@@ -1,0 +1,16 @@
+[
+{
+  "modid": "tartaros",
+  "name": "Tartaros",
+  "description": "A mod aimed at making death more interesting",
+  "version": "1.0",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Pyrofab", "CobraDarkPoney"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
