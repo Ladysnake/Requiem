@@ -1,0 +1,37 @@
+{
+  "textures": {
+    "particle": "tartaros:blocks/soul_extractor_front_off",
+    "bottom": "minecraft:blocks/furnace_top",
+    "top": "tartaros:blocks/crystalizer_top",
+    "side": "tartaros:blocks/crystalizer_side",
+    "inside": "minecraft:blocks/furnace_top",
+    "front": "#front"
+  },
+  "elements": [
+    {
+      "__comment": "Block",
+      "from": [0,0,0],
+      "to": [16,16,16],
+      "faces": {
+        "down":{"uv":	[0,0,16,16],"texture":"#bottom","cullface":"down"},
+  			"up":{"uv":		[0,0,16,16],"texture":"#top","cullface":"up"},
+  			"south":{"uv":	[0,0,16,16],"texture":"#side","cullface":"south"},
+  			"west":{"uv":	[0,0,16,16],"texture":"#side","cullface":"west"},
+        "north":{"uv": [0,0,16,16], "texture": "#front", "cullface":"north"},
+  			"east":{"uv":	[0,0,16,16],"texture":"#side","cullface":"east"}
+      }
+    },
+    {
+  		"__comment": "Inside",
+  		"from": [1,1,15],
+  		"to": [15,15,1],
+  		"faces": {
+  			"down":{"uv":	[0,0,16,16],"texture":"#inside","cullface":"north"},
+  			"up":{"uv":		[0,0,16,16],"texture":"#inside","cullface":"north"},
+  			"north":{"uv":	[0,1,16,15],"texture":"#inside","cullface":"north"},
+  			"west":{"uv":	[0,1,16,15],"texture":"#inside","cullface":"north"},
+  			"east":{"uv":	[0,1,16,15],"texture":"#inside","cullface":"north"}
+  		}
+  	}
+  ]
+}
