@@ -12,10 +12,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION, acceptedMinecraftVersions = Reference.MCVERSION)
 public class Tartaros {
 	
-	@Instance("Tartaros")
-	public Tartaros instance;
+	@Instance(Reference.MOD_ID)
+	public static Tartaros instance;
 	
-	 @SidedProxy(clientSide = "ladysnake.tartaros.proxy.ClientProxy",serverSide = "ladysnake.tartaros.proxy.ServerProxy")
+	 @SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS,serverSide = Reference.SERVER_PROXY_CLASS)
 	 public static CommonProxy proxy;
 	 
 	 @EventHandler

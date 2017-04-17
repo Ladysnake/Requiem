@@ -1,0 +1,6 @@
+{
+    "parent": "tartaros:block/crystallizer",
+    "textures": {
+      "front": "tartaros:blocks/crystalizer_front_off"
+    }
+}
