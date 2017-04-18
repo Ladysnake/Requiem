@@ -1,11 +1,69 @@
 {
-  "parent": "block/orientable",
-  "textures": {
-    "particle": "tartaros:blocks/soul_extractor_front_off",
-    "bottom": "minecraft:blocks/furnace_top",
-    "top": "tartaros:blocks/crystalizer_top",
-    "side": "tartaros:blocks/crystalizer_side",
-    "inside": "minecraft:blocks/furnace_top",
-    "front": "tartaros:blocks/soul_extractor_front_off"
-  }
+    "textures": {
+        "0": "tartaros:blocks/soul_extractor/soul_extractor_front",
+        "1": "tartaros:blocks/soul_extractor/soul_extractor_side",
+        "2": "tartaros:blocks/soul_extractor/soul_extractor_top",
+        "3": "tartaros:blocks/soul_extractor/soul_extractor_bottom",
+        "4": "tartaros:blocks/soul_extractor/soul_extractor_inside1_ver",
+        "5": "tartaros:blocks/soul_extractor/soul_extractor_inside1_hor",
+        "6": "tartaros:blocks/soul_extractor/soul_extractor_inside2_ver",
+        "7": "tartaros:blocks/soul_extractor/soul_extractor_inside2_hor",
+        "8": "tartaros:blocks/soul_extractor/soul_extractor_soul",
+        "9": "tartaros:blocks/soul_extractor/soul_extractor_sand"
+    },
+    "elements": [
+        {
+            "name": "Outer Cube",
+            "from": [ 0.0, 0.0, 0.0 ],
+            "to": [ 16.0, 16.0, 16.0 ],
+            "faces": {
+                "north": { "texture": "#0", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+                "east": { "texture": "#1", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+                "south": { "texture": "#1", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+                "west": { "texture": "#1", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+                "up": { "texture": "#2", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+                "down": { "texture": "#3", "uv": [ 0.0, 0.0, 16.0, 16.0 ] }
+            }
+        },
+        {
+            "name": "Inside1",
+            "from": [ 10.0, 2.0, 0.0 ],
+            "to": [ 14.0, 14.0, 4.0 ],
+            "faces": {
+                "east": { "texture": "#4", "uv": [ 0.0, 0.0, 4.0, 12.0 ] },
+                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 4.0, 12.0 ] },
+                "west": { "texture": "#4", "uv": [ 0.0, 0.0, 4.0, 12.0 ] },
+                "up": { "texture": "#5", "uv": [ 0.0, 0.0, 4.0, 4.0 ] },
+                "down": { "texture": "#5", "uv": [ 0.0, 0.0, 4.0, 4.0 ] }
+            }
+        },
+        {
+            "name": "Inside2",
+            "from": [ 2.0, 5.0, 0.0 ],
+            "to": [ 9.0, 14.0, 7.0 ],
+            "faces": {
+                "east": { "texture": "#6", "uv": [ 0.0, 0.0, 7.0, 9.0 ] },
+                "south": { "texture": "#6", "uv": [ 0.0, 0.0, 7.0, 9.0 ] },
+                "west": { "texture": "#6", "uv": [ 0.0, 0.0, 7.0, 9.0 ] },
+                "up": { "texture": "#7", "uv": [ 0.0, 0.0, 7.0, 7.0 ] },
+                "down": { "texture": "#7", "uv": [ 0.0, 0.0, 7.0, 7.0 ] }
+            }
+        },
+        {
+            "name": "Soul",
+            "from": [ 10.0, 2.0, 1.0 ],
+            "to": [ 14.0, 14.0, 1.0 ],
+            "faces": {
+                "north": { "texture": "#8", "uv": [ 0.0, 0.0, 4.0, 0.0 ] }
+            }
+        },
+        {
+            "name": "Sand",
+            "from": [ 2.0, 5.0, 1.0 ],
+            "to": [ 9.0, 14.0, 1.0 ],
+            "faces": {
+                "north": { "texture": "#9", "uv": [ 0.0, 0.0, 7.0, 9.0 ] }
+            }
+        }
+    ]
 }

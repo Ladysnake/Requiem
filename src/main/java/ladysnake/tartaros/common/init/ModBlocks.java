@@ -1,6 +1,7 @@
 package ladysnake.tartaros.common.init;
 
 import ladysnake.tartaros.common.blocks.BlockCrystallizer;
+import ladysnake.tartaros.common.blocks.BlockMercuriusWaystone;
 import ladysnake.tartaros.common.blocks.BlockSoulExtractor;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -15,15 +16,18 @@ public class ModBlocks {
 
     public static BlockCrystallizer crystallizer;
     public static BlockSoulExtractor soul_extractor;
+    public static BlockMercuriusWaystone mercurius_waystone;
 
     public static void init() {
     	crystallizer = new BlockCrystallizer();
     	soul_extractor = new BlockSoulExtractor();
+    	mercurius_waystone = new BlockMercuriusWaystone();
     }
     
     public static void register() {
     	registerBlock(crystallizer);
     	registerBlock(soul_extractor);
+    	registerBlock(mercurius_waystone);
     }
     
     private static void registerBlock(Block block) {
@@ -37,6 +41,7 @@ public class ModBlocks {
     public static void registerRenders() {
     	registerRender(crystallizer);
     	registerRender(soul_extractor);
+    	registerRender(mercurius_waystone);
     }
     
     @SideOnly(Side.CLIENT)

@@ -2,6 +2,7 @@ package ladysnake.tartaros.common.init;
 
 import ladysnake.tartaros.common.Reference;
 import ladysnake.tartaros.common.blocks.BlockCrystallizer;
+import ladysnake.tartaros.common.items.SoulInABottle;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -13,6 +14,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModItems {
 	public static Item ectoplasm, ectoplasma;
+	public static SoulInABottle soul_in_a_bottle;
 
     public static void init() {
     	ectoplasm = new Item();
@@ -21,17 +23,20 @@ public class ModItems {
         ectoplasma = new Item();
     	ectoplasma.setUnlocalizedName(Reference.Items.ECTOPLASMA.getUnlocalizedName());
         ectoplasma.setRegistryName(Reference.Items.ECTOPLASMA.getRegistryName());
+        soul_in_a_bottle = new SoulInABottle();
     }
     
     public static void register() {
     	GameRegistry.register(ectoplasm);
     	GameRegistry.register(ectoplasma);
+    	GameRegistry.register(soul_in_a_bottle);
     }
     
     @SideOnly(Side.CLIENT)
     public static void registerRenders() {
     	registerRender(ectoplasm);
     	registerRender(ectoplasma);
+    	registerRender(soul_in_a_bottle);
     }
     
     @SideOnly(Side.CLIENT)

@@ -18,6 +18,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -67,6 +68,11 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
     }
     
     @Override
+    public BlockRenderLayer getBlockLayer() {
+    	return BlockRenderLayer.CUTOUT;
+    }
+    
+    @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, FACING, LIT);
     }
@@ -84,7 +90,8 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
 	
 	@Override
     public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-        return state.withProperty(LIT, /*getTE(world, pos).isBurning()*/ true);
+		System.out.println(!getTE(world, pos).isEmpty());
+        return state.withProperty(LIT, !getTE(world, pos).isEmpty());
     }
 		
 	@Override
@@ -102,7 +109,7 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
 			else if(playerIn.getHeldItem(hand).getItem() == Items.GLASS_BOTTLE) {
 				if(getTE(worldIn, pos).retrieveSoul()){
 					playerIn.getHeldItem(hand).shrink(1);
-					playerIn.inventory.addItemStackToInventory(new ItemStack(ModItems.ectoplasm));
+					playerIn.inventory.addItemStackToInventory(new ItemStack(ModItems.soul_in_a_bottle));
 				}
 			}
 			return true;

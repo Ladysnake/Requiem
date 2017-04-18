@@ -7,6 +7,7 @@ import ladysnake.tartaros.common.crafting.CrystallizerRecipes;
 import ladysnake.tartaros.common.inventory.ContainerCrystallizer;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
@@ -290,7 +291,10 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
             {
                 flag1 = true;
                 //BlockCrystallizer.setState(this.isBurning(), this.world, this.pos);
-                this.world.markBlockRangeForRenderUpdate(this.pos, this.pos);
+                if (getWorld() != null) {
+        	    	IBlockState state = getWorld().getBlockState(getPos());
+        	     	getWorld().notifyBlockUpdate(getPos(), state, state, 3);
+        	    }
             }
         }
 

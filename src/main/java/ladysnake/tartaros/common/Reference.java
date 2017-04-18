@@ -6,12 +6,13 @@ public class Reference {
 	public static final String VERSION = "1.0";
 	public static final String MCVERSION = "[1.11.2]";
 	
-	public static final String CLIENT_PROXY_CLASS = "ladysnake.tartaros.client.ClientProxy";
-	public static final String SERVER_PROXY_CLASS = "ladysnake.tartaros.common.proxy.ServerProxy";
+	public static final String CLIENT_PROXY_CLASS = "ladysnake.tartaros.client.proxy.ClientProxy";
+	public static final String SERVER_PROXY_CLASS = "ladysnake.tartaros.server.proxy.ServerProxy";
 	
 	public static enum Items {
 		ECTOPLASM("ectoplasm", "itemEctoplasm"),
-		ECTOPLASMA("ectoplasma", "itemEctoplasma");
+		ECTOPLASMA("ectoplasma", "itemEctoplasma"),
+		SOULINABOTTLE("soul_in_a_bottle", "itemSoulInABottle");
 		
 		private String unlocalizedName;
 		private String registryName;
@@ -32,7 +33,8 @@ public class Reference {
 
 	public static enum Blocks {
 		CRYSTALLIZER("crystallizer", "blockCrystallizer"),
-		SOUL_EXTRACTOR("soul_extractor", "blockSoulExtractor");
+		SOUL_EXTRACTOR("soul_extractor", "blockSoulExtractor"),
+		MERCURIUS_WAYSTONE("mercurius_waystone", "blockMercuriusWaystone");
 		
 		private String unlocalizedName;
 		private String registryName;

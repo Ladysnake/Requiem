@@ -1,1 +1,7 @@
 tile.crystallizer.name=Crystallizer
+tile.soul_extractor.name=Soul Extractor
+
+item.ectoplasm.name=Ectoplasm
+item.ectoplasma.name=Ectoplasma
+
+entity.wandering_soul.name=Wandering Soul

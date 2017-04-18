@@ -2,6 +2,7 @@ package ladysnake.tartaros.common.tileentities;
 
 import java.util.Random;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,7 +27,7 @@ public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 		}
 		++processElapsed;
 		if(processElapsed%200 == 0) {
-			soulSandCount--;
+			consumeSoulSand();
 			Random rand = new Random();
 			soulCount+= rand.nextInt(2);
 		}
@@ -87,13 +88,32 @@ public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 		}
 			
 		soulSandCount += count;
+		markDirty();
+	    if (getWorld() != null) {
+	    	IBlockState state = getWorld().getBlockState(getPos());
+	     	getWorld().notifyBlockUpdate(getPos(), state, state, 3);
+	    }
 		System.out.println("\ntotal: " + soulSandCount + "\nretour: 0" + "\ntotalsouls: " + soulCount);
 		return 0;
+	}
+	
+	protected void consumeSoulSand() {
+		soulSandCount--;
+		markDirty();
+	    if (getWorld() != null) {
+	    	IBlockState state = getWorld().getBlockState(getPos());
+	     	getWorld().notifyBlockUpdate(getPos(), state, state, 3);
+	    }
 	}
 	
 	public boolean retrieveSoul() {
 		if(this.soulCount == 0) return false;
 		this.soulCount--;
+		markDirty();
+	    if (getWorld() != null) {
+	    	IBlockState state = getWorld().getBlockState(getPos());
+	     	getWorld().notifyBlockUpdate(getPos(), state, state, 3);
+	    }
 		return true;
 	}
 

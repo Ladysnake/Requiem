@@ -68,6 +68,11 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
     public int getMetaFromState(IBlockState state) {
         return state.getValue(FACING).getIndex()-2 + (state.getValue(LIT) ? 8 : 0);
     }
+    
+    @Override
+    public BlockRenderLayer getBlockLayer() {
+    	return BlockRenderLayer.TRANSLUCENT;
+    }
 
     @Override
     protected BlockStateContainer createBlockState() {
@@ -85,6 +90,7 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
 	
 	@Override
     public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+    	System.out.println("slt" + getTE(world, pos).isBurning());
         return state.withProperty(LIT, getTE(world, pos).isBurning());
     }
 	
