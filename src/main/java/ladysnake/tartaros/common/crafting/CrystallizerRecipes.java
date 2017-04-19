@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import com.google.common.collect.Maps;
 
+import ladysnake.tartaros.common.init.ModItems;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -24,8 +25,9 @@ public class CrystallizerRecipes {
     }
 	
 	private CrystallizerRecipes() {
-		this.addCrystalRecipe(new ItemStack(Blocks.IRON_ORE), new ItemStack(Items.NETHERBRICK));
-		this.addCrystalRecipe(new ItemStack(Blocks.SAND), new ItemStack(Blocks.GLASS), 20);
+		addCrystalRecipe(new ItemStack(Blocks.IRON_ORE), new ItemStack(Items.NETHERBRICK));
+		addCrystalRecipe(new ItemStack(Blocks.SAND), new ItemStack(Blocks.GLASS), 20);
+		addCrystalRecipe(new ItemStack(ModItems.ectoplasm), new ItemStack(ModItems.ectoplasma), 400);
 	}
 	
 	public void addCrystalRecipe(ItemStack input, ItemStack output){

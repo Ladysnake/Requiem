@@ -11,11 +11,7 @@
     "inventory": [{}],
     "lit": {
       "false": {},
-      "true": {
-        "textures": {
-          "front": "tartaros:blocks/soul_extractor_front_on"
-        }
-      }
+      "true": {}
     },
     "facing": {
       "north": {},

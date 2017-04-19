@@ -1,6 +1,10 @@
 {
-    "parent": "tartaros:block/crystallizer",
+    "parent": "block/orientable",
     "textures": {
-      "front": "tartaros:blocks/crystalizer_front_off"
+      "bottom": "minecraft:blocks/furnace_top",
+      "top": "minecraft:blocks/dispenser_front_vertical",
+      "side": "minecraft:blocks/furnace_side",
+      "inside": "minecraft:blocks/furnace_top",
+      "front": "tartaros:blocks/crystallizer/crystallizer_front_off"
     }
 }

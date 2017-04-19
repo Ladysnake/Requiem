@@ -1,6 +1,7 @@
 package ladysnake.tartaros.common.capabilities;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -35,8 +36,16 @@ public class IncorporealDataHandler {
 		private int incorporeal;
 	
 		@Override
-		public void setIncorporeal(boolean enable) {
+		public void setIncorporeal(boolean enable, EntityPlayer p) {
 			incorporeal = (enable) ? 1 : 0;
+			if(!p.isCreative()) {
+				p.capabilities.allowEdit = !enable;
+				p.capabilities.allowFlying = enable || p.isCreative();
+				p.capabilities.disableDamage = enable;
+				p.capabilities.isFlying = enable;
+				p.setEntityInvulnerable(enable);
+			}
+			//p.capabilities.setFlySpeed(0.05f);
 		}
 		
 		@Override

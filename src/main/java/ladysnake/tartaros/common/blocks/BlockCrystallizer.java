@@ -71,7 +71,7 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
     
     @Override
     public BlockRenderLayer getBlockLayer() {
-    	return BlockRenderLayer.TRANSLUCENT;
+    	return BlockRenderLayer.CUTOUT;
     }
 
     @Override

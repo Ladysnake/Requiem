@@ -1,6 +1,5 @@
 package ladysnake.tartaros.common.networkingtest;
 
-import ladysnake.tartaros.common.capabilities.IncorporealMessage;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;

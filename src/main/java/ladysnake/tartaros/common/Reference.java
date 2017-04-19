@@ -12,7 +12,11 @@ public class Reference {
 	public static enum Items {
 		ECTOPLASM("ectoplasm", "itemEctoplasm"),
 		ECTOPLASMA("ectoplasma", "itemEctoplasma"),
-		SOULINABOTTLE("soul_in_a_bottle", "itemSoulInABottle");
+		SOULGEM("soul_gem", "itemSoulGem"),
+		SOULINABOTTLE("soul_in_a_bottle", "itemSoulInABottle"),
+		SEPULTURE("sepulture", "itemSepulture"),
+		SEPULTUREFRAMING("sepulture_framing", "itemSepultureFraming");
+		
 		
 		private String unlocalizedName;
 		private String registryName;
@@ -33,8 +37,11 @@ public class Reference {
 
 	public static enum Blocks {
 		CRYSTALLIZER("crystallizer", "blockCrystallizer"),
+		ECTOPLASM("ectoplasm_block", "blockEctoplasm"),
+		ECTOPLASMA("ectoplasma_block", "blockEctoplasma"),
 		SOUL_EXTRACTOR("soul_extractor", "blockSoulExtractor"),
-		MERCURIUS_WAYSTONE("mercurius_waystone", "blockMercuriusWaystone");
+		MERCURIUS_WAYSTONE("mercurius_waystone", "blockMercuriusWaystone"),
+		SEPULTURE("sepulture", "blockSepulture");
 		
 		private String unlocalizedName;
 		private String registryName;

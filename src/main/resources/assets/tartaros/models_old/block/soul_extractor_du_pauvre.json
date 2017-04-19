@@ -1,0 +1,11 @@
+{
+  "parent": "block/orientable",
+  "textures": {
+    "particle": "tartaros:blocks/soul_extractor_front_off",
+    "bottom": "minecraft:blocks/furnace_top",
+    "top": "tartaros:blocks/crystalizer_top",
+    "side": "tartaros:blocks/crystalizer_side",
+    "inside": "minecraft:blocks/furnace_top",
+    "front": "tartaros:blocks/soul_extractor_front_on"
+  }
+}
