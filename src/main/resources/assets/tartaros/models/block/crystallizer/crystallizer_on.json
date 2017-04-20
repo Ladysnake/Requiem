@@ -1,5 +1,6 @@
 {
     "textures": {
+		    "particle": "tartaros:blocks/crystallizer/crystallizer_front_off",
         "0": "tartaros:blocks/crystallizer/crystallizer_front_off",
         "1": "tartaros:blocks/crystallizer/crystallizer_side",
         "2": "tartaros:blocks/crystallizer/crystallizer_top",
@@ -24,14 +25,14 @@
         },
         {
             "name": "Inside",
-            "from": [ 2.0, 10.0, 0.0 ],
-            "to": [ 14.0, 14.0, 4.0 ],
+            "from": [ 2.0, 10.0, 4.0 ],
+            "to": [ 14.0, 14.0, 0.0 ],
             "faces": {
-                "east": { "texture": "#3", "uv": [ 0.0, 0.0, 4.0, 4.0 ] },
-                "south": { "texture": "#4", "uv": [ 0.0, 0.0, 12.0, 4.0 ] },
-                "west": { "texture": "#3", "uv": [ 0.0, 0.0, 4.0, 4.0 ] },
-                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 12.0, 4.0 ] },
-                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 12.0, 4.0 ] }
+                "east": { "texture": "#3", "uv": [ 0.0, 0.0, 4.0, 4.0 ],"cullface":"north" },
+                "north": { "texture": "#4", "uv": [ 0.0, 0.0, 12.0, 4.0 ],"cullface":"north" },
+                "west": { "texture": "#3", "uv": [ 0.0, 0.0, 4.0, 4.0 ],"cullface":"north" },
+                "up": { "texture": "#4", "uv": [ 0.0, 0.0, 12.0, 4.0 ],"cullface":"north" },
+                "down": { "texture": "#4", "uv": [ 0.0, 0.0, 12.0, 4.0 ],"cullface":"north" }
             }
         },
         {
@@ -39,7 +40,7 @@
             "from": [ 2.0, 10.0, 1.0 ],
             "to": [ 14.0, 14.0, 1.0 ],
             "faces": {
-                "north": { "texture": "#5", "uv": [ 0.0, 0.0, 12.0, 0.125 ] }
+                "north": { "texture": "#5", "uv": [ 0.0, 0.0, 12.0, 4.0 ] }
             }
         },
         {

@@ -27,9 +27,10 @@ public class ModBlocks {
 
     public static void init() {
     	ectoplasm = new BlockEctoplasm();
-    	ectoplasma = new Block(Material.ICE);
+    	ectoplasma = new Block(Material.CLOTH);
     	ectoplasma.setUnlocalizedName(Reference.Blocks.ECTOPLASMA.getUnlocalizedName());
     	ectoplasma.setRegistryName(Reference.Blocks.ECTOPLASMA.getRegistryName());
+    	ectoplasma.setHardness(0.5f);
     	crystallizer = new BlockCrystallizer();
     	soul_extractor = new BlockSoulExtractor();
     	mercurius_waystone = new BlockMercuriusWaystone();

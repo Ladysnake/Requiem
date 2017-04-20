@@ -3,6 +3,7 @@ package ladysnake.tartaros.common.init;
 import ladysnake.tartaros.common.Reference;
 import ladysnake.tartaros.common.blocks.BlockCrystallizer;
 import ladysnake.tartaros.common.items.ItemSepulture;
+import ladysnake.tartaros.common.items.ItemSoulGem;
 import ladysnake.tartaros.common.items.ItemSoulInABottle;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -14,7 +15,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModItems {
-	public static Item ectoplasm, ectoplasma, soul_gem, sepulture_framing;
+	public static Item ectoplasm, ectoplasma, sepulture_framing;
+	public static ItemSoulGem soul_gem;
 	public static ItemSoulInABottle soul_in_a_bottle;
 	public static ItemSepulture sepulture;
 
@@ -25,9 +27,7 @@ public class ModItems {
         ectoplasma = new Item();
     	ectoplasma.setUnlocalizedName(Reference.Items.ECTOPLASMA.getUnlocalizedName());
         ectoplasma.setRegistryName(Reference.Items.ECTOPLASMA.getRegistryName());
-        soul_gem = new Item();
-        soul_gem.setUnlocalizedName(Reference.Items.SOULGEM.getUnlocalizedName());
-        soul_gem.setRegistryName(Reference.Items.SOULGEM.getRegistryName());
+        soul_gem = new ItemSoulGem();
         soul_in_a_bottle = new ItemSoulInABottle();
         sepulture = new ItemSepulture();
         sepulture_framing = new Item();

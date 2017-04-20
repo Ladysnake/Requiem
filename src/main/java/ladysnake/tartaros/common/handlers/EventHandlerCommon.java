@@ -1,5 +1,6 @@
 package ladysnake.tartaros.common.handlers;
 
+import ladysnake.tartaros.client.gui.IncorporealOverlay;
 import ladysnake.tartaros.common.Reference;
 import ladysnake.tartaros.common.blocks.IRespawnLocation;
 import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
@@ -13,6 +14,8 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -108,5 +111,16 @@ public class EventHandlerCommon {
 	    		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F); //0.5F being alpha
 	    	}
 	    }
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@SubscribeEvent
+	public void onRenderGameOverlay(RenderGameOverlayEvent event) {
+		if(event.getType() == ElementType.EXPERIENCE) {
+		    final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player);
+		    if(playerCorp.isIncorporeal()){
+		    	IncorporealOverlay.renderIncorporealOverlay(event.getResolution());
+		    }
+		}
 	}
 }

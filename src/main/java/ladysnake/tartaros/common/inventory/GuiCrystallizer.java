@@ -11,7 +11,7 @@ public class GuiCrystallizer extends GuiContainer {
 	public static final int WIDTH = 176;
     public static final int HEIGHT = 166;
     
-    private static final ResourceLocation background = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/crystalizer.png");
+    private static final ResourceLocation background = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/crystallizer.png");
 	
     private TileEntityCrystallizer tileCrystallizer;
     

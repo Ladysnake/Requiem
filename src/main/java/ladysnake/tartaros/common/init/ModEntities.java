@@ -25,7 +25,7 @@ public class ModEntities {
     
     public static void register() {
     	int id = 0;
-    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":wandering_soul"), EntityWanderingSoul.class, "wandering_soul", id++, Tartaros.instance, 64, 1, true, 0x000015, 0x00005f);
+    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":wandering_soul"), EntityWanderingSoul.class, "wandering_soul", id++, Tartaros.instance, 64, 1, true, 0xA8E4E4, 0x00D2D2);
     	EntityRegistry.addSpawn(EntityWanderingSoul.class, 100, 1, 1, EnumCreatureType.CREATURE, Biomes.HELL);
     	LootTableList.register(EntityWanderingSoul.LOOT);
     }

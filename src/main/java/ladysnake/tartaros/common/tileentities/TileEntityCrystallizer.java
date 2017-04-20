@@ -56,7 +56,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
     
     public static void init() {
     	fuelList = new HashMap<Item, Integer>();
-    	fuelList.put(Items.BLAZE_POWDER, 2000);
+    	fuelList.put(Items.BLAZE_POWDER, 800);
     }
 
     /**

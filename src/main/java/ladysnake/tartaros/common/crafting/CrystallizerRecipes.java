@@ -25,15 +25,26 @@ public class CrystallizerRecipes {
     }
 	
 	private CrystallizerRecipes() {
-		addCrystalRecipe(new ItemStack(Blocks.IRON_ORE), new ItemStack(Items.NETHERBRICK));
+		addCrystalRecipe(new ItemStack(Blocks.NETHERRACK), new ItemStack(Blocks.NETHER_BRICK));
 		addCrystalRecipe(new ItemStack(Blocks.SAND), new ItemStack(Blocks.GLASS), 20);
 		addCrystalRecipe(new ItemStack(ModItems.ectoplasm), new ItemStack(ModItems.ectoplasma), 400);
 	}
 	
+	/**
+	 * adds a recipe to the crystallizer
+	 * @param input the item that gets consumed
+	 * @param output the item that gets created
+	 */
 	public void addCrystalRecipe(ItemStack input, ItemStack output){
 		addCrystalRecipe(input, output, 200);
 	}
 	
+	/**
+	 * adds a recipe to the crystallizer
+	 * @param input the item that gets consumed
+	 * @param output the item that gets created
+	 * @param time the time, in ticks, that the process will take. (a blaze powder fuels for 800 ticks)
+	 */
 	public void addCrystalRecipe(ItemStack input, ItemStack output, int time){
 		if (getCrystalResult(input) != ItemStack.EMPTY) { net.minecraftforge.fml.common.FMLLog.info("Ignored crystallizing recipe with conflicting input: " + input + " = " + output); return; }
         this.crystallizingList.put(input, output);

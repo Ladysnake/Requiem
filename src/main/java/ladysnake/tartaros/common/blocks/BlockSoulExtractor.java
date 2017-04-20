@@ -39,6 +39,7 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
 		setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
         setUnlocalizedName(Reference.Blocks.SOUL_EXTRACTOR.getUnlocalizedName());
         setRegistryName(Reference.Blocks.SOUL_EXTRACTOR.getRegistryName());
+        this.setHardness(1.0f);
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -115,6 +116,12 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
 			return true;
 		}
 		return false;
+	}
+	
+	@Override
+	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
+		super.onBlockHarvested(worldIn, pos, state, player);
+		getTE(worldIn, pos).emptyInWorld(worldIn);
 	}
 
 }

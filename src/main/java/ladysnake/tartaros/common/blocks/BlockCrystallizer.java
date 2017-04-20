@@ -41,6 +41,7 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
         setUnlocalizedName(Reference.Blocks.CRYSTALLIZER.getUnlocalizedName());
         setRegistryName(Reference.Blocks.CRYSTALLIZER.getRegistryName());
         TileEntityCrystallizer.init();
+        this.setHardness(1.0f);
 	}
 	
 	@SideOnly(Side.CLIENT)

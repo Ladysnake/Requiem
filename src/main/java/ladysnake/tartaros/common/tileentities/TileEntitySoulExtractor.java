@@ -3,14 +3,18 @@ package ladysnake.tartaros.common.tileentities;
 import java.util.Random;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
+import net.minecraft.world.World;
 
 public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 	
@@ -29,7 +33,11 @@ public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 		if(processElapsed%200 == 0) {
 			consumeSoulSand();
 			Random rand = new Random();
-			soulCount+= rand.nextInt(2);
+			if(rand.nextInt()%5 == 0) soulCount++;
+			if(this.world.getTileEntity(pos) != null && this.world.getTileEntity(pos) instanceof TileEntityHopper){
+				TileEntityHopper hopper = ((TileEntityHopper)this.world.getTileEntity(pos));
+				hopper.getHopperInventory(hopper).getField(0);	//TODO put sand in hopper
+			}
 		}
 	}
 	
@@ -115,6 +123,11 @@ public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 	     	getWorld().notifyBlockUpdate(getPos(), state, state, 3);
 	    }
 		return true;
+	}
+	
+	public void emptyInWorld(World worldIn) {
+		if(!worldIn.isRemote)
+			worldIn.spawnEntity(new EntityItem(worldIn, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, new ItemStack(Blocks.SOUL_SAND, soulSandCount)));
 	}
 
 }

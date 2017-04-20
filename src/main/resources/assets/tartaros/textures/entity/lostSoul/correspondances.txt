@@ -1,4 +1,0 @@
-lostSoul_1 : Slain / normal death
-lostSoul_2 : Death bu burn / lava
-lostSoul_3 : Death by zombification
-lostSoul_4 : Death by explosion / charged creeper

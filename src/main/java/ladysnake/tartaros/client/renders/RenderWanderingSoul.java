@@ -1,11 +1,14 @@
 package ladysnake.tartaros.client.renders;
 
+import java.util.Random;
+
 import org.lwjgl.opengl.GL11;
 
 import ladysnake.tartaros.client.models.ModelWanderingSoul;
 import ladysnake.tartaros.common.Reference;
 import ladysnake.tartaros.common.entity.EntityWanderingSoul;
 import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelZombie;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.Render;
@@ -24,7 +27,13 @@ public class RenderWanderingSoul extends RenderLiving<EntityWanderingSoul> {
 	}
 
 	private void setEntityTexture() {
-		wanderingSoulTexture = new ResourceLocation(Reference.MOD_ID + ":textures/entity/wanderingsoul/lost_soul_1.png");
+		Random rand = new Random();
+		switch(rand.nextInt()){
+		case 1: wanderingSoulTexture = new ResourceLocation(Reference.MOD_ID + ":textures/entity/lost_soul/lostSoul_2.png"); break;
+		case 2: wanderingSoulTexture = new ResourceLocation(Reference.MOD_ID + ":textures/entity/lost_soul/lostSoul_3.png"); break;
+		case 3: wanderingSoulTexture = new ResourceLocation(Reference.MOD_ID + ":textures/entity/lost_soul/lostSoul_4.png"); break;
+		default: wanderingSoulTexture = new ResourceLocation(Reference.MOD_ID + ":textures/entity/lost_soul/lostSoul_1.png"); break;
+		}
 		
 	}
 
@@ -56,7 +65,7 @@ public class RenderWanderingSoul extends RenderLiving<EntityWanderingSoul> {
 
         @Override
         public Render<? super EntityWanderingSoul> createRenderFor(RenderManager manager) {
-            return new RenderWanderingSoul(manager, new ModelWanderingSoul(1.0f, false), 0.5f);
+            return new RenderWanderingSoul(manager, new ModelBiped(1.0f), 0.5f);
         }
 
 }
