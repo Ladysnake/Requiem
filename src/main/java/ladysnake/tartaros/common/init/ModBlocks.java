@@ -1,6 +1,7 @@
 package ladysnake.tartaros.common.init;
 
 import ladysnake.tartaros.common.Reference;
+import ladysnake.tartaros.common.Tartaros;
 import ladysnake.tartaros.common.blocks.BlockCrystallizer;
 import ladysnake.tartaros.common.blocks.BlockEctoplasm;
 import ladysnake.tartaros.common.blocks.BlockMercuriusWaystone;
@@ -51,6 +52,7 @@ public class ModBlocks {
     	ItemBlock item = new ItemBlock(block);
     	item.setRegistryName(block.getRegistryName());
     	GameRegistry.register(item);
+    	block.setCreativeTab(Tartaros.CREATIVE_TAB);
     }
     
     @SideOnly(Side.CLIENT)

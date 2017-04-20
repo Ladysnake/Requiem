@@ -1,6 +1,7 @@
 package ladysnake.tartaros.common.init;
 
 import ladysnake.tartaros.common.Reference;
+import ladysnake.tartaros.common.Tartaros;
 import ladysnake.tartaros.common.blocks.BlockCrystallizer;
 import ladysnake.tartaros.common.items.ItemSepulture;
 import ladysnake.tartaros.common.items.ItemSoulGem;
@@ -24,9 +25,11 @@ public class ModItems {
     	ectoplasm = new Item();
     	ectoplasm.setUnlocalizedName(Reference.Items.ECTOPLASM.getUnlocalizedName());
         ectoplasm.setRegistryName(Reference.Items.ECTOPLASM.getRegistryName());
+        ectoplasm.setCreativeTab(Tartaros.CREATIVE_TAB);
         ectoplasma = new Item();
     	ectoplasma.setUnlocalizedName(Reference.Items.ECTOPLASMA.getUnlocalizedName());
         ectoplasma.setRegistryName(Reference.Items.ECTOPLASMA.getRegistryName());
+        ectoplasma.setCreativeTab(Tartaros.CREATIVE_TAB);
         soul_gem = new ItemSoulGem();
         soul_in_a_bottle = new ItemSoulInABottle();
         sepulture = new ItemSepulture();

@@ -6,13 +6,18 @@ import ladysnake.tartaros.common.blocks.IRespawnLocation;
 import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
 import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
 import ladysnake.tartaros.common.capabilities.IncorporealDataHandler.Provider;
+import ladysnake.tartaros.common.entity.EntityItemWaystone;
+import ladysnake.tartaros.common.init.ModBlocks;
 import ladysnake.tartaros.common.networkingtest.PacketHandler;
 import ladysnake.tartaros.common.networkingtest.PingMessage;
 import ladysnake.tartaros.common.networkingtest.SimpleMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -40,11 +45,23 @@ public class EventHandlerCommon {
 		
 		event.addCapability(new ResourceLocation(Reference.MOD_ID, "incorporeal"), new Provider());
 	 }
+	
+	@SubscribeEvent
+	public void onLivingDeath(LivingDeathEvent event){
+		if(event.getEntity() instanceof EntityPlayer){
+			EntityPlayer p = (EntityPlayer)event.getEntity();
+			final ItemStack merc = new ItemStack(ModBlocks.mercurius_waystone);
+			if(p.inventory.hasItemStack(merc)) {
+				p.inventory.removeStackFromSlot(p.inventory.getSlotFor(merc));
+				p.world.spawnEntity(new EntityItemWaystone(p.world, p.posX + 0.5, p.posY + 1.0, p.posZ + 0.5));
+			}
+		}
+	}
 
 	
 	@SubscribeEvent
 	public void clonePlayer(PlayerEvent.Clone event) {
-		if(event.isWasDeath()){
+		if(event.isWasDeath() && !event.getEntityPlayer().isCreative()){
 			event.getEntityPlayer().experienceLevel = event.getOriginal().experienceLevel;
 			final IIncorporealHandler clone = IncorporealDataHandler.getHandler(event.getEntityPlayer());
 			clone.setIncorporeal(true, event.getEntityPlayer());
@@ -57,7 +74,9 @@ public class EventHandlerCommon {
 	
 	@SubscribeEvent
 	public void onSaveToFile(PlayerEvent.SaveToFile event) {
-		hasAskedServerForRenderInfo = false;
+		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
+		IMessage msg = new SimpleMessage(event.getEntityPlayer().getUniqueID().getMostSignificantBits(), event.getEntityPlayer().getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporeal());
+		PacketHandler.net.sendToAll(msg);
 	}
 	
 	@SubscribeEvent(priority = EventPriority.LOWEST)

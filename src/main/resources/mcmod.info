@@ -3,13 +3,13 @@
   "modid": "tartaros",
   "name": "Tartaros",
   "description": "A mod aimed at making death more interesting",
-  "version": "1.0",
+  "version": "0.1",
   "mcversion": "${mcversion}",
-  "url": "https://www.ladysnake.esy.es",
-  "updateUrl": "",
+  "url": "https://minecraft.curseforge.com/projects/tartaros",
+  "updateUrl": "https://minecraft.curseforge.com/projects/tartaros",
   "authorList": ["Pyrofab", "CobraDarkPoney"],
   "credits": "",
-  "logoFile": "",
+  "logoFile": "/assets/tartaros/textures/tartaros_ico.png",
   "screenshots": [],
   "dependencies": []
 }

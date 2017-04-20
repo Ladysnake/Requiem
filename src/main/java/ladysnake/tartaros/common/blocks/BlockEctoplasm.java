@@ -31,7 +31,7 @@ public class BlockEctoplasm extends Block {
 	
 	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
-		if (!worldIn.isRemote)
+		if (!worldIn.isRemote && !player.isCreative())
         {
             this.dropBlockAsItem(worldIn, pos, state, 0);
         }

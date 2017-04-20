@@ -1,6 +1,7 @@
 package ladysnake.tartaros.common.items;
 
 import ladysnake.tartaros.common.Reference;
+import ladysnake.tartaros.common.Tartaros;
 import ladysnake.tartaros.common.blocks.BlockSepulture;
 import ladysnake.tartaros.common.init.ModBlocks;
 import net.minecraft.block.Block;
@@ -24,6 +25,7 @@ public class ItemSepulture extends Item {
 		super();
 		setUnlocalizedName(Reference.Items.SEPULTURE.getUnlocalizedName());
         setRegistryName(Reference.Items.SEPULTURE.getRegistryName());
+        this.setCreativeTab(Tartaros.CREATIVE_TAB);
 	}
 	
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)

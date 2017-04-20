@@ -9,14 +9,17 @@ import ladysnake.tartaros.common.init.ModCrafting;
 import ladysnake.tartaros.common.init.ModEntities;
 import ladysnake.tartaros.common.init.ModItems;
 import ladysnake.tartaros.common.inventory.GuiProxy;
+import ladysnake.tartaros.common.inventory.TartarosTab;
 import ladysnake.tartaros.common.networkingtest.PacketHandler;
 import ladysnake.tartaros.common.tileentities.TileEntityCrystallizer;
 import ladysnake.tartaros.common.tileentities.TileEntitySoulExtractor;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public abstract class CommonProxy {
+	
 	public void preInit() {
 		IncorporealDataHandler.register();
 		ModBlocks.init();
