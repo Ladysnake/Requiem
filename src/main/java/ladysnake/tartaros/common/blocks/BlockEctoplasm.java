@@ -4,6 +4,7 @@ import ladysnake.tartaros.common.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
@@ -36,6 +37,11 @@ public class BlockEctoplasm extends Block {
             this.dropBlockAsItem(worldIn, pos, state, 0);
         }
 	}
+	
+	@Override
+	public void onFallenUpon(World worldIn, BlockPos pos, Entity entityIn, float fallDistance) {
+            entityIn.fall(fallDistance, 0.0F);
+    }
 	
 	
 }

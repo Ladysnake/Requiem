@@ -1,5 +1,7 @@
 package ladysnake.tartaros.common.handlers;
 
+import java.util.Random;
+
 import ladysnake.tartaros.client.gui.IncorporealOverlay;
 import ladysnake.tartaros.common.Reference;
 import ladysnake.tartaros.common.blocks.IRespawnLocation;
@@ -11,14 +13,18 @@ import ladysnake.tartaros.common.init.ModBlocks;
 import ladysnake.tartaros.common.networkingtest.PacketHandler;
 import ladysnake.tartaros.common.networkingtest.PingMessage;
 import ladysnake.tartaros.common.networkingtest.SimpleMessage;
+import ladysnake.tartaros.common.networkingtest.UpdateMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderLivingEvent;
@@ -30,13 +36,46 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly; 
 
 public class EventHandlerCommon {
+
+	private static final Random rand = new Random();
+	private static int ticksSinceLastSync = 0;
 	
-	private static boolean hasAskedServerForRenderInfo = false;
+	@SubscribeEvent
+	public void onPlayerTick(PlayerTickEvent event) {
+		if(event.side == Side.CLIENT) return;
+		
+		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.player);
+		if(playerCorp.isIncorporeal()) {
+			if(++ticksSinceLastSync >= 100) {
+				if(Math.floor(event.player.posX) == 0 && Math.floor(event.player.posZ) == 0) {
+					playerCorp.setIncorporeal(false, event.player);
+					for(int i = 0; i < 50; i++) {
+					    double motionX = rand.nextGaussian() * 0.02D;
+					    double motionY = rand.nextGaussian() * 0.02D + 1;
+					    double motionZ = rand.nextGaussian() * 0.02D;
+					    ((WorldServer)event.player.world).spawnParticle(EnumParticleTypes.CLOUD, false, event.player.posX + 0.5D, event.player.posY+ 1.0D, event.player.posZ+ 0.5D, 1, 0.3D, 0.3D, 0.3D, 0.0D, new int[0]); 
+					}
+				}
+				IMessage msg = new UpdateMessage(playerCorp.isIncorporeal());
+				PacketHandler.net.sendTo(msg, (EntityPlayerMP)event.player);
+				ticksSinceLastSync = 0;
+			}
+			if(event.player.experience > 0 && rand.nextInt()%3 == 0)
+				event.player.experience --;
+				if(rand.nextInt()%300 == 0)
+					if(event.player.experienceLevel > 0) {
+						event.player.removeExperienceLevel(1);
+					} else {
+						event.player.capabilities.allowFlying = false;
+					}
+		}
+	}
 	
 	@SubscribeEvent
 	 public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
@@ -67,16 +106,7 @@ public class EventHandlerCommon {
 			clone.setIncorporeal(true, event.getEntityPlayer());
 			IMessage msg = new SimpleMessage(event.getEntityPlayer().getUniqueID().getMostSignificantBits(), event.getEntityPlayer().getUniqueID().getLeastSignificantBits(), true);
 			PacketHandler.net.sendToAll(msg);
-			if(event.getEntityPlayer().world.isRemote)
-				hasAskedServerForRenderInfo = false;
 		}
-	}
-	
-	@SubscribeEvent
-	public void onSaveToFile(PlayerEvent.SaveToFile event) {
-		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
-		IMessage msg = new SimpleMessage(event.getEntityPlayer().getUniqueID().getMostSignificantBits(), event.getEntityPlayer().getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporeal());
-		PacketHandler.net.sendToAll(msg);
 	}
 	
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -116,12 +146,6 @@ public class EventHandlerCommon {
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void onEntityRender(RenderLivingEvent.Pre event) {
-    	if(!hasAskedServerForRenderInfo) {
-    		System.out.println("asking for render info");
-    		IMessage msg = new PingMessage();
-			PacketHandler.net.sendToServer((msg));
-			hasAskedServerForRenderInfo = true;
-    	}
 	    if(event.getEntity() instanceof EntityPlayer){
 	    	//System.out.println("coucou");
 	    	final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler((EntityPlayer)event.getEntity());

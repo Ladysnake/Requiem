@@ -54,7 +54,7 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 			if (!worldIn.isRemote)
 			{
 				WorldServer worldserver = (WorldServer)worldIn;
-				System.out.println("particles !");
+				//System.out.println("particles !");
 				Random rand = new Random();
 				for(int i = 0; i < 50; i++) {
 				    double motionX = rand.nextGaussian() * 0.02D;

@@ -16,7 +16,6 @@ public class SimplePacket implements IMessageHandler<SimpleMessage, IMessage>
 	@Override
 	public IMessage onMessage(final SimpleMessage message, MessageContext ctx) 
 	{
-		System.out.println("message get !");
 	  // just to make sure that the side is correct
 	  if (ctx.side.isClient())
 	  {
@@ -27,7 +26,6 @@ public class SimplePacket implements IMessageHandler<SimpleMessage, IMessage>
 				  final EntityPlayer player = Minecraft.getMinecraft().player.world.getPlayerEntityByUUID(new UUID(message.playerUUIDMost, message.playerUUIDLeast));
 				  final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(player);
 				  playerCorp.setIncorporeal(message.simpleBool, player);
-				  System.out.println("client" + playerCorp);				  
 			  }
 			});
 	  }
