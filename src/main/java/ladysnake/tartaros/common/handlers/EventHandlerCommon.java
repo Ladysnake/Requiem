@@ -51,7 +51,7 @@ public class EventHandlerCommon {
 		if(event.side == Side.CLIENT) return;
 		
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.player);
-		if(playerCorp.isIncorporeal()) {
+		if(playerCorp.isIncorporeal() && !event.player.isCreative()) {
 			if(++ticksSinceLastSync >= 100) {
 				if(Math.floor(event.player.posX) == 0 && Math.floor(event.player.posZ) == 0) {
 					playerCorp.setIncorporeal(false, event.player);
@@ -62,8 +62,8 @@ public class EventHandlerCommon {
 					    ((WorldServer)event.player.world).spawnParticle(EnumParticleTypes.CLOUD, false, event.player.posX + 0.5D, event.player.posY+ 1.0D, event.player.posZ+ 0.5D, 1, 0.3D, 0.3D, 0.3D, 0.0D, new int[0]); 
 					}
 				}
-				IMessage msg = new UpdateMessage(playerCorp.isIncorporeal());
-				PacketHandler.net.sendTo(msg, (EntityPlayerMP)event.player);
+				IMessage msg = new SimpleMessage(event.player.getUniqueID().getMostSignificantBits(), event.player.getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporeal());
+				PacketHandler.net.sendToAll(msg);
 				ticksSinceLastSync = 0;
 			}
 			if(event.player.experience > 0 && rand.nextInt()%3 == 0)
@@ -119,7 +119,7 @@ public class EventHandlerCommon {
 	@SubscribeEvent (priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
-		if(playerCorp.isIncorporeal()){
+		if(playerCorp.isIncorporeal() && !event.getEntityPlayer().isCreative()){
 			if(event.isCancelable() && !(event.getWorld().getBlockState(event.getPos()).getBlock() instanceof IRespawnLocation))
 				event.setCanceled(true);
 		}
@@ -128,16 +128,23 @@ public class EventHandlerCommon {
 	@SubscribeEvent (priority = EventPriority.HIGHEST)
 	public void onPlayerAttackEntity(AttackEntityEvent event) {
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
-		if(playerCorp.isIncorporeal()){
+		if(playerCorp.isIncorporeal() && !event.getEntityPlayer().isCreative()){
 			if(event.isCancelable())
 				event.setCanceled(true);
+			return;
+		}
+		if(event.getTarget() instanceof EntityPlayer) {
+			final IIncorporealHandler targetCorp = IncorporealDataHandler.getHandler(event.getTarget());
+			if(targetCorp.isIncorporeal() && !event.getEntityPlayer().isCreative())
+				if(event.isCancelable())
+					event.setCanceled(true);
 		}
 	}
 	
 	@SubscribeEvent (priority = EventPriority.HIGHEST)
 	public void onEntityItemPickup(EntityItemPickupEvent event) {
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
-		if(playerCorp.isIncorporeal()){
+		if(playerCorp.isIncorporeal() && !event.getEntityPlayer().isCreative()){
 			if(event.isCancelable())
 				event.setCanceled(true);
 		}

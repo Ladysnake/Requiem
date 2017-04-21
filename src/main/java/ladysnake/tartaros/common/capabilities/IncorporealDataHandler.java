@@ -42,7 +42,7 @@ public class IncorporealDataHandler {
 				p.capabilities.allowEdit = !enable;
 				p.capabilities.allowFlying = (enable && p.experienceLevel > 0);
 				p.capabilities.disableDamage = enable;
-				p.capabilities.isFlying = (enable && p.experienceLevel > 0);
+				p.capabilities.isFlying = (p.capabilities.isFlying && p.experienceLevel > 0);
 				p.setEntityInvulnerable(enable);
 				//System.out.println(p.capabilities.allowFlying + " " + (p.experienceLevel > 0));
 			}
