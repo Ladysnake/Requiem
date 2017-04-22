@@ -158,7 +158,7 @@ public class EventHandlerCommon {
 	    	final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler((EntityPlayer)event.getEntity());
 	    	//System.out.println(playerCorp);
 	    	if(playerCorp.isIncorporeal()){
-	    		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F); //0.5F being alpha
+	    		GlStateManager.color(0.9F, 0.9F, 1.0F, 0.5F); //0.5F being alpha
 	    	}
 	    }
 	}

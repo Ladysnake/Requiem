@@ -41,18 +41,19 @@ public class ModBlocks {
     public static void register() {
     	registerBlock(crystallizer);
     	registerBlock(soul_extractor);
-    	registerBlock(mercurius_waystone);
+    	registerBlock(mercurius_waystone).setMaxStackSize(1);
     	registerBlock(ectoplasma);
     	registerBlock(ectoplasm);
     	GameRegistry.register(sepulture);
     }
     
-    private static void registerBlock(Block block) {
+    private static Item registerBlock(Block block) {
     	GameRegistry.register(block);
     	ItemBlock item = new ItemBlock(block);
     	item.setRegistryName(block.getRegistryName());
     	GameRegistry.register(item);
     	block.setCreativeTab(Tartaros.CREATIVE_TAB);
+    	return item;
     }
     
     @SideOnly(Side.CLIENT)

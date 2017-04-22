@@ -23,9 +23,10 @@ public class ItemSepulture extends Item {
 
 	public ItemSepulture() {
 		super();
-		setUnlocalizedName(Reference.Items.SEPULTURE.getUnlocalizedName());
-        setRegistryName(Reference.Items.SEPULTURE.getRegistryName());
+		this.setUnlocalizedName(Reference.Items.SEPULTURE.getUnlocalizedName());
+        this.setRegistryName(Reference.Items.SEPULTURE.getRegistryName());
         this.setCreativeTab(Tartaros.CREATIVE_TAB);
+        this.setMaxStackSize(1);
 	}
 	
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
