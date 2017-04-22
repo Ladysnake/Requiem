@@ -39,7 +39,7 @@ public class IncorporealDataHandler {
 		public void setIncorporeal(boolean enable, EntityPlayer p) {
 			incorporeal = (enable) ? 1 : 0;
 			if(!p.isCreative()) {
-				p.capabilities.allowEdit = !enable;
+				//p.capabilities.allowEdit = (!enable);
 				p.capabilities.allowFlying = (enable && p.experienceLevel > 0);
 				p.capabilities.disableDamage = enable;
 				p.capabilities.isFlying = (p.capabilities.isFlying && p.experienceLevel > 0);

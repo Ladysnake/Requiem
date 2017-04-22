@@ -73,12 +73,10 @@ public class BlockSepulture extends BlockHorizontal implements IRespawnLocation 
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if(!worldIn.isRemote){
-			IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(playerIn);
-			playerCorp.setIncorporeal(false, playerIn);
-			IMessage msg = new SimpleMessage(playerIn.getUniqueID().getMostSignificantBits(), playerIn.getUniqueID().getLeastSignificantBits(), false);
-			PacketHandler.net.sendToAll(msg);
-		}
+		IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(playerIn);
+		playerCorp.setIncorporeal(false, playerIn);
+		IMessage msg = new SimpleMessage(playerIn.getUniqueID().getMostSignificantBits(), playerIn.getUniqueID().getLeastSignificantBits(), false);
+		PacketHandler.net.sendToAll(msg);
 		return true;
 	}
 	
