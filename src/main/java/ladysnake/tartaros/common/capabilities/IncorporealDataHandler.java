@@ -17,8 +17,6 @@ public class IncorporealDataHandler {
     public static final Capability<IIncorporealHandler> CAPABILITY_INCORPOREAL = null;
 	
     public static void register() {
-        
-    	System.out.println(CAPABILITY_INCORPOREAL);
         CapabilityManager.INSTANCE.register(IIncorporealHandler.class, new Storage(), DefaultIncorporealHandler.class);
         MinecraftForge.EVENT_BUS.register(new IncorporealDataHandler());
     }
