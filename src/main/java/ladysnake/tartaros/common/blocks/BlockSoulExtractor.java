@@ -91,7 +91,7 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
 	
 	@Override
     public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-		System.out.println(!getTE(world, pos).isEmpty());
+		//System.out.println(!getTE(world, pos).isEmpty());
         return state.withProperty(LIT, !getTE(world, pos).isEmpty());
     }
 		

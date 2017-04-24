@@ -18,7 +18,6 @@ public class EntityItemWaystone extends EntityItem {
 	
 	@Override
 	public void onUpdate() {
-		System.out.println("I am a waystone");
 		super.onUpdate();
 		if (this.onGround)
         {

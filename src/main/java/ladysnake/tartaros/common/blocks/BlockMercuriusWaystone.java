@@ -13,8 +13,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -22,6 +24,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -69,7 +72,26 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 		return true;
 	}
 	
-	
+	@Override
+	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer,
+			ItemStack stack) {
+		if(!worldIn.isRemote) {
+			WorldServer worldserver = worldIn.getMinecraftServer().worldServerForDimension(-1);
+		    BlockPos bp = new BlockPos(pos.getX()/8, 120, pos.getZ());
+		    while((worldserver.getBlockState(bp.down()) == Blocks.AIR.getDefaultState() || worldserver.getBlockState(bp) != Blocks.AIR.getDefaultState()) && bp.getY() > 0)
+		    	bp = bp.down();//TODO place an anchor in the nether
+		    if(bp.getY() > 0)
+		    	worldserver.setBlockState(bp, ModBlocks.mercurius_waystone.getDefaultState(), 0b11);
+		    else {
+		    	if(placer instanceof EntityPlayer)
+		    		((EntityPlayer)placer).sendStatusMessage(new TextComponentTranslation("tile.waystone.cannotplace", new Object[0]), true);
+		    	return;
+		    }
+	    	super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+		    System.out.println(bp);
+		}
+		
+	}
 	
 	@Override
 	public int quantityDropped(Random random) {

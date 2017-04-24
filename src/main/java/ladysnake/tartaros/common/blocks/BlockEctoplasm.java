@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 public class BlockEctoplasm extends Block {
 
 	public BlockEctoplasm() {
-		super(Material.CAKE);
+		super(Material.SNOW);
 
     	this.setUnlocalizedName(Reference.Blocks.ECTOPLASM.getUnlocalizedName());
     	this.setRegistryName(Reference.Blocks.ECTOPLASM.getRegistryName());
@@ -23,6 +23,10 @@ public class BlockEctoplasm extends Block {
 	@Override
 	public BlockRenderLayer getBlockLayer() {
 		return BlockRenderLayer.TRANSLUCENT;
+	}
+	
+	public boolean isOpaque() {
+		return false;
 	}
 	
 	@Override
