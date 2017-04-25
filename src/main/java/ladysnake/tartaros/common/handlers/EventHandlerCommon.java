@@ -10,10 +10,10 @@ import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
 import ladysnake.tartaros.common.capabilities.IncorporealDataHandler.Provider;
 import ladysnake.tartaros.common.entity.EntityItemWaystone;
 import ladysnake.tartaros.common.init.ModBlocks;
-import ladysnake.tartaros.common.networkingtest.PacketHandler;
-import ladysnake.tartaros.common.networkingtest.PingMessage;
-import ladysnake.tartaros.common.networkingtest.SimpleMessage;
-import ladysnake.tartaros.common.networkingtest.UpdateMessage;
+import ladysnake.tartaros.common.networking.PacketHandler;
+import ladysnake.tartaros.common.networking.PingMessage;
+import ladysnake.tartaros.common.networking.IncorporealMessage;
+import ladysnake.tartaros.common.networking.UpdateMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
@@ -62,7 +62,7 @@ public class EventHandlerCommon {
 					    ((WorldServer)event.player.world).spawnParticle(EnumParticleTypes.CLOUD, false, event.player.posX + 0.5D, event.player.posY+ 1.0D, event.player.posZ+ 0.5D, 1, 0.3D, 0.3D, 0.3D, 0.0D, new int[0]); 
 					}
 				}
-				IMessage msg = new SimpleMessage(event.player.getUniqueID().getMostSignificantBits(), event.player.getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporeal());
+				IMessage msg = new IncorporealMessage(event.player.getUniqueID().getMostSignificantBits(), event.player.getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporeal());
 				PacketHandler.net.sendToAll(msg);
 				ticksSinceLastSync = 0;
 			}
@@ -104,7 +104,7 @@ public class EventHandlerCommon {
 			event.getEntityPlayer().experienceLevel = event.getOriginal().experienceLevel;
 			final IIncorporealHandler clone = IncorporealDataHandler.getHandler(event.getEntityPlayer());
 			clone.setIncorporeal(true, event.getEntityPlayer());
-			IMessage msg = new SimpleMessage(event.getEntityPlayer().getUniqueID().getMostSignificantBits(), event.getEntityPlayer().getUniqueID().getLeastSignificantBits(), true);
+			IMessage msg = new IncorporealMessage(event.getEntityPlayer().getUniqueID().getMostSignificantBits(), event.getEntityPlayer().getUniqueID().getLeastSignificantBits(), true);
 			PacketHandler.net.sendToAll(msg);
 		}
 	}
@@ -150,27 +150,4 @@ public class EventHandlerCommon {
 		}
 	}
 	
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	public void onEntityRender(RenderLivingEvent.Pre event) {
-	    if(event.getEntity() instanceof EntityPlayer){
-	    	//System.out.println("coucou");
-	    	final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler((EntityPlayer)event.getEntity());
-	    	//System.out.println(playerCorp);
-	    	if(playerCorp.isIncorporeal()){
-	    		GlStateManager.color(0.9F, 0.9F, 1.0F, 0.5F); //0.5F being alpha
-	    	}
-	    }
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	public void onRenderGameOverlay(RenderGameOverlayEvent event) {
-		if(event.getType() == ElementType.EXPERIENCE) {
-		    final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player);
-		    if(playerCorp.isIncorporeal()){
-		    	IncorporealOverlay.renderIncorporealOverlay(event.getResolution());
-		    }
-		}
-	}
 }

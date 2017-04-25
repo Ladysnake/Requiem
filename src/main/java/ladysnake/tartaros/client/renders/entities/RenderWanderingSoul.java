@@ -1,4 +1,4 @@
-package ladysnake.tartaros.client.renders;
+package ladysnake.tartaros.client.renders.entities;
 
 import java.util.Random;
 

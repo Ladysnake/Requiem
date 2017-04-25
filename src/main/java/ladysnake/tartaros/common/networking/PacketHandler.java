@@ -1,4 +1,4 @@
-package ladysnake.tartaros.common.networkingtest;
+package ladysnake.tartaros.common.networking;
 
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -11,7 +11,7 @@ public class PacketHandler
   public static void initPackets()
   {
     net = NetworkRegistry.INSTANCE.newSimpleChannel("YourModId".toUpperCase());
-    registerMessage(SimplePacket.class, SimpleMessage.class);
+    registerMessage(IncorporealPacket.class, IncorporealMessage.class);
     registerMessage(PingPacket.class, PingMessage.class);
     registerMessage(UpdatePacket.class, UpdateMessage.class);
   }

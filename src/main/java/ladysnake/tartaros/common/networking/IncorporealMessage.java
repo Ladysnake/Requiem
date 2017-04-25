@@ -1,18 +1,18 @@
-package ladysnake.tartaros.common.networkingtest;
+package ladysnake.tartaros.common.networking;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class SimpleMessage implements IMessage
+public class IncorporealMessage implements IMessage
   {
     long playerUUIDMost;
 	long playerUUIDLeast;
     boolean simpleBool;
     
     // this constructor is required otherwise you'll get errors (used somewhere in fml through reflection)
-    public SimpleMessage() {}
+    public IncorporealMessage() {}
     
-    public SimpleMessage(long UUIDMost, long UUIDLeast, boolean simpleBool)
+    public IncorporealMessage(long UUIDMost, long UUIDLeast, boolean simpleBool)
     {
       this.playerUUIDMost = UUIDMost;
       this.playerUUIDLeast = UUIDLeast;

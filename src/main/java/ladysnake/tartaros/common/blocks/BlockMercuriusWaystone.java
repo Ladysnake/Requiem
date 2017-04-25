@@ -7,8 +7,8 @@ import ladysnake.tartaros.common.Reference;
 import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
 import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
 import ladysnake.tartaros.common.init.ModBlocks;
-import ladysnake.tartaros.common.networkingtest.PacketHandler;
-import ladysnake.tartaros.common.networkingtest.SimpleMessage;
+import ladysnake.tartaros.common.networking.PacketHandler;
+import ladysnake.tartaros.common.networking.IncorporealMessage;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -49,7 +49,7 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 		IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(playerIn);
 		if(playerCorp.isIncorporeal()){
 			playerCorp.setIncorporeal(false, playerIn);
-			IMessage msg = new SimpleMessage(playerIn.getUniqueID().getMostSignificantBits(), playerIn.getUniqueID().getLeastSignificantBits(), false);
+			IMessage msg = new IncorporealMessage(playerIn.getUniqueID().getMostSignificantBits(), playerIn.getUniqueID().getLeastSignificantBits(), false);
 			PacketHandler.net.sendToAll(msg);
 			worldIn.setBlockToAir(pos);
 

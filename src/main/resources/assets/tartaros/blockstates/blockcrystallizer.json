@@ -1,10 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "tartaros:crystallizer/crystallizer_off",
-    "textures": {
-      "front": "tartaros:blocks/crystallizer/crystalizer_front_off"
-    }
+    "model": "tartaros:crystallizer/crystallizer_off"
   },
   "variants": {
     "normal": [{}],
@@ -12,10 +9,7 @@
     "lit": {
       "false": {},
       "true": {
-        "model": "tartaros:crystallizer/crystallizer_on",
-        "textures": {
-          "front": "tartaros:blocks/crystallizer/crystalizer_front_on"
-        }
+        "model": "tartaros:crystallizer/crystallizer_on"
       }
     },
     "facing": {

@@ -6,8 +6,8 @@ import ladysnake.tartaros.common.Reference;
 import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
 import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
 import ladysnake.tartaros.common.init.ModItems;
-import ladysnake.tartaros.common.networkingtest.PacketHandler;
-import ladysnake.tartaros.common.networkingtest.SimpleMessage;
+import ladysnake.tartaros.common.networking.PacketHandler;
+import ladysnake.tartaros.common.networking.IncorporealMessage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.EnumPushReaction;
@@ -75,7 +75,7 @@ public class BlockSepulture extends BlockHorizontal implements IRespawnLocation 
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(playerIn);
 		playerCorp.setIncorporeal(false, playerIn);
-		IMessage msg = new SimpleMessage(playerIn.getUniqueID().getMostSignificantBits(), playerIn.getUniqueID().getLeastSignificantBits(), false);
+		IMessage msg = new IncorporealMessage(playerIn.getUniqueID().getMostSignificantBits(), playerIn.getUniqueID().getLeastSignificantBits(), false);
 		PacketHandler.net.sendToAll(msg);
 		return true;
 	}

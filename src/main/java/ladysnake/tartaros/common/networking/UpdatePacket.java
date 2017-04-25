@@ -1,4 +1,4 @@
-package ladysnake.tartaros.common.networkingtest;
+package ladysnake.tartaros.common.networking;
 
 import java.util.UUID;
 

@@ -1,6 +1,6 @@
 package ladysnake.tartaros.common.init;
 
-import ladysnake.tartaros.client.renders.RenderWanderingSoul;
+import ladysnake.tartaros.client.renders.entities.RenderWanderingSoul;
 import ladysnake.tartaros.common.Reference;
 import ladysnake.tartaros.common.Tartaros;
 import ladysnake.tartaros.common.blocks.BlockCrystallizer;

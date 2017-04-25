@@ -1,4 +1,4 @@
-package ladysnake.tartaros.common.networkingtest;
+package ladysnake.tartaros.common.networking;
 
 import java.util.UUID;
 
@@ -10,11 +10,11 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class SimplePacket implements IMessageHandler<SimpleMessage, IMessage>
+public class IncorporealPacket implements IMessageHandler<IncorporealMessage, IMessage>
 {
   
 	@Override
-	public IMessage onMessage(final SimpleMessage message, MessageContext ctx) 
+	public IMessage onMessage(final IncorporealMessage message, MessageContext ctx) 
 	{
 	  // just to make sure that the side is correct
 	  if (ctx.side.isClient())

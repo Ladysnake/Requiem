@@ -1,4 +1,4 @@
-package ladysnake.tartaros.common.networkingtest;
+package ladysnake.tartaros.common.networking;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
