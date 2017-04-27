@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModItems {
-	public static Item ectoplasm, ectoplasma, sepulture_framing;
+	public static Item ectoplasm, ectoplasma;
 	public static ItemSoulGem soul_gem;
 	public static ItemSoulInABottle soul_in_a_bottle;
 	public static ItemSepulture sepulture;
@@ -34,9 +34,6 @@ public class ModItems {
         soul_gem = new ItemSoulGem();
         soul_in_a_bottle = new ItemSoulInABottle();
         sepulture = new ItemSepulture();
-        sepulture_framing = new Item();
-        sepulture_framing.setUnlocalizedName(Reference.Items.SEPULTUREFRAMING.getUnlocalizedName());
-        sepulture_framing.setRegistryName(Reference.Items.SEPULTUREFRAMING.getRegistryName());
     }
     
     public static void register() {
@@ -45,7 +42,6 @@ public class ModItems {
     	GameRegistry.register(soul_gem);
     	GameRegistry.register(soul_in_a_bottle);
     	GameRegistry.register(sepulture);
-    	GameRegistry.register(sepulture_framing);
     }
     
     @SideOnly(Side.CLIENT)
@@ -55,7 +51,6 @@ public class ModItems {
     	registerRender(soul_gem);
     	registerRender(soul_in_a_bottle);
     	registerRender(sepulture);
-    	registerRender(sepulture_framing);
     }
     
     @SideOnly(Side.CLIENT)

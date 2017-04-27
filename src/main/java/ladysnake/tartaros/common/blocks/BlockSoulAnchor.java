@@ -18,6 +18,7 @@ public class BlockSoulAnchor extends Block implements ITileEntityProvider {
 		this.setUnlocalizedName(Reference.Blocks.SOUL_ANCHOR.getUnlocalizedName());
 		this.setRegistryName(Reference.Blocks.SOUL_ANCHOR.getRegistryName());
 		this.setHardness(-1f);
+		this.setLightLevel(15);
 	}
 	
 	@Override

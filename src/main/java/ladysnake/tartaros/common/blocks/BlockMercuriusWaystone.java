@@ -76,19 +76,21 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer,
 			ItemStack stack) {
 		if(!worldIn.isRemote) {
-			WorldServer worldserver = worldIn.getMinecraftServer().worldServerForDimension(-1);
-		    BlockPos bp = new BlockPos(pos.getX()/8, 120, pos.getZ());
-		    while((worldserver.getBlockState(bp.down()) == Blocks.AIR.getDefaultState() || worldserver.getBlockState(bp) != Blocks.AIR.getDefaultState()) && bp.getY() > 0)
-		    	bp = bp.down();//TODO place an anchor in the nether
-		    if(bp.getY() > 0)
-		    	worldserver.setBlockState(bp, ModBlocks.mercurius_waystone.getDefaultState(), 0b11);
-		    else {
-		    	if(placer instanceof EntityPlayer)
-		    		((EntityPlayer)placer).sendStatusMessage(new TextComponentTranslation("tile.waystone.cannotplace", new Object[0]), true);
-		    	return;
-		    }
+			if (worldIn.provider.getDimensionType().getId() != -1) {
+				WorldServer worldserver = worldIn.getMinecraftServer().worldServerForDimension(-1);
+			    BlockPos bp = new BlockPos(pos.getX()/8, 120, pos.getZ()/8);
+			    while((worldserver.getBlockState(bp.down()) == Blocks.AIR.getDefaultState() || worldserver.getBlockState(bp) != Blocks.AIR.getDefaultState()) && bp.getY() > 0)
+			    	bp = bp.down();
+			    if(bp.getY() > 0)
+			    	worldserver.setBlockState(bp, ModBlocks.soul_anchor.getDefaultState(), 0b11);
+			    else {
+			    	if(placer instanceof EntityPlayer)
+			    		((EntityPlayer)placer).sendStatusMessage(new TextComponentTranslation("tile.waystone.cannotplace", new Object[0]), true);
+			    	return;
+			    }
+			    System.out.println(bp);
+			}
 	    	super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-		    System.out.println(bp);
 		}
 		
 	}

@@ -22,7 +22,6 @@ public class IncorporealPacket implements IMessageHandler<IncorporealMessage, IM
 		  Minecraft.getMinecraft().addScheduledTask(new Runnable()
 			{
 			  public void run() {
-				  System.out.println("a packet has been processed");
 				  final EntityPlayer player = Minecraft.getMinecraft().player.world.getPlayerEntityByUUID(new UUID(message.playerUUIDMost, message.playerUUIDLeast));
 				  final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(player);
 				  playerCorp.setIncorporeal(message.simpleBool, player);

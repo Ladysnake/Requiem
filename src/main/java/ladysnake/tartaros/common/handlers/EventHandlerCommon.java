@@ -2,7 +2,6 @@ package ladysnake.tartaros.common.handlers;
 
 import java.util.Random;
 
-import ladysnake.tartaros.client.gui.IncorporealOverlay;
 import ladysnake.tartaros.common.Reference;
 import ladysnake.tartaros.common.blocks.IRespawnLocation;
 import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
@@ -10,24 +9,14 @@ import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
 import ladysnake.tartaros.common.capabilities.IncorporealDataHandler.Provider;
 import ladysnake.tartaros.common.entity.EntityItemWaystone;
 import ladysnake.tartaros.common.init.ModBlocks;
-import ladysnake.tartaros.common.networking.PacketHandler;
-import ladysnake.tartaros.common.networking.PingMessage;
 import ladysnake.tartaros.common.networking.IncorporealMessage;
-import ladysnake.tartaros.common.networking.UpdateMessage;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
+import ladysnake.tartaros.common.networking.PacketHandler;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
@@ -38,8 +27,7 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly; 
+import net.minecraftforge.fml.relauncher.Side; 
 
 public class EventHandlerCommon {
 
@@ -78,7 +66,7 @@ public class EventHandlerCommon {
 	}
 	
 	@SubscribeEvent
-	 public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
+	public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
 
 		if (!(event.getObject() instanceof EntityPlayer)) return;
 		
