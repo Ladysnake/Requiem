@@ -2,6 +2,8 @@ package ladysnake.tartaros.client.renders.entities;
 
 import java.util.Random;
 
+import javax.annotation.Nonnull;
+
 import org.lwjgl.opengl.GL11;
 
 import ladysnake.tartaros.client.models.ModelWanderingSoul;
@@ -19,28 +21,33 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class RenderWanderingSoul extends RenderLiving<EntityWanderingSoul> {
 	
-	protected ResourceLocation wanderingSoulTexture;
+	protected ResourceLocation wanderingSoulTexture = new ResourceLocation(Reference.MOD_ID + ":textures/entity/lost_soul/lostSoul_2.png");;
 
-	public RenderWanderingSoul(RenderManager renderManager, ModelBase modelBase, float shadowSize) {
-		super(renderManager, modelBase, shadowSize);
-		setEntityTexture();
-	}
+    public static final Factory FACTORY = new Factory();
 
-	private void setEntityTexture() {
-		Random rand = new Random();
-		switch(rand.nextInt()){
-		case 1: wanderingSoulTexture = new ResourceLocation(Reference.MOD_ID + ":textures/entity/lost_soul/lostSoul_2.png"); break;
-		case 2: wanderingSoulTexture = new ResourceLocation(Reference.MOD_ID + ":textures/entity/lost_soul/lostSoul_3.png"); break;
-		case 3: wanderingSoulTexture = new ResourceLocation(Reference.MOD_ID + ":textures/entity/lost_soul/lostSoul_4.png"); break;
-		default: wanderingSoulTexture = new ResourceLocation(Reference.MOD_ID + ":textures/entity/lost_soul/lostSoul_1.png"); break;
-		}
-		
-	}
+    public RenderWanderingSoul(RenderManager rendermanagerIn) {
+        super(rendermanagerIn, new ModelBiped(), 0.5F);
+    }
 
-	@Override
-	protected ResourceLocation getEntityTexture(EntityWanderingSoul entity) {
-		return wanderingSoulTexture;
-	}
+    @Override
+    @Nonnull
+    protected ResourceLocation getEntityTexture(@Nonnull EntityWanderingSoul entity) {
+        return this.getSoulTexture(entity);
+    }
+    
+    protected ResourceLocation getSoulTexture(EntityWanderingSoul soul) {
+    	return new ResourceLocation(Reference.MOD_ID + ":textures/entity/lost_soul/lostsoul_"  + soul.texture_id + ".png");
+    }
+
+    public static class Factory implements IRenderFactory<EntityWanderingSoul> {
+
+        @Override
+        public Render<? super EntityWanderingSoul> createRenderFor(RenderManager manager) {
+            return new RenderWanderingSoul(manager);
+        }
+
+    }
+
 	
 	@Override
 	public void doRender(EntityWanderingSoul entity, double x, double y, double z, float entityYaw, float partialTicks){
@@ -54,20 +61,4 @@ public class RenderWanderingSoul extends RenderLiving<EntityWanderingSoul> {
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glPopMatrix();
 	}
-	
-	@Override
-	public void setLightmap(EntityWanderingSoul entityLivingIn, float partialTicks) {
-		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-	}
-	
-	
-	public static class Factory implements IRenderFactory<EntityWanderingSoul> {
-
-        @Override
-        public Render<? super EntityWanderingSoul> createRenderFor(RenderManager manager) {
-            return new RenderWanderingSoul(manager, new ModelBiped(1.0f), 0.5f);
-        }
-
-}
-	
 }

@@ -73,8 +73,6 @@ public class ModBlocks {
     }
     
     @SideOnly(Side.CLIENT)
-    public static String modid = Reference.MOD_ID;
-
     public static void registerRender(Block block) {
     	ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation(Reference.MOD_ID + ":" + block.getUnlocalizedName().toString().substring(5)));
     }

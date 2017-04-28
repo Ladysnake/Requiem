@@ -56,12 +56,12 @@ public class EventHandlerCommon {
 			}
 			if(event.player.experience > 0 && rand.nextInt()%3 == 0)
 				event.player.experience --;
-				if(rand.nextInt()%300 == 0)
-					if(event.player.experienceLevel > 0) {
-						event.player.removeExperienceLevel(1);
-					} else {
-						event.player.capabilities.allowFlying = false;
-					}
+			if(rand.nextInt()%300 == 0)
+				if(event.player.experienceLevel > 0) {
+					event.player.removeExperienceLevel(1);
+				} else {
+					event.player.capabilities.allowFlying = false;
+				}
 		}
 	}
 	
