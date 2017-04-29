@@ -15,21 +15,23 @@
             "scale": [ 1.0, 1.0, 1.0 ]
         },
         "firstperson_righthand": {
-            "rotation": [ 0, 90, -50 ],
-            "translation": [ 9, 0, 1.13],
-            "scale": [ 0.68, 0.68, 0.68 ]
+            "rotation": [ -45, 90, 0 ],
+            "translation": [ 5, 0, 0],
+            "scale": [ 1, 1, 1 ]
         },
         "firstperson_lefthand": {
-            "rotation": [ 0, -90, 50 ],
-            "translation": [ 9, 0, -5.13],
-            "scale": [ 0.68, 0.68, 0.68 ]
+            "rotation": [ 45, -90, 90 ],
+            "translation": [ 5, 0, 0],
+            "scale": [ 1, 1, 1 ]
         },
         "gui": {
-          "translation": [3.5, -2.5, 0],
-          "scale": [0.5, 0.5, 0.5]
+			"rotation": [ 0, 180, 0 ],
+			"translation": [0, -4, 0],
+			"scale": [0.5, 0.5, 0.5]
         },
         "ground": {
-          "scale": [0.3, 0.3, 0.3]
+			"translation": [ 0, 2, 0],
+			"scale": [0.8, 0.8, 0.8]
         }
     },
 
