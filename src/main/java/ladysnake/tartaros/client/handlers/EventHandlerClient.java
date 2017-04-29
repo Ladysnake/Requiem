@@ -4,6 +4,9 @@ import ladysnake.tartaros.client.gui.GuiIncorporealOverlay;
 import ladysnake.tartaros.client.renders.blocks.RenderSoulAnchor;
 import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
 import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
+import ladysnake.tartaros.common.networking.IncorporealMessage;
+import ladysnake.tartaros.common.networking.PacketHandler;
+import ladysnake.tartaros.common.networking.PingMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,6 +15,8 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -19,7 +24,19 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class EventHandlerClient {
 	
 	private static RenderSoulAnchor renderAnch = new RenderSoulAnchor();
+	private static int refresh = 0;
 
+	@SubscribeEvent
+	public void onGameTick(TickEvent event) {
+		if (Minecraft.getMinecraft().player == null) return;
+		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player);
+		//System.out.println(playerCorp.isSynced());
+		if(!playerCorp.isSynced() && refresh++%100 == 0){
+			IMessage msg = new PingMessage(Minecraft.getMinecraft().player.getUniqueID().getMostSignificantBits(), Minecraft.getMinecraft().player.getUniqueID().getLeastSignificantBits());
+			PacketHandler.net.sendToServer(msg);
+		}
+	}
+	
 	@SubscribeEvent
 	public void onEntityRender(RenderLivingEvent.Pre event) {
 	    if(event.getEntity() instanceof EntityPlayer){

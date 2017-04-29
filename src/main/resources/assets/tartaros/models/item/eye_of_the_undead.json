@@ -1,7 +1,8 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "tartaros:items/eye_of_the_undead/eye_of_the_undead_empty"
+        "layer0": "tartaros:items/eye_of_the_undead/eye_of_the_undead_empty",
+        "layer1": "minecraft:items/bone"
     },
     "display": {
         "thirdperson_righthand": {
@@ -28,23 +29,16 @@
     "overrides": [
         {
             "predicate": {
-                "resurrecting": 1
+                "tartaros:charged": 1
             },
-            "model": "tartaros:items/eye_of_the_undead/eye_of_the_undead"
+            "model": "tartaros:item/eye_of_the_undead_charged"
         },
         {
             "predicate": {
-                "resurrecting": 1,
-                "resurrect": 0.65
+                "tartaros:charged": 1,
+                "tartaros:resurrecting": 1
             },
-            "model": "tartaros:items/eye_of_the_undead/eye_of_the_undead"
-        },
-        {
-            "predicate": {
-                "resurrecting": 1,
-                "resurrect": 0.9
-            },
-            "model": "tartaros:items/eye_of_the_undead/eye_of_the_undead"
+            "model": "tartaros:item/eye_of_the_undead_charged"
         }
     ]
 }

@@ -33,7 +33,7 @@ public class EntityWanderingSoul extends EntityMob {
     public EntityWanderingSoul(World worldIn)
     {
         super(worldIn);
-        texture_id = this.world.rand.nextInt(texture_total + 1) + 1;
+        texture_id = this.world.rand.nextInt(texture_total) + 1;
         setSize(0.6F, 1.95F);
     }
     

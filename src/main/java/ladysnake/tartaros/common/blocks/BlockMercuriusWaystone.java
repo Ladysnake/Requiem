@@ -82,7 +82,7 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 			    while((worldserver.getBlockState(bp.down()) == Blocks.AIR.getDefaultState() || worldserver.getBlockState(bp) != Blocks.AIR.getDefaultState()) && bp.getY() > 0)
 			    	bp = bp.down();
 			    if(bp.getY() > 0)
-			    	worldserver.setBlockState(bp, ModBlocks.soul_anchor.getDefaultState(), 0b11);
+			    	worldserver.setBlockState(bp, ModBlocks.soul_anchor.getDefaultState(), 3);
 			    else {
 			    	if(placer instanceof EntityPlayer)
 			    		((EntityPlayer)placer).sendStatusMessage(new TextComponentTranslation("tile.waystone.cannotplace", new Object[0]), true);

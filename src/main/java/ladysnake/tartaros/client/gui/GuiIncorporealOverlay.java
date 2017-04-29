@@ -67,7 +67,7 @@ public class GuiIncorporealOverlay extends Gui {
 		if(isInFieldOfView) {
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             Minecraft.getMinecraft().getTextureManager().bindTexture(ORIGIN_PATH);
-			this.drawTexturedModalRect((int)Math.round((angleToOrigin - angleLeftVision) / (angleRightVision - angleLeftVision) * scaledRes.getScaledWidth()), 0, 0, 0, 5, 10);
+			this.drawTexturedModalRect((int)Math.round((angleToOrigin - angleLeftVision) / (angleRightVision - angleLeftVision) * scaledRes.getScaledWidth()), 0, 0, 0, 10, 20);
 			//TODO make this a great gui
 		}
 				

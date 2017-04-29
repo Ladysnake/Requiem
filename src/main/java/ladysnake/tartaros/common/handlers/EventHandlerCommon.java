@@ -51,7 +51,7 @@ public class EventHandlerCommon {
 					}
 				}
 				IMessage msg = new IncorporealMessage(event.player.getUniqueID().getMostSignificantBits(), event.player.getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporeal());
-				PacketHandler.net.sendToAll(msg);
+				//PacketHandler.net.sendToAll(msg);
 				ticksSinceLastSync = 0;
 			}
 			if(event.player.experience > 0 && rand.nextInt()%3 == 0)

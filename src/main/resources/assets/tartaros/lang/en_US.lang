@@ -9,10 +9,10 @@ tile.ectoplasma_block.name=Block of Ectoplasma
 
 item.ectoplasm.name=Ectoplasm
 item.ectoplasma.name=Ectoplasma
-item.eye_of_the_dead.name=Eye of the Dead
+item.eye_of_the_undead.name=Eye of the Undead
+item.iron_scythe.name=Iron Scythe
 item.soul_gem.name=Soul Gem
 item.soul_in_a_bottle.name=Soul in a Bottle
 item.sepulture.name=Stone Burial
-item.sepulture_framing.name=Sarcophage framing
 
 entity.wandering_soul.name=Wandering Soul

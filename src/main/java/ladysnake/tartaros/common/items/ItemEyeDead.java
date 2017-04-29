@@ -35,15 +35,16 @@ public class ItemEyeDead extends Item {
         this.setCreativeTab(Tartaros.CREATIVE_TAB);
         this.setMaxStackSize(1);
         this.setMaxDamage(50);
-        this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + ":" + "resurrect"), new IItemPropertyGetter()
+        this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + ":charged"), new IItemPropertyGetter()
         {
             @SideOnly(Side.CLIENT)
             public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
             {
-                return entityIn == null ? 0.0F : (entityIn.getActiveItemStack().getItem() != ModItems.eye_of_the_dead ? 0.0F : (float)(stack.getMaxItemUseDuration() - entityIn.getItemInUseCount()) / 20.0F);
+//            	System.out.println(entityIn != null && (!findSoul((EntityPlayer)entityIn).isEmpty()) ? 1.0F : 0.0F);
+            	return entityIn != null && (!findSoul((EntityPlayer)entityIn).isEmpty()) ? 1.0F : 0.0F;
             }
         });
-        this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + "resurrecting"), new IItemPropertyGetter()
+        this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + ":resurrecting"), new IItemPropertyGetter()
         {
             @SideOnly(Side.CLIENT)
             public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
@@ -59,7 +60,7 @@ public class ItemEyeDead extends Item {
 		EntityPlayer player = (EntityPlayer)entityLiving;
 		if (IncorporealDataHandler.getHandler(player).isIncorporeal()) return;
 		ItemStack ammo = this.findSoul(player);
-		
+		ammo.shrink(1);
 		if (!worldIn.isRemote) {
 			EntityMinion minion = new EntityMinion(worldIn);
 			minion.setPosition(player.posX, player.posY, player.posZ);

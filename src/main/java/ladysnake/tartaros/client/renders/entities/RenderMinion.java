@@ -2,9 +2,13 @@ package ladysnake.tartaros.client.renders.entities;
 
 import javax.annotation.Nonnull;
 
+import org.lwjgl.opengl.GL11;
+
 import ladysnake.tartaros.common.entity.EntityMinion;
+import ladysnake.tartaros.common.entity.EntityWanderingSoul;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelZombie;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -13,7 +17,7 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class RenderMinion extends RenderLiving<EntityMinion> {
 
-	private ResourceLocation mobTexture = new ResourceLocation("textures/entity/zombie.png");
+	private ResourceLocation mobTexture = new ResourceLocation("textures/entity/zombie/zombie.png");
 
     public static final Factory FACTORY = new Factory();
 
@@ -37,4 +41,12 @@ public class RenderMinion extends RenderLiving<EntityMinion> {
         }
 
     }
+    
+    @Override
+	public void doRender(EntityMinion entity, double x, double y, double z, float entityYaw, float partialTicks){
+		GL11.glPushMatrix();
+		GL11.glColor3f(0.6f, 1.0f, 1.0f);
+		super.doRender(entity, x, y, z, entityYaw, partialTicks);
+		GL11.glPopMatrix();
+	}
 }
