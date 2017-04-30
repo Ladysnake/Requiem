@@ -4,21 +4,35 @@ import net.minecraft.entity.player.EntityPlayer;
 
 public interface IIncorporealHandler {
 	
+	public void setSynced (boolean synced);
+	
+	/**
+	 * Whether this handler needs updating from the server
+	 * @return true if this handler has already been synchronized at least once
+	 */
+	public boolean isSynced();
+	
+	/**
+	 * Sets the tangibility of the player specified, along with the corresponding attributes
+	 * @param ghostMode True if the player should be intangible
+	 * @param p The player upon which the change is applied
+	 */
 	public void setIncorporeal(boolean ghostMode, EntityPlayer p);
 
 	/**
 	 * Directly sets the value of the incorporeal capability. Should not be used except for loading data.
 	 * @param ghostMode
 	 */
-	@Deprecated
-	public void setIncorporeal(int ghostMode);
-	
-	public boolean isIncorporeal();
+	public void setIncorporeal(boolean ghostMode);
 	
 	/**
-	 * @return The integer that represents the value of the incorporeal capability. Should not be used except for saving data.
+	 * Whether the player is in soul mode or not
+	 * @return true if the player is a ghost
 	 */
-	@Deprecated
-	public int getIncorporeal();
+	public boolean isIncorporeal();
+	
+	public String getLastDeathMessage();
+	
+	public void setLastDeathMessage(String lastDeath);
 
 }

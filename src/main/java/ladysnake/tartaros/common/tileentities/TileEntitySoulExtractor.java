@@ -12,9 +12,12 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityHopper;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 	
@@ -33,10 +36,24 @@ public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 		if(processElapsed%200 == 0) {
 			consumeSoulSand();
 			Random rand = new Random();
-			if(rand.nextInt()%5 == 0) soulCount++;
-			if(this.world.getTileEntity(pos) != null && this.world.getTileEntity(pos) instanceof TileEntityHopper){
-				TileEntityHopper hopper = ((TileEntityHopper)this.world.getTileEntity(pos));
-				hopper.getHopperInventory(hopper).getField(0);	//TODO put sand in hopper
+			if(rand.nextInt(30) == 0) soulCount++;
+			if(this.world.getTileEntity(pos.down()) != null && this.world.getTileEntity(pos.down()) instanceof TileEntityHopper){
+				TileEntityHopper hopper = ((TileEntityHopper)this.world.getTileEntity(pos.down()));
+				IItemHandler handler = hopper.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
+				ItemStack sand = new ItemStack(Blocks.SAND);
+				int slot = -1;
+				for (int j = 0; j < handler.getSlots() && slot == -1; j ++){
+					if (handler.getStackInSlot(j).isEmpty()){
+						slot = j;
+					}
+					else {
+						if (handler.getStackInSlot(j).getCount() < handler.getSlotLimit(j) && ItemStack.areItemsEqual(handler.getStackInSlot(j), sand)){
+							slot = j;
+						}
+					}
+				}
+				if (slot != -1)
+					handler.insertItem(slot, sand, false);
 			}
 		}
 	}

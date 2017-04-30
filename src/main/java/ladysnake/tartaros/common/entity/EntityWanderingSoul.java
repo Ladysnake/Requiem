@@ -27,10 +27,13 @@ import net.minecraft.world.World;
 public class EntityWanderingSoul extends EntityMob {
 
 	public static final ResourceLocation LOOT = new ResourceLocation(Reference.MOD_ID, "entities/wandering_soul");
+	public int texture_id;
+	public static final int texture_total = 4;
 
     public EntityWanderingSoul(World worldIn)
     {
         super(worldIn);
+        texture_id = this.world.rand.nextInt(texture_total) + 1;
         setSize(0.6F, 1.95F);
     }
     
@@ -71,7 +74,7 @@ public class EntityWanderingSoul extends EntityMob {
 		if(super.isEntityInvulnerable(source))
 			return true;
 		
-		if (source.getEntity() instanceof EntityPlayer){
+		if (source.getEntity() instanceof EntityPlayer || source.isUnblockable()){
 			return false;
 		}
 	    return true;
@@ -92,20 +95,18 @@ public class EntityWanderingSoul extends EntityMob {
         return true;
     }
     
-    /*@Override
-    protected void applyEntityAttributes()
-    {
-        super.applyEntityAttributes(); 
+    @Override
+	protected void applyEntityAttributes() {
+		super.applyEntityAttributes();
+		this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(35.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.23000000417232513D);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
+	}
+    
+    @Override
+    public int getMaxSpawnedInChunk() {
+    	return 1;
+    }
 
-        // standard attributes registered to EntityLivingBase
-       getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10.0D);
-       getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.75D);
-       getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.4D);
-       getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(16.0D);
-
-        // need to register any additional attributes
-       getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
-       getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.0D);
-    }*/
 
 }

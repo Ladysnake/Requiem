@@ -2,32 +2,30 @@ package ladysnake.tartaros.common.handlers;
 
 import java.util.Random;
 
-import ladysnake.tartaros.client.gui.IncorporealOverlay;
 import ladysnake.tartaros.common.Reference;
 import ladysnake.tartaros.common.blocks.IRespawnLocation;
 import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
 import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
 import ladysnake.tartaros.common.capabilities.IncorporealDataHandler.Provider;
 import ladysnake.tartaros.common.entity.EntityItemWaystone;
+import ladysnake.tartaros.common.entity.EntityMinion;
+import ladysnake.tartaros.common.entity.EntityMinionZombie;
 import ladysnake.tartaros.common.init.ModBlocks;
-import ladysnake.tartaros.common.networkingtest.PacketHandler;
-import ladysnake.tartaros.common.networkingtest.PingMessage;
-import ladysnake.tartaros.common.networkingtest.SimpleMessage;
-import ladysnake.tartaros.common.networkingtest.UpdateMessage;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
+import ladysnake.tartaros.common.init.ModItems;
+import ladysnake.tartaros.common.items.ItemScythe;
+import ladysnake.tartaros.common.networking.IncorporealMessage;
+import ladysnake.tartaros.common.networking.PacketHandler;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.AbstractSkeleton;
+import net.minecraft.entity.monster.EntityHusk;
+import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
@@ -38,8 +36,7 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly; 
+import net.minecraftforge.fml.relauncher.Side; 
 
 public class EventHandlerCommon {
 
@@ -48,37 +45,37 @@ public class EventHandlerCommon {
 	
 	@SubscribeEvent
 	public void onPlayerTick(PlayerTickEvent event) {
-		if(event.side == Side.CLIENT) return;
 		
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.player);
+		
 		if(playerCorp.isIncorporeal() && !event.player.isCreative()) {
-			if(++ticksSinceLastSync >= 100) {
-				if(Math.floor(event.player.posX) == 0 && Math.floor(event.player.posZ) == 0) {
-					playerCorp.setIncorporeal(false, event.player);
-					for(int i = 0; i < 50; i++) {
-					    double motionX = rand.nextGaussian() * 0.02D;
-					    double motionY = rand.nextGaussian() * 0.02D + 1;
-					    double motionZ = rand.nextGaussian() * 0.02D;
-					    ((WorldServer)event.player.world).spawnParticle(EnumParticleTypes.CLOUD, false, event.player.posX + 0.5D, event.player.posY+ 1.0D, event.player.posZ+ 0.5D, 1, 0.3D, 0.3D, 0.3D, 0.0D, new int[0]); 
-					}
-				}
-				IMessage msg = new SimpleMessage(event.player.getUniqueID().getMostSignificantBits(), event.player.getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporeal());
+			
+			event.player.capabilities.isFlying = event.player.experienceLevel > 0;
+			event.player.capabilities.allowFlying = event.player.experienceLevel > 0;
+			if(event.side == Side.CLIENT) return;
+			
+			//Makes the player tangible if he is near 0,0
+			if(Math.pow(Math.pow(Math.floor(event.player.posX), 2) + Math.pow(Math.floor(event.player.posZ), 2), 0.5f) < 10 && ++ticksSinceLastSync >= 100) {
+				playerCorp.setIncorporeal(false, event.player);
+				IMessage msg = new IncorporealMessage(event.player.getUniqueID().getMostSignificantBits(), event.player.getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporeal());
 				PacketHandler.net.sendToAll(msg);
+				for(int i = 0; i < 50; i++) {
+				    double motionX = rand.nextGaussian() * 0.02D;
+				    double motionY = rand.nextGaussian() * 0.02D + 1;
+				    double motionZ = rand.nextGaussian() * 0.02D;
+				    ((WorldServer)event.player.world).spawnParticle(EnumParticleTypes.CLOUD, false, event.player.posX + 0.5D, event.player.posY+ 1.0D, event.player.posZ+ 0.5D, 1, 0.3D, 0.3D, 0.3D, 0.0D, new int[0]); 
+				}
 				ticksSinceLastSync = 0;
 			}
-			if(event.player.experience > 0 && rand.nextInt()%3 == 0)
+			if(event.player.experience > 0 && rand.nextBoolean())
 				event.player.experience --;
-				if(rand.nextInt()%300 == 0)
-					if(event.player.experienceLevel > 0) {
-						event.player.removeExperienceLevel(1);
-					} else {
-						event.player.capabilities.allowFlying = false;
-					}
+			else if(rand.nextInt()%300 == 0 && event.player.experienceLevel > 0)
+				event.player.removeExperienceLevel(1);
 		}
 	}
 	
 	@SubscribeEvent
-	 public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
+	public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
 
 		if (!(event.getObject() instanceof EntityPlayer)) return;
 		
@@ -89,10 +86,30 @@ public class EventHandlerCommon {
 	public void onLivingDeath(LivingDeathEvent event){
 		if(event.getEntity() instanceof EntityPlayer){
 			EntityPlayer p = (EntityPlayer)event.getEntity();
-			final ItemStack merc = new ItemStack(ModBlocks.mercurius_waystone);
+			final IIncorporealHandler corp = IncorporealDataHandler.getHandler(p);
+			corp.setLastDeathMessage(p.getDisplayNameString() + event.getSource().getDeathMessage(p).getUnformattedComponentText());
+			final ItemStack merc = new ItemStack(ModBlocks.MERCURIUS_WAYSTONE);
 			if(p.inventory.hasItemStack(merc)) {
 				p.inventory.removeStackFromSlot(p.inventory.getSlotFor(merc));
 				p.world.spawnEntity(new EntityItemWaystone(p.world, p.posX + 0.5, p.posY + 1.0, p.posZ + 0.5));
+			}
+		}
+		if(event.getSource().getEntity() instanceof EntityPlayer) {
+			EntityPlayer killer = (EntityPlayer)event.getSource().getEntity();
+			EntityLivingBase victim = event.getEntityLiving();
+			if (killer.getHeldItemMainhand().getItem() instanceof ItemScythe) {
+				((ItemScythe)killer.getHeldItemMainhand().getItem()).fillBottle(killer);
+			}
+			if (killer.world.rand.nextInt(20) == 0) {
+				if(victim instanceof EntityZombie || victim instanceof AbstractSkeleton) {
+					EntityMinion skull;
+					if (victim instanceof EntityHusk)
+						skull = new EntityMinionZombie(victim.world, true);
+					else
+						skull = new EntityMinionZombie(victim.world, false);
+					skull.setPosition(victim.posX, victim.posY, victim.posZ);
+					victim.world.spawnEntity(skull);
+				}
 			}
 		}
 	}
@@ -102,9 +119,11 @@ public class EventHandlerCommon {
 	public void clonePlayer(PlayerEvent.Clone event) {
 		if(event.isWasDeath() && !event.getEntityPlayer().isCreative()){
 			event.getEntityPlayer().experienceLevel = event.getOriginal().experienceLevel;
+			final IIncorporealHandler corpse = IncorporealDataHandler.getHandler(event.getOriginal());
 			final IIncorporealHandler clone = IncorporealDataHandler.getHandler(event.getEntityPlayer());
 			clone.setIncorporeal(true, event.getEntityPlayer());
-			IMessage msg = new SimpleMessage(event.getEntityPlayer().getUniqueID().getMostSignificantBits(), event.getEntityPlayer().getUniqueID().getLeastSignificantBits(), true);
+			clone.setLastDeathMessage(corpse.getLastDeathMessage());
+			IMessage msg = new IncorporealMessage(event.getEntityPlayer().getUniqueID().getMostSignificantBits(), event.getEntityPlayer().getUniqueID().getLeastSignificantBits(), true);
 			PacketHandler.net.sendToAll(msg);
 		}
 	}
@@ -150,27 +169,4 @@ public class EventHandlerCommon {
 		}
 	}
 	
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	public void onEntityRender(RenderLivingEvent.Pre event) {
-	    if(event.getEntity() instanceof EntityPlayer){
-	    	//System.out.println("coucou");
-	    	final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler((EntityPlayer)event.getEntity());
-	    	//System.out.println(playerCorp);
-	    	if(playerCorp.isIncorporeal()){
-	    		GlStateManager.color(0.9F, 0.9F, 1.0F, 0.5F); //0.5F being alpha
-	    	}
-	    }
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	public void onRenderGameOverlay(RenderGameOverlayEvent event) {
-		if(event.getType() == ElementType.EXPERIENCE) {
-		    final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player);
-		    if(playerCorp.isIncorporeal()){
-		    	IncorporealOverlay.renderIncorporealOverlay(event.getResolution());
-		    }
-		}
-	}
 }

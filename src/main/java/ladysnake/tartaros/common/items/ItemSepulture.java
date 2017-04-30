@@ -64,7 +64,7 @@ public class ItemSepulture extends Item {
 
                 if (flag2 && flag3 && worldIn.getBlockState(pos.down()).isOpaqueCube() && worldIn.getBlockState(blockpos.down()).isOpaqueCube())
                 {
-                    IBlockState iblockstate2 = ModBlocks.sepulture.getDefaultState().withProperty(BlockSepulture.FACING, enumfacing).withProperty(BlockSepulture.PART, BlockSepulture.EnumPartType.FOOT);
+                    IBlockState iblockstate2 = ModBlocks.SEPULTURE.getDefaultState().withProperty(BlockSepulture.FACING, enumfacing).withProperty(BlockSepulture.PART, BlockSepulture.EnumPartType.FOOT);
                     worldIn.setBlockState(pos, iblockstate2, 10);
                     worldIn.setBlockState(blockpos, iblockstate2.withProperty(BlockSepulture.PART, BlockSepulture.EnumPartType.HEAD), 10);
                     worldIn.notifyNeighborsRespectDebug(pos, block, false);

@@ -6,6 +6,7 @@ import ladysnake.tartaros.common.blocks.BlockCrystallizer;
 import ladysnake.tartaros.common.blocks.BlockEctoplasm;
 import ladysnake.tartaros.common.blocks.BlockMercuriusWaystone;
 import ladysnake.tartaros.common.blocks.BlockSepulture;
+import ladysnake.tartaros.common.blocks.BlockSoulAnchor;
 import ladysnake.tartaros.common.blocks.BlockSoulExtractor;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -13,38 +14,42 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModBlocks {
 
-	public static Block ectoplasma;
-	public static BlockEctoplasm ectoplasm;
-    public static BlockCrystallizer crystallizer;
-    public static BlockSoulExtractor soul_extractor;
-    public static BlockMercuriusWaystone mercurius_waystone;
-    public static BlockSepulture sepulture;
+	public static Block ECTOPLASMA;
+	public static BlockEctoplasm ECTOPLASM;
+    public static BlockCrystallizer CRYSTALLIZER;
+    public static BlockMercuriusWaystone MERCURIUS_WAYSTONE;
+    public static BlockSoulAnchor SOUL_ANCHOR;
+    public static BlockSoulExtractor SOUL_EXTRACTOR;
+    public static BlockSepulture SEPULTURE;
 
     public static void init() {
-    	ectoplasm = new BlockEctoplasm();
-    	ectoplasma = new Block(Material.CLOTH);
-    	ectoplasma.setUnlocalizedName(Reference.Blocks.ECTOPLASMA.getUnlocalizedName());
-    	ectoplasma.setRegistryName(Reference.Blocks.ECTOPLASMA.getRegistryName());
-    	ectoplasma.setHardness(0.5f);
-    	crystallizer = new BlockCrystallizer();
-    	soul_extractor = new BlockSoulExtractor();
-    	mercurius_waystone = new BlockMercuriusWaystone();
-    	sepulture = new BlockSepulture();
+    	CRYSTALLIZER = new BlockCrystallizer();
+    	ECTOPLASM = new BlockEctoplasm();
+    	ECTOPLASMA = new Block(Material.CLOTH);
+    	ECTOPLASMA.setUnlocalizedName(Reference.Blocks.ECTOPLASMA.getUnlocalizedName());
+    	ECTOPLASMA.setRegistryName(Reference.Blocks.ECTOPLASMA.getRegistryName());
+    	ECTOPLASMA.setHardness(0.5f);
+    	MERCURIUS_WAYSTONE = new BlockMercuriusWaystone();
+    	SOUL_ANCHOR = new BlockSoulAnchor();
+    	SOUL_EXTRACTOR = new BlockSoulExtractor();
+    	SEPULTURE = new BlockSepulture();
     }
     
     public static void register() {
-    	registerBlock(crystallizer);
-    	registerBlock(soul_extractor);
-    	registerBlock(mercurius_waystone).setMaxStackSize(1);
-    	registerBlock(ectoplasma);
-    	registerBlock(ectoplasm);
-    	GameRegistry.register(sepulture);
+    	registerBlock(CRYSTALLIZER);
+    	registerBlock(ECTOPLASMA);
+    	registerBlock(ECTOPLASM);
+    	registerBlock(MERCURIUS_WAYSTONE).setMaxStackSize(1);
+    	GameRegistry.register(SEPULTURE);
+    	registerBlock(SOUL_EXTRACTOR);
+    	registerBlock(SOUL_ANCHOR);
     }
     
     private static Item registerBlock(Block block) {
@@ -58,16 +63,17 @@ public class ModBlocks {
     
     @SideOnly(Side.CLIENT)
     public static void registerRenders() {
-    	registerRender(crystallizer);
-    	registerRender(soul_extractor);
-    	registerRender(mercurius_waystone);
-    	registerRender(sepulture);
-    	registerRender(ectoplasm);
-    	registerRender(ectoplasma);
+    	registerRender(CRYSTALLIZER);
+    	registerRender(SOUL_EXTRACTOR);
+    	registerRender(MERCURIUS_WAYSTONE);
+    	registerRender(SEPULTURE);
+    	registerRender(ECTOPLASM);
+    	registerRender(ECTOPLASMA);
+    	registerRender(SOUL_ANCHOR);
     }
     
     @SideOnly(Side.CLIENT)
-    private static void registerRender(Block block) {
-    	Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(block), 0, new ModelResourceLocation(block.getRegistryName(), "inventory"));
+    public static void registerRender(Block block) {
+    	ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation(Reference.MOD_ID + ":" + block.getUnlocalizedName().toString().substring(5)));
     }
 }

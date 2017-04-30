@@ -12,7 +12,7 @@ apply plugin: 'maven'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = "0.2.1"
+version = "0.3.0"
 group = "es.esy.ladysnake.tartaros"
 archivesBaseName = "tartaros"
 

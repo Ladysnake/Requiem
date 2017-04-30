@@ -17,8 +17,6 @@ public class IncorporealDataHandler {
     public static final Capability<IIncorporealHandler> CAPABILITY_INCORPOREAL = null;
 	
     public static void register() {
-        
-    	System.out.println(CAPABILITY_INCORPOREAL);
         CapabilityManager.INSTANCE.register(IIncorporealHandler.class, new Storage(), DefaultIncorporealHandler.class);
         MinecraftForge.EVENT_BUS.register(new IncorporealDataHandler());
     }
@@ -33,33 +31,53 @@ public class IncorporealDataHandler {
 	
 	public static class DefaultIncorporealHandler implements IIncorporealHandler {
 		
-		private int incorporeal;
+		private boolean incorporeal;
+		private String lastDeathMessage;
+		public boolean synced = false;
 	
 		@Override
 		public void setIncorporeal(boolean enable, EntityPlayer p) {
-			incorporeal = (enable) ? 1 : 0;
+			incorporeal = enable;
+			p.setEntityInvulnerable(enable);
 			if(!p.isCreative()) {
 				//p.capabilities.allowEdit = (!enable);
-				p.capabilities.allowFlying = (enable && p.experienceLevel > 0);
 				p.capabilities.disableDamage = enable;
-				p.capabilities.isFlying = (p.capabilities.isFlying && p.experienceLevel > 0);
-				p.setEntityInvulnerable(enable);
+				p.capabilities.allowFlying = (enable && p.experienceLevel > 0);
+				p.capabilities.isFlying = (enable && p.capabilities.isFlying && p.experienceLevel > 0);
 				//System.out.println(p.capabilities.allowFlying + " " + (p.experienceLevel > 0));
 			}
+			synced = true;
 		}
 		
 		@Override 
-		public void setIncorporeal(int ghostMode) {
-			incorporeal = (ghostMode == 0) ? 0 : 1;
+		public void setIncorporeal(boolean ghostMode) {
+			incorporeal = ghostMode;
+			synced = true;
 		}
 	
 		@Override
 		public boolean isIncorporeal() {
-			return incorporeal == 1;
+			return incorporeal;
 		}
 		
-		public int getIncorporeal() {
-			return incorporeal;
+		@Override
+		public void setSynced(boolean synced) {
+			this.synced = synced;
+		}
+
+		@Override
+		public boolean isSynced() {
+			return this.synced;
+		}
+
+		@Override
+		public String getLastDeathMessage() {
+			return this.lastDeathMessage;
+		}
+
+		@Override
+		public void setLastDeathMessage(String deathMessage) {
+			this.lastDeathMessage = deathMessage;
 		}
 	}
 	
@@ -98,7 +116,8 @@ public class IncorporealDataHandler {
 		    public NBTBase writeNBT (Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side) {
 		        
 		        final NBTTagCompound tag = new NBTTagCompound();           
-		        tag.setInteger("incorporeal", instance.getIncorporeal());          
+		        tag.setBoolean("incorporeal", instance.isIncorporeal());          
+		        tag.setString("lastDeath", instance.getLastDeathMessage().isEmpty() ? "This player has no recorded death" : instance.getLastDeathMessage());
 		        return tag;
 		    }
 
@@ -106,7 +125,8 @@ public class IncorporealDataHandler {
 		    public void readNBT (Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side, NBTBase nbt) {
 		        
 		        final NBTTagCompound tag = (NBTTagCompound) nbt;
-		        instance.setIncorporeal(tag.getInteger("incorporeal"));
+		        instance.setIncorporeal(tag.getBoolean("incorporeal"));
+		        instance.setLastDeathMessage(tag.getString("lastDeath"));
 		    }
 		}
 

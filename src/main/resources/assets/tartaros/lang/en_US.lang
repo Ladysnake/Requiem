@@ -3,14 +3,16 @@ itemGroup.tartaros=Tartaros
 tile.crystallizer.name=Crystallizer
 tile.soul_extractor.name=Soul Extractor
 tile.mercurius_waystone.name=Mercurius' Waystone
+tile.waystone.cannotplace=Some force deep under seems to prevent you from placing this here.
 tile.ectoplasm_block.name=Block of Ectoplasm
 tile.ectoplasma_block.name=Block of Ectoplasma
 
 item.ectoplasm.name=Ectoplasm
 item.ectoplasma.name=Ectoplasma
+item.eye_of_the_undead.name=Eye of the Undead
+item.iron_scythe.name=Iron Scythe
 item.soul_gem.name=Soul Gem
 item.soul_in_a_bottle.name=Soul in a Bottle
 item.sepulture.name=Stone Burial
-item.sepulture_framing.name=Sarcophage framing
 
 entity.wandering_soul.name=Wandering Soul

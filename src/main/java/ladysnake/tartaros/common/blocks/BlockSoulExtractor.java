@@ -91,7 +91,7 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
 	
 	@Override
     public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-		System.out.println(!getTE(world, pos).isEmpty());
+		//System.out.println(!getTE(world, pos).isEmpty());
         return state.withProperty(LIT, !getTE(world, pos).isEmpty());
     }
 		
@@ -110,7 +110,7 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
 			else if(playerIn.getHeldItem(hand).getItem() == Items.GLASS_BOTTLE) {
 				if(getTE(worldIn, pos).retrieveSoul()){
 					playerIn.getHeldItem(hand).shrink(1);
-					playerIn.inventory.addItemStackToInventory(new ItemStack(ModItems.soul_in_a_bottle));
+					playerIn.inventory.addItemStackToInventory(new ItemStack(ModItems.SOUL_IN_A_BOTTLE));
 				}
 			}
 			return true;
