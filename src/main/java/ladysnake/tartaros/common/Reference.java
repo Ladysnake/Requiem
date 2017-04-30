@@ -13,6 +13,7 @@ public class Reference {
 		ECTOPLASM("ectoplasm", "itemEctoplasm"),
 		ECTOPLASMA("ectoplasma", "itemEctoplasma"),
 		EYE_DEAD("eye_of_the_undead", "itemEyeDead"),
+		GRAND_FAUX("grand_faux", "itemGrandFaux"),
 		SCYTHE_IRON("iron_scythe", "itemIronScythe"),
 		SOULGEM("soul_gem", "itemSoulGem"),
 		SOULINABOTTLE("soul_in_a_bottle", "itemSoulInABottle"),

@@ -28,7 +28,7 @@ public class EventHandlerClient {
 
 	@SubscribeEvent
 	public void onGameTick(TickEvent event) {
-		if (Minecraft.getMinecraft().player == null) return;
+		if (Minecraft.getMinecraft().player == null || !Minecraft.getMinecraft().player.world.isRemote) return;
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player);
 		//System.out.println(playerCorp.isSynced());
 		if(!playerCorp.isSynced() && refresh++%100 == 0){
@@ -45,16 +45,6 @@ public class EventHandlerClient {
 	    		GlStateManager.color(0.9F, 0.9F, 1.0F, 0.5F); //0.5F being alpha
 	    	}
 	    }
-	}
-	
-	@SubscribeEvent
-	public void onRenderGameOverlay(RenderGameOverlayEvent event) {
-		if(event.getType() == ElementType.EXPERIENCE) {
-			final IIncorporealHandler myCorp = IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player);
-		    if(myCorp.isIncorporeal()){
-		    	GuiIncorporealOverlay.INSTANCE.drawIncorporealOverlay(event.getResolution());
-		    }
-		}
 	}
 	
 	@SubscribeEvent

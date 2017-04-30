@@ -30,5 +30,9 @@ public interface IIncorporealHandler {
 	 * @return true if the player is a ghost
 	 */
 	public boolean isIncorporeal();
+	
+	public String getLastDeathMessage();
+	
+	public void setLastDeathMessage(String lastDeath);
 
 }

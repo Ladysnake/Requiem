@@ -27,7 +27,7 @@ public class CrystallizerRecipes {
 	private CrystallizerRecipes() {
 		addCrystalRecipe(new ItemStack(Blocks.NETHERRACK), new ItemStack(Blocks.NETHER_BRICK));
 		addCrystalRecipe(new ItemStack(Blocks.SAND), new ItemStack(Blocks.GLASS), 20);
-		addCrystalRecipe(new ItemStack(ModItems.ectoplasm), new ItemStack(ModItems.ectoplasma), 400);
+		addCrystalRecipe(new ItemStack(ModItems.ECTOPLASM), new ItemStack(ModItems.ECTOPLASMA), 400);
 	}
 	
 	/**

@@ -32,17 +32,18 @@ public class IncorporealDataHandler {
 	public static class DefaultIncorporealHandler implements IIncorporealHandler {
 		
 		private boolean incorporeal;
+		private String lastDeathMessage;
 		public boolean synced = false;
 	
 		@Override
 		public void setIncorporeal(boolean enable, EntityPlayer p) {
 			incorporeal = enable;
+			p.setEntityInvulnerable(enable);
 			if(!p.isCreative()) {
 				//p.capabilities.allowEdit = (!enable);
-				p.capabilities.allowFlying = (enable && p.experienceLevel > 0);
 				p.capabilities.disableDamage = enable;
+				p.capabilities.allowFlying = (enable && p.experienceLevel > 0);
 				p.capabilities.isFlying = (enable && p.capabilities.isFlying && p.experienceLevel > 0);
-				p.setEntityInvulnerable(enable);
 				//System.out.println(p.capabilities.allowFlying + " " + (p.experienceLevel > 0));
 			}
 			synced = true;
@@ -67,6 +68,16 @@ public class IncorporealDataHandler {
 		@Override
 		public boolean isSynced() {
 			return this.synced;
+		}
+
+		@Override
+		public String getLastDeathMessage() {
+			return this.lastDeathMessage;
+		}
+
+		@Override
+		public void setLastDeathMessage(String deathMessage) {
+			this.lastDeathMessage = deathMessage;
 		}
 	}
 	
@@ -106,7 +117,7 @@ public class IncorporealDataHandler {
 		        
 		        final NBTTagCompound tag = new NBTTagCompound();           
 		        tag.setBoolean("incorporeal", instance.isIncorporeal());          
-		        //tag.setBoolean("", instance.isSynced());
+		        tag.setString("lastDeath", instance.getLastDeathMessage().isEmpty() ? "This player has no recorded death" : instance.getLastDeathMessage());
 		        return tag;
 		    }
 
@@ -115,7 +126,7 @@ public class IncorporealDataHandler {
 		        
 		        final NBTTagCompound tag = (NBTTagCompound) nbt;
 		        instance.setIncorporeal(tag.getBoolean("incorporeal"));
-		        //instance.setSynced(tag.getBoolean("synced"));
+		        instance.setLastDeathMessage(tag.getString("lastDeath"));
 		    }
 		}
 

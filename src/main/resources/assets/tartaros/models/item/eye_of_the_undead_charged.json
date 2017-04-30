@@ -1,6 +1,0 @@
-{
-    "parent": "tartaros:item/eye_of_the_undead",
-    "textures": {
-        "layer0": "tartaros:items/eye_of_the_undead/eye_of_the_undead"
-    }
-}

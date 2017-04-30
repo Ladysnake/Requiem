@@ -28,6 +28,8 @@ import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -74,9 +76,19 @@ public class BlockSepulture extends BlockHorizontal implements IRespawnLocation 
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(playerIn);
-		playerCorp.setIncorporeal(false, playerIn);
-		IMessage msg = new IncorporealMessage(playerIn.getUniqueID().getMostSignificantBits(), playerIn.getUniqueID().getLeastSignificantBits(), false);
-		PacketHandler.net.sendToAll(msg);
+		if (playerCorp.isIncorporeal()) {
+			//playerCorp.getLastDeathMessage();
+			playerCorp.setIncorporeal(false, playerIn);
+			IMessage msg = new IncorporealMessage(playerIn.getUniqueID().getMostSignificantBits(), playerIn.getUniqueID().getLeastSignificantBits(), false);
+			PacketHandler.net.sendToAll(msg);
+		} else {
+			try {
+				System.out.println(playerCorp.getLastDeathMessage().contains("\n"));
+				playerIn.sendStatusMessage(new TextComponentString(playerCorp.getLastDeathMessage()), false);
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+			}
+		}
 		return true;
 	}
 	
@@ -112,7 +124,7 @@ public class BlockSepulture extends BlockHorizontal implements IRespawnLocation 
 	@Override
 	public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return state.getValue(PART) == BlockSepulture.EnumPartType.HEAD ? Items.AIR : ModItems.sepulture;
+        return state.getValue(PART) == BlockSepulture.EnumPartType.HEAD ? Items.AIR : ModItems.SEPULTURE;
     }
 	
 	@Override
@@ -145,7 +157,7 @@ public class BlockSepulture extends BlockHorizontal implements IRespawnLocation 
 	@Override
 	public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(ModItems.sepulture);
+        return new ItemStack(ModItems.SEPULTURE);
     }
 	
 	@Override

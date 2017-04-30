@@ -1,0 +1,37 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "tartaros:items/grand_faux_test"
+    },
+    "display": {
+        "thirdperson_righthand": {
+            "rotation": [ 0, -90, -30 ],
+            "translation": [ 0, 20, 10 ],
+            "scale": [ 1.0, 4.0, 1.0 ]
+        },
+        "thirdperson_lefthand": {
+            "rotation": [ 0, 0, 0 ],
+            "translation": [ 0, 0, 0 ],
+            "scale": [ 1.0, 4.0, 1.0 ]
+        },
+        "firstperson_righthand": {
+            "rotation": [ 0, -90, 0 ],
+            "translation": [ 0, 5, 0],
+            "scale": [ 1.0, 4.0, 1 ]
+        },
+        "firstperson_lefthand": {
+            "rotation": [ 0, 0, 0 ],
+            "translation": [ 0, 0, 0],
+            "scale": [ 1.0, 4.0, 1 ]
+        },
+        "gui": {
+      			"rotation": [ 0, 0, 0 ],
+      			"translation": [0, 0, 0],
+      			"scale": [0.25, 2.0, 0.5]
+        },
+        "ground": {
+      			"translation": [ 0, 0, 0],
+      			"scale": [0.4, 1.6, 0.8]
+        }
+    }
+}

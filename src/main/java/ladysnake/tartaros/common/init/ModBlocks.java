@@ -21,35 +21,35 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModBlocks {
 
-	public static Block ectoplasma;
-	public static BlockEctoplasm ectoplasm;
-    public static BlockCrystallizer crystallizer;
-    public static BlockMercuriusWaystone mercurius_waystone;
-    public static BlockSoulAnchor soul_anchor;
-    public static BlockSoulExtractor soul_extractor;
-    public static BlockSepulture sepulture;
+	public static Block ECTOPLASMA;
+	public static BlockEctoplasm ECTOPLASM;
+    public static BlockCrystallizer CRYSTALLIZER;
+    public static BlockMercuriusWaystone MERCURIUS_WAYSTONE;
+    public static BlockSoulAnchor SOUL_ANCHOR;
+    public static BlockSoulExtractor SOUL_EXTRACTOR;
+    public static BlockSepulture SEPULTURE;
 
     public static void init() {
-    	crystallizer = new BlockCrystallizer();
-    	ectoplasm = new BlockEctoplasm();
-    	ectoplasma = new Block(Material.CLOTH);
-    	ectoplasma.setUnlocalizedName(Reference.Blocks.ECTOPLASMA.getUnlocalizedName());
-    	ectoplasma.setRegistryName(Reference.Blocks.ECTOPLASMA.getRegistryName());
-    	ectoplasma.setHardness(0.5f);
-    	mercurius_waystone = new BlockMercuriusWaystone();
-    	soul_anchor = new BlockSoulAnchor();
-    	soul_extractor = new BlockSoulExtractor();
-    	sepulture = new BlockSepulture();
+    	CRYSTALLIZER = new BlockCrystallizer();
+    	ECTOPLASM = new BlockEctoplasm();
+    	ECTOPLASMA = new Block(Material.CLOTH);
+    	ECTOPLASMA.setUnlocalizedName(Reference.Blocks.ECTOPLASMA.getUnlocalizedName());
+    	ECTOPLASMA.setRegistryName(Reference.Blocks.ECTOPLASMA.getRegistryName());
+    	ECTOPLASMA.setHardness(0.5f);
+    	MERCURIUS_WAYSTONE = new BlockMercuriusWaystone();
+    	SOUL_ANCHOR = new BlockSoulAnchor();
+    	SOUL_EXTRACTOR = new BlockSoulExtractor();
+    	SEPULTURE = new BlockSepulture();
     }
     
     public static void register() {
-    	registerBlock(crystallizer);
-    	registerBlock(ectoplasma);
-    	registerBlock(ectoplasm);
-    	registerBlock(mercurius_waystone).setMaxStackSize(1);
-    	GameRegistry.register(sepulture);
-    	registerBlock(soul_extractor);
-    	registerBlock(soul_anchor);
+    	registerBlock(CRYSTALLIZER);
+    	registerBlock(ECTOPLASMA);
+    	registerBlock(ECTOPLASM);
+    	registerBlock(MERCURIUS_WAYSTONE).setMaxStackSize(1);
+    	GameRegistry.register(SEPULTURE);
+    	registerBlock(SOUL_EXTRACTOR);
+    	registerBlock(SOUL_ANCHOR);
     }
     
     private static Item registerBlock(Block block) {
@@ -63,13 +63,13 @@ public class ModBlocks {
     
     @SideOnly(Side.CLIENT)
     public static void registerRenders() {
-    	registerRender(crystallizer);
-    	registerRender(soul_extractor);
-    	registerRender(mercurius_waystone);
-    	registerRender(sepulture);
-    	registerRender(ectoplasm);
-    	registerRender(ectoplasma);
-    	registerRender(soul_anchor);
+    	registerRender(CRYSTALLIZER);
+    	registerRender(SOUL_EXTRACTOR);
+    	registerRender(MERCURIUS_WAYSTONE);
+    	registerRender(SEPULTURE);
+    	registerRender(ECTOPLASM);
+    	registerRender(ECTOPLASMA);
+    	registerRender(SOUL_ANCHOR);
     }
     
     @SideOnly(Side.CLIENT)

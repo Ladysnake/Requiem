@@ -1,4 +1,5 @@
 {
+    "parent": "block/block",
     "textures": {
         "particle": "tartaros:blocks/soul_extractor/soul_extractor_front",
 		"0": "tartaros:blocks/soul_extractor/soul_extractor_front",

@@ -3,6 +3,8 @@ package ladysnake.tartaros.common.blocks;
 import java.util.List;
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
 import ladysnake.tartaros.common.Reference;
 import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
 import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
@@ -34,7 +36,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 	
 	private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(0.0625 * 4, 0, 0.0625 * 4, 0.0625 * 12, 0.0625 * 16, 0.0625 * 12);
-	private static final AxisAlignedBB COLLISION_BOX = new AxisAlignedBB(0.0625 * 4, 0, 0.0625 * 4, 0.0625 * 12, 0.0625 * 16, 0.0625 * 12);
+	private static final AxisAlignedBB COLLISION_BOX = new AxisAlignedBB(0.300D, 0.0D, 0.300D, 0.700D, 1.0D, 0.700D);
 
 	public BlockMercuriusWaystone() {
 		super(Material.ROCK);
@@ -66,8 +68,6 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 				    worldserver.spawnParticle(EnumParticleTypes.CLOUD, false, pos.getX() + 0.5D, pos.getY()+ 1.0D, pos.getZ()+ 0.5D, 1, 0.3D, 0.3D, 0.3D, 0.0D, new int[0]); 
 				}
 			}
-
-
 		}
 		return true;
 	}
@@ -82,7 +82,7 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 			    while((worldserver.getBlockState(bp.down()) == Blocks.AIR.getDefaultState() || worldserver.getBlockState(bp) != Blocks.AIR.getDefaultState()) && bp.getY() > 0)
 			    	bp = bp.down();
 			    if(bp.getY() > 0)
-			    	worldserver.setBlockState(bp, ModBlocks.soul_anchor.getDefaultState(), 3);
+			    	worldserver.setBlockState(bp, ModBlocks.SOUL_ANCHOR.getDefaultState(), 3);
 			    else {
 			    	if(placer instanceof EntityPlayer)
 			    		((EntityPlayer)placer).sendStatusMessage(new TextComponentTranslation("tile.waystone.cannotplace", new Object[0]), true);
@@ -116,10 +116,19 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 	}
 	
 	@Override
-	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox,
-			List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean p_185477_7_) {
-		super.addCollisionBoxToList(pos, entityBox, collidingBoxes, COLLISION_BOX);
+	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_)
+    {
+		addCollisionBoxToList(pos, entityBox, collidingBoxes, COLLISION_BOX);
 	}
 	
+	@Override
+	public boolean isFullCube(IBlockState state) {
+		return false;
+	}
+	
+	@Override
+	public boolean isFullBlock(IBlockState state) {
+		return false;
+	}
 	
 }
