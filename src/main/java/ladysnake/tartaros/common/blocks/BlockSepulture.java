@@ -176,12 +176,7 @@ public class BlockSepulture extends BlockHorizontal implements IRespawnLocation,
             {
                 worldIn.setBlockToAir(blockpos);
             }
-        } else {
-        	if (!worldIn.isRemote)
-            {
-                this.dropBlockAsItem(worldIn, pos, state, 0);
-            }
-        }
+        } 
     }
 	
 	public IBlockState getStateFromMeta(int meta)
