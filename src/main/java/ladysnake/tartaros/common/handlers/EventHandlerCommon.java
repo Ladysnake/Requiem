@@ -12,17 +12,17 @@ import ladysnake.tartaros.common.entity.EntityItemWaystone;
 import ladysnake.tartaros.common.entity.EntityMinion;
 import ladysnake.tartaros.common.entity.EntityMinionZombie;
 import ladysnake.tartaros.common.init.ModBlocks;
-import ladysnake.tartaros.common.init.ModItems;
 import ladysnake.tartaros.common.items.ItemScythe;
 import ladysnake.tartaros.common.networking.IncorporealMessage;
 import ladysnake.tartaros.common.networking.PacketHandler;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.AbstractSkeleton;
 import net.minecraft.entity.monster.EntityHusk;
-import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
@@ -85,16 +85,19 @@ public class EventHandlerCommon {
 	
 	@SubscribeEvent
 	public void onLivingDeath(LivingDeathEvent event){
+		
 		if(event.getEntity() instanceof EntityPlayer){
 			EntityPlayer p = (EntityPlayer)event.getEntity();
 			final IIncorporealHandler corp = IncorporealDataHandler.getHandler(p);
 			corp.setLastDeathMessage(p.getDisplayNameString() + event.getSource().getDeathMessage(p).getUnformattedComponentText());
+			
 			final ItemStack merc = new ItemStack(ModBlocks.MERCURIUS_WAYSTONE);
 			if(p.inventory.hasItemStack(merc)) {
 				p.inventory.removeStackFromSlot(p.inventory.getSlotFor(merc));
 				p.world.spawnEntity(new EntityItemWaystone(p.world, p.posX + 0.5, p.posY + 1.0, p.posZ + 0.5));
 			}
 		}
+		
 		if(event.getSource().getEntity() instanceof EntityPlayer) {
 			EntityPlayer killer = (EntityPlayer)event.getSource().getEntity();
 			EntityLivingBase victim = event.getEntityLiving();
@@ -127,9 +130,11 @@ public class EventHandlerCommon {
 			IMessage msg = new IncorporealMessage(event.getEntityPlayer().getUniqueID().getMostSignificantBits(), event.getEntityPlayer().getUniqueID().getLeastSignificantBits(), true);
 			PacketHandler.net.sendToAll(msg);
 			
-			if (!TartarosConfig.respawnInNether) {
-				event.getEntityPlayer().posX = event.getOriginal().posX/8;
-				event.getEntityPlayer().posZ = event.getOriginal().posZ/8;
+			if (TartarosConfig.respawnInNether && !event.getEntityPlayer().world.isRemote) {
+				//TartarosTeleporter.changeDimension((EntityPlayerMP)event.getEntityPlayer(), -1);
+				//event.getEntityPlayer().changeDimension(-1);
+				//EntityList.newEntity(event.getEntity().getClass(), event.getEntityPlayer().world.getMinecraftServer().worldServerForDimension(-1));
+				CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.getEntityPlayer(), -1);
 			}
 		}
 	}

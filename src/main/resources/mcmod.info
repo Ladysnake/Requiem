@@ -7,7 +7,7 @@
   "mcversion": "${mcversion}",
   "url": "https://minecraft.curseforge.com/projects/tartaros",
   "updateUrl": "https://minecraft.curseforge.com/projects/tartaros",
-  "authorList": ["Pyrofab", "CobraDarkPoney"],
+  "authorList": ["Pyrofab", "CobraDarkPoney", "Noprotox"],
   "credits": "MrCrayfish for his amazing model creator.",
   "logoFile": "/assets/tartaros/textures/tartaros_ico.png",
   "screenshots": [],
