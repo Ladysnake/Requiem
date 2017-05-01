@@ -14,6 +14,7 @@ public class CustomTartarosTeleporter {
 
 	public static void transferPlayerToDimension(EntityPlayerMP player, int dimensionIn)
     {
+		System.out.println("transfering player" + player.getDisplayNameString() + " to dimension " + dimensionIn);
         int i = player.dimension;
         WorldServer worldserver = player.mcServer.worldServerForDimension(player.dimension);
         player.dimension = dimensionIn;
@@ -106,7 +107,11 @@ public class CustomTartarosTeleporter {
 
             if (entityIn.isEntityAlive())
             {
-                entityIn.setLocationAndAngles(d0, entityIn.posY, d1, entityIn.rotationYaw, entityIn.rotationPitch);
+            	BlockPos bp = new BlockPos(d0, 120, d1);
+            	while (!toWorldIn.isAirBlock(bp) || !toWorldIn.isAirBlock(bp.up()) || toWorldIn.isAirBlock(bp.down()) && bp.getY() > 0) {
+            		bp = bp.down();
+            	}
+                entityIn.setLocationAndAngles(bp.getX(), bp.getY(), bp.getZ(), entityIn.rotationYaw, entityIn.rotationPitch);
                 toWorldIn.spawnEntity(entityIn);
                 toWorldIn.updateEntityWithOptionalForce(entityIn, false);
             }

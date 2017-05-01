@@ -11,6 +11,7 @@ public class Reference {
 	public static final String SERVER_PROXY_CLASS = "ladysnake.tartaros.server.proxy.ServerProxy";
 	
 	public static enum Items {
+		DEBUG("debug_item", "itemDebug"),
 		ECTOPLASM("ectoplasm", "itemEctoplasm"),
 		ECTOPLASMA("ectoplasma", "itemEctoplasma"),
 		EYE_DEAD("eye_of_the_undead", "itemEyeDead"),

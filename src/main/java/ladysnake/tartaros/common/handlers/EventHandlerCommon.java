@@ -72,6 +72,10 @@ public class EventHandlerCommon {
 				event.player.experience --;
 			else if(rand.nextInt()%300 == 0 && event.player.experienceLevel > 0)
 				event.player.removeExperienceLevel(1);
+		} else if (playerCorp.isIncorporeal() && !playerCorp.isSynced() && !event.player.world.isRemote && TartarosConfig.respawnInNether)
+		{
+			CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, -1);
+			playerCorp.setSynced(true);
 		}
 	}
 	
@@ -127,15 +131,9 @@ public class EventHandlerCommon {
 			final IIncorporealHandler clone = IncorporealDataHandler.getHandler(event.getEntityPlayer());
 			clone.setIncorporeal(true, event.getEntityPlayer());
 			clone.setLastDeathMessage(corpse.getLastDeathMessage());
+			clone.setSynced(false);
 			IMessage msg = new IncorporealMessage(event.getEntityPlayer().getUniqueID().getMostSignificantBits(), event.getEntityPlayer().getUniqueID().getLeastSignificantBits(), true);
 			PacketHandler.net.sendToAll(msg);
-			
-			if (TartarosConfig.respawnInNether && !event.getEntityPlayer().world.isRemote) {
-				//TartarosTeleporter.changeDimension((EntityPlayerMP)event.getEntityPlayer(), -1);
-				//event.getEntityPlayer().changeDimension(-1);
-				//EntityList.newEntity(event.getEntity().getClass(), event.getEntityPlayer().world.getMinecraftServer().worldServerForDimension(-1));
-				CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.getEntityPlayer(), -1);
-			}
 		}
 	}
 	
