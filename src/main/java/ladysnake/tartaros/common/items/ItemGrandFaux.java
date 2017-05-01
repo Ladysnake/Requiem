@@ -11,6 +11,5 @@ public class ItemGrandFaux extends ItemScythe {
 		this.setUnlocalizedName(Reference.Items.GRAND_FAUX.getUnlocalizedName());
         this.setRegistryName(Reference.Items.GRAND_FAUX.getRegistryName());
         this.setMaxDamage(1500);
-        this.attackSpeed = -3.0f;
 	}
 }

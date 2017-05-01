@@ -28,6 +28,7 @@ public class Tartaros {
 	 @EventHandler
 	 public void preInit(FMLPreInitializationEvent event) {
 		 config = new Configuration(event.getSuggestedConfigurationFile());
+		 TartarosConfig.syncConfig();
 		 proxy.preInit();
 	 }
 	 

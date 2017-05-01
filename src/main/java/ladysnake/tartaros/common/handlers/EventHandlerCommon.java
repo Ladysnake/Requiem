@@ -118,7 +118,7 @@ public class EventHandlerCommon {
 	
 	@SubscribeEvent
 	public void clonePlayer(PlayerEvent.Clone event) {
-		if(event.isWasDeath() && !event.getEntityPlayer().isCreative()){
+		if(event.isWasDeath() && !event.getEntityPlayer().isCreative()) {
 			event.getEntityPlayer().experienceLevel = event.getOriginal().experienceLevel;
 			final IIncorporealHandler corpse = IncorporealDataHandler.getHandler(event.getOriginal());
 			final IIncorporealHandler clone = IncorporealDataHandler.getHandler(event.getEntityPlayer());
@@ -127,10 +127,9 @@ public class EventHandlerCommon {
 			IMessage msg = new IncorporealMessage(event.getEntityPlayer().getUniqueID().getMostSignificantBits(), event.getEntityPlayer().getUniqueID().getLeastSignificantBits(), true);
 			PacketHandler.net.sendToAll(msg);
 			
-			if (TartarosConfig.respawnInNether) {
-				EntityPlayer p = event.getEntityPlayer();
-				p.setPosition(p.posX, p.posY, p.posZ);
-				p.changeDimension(-1);
+			if (!TartarosConfig.respawnInNether) {
+				event.getEntityPlayer().posX = event.getOriginal().posX/8;
+				event.getEntityPlayer().posZ = event.getOriginal().posZ/8;
 			}
 		}
 	}
