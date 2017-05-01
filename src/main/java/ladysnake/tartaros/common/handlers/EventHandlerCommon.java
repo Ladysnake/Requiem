@@ -3,6 +3,7 @@ package ladysnake.tartaros.common.handlers;
 import java.util.Random;
 
 import ladysnake.tartaros.common.Reference;
+import ladysnake.tartaros.common.TartarosConfig;
 import ladysnake.tartaros.common.blocks.IRespawnLocation;
 import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
 import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
@@ -125,6 +126,12 @@ public class EventHandlerCommon {
 			clone.setLastDeathMessage(corpse.getLastDeathMessage());
 			IMessage msg = new IncorporealMessage(event.getEntityPlayer().getUniqueID().getMostSignificantBits(), event.getEntityPlayer().getUniqueID().getLeastSignificantBits(), true);
 			PacketHandler.net.sendToAll(msg);
+			
+			if (TartarosConfig.respawnInNether) {
+				EntityPlayer p = event.getEntityPlayer();
+				p.setPosition(p.posX, p.posY, p.posZ);
+				p.changeDimension(-1);
+			}
 		}
 	}
 	
