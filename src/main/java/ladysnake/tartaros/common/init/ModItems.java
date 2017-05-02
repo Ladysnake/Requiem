@@ -3,6 +3,7 @@ package ladysnake.tartaros.common.init;
 import ladysnake.tartaros.common.Reference;
 import ladysnake.tartaros.common.Tartaros;
 import ladysnake.tartaros.common.blocks.BlockCrystallizer;
+import ladysnake.tartaros.common.items.ItemDebug;
 import ladysnake.tartaros.common.items.ItemEyeDead;
 import ladysnake.tartaros.common.items.ItemGrandFaux;
 import ladysnake.tartaros.common.items.ItemScythe;
@@ -22,6 +23,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModItems {
 	public static Item ECTOPLASM, ECTOPLASMA;
+	public static ItemDebug DEBUG_ITEM;
 	public static ItemEyeDead EYE_OF_THE_UNDEAD;
 	public static ItemGrandFaux GRAND_FAUX;
 	public static ItemScytheIron SCYTHE_IRON;
@@ -30,6 +32,7 @@ public class ModItems {
 	public static ItemSepulture SEPULTURE;
 
     public static void init() {
+    	DEBUG_ITEM = new ItemDebug();
     	ECTOPLASM = new Item();
     	ECTOPLASM.setUnlocalizedName(Reference.Items.ECTOPLASM.getUnlocalizedName());
         ECTOPLASM.setRegistryName(Reference.Items.ECTOPLASM.getRegistryName());
@@ -47,6 +50,7 @@ public class ModItems {
     }
     
     public static void register() {
+    	GameRegistry.register(DEBUG_ITEM);
     	GameRegistry.register(ECTOPLASM);
     	GameRegistry.register(ECTOPLASMA);
     	GameRegistry.register(EYE_OF_THE_UNDEAD);
@@ -59,6 +63,7 @@ public class ModItems {
     
     @SideOnly(Side.CLIENT)
     public static void registerRenders() {
+    	registerRender(DEBUG_ITEM);
     	registerRender(ECTOPLASM);
     	registerRender(ECTOPLASMA);
     	registerRender(EYE_OF_THE_UNDEAD);

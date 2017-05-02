@@ -3,6 +3,7 @@ package ladysnake.tartaros.common;
 import ladysnake.tartaros.common.inventory.TartarosTab;
 import ladysnake.tartaros.common.proxy.CommonProxy;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -11,8 +12,11 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION, acceptedMinecraftVersions = Reference.MCVERSION)
+@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION, acceptedMinecraftVersions = Reference.MCVERSION,
+		guiFactory = Reference.GUI_FACTORY)
 public class Tartaros {
+	
+	public static Configuration config;
 	
 	@Instance(Reference.MOD_ID)
 	public static Tartaros instance;
@@ -24,6 +28,8 @@ public class Tartaros {
 	 
 	 @EventHandler
 	 public void preInit(FMLPreInitializationEvent event) {
+		 config = new Configuration(event.getSuggestedConfigurationFile());
+		 TartarosConfig.syncConfig();
 		 proxy.preInit();
 	 }
 	 

@@ -12,6 +12,7 @@ public class ModCrafting {
 		GameRegistry.addShapedRecipe(new ItemStack(ModBlocks.ECTOPLASM), "EEE", "EEE", "EEE", 'E', ModItems.ECTOPLASM);
 		GameRegistry.addShapedRecipe(new ItemStack(ModBlocks.ECTOPLASMA), "EEE", "EEE", "EEE", 'E', ModItems.ECTOPLASMA);
 		GameRegistry.addShapedRecipe(new ItemStack(ModItems.EYE_OF_THE_UNDEAD), "IGI", "IEI", "ISI", 'I', Items.IRON_INGOT, 'G', Blocks.GLASS, 'E', Items.ENDER_EYE, 'S', ModItems.ECTOPLASMA);
+		GameRegistry.addShapedRecipe(new ItemStack(ModItems.GRAND_FAUX), "IBB", "PSS", "SPP", 'I', Items.IRON_INGOT, 'B', Blocks.IRON_BLOCK, 'P', Items.PAPER, 'S', Items.STICK);
 		GameRegistry.addShapedRecipe(new ItemStack(ModItems.SCYTHE_IRON), "III", " SS", "S  ", 'I', Items.IRON_INGOT, 'S', Items.STICK);
 		GameRegistry.addShapedRecipe(new ItemStack(ModBlocks.MERCURIUS_WAYSTONE), "W", "G", "C", 'W', Blocks.COBBLESTONE_WALL, 'G', ModItems.SOUL_GEM, 'C', Blocks.COBBLESTONE);
 		GameRegistry.addShapedRecipe(new ItemStack(ModItems.SEPULTURE), "CCC", "QGS", 'C', new ItemStack(Blocks.STONE_SLAB, 1, 0), 'Q', Items.QUARTZ, 'G', ModItems.SOUL_GEM, 'S', new ItemStack(Items.SKULL, 1, 1));

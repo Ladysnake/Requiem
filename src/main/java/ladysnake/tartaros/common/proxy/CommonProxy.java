@@ -12,6 +12,7 @@ import ladysnake.tartaros.common.inventory.GuiProxy;
 import ladysnake.tartaros.common.inventory.TartarosTab;
 import ladysnake.tartaros.common.networking.PacketHandler;
 import ladysnake.tartaros.common.tileentities.TileEntityCrystallizer;
+import ladysnake.tartaros.common.tileentities.TileEntitySepulture;
 import ladysnake.tartaros.common.tileentities.TileEntitySoulAnchor;
 import ladysnake.tartaros.common.tileentities.TileEntitySoulExtractor;
 import net.minecraft.creativetab.CreativeTabs;
@@ -36,6 +37,7 @@ public abstract class CommonProxy {
 		
 		GameRegistry.registerTileEntity(TileEntityCrystallizer.class, Reference.MOD_ID + "tileentitycrystallizer");
 		GameRegistry.registerTileEntity(TileEntitySoulExtractor.class, Reference.MOD_ID + "tileentitysoulextractor");
+		GameRegistry.registerTileEntity(TileEntitySepulture.class, Reference.MOD_ID + "tileentitysepulture");
 		GameRegistry.registerTileEntity(TileEntitySoulAnchor.class, Reference.MOD_ID + "tileentitysoulanchor");
 		NetworkRegistry.INSTANCE.registerGuiHandler(Tartaros.instance, new GuiProxy());
 		PacketHandler.initPackets();
