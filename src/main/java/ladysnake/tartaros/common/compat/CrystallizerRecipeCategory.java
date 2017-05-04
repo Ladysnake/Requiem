@@ -17,7 +17,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class CrystallizerRecipeCategory extends BlankRecipeCategory {
 
-	public static final ResourceLocation background_texture = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/crystallizer.png");
+	public static final ResourceLocation background_texture = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/crystallizer_jei.png");
 	private final IDrawable background;
 	private final IDrawableAnimated progressBar, fuelBar;
     private final String name;

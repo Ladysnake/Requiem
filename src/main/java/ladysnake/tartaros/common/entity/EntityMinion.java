@@ -64,7 +64,10 @@ public abstract class EntityMinion extends EntityCreature {
 		return true;
 	}
 	
-	
+	@Override
+	public boolean hasNoGravity() {
+		return false;
+	}
 	
 	@Override
 	public boolean attackEntityAsMob(Entity entityIn)

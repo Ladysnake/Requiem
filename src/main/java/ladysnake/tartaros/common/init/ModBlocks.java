@@ -44,7 +44,7 @@ public class ModBlocks {
     	SOUL_CANDLE = new BlockSoulCandle();
     	SOUL_EXTRACTOR = new BlockSoulExtractor();
     	SEPULTURE = new BlockSepulture();
-    	RESUSCITATOR = new BlockResuscitator();
+    	//RESUSCITATOR = new BlockResuscitator();
     }
     
     public static void register() {
@@ -56,7 +56,7 @@ public class ModBlocks {
     	registerBlock(SOUL_CANDLE);
     	GameRegistry.register(SEPULTURE);
     	registerBlock(SOUL_EXTRACTOR);
-    	registerBlock(RESUSCITATOR);
+    	//registerBlock(RESUSCITATOR);
     }
     
     private static Item registerBlock(Block block) {
@@ -78,7 +78,7 @@ public class ModBlocks {
     	registerRender(ECTOPLASMA);
     	registerRender(SOUL_ANCHOR);
 
-    	registerRender(RESUSCITATOR);
+    	//registerRender(RESUSCITATOR);
 
     	registerRender(SOUL_CANDLE);
     }

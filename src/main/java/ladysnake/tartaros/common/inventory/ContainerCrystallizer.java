@@ -123,7 +123,7 @@ public class ContainerCrystallizer extends Container {
             }
             else if (index != 1 && index != 0)
             {
-                if (!CrystallizerRecipes.instance().getCrystalResult(itemstack1).isEmpty())
+                if (CrystallizerRecipes.instance().getCrystalRecipe(itemstack1) != null)
                 {
                     if (!this.mergeItemStack(itemstack1, 0, 1, false))
                     {

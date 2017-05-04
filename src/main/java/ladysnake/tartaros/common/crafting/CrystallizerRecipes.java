@@ -40,20 +40,20 @@ public class CrystallizerRecipes {
 	 * @param time the time, in ticks, that the process will take. (a blaze powder fuels for 800 ticks)
 	 */
 	public static void addCrystalRecipe(ItemStack input, ItemStack output, int time){
-		if (getCrystalResult(input) != ItemStack.EMPTY) { net.minecraftforge.fml.common.FMLLog.info("Ignored crystallizing recipe with conflicting input: " + input + " = " + output); return; }
+		if (getCrystalRecipe(input) != null) { net.minecraftforge.fml.common.FMLLog.info("Ignored crystallizing recipe with conflicting input: " + input + " = " + output); return; }
         	crystallizingRecipes.add(new CrystallizerRecipe(input, output, time));
 	}
 	
-	public static ItemStack getCrystalResult(ItemStack input) {
+	public static CrystallizerRecipe getCrystalRecipe(ItemStack input) {
 		for (CrystallizerRecipe cr : crystallizingRecipes)
         {
             if (compareItemStacks(input, cr.getInput()))
             {
-                return cr.getOutput();
+                return cr;
             }
         }
 
-        return ItemStack.EMPTY;
+        return null;
 	}
 	
 	private static boolean compareItemStacks(ItemStack stack1, ItemStack stack2)

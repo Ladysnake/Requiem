@@ -311,8 +311,8 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
 
     public int getCookTime(ItemStack stack)
     {
-    	if(CrystallizerRecipes.instance().crystalTimeList.get(stack.getItem()) == null) return 1;
-        return CrystallizerRecipes.instance().crystalTimeList.get(stack.getItem());
+    	if(CrystallizerRecipes.getCrystalRecipe(stack) == null) return 1;
+        return CrystallizerRecipes.getCrystalRecipe(stack).getProcessTime();
     }
 
     /**
@@ -326,7 +326,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
         }
         else
         {
-            ItemStack itemstack = CrystallizerRecipes.instance().getCrystalResult((ItemStack)this.crystallizerItemStacks.get(0));
+            ItemStack itemstack = CrystallizerRecipes.getCrystalRecipe((ItemStack)this.crystallizerItemStacks.get(0)).getOutput();
 
             if (itemstack.isEmpty())
             {
@@ -351,7 +351,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
         if (this.canSmelt())
         {
             ItemStack itemstack = (ItemStack)this.crystallizerItemStacks.get(0);
-            ItemStack itemstack1 = CrystallizerRecipes.instance().getCrystalResult(itemstack);
+            ItemStack itemstack1 = CrystallizerRecipes.getCrystalRecipe(itemstack).getOutput();
             ItemStack itemstack2 = (ItemStack)this.crystallizerItemStacks.get(2);
 
             if (itemstack2.isEmpty())
