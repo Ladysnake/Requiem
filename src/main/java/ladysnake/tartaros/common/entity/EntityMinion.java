@@ -36,6 +36,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public abstract class EntityMinion extends EntityCreature {
+	public boolean corpse;
 	
 	public EntityMinion(World worldIn) {
 		super(worldIn);
@@ -67,8 +68,13 @@ public abstract class EntityMinion extends EntityCreature {
         return flag;
     }
 
-	public void setDeath() {
+	public void setCorpse() {
 		System.out.println("death");
+		this.corpse = true;
+	}
+	
+	public boolean isCorpse(){
+		return corpse;
 	}
 	
 }

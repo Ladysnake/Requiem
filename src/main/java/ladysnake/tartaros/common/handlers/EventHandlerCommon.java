@@ -118,12 +118,12 @@ public class EventHandlerCommon {
 					EntityMinion skull;
 					if (victim instanceof EntityHusk){
 						skull = new EntityMinionZombie(victim.world, true);
-						skull.setDeath();
+						skull.setCorpse();
 					}
 					else{
 						System.out.println("mort");
 						skull = new EntityMinionZombie(victim.world, false);
-						skull.setDeath();
+						skull.setCorpse();
 						skull.setPosition(victim.posX, victim.posY, victim.posZ);
 						victim.world.spawnEntity(skull);
 					}

@@ -39,9 +39,7 @@ public abstract class CommonProxy {
 		GameRegistry.registerTileEntity(TileEntitySoulExtractor.class, Reference.MOD_ID + "tileentitysoulextractor");
 		GameRegistry.registerTileEntity(TileEntitySepulture.class, Reference.MOD_ID + "tileentitysepulture");
 		GameRegistry.registerTileEntity(TileEntitySoulAnchor.class, Reference.MOD_ID + "tileentitysoulanchor");
-
 		GameRegistry.registerTileEntity(TileEntityResuscitator.class, Reference.MOD_ID + "tileentityresuscitator");
-
 		GameRegistry.registerTileEntity(TileEntitySoulCandle.class, Reference.MOD_ID + "tileentitysoulcandle");
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(Tartaros.instance, new GuiProxy());

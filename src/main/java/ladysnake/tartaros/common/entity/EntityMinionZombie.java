@@ -17,7 +17,6 @@ import net.minecraft.world.World;
 public class EntityMinionZombie extends EntityMinion {
 
 	private boolean isHusk;
-	public boolean Death01;
 
 	public EntityMinionZombie(World worldIn) {
 		this(worldIn, false);
@@ -56,21 +55,10 @@ public class EntityMinionZombie extends EntityMinion {
 	}
 
 	@Override
-	public void setDeath(){
-		System.out.println("SETDEATH " + Death01);
-		this.Death01 = true;
-		System.out.println("SETDEATH " + Death01);
-	}
-	
-	public boolean isDeath(){
-		return Death01;
-	}
-
-	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
 		compound.setBoolean("isHusk", this.isHusk);
-		compound.setBoolean("Death01", this.Death01);
+		compound.setBoolean("Death01", this.corpse);
 		return compound;
 	}
 
@@ -78,7 +66,7 @@ public class EntityMinionZombie extends EntityMinion {
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
 		this.isHusk = compound.getBoolean("isHusk");
-		this.Death01 = compound.getBoolean("Death01");
+		this.corpse = compound.getBoolean("Death01");
 	}
 
 }
