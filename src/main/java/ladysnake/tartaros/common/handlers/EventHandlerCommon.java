@@ -28,6 +28,7 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
@@ -48,6 +49,8 @@ public class EventHandlerCommon {
 	public void onPlayerTick(PlayerTickEvent event) {
 		
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.player);
+		
+		playerCorp.tick(event);
 		
 		if(playerCorp.isIncorporeal() && !event.player.isCreative()) {
 			
@@ -72,7 +75,9 @@ public class EventHandlerCommon {
 				event.player.experience --;
 			else if(rand.nextInt()%300 == 0 && event.player.experienceLevel > 0)
 				event.player.removeExperienceLevel(1);
-		} else if (playerCorp.isIncorporeal() && !playerCorp.isSynced() && !event.player.world.isRemote && TartarosConfig.respawnInNether)
+		}
+		
+		if (playerCorp.isIncorporeal() && !playerCorp.isSynced() && !event.player.world.isRemote && TartarosConfig.respawnInNether)
 		{
 			CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, -1);
 			playerCorp.setSynced(true);
@@ -148,7 +153,8 @@ public class EventHandlerCommon {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
 		if(playerCorp.isIncorporeal() && !event.getEntityPlayer().isCreative()){
-			if(event.isCancelable() && !(event.getWorld().getBlockState(event.getPos()).getBlock() instanceof IRespawnLocation))
+			if(event.isCancelable() && !(event.getWorld().getBlockState(event.getPos()).getBlock() instanceof IRespawnLocation) && 
+					!(IncorporealDataHandler.soulInteractableBlocks.contains(event.getWorld().getBlockState(event.getPos()).getBlock())))
 				event.setCanceled(true);
 		}
 	}
@@ -175,6 +181,18 @@ public class EventHandlerCommon {
 		if(playerCorp.isIncorporeal() && !event.getEntityPlayer().isCreative()){
 			if(event.isCancelable())
 				event.setCanceled(true);
+		}
+	}
+	
+	@SubscribeEvent
+	public void onEntityStruckByLightning(EntityStruckByLightningEvent event) {
+		if(event.getEntity() instanceof EntityPlayer) {
+			final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler((EntityPlayer)event.getEntity());
+			if (playerCorp.isIncorporeal()) {
+				playerCorp.setIncorporeal(false, (EntityPlayer) event.getEntity());
+				IMessage msg = new IncorporealMessage(event.getEntity().getUniqueID().getMostSignificantBits(), event.getEntity().getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporeal());
+				PacketHandler.net.sendToAll(msg);
+			}				
 		}
 	}
 	

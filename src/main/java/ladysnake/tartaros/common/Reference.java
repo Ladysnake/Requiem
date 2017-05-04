@@ -45,6 +45,7 @@ public class Reference {
 		ECTOPLASM("ectoplasm_block", "blockEctoplasm"),
 		ECTOPLASMA("ectoplasma_block", "blockEctoplasma"),
 		SOUL_ANCHOR("soul_anchor", "blockSoulAnchor"),
+		SOUL_CANDLE("soul_candle", "blockSoulCandle"),
 		SOUL_EXTRACTOR("soul_extractor", "blockSoulExtractor"),
 		MERCURIUS_WAYSTONE("mercurius_waystone", "blockMercuriusWaystone"),
 		SEPULTURE("sepulture", "blockSepulture");

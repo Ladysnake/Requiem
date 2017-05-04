@@ -1,10 +1,14 @@
 package ladysnake.tartaros.client.gui;
 
+import java.io.IOException;
+
 import org.lwjgl.opengl.GL11;
 
 import ladysnake.tartaros.common.Reference;
+import ladysnake.tartaros.common.TartarosConfig;
 import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
 import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
+import ladysnake.tartaros.common.tileentities.TileEntitySoulAnchor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -12,7 +16,10 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.shader.Shader;
+import net.minecraft.client.shader.ShaderManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -26,12 +33,24 @@ public class GuiIncorporealOverlay extends Gui {
 	
 	private static final ResourceLocation INCORPOREAL_PATH = new ResourceLocation(Reference.MOD_ID + ":textures/gui/soul_overlay.png");
 	private static final ResourceLocation ORIGIN_PATH = new ResourceLocation(Reference.MOD_ID + ":textures/gui/soul_compass.png");
+	private boolean usingShader;
+	
+	private static ShaderManager sm;
+	
+	static {
+		try {
+			sm = new ShaderManager(null, null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	private Minecraft mc;
 	
 	public GuiIncorporealOverlay(Minecraft mc) {
 		super();
 		this.mc = mc;
+		this.usingShader = false;
 	}
 	
 	@SubscribeEvent
@@ -40,8 +59,21 @@ public class GuiIncorporealOverlay extends Gui {
 		final IIncorporealHandler pl = IncorporealDataHandler.getHandler(this.mc.player);
 		if(pl.isIncorporeal()) {
 			this.drawIncorporealOverlay(event.getResolution());
-	        this.drawOriginIndicator(event.getResolution());
+	        if(TartarosConfig.soulCompass)
+				this.drawOriginIndicator(event.getResolution());
 		}
+        if(pl.isSoulCandleNearby()) {
+        	if(!usingShader) {
+        		Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("shaders/post/desaturate.json"));
+        		usingShader = true;
+        	}
+        }
+        else {
+        	if(usingShader) {
+        		Minecraft.getMinecraft().entityRenderer.stopUseShader();
+        		usingShader = false;
+        	}
+        }
 	}
 	
 	/**
@@ -106,6 +138,19 @@ public class GuiIncorporealOverlay extends Gui {
 		if(isInFieldOfView) {
 			this.drawTexturedModalRect(i + 3 + (int)Math.round((angleToOrigin - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 200, 0, 7, 10);
 			//TODO make this a great gui
+		}
+		
+		if(!TartarosConfig.soulCompassAnchors) return;
+		
+		for(TileEntity te : mc.player.world.loadedTileEntityList) {
+			if(te instanceof TileEntitySoulAnchor) {
+				if(Math.sqrt(Math.pow(te.getPos().getX() - mc.player.posX, 2) + Math.pow(te.getPos().getZ() + mc.player.posZ, 2)) < 100) {
+					double angleToTE = (180 - (Math.atan2(player.posX - te.getPos().getX(), player.posZ - te.getPos().getZ())) * (180 / Math.PI)) % 360D;
+					if (angleToTE > angleLeftVision && angleToTE < angleRightVision) {
+						this.drawTexturedModalRect(i + 3 + (int)Math.round((angleToTE - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 207, 0, 7, 10);
+					}
+				}
+			}
 		}
 		
         GlStateManager.popAttrib();

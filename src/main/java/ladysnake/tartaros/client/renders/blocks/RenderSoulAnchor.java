@@ -5,6 +5,7 @@ import java.util.Vector;
 import org.lwjgl.opengl.GL11;
 
 import ladysnake.tartaros.common.Reference;
+import ladysnake.tartaros.common.TartarosConfig;
 import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
 import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
 import net.minecraft.client.Minecraft;
@@ -19,6 +20,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 
 public class RenderSoulAnchor extends TileEntitySpecialRenderer {
@@ -30,8 +32,13 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer {
 	@Override
 	public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage) {
 		
+		if(!TartarosConfig.anchorsXRay) return;
+		
 		//System.out.println(text);
 		Minecraft mc = Minecraft.getMinecraft();
+		
+		if(mc.player.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + (double)mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(te.getPos().getX(), te.getPos().getY(), te.getPos().getZ()), false, true, false) == null)
+			return;
 		
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(mc.player);
     	if(!playerCorp.isIncorporeal()) return;
