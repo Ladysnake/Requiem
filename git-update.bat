@@ -1,5 +1,9 @@
-﻿@echo off
+@echo off
 git pull
 git add *
-git commit -m "Added textures/models"
+if "%1"=="" (
+  git commit -m "Added textures/models"
+) else (
+  git commit -m %1
+)
 git push
