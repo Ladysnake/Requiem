@@ -34,9 +34,9 @@ public class BlockResuscitator extends Block implements ITileEntityProvider {
 		if (te instanceof TileEntityResuscitator) {
 			TileEntityResuscitator resuscitator = (TileEntityResuscitator) te;
 
-			if (!playerIn.isSneaking() && playerIn.getHeldItem(hand) != null) {
+			if (!playerIn.isSneaking() && playerIn.getHeldItem(hand).isEmpty() == false) {
 				resuscitator.AddItem(playerIn.getHeldItem(hand));
-			} else {
+			} else if(!playerIn.getHeldItem(hand).isEmpty()){
 				resuscitator.RemoveItem(playerIn.getHeldItem(hand));
 			}
 			System.out.println("items : " + resuscitator.itemName);

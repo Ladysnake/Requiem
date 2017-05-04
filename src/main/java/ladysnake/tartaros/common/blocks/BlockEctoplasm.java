@@ -12,7 +12,8 @@ import net.minecraft.world.World;
 
 public class BlockEctoplasm extends Block {
 
-	public BlockEctoplasm() {
+	public BlockEctoplasm() 
+	{
 		super(Material.ICE);
 
     	this.setUnlocalizedName(Reference.Blocks.ECTOPLASM.getUnlocalizedName());
