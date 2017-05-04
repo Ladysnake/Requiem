@@ -53,7 +53,7 @@ public class EntityMinionZombie extends EntityMinion {
 	public boolean isHusk() {
 		return isHusk;
 	}
-
+	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);

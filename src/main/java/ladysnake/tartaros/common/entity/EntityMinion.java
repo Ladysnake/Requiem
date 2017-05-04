@@ -41,6 +41,7 @@ public abstract class EntityMinion extends EntityCreature {
 	public EntityMinion(World worldIn) {
 		super(worldIn);
         setSize(0.6F, 1.95F);
+        corpse = true;
 	}
 	
 	@Override
@@ -68,9 +69,8 @@ public abstract class EntityMinion extends EntityCreature {
         return flag;
     }
 
-	public void setCorpse() {
-		System.out.println("death");
-		this.corpse = true;
+	public void setCorpse(boolean isCorpse) {
+		this.corpse = isCorpse;
 	}
 	
 	public boolean isCorpse(){

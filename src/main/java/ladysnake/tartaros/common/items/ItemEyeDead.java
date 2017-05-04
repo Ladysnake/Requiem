@@ -70,6 +70,7 @@ public class ItemEyeDead extends Item {
 			ammo.shrink(1);
 			EntityMinion minion = new EntityMinionZombie(worldIn, false);
 			minion.setPosition(player.posX, player.posY, player.posZ);
+			minion.setCorpse(true);
 			worldIn.spawnEntity(minion);	//TODO create a minion entity with custom AI
 		}
 	}

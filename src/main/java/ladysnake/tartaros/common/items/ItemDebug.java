@@ -1,7 +1,10 @@
 package ladysnake.tartaros.common.items;
 
+import java.util.List;
+
 import ladysnake.tartaros.common.Reference;
 import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
+import ladysnake.tartaros.common.entity.EntityMinionZombie;
 import ladysnake.tartaros.common.handlers.CustomTartarosTeleporter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
 public class ItemDebug extends Item {
@@ -24,7 +28,11 @@ public class ItemDebug extends Item {
 	
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-		IncorporealDataHandler.getHandler(playerIn).setIncorporeal(true, playerIn);
+		List<EntityMinionZombie> minions = worldIn.getEntitiesWithinAABB(EntityMinionZombie.class, new AxisAlignedBB(Math.floor(playerIn.posX), Math.floor(playerIn.posY), Math.floor(playerIn.posZ), Math.floor(playerIn.posX) + 1, Math.floor(playerIn.posY) + 1, Math.floor(playerIn.posZ) + 1).expandXyz(20));
+		for (EntityMinionZombie m : minions) {
+			System.out.println(m);
+			m.setCorpse(true);
+		}
 		return super.onItemRightClick(worldIn, playerIn, handIn);
 	}
 }
