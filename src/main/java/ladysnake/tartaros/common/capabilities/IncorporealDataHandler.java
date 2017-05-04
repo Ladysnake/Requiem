@@ -1,7 +1,12 @@
 package ladysnake.tartaros.common.capabilities;
 
+import java.util.ArrayList;
+
+import ladysnake.tartaros.common.TartarosConfig;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -10,8 +15,17 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 
 public class IncorporealDataHandler {
+	
+	public static ArrayList<Block> soulInteractableBlocks = new ArrayList<Block>();
+	
+	static {
+		soulInteractableBlocks.add(Blocks.LEVER);
+		soulInteractableBlocks.add(Blocks.GLASS_PANE);
+	}
 	
 	@CapabilityInject(IIncorporealHandler.class)
     public static final Capability<IIncorporealHandler> CAPABILITY_INCORPOREAL = null;
@@ -32,6 +46,7 @@ public class IncorporealDataHandler {
 	public static class DefaultIncorporealHandler implements IIncorporealHandler {
 		
 		private boolean incorporeal;
+		private int soulCandleNearby = -1;
 		private String lastDeathMessage;
 		public boolean synced = false;
 	
@@ -39,6 +54,7 @@ public class IncorporealDataHandler {
 		public void setIncorporeal(boolean enable, EntityPlayer p) {
 			incorporeal = enable;
 			p.setEntityInvulnerable(enable);
+			p.setInvisible(enable && TartarosConfig.invisibleGhosts);
 			if(!p.isCreative()) {
 				//p.capabilities.allowEdit = (!enable);
 				p.capabilities.disableDamage = enable;
@@ -49,15 +65,28 @@ public class IncorporealDataHandler {
 			synced = true;
 		}
 		
+		/**
+		 * Used to load data
+		 */
 		@Override 
 		public void setIncorporeal(boolean ghostMode) {
 			incorporeal = ghostMode;
 			synced = true;
 		}
+		
+		@Override
+		public void setSoulCandleNearby(boolean soulCandle) {
+			this.soulCandleNearby = soulCandle ? 100 : -1;
+		}
+		
+		@Override
+		public boolean isSoulCandleNearby() {
+			return this.soulCandleNearby > 0;
+		}
 	
 		@Override
 		public boolean isIncorporeal() {
-			return incorporeal;
+			return this.incorporeal && !this.isSoulCandleNearby();
 		}
 		
 		@Override
@@ -78,6 +107,12 @@ public class IncorporealDataHandler {
 		@Override
 		public void setLastDeathMessage(String deathMessage) {
 			this.lastDeathMessage = deathMessage;
+		}
+		
+		@Override
+		public void tick(PlayerTickEvent event) {
+			if(this.isSoulCandleNearby())
+				this.soulCandleNearby--;
 		}
 	}
 	

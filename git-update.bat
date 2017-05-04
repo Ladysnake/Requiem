@@ -1,5 +1,9 @@
-﻿@echo off
+@echo off
 git pull
 git add *
-git commit -m "Auto-updated the git. (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧"
+if "%1"=="" (
+  git commit -m "Minor commit (surely one texture or model something like that)"
+) else (
+  git commit -m %1
+)
 git push

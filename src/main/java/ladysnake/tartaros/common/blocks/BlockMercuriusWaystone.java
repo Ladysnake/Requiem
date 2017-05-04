@@ -6,6 +6,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import ladysnake.tartaros.common.Reference;
+import ladysnake.tartaros.common.TartarosConfig;
 import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
 import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
 import ladysnake.tartaros.common.init.ModBlocks;
@@ -53,7 +54,9 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 			playerCorp.setIncorporeal(false, playerIn);
 			IMessage msg = new IncorporealMessage(playerIn.getUniqueID().getMostSignificantBits(), playerIn.getUniqueID().getLeastSignificantBits(), false);
 			PacketHandler.net.sendToAll(msg);
-			worldIn.setBlockToAir(pos);
+			
+			if(TartarosConfig.oneUseWaystone)
+				worldIn.setBlockToAir(pos);
 
 
 			if (!worldIn.isRemote)
@@ -88,7 +91,7 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 			    		((EntityPlayer)placer).sendStatusMessage(new TextComponentTranslation("tile.waystone.cannotplace", new Object[0]), true);
 			    	return;
 			    }
-			    System.out.println(bp);
+			    //System.out.println(bp);
 			}
 	    	super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
 		}
@@ -129,6 +132,19 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 	@Override
 	public boolean isFullBlock(IBlockState state) {
 		return false;
+	}
+	
+	@Override
+	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+		super.breakBlock(worldIn, pos, state);
+		
+		BlockPos bp = new BlockPos(pos.getX()/8, 120, pos.getZ()/8);
+		WorldServer worldserver = worldIn.getMinecraftServer().worldServerForDimension(-1);
+		while((worldserver.getBlockState(bp) != ModBlocks.SOUL_ANCHOR.getDefaultState()) && bp.getY() > 0)
+	    	bp = bp.down();
+		//System.out.println(bp);
+		if(bp.getY() > 0)
+			worldserver.setBlockToAir(bp);
 	}
 	
 }

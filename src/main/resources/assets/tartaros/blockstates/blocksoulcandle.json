@@ -1,0 +1,6 @@
+{
+    "forge_marker": 1,
+    "variants": {
+      "normal": {"model": "tartaros:soul_candle"}
+    }
+}
