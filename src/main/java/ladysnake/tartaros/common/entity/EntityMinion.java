@@ -58,11 +58,12 @@ public abstract class EntityMinion extends EntityCreature {
 	
 	@Override
 	public boolean isAIDisabled() {
-		if(isCorpse()){
-			return true;
+		if(!isCorpse()){
+			return false;
 		}
-		return false;
+		return true;
 	}
+	
 	
 	
 	@Override

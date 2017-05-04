@@ -43,7 +43,44 @@ public class ModelMinionZombie extends ModelBiped {
 			this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
 			this.bipedRightArm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
 			this.bipedLeftArm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
+			
+			this.bipedRightArm.rotationPointX = 3.5F;
+			this.bipedRightArm.rotationPointY = 24.0F;
+			this.bipedRightArm.rotationPointZ = 1.0F;
+			
+			this.bipedLeftArm.rotationPointX = -7.0F;
+			this.bipedLeftArm.rotationPointY = 23.0F;
+			this.bipedLeftArm.rotationPointZ = 1.0F;
+			
+			this.bipedRightLeg.rotateAngleX = 1.6F;
+			this.bipedRightLeg.rotateAngleY = 1.55F;
+			this.bipedRightLeg.rotateAngleZ = 1.6F;
+			this.bipedRightLeg.rotationPointX = -4.5F;
+			this.bipedRightLeg.rotationPointY = 10.1F;
+			this.bipedRightLeg.rotationPointZ = 10.0F;
+			// left arm
+			this.bipedLeftLeg.rotateAngleX = 1.6F;
+			this.bipedLeftLeg.rotateAngleY = 1.55F;
+			this.bipedLeftLeg.rotateAngleZ = 1.6F;
+			this.bipedLeftLeg.rotationPointX = -4.5F;
+			this.bipedLeftLeg.rotationPointY = 10.1F;
+			this.bipedLeftLeg.rotationPointZ = 10.0F;
 
+			// body
+			this.bipedBody.rotateAngleX = 1.6F;
+			this.bipedBody.rotateAngleY = 0.0F;
+			this.bipedBody.rotateAngleZ = 0.0F;
+			this.bipedBody.rotationPointX = -2.2F;
+			this.bipedBody.rotationPointY = 22.0F;
+			this.bipedBody.rotationPointZ = 0.0F;
+
+			// head
+			this.bipedHead.rotateAngleX = 1.6F;
+			this.bipedHead.rotateAngleY = 0.0F;
+			this.bipedHead.rotateAngleZ = 4.0F;
+			this.bipedHead.rotationPointX = -2.2F;
+			this.bipedHead.rotationPointY = 22.0F;
+			this.bipedHead.rotationPointZ = 0.0F;
 		} else {
 
 			((EntityMinionZombie) entityIn).isAIDisabled();
