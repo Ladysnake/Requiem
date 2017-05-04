@@ -19,10 +19,8 @@ public class ModelMinionZombie extends ModelBiped {
 	}
 
 	@Override
-	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw,
-			float headPitch, float scaleFactor, Entity entityIn) {
-		entityIn = new EntityMinionZombie(null, false);
-		if (entityIn.isDead) {
+	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+		if (((EntityMinionZombie)entityIn).isCorpse()) {
 			System.out.println("is dead");
 			super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
 			boolean flag = entityIn instanceof EntityZombie && ((EntityZombie) entityIn).isArmsRaised();
