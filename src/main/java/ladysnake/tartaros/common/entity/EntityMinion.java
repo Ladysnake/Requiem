@@ -66,9 +66,5 @@ public abstract class EntityMinion extends EntityCreature {
 
         return flag;
     }
-
-	public void setDeath() {
-		System.out.println("death");
-	}
 	
 }

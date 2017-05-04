@@ -55,16 +55,6 @@ public class EntityMinionZombie extends EntityMinion {
 		return isHusk;
 	}
 
-	@Override
-	public void setDeath(){
-		System.out.println("SETDEATH " + Death01);
-		this.Death01 = true;
-		System.out.println("SETDEATH " + Death01);
-	}
-	
-	public boolean isDeath(){
-		return Death01;
-	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
