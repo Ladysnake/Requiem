@@ -101,15 +101,20 @@ public class EventHandlerCommon {
 			if (killer.getHeldItemMainhand().getItem() instanceof ItemScythe) {
 				((ItemScythe)killer.getHeldItemMainhand().getItem()).fillBottle(killer);
 			}
-			if (killer.world.rand.nextInt(20) == 0) {
+			if (killer.world.rand.nextInt(1) == 0) {
 				if(victim instanceof EntityZombie || victim instanceof AbstractSkeleton) {
 					EntityMinion skull;
-					if (victim instanceof EntityHusk)
+					if (victim instanceof EntityHusk){
 						skull = new EntityMinionZombie(victim.world, true);
-					else
+						skull.setDeath();
+					}
+					else{
+						System.out.println("mort");
 						skull = new EntityMinionZombie(victim.world, false);
-					skull.setPosition(victim.posX, victim.posY, victim.posZ);
-					victim.world.spawnEntity(skull);
+						skull.setDeath();
+						skull.setPosition(victim.posX, victim.posY, victim.posZ);
+						victim.world.spawnEntity(skull);
+					}
 				}
 			}
 		}

@@ -36,7 +36,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public abstract class EntityMinion extends EntityCreature {
-
+	
 	public EntityMinion(World worldIn) {
 		super(worldIn);
         setSize(0.6F, 1.95F);
@@ -66,5 +66,9 @@ public abstract class EntityMinion extends EntityCreature {
 
         return flag;
     }
+
+	public void setDeath() {
+		System.out.println("death");
+	}
 	
 }

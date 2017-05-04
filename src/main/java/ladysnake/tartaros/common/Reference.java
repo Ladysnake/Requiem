@@ -1,5 +1,7 @@
 package ladysnake.tartaros.common;
 
+import net.minecraft.block.ITileEntityProvider;
+
 public class Reference {
 	public static final String MOD_ID = "tartaros";
 	public static final String MOD_NAME = "Tartaros";
@@ -45,7 +47,8 @@ public class Reference {
 		SOUL_ANCHOR("soul_anchor", "blockSoulAnchor"),
 		SOUL_EXTRACTOR("soul_extractor", "blockSoulExtractor"),
 		MERCURIUS_WAYSTONE("mercurius_waystone", "blockMercuriusWaystone"),
-		SEPULTURE("sepulture", "blockSepulture");
+		SEPULTURE("sepulture", "blockSepulture"),
+		RESUSCITATOR("resuscitator","blockResuscitator");
 		
 		private String unlocalizedName;
 		private String registryName;

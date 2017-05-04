@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import ladysnake.tartaros.common.blocks.BlockCrystallizer;
 import ladysnake.tartaros.common.crafting.CrystallizerRecipes;
+import ladysnake.tartaros.common.init.ModBlocks;
 import ladysnake.tartaros.common.inventory.ContainerCrystallizer;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -34,7 +35,9 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.walkers.ItemStackDataLists;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -290,7 +293,9 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
             if (flag != this.isBurning())
             {
                 flag1 = true;
-                //BlockCrystallizer.setState(this.isBurning(), this.world, this.pos);
+                IBlockState state1 = getWorld().getBlockState(getPos());
+				BlockCrystallizer.setState(this.isBurning(), this.world, this.pos, state1);
+                System.out.println("Update 1 !");
                 if (getWorld() != null) {
         	    	IBlockState state = getWorld().getBlockState(getPos());
         	     	getWorld().notifyBlockUpdate(getPos(), state, state, 3);

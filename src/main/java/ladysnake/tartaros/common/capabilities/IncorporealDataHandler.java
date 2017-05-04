@@ -117,7 +117,7 @@ public class IncorporealDataHandler {
 		        
 		        final NBTTagCompound tag = new NBTTagCompound();           
 		        tag.setBoolean("incorporeal", instance.isIncorporeal());          
-		        tag.setString("lastDeath", instance.getLastDeathMessage().isEmpty() ? "This player has no recorded death" : instance.getLastDeathMessage());
+		        tag.setString("lastDeath", instance.getLastDeathMessage() == null || instance.getLastDeathMessage().isEmpty() ? "This player has no recorded death" : instance.getLastDeathMessage());
 		        return tag;
 		    }
 

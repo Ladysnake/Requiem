@@ -17,54 +17,68 @@ import net.minecraft.world.World;
 public class EntityMinionZombie extends EntityMinion {
 
 	private boolean isHusk;
-	
+	public boolean Death01;
+
 	public EntityMinionZombie(World worldIn) {
-		this (worldIn, false);
+		this(worldIn, false);
 	}
-	
+
 	/**
 	 * Creates a zombie minion
+	 * 
 	 * @param worldIn
-	 * @param zombieType false for the default zombie
+	 * @param zombieType
+	 *            false for the default zombie
 	 */
 	public EntityMinionZombie(World worldIn, boolean isHusk) {
 		super(worldIn);
 		this.isHusk = isHusk;
 	}
-	
+
 	@Override
-	protected void initEntityAI()
-    {
-        this.tasks.addTask(0, new EntityAISwimming(this));
-        this.tasks.addTask(2, new EntityAIMinionAttack(this, 1.0D, false));
-        this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
-        this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
-        this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-        this.tasks.addTask(8, new EntityAILookIdle(this));
-        this.applyEntityAI();
-    }
-	
-	protected void applyEntityAI()
-    {
-        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[] {EntityPigZombie.class}));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityMob.class, true));
-    }
-	
+	protected void initEntityAI() {
+		this.tasks.addTask(0, new EntityAISwimming(this));
+		this.tasks.addTask(2, new EntityAIMinionAttack(this, 1.0D, false));
+		this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
+		this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
+		this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+		this.tasks.addTask(8, new EntityAILookIdle(this));
+		this.applyEntityAI();
+	}
+
+	protected void applyEntityAI() {
+		this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[] { EntityPigZombie.class }));
+		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityMob.class, true));
+	}
+
 	public boolean isHusk() {
 		return isHusk;
 	}
+
+	@Override
+	public void setDeath(){
+		System.out.println("SETDEATH " + Death01);
+		this.Death01 = true;
+		System.out.println("SETDEATH " + Death01);
+	}
 	
+	public boolean isDeath(){
+		return Death01;
+	}
+
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
 		compound.setBoolean("isHusk", this.isHusk);
+		compound.setBoolean("Death01", this.Death01);
 		return compound;
 	}
-	
+
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
 		this.isHusk = compound.getBoolean("isHusk");
+		this.Death01 = compound.getBoolean("Death01");
 	}
 
 }

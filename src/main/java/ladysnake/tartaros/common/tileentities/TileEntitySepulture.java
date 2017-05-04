@@ -26,5 +26,5 @@ public class TileEntitySepulture extends TileEntity {
 		if(deathMessage != null)
 			compound.setString("deathMessage", deathMessage);
 		return compound;
-	};
+	}
 }

@@ -5,6 +5,7 @@ import ladysnake.tartaros.common.Tartaros;
 import ladysnake.tartaros.common.blocks.BlockCrystallizer;
 import ladysnake.tartaros.common.blocks.BlockEctoplasm;
 import ladysnake.tartaros.common.blocks.BlockMercuriusWaystone;
+import ladysnake.tartaros.common.blocks.BlockResuscitator;
 import ladysnake.tartaros.common.blocks.BlockSepulture;
 import ladysnake.tartaros.common.blocks.BlockSoulAnchor;
 import ladysnake.tartaros.common.blocks.BlockSoulExtractor;
@@ -28,6 +29,7 @@ public class ModBlocks {
     public static BlockSoulAnchor SOUL_ANCHOR;
     public static BlockSoulExtractor SOUL_EXTRACTOR;
     public static BlockSepulture SEPULTURE;
+    public static BlockResuscitator RESUSCITATOR;
 
     public static void init() {
     	CRYSTALLIZER = new BlockCrystallizer();
@@ -40,6 +42,7 @@ public class ModBlocks {
     	SOUL_ANCHOR = new BlockSoulAnchor();
     	SOUL_EXTRACTOR = new BlockSoulExtractor();
     	SEPULTURE = new BlockSepulture();
+    	RESUSCITATOR = new BlockResuscitator();
     }
     
     public static void register() {
@@ -50,6 +53,7 @@ public class ModBlocks {
     	GameRegistry.register(SEPULTURE);
     	registerBlock(SOUL_EXTRACTOR);
     	registerBlock(SOUL_ANCHOR);
+    	registerBlock(RESUSCITATOR);
     }
     
     private static Item registerBlock(Block block) {
@@ -70,6 +74,7 @@ public class ModBlocks {
     	registerRender(ECTOPLASM);
     	registerRender(ECTOPLASMA);
     	registerRender(SOUL_ANCHOR);
+    	registerRender(RESUSCITATOR);
     }
     
     @SideOnly(Side.CLIENT)
