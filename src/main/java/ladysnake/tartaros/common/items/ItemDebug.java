@@ -31,7 +31,7 @@ public class ItemDebug extends Item {
 		List<EntityMinionZombie> minions = worldIn.getEntitiesWithinAABB(EntityMinionZombie.class, new AxisAlignedBB(Math.floor(playerIn.posX), Math.floor(playerIn.posY), Math.floor(playerIn.posZ), Math.floor(playerIn.posX) + 1, Math.floor(playerIn.posY) + 1, Math.floor(playerIn.posZ) + 1).expandXyz(20));
 		for (EntityMinionZombie m : minions) {
 			System.out.println(m);
-			m.setCorpse(true);
+			m.setCorpse(!m.isCorpse());
 		}
 		return super.onItemRightClick(worldIn, playerIn, handIn);
 	}

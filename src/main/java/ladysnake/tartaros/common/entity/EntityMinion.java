@@ -57,6 +57,15 @@ public abstract class EntityMinion extends EntityCreature {
 	}
 	
 	@Override
+	public boolean isAIDisabled() {
+		if(isCorpse()){
+			return true;
+		}
+		return false;
+	}
+	
+	
+	@Override
 	public boolean attackEntityAsMob(Entity entityIn)
     {
         boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), (float)((int)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue()));
