@@ -78,13 +78,7 @@ public class ItemEyeDead extends Item {
 		if (ammo.isEmpty())
 			return;
 		stack.damageItem(1, player);
-		if (!worldIn.isRemote) {
-			ammo.shrink(1);
-			EntityMinionZombie minion = new EntityMinionZombie(worldIn, false);
-			minion.setPosition(player.posX, player.posY, player.posZ);
-			minion.setCorpse(true);
-			worldIn.spawnEntity(minion);
-		}
+		ammo.shrink(1);
 		List<EntityMinionZombie> minions = worldIn.getEntitiesWithinAABB(EntityMinionZombie.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20));
 		for (EntityMinionZombie m : minions) {
 			System.out.println(m);
