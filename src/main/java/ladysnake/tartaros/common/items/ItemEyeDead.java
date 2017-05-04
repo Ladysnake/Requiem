@@ -68,17 +68,16 @@ public class ItemEyeDead extends Item {
 		stack.damageItem(1, player);
 		if (!worldIn.isRemote) {
 			ammo.shrink(1);
-			EntityMinion minion = new EntityMinionZombie(worldIn, false);
+			EntityMinionZombie minion = new EntityMinionZombie(worldIn, false);
 			minion.setPosition(player.posX, player.posY, player.posZ);
 			minion.setCorpse(true);
-			worldIn.spawnEntity(minion);	//TODO create a minion entity with custom AI
+			worldIn.spawnEntity(minion);
 		}
 	}
 	
 	@Override
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
 			EnumFacing facing, float hitX, float hitY, float hitZ) {
-		// TODO Auto-generated method stub
 		return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
 	}
 	
