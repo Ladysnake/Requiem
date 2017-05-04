@@ -80,6 +80,7 @@ public class ItemEyeDead extends Item {
 		if (ammo.isEmpty())
 			return;
 		stack.damageItem(1, player);
+		ammo.shrink(1);
 		List<EntityMinionZombie> minions = worldIn.getEntitiesWithinAABB(EntityMinionZombie.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20));
 		for (EntityMinionZombie m : minions) {
 			System.out.println(m);
@@ -94,7 +95,6 @@ public class ItemEyeDead extends Item {
 			m.setCorpse(!m.isCorpse());
 		}
 		ammo.shrink(1);
-		
 	}
 
 	
@@ -102,7 +102,6 @@ public class ItemEyeDead extends Item {
 	@Override
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
 			EnumFacing facing, float hitX, float hitY, float hitZ) {
-		// TODO Auto-generated method stub
 		return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
 	}
 

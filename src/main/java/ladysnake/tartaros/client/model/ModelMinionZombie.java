@@ -1,3 +1,4 @@
+
 package ladysnake.tartaros.client.model;
 
 import ladysnake.tartaros.common.entity.EntityMinionZombie;

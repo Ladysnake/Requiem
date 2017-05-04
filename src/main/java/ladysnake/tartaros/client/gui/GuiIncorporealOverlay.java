@@ -34,16 +34,6 @@ public class GuiIncorporealOverlay extends Gui {
 	private static final ResourceLocation INCORPOREAL_PATH = new ResourceLocation(Reference.MOD_ID + ":textures/gui/soul_overlay.png");
 	private static final ResourceLocation ORIGIN_PATH = new ResourceLocation(Reference.MOD_ID + ":textures/gui/soul_compass.png");
 	private boolean usingShader;
-	
-	private static ShaderManager sm;
-	
-	static {
-		try {
-			sm = new ShaderManager(null, null);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 
 	private Minecraft mc;
 	
