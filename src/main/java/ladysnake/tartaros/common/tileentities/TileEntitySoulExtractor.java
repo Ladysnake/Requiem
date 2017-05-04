@@ -21,7 +21,7 @@ import net.minecraftforge.items.IItemHandler;
 
 public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 	
-	public static final int MAX_SOULSAND = 128;
+	public static final int MAX_INPUT = 128;
 	private int soulSandCount, soulCount;
 	private short processElapsed;
 
@@ -37,23 +37,45 @@ public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 			consumeSoulSand();
 			Random rand = new Random();
 			if(rand.nextInt(30) == 0) soulCount++;
+			ItemStack outputStack = new ItemStack(Blocks.SAND);
 			if(this.world.getTileEntity(pos.down()) != null && this.world.getTileEntity(pos.down()) instanceof TileEntityHopper){
 				TileEntityHopper hopper = ((TileEntityHopper)this.world.getTileEntity(pos.down()));
 				IItemHandler handler = hopper.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
-				ItemStack sand = new ItemStack(Blocks.SAND);
 				int slot = -1;
 				for (int j = 0; j < handler.getSlots() && slot == -1; j ++){
 					if (handler.getStackInSlot(j).isEmpty()){
 						slot = j;
 					}
 					else {
-						if (handler.getStackInSlot(j).getCount() < handler.getSlotLimit(j) && ItemStack.areItemsEqual(handler.getStackInSlot(j), sand)){
+						if (handler.getStackInSlot(j).getCount() < handler.getSlotLimit(j) && ItemStack.areItemsEqual(handler.getStackInSlot(j), outputStack)){
 							slot = j;
 						}
 					}
 				}
 				if (slot != -1)
-					handler.insertItem(slot, sand, false);
+					handler.insertItem(slot, outputStack, false);
+			} else {
+				TileEntity tile = getWorld().getTileEntity(pos.up());
+				if(tile != null) {
+					IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN);
+					if(handler != null) {
+						int slot = -1;
+						for (int j = 0; j < handler.getSlots() && slot == -1; j ++){
+							if (handler.getStackInSlot(j).isEmpty()){
+								slot = j;
+							}
+							else {
+								if (handler.getStackInSlot(j).getCount() < handler.getSlotLimit(j) && ItemStack.areItemsEqual(handler.getStackInSlot(j), outputStack) && ItemStack.areItemStackTagsEqual(handler.getStackInSlot(j), outputStack)){
+									slot = j;
+								}
+							}
+						}
+						if(slot != -1)
+							handler.insertItem(slot, outputStack, false);
+					}
+				} else {
+					getWorld().spawnEntity(new EntityItem(getWorld(), pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, outputStack));
+				}
 			}
 		}
 	}
@@ -105,9 +127,9 @@ public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 	 * @return The remaining quantity.
 	 */
 	public int addSoulSand(int count) {
-		if(soulSandCount + count > MAX_SOULSAND){
-			count -= MAX_SOULSAND - soulSandCount;
-			this.soulSandCount = MAX_SOULSAND;
+		if(soulSandCount + count > MAX_INPUT){
+			count -= MAX_INPUT - soulSandCount;
+			this.soulSandCount = MAX_INPUT;
 			System.out.println("total: " + soulSandCount + "\nretour:" + count);
 			return count;
 		}

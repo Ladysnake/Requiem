@@ -33,6 +33,7 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
 	
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 	public static final PropertyBool LIT = PropertyBool.create("lit");
+	public static final PropertyBool OUTPUT = PropertyBool.create("output");
 	
 	public BlockSoulExtractor() {
 		super(Material.PISTON);

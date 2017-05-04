@@ -6,6 +6,7 @@ import net.minecraftforge.common.config.Property;
 public class TartarosConfig {
 
 	public static boolean anchorsXRay = true;
+	public static boolean doSableDrop = true;
 	public static boolean invisibleGhosts = false;
 	public static boolean oneUseWaystone = true;
 	public static boolean respawnInNether = false;
@@ -59,9 +60,16 @@ public class TartarosConfig {
 	        		"lever, glass_pane",
 	        		"The blocks that can be right clicked/broken by ghosts");
 	        
+	        Property doSablePopProp = Tartaros.config.get(
+	        		Configuration.CATEGORY_GENERAL,
+	        		"doSablePop",
+	        		"true",
+	        		"Whether output stacks from the extractor should spawn items in world when there is no appropriate container");
+	        
 	        
 
 	        anchorsXRay = anchorsXRayProp.getBoolean();
+	        doSableDrop = doSablePopProp.getBoolean();
 	        invisibleGhosts = invisibleGhostProp.getBoolean();
 	        oneUseWaystone = oneUseWaystoneProp.getBoolean();
 	        respawnInNether = shouldRespawnInNetherProp.getBoolean();
