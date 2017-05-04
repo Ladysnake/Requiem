@@ -33,7 +33,9 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 
 public abstract class EntityMinion extends EntityCreature {
 	public boolean corpse;
@@ -63,11 +65,7 @@ public abstract class EntityMinion extends EntityCreature {
 		}
 		return true;
 	}
-	
-	@Override
-	public boolean hasNoGravity() {
-		return false;
-	}
+
 	
 	@Override
 	public boolean attackEntityAsMob(Entity entityIn)

@@ -57,7 +57,7 @@ public class RenderMinionZombie extends RenderBiped<EntityMinionZombie> {
 
     }
    
-   
+    
     
     @Override
     protected void preRenderCallback(EntityMinionZombie minionIn, float partialTickTime)

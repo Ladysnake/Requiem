@@ -1,6 +1,7 @@
 package ladysnake.tartaros.common.items;
 
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.Nullable;
 
@@ -24,6 +25,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -81,6 +83,14 @@ public class ItemEyeDead extends Item {
 		List<EntityMinionZombie> minions = worldIn.getEntitiesWithinAABB(EntityMinionZombie.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20));
 		for (EntityMinionZombie m : minions) {
 			System.out.println(m);
+			for(int i = 0; i < 50; i++){
+				System.out.println("spawn Particle!");
+				Random rand = new Random();
+				double motionX = rand.nextGaussian() * 0.1D;
+				double motionY = rand.nextGaussian() * 0.1D;
+				double motionZ = rand.nextGaussian() * 0.1D;
+				worldIn.spawnParticle(EnumParticleTypes.CLOUD, false, m.posX , m.posY+ 1.0D, m.posZ, motionX, motionY, motionZ, new int[0]);
+			}
 			m.setCorpse(!m.isCorpse());
 		}
 		ammo.shrink(1);

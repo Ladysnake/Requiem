@@ -1,6 +1,7 @@
 package ladysnake.tartaros.common.entity;
 
 import ladysnake.tartaros.common.entity.ai.EntityAIMinionAttack;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
@@ -12,6 +13,7 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 
 public class EntityMinionZombie extends EntityMinion {
@@ -53,6 +55,7 @@ public class EntityMinionZombie extends EntityMinion {
 	public boolean isHusk() {
 		return isHusk;
 	}
+	
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
