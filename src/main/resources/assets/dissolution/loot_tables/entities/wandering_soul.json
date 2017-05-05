@@ -1,12 +1,12 @@
 {
     "pools": [
         {
-            "name": "tartaros:wandering_soul",
+            "name": "dissolution:wandering_soul",
             "rolls": 1,
             "entries": [
                 {
                     "type": "item",
-                    "name": "tartaros:itemectoplasm",
+                    "name": "dissolution:itemectoplasm",
                     "weight": 1,
                     "functions": [
                         {

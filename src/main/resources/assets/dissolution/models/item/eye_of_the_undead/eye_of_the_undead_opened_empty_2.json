@@ -1,7 +1,7 @@
 {
-    "parent": "tartaros:item/eye_of_the_undead",
+    "parent": "dissolution:item/eye_of_the_undead",
     "textures": {
-      "layer0": "tartaros:items/eye_of_the_undead/eye_of_the_undead_iris_empty",
-      "layer1": "tartaros:items/eye_of_the_undead/eye_of_the_undead_opening_2"
+      "layer0": "dissolution:items/eye_of_the_undead/eye_of_the_undead_iris_empty",
+      "layer1": "dissolution:items/eye_of_the_undead/eye_of_the_undead_opening_2"
     }
 }

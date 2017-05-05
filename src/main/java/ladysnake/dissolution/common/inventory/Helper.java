@@ -1,6 +1,6 @@
-package ladysnake.tartaros.common.inventory;
+package ladysnake.dissolution.common.inventory;
 
-import ladysnake.tartaros.common.items.ItemSoulInABottle;
+import ladysnake.dissolution.common.items.ItemSoulInABottle;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

@@ -1,17 +1,18 @@
-package ladysnake.tartaros.common.items;
+package ladysnake.dissolution.common.items;
 
 import java.util.List;
 import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.Tartaros;
-import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
-import ladysnake.tartaros.common.entity.EntityMinion;
-import ladysnake.tartaros.common.entity.EntityMinionZombie;
-import ladysnake.tartaros.common.init.ModItems;
-import ladysnake.tartaros.common.inventory.Helper;
+import ladysnake.dissolution.common.entity.EntityMinionSquelette;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.entity.EntityMinion;
+import ladysnake.dissolution.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.inventory.Helper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
@@ -70,30 +71,48 @@ public class ItemEyeDead extends Item {
 
 	@Override
 	public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityLivingBase entityLiving, int timeLeft) {
-		if (!(entityLiving instanceof EntityPlayer) || this.getMaxItemUseDuration(stack) - timeLeft < 30)
-			return;
+		
+		if (!(entityLiving instanceof EntityPlayer) || this.getMaxItemUseDuration(stack) - timeLeft < 30)return;
 		EntityPlayer player = (EntityPlayer) entityLiving;
+		
 		System.out.println(player.capabilities.disableDamage);
-		if (IncorporealDataHandler.getHandler(player).isIncorporeal())
-			return;
+		if (IncorporealDataHandler.getHandler(player).isIncorporeal()) return;
+		
 		ItemStack ammo = Helper.findItem(player, ModItems.SOUL_IN_A_BOTTLE);
-		if (ammo.isEmpty())
-			return;
+		if (ammo.isEmpty()) return;
+		
 		stack.damageItem(1, player);
+		
 		ammo.shrink(1);
-		List<EntityMinionZombie> minions = worldIn.getEntitiesWithinAABB(EntityMinionZombie.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20));
-		for (EntityMinionZombie m : minions) {
-			System.out.println(m);
+		
+		List<EntityMinionZombie> minionsZ = worldIn.getEntitiesWithinAABB(EntityMinionZombie.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20));
+		for (EntityMinionZombie mZ : minionsZ) {
+			System.out.println(mZ);
 			for(int i = 0; i < 50; i++){
-				System.out.println("spawn Particle!");
+				System.out.println("spawn Particle Z!");
 				Random rand = new Random();
 				double motionX = rand.nextGaussian() * 0.1D;
 				double motionY = rand.nextGaussian() * 0.1D;
 				double motionZ = rand.nextGaussian() * 0.1D;
-				worldIn.spawnParticle(EnumParticleTypes.CLOUD, false, m.posX , m.posY+ 1.0D, m.posZ, motionX, motionY, motionZ, new int[0]);
+				worldIn.spawnParticle(EnumParticleTypes.CLOUD, false, mZ.posX , mZ.posY+ 1.0D, mZ.posZ, motionX, motionY, motionZ, new int[0]);
 			}
-			m.setCorpse(!m.isCorpse());
+			mZ.setCorpse(!mZ.isCorpse());
 		}
+		
+		List<EntityMinionSquelette> minionsS = worldIn.getEntitiesWithinAABB(EntityMinionSquelette.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20));
+		for (EntityMinionSquelette mS : minionsS) {
+			System.out.println(mS);
+			for(int i = 0; i < 50; i++){
+				System.out.println("spawn Particle S!");
+				Random rand = new Random();
+				double motionX = rand.nextGaussian() * 0.1D;
+				double motionY = rand.nextGaussian() * 0.1D;
+				double motionZ = rand.nextGaussian() * 0.1D;
+				worldIn.spawnParticle(EnumParticleTypes.DRAGON_BREATH, false, mS.posX , mS.posY+ 1.0D, mS.posZ, motionX, motionY, motionZ, new int[0]);
+			}
+			mS.setCorpse(!mS.isCorpse());
+		}
+		
 		ammo.shrink(1);
 	}
 

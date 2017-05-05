@@ -1,13 +1,13 @@
 {
     "parent": "block/block",
     "textures": {
-		    "particle": "tartaros:blocks/crystallizer/crystallizer_front_off",
-        "0": "tartaros:blocks/crystallizer/crystallizer_front_off",
-        "1": "tartaros:blocks/crystallizer/crystallizer_side",
-        "2": "tartaros:blocks/crystallizer/crystallizer_top",
-        "3": "tartaros:blocks/crystallizer/crystallizer_inside_ver",
-        "4": "tartaros:blocks/crystallizer/crystallizer_inside_hor",
-        "5": "tartaros:blocks/crystallizer/crystallizer_blaze",
+		    "particle": "dissolution:blocks/crystallizer/crystallizer_front_off",
+        "0": "dissolution:blocks/crystallizer/crystallizer_front_off",
+        "1": "dissolution:blocks/crystallizer/crystallizer_side",
+        "2": "dissolution:blocks/crystallizer/crystallizer_top",
+        "3": "dissolution:blocks/crystallizer/crystallizer_inside_ver",
+        "4": "dissolution:blocks/crystallizer/crystallizer_inside_hor",
+        "5": "dissolution:blocks/crystallizer/crystallizer_blaze",
         "inside": "minecraft:blocks/furnace_top"
     },
     "elements": [

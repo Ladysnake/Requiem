@@ -1,4 +1,4 @@
-package ladysnake.tartaros.common.tileentities;
+package ladysnake.dissolution.common.tileentities;
 
 import java.awt.List;
 import java.util.ArrayList;

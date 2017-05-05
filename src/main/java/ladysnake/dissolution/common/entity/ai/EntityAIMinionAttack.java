@@ -1,6 +1,6 @@
-package ladysnake.tartaros.common.entity.ai;
+package ladysnake.dissolution.common.entity.ai;
 
-import ladysnake.tartaros.common.entity.EntityMinion;
+import ladysnake.dissolution.common.entity.EntityMinion;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 

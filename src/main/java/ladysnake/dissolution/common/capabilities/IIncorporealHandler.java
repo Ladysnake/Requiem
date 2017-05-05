@@ -1,4 +1,4 @@
-package ladysnake.tartaros.common.capabilities;
+package ladysnake.dissolution.common.capabilities;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;

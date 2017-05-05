@@ -1,14 +1,14 @@
-package ladysnake.tartaros.client.proxy;
+package ladysnake.dissolution.client.proxy;
 
-import ladysnake.tartaros.client.gui.GuiIncorporealOverlay;
-import ladysnake.tartaros.client.handlers.EventHandlerClient;
-import ladysnake.tartaros.client.renders.blocks.RenderSoulAnchor;
-import ladysnake.tartaros.common.handlers.EventHandlerCommon;
-import ladysnake.tartaros.common.init.ModBlocks;
-import ladysnake.tartaros.common.init.ModEntities;
-import ladysnake.tartaros.common.init.ModItems;
-import ladysnake.tartaros.common.proxy.CommonProxy;
-import ladysnake.tartaros.common.tileentities.TileEntitySoulAnchor;
+import ladysnake.dissolution.client.gui.GuiIncorporealOverlay;
+import ladysnake.dissolution.client.handlers.EventHandlerClient;
+import ladysnake.dissolution.client.renders.blocks.RenderSoulAnchor;
+import ladysnake.dissolution.common.handlers.EventHandlerCommon;
+import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.init.ModEntities;
+import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.proxy.CommonProxy;
+import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;

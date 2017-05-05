@@ -1,7 +1,8 @@
 
-package ladysnake.tartaros.client.model;
+package ladysnake.dissolution.client.model;
 
-import ladysnake.tartaros.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.entity.EntityMinionSquelette;
+import ladysnake.dissolution.common.entity.EntityMinionZombie;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityZombie;
@@ -72,7 +73,7 @@ public class ModelMinionZombie extends ModelBiped {
 		
 		else {
 	        
-	        ((EntityMinionZombie) entityIn).isAIDisabled();			
+	        ((EntityMinionZombie) entityIn).isAIDisabled();
 			// right arm
 			this.bipedRightArm.rotateAngleX = 1.5F;
 			this.bipedRightArm.rotateAngleY = -0.1F;
@@ -87,22 +88,20 @@ public class ModelMinionZombie extends ModelBiped {
 			this.bipedLeftArm.rotationPointX = -7.0F;
 			this.bipedLeftArm.rotationPointY = 23.0F;
 			this.bipedLeftArm.rotationPointZ = 1.0F;
-
-			// right arm
+			// right leg
 			this.bipedRightLeg.rotateAngleX = 1.2F;
 			this.bipedRightLeg.rotateAngleY = -0.1F;
 			this.bipedRightLeg.rotateAngleZ = 1.6F;
 			this.bipedRightLeg.rotationPointX = -4.5F;
 			this.bipedRightLeg.rotationPointY = 22.1F;
 			this.bipedRightLeg.rotationPointZ = 10.0F;
-			// left arm
+			// left leg
 			this.bipedLeftLeg.rotateAngleX = 1.9F;
 			this.bipedLeftLeg.rotateAngleY = 0.0F;
 			this.bipedLeftLeg.rotateAngleZ = 1.5F;
 			this.bipedLeftLeg.rotationPointX = -1.0F;
 			this.bipedLeftLeg.rotationPointY = 22.1F;
 			this.bipedLeftLeg.rotationPointZ = 10.0F;
-
 			// body
 			this.bipedBody.rotateAngleX = 1.6F;
 			this.bipedBody.rotateAngleY = 0.0F;
@@ -110,7 +109,6 @@ public class ModelMinionZombie extends ModelBiped {
 			this.bipedBody.rotationPointX = -2.2F;
 			this.bipedBody.rotationPointY = 22.0F;
 			this.bipedBody.rotationPointZ = 0.0F;
-
 			// head
 			this.bipedHead.rotateAngleX = 1.6F;
 			this.bipedHead.rotateAngleY = 0.0F;

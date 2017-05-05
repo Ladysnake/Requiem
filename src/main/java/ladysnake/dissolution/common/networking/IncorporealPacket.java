@@ -1,9 +1,9 @@
-package ladysnake.tartaros.common.networking;
+package ladysnake.dissolution.common.networking;
 
 import java.util.UUID;
 
-import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
-import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;

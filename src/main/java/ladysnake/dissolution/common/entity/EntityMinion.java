@@ -1,12 +1,13 @@
-package ladysnake.tartaros.common.entity;
+package ladysnake.dissolution.common.entity;
 
+import java.util.Random;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
 
 import com.google.common.base.Optional;
 
-import ladysnake.tartaros.common.entity.ai.EntityAIMinionAttack;
+import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityCreature;
@@ -56,6 +57,7 @@ public abstract class EntityMinion extends EntityCreature {
 		this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(35.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.23000000417232513D);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0D);
+        this.isAIDisabled();
 	}
 	
 	@Override
@@ -65,7 +67,16 @@ public abstract class EntityMinion extends EntityCreature {
 		}
 		return true;
 	}
-
+	
+	public void DoParticle(EnumParticleTypes part, Entity entity, int amount){
+		for(int i = 0; i < amount; i++){
+			Random rand = new Random();
+			double motionX = rand.nextGaussian() * 0.1D;
+			double motionY = rand.nextGaussian() * 0.1D;
+			double motionZ = rand.nextGaussian() * 0.1D;
+			entity.world.spawnParticle(part, false, entity.posX , entity.posY+ 1.0D, entity.posZ, motionX, motionY, motionZ, new int[0]);
+		}
+	}
 	
 	@Override
 	public boolean attackEntityAsMob(Entity entityIn)
@@ -79,6 +90,7 @@ public abstract class EntityMinion extends EntityCreature {
 
         return flag;
     }
+	
 
 	public void setCorpse(boolean isCorpse) {
 		this.corpse = isCorpse;

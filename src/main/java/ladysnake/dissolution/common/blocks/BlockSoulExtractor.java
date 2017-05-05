@@ -1,8 +1,8 @@
-package ladysnake.tartaros.common.blocks;
+package ladysnake.dissolution.common.blocks;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.init.ModItems;
-import ladysnake.tartaros.common.tileentities.TileEntitySoulExtractor;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.tileentities.TileEntitySoulExtractor;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;

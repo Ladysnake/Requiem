@@ -1,4 +1,4 @@
-package ladysnake.tartaros.client.models;
+package ladysnake.dissolution.client.models;
 
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;

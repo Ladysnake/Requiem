@@ -1,6 +1,6 @@
-package ladysnake.tartaros.common.inventory;
+package ladysnake.dissolution.common.inventory;
 
-import ladysnake.tartaros.common.tileentities.TileEntityCrystallizer;
+import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;

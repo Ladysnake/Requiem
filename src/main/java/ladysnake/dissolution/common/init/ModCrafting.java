@@ -1,4 +1,4 @@
-package ladysnake.tartaros.common.init;
+package ladysnake.dissolution.common.init;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;

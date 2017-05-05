@@ -1,11 +1,11 @@
-package ladysnake.tartaros.common.blocks;
+package ladysnake.dissolution.common.blocks;
 
 import java.util.Random;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.Tartaros;
-import ladysnake.tartaros.common.init.ModBlocks;
-import ladysnake.tartaros.common.tileentities.TileEntityCrystallizer;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.ITileEntityProvider;

@@ -1,6 +1,6 @@
 {
 	"textures": {
-        "0": "tartaros:items/grand_faux"
+        "0": "dissolution:items/grand_faux"
     },
 
     "display": {

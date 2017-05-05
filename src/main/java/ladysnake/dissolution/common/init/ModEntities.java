@@ -1,12 +1,14 @@
-package ladysnake.tartaros.common.init;
+package ladysnake.dissolution.common.init;
 
-import ladysnake.tartaros.client.renders.entities.RenderMinionZombie;
-import ladysnake.tartaros.client.renders.entities.RenderWanderingSoul;
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.Tartaros;
-import ladysnake.tartaros.common.entity.EntityMinion;
-import ladysnake.tartaros.common.entity.EntityMinionZombie;
-import ladysnake.tartaros.common.entity.EntityWanderingSoul;
+import ladysnake.dissolution.client.renders.entities.RenderMinionSquelette;
+import ladysnake.dissolution.common.entity.EntityMinionSquelette;
+import ladysnake.dissolution.client.renders.entities.RenderMinionZombie;
+import ladysnake.dissolution.client.renders.entities.RenderWanderingSoul;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.entity.EntityMinion;
+import ladysnake.dissolution.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.entity.EntityWanderingSoul;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;
@@ -24,12 +26,14 @@ public class ModEntities {
     	EntityRegistry.addSpawn(EntityWanderingSoul.class, 50, 1, 1, EnumCreatureType.CREATURE, Biomes.HELL);
     	LootTableList.register(EntityWanderingSoul.LOOT);
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_zombie"), EntityMinionZombie.class, "minion", id++, Tartaros.instance, 64, 1, true);
+    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_squelette"), EntityMinionSquelette.class, "minion", id++, Tartaros.instance, 64, 1, true);
     }
     
     @SideOnly(Side.CLIENT)
     public static void registerRenders() {
     	RenderingRegistry.registerEntityRenderingHandler(EntityWanderingSoul.class, new RenderWanderingSoul.Factory());
     	RenderingRegistry.registerEntityRenderingHandler(EntityMinionZombie.class, new RenderMinionZombie.Factory());
+    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionSquelette.class, new RenderMinionSquelette.Factory());
     }
 
 }

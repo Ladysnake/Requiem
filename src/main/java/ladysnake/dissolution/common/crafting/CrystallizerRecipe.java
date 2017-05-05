@@ -1,4 +1,4 @@
-package ladysnake.tartaros.common.crafting;
+package ladysnake.dissolution.common.crafting;
 
 import net.minecraft.item.ItemStack;
 

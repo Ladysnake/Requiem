@@ -1,8 +1,8 @@
-package ladysnake.tartaros.common.capabilities;
+package ladysnake.dissolution.common.capabilities;
 
 import java.util.ArrayList;
 
-import ladysnake.tartaros.common.TartarosConfig;
+import ladysnake.dissolution.common.TartarosConfig;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

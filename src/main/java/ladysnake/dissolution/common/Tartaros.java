@@ -1,7 +1,8 @@
-package ladysnake.tartaros.common;
+package ladysnake.dissolution.common;
 
-import ladysnake.tartaros.common.inventory.TartarosTab;
-import ladysnake.tartaros.common.proxy.CommonProxy;
+
+import ladysnake.dissolution.common.proxy.CommonProxy;
+import ladysnake.dissolution.common.inventory.TartarosTab;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;

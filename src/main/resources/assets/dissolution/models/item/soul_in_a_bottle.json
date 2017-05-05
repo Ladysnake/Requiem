@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "tartaros:items/soul_in_a_bottle"
+        "layer0": "dissolution:items/soul_in_a_bottle"
     }
 }

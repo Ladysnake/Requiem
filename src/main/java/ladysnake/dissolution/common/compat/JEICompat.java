@@ -1,9 +1,9 @@
-package ladysnake.tartaros.common.compat;
+package ladysnake.dissolution.common.compat;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.crafting.CrystallizerRecipe;
-import ladysnake.tartaros.common.crafting.CrystallizerRecipes;
-import ladysnake.tartaros.common.init.ModBlocks;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.crafting.CrystallizerRecipe;
+import ladysnake.dissolution.common.crafting.CrystallizerRecipes;
+import ladysnake.dissolution.common.init.ModBlocks;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IJeiRuntime;
