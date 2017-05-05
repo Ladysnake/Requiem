@@ -25,8 +25,8 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class RenderMinionSquelette extends RenderBiped<EntityMinionSquelette> {
 
-	private static final ResourceLocation SQUELETTE_TEXTURES = new ResourceLocation("tartaros:textures/entity/minions/minion_skeleton.png");
-	private static final ResourceLocation STRAY_TEXTURES = new ResourceLocation("tartaros:textures/entity/minions/minion_stray.png");
+	private static final ResourceLocation SQUELETTE_TEXTURES = new ResourceLocation("dissolution:textures/entity/minions/minion_skeleton.png");
+	private static final ResourceLocation STRAY_TEXTURES = new ResourceLocation("dissolution:textures/entity/minions/minion_stray.png");
 	private static final DataParameter<Boolean> DEATH = EntityDataManager.<Boolean>createKey(EntityMinionSquelette.class, DataSerializers.BOOLEAN);
 	private EntityDataManager dataManager;
 
