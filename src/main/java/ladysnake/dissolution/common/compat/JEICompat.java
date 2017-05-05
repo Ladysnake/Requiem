@@ -1,9 +1,9 @@
-package ladysnake.tartaros.common.compat;
+package ladysnake.dissolution.common.compat;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.crafting.CrystallizerRecipe;
-import ladysnake.tartaros.common.crafting.CrystallizerRecipes;
-import ladysnake.tartaros.common.init.ModBlocks;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.crafting.CrystallizerRecipe;
+import ladysnake.dissolution.common.crafting.CrystallizerRecipes;
+import ladysnake.dissolution.common.init.ModBlocks;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IJeiRuntime;
@@ -12,12 +12,9 @@ import mezz.jei.api.IModRegistry;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.JEIPlugin;
-import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.api.recipe.IRecipeWrapperFactory;
 import mezz.jei.api.recipe.IStackHelper;
 import net.minecraft.item.ItemStack;
 

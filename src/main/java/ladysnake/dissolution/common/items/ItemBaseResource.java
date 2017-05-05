@@ -1,7 +1,7 @@
-package ladysnake.tartaros.common.items;
+package ladysnake.dissolution.common.items;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.Tartaros;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Tartaros;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

@@ -1,12 +1,12 @@
-package ladysnake.tartaros.common.entity;
+package ladysnake.dissolution.common.entity;
 
 import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
-import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.SharedMonsterAttributes;

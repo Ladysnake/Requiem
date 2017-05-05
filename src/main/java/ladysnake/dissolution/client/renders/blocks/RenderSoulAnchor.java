@@ -1,13 +1,13 @@
-package ladysnake.tartaros.client.renders.blocks;
+package ladysnake.dissolution.client.renders.blocks;
 
 import java.util.Vector;
 
 import org.lwjgl.opengl.GL11;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.TartarosConfig;
-import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
-import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.TartarosConfig;
+import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BlockRendererDispatcher;

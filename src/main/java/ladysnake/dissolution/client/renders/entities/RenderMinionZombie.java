@@ -1,13 +1,13 @@
-package ladysnake.tartaros.client.renders.entities;
+package ladysnake.dissolution.client.renders.entities;
 
 import javax.annotation.Nonnull;
 
 import org.lwjgl.opengl.GL11;
 
-import ladysnake.tartaros.client.model.ModelMinionZombie;
-import ladysnake.tartaros.common.entity.EntityMinion;
-import ladysnake.tartaros.common.entity.EntityMinionZombie;
-import ladysnake.tartaros.common.entity.EntityWanderingSoul;
+import ladysnake.dissolution.client.model.ModelMinionZombie;
+import ladysnake.dissolution.common.entity.EntityMinion;
+import ladysnake.dissolution.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.entity.EntityWanderingSoul;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelZombie;

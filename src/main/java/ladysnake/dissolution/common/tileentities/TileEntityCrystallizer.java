@@ -1,11 +1,11 @@
-package ladysnake.tartaros.common.tileentities;
+package ladysnake.dissolution.common.tileentities;
 
 import java.util.HashMap;
 
-import ladysnake.tartaros.common.blocks.BlockCrystallizer;
-import ladysnake.tartaros.common.crafting.CrystallizerRecipes;
-import ladysnake.tartaros.common.init.ModBlocks;
-import ladysnake.tartaros.common.inventory.ContainerCrystallizer;
+import ladysnake.dissolution.common.blocks.BlockCrystallizer;
+import ladysnake.dissolution.common.crafting.CrystallizerRecipes;
+import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.inventory.ContainerCrystallizer;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

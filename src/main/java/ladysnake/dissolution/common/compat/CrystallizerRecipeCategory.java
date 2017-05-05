@@ -1,7 +1,7 @@
-package ladysnake.tartaros.common.compat;
+package ladysnake.dissolution.common.compat;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.inventory.GuiCrystallizer;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.inventory.GuiCrystallizer;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;

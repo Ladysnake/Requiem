@@ -1,9 +1,9 @@
-package ladysnake.tartaros.common.items;
+package ladysnake.dissolution.common.items;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.Tartaros;
-import ladysnake.tartaros.common.blocks.BlockSepulture;
-import ladysnake.tartaros.common.init.ModBlocks;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.blocks.BlockSepulture;
+import ladysnake.dissolution.common.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;

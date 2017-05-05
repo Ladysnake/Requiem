@@ -1,4 +1,4 @@
-package ladysnake.tartaros.common;
+package ladysnake.dissolution.common;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;

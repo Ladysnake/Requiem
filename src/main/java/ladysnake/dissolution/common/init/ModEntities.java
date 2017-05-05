@@ -1,12 +1,12 @@
-package ladysnake.tartaros.common.init;
+package ladysnake.dissolution.common.init;
 
-import ladysnake.tartaros.client.renders.entities.RenderMinionZombie;
-import ladysnake.tartaros.client.renders.entities.RenderWanderingSoul;
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.Tartaros;
-import ladysnake.tartaros.common.entity.EntityMinion;
-import ladysnake.tartaros.common.entity.EntityMinionZombie;
-import ladysnake.tartaros.common.entity.EntityWanderingSoul;
+import ladysnake.dissolution.client.renders.entities.RenderMinionZombie;
+import ladysnake.dissolution.client.renders.entities.RenderWanderingSoul;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.entity.EntityMinion;
+import ladysnake.dissolution.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.entity.EntityWanderingSoul;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;

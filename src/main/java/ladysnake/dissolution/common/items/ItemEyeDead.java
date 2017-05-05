@@ -1,17 +1,17 @@
-package ladysnake.tartaros.common.items;
+package ladysnake.dissolution.common.items;
 
 import java.util.List;
 import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.Tartaros;
-import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
-import ladysnake.tartaros.common.entity.EntityMinion;
-import ladysnake.tartaros.common.entity.EntityMinionZombie;
-import ladysnake.tartaros.common.init.ModItems;
-import ladysnake.tartaros.common.inventory.Helper;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.entity.EntityMinion;
+import ladysnake.dissolution.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.inventory.Helper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;

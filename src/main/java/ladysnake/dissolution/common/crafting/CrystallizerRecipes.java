@@ -1,10 +1,10 @@
-package ladysnake.tartaros.common.crafting;
+package ladysnake.dissolution.common.crafting;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import ladysnake.tartaros.common.init.ModItems;
+import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 

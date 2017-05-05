@@ -1,4 +1,4 @@
-package ladysnake.tartaros.common.tileentities;
+package ladysnake.dissolution.common.tileentities;
 
 import net.minecraft.tileentity.TileEntity;
 

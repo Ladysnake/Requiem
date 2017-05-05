@@ -1,15 +1,15 @@
-package ladysnake.tartaros.common.init;
+package ladysnake.dissolution.common.init;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.Tartaros;
-import ladysnake.tartaros.common.items.ItemBaseResource;
-import ladysnake.tartaros.common.items.ItemDebug;
-import ladysnake.tartaros.common.items.ItemEyeDead;
-import ladysnake.tartaros.common.items.ItemGrandFaux;
-import ladysnake.tartaros.common.items.ItemScytheIron;
-import ladysnake.tartaros.common.items.ItemSepulture;
-import ladysnake.tartaros.common.items.ItemSoulGem;
-import ladysnake.tartaros.common.items.ItemSoulInABottle;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.items.ItemBaseResource;
+import ladysnake.dissolution.common.items.ItemDebug;
+import ladysnake.dissolution.common.items.ItemEyeDead;
+import ladysnake.dissolution.common.items.ItemGrandFaux;
+import ladysnake.dissolution.common.items.ItemScytheIron;
+import ladysnake.dissolution.common.items.ItemSepulture;
+import ladysnake.dissolution.common.items.ItemSoulGem;
+import ladysnake.dissolution.common.items.ItemSoulInABottle;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;

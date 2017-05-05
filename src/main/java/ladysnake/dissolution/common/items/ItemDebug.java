@@ -1,11 +1,11 @@
-package ladysnake.tartaros.common.items;
+package ladysnake.dissolution.common.items;
 
 import java.util.List;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
-import ladysnake.tartaros.common.entity.EntityMinionZombie;
-import ladysnake.tartaros.common.handlers.CustomTartarosTeleporter;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.handlers.CustomTartarosTeleporter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;

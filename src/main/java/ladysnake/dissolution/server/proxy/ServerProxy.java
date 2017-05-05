@@ -1,6 +1,6 @@
-package ladysnake.tartaros.server.proxy;
+package ladysnake.dissolution.server.proxy;
 
-import ladysnake.tartaros.common.proxy.CommonProxy;
+import ladysnake.dissolution.common.proxy.CommonProxy;
 
 public class ServerProxy extends CommonProxy {
 	 
