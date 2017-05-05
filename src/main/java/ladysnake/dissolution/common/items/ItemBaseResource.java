@@ -19,7 +19,7 @@ public class ItemBaseResource extends Item {
 	
 	@Override
 	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
-		for (int i = 0; i < 16; ++i)
+		for (int i = 0; i < 5; ++i)
         {
             subItems.add(new ItemStack(itemIn, 1, i));
         }

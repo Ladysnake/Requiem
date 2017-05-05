@@ -9,7 +9,7 @@ public class TartarosConfig {
 	public static boolean doSableDrop = true;
 	public static boolean invisibleGhosts = false;
 	public static boolean oneUseWaystone = true;
-	public static boolean respawnInNether = false;
+	public static boolean respawnInNether = true;
 	public static boolean soulCompass = true;
 	public static boolean soulCompassAnchors = true;
 	
@@ -21,7 +21,7 @@ public class TartarosConfig {
 	        Property shouldRespawnInNetherProp = Tartaros.config.get(
 	        		Configuration.CATEGORY_GENERAL,
 	                "shouldRespawnInNether", // Property name
-	                "false", // Default value
+	                "true", // Default value
 	                "Whether players should respawn in the nether when they die");
 	        
 	        Property anchorsXRayProp = Tartaros.config.get(
