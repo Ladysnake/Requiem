@@ -9,6 +9,7 @@ import ladysnake.dissolution.client.renders.entities.RenderWanderingSoul;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.Tartaros;
 import ladysnake.dissolution.common.entity.EntityMinion;
+import ladysnake.dissolution.common.entity.EntityMinionHusk;
 import ladysnake.dissolution.common.entity.EntityMinionZombie;
 import ladysnake.dissolution.common.entity.EntityWanderingSoul;
 import net.minecraft.entity.EnumCreatureType;
@@ -27,9 +28,10 @@ public class ModEntities {
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":wandering_soul"), EntityWanderingSoul.class, "wandering_soul", id++, Tartaros.instance, 64, 1, true, 0xA8E4E4, 0x00D2D2);
     	EntityRegistry.addSpawn(EntityWanderingSoul.class, 50, 1, 1, EnumCreatureType.CREATURE, Biomes.HELL);
     	LootTableList.register(EntityWanderingSoul.LOOT);
-    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_zombie"), EntityMinionZombie.class, "minion", id++, Tartaros.instance, 64, 1, true);
-    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_squelette"), EntityMinionSquelette.class, "minion", id++, Tartaros.instance, 64, 1, true);
-    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_stray"), EntityMinionStray.class, "minion", id++, Tartaros.instance, 64, 1, true);
+    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_zombie"), EntityMinionZombie.class, "minion_zombie", id++, Tartaros.instance, 64, 1, true);
+    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_husk"), EntityMinionHusk.class, "minion_husk", id++, Tartaros.instance, 64, 1, true);
+    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_skeleton"), EntityMinionSquelette.class, "minion_skeleton", id++, Tartaros.instance, 64, 1, true);
+    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_stray"), EntityMinionStray.class, "minion_stray", id++, Tartaros.instance, 64, 1, true);
     }
     
     @SideOnly(Side.CLIENT)

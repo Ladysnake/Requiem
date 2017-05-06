@@ -1,6 +1,8 @@
 package ladysnake.dissolution.common.items;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +80,6 @@ public abstract class ItemScythe extends ItemSword {
         if(!player.getHeldItemOffhand().isEmpty()) return true;
         if(alreadyRunningAOE) return false;
         Integer initialCooldown = new Integer(100);
-//        Method abc = EntityPlayer.class.getDeclaredMethod("abc", ItemStack.class);
         player.spawnSweepParticles();
         int initialDamage = stack.getItemDamage();
         try {

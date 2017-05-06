@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 import org.lwjgl.opengl.GL11;
 
-import ladysnake.dissolution.client.model.ModelMinionZombie;
+import ladysnake.dissolution.client.models.ModelMinionZombie;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.EntityMinion;
 import ladysnake.dissolution.common.entity.EntityMinionZombie;
@@ -44,7 +44,7 @@ public class RenderMinionZombie extends RenderBiped<EntityMinionZombie> {
     protected ResourceLocation getEntityTexture(@Nonnull EntityMinionZombie entity) {
     	if ((entity.isHusk())) 
    			return HUSK_ZOMBIE_TEXTURES;
-        	return ZOMBIE_TEXTURES;
+        return ZOMBIE_TEXTURES;
     }
 
     public static class Factory implements IRenderFactory<EntityMinionZombie> {
@@ -58,12 +58,23 @@ public class RenderMinionZombie extends RenderBiped<EntityMinionZombie> {
 
     }
    
-    
+    @Override
+    public void doRender(EntityMinionZombie minionIn, double x, double y, double z, float entityYaw, float partialTicks) {
+    	GL11.glPushMatrix();
+    	if(minionIn.getRemainingTicks() > 0 && minionIn.getRemainingTicks() < 1200) {
+    		GL11.glColor4f(1.0f, 1.0f, 1.0f, ((float)minionIn.getRemainingTicks()) / ((float)minionIn.maxTicks));
+    		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+    		GL11.glEnable(GL11.GL_BLEND);
+    	}
+    	super.doRender(minionIn, x, y, z, entityYaw, partialTicks);
+        GL11.glPopMatrix();
+    }
     
     @Override
     protected void preRenderCallback(EntityMinionZombie minionIn, float partialTickTime)
     {
-    	
+    	if(minionIn.isHusk())
+    		GlStateManager.scale(1.0625F, 1.0625F, 1.0625F);
         super.preRenderCallback(minionIn, partialTickTime);
     }
 }
