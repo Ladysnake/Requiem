@@ -28,6 +28,7 @@ public abstract class CommonProxy {
 		ModBlocks.register();
 		ModItems.init();
 		ModItems.register();
+		ModItems.registerOres();
 		ModEntities.register();
 	}
 	

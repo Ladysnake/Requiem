@@ -5,6 +5,7 @@ import java.util.List;
 
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -12,15 +13,14 @@ import net.minecraft.util.NonNullList;
 
 public class ItemBaseResource extends Item {
 
-	public static final int TOTAL_VARIANTS = 5;
-	public static final List<String> names = new ArrayList<String>();
+	public static final List<String> variants = new ArrayList<String>();
 
 	static {
-		names.add("ectoplasm");
-		names.add("ectoplasma");
-		names.add("soulfur");
-		names.add("mercury");
-		names.add("cinnabar");
+		variants.add("ectoplasm");
+		variants.add("ectoplasma");
+		variants.add("sulfur");
+		variants.add("cinnabar");
+		variants.add("mercury");
 	}
 
 	public ItemBaseResource() {
@@ -33,16 +33,22 @@ public class ItemBaseResource extends Item {
 
 	@Override
 	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
-		for (int i = 0; i < TOTAL_VARIANTS; ++i) {
+		for (int i = 0; i < variants.size(); ++i) {
 			subItems.add(new ItemStack(itemIn, 1, i));
 		}
 	}
 
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
-		if (stack.getMetadata() < names.size())	
-			return "item." + names.get(stack.getMetadata());
+		if (stack.getMetadata() < variants.size())
+			return "item." + variants.get(stack.getMetadata());
 		return super.getUnlocalizedName(stack);
+	}
+
+	public static ItemStack resourceFromName(String name) {
+		if (variants.contains(name))
+			return new ItemStack(ModItems.BASE_RESOURCE, 1, variants.indexOf(name));
+		return null;
 	}
 
 }

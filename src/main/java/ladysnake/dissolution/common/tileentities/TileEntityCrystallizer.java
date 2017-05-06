@@ -3,7 +3,7 @@ package ladysnake.dissolution.common.tileentities;
 import java.util.HashMap;
 
 import ladysnake.dissolution.common.blocks.BlockCrystallizer;
-import ladysnake.dissolution.common.crafting.CrystallizerRecipes;
+import ladysnake.dissolution.common.crafting.CrystallizerRecipe;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.inventory.ContainerCrystallizer;
 import net.minecraft.block.Block;
@@ -311,8 +311,8 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
 
     public int getCookTime(ItemStack stack)
     {
-    	if(CrystallizerRecipes.getCrystalRecipe(stack) == null) return 1;
-        return CrystallizerRecipes.getCrystalRecipe(stack).getProcessTime();
+    	if(CrystallizerRecipe.getCrystalRecipe(stack) == null) return 1;
+        return CrystallizerRecipe.getCrystalRecipe(stack).getProcessTime();
     }
 
     /**
@@ -326,7 +326,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
         }
         else
         {
-            ItemStack itemstack = CrystallizerRecipes.getCrystalRecipe((ItemStack)this.crystallizerItemStacks.get(0)).getOutput();
+            ItemStack itemstack = CrystallizerRecipe.getCrystalRecipe((ItemStack)this.crystallizerItemStacks.get(0)).getOutput();
 
             if (itemstack.isEmpty())
             {
@@ -351,7 +351,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
         if (this.canSmelt())
         {
             ItemStack itemstack = (ItemStack)this.crystallizerItemStacks.get(0);
-            ItemStack itemstack1 = CrystallizerRecipes.getCrystalRecipe(itemstack).getOutput();
+            ItemStack itemstack1 = CrystallizerRecipe.getCrystalRecipe(itemstack).getOutput();
             ItemStack itemstack2 = (ItemStack)this.crystallizerItemStacks.get(2);
 
             if (itemstack2.isEmpty())

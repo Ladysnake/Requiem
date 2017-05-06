@@ -30,6 +30,7 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -72,50 +73,35 @@ public class ItemEyeDead extends Item {
 	@Override
 	public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityLivingBase entityLiving, int timeLeft) {
 		
-		if (!(entityLiving instanceof EntityPlayer) || this.getMaxItemUseDuration(stack) - timeLeft < 30)return;
+		if (!(entityLiving instanceof EntityPlayer) || this.getMaxItemUseDuration(stack) - timeLeft < 30) return;
 		EntityPlayer player = (EntityPlayer) entityLiving;
 		
-		System.out.println(player.capabilities.disableDamage);
 		if (IncorporealDataHandler.getHandler(player).isIncorporeal()) return;
 		
 		ItemStack ammo = Helper.findItem(player, ModItems.SOUL_IN_A_BOTTLE);
-		if (ammo.isEmpty()) return;
+		if (ammo.isEmpty()) {
+			((EntityPlayer)entityLiving).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".nosoul", new Object[0]), true);
+			return;
+		}
 		
 		stack.damageItem(1, player);
 		
-		ammo.shrink(1);
-		
-		List<EntityMinionZombie> minionsZ = worldIn.getEntitiesWithinAABB(EntityMinionZombie.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20));
-		for (EntityMinionZombie mZ : minionsZ) {
-			System.out.println(mZ);
-			for(int i = 0; i < 50; i++){
+		List<EntityMinion> minions = worldIn.getEntitiesWithinAABB(EntityMinion.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20));
+		for (EntityMinion m : minions) {
+			System.out.println(m);
+			for(int i = 0; i < (m.isCorpse() ? 50 : 5); i++){
 				System.out.println("spawn Particle Z!");
 				Random rand = new Random();
 				double motionX = rand.nextGaussian() * 0.1D;
 				double motionY = rand.nextGaussian() * 0.1D;
 				double motionZ = rand.nextGaussian() * 0.1D;
-				worldIn.spawnParticle(EnumParticleTypes.CLOUD, false, mZ.posX , mZ.posY+ 1.0D, mZ.posZ, motionX, motionY, motionZ, new int[0]);
+				worldIn.spawnParticle(m.isCorpse() ? EnumParticleTypes.DRAGON_BREATH : EnumParticleTypes.CLOUD, false, m.posX , m.posY+ 1.0D, m.posZ, motionX, motionY, motionZ, new int[0]);
 			}
-			mZ.setCorpse(!mZ.isCorpse());
+			if(m.isCorpse())
+				ammo.shrink(1);
+			m.setCorpse(false);
 		}
-		
-		List<EntityMinionSquelette> minionsS = worldIn.getEntitiesWithinAABB(EntityMinionSquelette.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20));
-		for (EntityMinionSquelette mS : minionsS) {
-			System.out.println(mS);
-			for(int i = 0; i < 50; i++){
-				System.out.println("spawn Particle S!");
-				Random rand = new Random();
-				double motionX = rand.nextGaussian() * 0.1D;
-				double motionY = rand.nextGaussian() * 0.1D;
-				double motionZ = rand.nextGaussian() * 0.1D;
-				worldIn.spawnParticle(EnumParticleTypes.DRAGON_BREATH, false, mS.posX , mS.posY+ 1.0D, mS.posZ, motionX, motionY, motionZ, new int[0]);
-			}
-			mS.setCorpse(!mS.isCorpse());
-		}
-		
-		ammo.shrink(1);
 	}
-
 	
 
 	@Override
