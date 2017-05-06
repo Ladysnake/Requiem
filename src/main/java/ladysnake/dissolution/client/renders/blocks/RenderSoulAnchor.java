@@ -41,7 +41,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer {
 			return;
 		
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(mc.player);
-    	if(!playerCorp.isIncorporeal()) return;
+    	if(!playerCorp.isIncorporealM() || !playerCorp.isIncorporealS()) return;
 		
 		GlStateManager.pushMatrix();
 		

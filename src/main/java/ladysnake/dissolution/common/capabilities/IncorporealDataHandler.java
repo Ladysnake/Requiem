@@ -46,7 +46,8 @@ public class IncorporealDataHandler {
 	public static class DefaultIncorporealHandler implements IIncorporealHandler {
 		
 		private boolean incorporeal;
-		private int soulCandleNearby = -1;
+		private int mercuryCandleNearby = -1;
+		private int sulfurCandleNearby = -1;
 		private String lastDeathMessage;
 		public boolean synced = false;
 	
@@ -75,18 +76,33 @@ public class IncorporealDataHandler {
 		}
 		
 		@Override
-		public void setSoulCandleNearby(boolean soulCandle) {
-			this.soulCandleNearby = soulCandle ? 100 : -1;
+		public void setMercuryCandleNearby(boolean soulCandle) {
+			this.mercuryCandleNearby = soulCandle ? 100 : -1;
 		}
 		
 		@Override
-		public boolean isSoulCandleNearby() {
-			return this.soulCandleNearby > 0;
+		public void setSulfurCandleNearby(boolean soulCandle) {
+			this.sulfurCandleNearby = soulCandle ? 100 : -1;
+		}
+		
+		@Override
+		public boolean isMercuryCandleNearby() {
+			return this.mercuryCandleNearby > 0;
+		}
+		
+		@Override
+		public boolean isSulfurCandleNearby() {
+			return this.sulfurCandleNearby > 0;
 		}
 	
 		@Override
-		public boolean isIncorporeal() {
-			return this.incorporeal && !this.isSoulCandleNearby();
+		public boolean isIncorporealM() {
+			return this.incorporeal && !this.isMercuryCandleNearby();
+		}
+		
+		@Override
+		public boolean isIncorporealS() {
+			return this.incorporeal && !this.isMercuryCandleNearby();
 		}
 		
 		@Override
@@ -110,9 +126,14 @@ public class IncorporealDataHandler {
 		}
 		
 		@Override
-		public void tick(PlayerTickEvent event) {
-			if(this.isSoulCandleNearby())
-				this.soulCandleNearby--;
+		public void tickM(PlayerTickEvent event) {
+			if(this.isMercuryCandleNearby())
+				this.mercuryCandleNearby--;
+		}
+		@Override
+		public void tickS(PlayerTickEvent event) {
+			if(this.isSulfurCandleNearby())
+				this.sulfurCandleNearby--;
 		}
 	}
 	
@@ -151,7 +172,8 @@ public class IncorporealDataHandler {
 		    public NBTBase writeNBT (Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side) {
 		        
 		        final NBTTagCompound tag = new NBTTagCompound();           
-		        tag.setBoolean("incorporeal", instance.isIncorporeal());          
+		        tag.setBoolean("incorporealm", instance.isIncorporealM());    
+		        tag.setBoolean("incorporeals", instance.isIncorporealS()); 
 		        tag.setString("lastDeath", instance.getLastDeathMessage() == null || instance.getLastDeathMessage().isEmpty() ? "This player has no recorded death" : instance.getLastDeathMessage());
 		        return tag;
 		    }
@@ -160,7 +182,8 @@ public class IncorporealDataHandler {
 		    public void readNBT (Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side, NBTBase nbt) {
 		        
 		        final NBTTagCompound tag = (NBTTagCompound) nbt;
-		        instance.setIncorporeal(tag.getBoolean("incorporeal"));
+		        instance.setIncorporeal(tag.getBoolean("incorporealm"));
+		        instance.setIncorporeal(tag.getBoolean("incorporeals"));
 		        instance.setLastDeathMessage(tag.getString("lastDeath"));
 		    }
 		}

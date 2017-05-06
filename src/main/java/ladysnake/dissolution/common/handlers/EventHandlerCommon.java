@@ -64,10 +64,11 @@ public class EventHandlerCommon {
 
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.player);
 
-		playerCorp.tick(event);
+		playerCorp.tickM(event);
+		playerCorp.tickS(event);
 		
 
-		if (playerCorp.isIncorporeal() && !event.player.isCreative()) {
+		if (playerCorp.isIncorporealM() || playerCorp.isIncorporealS() && !event.player.isCreative()) {
 
 			event.player.capabilities.isFlying = event.player.experienceLevel > 0;
 			event.player.capabilities.allowFlying = event.player.experienceLevel > 0;
@@ -79,7 +80,7 @@ public class EventHandlerCommon {
 					0.5f) < 10 && ++ticksSinceLastSync >= 100) {
 				playerCorp.setIncorporeal(false, event.player);
 				IMessage msg = new IncorporealMessage(event.player.getUniqueID().getMostSignificantBits(),
-						event.player.getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporeal());
+						event.player.getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporealM() || playerCorp.isIncorporealS());
 				PacketHandler.net.sendToAll(msg);
 				for (int i = 0; i < 50; i++) {
 					double motionX = rand.nextGaussian() * 0.02D;
@@ -101,7 +102,7 @@ public class EventHandlerCommon {
 				event.player.removeExperienceLevel(1);
 		}
 
-		if (playerCorp.isIncorporeal() && !playerCorp.isSynced() && !event.player.world.isRemote
+		if (playerCorp.isIncorporealM() || playerCorp.isIncorporealS() && !playerCorp.isSynced() && !event.player.world.isRemote
 				&& TartarosConfig.respawnInNether) {
 			CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, -1);
 			playerCorp.setSynced(true);
@@ -145,6 +146,22 @@ public class EventHandlerCommon {
 			if (killer.world.rand.nextInt(1) == 0 && !eye.isEmpty() && !killer.world.isRemote) {
 
 				if (victim instanceof EntityZombie) {
+<<<<<<< HEAD
+					System.out.println("Zombie");
+					EntityMinionZombie skullZ;
+					skullZ = new EntityMinionZombie(victim.world, false);
+					skullZ.setPosition(victim.posX, victim.posY, victim.posZ);
+					skullZ.onUpdate();
+					victim.world.spawnEntity(skullZ);
+				}
+				else if(victim instanceof EntityHusk){
+					System.out.println("HUSK");
+					EntityMinionZombie skullZ;
+					skullZ = new EntityMinionZombie(victim.world, true);
+				}
+
+				if (victim instanceof EntitySkeleton) {
+=======
 					EntityMinionZombie skullZ = (victim instanceof EntityHusk) ?
 							new EntityMinionHusk(victim.world) :
 							new EntityMinionZombie(victim.world);
@@ -152,6 +169,7 @@ public class EventHandlerCommon {
 					skullZ.onUpdate();
 					victim.world.spawnEntity(skullZ);
 				} else if (victim instanceof EntitySkeleton) {
+>>>>>>> b7134c071457c25cd7c3406baafa17b569f34251
 						System.out.println("ske");
 						EntityMinionSquelette skullS;
 						skullS = new EntityMinionSquelette(victim.world);
@@ -191,14 +209,14 @@ public class EventHandlerCommon {
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onVisibilityPlayer(PlayerEvent.Visibility event) {
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
-		if (playerCorp.isIncorporeal())
+		if (playerCorp.isIncorporealM() || playerCorp.isIncorporealS())
 			event.modifyVisibility(0D);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
-		if (playerCorp.isIncorporeal() && !event.getEntityPlayer().isCreative()) {
+		if (playerCorp.isIncorporealM() || playerCorp.isIncorporealS() && !event.getEntityPlayer().isCreative()) {
 			if (event.isCancelable()
 					&& !(event.getWorld().getBlockState(event.getPos()).getBlock() instanceof IRespawnLocation)
 					&& !(IncorporealDataHandler.soulInteractableBlocks
@@ -210,14 +228,14 @@ public class EventHandlerCommon {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerAttackEntity(AttackEntityEvent event) {
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
-		if (playerCorp.isIncorporeal() && !event.getEntityPlayer().isCreative()) {
+		if (playerCorp.isIncorporealM() || playerCorp.isIncorporealS() && !event.getEntityPlayer().isCreative()) {
 			if (event.isCancelable())
 				event.setCanceled(true);
 			return;
 		}
 		if (event.getTarget() instanceof EntityPlayer) {
 			final IIncorporealHandler targetCorp = IncorporealDataHandler.getHandler(event.getTarget());
-			if (targetCorp.isIncorporeal() && !event.getEntityPlayer().isCreative())
+			if (playerCorp.isIncorporealM() || playerCorp.isIncorporealS() && !event.getEntityPlayer().isCreative())
 				if (event.isCancelable())
 					event.setCanceled(true);
 		}
@@ -226,7 +244,7 @@ public class EventHandlerCommon {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityItemPickup(EntityItemPickupEvent event) {
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
-		if (playerCorp.isIncorporeal() && !event.getEntityPlayer().isCreative()) {
+		if (playerCorp.isIncorporealM() || playerCorp.isIncorporealS() && !event.getEntityPlayer().isCreative()) {
 			if (event.isCancelable())
 				event.setCanceled(true);
 		}
@@ -236,10 +254,10 @@ public class EventHandlerCommon {
 	public void onEntityStruckByLightning(EntityStruckByLightningEvent event) {
 		if (event.getEntity() instanceof EntityPlayer) {
 			final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler((EntityPlayer) event.getEntity());
-			if (playerCorp.isIncorporeal()) {
+			if (playerCorp.isIncorporealM() || playerCorp.isIncorporealS()) {
 				playerCorp.setIncorporeal(false, (EntityPlayer) event.getEntity());
 				IMessage msg = new IncorporealMessage(event.getEntity().getUniqueID().getMostSignificantBits(),
-						event.getEntity().getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporeal());
+						event.getEntity().getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporealM() || playerCorp.isIncorporealS());
 				PacketHandler.net.sendToAll(msg);
 			}
 		}
