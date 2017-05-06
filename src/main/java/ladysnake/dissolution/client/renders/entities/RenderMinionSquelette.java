@@ -5,6 +5,7 @@ import javax.annotation.Nonnull;
 import org.lwjgl.opengl.GL11;
 
 import ladysnake.dissolution.common.entity.EntityMinionSquelette;
+import ladysnake.dissolution.common.entity.EntityMinionZombie;
 import ladysnake.dissolution.client.models.ModelMinionSquelette;
 import ladysnake.dissolution.common.entity.EntityMinion;
 import ladysnake.dissolution.common.entity.EntityWanderingSoul;
@@ -53,6 +54,20 @@ public class RenderMinionSquelette extends RenderBiped<EntityMinionSquelette> {
 
     }
    
+    @Override
+    public void doRenderShadowAndFire(Entity entityIn, double x, double y, double z, float yaw, float partialTicks) {}
+   
+    @Override
+    public void doRender(EntityMinionSquelette minionIn, double x, double y, double z, float entityYaw, float partialTicks) {
+    	GL11.glPushMatrix();
+    	if(minionIn.getRemainingTicks() > 0 && minionIn.getRemainingTicks() < 1200) {
+    		GL11.glColor4f(1.0f, 1.0f, 1.0f, ((float)minionIn.getRemainingTicks()) / ((float)minionIn.maxTicks));
+    		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+    		GL11.glEnable(GL11.GL_BLEND);
+    	}
+    	super.doRender(minionIn, x, y, z, entityYaw, partialTicks);
+        GL11.glPopMatrix();
+    }
     
     @Override
     protected void preRenderCallback(EntityMinionSquelette minionIn, float partialTickTime)

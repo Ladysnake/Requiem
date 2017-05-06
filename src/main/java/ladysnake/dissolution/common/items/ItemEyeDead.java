@@ -90,7 +90,6 @@ public class ItemEyeDead extends Item {
 		for (EntityMinion m : minions) {
 			System.out.println(m);
 			for(int i = 0; i < (m.isCorpse() ? 50 : 5); i++){
-				System.out.println("spawn Particle Z!");
 				Random rand = new Random();
 				double motionX = rand.nextGaussian() * 0.1D;
 				double motionY = rand.nextGaussian() * 0.1D;

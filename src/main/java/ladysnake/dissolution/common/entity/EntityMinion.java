@@ -29,6 +29,7 @@ import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -106,6 +107,10 @@ public abstract class EntityMinion extends EntityCreature {
 		super.onUpdate();
 	}
 	
+	@Override
+	protected boolean canEquipItem(ItemStack stack) {
+		return true;
+	}
 
 	public void setCorpse(boolean isCorpse) {
 		this.corpse = isCorpse;

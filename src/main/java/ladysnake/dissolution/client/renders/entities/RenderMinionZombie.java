@@ -57,6 +57,9 @@ public class RenderMinionZombie extends RenderBiped<EntityMinionZombie> {
         }
 
     }
+    
+    @Override
+    public void doRenderShadowAndFire(Entity entityIn, double x, double y, double z, float yaw, float partialTicks) {}
    
     @Override
     public void doRender(EntityMinionZombie minionIn, double x, double y, double z, float entityYaw, float partialTicks) {
