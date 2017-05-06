@@ -40,6 +40,7 @@ import net.minecraft.world.WorldServer;
 
 public abstract class EntityMinion extends EntityCreature {
 	public boolean corpse;
+	static int t = 1200;
 	
 	public EntityMinion(World worldIn) {
 		super(worldIn);
@@ -91,6 +92,19 @@ public abstract class EntityMinion extends EntityCreature {
         return flag;
     }
 	
+	@Override
+	public void onUpdate() {
+	if(this.corpse){
+			t--;
+			if(t <= 0){
+				this.setDead();
+				t = 1200;
+			}
+	}
+		
+		super.onUpdate();
+	}
+	
 
 	public void setCorpse(boolean isCorpse) {
 		this.corpse = isCorpse;
@@ -98,6 +112,19 @@ public abstract class EntityMinion extends EntityCreature {
 	
 	public boolean isCorpse(){
 		return corpse;
+	}
+	
+	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		super.writeToNBT(compound);
+		compound.setBoolean("Corpse", this.isCorpse());
+		return compound;
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound compound) {
+		super.readFromNBT(compound);
+		this.corpse = compound.getBoolean("Corpse");
 	}
 	
 }

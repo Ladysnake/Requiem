@@ -27,8 +27,8 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class RenderMinionZombie extends RenderBiped<EntityMinionZombie> {
 
-	private static final ResourceLocation ZOMBIE_TEXTURES = new ResourceLocation("tartaros:textures/entity/minions/minion_zombie.png");
-	private static final ResourceLocation HUSK_ZOMBIE_TEXTURES = new ResourceLocation("tartaros:textures/entity/minions/minion_husk.png");
+	private static final ResourceLocation ZOMBIE_TEXTURES = new ResourceLocation("dissolution:textures/entity/minions/minion_zombie.png");
+	private static final ResourceLocation HUSK_ZOMBIE_TEXTURES = new ResourceLocation("dissolution:textures/entity/minions/minion_husk.png");
 	private static final DataParameter<Boolean> DEATH = EntityDataManager.<Boolean>createKey(EntityMinionZombie.class, DataSerializers.BOOLEAN);
 	private EntityDataManager dataManager;
 

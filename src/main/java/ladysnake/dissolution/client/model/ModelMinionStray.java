@@ -1,6 +1,7 @@
 package ladysnake.dissolution.client.model;
 
 import ladysnake.dissolution.common.entity.EntityMinionSquelette;
+import ladysnake.dissolution.common.entity.EntityMinionStray;
 import ladysnake.dissolution.common.entity.EntityMinionZombie;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
@@ -17,14 +18,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelMinionSquelette extends ModelBiped
+public class ModelMinionStray extends ModelBiped
 {
-    public ModelMinionSquelette()
+    public ModelMinionStray()
     {
         this(0.0F, false);
     }
 
-    public ModelMinionSquelette(float modelSize, boolean show)
+    public ModelMinionStray(float modelSize, boolean show)
     {
         super(modelSize, 0.0F, 64, 32);
 
@@ -54,7 +55,7 @@ public class ModelMinionSquelette extends ModelBiped
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
         ItemStack itemstack = ((EntityLivingBase)entityIn).getHeldItemMainhand();
 
-        if (!((EntityMinionSquelette) entityIn).isCorpse()) {
+        if (!((EntityMinionStray) entityIn).isCorpse()) {
         	
             float f = MathHelper.sin(this.swingProgress * (float)Math.PI);
             float f1 = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float)Math.PI);
@@ -100,7 +101,7 @@ public class ModelMinionSquelette extends ModelBiped
 			this.bipedHead.rotationPointZ = 0.0F;
         }
         else {
-        	((EntityMinionSquelette) entityIn).isAIDisabled();		
+        	((EntityMinionStray) entityIn).isAIDisabled();		
 			// right arm
 			this.bipedRightArm.rotateAngleX = 1.5F;
 			this.bipedRightArm.rotateAngleY = -0.1F;

@@ -16,9 +16,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 
-public class EntityMinionSquelette extends EntityMinion {
+public class EntityMinionStray extends EntityMinion {
 
-	public EntityMinionSquelette(World worldIn) {
+	public EntityMinionStray(World worldIn) {
 		super(worldIn);
 	}
 

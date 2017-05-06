@@ -1,7 +1,9 @@
 package ladysnake.dissolution.common.init;
 
 import ladysnake.dissolution.client.renders.entities.RenderMinionSquelette;
+import ladysnake.dissolution.client.renders.entities.RenderMinionStray;
 import ladysnake.dissolution.common.entity.EntityMinionSquelette;
+import ladysnake.dissolution.common.entity.EntityMinionStray;
 import ladysnake.dissolution.client.renders.entities.RenderMinionZombie;
 import ladysnake.dissolution.client.renders.entities.RenderWanderingSoul;
 import ladysnake.dissolution.common.Reference;
@@ -27,6 +29,7 @@ public class ModEntities {
     	LootTableList.register(EntityWanderingSoul.LOOT);
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_zombie"), EntityMinionZombie.class, "minion", id++, Tartaros.instance, 64, 1, true);
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_squelette"), EntityMinionSquelette.class, "minion", id++, Tartaros.instance, 64, 1, true);
+    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_stray"), EntityMinionStray.class, "minion", id++, Tartaros.instance, 64, 1, true);
     }
     
     @SideOnly(Side.CLIENT)
@@ -34,6 +37,7 @@ public class ModEntities {
     	RenderingRegistry.registerEntityRenderingHandler(EntityWanderingSoul.class, new RenderWanderingSoul.Factory());
     	RenderingRegistry.registerEntityRenderingHandler(EntityMinionZombie.class, new RenderMinionZombie.Factory());
     	RenderingRegistry.registerEntityRenderingHandler(EntityMinionSquelette.class, new RenderMinionSquelette.Factory());
+    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionStray.class, new RenderMinionStray.Factory());
     }
 
 }
