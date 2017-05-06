@@ -8,6 +8,8 @@ tile.mercurius_waystone.name=Mercurius' Waystone
 tile.mercurius_waystone.cannotplace=Some force deep under seems to prevent you from placing this here.
 tile.soul_anchor.name=Soul Anchor
 tile.soul_extractor.name=Soul Extractor
+tile.mercury_candle.name=Mercury Candle
+tile.sulfur_candle.name=Sulfur Candle
 
 item.cinnabar.name=Cinnabar
 item.ectoplasm.name=Ectoplasm

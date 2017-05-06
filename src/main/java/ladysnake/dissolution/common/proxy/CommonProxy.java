@@ -14,7 +14,7 @@ import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
 import ladysnake.dissolution.common.tileentities.TileEntityResuscitator;
 import ladysnake.dissolution.common.tileentities.TileEntitySepulture;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
-import ladysnake.dissolution.common.tileentities.TileEntitySoulCandle;
+import ladysnake.dissolution.common.tileentities.TileEntityMercuryCandle;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulExtractor;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -41,7 +41,7 @@ public abstract class CommonProxy {
 		GameRegistry.registerTileEntity(TileEntitySepulture.class, Reference.MOD_ID + "tileentitysepulture");
 		GameRegistry.registerTileEntity(TileEntitySoulAnchor.class, Reference.MOD_ID + "tileentitysoulanchor");
 		GameRegistry.registerTileEntity(TileEntityResuscitator.class, Reference.MOD_ID + "tileentityresuscitator");
-		GameRegistry.registerTileEntity(TileEntitySoulCandle.class, Reference.MOD_ID + "tileentitysoulcandle");
+		GameRegistry.registerTileEntity(TileEntityMercuryCandle.class, Reference.MOD_ID + "tileentitysoulcandle");
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(Tartaros.instance, new GuiProxy());
 		PacketHandler.initPackets();
