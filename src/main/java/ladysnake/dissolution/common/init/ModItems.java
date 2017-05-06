@@ -19,7 +19,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModItems {
-	public static Item ECTOPLASM, ECTOPLASMA;
 	public static ItemDebug DEBUG_ITEM;
 	public static ItemEyeDead EYE_OF_THE_UNDEAD;
 	public static ItemGrandFaux GRAND_FAUX;
@@ -32,14 +31,6 @@ public class ModItems {
     public static void init() {
     	BASE_RESOURCE = new ItemBaseResource();
     	DEBUG_ITEM = new ItemDebug();
-    	ECTOPLASM = new Item();
-    	ECTOPLASM.setUnlocalizedName(Reference.Items.ECTOPLASM.getUnlocalizedName());
-        ECTOPLASM.setRegistryName(Reference.Items.ECTOPLASM.getRegistryName());
-        ECTOPLASM.setCreativeTab(Tartaros.CREATIVE_TAB);
-        ECTOPLASMA = new Item();
-    	ECTOPLASMA.setUnlocalizedName(Reference.Items.ECTOPLASMA.getUnlocalizedName());
-        ECTOPLASMA.setRegistryName(Reference.Items.ECTOPLASMA.getRegistryName());
-        ECTOPLASMA.setCreativeTab(Tartaros.CREATIVE_TAB);
         EYE_OF_THE_UNDEAD = new ItemEyeDead();
         SCYTHE_IRON = new ItemScytheIron();
         GRAND_FAUX = new ItemGrandFaux();
@@ -51,8 +42,6 @@ public class ModItems {
     public static void register() {
     	GameRegistry.register(BASE_RESOURCE);
     	GameRegistry.register(DEBUG_ITEM);
-    	GameRegistry.register(ECTOPLASM);
-    	GameRegistry.register(ECTOPLASMA);
     	GameRegistry.register(EYE_OF_THE_UNDEAD);
     	GameRegistry.register(GRAND_FAUX);
     	GameRegistry.register(SCYTHE_IRON);
@@ -63,10 +52,10 @@ public class ModItems {
     
     @SideOnly(Side.CLIENT)
     public static void registerRenders() {
-    	registerRender(BASE_RESOURCE);
+    	for (int i = 0; i < BASE_RESOURCE.TOTAL_VARIANTS; ++i) {
+    		registerRender(BASE_RESOURCE, i, BASE_RESOURCE.names.get(i));
+    	}
     	registerRender(DEBUG_ITEM);
-    	registerRender(ECTOPLASM);
-    	registerRender(ECTOPLASMA);
     	registerRender(EYE_OF_THE_UNDEAD);
     	registerRender(GRAND_FAUX);
     	registerRender(SCYTHE_IRON);
@@ -78,5 +67,10 @@ public class ModItems {
     @SideOnly(Side.CLIENT)
     public static void registerRender(Item item) {
     	ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(Reference.MOD_ID + ":" + item.getUnlocalizedName().toString().substring(5)));
+    }
+    
+    @SideOnly(Side.CLIENT)
+    public static void registerRender(Item item, int metadata, String name) {
+    	ModelLoader.setCustomModelResourceLocation(item, metadata, new ModelResourceLocation(Reference.MOD_ID + ":" + name));
     }
 }

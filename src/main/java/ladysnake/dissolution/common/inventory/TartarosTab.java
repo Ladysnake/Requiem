@@ -12,7 +12,7 @@ public class TartarosTab extends CreativeTabs {
 	
 	@Override
 	public ItemStack getTabIconItem() {
-		return new ItemStack(ModItems.ECTOPLASM);
+		return new ItemStack(ModItems.BASE_RESOURCE, 1, 0);
 	}
 
 }

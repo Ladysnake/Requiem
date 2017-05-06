@@ -21,7 +21,7 @@ public class CrystallizerRecipes {
 	static {
 		addCrystalRecipe(new ItemStack(Blocks.NETHERRACK), new ItemStack(Blocks.NETHER_BRICK));
 		addCrystalRecipe(new ItemStack(Blocks.SAND), new ItemStack(Blocks.GLASS), 20);
-		addCrystalRecipe(new ItemStack(ModItems.ECTOPLASM), new ItemStack(ModItems.ECTOPLASMA), 400);
+		addCrystalRecipe(new ItemStack(ModItems.BASE_RESOURCE, 1, 1), new ItemStack(ModItems.BASE_RESOURCE, 1, 2), 400);
 	}
 	
 	/**
