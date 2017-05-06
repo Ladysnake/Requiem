@@ -78,6 +78,8 @@ public abstract class ItemScythe extends ItemSword {
         if(!player.getHeldItemOffhand().isEmpty()) return true;
         if(alreadyRunningAOE) return false;
         Integer initialCooldown = new Integer(100);
+//        Method abc = EntityPlayer.class.getDeclaredMethod("abc", ItemStack.class);
+        player.spawnSweepParticles();
         int initialDamage = stack.getItemDamage();
         try {
         	initialCooldown = ObfuscationReflectionHelper.getPrivateValue(EntityLivingBase.class, player, new String[]{"ticksSinceLastSwing", "field_184617_aD"});

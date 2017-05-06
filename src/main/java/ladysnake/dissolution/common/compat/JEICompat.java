@@ -1,8 +1,10 @@
 package ladysnake.dissolution.common.compat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.crafting.CrystallizerRecipe;
-import ladysnake.dissolution.common.crafting.CrystallizerRecipes;
 import ladysnake.dissolution.common.init.ModBlocks;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
@@ -42,13 +44,16 @@ public class JEICompat implements IModPlugin {
 
 			@Override
 			public void getIngredients(IIngredients ingredients) {
-				ingredients.setInput(ItemStack.class, cr.getInput());
+				List<ItemStack> inputList = new ArrayList<ItemStack>();
+				inputList.add(cr.getInput());
+				inputList.add(cr.getFuel());
+				ingredients.setInputs(ItemStack.class, inputList);
 				ingredients.setOutput(ItemStack.class, cr.getOutput());
 			}
 			
 		}, Reference.MOD_ID + ".crystallizer");
 		
-		registry.addRecipes(CrystallizerRecipes.crystallizingRecipes, Reference.MOD_ID + ".crystallizer");
+		registry.addRecipes(CrystallizerRecipe.crystallizingRecipes, Reference.MOD_ID + ".crystallizer");
 		registry.addRecipeCategoryCraftingItem(new ItemStack(ModBlocks.CRYSTALLIZER), Reference.MOD_ID + ".crystallizer");
 	}
 	

@@ -85,6 +85,10 @@ public class EventHandlerCommon {
 							event.player.posX + 0.5D, event.player.posY + 1.0D, event.player.posZ + 0.5D, 1, 0.3D, 0.3D,
 							0.3D, 0.0D, new int[0]);
 				}
+				if(event.player.dimension == -1 && TartarosConfig.respawnInNether) {
+					CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, event.player.getSpawnDimension());
+//					event.player.setPosition(event.player.spawn, y, z);
+				}
 				ticksSinceLastSync = 0;
 			}
 			if (event.player.experience > 0 && rand.nextBoolean())

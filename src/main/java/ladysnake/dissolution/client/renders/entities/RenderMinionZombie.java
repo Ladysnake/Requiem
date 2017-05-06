@@ -5,6 +5,7 @@ import javax.annotation.Nonnull;
 import org.lwjgl.opengl.GL11;
 
 import ladysnake.dissolution.client.model.ModelMinionZombie;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.EntityMinion;
 import ladysnake.dissolution.common.entity.EntityMinionZombie;
 import ladysnake.dissolution.common.entity.EntityWanderingSoul;
@@ -27,8 +28,8 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class RenderMinionZombie extends RenderBiped<EntityMinionZombie> {
 
-	private static final ResourceLocation ZOMBIE_TEXTURES = new ResourceLocation("dissolution:textures/entity/minions/minion_zombie.png");
-	private static final ResourceLocation HUSK_ZOMBIE_TEXTURES = new ResourceLocation("dissolution:textures/entity/minions/minion_husk.png");
+	private static final ResourceLocation ZOMBIE_TEXTURES = new ResourceLocation(Reference.MOD_ID + ":textures/entity/minions/minion_zombie.png");
+	private static final ResourceLocation HUSK_ZOMBIE_TEXTURES = new ResourceLocation(Reference.MOD_ID + ":textures/entity/minions/minion_husk.png");
 	private static final DataParameter<Boolean> DEATH = EntityDataManager.<Boolean>createKey(EntityMinionZombie.class, DataSerializers.BOOLEAN);
 	private EntityDataManager dataManager;
 
