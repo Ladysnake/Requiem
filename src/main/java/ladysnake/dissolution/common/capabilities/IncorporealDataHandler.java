@@ -96,13 +96,8 @@ public class IncorporealDataHandler {
 		}
 	
 		@Override
-		public boolean isIncorporealM() {
-			return this.incorporeal && !this.isMercuryCandleNearby();
-		}
-		
-		@Override
-		public boolean isIncorporealS() {
-			return this.incorporeal && !this.isMercuryCandleNearby();
+		public boolean isIncorporeal() {
+			return (this.incorporeal && !this.isMercuryCandleNearby()) || this.isSulfurCandleNearby();
 		}
 		
 		@Override
@@ -126,12 +121,9 @@ public class IncorporealDataHandler {
 		}
 		
 		@Override
-		public void tickM(PlayerTickEvent event) {
+		public void tick(PlayerTickEvent event) {
 			if(this.isMercuryCandleNearby())
 				this.mercuryCandleNearby--;
-		}
-		@Override
-		public void tickS(PlayerTickEvent event) {
 			if(this.isSulfurCandleNearby())
 				this.sulfurCandleNearby--;
 		}
@@ -172,8 +164,7 @@ public class IncorporealDataHandler {
 		    public NBTBase writeNBT (Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side) {
 		        
 		        final NBTTagCompound tag = new NBTTagCompound();           
-		        tag.setBoolean("incorporealm", instance.isIncorporealM());    
-		        tag.setBoolean("incorporeals", instance.isIncorporealS()); 
+		        tag.setBoolean("incorporeal", instance.isIncorporeal() && !instance.isMercuryCandleNearby());    
 		        tag.setString("lastDeath", instance.getLastDeathMessage() == null || instance.getLastDeathMessage().isEmpty() ? "This player has no recorded death" : instance.getLastDeathMessage());
 		        return tag;
 		    }
@@ -182,8 +173,7 @@ public class IncorporealDataHandler {
 		    public void readNBT (Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side, NBTBase nbt) {
 		        
 		        final NBTTagCompound tag = (NBTTagCompound) nbt;
-		        instance.setIncorporeal(tag.getBoolean("incorporealm"));
-		        instance.setIncorporeal(tag.getBoolean("incorporeals"));
+		        instance.setIncorporeal(tag.getBoolean("incorporeal"));
 		        instance.setLastDeathMessage(tag.getString("lastDeath"));
 		    }
 		}

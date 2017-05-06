@@ -41,7 +41,7 @@ public class EventHandlerClient {
 	public void onEntityRender(RenderLivingEvent.Pre event) {
 	    if(event.getEntity() instanceof EntityPlayer){
 	    	final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler((EntityPlayer)event.getEntity());
-	    	if(playerCorp.isIncorporealM() || playerCorp.isIncorporealS()){
+	    	if(playerCorp.isIncorporeal()){
 	    		GlStateManager.color(0.9F, 0.9F, 1.0F, 0.5F); //0.5F being alpha
 	    	}
 	    }
@@ -51,7 +51,7 @@ public class EventHandlerClient {
 	public void onRenderSpecificHand(RenderSpecificHandEvent event) {		//TODO make this work
 		final IIncorporealHandler myCorp = IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player);
 		
-		if(myCorp.isIncorporealM() || myCorp.isIncorporealS()){
+		if(myCorp.isIncorporeal()){
 	    		event.setCanceled(true);
 	    	}
 	}

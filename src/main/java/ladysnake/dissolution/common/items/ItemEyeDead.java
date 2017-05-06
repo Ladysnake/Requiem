@@ -5,7 +5,7 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import ladysnake.dissolution.common.entity.EntityMinionSquelette;
+import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.Tartaros;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
@@ -76,7 +76,7 @@ public class ItemEyeDead extends Item {
 		if (!(entityLiving instanceof EntityPlayer) || this.getMaxItemUseDuration(stack) - timeLeft < 30) return;
 		EntityPlayer player = (EntityPlayer) entityLiving;
 		
-		if (IncorporealDataHandler.getHandler(player).isIncorporealM() || IncorporealDataHandler.getHandler(player).isIncorporealS()) return;
+		if (IncorporealDataHandler.getHandler(player).isIncorporeal() || IncorporealDataHandler.getHandler(player).isIncorporeal()) return;
 		
 		ItemStack ammo = Helper.findItem(player, ModItems.SOUL_IN_A_BOTTLE);
 		if (ammo.isEmpty()) {
@@ -88,7 +88,6 @@ public class ItemEyeDead extends Item {
 		
 		List<EntityMinion> minions = worldIn.getEntitiesWithinAABB(EntityMinion.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20));
 		for (EntityMinion m : minions) {
-			System.out.println(m);
 			for(int i = 0; i < (m.isCorpse() ? 50 : 5); i++){
 				Random rand = new Random();
 				double motionX = rand.nextGaussian() * 0.1D;

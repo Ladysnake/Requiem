@@ -30,7 +30,7 @@ public class PingPacket implements IMessageHandler<PingMessage, UpdateMessage>
 				  //System.out.println("a ping packet has been processed");
 				  EntityPlayerMP thePlayer = ctx.getServerHandler().playerEntity;
 				  final IIncorporealHandler clone = IncorporealDataHandler.getHandler((EntityPlayer)thePlayer);
-				  IMessage msg = new IncorporealMessage(message.uuidMost, message.uuidLeast, clone.isIncorporealM() || clone.isIncorporealS());
+				  IMessage msg = new IncorporealMessage(message.uuidMost, message.uuidLeast, clone.isIncorporeal() || clone.isIncorporeal());
 				  PacketHandler.net.sendToAll(msg);
 			  }
 			});

@@ -4,9 +4,9 @@ import javax.annotation.Nonnull;
 
 import org.lwjgl.opengl.GL11;
 
-import ladysnake.dissolution.common.entity.EntityMinionSquelette;
+import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionZombie;
-import ladysnake.dissolution.client.models.ModelMinionSquelette;
+import ladysnake.dissolution.client.models.ModelMinionSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinion;
 import ladysnake.dissolution.common.entity.EntityWanderingSoul;
 import net.minecraft.client.Minecraft;
@@ -24,31 +24,31 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
-public class RenderMinionSquelette extends RenderBiped<EntityMinionSquelette> {
+public class RenderMinionSkeleton extends RenderBiped<EntityMinionSkeleton> {
 
 	private static final ResourceLocation SQUELETTE_TEXTURES = new ResourceLocation("dissolution:textures/entity/minions/minion_skeleton.png");
-	private static final DataParameter<Boolean> DEATH = EntityDataManager.<Boolean>createKey(EntityMinionSquelette.class, DataSerializers.BOOLEAN);
+	private static final DataParameter<Boolean> DEATH = EntityDataManager.<Boolean>createKey(EntityMinionSkeleton.class, DataSerializers.BOOLEAN);
 	private EntityDataManager dataManager;
 
     public static final Factory FACTORY = new Factory();
 
-    public RenderMinionSquelette(RenderManager rendermanagerIn, boolean death) {
-    		super(rendermanagerIn, new ModelMinionSquelette(), 0.5F);
+    public RenderMinionSkeleton(RenderManager rendermanagerIn, boolean death) {
+    		super(rendermanagerIn, new ModelMinionSkeleton(), 0.5F);
     }
 
     @Override
     @Nonnull
-    protected ResourceLocation getEntityTexture(@Nonnull EntityMinionSquelette entity) {
+    protected ResourceLocation getEntityTexture(@Nonnull EntityMinionSkeleton entity) {
 
         	return SQUELETTE_TEXTURES;
     }
 
-    public static class Factory implements IRenderFactory<EntityMinionSquelette> {
+    public static class Factory implements IRenderFactory<EntityMinionSkeleton> {
 
         @Override
-        public Render<EntityMinionSquelette> createRenderFor(RenderManager manager) {
+        public Render<EntityMinionSkeleton> createRenderFor(RenderManager manager) {
         	
-        		return new RenderMinionSquelette(manager, true);	
+        		return new RenderMinionSkeleton(manager, true);	
  	
         }
 
@@ -58,7 +58,7 @@ public class RenderMinionSquelette extends RenderBiped<EntityMinionSquelette> {
     public void doRenderShadowAndFire(Entity entityIn, double x, double y, double z, float yaw, float partialTicks) {}
    
     @Override
-    public void doRender(EntityMinionSquelette minionIn, double x, double y, double z, float entityYaw, float partialTicks) {
+    public void doRender(EntityMinionSkeleton minionIn, double x, double y, double z, float entityYaw, float partialTicks) {
     	GL11.glPushMatrix();
     	if(minionIn.getRemainingTicks() > 0 && minionIn.getRemainingTicks() < 1200) {
     		GL11.glColor4f(1.0f, 1.0f, 1.0f, ((float)minionIn.getRemainingTicks()) / ((float)minionIn.maxTicks));
@@ -70,7 +70,7 @@ public class RenderMinionSquelette extends RenderBiped<EntityMinionSquelette> {
     }
     
     @Override
-    protected void preRenderCallback(EntityMinionSquelette minionIn, float partialTickTime)
+    protected void preRenderCallback(EntityMinionSkeleton minionIn, float partialTickTime)
     {
     	
         super.preRenderCallback(minionIn, partialTickTime);

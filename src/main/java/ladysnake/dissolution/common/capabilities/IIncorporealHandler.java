@@ -27,35 +27,42 @@ public interface IIncorporealHandler {
 	public void setIncorporeal(boolean ghostMode);
 	
 	/**
+	 * Whether the player is in soul mode or not
+	 * @return true if the player is a ghost
+	 */
+	public boolean isIncorporeal();
+	
+	/**
+	 * @return the recorded message corresponding to this player last death
+	 */
+	public String getLastDeathMessage();
+	
+	public void setLastDeathMessage(String lastDeath);
+	
+	/**
 	 * Temporary status overriding the normal incorporeal one. Does not get saved upon reload.
 	 * @param tangible
 	 */
 	public void setMercuryCandleNearby(boolean tangible);
 	
-	public void setSulfurCandleNearby(boolean tangible);
+	/**
+	 * Temporary status overriding the normal incorporeal one. Does not get saved upon reload.
+	 * @param tangible
+	 */
+	public void setSulfurCandleNearby(boolean intangible);
 	
 	/**
-	 * Determines if there is a soul candle near this player.
+	 * Determines if there is a mercury candle near this player.
 	 * @return true if a soul candle is in a valid radius
 	 */
 	public boolean isMercuryCandleNearby();
 	
+	/**
+	 * Determines if there is a sulfur candle near this player.
+	 * @return true if a soul candle is in a valid radius
+	 */
 	public boolean isSulfurCandleNearby();
 	
-	/**
-	 * Whether the player is in soul mode or not
-	 * @return true if the player is a ghost
-	 */
-	public boolean isIncorporealM();
+	public void tick(PlayerTickEvent event);
 	
-	public boolean isIncorporealS();
-	
-	public String getLastDeathMessage();
-	
-	public void setLastDeathMessage(String lastDeath);
-	
-	public void tickM(PlayerTickEvent event);
-	
-	public void tickS(PlayerTickEvent event);
-
 }
