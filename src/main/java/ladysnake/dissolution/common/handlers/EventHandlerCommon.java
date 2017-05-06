@@ -136,25 +136,19 @@ public class EventHandlerCommon {
 				((ItemScythe) killer.getHeldItemMainhand().getItem()).fillBottle(killer);
 			}
 
-			ItemStack Eye = Helper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD);
-			if (killer.world.rand.nextInt(1) == 0 && !Eye.isEmpty()) {
+			if(killer.world.isRemote) return;
+			ItemStack eye = Helper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD);
+			if (killer.world.rand.nextInt(1) == 0 && !eye.isEmpty() && !killer.world.isRemote) {
 
 				if (victim instanceof EntityZombie) {
 					EntityMinionZombie skullZ;
-
-					if (victim instanceof EntityHusk) {
-
+					if(victim instanceof EntityHusk)
 						skullZ = new EntityMinionZombie(victim.world, true);
-						
-					}
-
-					else {
-
+					else
 						skullZ = new EntityMinionZombie(victim.world, false);
-						skullZ.setPosition(victim.posX, victim.posY, victim.posZ);
-						skullZ.onUpdate();
-						victim.world.spawnEntity(skullZ);
-					}
+					skullZ.setPosition(victim.posX, victim.posY, victim.posZ);
+					skullZ.onUpdate();
+					victim.world.spawnEntity(skullZ);
 				}
 
 				if (victim instanceof EntitySkeleton) {

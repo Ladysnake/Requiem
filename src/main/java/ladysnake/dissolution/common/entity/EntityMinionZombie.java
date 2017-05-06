@@ -33,6 +33,7 @@ public class EntityMinionZombie extends EntityMinion {
 	 */
 	public EntityMinionZombie(World worldIn, boolean isHusk) {
 		super(worldIn);
+		System.out.println(isHusk);
 		this.isHusk = isHusk;
 	}
 
@@ -50,6 +51,10 @@ public class EntityMinionZombie extends EntityMinion {
 	protected void applyEntityAI() {
 		this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[] { EntityPigZombie.class }));
 		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityMob.class, true));
+	}
+	
+	public void setHusk(boolean isHusk) {
+		this.isHusk = isHusk;
 	}
 
 	public boolean isHusk() {
