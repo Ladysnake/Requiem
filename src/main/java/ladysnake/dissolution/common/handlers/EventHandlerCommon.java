@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.handlers;
 
+import java.util.List;
 import java.util.Random;
 
 import ladysnake.dissolution.common.entity.EntityMinionSquelette;
@@ -12,6 +13,7 @@ import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler.Provider;
 import ladysnake.dissolution.common.entity.EntityItemWaystone;
 import ladysnake.dissolution.common.entity.EntityMinion;
+import ladysnake.dissolution.common.entity.EntityMinionHusk;
 import ladysnake.dissolution.common.entity.EntityMinionZombie;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
@@ -36,6 +38,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
@@ -142,6 +146,7 @@ public class EventHandlerCommon {
 			if (killer.world.rand.nextInt(1) == 0 && !eye.isEmpty() && !killer.world.isRemote) {
 
 				if (victim instanceof EntityZombie) {
+<<<<<<< HEAD
 					System.out.println("Zombie");
 					EntityMinionZombie skullZ;
 					skullZ = new EntityMinionZombie(victim.world, false);
@@ -156,6 +161,15 @@ public class EventHandlerCommon {
 				}
 
 				if (victim instanceof EntitySkeleton) {
+=======
+					EntityMinionZombie skullZ = (victim instanceof EntityHusk) ?
+							new EntityMinionHusk(victim.world) :
+							new EntityMinionZombie(victim.world);
+					skullZ.setPosition(victim.posX, victim.posY, victim.posZ);
+					skullZ.onUpdate();
+					victim.world.spawnEntity(skullZ);
+				} else if (victim instanceof EntitySkeleton) {
+>>>>>>> b7134c071457c25cd7c3406baafa17b569f34251
 						System.out.println("ske");
 						EntityMinionSquelette skullS;
 						skullS = new EntityMinionSquelette(victim.world);
@@ -163,8 +177,7 @@ public class EventHandlerCommon {
 						skullS.setPosition(victim.posX, victim.posY, victim.posZ);
 						victim.world.spawnEntity(skullS);
 
-				}
-				else if(victim instanceof EntityStray){
+				} else if(victim instanceof EntityStray){
 					EntityMinionStray skullSt;
 					skullSt = new EntityMinionStray(victim.world);
 					skullSt.onUpdate();

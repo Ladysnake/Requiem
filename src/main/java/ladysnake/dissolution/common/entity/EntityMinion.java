@@ -40,12 +40,14 @@ import net.minecraft.world.WorldServer;
 
 public abstract class EntityMinion extends EntityCreature {
 	public boolean corpse;
-	static int t = 1200;
+	protected int remainingTicks;
+	public static int maxTicks = 1200;
 	
 	public EntityMinion(World worldIn) {
 		super(worldIn);
         setSize(0.6F, 1.95F);
         corpse = true;
+        this.remainingTicks = maxTicks;
 	}
 	
 	@Override
@@ -94,24 +96,28 @@ public abstract class EntityMinion extends EntityCreature {
 	
 	@Override
 	public void onUpdate() {
-	if(this.corpse){
-			t--;
-			if(t <= 0){
+		if(this.isCorpse()){
+			remainingTicks--;
+			if(remainingTicks <= 0){
 				this.setDead();
-				t = 1200;
+				return;
 			}
-	}
-		
+		}	
 		super.onUpdate();
 	}
 	
 
 	public void setCorpse(boolean isCorpse) {
 		this.corpse = isCorpse;
+		this.remainingTicks = maxTicks;
 	}
 	
 	public boolean isCorpse(){
 		return corpse;
+	}
+	
+	public int getRemainingTicks() {
+		return remainingTicks;
 	}
 	
 	@Override

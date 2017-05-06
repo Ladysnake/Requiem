@@ -50,9 +50,9 @@ public class ItemEyeDead extends Item {
 				// System.out.println(entityIn != null &&
 				// (!Helper.findItem((EntityPlayer)entityIn,
 				// ModItems.SOUL_IN_A_BOTTLE).isEmpty()) ? 1.0F : 0.0F);
-				return entityIn != null
-						&& (!Helper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE).isEmpty()) ? 1.0F
-								: 0.0F;
+				return entityIn != null	&& (!Helper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE).isEmpty()) 
+						? 1.0F
+						: 0.0F;
 			}
 		});
 		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + ":resurrecting"), new IItemPropertyGetter() {
@@ -95,7 +95,7 @@ public class ItemEyeDead extends Item {
 				double motionX = rand.nextGaussian() * 0.1D;
 				double motionY = rand.nextGaussian() * 0.1D;
 				double motionZ = rand.nextGaussian() * 0.1D;
-				worldIn.spawnParticle(m.isCorpse() ? EnumParticleTypes.CLOUD : EnumParticleTypes.CLOUD, false, m.posX , m.posY+ 1.0D, m.posZ, motionX, motionY, motionZ, new int[0]);
+				worldIn.spawnParticle(m.isCorpse() ? EnumParticleTypes.DRAGON_BREATH : EnumParticleTypes.CLOUD, false, m.posX , m.posY+ 1.0D, m.posZ, motionX, motionY, motionZ, new int[0]);
 			}
 			if(m.isCorpse())
 				ammo.shrink(1);
