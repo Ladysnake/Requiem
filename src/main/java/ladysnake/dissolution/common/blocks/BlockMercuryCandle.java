@@ -41,7 +41,7 @@ public class BlockMercuryCandle extends Block implements ITileEntityProvider {
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(playerIn);
-		playerCorp.setMercuryCandleNearby(true);
+		playerCorp.setSoulCandleNearby(true, 1);
 		/*
 		if(worldIn.isRemote) {
 			if(Minecraft.getMinecraft().entityRenderer.isShaderActive())

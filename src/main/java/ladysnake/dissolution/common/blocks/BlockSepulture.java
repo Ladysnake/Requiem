@@ -84,7 +84,7 @@ public class BlockSepulture extends BlockHorizontal implements IRespawnLocation,
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(playerIn);
-		if (playerCorp.isIncorporealM() || playerCorp.isIncorporealS()) {
+		if (playerCorp.isIncorporeal()) {
 			this.getTE(worldIn, pos).setDeathMessage(playerCorp.getLastDeathMessage());
 			playerCorp.setIncorporeal(false, playerIn);
 			IMessage msg = new IncorporealMessage(playerIn.getUniqueID().getMostSignificantBits(), playerIn.getUniqueID().getLeastSignificantBits(), false);

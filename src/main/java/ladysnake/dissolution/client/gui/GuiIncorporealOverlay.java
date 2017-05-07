@@ -47,23 +47,18 @@ public class GuiIncorporealOverlay extends Gui {
 	public void onRenderExperienceBar(RenderGameOverlayEvent.Post event) {
 		if (event.getType() != ElementType.EXPERIENCE) return;
 		final IIncorporealHandler pl = IncorporealDataHandler.getHandler(this.mc.player);
-		if(pl.isIncorporealM()) {
+		if(pl.isIncorporeal()) {
 			this.drawIncorporealOverlay(event.getResolution());
 	        if(TartarosConfig.soulCompass)
 				this.drawOriginIndicator(event.getResolution());
 		}
-		if(pl.isIncorporealS()) {
-			this.drawIncorporealOverlay(event.getResolution());
-	        if(TartarosConfig.soulCompass)
-				this.drawOriginIndicator(event.getResolution());
-		}
-        if(pl.isMercuryCandleNearby()) {
+        if(pl.isSoulCandleNearby(1)) {
         	if(!usingShader) {
         		Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("shaders/post/desaturate.json"));
         		usingShader = true;
         	}
         }
-        else if(pl.isSulfurCandleNearby()){
+        else if(pl.isSoulCandleNearby(2)){
         	if(!usingShader) {
         		Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("shaders/post/deconverge.json"));
     			usingShader = true;

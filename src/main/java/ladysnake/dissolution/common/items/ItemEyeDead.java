@@ -76,7 +76,7 @@ public class ItemEyeDead extends Item {
 		if (!(entityLiving instanceof EntityPlayer) || this.getMaxItemUseDuration(stack) - timeLeft < 30) return;
 		EntityPlayer player = (EntityPlayer) entityLiving;
 		
-		if (IncorporealDataHandler.getHandler(player).isIncorporealM() || IncorporealDataHandler.getHandler(player).isIncorporealS()) return;
+		if (IncorporealDataHandler.getHandler(player).isIncorporeal()) return;
 		
 		ItemStack ammo = Helper.findItem(player, ModItems.SOUL_IN_A_BOTTLE);
 		if (ammo.isEmpty()) {
