@@ -3,7 +3,7 @@ package ladysnake.dissolution.common.handlers;
 import java.util.List;
 import java.util.Random;
 
-import ladysnake.dissolution.common.entity.EntityMinionSquelette;
+import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionStray;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.TartarosConfig;
@@ -64,7 +64,7 @@ public class EventHandlerCommon {
 
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.player);
 
-		playerCorp.tick(event);	
+		playerCorp.tick(event);			
 
 		if (playerCorp.isIncorporeal() && !event.player.isCreative()) {
 
@@ -139,7 +139,6 @@ public class EventHandlerCommon {
 				((ItemScythe) killer.getHeldItemMainhand().getItem()).fillBottle(killer);
 			}
 
-			if(killer.world.isRemote) return;
 			ItemStack eye = Helper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD);
 			if (killer.world.rand.nextInt(1) == 0 && !eye.isEmpty() && !killer.world.isRemote) {
 
@@ -166,8 +165,8 @@ public class EventHandlerCommon {
 					victim.world.spawnEntity(skullZ);
 				} else if (victim instanceof EntitySkeleton) {
 						System.out.println("ske");
-						EntityMinionSquelette skullS;
-						skullS = new EntityMinionSquelette(victim.world);
+						EntityMinionSkeleton skullS;
+						skullS = new EntityMinionSkeleton(victim.world);
 						skullS.onUpdate();
 						skullS.setPosition(victim.posX, victim.posY, victim.posZ);
 						victim.world.spawnEntity(skullS);
@@ -178,7 +177,6 @@ public class EventHandlerCommon {
 					skullSt.onUpdate();
 					skullSt.setPosition(victim.posX, victim.posY, victim.posZ);
 					victim.world.spawnEntity(skullSt);
-					
 				}
 			}
 		}

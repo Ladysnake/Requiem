@@ -1,8 +1,8 @@
 package ladysnake.dissolution.common.init;
 
-import ladysnake.dissolution.client.renders.entities.RenderMinionSquelette;
+import ladysnake.dissolution.client.renders.entities.RenderMinionSkeleton;
 import ladysnake.dissolution.client.renders.entities.RenderMinionStray;
-import ladysnake.dissolution.common.entity.EntityMinionSquelette;
+import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionStray;
 import ladysnake.dissolution.client.renders.entities.RenderMinionZombie;
 import ladysnake.dissolution.client.renders.entities.RenderWanderingSoul;
@@ -30,7 +30,7 @@ public class ModEntities {
     	LootTableList.register(EntityWanderingSoul.LOOT);
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_zombie"), EntityMinionZombie.class, "minion_zombie", id++, Tartaros.instance, 64, 1, true);
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_husk"), EntityMinionHusk.class, "minion_husk", id++, Tartaros.instance, 64, 1, true);
-    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_skeleton"), EntityMinionSquelette.class, "minion_skeleton", id++, Tartaros.instance, 64, 1, true);
+    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_skeleton"), EntityMinionSkeleton.class, "minion_skeleton", id++, Tartaros.instance, 64, 1, true);
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_stray"), EntityMinionStray.class, "minion_stray", id++, Tartaros.instance, 64, 1, true);
     }
     
@@ -38,7 +38,7 @@ public class ModEntities {
     public static void registerRenders() {
     	RenderingRegistry.registerEntityRenderingHandler(EntityWanderingSoul.class, new RenderWanderingSoul.Factory());
     	RenderingRegistry.registerEntityRenderingHandler(EntityMinionZombie.class, new RenderMinionZombie.Factory());
-    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionSquelette.class, new RenderMinionSquelette.Factory());
+    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionSkeleton.class, new RenderMinionSkeleton.Factory());
     	RenderingRegistry.registerEntityRenderingHandler(EntityMinionStray.class, new RenderMinionStray.Factory());
     }
 

@@ -4,14 +4,13 @@ import javax.annotation.Nonnull;
 
 import org.lwjgl.opengl.GL11;
 
-import ladysnake.dissolution.client.models.ModelMinionZombie;
-import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.entity.EntityMinion;
+import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.client.models.ModelMinionSkeleton;
+import ladysnake.dissolution.common.entity.EntityMinion;
 import ladysnake.dissolution.common.entity.EntityWanderingSoul;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelZombie;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.Render;
@@ -19,50 +18,47 @@ import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
-public class RenderMinionZombie extends RenderBiped<EntityMinionZombie> {
+public class RenderMinionSkeleton extends RenderBiped<EntityMinionSkeleton> {
 
-	private static final ResourceLocation ZOMBIE_TEXTURES = new ResourceLocation(Reference.MOD_ID + ":textures/entity/minions/minion_zombie.png");
-	private static final ResourceLocation HUSK_ZOMBIE_TEXTURES = new ResourceLocation(Reference.MOD_ID + ":textures/entity/minions/minion_husk.png");
-	private static final DataParameter<Boolean> DEATH = EntityDataManager.<Boolean>createKey(EntityMinionZombie.class, DataSerializers.BOOLEAN);
+	private static final ResourceLocation SQUELETTE_TEXTURES = new ResourceLocation("dissolution:textures/entity/minions/minion_skeleton.png");
+	private static final DataParameter<Boolean> DEATH = EntityDataManager.<Boolean>createKey(EntityMinionSkeleton.class, DataSerializers.BOOLEAN);
 	private EntityDataManager dataManager;
 
     public static final Factory FACTORY = new Factory();
 
-    public RenderMinionZombie(RenderManager rendermanagerIn, boolean death) {
-    		super(rendermanagerIn, new ModelMinionZombie(), 0.5F);
+    public RenderMinionSkeleton(RenderManager rendermanagerIn, boolean death) {
+    		super(rendermanagerIn, new ModelMinionSkeleton(), 0.5F);
     }
 
     @Override
     @Nonnull
-    protected ResourceLocation getEntityTexture(@Nonnull EntityMinionZombie entity) {
-    	if ((entity.isHusk())) 
-   			return HUSK_ZOMBIE_TEXTURES;
-        return ZOMBIE_TEXTURES;
+    protected ResourceLocation getEntityTexture(@Nonnull EntityMinionSkeleton entity) {
+
+        	return SQUELETTE_TEXTURES;
     }
 
-    public static class Factory implements IRenderFactory<EntityMinionZombie> {
+    public static class Factory implements IRenderFactory<EntityMinionSkeleton> {
 
         @Override
-        public Render<EntityMinionZombie> createRenderFor(RenderManager manager) {
+        public Render<EntityMinionSkeleton> createRenderFor(RenderManager manager) {
         	
-        		return new RenderMinionZombie(manager, true);	
+        		return new RenderMinionSkeleton(manager, true);	
  	
         }
 
     }
-    
+   
     @Override
     public void doRenderShadowAndFire(Entity entityIn, double x, double y, double z, float yaw, float partialTicks) {}
    
     @Override
-    public void doRender(EntityMinionZombie minionIn, double x, double y, double z, float entityYaw, float partialTicks) {
+    public void doRender(EntityMinionSkeleton minionIn, double x, double y, double z, float entityYaw, float partialTicks) {
     	GL11.glPushMatrix();
     	if(minionIn.getRemainingTicks() > 0 && minionIn.getRemainingTicks() < 1200) {
     		GL11.glColor4f(1.0f, 1.0f, 1.0f, ((float)minionIn.getRemainingTicks()) / ((float)minionIn.maxTicks));
@@ -74,10 +70,9 @@ public class RenderMinionZombie extends RenderBiped<EntityMinionZombie> {
     }
     
     @Override
-    protected void preRenderCallback(EntityMinionZombie minionIn, float partialTickTime)
+    protected void preRenderCallback(EntityMinionSkeleton minionIn, float partialTickTime)
     {
-    	if(minionIn.isHusk())
-    		GlStateManager.scale(1.0625F, 1.0625F, 1.0625F);
+    	
         super.preRenderCallback(minionIn, partialTickTime);
     }
 }
