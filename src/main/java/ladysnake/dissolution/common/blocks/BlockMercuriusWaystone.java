@@ -10,17 +10,15 @@ import ladysnake.dissolution.common.TartarosConfig;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
-import ladysnake.dissolution.common.networking.PacketHandler;
-import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
+import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
@@ -34,7 +32,6 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.relauncher.Side;
 
 public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 	
@@ -86,8 +83,12 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 			    BlockPos bp = new BlockPos(pos.getX()/8, 120, pos.getZ()/8);
 			    while((worldserver.getBlockState(bp.down()) == Blocks.AIR.getDefaultState() || worldserver.getBlockState(bp) != Blocks.AIR.getDefaultState()) && bp.getY() > 0)
 			    	bp = bp.down();
-			    if(bp.getY() > 0)
+			    if(bp.getY() > 0)  {
+			    	BlockSoulAnchor.scheduledBP.add(pos);
+			    	BlockSoulAnchor.scheduledDim.add(placer.dimension);
+			    	//System.out.println(bp);	//TODO remove this
 			    	worldserver.setBlockState(bp, ModBlocks.SOUL_ANCHOR.getDefaultState(), 3);
+			    }
 			    else {
 			    	if(placer instanceof EntityPlayer)
 			    		((EntityPlayer)placer).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".cannotplace", new Object[0]), true);

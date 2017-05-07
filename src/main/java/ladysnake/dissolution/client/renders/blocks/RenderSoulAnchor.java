@@ -55,7 +55,6 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer {
 	    GlStateManager.disableTexture2D();
 
 	    Minecraft.getMinecraft().renderEngine.bindTexture(texture);
-	    //GlStateManager.bindTexture(texture);		//TODO
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glEnable(GL11.GL_BLEND);
 	    GlStateManager.color(0.8f, 0.8f, 1f, 1.0f);
