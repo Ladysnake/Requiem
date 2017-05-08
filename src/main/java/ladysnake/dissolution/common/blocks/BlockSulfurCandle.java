@@ -7,20 +7,17 @@ import javax.annotation.Nullable;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
-import ladysnake.dissolution.common.tileentities.TileEntityMercuryCandle;
-import ladysnake.dissolution.common.tileentities.TileEntitySulfurCandle;
+import ladysnake.dissolution.common.tileentities.TileEntitySoulCandle;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -56,7 +53,7 @@ public class BlockSulfurCandle extends Block implements ITileEntityProvider {
 
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileEntitySulfurCandle();
+		return new TileEntitySoulCandle();
 	}
 	
 	@Override

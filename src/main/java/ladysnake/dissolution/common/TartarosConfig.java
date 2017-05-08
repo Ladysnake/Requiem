@@ -58,7 +58,7 @@ public class TartarosConfig {
 	        		Configuration.CATEGORY_GENERAL,
 	        		"soulInteractableBlocks",
 	        		"lever, glass_pane",
-	        		"The blocks that can be right clicked/broken by ghosts");
+	        		"The blocks that can be right clicked/broken by ghosts (doesn't affect anything currently)");
 	        
 	        Property doSablePopProp = Tartaros.config.get(
 	        		Configuration.CATEGORY_GENERAL,

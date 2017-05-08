@@ -5,7 +5,10 @@ import java.util.List;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class TileEntitySoulAnchor extends TileEntity {
 	
@@ -48,10 +51,12 @@ public class TileEntitySoulAnchor extends TileEntity {
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
-		compound.setInteger("targX", targetPos.getX());
-		compound.setInteger("targY", targetPos.getY());
-		compound.setInteger("targZ", targetPos.getZ());
-		compound.setInteger("targDim", targetDim);
+		try {
+			compound.setInteger("targX", targetPos.getX());
+			compound.setInteger("targY", targetPos.getY());
+			compound.setInteger("targZ", targetPos.getZ());
+			compound.setInteger("targDim", targetDim);
+		} catch (NullPointerException e) {}
 		return compound;
 	}
 
@@ -59,4 +64,10 @@ public class TileEntitySoulAnchor extends TileEntity {
 	public String toString() {
 		return "TileEntitySoulAnchor [targetPos=" + targetPos + ", targetDim=" + targetDim + "]";
 	}
+	
+	@SideOnly(Side.CLIENT)
+    public boolean shouldRenderFace(EnumFacing face)
+    {
+        return face == EnumFacing.UP;
+    }
 }

@@ -6,7 +6,7 @@
             "entries": [
                 {
                     "type": "item",
-                    "name": "dissolution:itemectoplasm",
+                    "name": "dissolution:itemresource",
                     "weight": 1,
                     "functions": [
                         {

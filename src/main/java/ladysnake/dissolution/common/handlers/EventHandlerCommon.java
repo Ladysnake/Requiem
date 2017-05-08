@@ -103,8 +103,8 @@ public class EventHandlerCommon {
 		if (playerCorp.isIncorporeal() && !playerCorp.isSynced() && !event.player.world.isRemote
 				&& TartarosConfig.respawnInNether) {
 			CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, -1);
-			playerCorp.setSynced(true);
 		}
+		playerCorp.setSynced(true);
 	}
 
 	@SubscribeEvent

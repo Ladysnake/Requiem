@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
-import ladysnake.dissolution.common.tileentities.TileEntityMercuryCandle;
+import ladysnake.dissolution.common.tileentities.TileEntitySoulCandle;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -55,7 +55,7 @@ public class BlockMercuryCandle extends Block implements ITileEntityProvider {
 
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileEntityMercuryCandle();
+		return new TileEntitySoulCandle();
 	}
 	
 	@Override
