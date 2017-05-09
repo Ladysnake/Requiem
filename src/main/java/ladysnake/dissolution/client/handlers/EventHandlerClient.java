@@ -48,7 +48,7 @@ public class EventHandlerClient {
 	}
 	
 	@SubscribeEvent
-	public void onRenderSpecificHand(RenderSpecificHandEvent event) {		//TODO make this work
+	public void onRenderSpecificHand(RenderSpecificHandEvent event) {
 		final IIncorporealHandler myCorp = IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player);
 		
 		if(myCorp.isIncorporeal()){

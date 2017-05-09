@@ -1,15 +1,19 @@
 [
 {
   "modid": "dissolution",
+<<<<<<< HEAD
   "name": "Tartaros - Dissolution",
+=======
+  "name": "Dissolution",
+>>>>>>> d4c65f861c086193425f17807d684c7654c6a0d4
   "description": "A mod aimed at making death more interesting",
   "version": "0.3.0",
   "mcversion": "${mcversion}",
-  "url": "https://minecraft.curseforge.com/projects/tartaros",
+  "url": "https://minecraft.curseforge.com/projects/dissolution",
   "updateUrl": "https://minecraft.curseforge.com/projects/tartaros",
   "authorList": ["Pyrofab", "CobraDarkPoney", "Noprotox"],
   "credits": "MrCrayfish for his amazing model creator.",
-  "logoFile": "/assets/tartaros/textures/tartaros_ico.png",
+  "logoFile": "/assets/dissolution/textures/tartaros_ico.png",
   "screenshots": [],
   "dependencies": []
 }

@@ -2,8 +2,8 @@
     "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
     "parent": "block/block",
     "textures": {
-  		"particle": "tartaros:blocks/waystone",
-          "0": "tartaros:blocks/waystone"
+  		"particle": "dissolution:blocks/waystone",
+          "0": "dissolution:blocks/waystone"
       },
       "elements": [
           {

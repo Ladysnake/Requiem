@@ -52,10 +52,16 @@ public class GuiIncorporealOverlay extends Gui {
 	        if(TartarosConfig.soulCompass)
 				this.drawOriginIndicator(event.getResolution());
 		}
-        if(pl.isSoulCandleNearby()) {
+        if(pl.isSoulCandleNearby(1)) {
         	if(!usingShader) {
         		Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("shaders/post/desaturate.json"));
         		usingShader = true;
+        	}
+        }
+        else if(pl.isSoulCandleNearby(2)){
+        	if(!usingShader) {
+        		Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("shaders/post/deconverge.json"));
+    			usingShader = true;
         	}
         }
         else {
@@ -127,7 +133,6 @@ public class GuiIncorporealOverlay extends Gui {
 		
 		if(isInFieldOfView) {
 			this.drawTexturedModalRect(i + 3 + (int)Math.round((angleToOrigin - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 200, 0, 7, 10);
-			//TODO make this a great gui
 		}
 		
 		if(!TartarosConfig.soulCompassAnchors) return;

@@ -1,9 +1,9 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "tartaros:soul_extractor/soul_extractor_off",
+    "model": "dissolution:soul_extractor/soul_extractor_off",
     "textures": {
-      "front": "tartaros:blocks/soul_extractor/soul_extractor_front_off"
+      "front": "dissolution:blocks/soul_extractor/soul_extractor_front_off"
     }
   },
   "variants": {
@@ -12,9 +12,9 @@
     "lit": {
       "false": {},
       "true": {
-        "model": "tartaros:soul_extractor/soul_extractor_on",
+        "model": "dissolution:soul_extractor/soul_extractor_on",
         "textures": {
-          "front": "tartaros:blocks/soul_extractor/soul_extractor_front_on"
+          "front": "dissolution:blocks/soul_extractor/soul_extractor_front_on"
         }
       }
     },

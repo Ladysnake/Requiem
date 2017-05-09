@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.entity;
 
+import java.util.Random;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -28,6 +29,7 @@ import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -39,11 +41,14 @@ import net.minecraft.world.WorldServer;
 
 public abstract class EntityMinion extends EntityCreature {
 	public boolean corpse;
+	protected int remainingTicks;
+	public static int maxTicks = 1200;
 	
 	public EntityMinion(World worldIn) {
 		super(worldIn);
         setSize(0.6F, 1.95F);
         corpse = true;
+        this.remainingTicks = maxTicks;
 	}
 	
 	@Override
@@ -56,6 +61,7 @@ public abstract class EntityMinion extends EntityCreature {
 		this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(35.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.23000000417232513D);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0D);
+        this.isAIDisabled();
 	}
 	
 	@Override
@@ -65,7 +71,16 @@ public abstract class EntityMinion extends EntityCreature {
 		}
 		return true;
 	}
-
+	
+	public void DoParticle(EnumParticleTypes part, Entity entity, int amount){
+		for(int i = 0; i < amount; i++){
+			Random rand = new Random();
+			double motionX = rand.nextGaussian() * 0.1D;
+			double motionY = rand.nextGaussian() * 0.1D;
+			double motionZ = rand.nextGaussian() * 0.1D;
+			entity.world.spawnParticle(part, false, entity.posX , entity.posY+ 1.0D, entity.posZ, motionX, motionY, motionZ, new int[0]);
+		}
+	}
 	
 	@Override
 	public boolean attackEntityAsMob(Entity entityIn)
@@ -79,13 +94,48 @@ public abstract class EntityMinion extends EntityCreature {
 
         return flag;
     }
+	
+	@Override
+	public void onUpdate() {
+		if(this.isCorpse()){
+			remainingTicks--;
+			if(remainingTicks <= 0){
+				this.setDead();
+				return;
+			}
+		}	
+		super.onUpdate();
+	}
+	
+	@Override
+	protected boolean canEquipItem(ItemStack stack) {
+		return true;
+	}
 
 	public void setCorpse(boolean isCorpse) {
 		this.corpse = isCorpse;
+		this.remainingTicks = maxTicks;
 	}
 	
 	public boolean isCorpse(){
 		return corpse;
+	}
+	
+	public int getRemainingTicks() {
+		return remainingTicks;
+	}
+	
+	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		super.writeToNBT(compound);
+		compound.setBoolean("Corpse", this.isCorpse());
+		return compound;
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound compound) {
+		super.readFromNBT(compound);
+		this.corpse = compound.getBoolean("Corpse");
 	}
 	
 }

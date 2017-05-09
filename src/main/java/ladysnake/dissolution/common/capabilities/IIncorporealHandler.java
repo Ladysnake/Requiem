@@ -30,13 +30,14 @@ public interface IIncorporealHandler {
 	 * Temporary status overriding the normal incorporeal one. Does not get saved upon reload.
 	 * @param tangible
 	 */
-	public void setSoulCandleNearby(boolean tangible);
+	public void setSoulCandleNearby(boolean tangible, int CandleType);
 	
 	/**
 	 * Determines if there is a soul candle near this player.
 	 * @return true if a soul candle is in a valid radius
 	 */
-	public boolean isSoulCandleNearby();
+	public boolean isSoulCandleNearby(int CandleType);
+	
 	
 	/**
 	 * Whether the player is in soul mode or not
@@ -44,10 +45,11 @@ public interface IIncorporealHandler {
 	 */
 	public boolean isIncorporeal();
 	
+	
 	public String getLastDeathMessage();
 	
 	public void setLastDeathMessage(String lastDeath);
 	
-	public void tick(PlayerTickEvent event);
+	public void tick(PlayerTickEvent event);	
 
 }

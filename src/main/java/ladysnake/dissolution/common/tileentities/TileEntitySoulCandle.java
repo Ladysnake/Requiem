@@ -25,8 +25,7 @@ public class TileEntitySoulCandle extends TileEntity implements ITickable {
 		AxisAlignedBB affectedArea = new AxisAlignedBB(x, y, z, x +1, y + 1, z+1).expandXyz(20);
 		List<EntityPlayer> players = this.world.getEntitiesWithinAABB(EntityPlayer.class, affectedArea);
 		for(EntityPlayer p : players) {
-			IncorporealDataHandler.getHandler(p).setSoulCandleNearby(true);
+			IncorporealDataHandler.getHandler(p).setSoulCandleNearby(true, 1);
 		}
 	}
-
 }

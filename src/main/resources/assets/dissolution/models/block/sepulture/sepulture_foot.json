@@ -1,10 +1,10 @@
 {
     "textures": {
-        "particle": "tartaros:blocks/burial/stone/burial_stone_feet_top",
-        "top": "tartaros:blocks/burial/stone/burial_stone_feet_top",
+        "particle": "dissolution:blocks/burial/stone/burial_stone_feet_top",
+        "top": "dissolution:blocks/burial/stone/burial_stone_feet_top",
         "bottom": "blocks/furnace_top",
-        "end": "tartaros:blocks/burial/stone/burial_stone_feet_end",
-        "side": "tartaros:blocks/burial/stone/burial_stone_feet_side"
+        "end": "dissolution:blocks/burial/stone/burial_stone_feet_end",
+        "side": "dissolution:blocks/burial/stone/burial_stone_feet_side"
     },
     "elements": [
         {   "from": [ 0, 0, 0 ],

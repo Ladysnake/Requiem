@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "tartaros:crystallizer/crystallizer_off"
+    "model": "dissolution:crystallizer/crystallizer_off"
   },
   "variants": {
     "normal": [{}],
@@ -9,7 +9,7 @@
     "lit": {
       "false": {},
       "true": {
-        "model": "tartaros:crystallizer/crystallizer_on"
+        "model": "dissolution:crystallizer/crystallizer_on"
       }
     },
     "facing": {

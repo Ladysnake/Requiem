@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "tartaros:items/sepulture_framing"
+        "layer0": "dissolution:items/sepulture_framing"
     }
 }

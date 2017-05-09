@@ -1,6 +1,6 @@
 {
     "parent": "block/cube_all",
     "textures": {
-        "all": "tartaros:blocks/ectoplasm_block"
+        "all": "dissolution:blocks/ectoplasm_block"
     }
 }
