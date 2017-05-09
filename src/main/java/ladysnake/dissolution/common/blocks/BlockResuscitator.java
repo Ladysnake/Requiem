@@ -1,8 +1,8 @@
-package ladysnake.tartaros.common.blocks;
+package ladysnake.dissolution.common.blocks;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.tileentities.TileEntityCrystallizer;
-import ladysnake.tartaros.common.tileentities.TileEntityResuscitator;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
+import ladysnake.dissolution.common.tileentities.TileEntityResuscitator;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;

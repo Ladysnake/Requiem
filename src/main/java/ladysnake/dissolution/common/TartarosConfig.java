@@ -1,5 +1,6 @@
-package ladysnake.tartaros.common;
+package ladysnake.dissolution.common;
 
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
@@ -8,8 +9,9 @@ public class TartarosConfig {
 	public static boolean anchorsXRay = true;
 	public static boolean doSableDrop = true;
 	public static boolean invisibleGhosts = false;
+	public static int flightMode = 2;
 	public static boolean oneUseWaystone = true;
-	public static boolean respawnInNether = false;
+	public static boolean respawnInNether = true;
 	public static boolean soulCompass = true;
 	public static boolean soulCompassAnchors = true;
 	
@@ -21,7 +23,7 @@ public class TartarosConfig {
 	        Property shouldRespawnInNetherProp = Tartaros.config.get(
 	        		Configuration.CATEGORY_GENERAL,
 	                "shouldRespawnInNether", // Property name
-	                "false", // Default value
+	                "true", // Default value
 	                "Whether players should respawn in the nether when they die");
 	        
 	        Property anchorsXRayProp = Tartaros.config.get(
@@ -35,6 +37,12 @@ public class TartarosConfig {
 	        		"invisibleGhosts",
 	        		"false",
 	        		"If set to true, dead players will be fully invisible");
+	        
+	        Property flightModeProp = Tartaros.config.get(
+	        		Configuration.CATEGORY_GENERAL,
+	        		"flightMode",
+	        		"2",
+	        		"-1= noflight, 0=painful flight, 1=creative, 2=spectator-lite");
 	        
 	        Property showSoulCompassProp = Tartaros.config.get(
 	        		Configuration.CATEGORY_CLIENT,
@@ -58,7 +66,7 @@ public class TartarosConfig {
 	        		Configuration.CATEGORY_GENERAL,
 	        		"soulInteractableBlocks",
 	        		"lever, glass_pane",
-	        		"The blocks that can be right clicked/broken by ghosts");
+	        		"The blocks that can be right clicked/broken by ghosts (Has no effect currently)");
 	        
 	        Property doSablePopProp = Tartaros.config.get(
 	        		Configuration.CATEGORY_GENERAL,
@@ -71,6 +79,7 @@ public class TartarosConfig {
 	        anchorsXRay = anchorsXRayProp.getBoolean();
 	        doSableDrop = doSablePopProp.getBoolean();
 	        invisibleGhosts = invisibleGhostProp.getBoolean();
+	        flightMode = flightModeProp.getInt();
 	        oneUseWaystone = oneUseWaystoneProp.getBoolean();
 	        respawnInNether = shouldRespawnInNetherProp.getBoolean();
 	        soulCompass = showSoulCompassProp.getBoolean();

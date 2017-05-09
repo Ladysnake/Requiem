@@ -1,13 +1,13 @@
-package ladysnake.tartaros.common.blocks;
+package ladysnake.dissolution.common.blocks;
 
 import java.util.List;
 
 import javax.annotation.Nullable;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
-import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
-import ladysnake.tartaros.common.tileentities.TileEntitySoulCandle;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.tileentities.TileEntitySoulCandle;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;

@@ -1,17 +1,17 @@
-package ladysnake.tartaros.common.blocks;
+package ladysnake.dissolution.common.blocks;
 
 import java.util.List;
 import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.TartarosConfig;
-import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
-import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
-import ladysnake.tartaros.common.init.ModBlocks;
-import ladysnake.tartaros.common.networking.PacketHandler;
-import ladysnake.tartaros.common.networking.IncorporealMessage;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.TartarosConfig;
+import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.networking.IncorporealMessage;
+import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

@@ -14,7 +14,7 @@ apply plugin: 'maven'
 
 version = "0.3.0"
 group = "es.esy.ladysnake.tartaros"
-archivesBaseName = "tartaros"
+archivesBaseName = "dissolution"
 
 
 sourceCompatibility = targetCompatibility = "1.6" // Need this here so eclipse task generates correctly.

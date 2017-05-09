@@ -1,8 +1,8 @@
-package ladysnake.tartaros.common.capabilities;
+package ladysnake.dissolution.common.capabilities;
 
 import java.util.ArrayList;
 
-import ladysnake.tartaros.common.TartarosConfig;
+import ladysnake.dissolution.common.TartarosConfig;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -58,7 +58,7 @@ public class IncorporealDataHandler {
 			if(!p.isCreative()) {
 				//p.capabilities.allowEdit = (!enable);
 				p.capabilities.disableDamage = enable;
-				p.capabilities.allowFlying = (enable && p.experienceLevel > 0);
+				p.capabilities.allowFlying = (enable && (p.experienceLevel > 0) && (TartarosConfig.flightMode >= 0));
 				p.capabilities.isFlying = (enable && p.capabilities.isFlying && p.experienceLevel > 0);
 				//System.out.println(p.capabilities.allowFlying + " " + (p.experienceLevel > 0));
 			}

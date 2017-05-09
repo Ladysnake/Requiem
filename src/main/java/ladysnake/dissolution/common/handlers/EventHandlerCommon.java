@@ -1,20 +1,20 @@
-package ladysnake.tartaros.common.handlers;
+package ladysnake.dissolution.common.handlers;
 
 import java.util.Random;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.TartarosConfig;
-import ladysnake.tartaros.common.blocks.IRespawnLocation;
-import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
-import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
-import ladysnake.tartaros.common.capabilities.IncorporealDataHandler.Provider;
-import ladysnake.tartaros.common.entity.EntityItemWaystone;
-import ladysnake.tartaros.common.entity.EntityMinion;
-import ladysnake.tartaros.common.entity.EntityMinionZombie;
-import ladysnake.tartaros.common.init.ModBlocks;
-import ladysnake.tartaros.common.items.ItemScythe;
-import ladysnake.tartaros.common.networking.IncorporealMessage;
-import ladysnake.tartaros.common.networking.PacketHandler;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.TartarosConfig;
+import ladysnake.dissolution.common.blocks.IRespawnLocation;
+import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler.Provider;
+import ladysnake.dissolution.common.entity.EntityItemWaystone;
+import ladysnake.dissolution.common.entity.EntityMinion;
+import ladysnake.dissolution.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.items.ItemScythe;
+import ladysnake.dissolution.common.networking.IncorporealMessage;
+import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
@@ -142,6 +142,9 @@ public class EventHandlerCommon {
 			clone.setSynced(false);
 			IMessage msg = new IncorporealMessage(event.getEntityPlayer().getUniqueID().getMostSignificantBits(), event.getEntityPlayer().getUniqueID().getLeastSignificantBits(), true);
 			PacketHandler.net.sendToAll(msg);
+			
+			if(TartarosConfig.respawnInNether)
+				event.getEntityPlayer().setPosition(event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ);
 		}
 	}
 	

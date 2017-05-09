@@ -1,15 +1,15 @@
-package ladysnake.tartaros.common.blocks;
+package ladysnake.dissolution.common.blocks;
 
 import java.util.Random;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
-import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
-import ladysnake.tartaros.common.init.ModItems;
-import ladysnake.tartaros.common.networking.PacketHandler;
-import ladysnake.tartaros.common.tileentities.TileEntityCrystallizer;
-import ladysnake.tartaros.common.tileentities.TileEntitySepulture;
-import ladysnake.tartaros.common.networking.IncorporealMessage;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.networking.IncorporealMessage;
+import ladysnake.dissolution.common.networking.PacketHandler;
+import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
+import ladysnake.dissolution.common.tileentities.TileEntitySepulture;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
@@ -51,6 +51,7 @@ public class BlockSepulture extends BlockHorizontal implements IRespawnLocation,
         this.setUnlocalizedName(Reference.Blocks.SEPULTURE.getUnlocalizedName());
 		this.setRegistryName(Reference.Blocks.SEPULTURE.getRegistryName());
 		this.setHardness(1f);
+		this.setHarvestLevel("pickaxe", 0);
 	}
 	
 	public static enum EnumPartType implements IStringSerializable

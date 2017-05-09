@@ -1,7 +1,7 @@
 
-package ladysnake.tartaros.client.model;
+package ladysnake.dissolution.client.model;
 
-import ladysnake.tartaros.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.entity.EntityMinionZombie;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityZombie;

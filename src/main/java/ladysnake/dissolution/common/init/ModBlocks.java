@@ -1,15 +1,15 @@
-package ladysnake.tartaros.common.init;
+package ladysnake.dissolution.common.init;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.Tartaros;
-import ladysnake.tartaros.common.blocks.BlockCrystallizer;
-import ladysnake.tartaros.common.blocks.BlockEctoplasm;
-import ladysnake.tartaros.common.blocks.BlockMercuriusWaystone;
-import ladysnake.tartaros.common.blocks.BlockResuscitator;
-import ladysnake.tartaros.common.blocks.BlockSepulture;
-import ladysnake.tartaros.common.blocks.BlockSoulAnchor;
-import ladysnake.tartaros.common.blocks.BlockSoulCandle;
-import ladysnake.tartaros.common.blocks.BlockSoulExtractor;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.blocks.BlockCrystallizer;
+import ladysnake.dissolution.common.blocks.BlockEctoplasm;
+import ladysnake.dissolution.common.blocks.BlockMercuriusWaystone;
+import ladysnake.dissolution.common.blocks.BlockResuscitator;
+import ladysnake.dissolution.common.blocks.BlockSepulture;
+import ladysnake.dissolution.common.blocks.BlockSoulAnchor;
+import ladysnake.dissolution.common.blocks.BlockSoulCandle;
+import ladysnake.dissolution.common.blocks.BlockSoulExtractor;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;

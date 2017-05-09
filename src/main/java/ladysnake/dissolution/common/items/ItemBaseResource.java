@@ -1,7 +1,7 @@
-package ladysnake.tartaros.common.items;
+package ladysnake.dissolution.common.items;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.Tartaros;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Tartaros;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,7 +19,7 @@ public class ItemBaseResource extends Item {
 	
 	@Override
 	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
-		for (int i = 0; i < 16; ++i)
+		for (int i = 0; i < 5; ++i)
         {
             subItems.add(new ItemStack(itemIn, 1, i));
         }

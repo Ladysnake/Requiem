@@ -1,4 +1,4 @@
-package ladysnake.tartaros.common.entity;
+package ladysnake.dissolution.common.entity;
 
 import java.util.UUID;
 
@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Optional;
 
-import ladysnake.tartaros.common.entity.ai.EntityAIMinionAttack;
+import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityCreature;

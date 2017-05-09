@@ -1,12 +1,12 @@
-package ladysnake.tartaros.client.handlers;
+package ladysnake.dissolution.client.handlers;
 
-import ladysnake.tartaros.client.gui.GuiIncorporealOverlay;
-import ladysnake.tartaros.client.renders.blocks.RenderSoulAnchor;
-import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
-import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
-import ladysnake.tartaros.common.networking.IncorporealMessage;
-import ladysnake.tartaros.common.networking.PacketHandler;
-import ladysnake.tartaros.common.networking.PingMessage;
+import ladysnake.dissolution.client.gui.GuiIncorporealOverlay;
+import ladysnake.dissolution.client.renders.blocks.RenderSoulAnchor;
+import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.networking.IncorporealMessage;
+import ladysnake.dissolution.common.networking.PacketHandler;
+import ladysnake.dissolution.common.networking.PingMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;

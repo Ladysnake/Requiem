@@ -1,4 +1,4 @@
-package ladysnake.tartaros.client.renders.entities;
+package ladysnake.dissolution.client.renders.entities;
 
 import java.util.Random;
 
@@ -6,9 +6,9 @@ import javax.annotation.Nonnull;
 
 import org.lwjgl.opengl.GL11;
 
-import ladysnake.tartaros.client.models.ModelWanderingSoul;
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.entity.EntityWanderingSoul;
+import ladysnake.dissolution.client.models.ModelWanderingSoul;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.entity.EntityWanderingSoul;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelZombie;

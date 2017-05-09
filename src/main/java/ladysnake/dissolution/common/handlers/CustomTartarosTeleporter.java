@@ -1,4 +1,4 @@
-package ladysnake.tartaros.common.handlers;
+package ladysnake.dissolution.common.handlers;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;

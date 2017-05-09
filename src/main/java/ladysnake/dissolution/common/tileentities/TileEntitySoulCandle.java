@@ -1,8 +1,8 @@
-package ladysnake.tartaros.common.tileentities;
+package ladysnake.dissolution.common.tileentities;
 
 import java.util.List;
 
-import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
