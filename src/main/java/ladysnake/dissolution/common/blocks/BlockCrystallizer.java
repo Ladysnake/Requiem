@@ -42,12 +42,12 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
 	public final int GUI_ID = 1;
 
 	public BlockCrystallizer() {
-		super(Material.PISTON);
+		super(Material.ROCK);
 		setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		setUnlocalizedName(Reference.Blocks.CRYSTALLIZER.getUnlocalizedName());
 		setRegistryName(Reference.Blocks.CRYSTALLIZER.getRegistryName());
 		TileEntityCrystallizer.init();
-		this.setHardness(1.0f);
+		this.setHardness(2.0f);
 		this.setHarvestLevel("pickaxe", 1);
 	}
 
@@ -144,13 +144,13 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
 
         if (active)
         {
-            worldIn.setBlockState(pos, Blocks.LIT_FURNACE.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)), 3);
-            worldIn.setBlockState(pos, Blocks.LIT_FURNACE.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)), 3);
+            worldIn.setBlockState(pos, ModBlocks.CRYSTALLIZER.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, true), 3);
+            worldIn.setBlockState(pos, ModBlocks.CRYSTALLIZER.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, true), 3);
         }
         else
         {
-            worldIn.setBlockState(pos, Blocks.FURNACE.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)), 3);
-            worldIn.setBlockState(pos, Blocks.FURNACE.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)), 3);
+            worldIn.setBlockState(pos, ModBlocks.CRYSTALLIZER.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, false), 3);
+            worldIn.setBlockState(pos, ModBlocks.CRYSTALLIZER.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, false), 3);
         }
 
         te.keepInventory = false;

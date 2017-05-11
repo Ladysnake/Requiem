@@ -151,7 +151,6 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
 	    */
 	    
 	    GlStateManager.disableRescaleNormal();
-	    GlStateManager.enableDepth();
 	    Minecraft.getMinecraft().entityRenderer.enableLightmap();
 	    
 	    GlStateManager.popMatrix();
@@ -172,28 +171,28 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
         {
             GlStateManager.pushMatrix();
             float f1 = 2.0F / (float)(18 - j);
-
-            if (j == 0 && false)
+/*
+            if (j == 0)
             {
                 this.bindTexture(TEXTURE);
                 f1 = 0.15F;
                 GlStateManager.enableBlend();
                 GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             }
-
+*/
             if (j >= 1)
             {
                 this.bindTexture(END_PORTAL_TEXTURE);
                 flag = true;
                 Minecraft.getMinecraft().entityRenderer.func_191514_d(true);
             }
-
-            if (j == 1 && false)
+/*
+            if (j == 1)
             {
                 GlStateManager.enableBlend();
                 GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
             }
-
+*/
             GlStateManager.texGen(GlStateManager.TexGen.S, 9216);
             GlStateManager.texGen(GlStateManager.TexGen.T, 9216);
             GlStateManager.texGen(GlStateManager.TexGen.R, 9216);

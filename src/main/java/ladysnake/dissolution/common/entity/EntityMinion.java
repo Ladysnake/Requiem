@@ -1,34 +1,14 @@
 package ladysnake.dissolution.common.entity;
 
 import java.util.Random;
-import java.util.UUID;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.Optional;
-
-import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.IEntityOwnable;
+import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAIMoveThroughVillage;
-import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
-import net.minecraft.entity.ai.EntityAIWatchClosest;
-import net.minecraft.entity.ai.EntityAIZombieAttack;
-import net.minecraft.entity.monster.EntityIronGolem;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntityPigZombie;
-import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.entity.passive.EntityVillager;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -37,16 +17,18 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
-public abstract class EntityMinion extends EntityCreature {
+public abstract class EntityMinion extends EntityCreature implements IEntityAdditionalSpawnData {
 	public boolean corpse;
 	protected int remainingTicks;
 	public static int maxTicks = 1200;
+	protected static float sizeX = 0.6F, sizeY = 1.95F;
+	private static final DataParameter<Boolean> IS_CHILD = EntityDataManager.<Boolean>createKey(EntityMinion.class, DataSerializers.BOOLEAN);
 	
 	public EntityMinion(World worldIn) {
 		super(worldIn);
-        setSize(0.6F, 1.95F);
+        setSize(sizeX, sizeY);
         corpse = true;
         this.remainingTicks = maxTicks;
 	}
@@ -63,6 +45,12 @@ public abstract class EntityMinion extends EntityCreature {
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0D);
         this.isAIDisabled();
 	}
+	
+    protected void entityInit()
+    {
+        super.entityInit();
+        this.getDataManager().register(IS_CHILD, Boolean.valueOf(false));
+    }
 	
 	@Override
 	public boolean isAIDisabled() {
@@ -107,14 +95,68 @@ public abstract class EntityMinion extends EntityCreature {
 		super.onUpdate();
 	}
 	
+	public void setChild(boolean childMinion)
+    {
+        this.getDataManager().set(IS_CHILD, Boolean.valueOf(childMinion));
+        /*
+        if (this.world != null && !this.world.isRemote)
+        {
+            IAttributeInstance iattributeinstance = this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+            //iattributeinstance.removeModifier(BABY_SPEED_BOOST);
+
+            if (childMinion)
+            {
+            //    iattributeinstance.applyModifier(BABY_SPEED_BOOST);
+            }
+        }*/
+
+        this.setChildSize(childMinion);
+    }
+	
+	@Override
+	public boolean isChild()
+    {
+        return ((Boolean)this.getDataManager().get(IS_CHILD)).booleanValue();
+    }
+	
+	public void setChildSize(boolean isChild)
+    {
+		float ratio = (isChild ? 0.5F : 1.0F);
+		if(isCorpse())
+			super.setSize(sizeY*ratio, sizeX*ratio);
+		else
+			super.setSize(sizeX*ratio, sizeY*ratio);
+    }
+	
+	public void notifyDataManagerChange(DataParameter<?> key)
+    {
+        if (IS_CHILD.equals(key))
+        {
+            this.setChildSize(this.isChild());
+        }
+
+        super.notifyDataManagerChange(key);
+    }
+	
 	@Override
 	protected boolean canEquipItem(ItemStack stack) {
 		return true;
 	}
+	
+	@Override
+	public EnumCreatureAttribute getCreatureAttribute()
+    {
+        return EnumCreatureAttribute.UNDEAD;
+    }
 
 	public void setCorpse(boolean isCorpse) {
 		this.corpse = isCorpse;
 		this.remainingTicks = maxTicks;
+		
+		if(isCorpse)
+			this.setSize(sizeY, sizeX);
+		else
+			this.setSize(sizeX, sizeY);
 	}
 	
 	public boolean isCorpse(){
@@ -129,6 +171,8 @@ public abstract class EntityMinion extends EntityCreature {
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
 		compound.setBoolean("Corpse", this.isCorpse());
+		if (this.isChild())
+            compound.setBoolean("IsBaby", true);
 		return compound;
 	}
 
@@ -136,6 +180,17 @@ public abstract class EntityMinion extends EntityCreature {
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
 		this.corpse = compound.getBoolean("Corpse");
+		this.setChild(compound.getBoolean("IsBaby"));
+	}
+
+	@Override
+	public void writeSpawnData(ByteBuf buffer) {
+		buffer.writeBoolean(corpse);
+	}
+
+	@Override
+	public void readSpawnData(ByteBuf additionalData) {
+		setCorpse(additionalData.readBoolean());
 	}
 	
 }

@@ -1,17 +1,17 @@
 package ladysnake.dissolution.client.handlers;
 
-import ladysnake.dissolution.client.gui.GuiIncorporealOverlay;
 import ladysnake.dissolution.client.renders.blocks.RenderSoulAnchor;
+import ladysnake.dissolution.common.blocks.IRespawnLocation;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
-import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PingMessage;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiDownloadTerrain;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -30,9 +30,9 @@ public class EventHandlerClient {
 	public void onGameTick(TickEvent event) {
 		if (Minecraft.getMinecraft().player == null || !Minecraft.getMinecraft().player.world.isRemote) return;
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player);
-		//System.out.println(playerCorp.isSynced());
 		if(!playerCorp.isSynced() && refresh++%100 == 0){
-			IMessage msg = new PingMessage(Minecraft.getMinecraft().player.getUniqueID().getMostSignificantBits(), Minecraft.getMinecraft().player.getUniqueID().getLeastSignificantBits());
+			IMessage msg = new PingMessage(Minecraft.getMinecraft().player.getUniqueID().getMostSignificantBits(), 
+					Minecraft.getMinecraft().player.getUniqueID().getLeastSignificantBits());
 			PacketHandler.net.sendToServer(msg);
 		}
 	}
@@ -49,10 +49,12 @@ public class EventHandlerClient {
 	
 	@SubscribeEvent
 	public void onRenderSpecificHand(RenderSpecificHandEvent event) {
-		final IIncorporealHandler myCorp = IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player);
-		
-		if(myCorp.isIncorporeal()){
-	    		event.setCanceled(true);
-	    	}
+   		event.setCanceled(IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal());
+	}
+	
+	@SubscribeEvent
+	public void onDrawBlockHighlight (DrawBlockHighlightEvent event) {
+		event.setCanceled(IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal() && 
+				!(event.getPlayer().world.getBlockState(event.getTarget().getBlockPos()).getBlock() instanceof IRespawnLocation));
 	}
 }

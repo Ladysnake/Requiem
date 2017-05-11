@@ -1,7 +1,8 @@
 package ladysnake.dissolution.common.entity;
 
+import io.netty.buffer.ByteBuf;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
-import net.minecraft.entity.Entity;
+import net.minecraft.block.Block;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
@@ -12,8 +13,10 @@ import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class EntityMinionZombie extends EntityMinion {
@@ -21,7 +24,7 @@ public class EntityMinionZombie extends EntityMinion {
 	private boolean isHusk;
 
 	public EntityMinionZombie(World worldIn) {
-		this(worldIn, false);
+		this(worldIn, false, false);
 	}
 
 	/**
@@ -31,10 +34,10 @@ public class EntityMinionZombie extends EntityMinion {
 	 * @param zombieType
 	 *            false for the default zombie
 	 */
-	public EntityMinionZombie(World worldIn, boolean isHusk) {
+	public EntityMinionZombie(World worldIn, boolean isHusk, boolean isChild) {
 		super(worldIn);
-		System.out.println(isHusk);
 		this.isHusk = isHusk;
+		setChild(isChild);
 	}
 
 	@Override
@@ -43,8 +46,6 @@ public class EntityMinionZombie extends EntityMinion {
 		this.tasks.addTask(2, new EntityAIMinionAttack(this, 1.0D, false));
 		this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
 		this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
-		this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-		this.tasks.addTask(8, new EntityAILookIdle(this));
 		this.applyEntityAI();
 	}
 
@@ -53,14 +54,39 @@ public class EntityMinionZombie extends EntityMinion {
 		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityMob.class, true));
 	}
 	
-	public void setHusk(boolean isHusk) {
-		this.isHusk = isHusk;
+	public void setHusk(boolean husk) {
+		this.isHusk = husk;
 	}
-
+	
 	public boolean isHusk() {
 		return isHusk;
 	}
 	
+	@Override
+	protected SoundEvent getAmbientSound()
+    {
+        return (isCorpse()) ? null : SoundEvents.ENTITY_ZOMBIE_AMBIENT;
+    }
+
+    protected SoundEvent getHurtSound()
+    {
+    	return (isCorpse()) ? null : SoundEvents.ENTITY_ZOMBIE_HURT;
+    }
+
+    protected SoundEvent getDeathSound()
+    {
+    	return (isCorpse()) ? null : SoundEvents.ENTITY_ZOMBIE_DEATH;
+    }
+
+    protected SoundEvent getStepSound()
+    {
+    	return (isCorpse()) ? null : SoundEvents.ENTITY_ZOMBIE_STEP;
+    }
+
+    protected void playStepSound(BlockPos pos, Block blockIn)
+    {
+        this.playSound(this.getStepSound(), 0.15F, 1.0F);
+    }
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
@@ -73,8 +99,21 @@ public class EntityMinionZombie extends EntityMinion {
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		this.isHusk = compound.getBoolean("isHusk");
+		this.setHusk(compound.getBoolean("isHusk"));
 		this.corpse = compound.getBoolean("Death01");
+	}
+	
+	@Override
+	public void writeSpawnData(ByteBuf buffer) {
+		super.writeSpawnData(buffer);
+		buffer.writeBoolean(isHusk());
+	}
+	
+	@Override
+	public void readSpawnData(ByteBuf additionalData) {
+		super.readSpawnData(additionalData);
+		System.out.println("clientside isHusk: " + additionalData.getBoolean(1));
+		setHusk(additionalData.readBoolean());
 	}
 
 }

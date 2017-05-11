@@ -11,12 +11,14 @@ import ladysnake.dissolution.common.entity.EntityMinion;
 import ladysnake.dissolution.common.entity.EntityWanderingSoul;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelZombie;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -34,6 +36,15 @@ public class RenderMinionSkeleton extends RenderBiped<EntityMinionSkeleton> {
 
     public RenderMinionSkeleton(RenderManager rendermanagerIn, boolean death) {
     		super(rendermanagerIn, new ModelMinionSkeleton(), 0.5F);
+    		LayerBipedArmor layerbipedarmor = new LayerBipedArmor(this)
+            {
+                protected void initArmor()
+                {
+                    this.modelLeggings = new ModelMinionSkeleton(0.5F, true);
+                    this.modelArmor = new ModelMinionSkeleton(1.0F, true);
+                }
+            };
+            this.addLayer(layerbipedarmor);
     }
 
     @Override

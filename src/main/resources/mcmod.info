@@ -1,11 +1,7 @@
 [
 {
   "modid": "dissolution",
-<<<<<<< HEAD
-  "name": "Tartaros - Dissolution",
-=======
   "name": "Dissolution",
->>>>>>> d4c65f861c086193425f17807d684c7654c6a0d4
   "description": "A mod aimed at making death more interesting",
   "version": "0.3.0",
   "mcversion": "${mcversion}",

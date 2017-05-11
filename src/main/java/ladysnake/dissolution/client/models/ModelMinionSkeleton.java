@@ -4,6 +4,7 @@ import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionZombie;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.model.ModelSkeleton;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.AbstractSkeleton;
@@ -26,7 +27,7 @@ public class ModelMinionSkeleton extends ModelBiped
 
     public ModelMinionSkeleton(float modelSize, boolean show)
     {
-        super(modelSize, 0.0F, 64, 32);
+        super();
 
         if (!show)
         {

@@ -1,7 +1,9 @@
 package ladysnake.dissolution.common.blocks;
 
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulExtractor;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -36,7 +38,7 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
 	public static final PropertyBool OUTPUT = PropertyBool.create("output");
 	
 	public BlockSoulExtractor() {
-		super(Material.PISTON);
+		super(Material.ROCK);
 		setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
         setUnlocalizedName(Reference.Blocks.SOUL_EXTRACTOR.getUnlocalizedName());
         setRegistryName(Reference.Blocks.SOUL_EXTRACTOR.getRegistryName());
@@ -125,5 +127,31 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
 		super.onBlockHarvested(worldIn, pos, state, player);
 		getTE(worldIn, pos).emptyInWorld(worldIn);
 	}
+	
+	public static void setState(boolean active, World worldIn, BlockPos pos)
+    {
+        IBlockState iblockstate = worldIn.getBlockState(pos);
+        TileEntitySoulExtractor te = (TileEntitySoulExtractor) worldIn.getTileEntity(pos);
+        te.keepInventory = true;
+
+        if (active)
+        {
+            worldIn.setBlockState(pos, ModBlocks.SOUL_EXTRACTOR.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, true), 3);
+            worldIn.setBlockState(pos, ModBlocks.SOUL_EXTRACTOR.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, true), 3);
+        }
+        else
+        {
+            worldIn.setBlockState(pos, ModBlocks.SOUL_EXTRACTOR.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, false), 3);
+            worldIn.setBlockState(pos, ModBlocks.SOUL_EXTRACTOR.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, false), 3);
+        }
+
+        te.keepInventory = false;
+/*
+        if (te != null)
+        {
+            te.validate();
+            worldIn.setTileEntity(pos, te);
+        }*/
+    }
 
 }

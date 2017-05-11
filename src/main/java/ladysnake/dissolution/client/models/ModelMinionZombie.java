@@ -1,24 +1,22 @@
 package ladysnake.dissolution.client.models;
 
-import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionZombie;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.model.ModelZombie;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelMinionZombie extends ModelBiped {
+public class ModelMinionZombie extends ModelZombie {
 	public ModelMinionZombie() {
 		this(0.0F, false);
 	}
 
 	public ModelMinionZombie(float modelSize, boolean show) {
-		super(modelSize, 0.0F, 64, show ? 32 : 64);
+		super();
 	}
 
 	@Override

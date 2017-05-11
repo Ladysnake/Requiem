@@ -17,6 +17,7 @@ public class TileEntitySoulAnchor extends TileEntity {
 	
 	public TileEntitySoulAnchor() {
 		super();
+		this.targetPos = new BlockPos(0, 128, 0);
 	}
 	
 	public TileEntitySoulAnchor(BlockPos pos, int dim) {

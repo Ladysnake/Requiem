@@ -11,7 +11,9 @@ public class ModCrafting {
 	public static void register() {
 		GameRegistry.addShapedRecipe(new ItemStack(ModBlocks.CRYSTALLIZER), "SGI", "BIB", "QRS", 'S', Blocks.COBBLESTONE, 'G', Blocks.GLASS, 'I', Items.IRON_INGOT, 'B', Blocks.IRON_BLOCK, 'Q', Items.QUARTZ, 'R', Items.REDSTONE);
 		GameRegistry.addShapedRecipe(new ItemStack(ModBlocks.ECTOPLASM), "EEE", "EEE", "EEE", 'E', ItemBaseResource.resourceFromName("ectoplasm"));
+		GameRegistry.addShapelessRecipe(ItemBaseResource.resourceFromName("ectoplasm", 9), ModBlocks.ECTOPLASM);
 		GameRegistry.addShapedRecipe(new ItemStack(ModBlocks.ECTOPLASMA), "EEE", "EEE", "EEE", 'E', ItemBaseResource.resourceFromName("ectoplasma"));
+		GameRegistry.addShapelessRecipe(ItemBaseResource.resourceFromName("ectoplasma", 9), ModBlocks.ECTOPLASMA);
 		GameRegistry.addShapedRecipe(new ItemStack(ModItems.EYE_OF_THE_UNDEAD), "IGI", "IEI", "ISI", 'I', Items.IRON_INGOT, 'G', Blocks.GLASS, 'E', Items.ENDER_EYE, 'S', ItemBaseResource.resourceFromName("ectoplasma"));
 		GameRegistry.addShapedRecipe(new ItemStack(ModItems.GRAND_FAUX), "IBB", "PSS", "SPP", 'I', Items.IRON_INGOT, 'B', Blocks.IRON_BLOCK, 'P', Items.PAPER, 'S', Items.STICK);
 		GameRegistry.addShapedRecipe(new ItemStack(ModItems.SCYTHE_IRON), "III", " SS", "S  ", 'I', Items.IRON_INGOT, 'S', Items.STICK);

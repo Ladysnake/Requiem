@@ -50,6 +50,6 @@ public interface IIncorporealHandler {
 	
 	public void setLastDeathMessage(String lastDeath);
 	
-	public void tick(PlayerTickEvent event);	
+	public void tick(PlayerTickEvent event);
 
 }

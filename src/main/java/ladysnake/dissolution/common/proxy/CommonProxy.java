@@ -4,6 +4,8 @@ import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.Tartaros;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.handlers.EventHandlerCommon;
+import ladysnake.dissolution.common.handlers.LivingDeathHandler;
+import ladysnake.dissolution.common.handlers.PlayerTickHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModCrafting;
 import ladysnake.dissolution.common.init.ModEntities;
@@ -34,6 +36,8 @@ public abstract class CommonProxy {
 	
 	public void init() {
 		MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
+		MinecraftForge.EVENT_BUS.register(new LivingDeathHandler());
+		MinecraftForge.EVENT_BUS.register(new PlayerTickHandler());
 		System.out.println("init");
 		
 		GameRegistry.registerTileEntity(TileEntityCrystallizer.class, Reference.MOD_ID + "tileentitycrystallizer");

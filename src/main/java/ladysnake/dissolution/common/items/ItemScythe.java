@@ -19,6 +19,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
@@ -151,7 +152,8 @@ public abstract class ItemScythe extends ItemSword {
 	 * Fills an empty bottle in the wielder's inventory with a soul
 	 * @param p the player wielding this scythe
 	 */
-	public void fillBottle(EntityPlayer p) {
+	public void harvestSoul(EntityPlayer p, EntityLivingBase s) {
+		if(s.getCreatureAttribute() == EnumCreatureAttribute.UNDEAD) return;
 		this.fillBottle(p, 1);
 	}
 	

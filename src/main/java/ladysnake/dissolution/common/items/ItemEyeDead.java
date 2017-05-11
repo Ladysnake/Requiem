@@ -80,15 +80,17 @@ public class ItemEyeDead extends Item {
 		if (IncorporealDataHandler.getHandler(player).isIncorporeal() || IncorporealDataHandler.getHandler(player).isIncorporeal()) return;
 		
 		ItemStack ammo = Helper.findItem(player, ModItems.SOUL_IN_A_BOTTLE);
-		if (ammo.isEmpty()) {
-			((EntityPlayer)entityLiving).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".nosoul", new Object[0]), true);
-			return;
-		}
-		
-		stack.damageItem(1, player);
 		
 		List<EntityMinion> minions = worldIn.getEntitiesWithinAABB(EntityMinion.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20));
+
+		if(minions.isEmpty()) return;
+		
+		boolean used = false;
 		for (EntityMinion m : minions) {
+			if (ammo.isEmpty() && m.isCorpse()) {
+				((EntityPlayer)entityLiving).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".nosoul", new Object[0]), true);
+				break;
+			}
 			for(int i = 0; i < (m.isCorpse() ? 50 : 5); i++){
 				Random rand = new Random();
 				double motionX = rand.nextGaussian() * 0.1D;
@@ -96,10 +98,14 @@ public class ItemEyeDead extends Item {
 				double motionZ = rand.nextGaussian() * 0.1D;
 				worldIn.spawnParticle(m.isCorpse() ? EnumParticleTypes.DRAGON_BREATH : EnumParticleTypes.CLOUD, false, m.posX , m.posY+ 1.0D, m.posZ, motionX, motionY, motionZ, new int[0]);
 			}
-			if(m.isCorpse())
+			if(m.isCorpse()) {
 				ammo.shrink(1);
+				used = true;
+			}
 			m.setCorpse(false);
 		}
+		if(used)
+			stack.damageItem(1, player);
 	}
 	
 

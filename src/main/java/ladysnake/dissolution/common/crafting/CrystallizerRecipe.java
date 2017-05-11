@@ -3,6 +3,7 @@ package ladysnake.dissolution.common.crafting;
 import java.util.ArrayList;
 import java.util.List;
 
+import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.inventory.Helper;
 import ladysnake.dissolution.common.items.ItemBaseResource;
 import net.minecraft.init.Blocks;
@@ -17,6 +18,7 @@ public class CrystallizerRecipe {
 	
 	static {
 		new CrystallizerRecipe(ItemBaseResource.resourceFromName("ectoplasm"), ItemBaseResource.resourceFromName("ectoplasma"), 400);
+		new CrystallizerRecipe(new ItemStack(ModBlocks.ECTOPLASMA), new ItemStack(ModBlocks.ECTOPLASM), 400*9);
 		new CrystallizerRecipe(new ItemStack(Blocks.SAND), new ItemStack(Blocks.GLASS), 20);
 		new CrystallizerRecipe(new ItemStack(Blocks.NETHERRACK), new ItemStack(Blocks.NETHER_BRICK));
 	}

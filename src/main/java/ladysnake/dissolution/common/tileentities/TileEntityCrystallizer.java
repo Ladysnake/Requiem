@@ -286,7 +286,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
             if (flag != this.isBurning())
             {
                 flag1 = true;
-                IBlockState state1 = getWorld().getBlockState(getPos());
+//                IBlockState state1 = getWorld().getBlockState(getPos());
 				BlockCrystallizer.setState(this.isBurning(), this.world, this.pos);
                 System.out.println("Update 1 !");
                 if (getWorld() != null) {
