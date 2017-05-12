@@ -35,9 +35,8 @@ public class EntityMinionZombie extends EntityMinion {
 	 *            false for the default zombie
 	 */
 	public EntityMinionZombie(World worldIn, boolean isHusk, boolean isChild) {
-		super(worldIn);
+		super(worldIn, isChild);
 		this.isHusk = isHusk;
-		setChild(isChild);
 	}
 
 	@Override
@@ -47,11 +46,6 @@ public class EntityMinionZombie extends EntityMinion {
 		this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
 		this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
 		this.applyEntityAI();
-	}
-
-	protected void applyEntityAI() {
-		this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[] { EntityPigZombie.class }));
-		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityMob.class, true));
 	}
 	
 	public void setHusk(boolean husk) {
@@ -65,22 +59,22 @@ public class EntityMinionZombie extends EntityMinion {
 	@Override
 	protected SoundEvent getAmbientSound()
     {
-        return (isCorpse()) ? null : SoundEvents.ENTITY_ZOMBIE_AMBIENT;
+        return (isCorpse()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_AMBIENT;
     }
 
     protected SoundEvent getHurtSound()
     {
-    	return (isCorpse()) ? null : SoundEvents.ENTITY_ZOMBIE_HURT;
+    	return (isCorpse()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-    	return (isCorpse()) ? null : SoundEvents.ENTITY_ZOMBIE_DEATH;
+    	return (isCorpse()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_DEATH;
     }
 
     protected SoundEvent getStepSound()
     {
-    	return (isCorpse()) ? null : SoundEvents.ENTITY_ZOMBIE_STEP;
+    	return (isCorpse()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_STEP;
     }
 
     protected void playStepSound(BlockPos pos, Block blockIn)
@@ -91,8 +85,7 @@ public class EntityMinionZombie extends EntityMinion {
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
-		compound.setBoolean("isHusk", this.isHusk);
-		compound.setBoolean("Death01", this.corpse);
+		compound.setBoolean("isHusk", this.isHusk());
 		return compound;
 	}
 
@@ -100,7 +93,6 @@ public class EntityMinionZombie extends EntityMinion {
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
 		this.setHusk(compound.getBoolean("isHusk"));
-		this.corpse = compound.getBoolean("Death01");
 	}
 	
 	@Override
@@ -112,7 +104,6 @@ public class EntityMinionZombie extends EntityMinion {
 	@Override
 	public void readSpawnData(ByteBuf additionalData) {
 		super.readSpawnData(additionalData);
-		System.out.println("clientside isHusk: " + additionalData.getBoolean(1));
 		setHusk(additionalData.readBoolean());
 	}
 

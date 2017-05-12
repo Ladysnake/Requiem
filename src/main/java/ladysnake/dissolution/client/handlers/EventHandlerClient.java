@@ -7,15 +7,14 @@ import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PingMessage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiDownloadTerrain;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
-import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -23,6 +22,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class EventHandlerClient {
 	
+	public static final float SOUL_VERTICAL_SPEED = 0.1f;
 	private static RenderSoulAnchor renderAnch = new RenderSoulAnchor();
 	private static int refresh = 0;
 
@@ -34,6 +34,22 @@ public class EventHandlerClient {
 			IMessage msg = new PingMessage(Minecraft.getMinecraft().player.getUniqueID().getMostSignificantBits(), 
 					Minecraft.getMinecraft().player.getUniqueID().getLeastSignificantBits());
 			PacketHandler.net.sendToServer(msg);
+		}
+	}
+	
+	@SubscribeEvent
+	public void onPlayerTick(PlayerTickEvent event) {
+		if(event.side == Side.SERVER) return;
+		if(IncorporealDataHandler.getHandler(event.player).isIncorporeal() && !event.player.isCreative()) {
+		
+			if(Minecraft.getMinecraft().gameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindJump)) {
+				event.player.motionY = SOUL_VERTICAL_SPEED * (event.player.experienceLevel > 0 ? 1 : 0.1f);
+				event.player.velocityChanged = true;
+			} else {
+				event.player.motionY = -0.8f * SOUL_VERTICAL_SPEED;
+				event.player.fallDistance = 0;
+				event.player.velocityChanged = true;
+			}
 		}
 	}
 	
@@ -54,7 +70,9 @@ public class EventHandlerClient {
 	
 	@SubscribeEvent
 	public void onDrawBlockHighlight (DrawBlockHighlightEvent event) {
-		event.setCanceled(IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal() && 
-				!(event.getPlayer().world.getBlockState(event.getTarget().getBlockPos()).getBlock() instanceof IRespawnLocation));
+		try {
+			event.setCanceled(IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal() && 
+					!(event.getPlayer().world.getBlockState(event.getTarget().getBlockPos()).getBlock() instanceof IRespawnLocation));
+		} catch (NullPointerException e) {	}
 	}
 }

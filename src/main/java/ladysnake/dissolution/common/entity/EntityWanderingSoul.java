@@ -74,7 +74,7 @@ public class EntityWanderingSoul extends EntityMob {
 		if(super.isEntityInvulnerable(source))
 			return true;
 		
-		if (source.getEntity() instanceof EntityPlayer || source.isUnblockable()){
+		if (source.getEntity() instanceof EntityPlayer || source.canHarmInCreative()){
 			return false;
 		}
 	    return true;

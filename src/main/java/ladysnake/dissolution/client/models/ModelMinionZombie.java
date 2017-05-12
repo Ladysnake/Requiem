@@ -16,7 +16,7 @@ public class ModelMinionZombie extends ModelZombie {
 	}
 
 	public ModelMinionZombie(float modelSize, boolean show) {
-		super();
+		super(modelSize, show);
 	}
 
 	@Override

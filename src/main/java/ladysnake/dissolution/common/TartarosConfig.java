@@ -4,11 +4,16 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
 public class TartarosConfig {
+	
+	public static final int NO_FLIGHT = -1;
+	public static final int CUSTOM_FLIGHT = 0;
+	public static final int CREATIVE_FLIGHT = 1;
+	public static final int SPECTATOR_FLIGHT = 2;
 
 	public static boolean anchorsXRay = true;
 	public static boolean doSableDrop = true;
 	public static boolean invisibleGhosts = false;
-	public static int flightMode = 2;
+	public static int flightMode = CUSTOM_FLIGHT;
 	public static boolean oneUseWaystone = true;
 	public static boolean respawnInNether = true;
 	public static boolean soulCompass = true;
@@ -40,7 +45,7 @@ public class TartarosConfig {
 	        Property flightModeProp = Tartaros.config.get(
 	        		Configuration.CATEGORY_GENERAL,
 	        		"flightMode",
-	        		"2",
+	        		"0",
 	        		"-1= noflight, 0=painful flight, 1=creative, 2=spectator-lite");
 	        
 	        Property showSoulCompassProp = Tartaros.config.get(

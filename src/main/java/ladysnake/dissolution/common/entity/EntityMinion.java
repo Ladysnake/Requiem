@@ -3,38 +3,75 @@ package ladysnake.dissolution.common.entity;
 import java.util.Random;
 
 import io.netty.buffer.ByteBuf;
+import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.EntityAIAttackMelee;
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntityPigZombie;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntityTippedArrow;
+import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
-public abstract class EntityMinion extends EntityCreature implements IEntityAdditionalSpawnData {
+public abstract class EntityMinion extends EntityCreature implements IEntityAdditionalSpawnData, IRangedAttackMob {
 	public boolean corpse;
 	protected int remainingTicks;
-	public static int maxTicks = 1200;
+	public static final int MAX_DEAD_TICKS = 1200;
+	public static final int MAX_RISEN_TICKS = 6000;
+	public static final int SUN_TICKS_PENALTY = 9;
 	protected static float sizeX = 0.6F, sizeY = 1.95F;
 	private static final DataParameter<Boolean> IS_CHILD = EntityDataManager.<Boolean>createKey(EntityMinion.class, DataSerializers.BOOLEAN);
+    private final EntityAIMinionRangedAttack aiArrowAttack = new EntityAIMinionRangedAttack(this, 1.0D, 20, 15.0F);
+    private final EntityAIAttackMelee aiAttackOnCollide = new EntityAIAttackMelee(this, 1.2D, false);
 	
 	public EntityMinion(World worldIn) {
+		this(worldIn, false);
+	}
+	
+	public EntityMinion(World worldIn, boolean isChild) {
 		super(worldIn);
-        setSize(sizeX, sizeY);
-        corpse = true;
-        this.remainingTicks = maxTicks;
+        this.setSize(sizeX, sizeY);
+        this.corpse = true;
+        this.remainingTicks = MAX_DEAD_TICKS;
+		this.setChild(isChild);
 	}
 	
 	@Override
 	protected abstract void initEntityAI();
+
+	protected void applyEntityAI() {
+		this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[] { EntityPigZombie.class }) {
+			@Override
+			protected boolean isSuitableTarget(EntityLivingBase target, boolean includeInvincibles) {
+				return super.isSuitableTarget(target, includeInvincibles) && !(target instanceof EntityPlayer);
+			}
+		});
+		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityMob.class, true));
+	}
 	
 	@Override
 	protected void applyEntityAttributes() {
@@ -83,16 +120,102 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
         return flag;
     }
 	
+	public void setCombatTask()
+    {
+        if (this.world != null && !this.world.isRemote)
+        {
+            this.tasks.removeTask(this.aiAttackOnCollide);
+            this.tasks.removeTask(this.aiArrowAttack);
+            ItemStack itemstack = this.getHeldItemMainhand();
+
+            if (itemstack.getItem() == Items.BOW)
+            {
+                int i = 20;
+
+                if (this.world.getDifficulty() != EnumDifficulty.HARD)
+                {
+                    i = 40;
+                }
+
+                this.aiArrowAttack.setAttackCooldown(i);
+                this.tasks.addTask(4, this.aiArrowAttack);
+            }
+            else
+            {
+                this.tasks.addTask(4, this.aiAttackOnCollide);
+            }
+        }
+    }
+
+	@Override
+	public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+		EntityArrow entityarrow = this.getArrow(distanceFactor);
+        double d0 = target.posX - this.posX;
+        double d1 = target.getEntityBoundingBox().minY + (double)(target.height / 3.0F) - entityarrow.posY;
+        double d2 = target.posZ - this.posZ;
+        double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
+        entityarrow.setThrowableHeading(d0, d1 + d3 * 0.20000000298023224D, d2, 1.6F, (float)(14 - this.world.getDifficulty().getDifficultyId() * 4));
+        this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        this.world.spawnEntity(entityarrow);
+	}
+	
+	protected EntityArrow getArrow(float p_190726_1_)
+    {
+        EntityTippedArrow entitytippedarrow = new EntityTippedArrow(this.world, this);
+        entitytippedarrow.setEnchantmentEffectsFromEntity(this, p_190726_1_);
+        if(this instanceof EntityMinionStray)
+        	entitytippedarrow.addEffect(new PotionEffect(MobEffects.SLOWNESS, 600));
+        return entitytippedarrow;
+    }
+	
 	@Override
 	public void onUpdate() {
-		if(this.isCorpse()){
+		//if(this.isCorpse()){
 			remainingTicks--;
+			this.handleSpecialDamage();
 			if(remainingTicks <= 0){
+				if(!this.isCorpse() && !this.world.isRemote) {
+					for(int i = 0; i < 150; i++) {
+					    double motionX = rand.nextGaussian() * 0.05D;
+					    double motionY = rand.nextGaussian() * 0.05D;
+					    double motionZ = rand.nextGaussian() * 0.05D;
+					    ((WorldServer)this.world).spawnParticle(EnumParticleTypes.SMOKE_NORMAL, false, posX, posY + 1.5D, posZ, 1, 0.3D, 0.3D, 0.3D, 0.0D, new int[0]); 
+					}
+				}
 				this.setDead();
 				return;
 			}
-		}	
+		//}	
 		super.onUpdate();
+	}
+	
+	protected void handleSpecialDamage() {
+		if(this.world.isDaytime() &&
+				this.world.canSeeSky(new BlockPos(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ))) {
+			boolean flag = true;
+            ItemStack itemstack = this.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+
+            if (!itemstack.isEmpty())
+            {
+                if (itemstack.isItemStackDamageable())
+                {
+                    itemstack.setItemDamage(itemstack.getItemDamage() + this.rand.nextInt(2));
+
+                    if (itemstack.getItemDamage() >= itemstack.getMaxDamage())
+                    {
+                        this.renderBrokenItemStack(itemstack);
+                        this.setItemStackToSlot(EntityEquipmentSlot.HEAD, ItemStack.EMPTY);
+                    }
+                }
+
+                flag = false;
+            }
+
+            if (flag)
+            {
+                this.remainingTicks -= (isCorpse()) ? SUN_TICKS_PENALTY / 2.0f : SUN_TICKS_PENALTY * 2;
+            }
+		}
 	}
 	
 	public void setChild(boolean childMinion)
@@ -151,7 +274,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 
 	public void setCorpse(boolean isCorpse) {
 		this.corpse = isCorpse;
-		this.remainingTicks = maxTicks;
+		this.remainingTicks = isCorpse ? MAX_DEAD_TICKS : MAX_RISEN_TICKS;
 		
 		if(isCorpse)
 			this.setSize(sizeY, sizeX);

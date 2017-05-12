@@ -26,3 +26,7 @@ item.sepulture.name=Stone Burial
 
 entity.wandering_soul.name=Wandering Soul
 entity.minion.name=Minion
+entity.minion_zombie.name=Zombified Minion
+entity.minion_pig_zombie.name=Zombie Pigman Minion
+entity.minion_skeleton.name=Skeletal Minion
+entity.minion_stray.name=Stray Minion

@@ -33,8 +33,12 @@ public class PlayerTickHandler {
 		if (playerCorp.isIncorporeal()) {
 			
 			if(!event.player.isCreative()) {
-				event.player.capabilities.isFlying = event.player.experienceLevel > 0;
-				event.player.capabilities.allowFlying = event.player.experienceLevel > 0;
+				if (TartarosConfig.flightMode == TartarosConfig.SPECTATOR_FLIGHT)
+					event.player.capabilities.isFlying = event.player.experienceLevel > 0;
+				else if (TartarosConfig.flightMode == TartarosConfig.CREATIVE_FLIGHT && event.player.experienceLevel <= 0)
+					event.player.capabilities.isFlying = false;
+				if(TartarosConfig.flightMode == TartarosConfig.SPECTATOR_FLIGHT || TartarosConfig.flightMode == TartarosConfig.CREATIVE_FLIGHT)
+					event.player.capabilities.allowFlying = event.player.experienceLevel > 0;
 			}
 			
 			if (event.side == Side.CLIENT)

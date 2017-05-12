@@ -4,6 +4,7 @@ import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.entity.EntityItemWaystone;
 import ladysnake.dissolution.common.entity.EntityMinion;
+import ladysnake.dissolution.common.entity.EntityMinionPigZombie;
 import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionStray;
 import ladysnake.dissolution.common.entity.EntityMinionZombie;
@@ -13,6 +14,7 @@ import ladysnake.dissolution.common.inventory.Helper;
 import ladysnake.dissolution.common.items.ItemScythe;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityHusk;
+import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityStray;
 import net.minecraft.entity.monster.EntityZombie;
@@ -59,8 +61,9 @@ public class LivingDeathHandler {
 
 			EntityMinion corpse = null;
 			
-			if (victim instanceof EntityZombie) 
-			{
+			if(victim instanceof EntityPigZombie) {
+				corpse = new EntityMinionPigZombie(victim.world, ((EntityZombie)victim).isChild());
+			} else if (victim instanceof EntityZombie) {
 				corpse = new EntityMinionZombie(victim.world, victim instanceof EntityHusk, ((EntityZombie)victim).isChild());
 			} else if (victim instanceof EntitySkeleton) {
 				corpse = new EntityMinionSkeleton(victim.world);
@@ -79,9 +82,10 @@ public class LivingDeathHandler {
 						corpse.setItemStackToSlot(EntityEquipmentSlot.LEGS, stuff);
 					else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.FEET, victim))
 						corpse.setItemStackToSlot(EntityEquipmentSlot.FEET, stuff);
-					else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.MAINHAND, victim))
+					
+					else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.MAINHAND, victim) && !stuff.isEmpty())
 						corpse.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stuff);
-					else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.OFFHAND, victim))
+					else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.OFFHAND, victim) && !stuff.isEmpty())
 						corpse.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, stuff);
 				}
 				corpse.onUpdate();

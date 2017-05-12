@@ -75,10 +75,13 @@ public class RenderMinionStray extends RenderBiped<EntityMinionStray> {
     @Override
     public void doRender(EntityMinionStray minionIn, double x, double y, double z, float entityYaw, float partialTicks) {
     	GL11.glPushMatrix();
-    	if(minionIn.getRemainingTicks() > 0 && minionIn.getRemainingTicks() < 1200) {
-    		GL11.glColor4f(1.0f, 1.0f, 1.0f, ((float)minionIn.getRemainingTicks()) / ((float)minionIn.maxTicks));
+    	if(minionIn.isCorpse() && minionIn.getRemainingTicks() > 0 && minionIn.getRemainingTicks() < minionIn.MAX_DEAD_TICKS) {
+    		GL11.glColor4f(1.0f, 1.0f, 1.0f, ((float)minionIn.getRemainingTicks()) / ((float)minionIn.MAX_DEAD_TICKS));
     		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     		GL11.glEnable(GL11.GL_BLEND);
+    	} else if (minionIn.getRemainingTicks() > 0 && minionIn.getRemainingTicks() < minionIn.MAX_RISEN_TICKS) {
+        	float colorRatio = ((float)minionIn.getRemainingTicks()) / ((float)minionIn.MAX_RISEN_TICKS);
+    		GL11.glColor4f(colorRatio, colorRatio, colorRatio, 1.0f);
     	}
     	super.doRender(minionIn, x, y, z, entityYaw, partialTicks);
         GL11.glPopMatrix();

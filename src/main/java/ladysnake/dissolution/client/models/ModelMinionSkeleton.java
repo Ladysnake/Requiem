@@ -27,7 +27,7 @@ public class ModelMinionSkeleton extends ModelBiped
 
     public ModelMinionSkeleton(float modelSize, boolean show)
     {
-        super();
+    	super(modelSize, 0.0F, 64, 32);
 
         if (!show)
         {

@@ -15,6 +15,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 
@@ -55,12 +56,14 @@ public class IncorporealDataHandler {
 		public void setIncorporeal(boolean enable, EntityPlayer p) {
 			incorporeal = enable;
 			p.setEntityInvulnerable(enable);
+			ObfuscationReflectionHelper.setPrivateValue(Entity.class, p, true, "isImmuneToFire");
 			p.setInvisible(enable && TartarosConfig.invisibleGhosts);
 			if(!p.isCreative()) {
+				boolean enableFlight = (TartarosConfig.flightMode != TartarosConfig.NO_FLIGHT) && (TartarosConfig.flightMode != TartarosConfig.CUSTOM_FLIGHT);
 				//p.capabilities.allowEdit = (!enable);
 				p.capabilities.disableDamage = enable;
-				p.capabilities.allowFlying = (enable && (p.experienceLevel > 0) && (TartarosConfig.flightMode >= 0));
-				p.capabilities.isFlying = (enable && p.capabilities.isFlying && p.experienceLevel > 0);
+				p.capabilities.allowFlying = (enable && (p.experienceLevel > 0) && enableFlight);
+				p.capabilities.isFlying = (enable && p.capabilities.isFlying && p.experienceLevel > 0 && enableFlight);
 				//System.out.println(p.capabilities.allowFlying + " " + (p.experienceLevel > 0));
 			}
 			synced = true;
