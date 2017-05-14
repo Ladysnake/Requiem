@@ -21,7 +21,7 @@ public class EntityMinionPigZombie extends EntityMinionZombie {
 	}
 	
 	@Override
-	protected void handleSpecialDamage() {}
+	protected void handleSunExposition() {}
 	
 	@Override
 	protected SoundEvent getAmbientSound()

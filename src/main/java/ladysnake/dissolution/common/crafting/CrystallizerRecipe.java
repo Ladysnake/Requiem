@@ -18,7 +18,7 @@ public class CrystallizerRecipe {
 	
 	static {
 		new CrystallizerRecipe(ItemBaseResource.resourceFromName("ectoplasm"), ItemBaseResource.resourceFromName("ectoplasma"), 400);
-		new CrystallizerRecipe(new ItemStack(ModBlocks.ECTOPLASMA), new ItemStack(ModBlocks.ECTOPLASM), 400*9);
+		new CrystallizerRecipe(new ItemStack(ModBlocks.ECTOPLASM), new ItemStack(ModBlocks.ECTOPLASMA), 400*9);
 		new CrystallizerRecipe(new ItemStack(Blocks.SAND), new ItemStack(Blocks.GLASS), 20);
 		new CrystallizerRecipe(new ItemStack(Blocks.NETHERRACK), new ItemStack(Blocks.NETHER_BRICK));
 	}

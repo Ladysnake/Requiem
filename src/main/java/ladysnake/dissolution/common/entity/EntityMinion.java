@@ -162,17 +162,19 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 	protected EntityArrow getArrow(float p_190726_1_)
     {
         EntityTippedArrow entitytippedarrow = new EntityTippedArrow(this.world, this);
-        entitytippedarrow.setEnchantmentEffectsFromEntity(this, p_190726_1_);
+        //entitytippedarrow.setEnchantmentEffectsFromEntity(this, p_190726_1_);
         if(this instanceof EntityMinionStray)
         	entitytippedarrow.addEffect(new PotionEffect(MobEffects.SLOWNESS, 600));
         return entitytippedarrow;
     }
 	
 	@Override
-	public void onUpdate() {
+	public void onLivingUpdate() {
 		//if(this.isCorpse()){
 			remainingTicks--;
-			this.handleSpecialDamage();
+			//System.out.println(remainingTicks);
+			if(!this.isCorpse())
+				this.handleSunExposition();
 			if(remainingTicks <= 0){
 				if(!this.isCorpse() && !this.world.isRemote) {
 					for(int i = 0; i < 150; i++) {
@@ -186,12 +188,13 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 				return;
 			}
 		//}	
-		super.onUpdate();
+		super.onLivingUpdate();
 	}
 	
-	protected void handleSpecialDamage() {
-		if(this.world.isDaytime() &&
-				this.world.canSeeSky(new BlockPos(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ))) {
+	protected void handleSunExposition() {
+		if(this.world.isDaytime() && !this.world.isRemote && 
+				this.world.canSeeSky(new BlockPos(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ)) &&
+				!this.world.isRaining()) {
 			boolean flag = true;
             ItemStack itemstack = this.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 
@@ -204,18 +207,46 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
                     if (itemstack.getItemDamage() >= itemstack.getMaxDamage())
                     {
                         this.renderBrokenItemStack(itemstack);
-                        this.setItemStackToSlot(EntityEquipmentSlot.HEAD, ItemStack.EMPTY);
+                        this.setItemStackToSlot(EntityEquipmentSlot.HEAD, null);
                     }
                 }
 
                 flag = false;
             }
 
-            if (flag)
+            if (flag && !this.isBurning())
             {
-                this.remainingTicks -= (isCorpse()) ? SUN_TICKS_PENALTY / 2.0f : SUN_TICKS_PENALTY * 2;
+            	this.setFire(1);
             }
 		}
+		if(this.isBurning()) {
+            this.remainingTicks -= (isCorpse()) ? SUN_TICKS_PENALTY / 2.0f : SUN_TICKS_PENALTY * 2;
+//           	System.out.println((this.world.isRemote ? "client: " : "server: ") + this.remainingTicks);
+		}
+	}
+	
+	@Override
+	protected void damageEntity(DamageSource damageSrc, float damageAmount) {
+		super.damageEntity(damageSrc, damageAmount);
+		if(!damageSrc.isFireDamage())
+			this.remainingTicks -= 5;
+	}
+	
+	@Override
+	public boolean isEntityInvulnerable(DamageSource source) {
+		if(this.isCorpse()) {
+			if(super.isEntityInvulnerable(source))
+				return true;
+			
+			if (source.getEntity() instanceof EntityPlayer || source.canHarmInCreative()){
+				return false;
+			}
+		    return true;
+		}
+		
+		if(source.isFireDamage())
+			return rand.nextBoolean();
+		return super.isEntityInvulnerable(source);
 	}
 	
 	public void setChild(boolean childMinion)
@@ -294,6 +325,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
 		compound.setBoolean("Corpse", this.isCorpse());
+		compound.setInteger("remainingTicks", remainingTicks);
 		if (this.isChild())
             compound.setBoolean("IsBaby", true);
 		return compound;
@@ -303,17 +335,20 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
 		this.corpse = compound.getBoolean("Corpse");
+		this.remainingTicks = compound.getInteger("remainingTicks");
 		this.setChild(compound.getBoolean("IsBaby"));
 	}
 
 	@Override
 	public void writeSpawnData(ByteBuf buffer) {
 		buffer.writeBoolean(corpse);
+		buffer.writeInt(remainingTicks);
 	}
 
 	@Override
 	public void readSpawnData(ByteBuf additionalData) {
 		setCorpse(additionalData.readBoolean());
+		remainingTicks = additionalData.readInt();
 	}
 	
 }

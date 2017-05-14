@@ -60,22 +60,22 @@ public class EntityMinionWitherSkeleton extends EntityMinion {
 	@Override
 	protected SoundEvent getAmbientSound()
     {
-        return (isCorpse()) ? null : (this instanceof EntityMinionWitherSkeleton) ? SoundEvents.ENTITY_WITHER_SKELETON_AMBIENT : SoundEvents.ENTITY_SKELETON_AMBIENT;
+        return (isCorpse()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_AMBIENT;
     }
 
     protected SoundEvent getHurtSound()
     {
-    	return (isCorpse()) ? null : (this instanceof EntityMinionWitherSkeleton) ? SoundEvents.ENTITY_WITHER_SKELETON_HURT : SoundEvents.ENTITY_SKELETON_HURT;
+    	return (isCorpse()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-    	return (isCorpse()) ? null : (this instanceof EntityMinionWitherSkeleton) ? SoundEvents.ENTITY_WITHER_SKELETON_DEATH : SoundEvents.ENTITY_SKELETON_DEATH;
+    	return (isCorpse()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_DEATH;
     }
 
     protected SoundEvent getStepSound()
     {
-    	return (isCorpse()) ? null : (this instanceof EntityMinionWitherSkeleton) ? SoundEvents.ENTITY_WITHER_SKELETON_STEP : SoundEvents.ENTITY_SKELETON_STEP;
+    	return (isCorpse()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_STEP;
     }
 
     protected void playStepSound(BlockPos pos, Block blockIn)
@@ -122,6 +122,9 @@ public class EntityMinionWitherSkeleton extends EntityMinion {
             return true;
         }
     }
+    
+    @Override
+    protected void handleSunExposition() {}
     
     @Override
     public void readFromNBT(NBTTagCompound compound) {
