@@ -77,37 +77,43 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer,
 			ItemStack stack) {
 		if(!worldIn.isRemote) {
-			if (worldIn.provider.getDimensionType().getId() != -1) {
-				WorldServer worldservernether = worldIn.getMinecraftServer().worldServerForDimension(-1);
-			    BlockPos bp = getAnchorBaseSpawnPos(worldservernether, pos);
-			    if(bp.getY() > 0)  {
-			    	BlockSoulAnchor.scheduledBP.add(pos);
-			    	BlockSoulAnchor.scheduledDim.add(placer.dimension);
-			    	worldservernether.setBlockState(bp, ModBlocks.SOUL_ANCHOR.getDefaultState(), 3);
-			    }
-			    else {
-			    	if(placer instanceof EntityPlayer) {
-			    		((EntityPlayer)placer).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".cannotplace", new Object[0]), true);
-			    		((EntityPlayer)placer).inventory.addItemStackToInventory(new ItemStack(this));
-			    	}
-			    	WorldServer worldserveroverworld = (WorldServer)worldIn;
-					Random rand = new Random();
-					for(int i = 0; i < 50; i++) {
-					    double motionX = rand.nextGaussian() * 0.02D;
-					    double motionY = rand.nextGaussian() * 0.02D;
-					    double motionZ = rand.nextGaussian() * 0.02D;
-					    worldserveroverworld.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, false, pos.getX() + 0.5D, pos.getY()+ 1.0D, pos.getZ()+ 0.5D, 1, 0.3D, 0.3D, 0.3D, 0.0D, new int[0]); 
-					}
-			    	checkBreaking = false;
-			    	worldIn.setBlockToAir(pos);
-			    	checkBreaking = true;
-			    	return;
-			    }
-			    //System.out.println(bp);
-			}
+			placeSoulAnchor(worldIn, pos, placer);
 	    	super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
 		}
 		
+	}
+	
+	public void placeSoulAnchor(World worldIn, BlockPos pos, Entity placer) {
+		if (worldIn.provider.getDimensionType().getId() != -1) {
+			WorldServer worldservernether = worldIn.getMinecraftServer().worldServerForDimension(-1);
+		    BlockPos bp = getAnchorBaseSpawnPos(worldservernether, pos);
+		    if(bp.getY() > 0)  {
+		    	BlockSoulAnchor.scheduledBP.add(pos);
+		    	BlockSoulAnchor.scheduledBP.add(pos);
+		    	BlockSoulAnchor.scheduledDim.add(placer.dimension);
+		    	BlockSoulAnchor.scheduledDim.add(placer.dimension);
+		    	worldservernether.setBlockState(bp, ModBlocks.SOUL_ANCHOR.getDefaultState(), 3);
+		    }
+		    else {
+		    	if(placer instanceof EntityPlayer) {
+		    		((EntityPlayer)placer).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".cannotplace", new Object[0]), true);
+		    		((EntityPlayer)placer).inventory.addItemStackToInventory(new ItemStack(this));
+		    	}
+		    	WorldServer worldserveroverworld = (WorldServer)worldIn;
+				Random rand = new Random();
+				for(int i = 0; i < 50; i++) {
+				    double motionX = rand.nextGaussian() * 0.02D;
+				    double motionY = rand.nextGaussian() * 0.02D;
+				    double motionZ = rand.nextGaussian() * 0.02D;
+				    worldserveroverworld.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, false, pos.getX() + 0.5D, pos.getY()+ 1.0D, pos.getZ()+ 0.5D, 1, 0.3D, 0.3D, 0.3D, 0.0D, new int[0]); 
+				}
+		    	checkBreaking = false;
+		    	worldIn.setBlockToAir(pos);
+		    	checkBreaking = true;
+		    	return;
+		    }
+		    //System.out.println(bp);
+		}
 	}
 	
 	@Override

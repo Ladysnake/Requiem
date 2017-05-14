@@ -7,8 +7,9 @@ public class TartarosConfig {
 	
 	public static final int NO_FLIGHT = -1;
 	public static final int CUSTOM_FLIGHT = 0;
-	public static final int CREATIVE_FLIGHT = 1;
-	public static final int SPECTATOR_FLIGHT = 2;
+	public static final int PAINFUL_FLIGHT = 1;
+	public static final int CREATIVE_FLIGHT = 2;
+	public static final int SPECTATOR_FLIGHT = 3;
 
 	public static boolean anchorsXRay = true;
 	public static boolean doSableDrop = true;
@@ -22,6 +23,12 @@ public class TartarosConfig {
 	public static void syncConfig() {
 		try {
 	        Tartaros.config.load();
+	        
+	        Property versionProp = Tartaros.config.get(
+	        		"Don't touch that", 
+	        		"version", 
+	        		"1.0", 
+	        		"The version of this configuration file. Don't modify this number unless you want your changes randomly reset.");
 
 	        // Read props from config
 	        Property shouldRespawnInNetherProp = Tartaros.config.get(
@@ -46,7 +53,7 @@ public class TartarosConfig {
 	        		Configuration.CATEGORY_GENERAL,
 	        		"flightMode",
 	        		"0",
-	        		"-1= noflight, 0=painful flight, 1=creative, 2=spectator-lite");
+	        		"-1= noflight, 0=custom flight, 1=painful flight, 2=creative, 3=spectator-lite");
 	        
 	        Property showSoulCompassProp = Tartaros.config.get(
 	        		Configuration.CATEGORY_CLIENT,
