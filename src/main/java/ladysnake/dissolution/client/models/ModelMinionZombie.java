@@ -66,6 +66,13 @@ public class ModelMinionZombie extends ModelZombie {
 			this.bipedHead.rotationPointX = 0.0F;
 			this.bipedHead.rotationPointY = 0.0F;
 			this.bipedHead.rotationPointZ = 0.0F;
+			
+			this.bipedHeadwear.rotateAngleX = 0.0F;
+			this.bipedHeadwear.rotateAngleY = 0.0F;
+			this.bipedHeadwear.rotateAngleZ = 0.0F;
+			this.bipedHeadwear.rotationPointX = 0.0F;
+			this.bipedHeadwear.rotationPointY = 0.0F;
+			this.bipedHeadwear.rotationPointZ = 0.0F;
 		}
 		
 		else {
@@ -113,6 +120,13 @@ public class ModelMinionZombie extends ModelZombie {
 			this.bipedHead.rotationPointX = -2.2F;
 			this.bipedHead.rotationPointY = 22.0F;
 			this.bipedHead.rotationPointZ = 0.0F;
+			
+			this.bipedHeadwear.rotateAngleX = 1.6F;
+			this.bipedHeadwear.rotateAngleY = 0.0F;
+			this.bipedHeadwear.rotateAngleZ = 4.0F;
+			this.bipedHeadwear.rotationPointX = -2.2F;
+			this.bipedHeadwear.rotationPointY = 22.0F;
+			this.bipedHeadwear.rotationPointZ = 0.0F;
 		}
 	}
 }

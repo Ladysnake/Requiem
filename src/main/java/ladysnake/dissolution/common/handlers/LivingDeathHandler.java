@@ -7,6 +7,7 @@ import ladysnake.dissolution.common.entity.EntityMinion;
 import ladysnake.dissolution.common.entity.EntityMinionPigZombie;
 import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionStray;
+import ladysnake.dissolution.common.entity.EntityMinionWitherSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionZombie;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
@@ -17,6 +18,7 @@ import net.minecraft.entity.monster.EntityHusk;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityStray;
+import net.minecraft.entity.monster.EntityWitherSkeleton;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -69,6 +71,8 @@ public class LivingDeathHandler {
 				corpse = new EntityMinionSkeleton(victim.world);
 			} else if(victim instanceof EntityStray){
 				corpse = new EntityMinionStray(victim.world);
+			} else if(victim instanceof EntityWitherSkeleton){
+				corpse = new EntityMinionWitherSkeleton(victim.world);
 			}
 
 			if (corpse != null) {
