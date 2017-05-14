@@ -36,15 +36,6 @@ public class PlayerTickHandler {
 		playerCorp.tick(event);
 
 		if (playerCorp.isIncorporeal()) {
-<<<<<<< HEAD
-
-			if (!event.player.isCreative()) {
-				if (TartarosConfig.flightMode == TartarosConfig.SPECTATOR_FLIGHT)
-					event.player.capabilities.isFlying = event.player.experienceLevel > 0;
-				else if (TartarosConfig.flightMode == TartarosConfig.CREATIVE_FLIGHT
-						&& event.player.experienceLevel <= 0)
-=======
-			
 			if(!event.player.isCreative()) {
 				if (TartarosConfig.flightMode == TartarosConfig.SPECTATOR_FLIGHT || TartarosConfig.flightMode == TartarosConfig.CUSTOM_FLIGHT)
 					event.player.capabilities.isFlying = event.player.experienceLevel > 0;
@@ -53,7 +44,6 @@ public class PlayerTickHandler {
 					event.player.capabilities.setFlySpeed(event.player.experienceLevel > 0 ? 0.025f : 0.01f);
 				}
 				else if (TartarosConfig.flightMode == TartarosConfig.CREATIVE_FLIGHT && event.player.experienceLevel <= 0)
->>>>>>> c44d91244429b0c6872b8578e8960ed64f542119
 					event.player.capabilities.isFlying = false;
 				if (TartarosConfig.flightMode == TartarosConfig.SPECTATOR_FLIGHT
 						|| TartarosConfig.flightMode == TartarosConfig.CREATIVE_FLIGHT)
