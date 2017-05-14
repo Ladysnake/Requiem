@@ -1,6 +1,7 @@
 package ladysnake.dissolution.client.handlers;
 
 import ladysnake.dissolution.client.renders.blocks.RenderSoulAnchor;
+import ladysnake.dissolution.common.TartarosConfig;
 import ladysnake.dissolution.common.blocks.IRespawnLocation;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
@@ -39,13 +40,16 @@ public class EventHandlerClient {
 	
 	@SubscribeEvent
 	public void onPlayerTick(PlayerTickEvent event) {
-		if(event.side == Side.SERVER) return;
+		if(event.side == Side.SERVER) 
+			return;
+		if(!(TartarosConfig.flightMode == TartarosConfig.CUSTOM_FLIGHT || TartarosConfig.flightMode == TartarosConfig.PAINFUL_FLIGHT)) 
+			return;
 		if(IncorporealDataHandler.getHandler(event.player).isIncorporeal() && !event.player.isCreative()) {
 		
-			if(Minecraft.getMinecraft().gameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindJump)) {
-				event.player.motionY = SOUL_VERTICAL_SPEED * (event.player.experienceLevel > 0 ? 1 : 0.1f);
+			if(Minecraft.getMinecraft().gameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindJump) && event.player.experienceLevel > 0) {
+				event.player.motionY = SOUL_VERTICAL_SPEED;
 				event.player.velocityChanged = true;
-			} else {
+			} else if(event.player.motionY < SOUL_VERTICAL_SPEED * 0.5f){
 				event.player.motionY = -0.8f * SOUL_VERTICAL_SPEED;
 				event.player.fallDistance = 0;
 				event.player.velocityChanged = true;

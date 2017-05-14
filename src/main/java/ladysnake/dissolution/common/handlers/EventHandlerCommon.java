@@ -88,7 +88,8 @@ public class EventHandlerCommon {
 			if (event.isCancelable()
 					&& !(event.getWorld().getBlockState(event.getPos()).getBlock() instanceof IRespawnLocation)
 					&& !(IncorporealDataHandler.soulInteractableBlocks
-							.contains(event.getWorld().getBlockState(event.getPos()).getBlock())))
+							.contains(event.getWorld().getBlockState(event.getPos()).getBlock()))
+					&& !(event.getItemStack().getItem() == ModItems.DEBUG_ITEM))
 				event.setCanceled(true);
 		}
 	}
