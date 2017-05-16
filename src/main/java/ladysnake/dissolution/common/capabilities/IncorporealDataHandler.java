@@ -1,8 +1,8 @@
-package ladysnake.tartaros.common.capabilities;
+package ladysnake.dissolution.common.capabilities;
 
 import java.util.ArrayList;
 
-import ladysnake.tartaros.common.TartarosConfig;
+import ladysnake.dissolution.common.TartarosConfig;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,6 +15,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 
@@ -46,7 +47,8 @@ public class IncorporealDataHandler {
 	public static class DefaultIncorporealHandler implements IIncorporealHandler {
 		
 		private boolean incorporeal;
-		private int soulCandleNearby = -1;
+		private int mercuryCandleNearby = -1;
+		private int sulfurCandleNearby = -1;
 		private String lastDeathMessage;
 		public boolean synced = false;
 	
@@ -54,12 +56,16 @@ public class IncorporealDataHandler {
 		public void setIncorporeal(boolean enable, EntityPlayer p) {
 			incorporeal = enable;
 			p.setEntityInvulnerable(enable);
+			if(TartarosConfig.flightMode == TartarosConfig.CUSTOM_FLIGHT)
+				p.capabilities.setFlySpeed(enable ? 0.025f : 0.05f);
+			ObfuscationReflectionHelper.setPrivateValue(Entity.class, p, true, "isImmuneToFire");
 			p.setInvisible(enable && TartarosConfig.invisibleGhosts);
 			if(!p.isCreative()) {
+				boolean enableFlight = (TartarosConfig.flightMode != TartarosConfig.NO_FLIGHT) && (TartarosConfig.flightMode != TartarosConfig.CUSTOM_FLIGHT);
 				//p.capabilities.allowEdit = (!enable);
 				p.capabilities.disableDamage = enable;
-				p.capabilities.allowFlying = (enable && p.experienceLevel > 0);
-				p.capabilities.isFlying = (enable && p.capabilities.isFlying && p.experienceLevel > 0);
+				p.capabilities.allowFlying = (enable && (p.experienceLevel > 0) && enableFlight);
+				p.capabilities.isFlying = (enable && p.capabilities.isFlying && p.experienceLevel > 0 && enableFlight);
 				//System.out.println(p.capabilities.allowFlying + " " + (p.experienceLevel > 0));
 			}
 			synced = true;
@@ -75,18 +81,30 @@ public class IncorporealDataHandler {
 		}
 		
 		@Override
-		public void setSoulCandleNearby(boolean soulCandle) {
-			this.soulCandleNearby = soulCandle ? 100 : -1;
+		public void setSoulCandleNearby(boolean soulCandle, int CandleType) {
+			if(CandleType == 1){
+				this.mercuryCandleNearby = soulCandle ? 100 : -1;
+			}
+			else if(CandleType == 2){
+				this.sulfurCandleNearby = soulCandle ? 100 : -1;
+			}
+			
 		}
 		
 		@Override
-		public boolean isSoulCandleNearby() {
-			return this.soulCandleNearby > 0;
+		public boolean isSoulCandleNearby(int CandleType) {
+			if(CandleType == 1){
+				return this.mercuryCandleNearby > 0;
+			}
+			else if(CandleType == 2){
+				return this.sulfurCandleNearby > 0;
+			}
+			else return this.mercuryCandleNearby > 0;
 		}
 	
 		@Override
 		public boolean isIncorporeal() {
-			return this.incorporeal && !this.isSoulCandleNearby();
+			return this.incorporeal && !this.isSoulCandleNearby(1) || this.incorporeal && !this.isSoulCandleNearby(2);
 		}
 		
 		@Override
@@ -111,8 +129,8 @@ public class IncorporealDataHandler {
 		
 		@Override
 		public void tick(PlayerTickEvent event) {
-			if(this.isSoulCandleNearby())
-				this.soulCandleNearby--;
+			if(this.isSoulCandleNearby(1)) this.mercuryCandleNearby--;
+			if(this.isSoulCandleNearby(2)) this.sulfurCandleNearby--;
 		}
 	}
 	
@@ -151,7 +169,7 @@ public class IncorporealDataHandler {
 		    public NBTBase writeNBT (Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side) {
 		        
 		        final NBTTagCompound tag = new NBTTagCompound();           
-		        tag.setBoolean("incorporeal", instance.isIncorporeal());          
+		        tag.setBoolean("incorporeal", instance.isIncorporeal());    
 		        tag.setString("lastDeath", instance.getLastDeathMessage() == null || instance.getLastDeathMessage().isEmpty() ? "This player has no recorded death" : instance.getLastDeathMessage());
 		        return tag;
 		    }

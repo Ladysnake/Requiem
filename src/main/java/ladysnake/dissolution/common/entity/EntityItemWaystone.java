@@ -1,6 +1,6 @@
-package ladysnake.tartaros.common.entity;
+package ladysnake.dissolution.common.entity;
 
-import ladysnake.tartaros.common.init.ModBlocks;
+import ladysnake.dissolution.common.init.ModBlocks;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -22,6 +22,7 @@ public class EntityItemWaystone extends EntityItem {
 		if (this.onGround)
         {
             world.setBlockState(getPosition(), ModBlocks.MERCURIUS_WAYSTONE.getDefaultState() , 11);
+            ModBlocks.MERCURIUS_WAYSTONE.placeSoulAnchor(world, getPosition(), this);
             this.setDead();
         }
 	}

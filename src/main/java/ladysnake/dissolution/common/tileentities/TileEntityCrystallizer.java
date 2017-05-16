@@ -1,13 +1,10 @@
-package ladysnake.tartaros.common.tileentities;
+package ladysnake.dissolution.common.tileentities;
 
 import java.util.HashMap;
 
-import ladysnake.tartaros.common.blocks.BlockCrystallizer;
-import ladysnake.tartaros.common.crafting.CrystallizerRecipes;
-import ladysnake.tartaros.common.init.ModBlocks;
-import ladysnake.tartaros.common.inventory.ContainerCrystallizer;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
+import ladysnake.dissolution.common.blocks.BlockCrystallizer;
+import ladysnake.dissolution.common.crafting.CrystallizerRecipe;
+import ladysnake.dissolution.common.inventory.ContainerCrystallizer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -19,12 +16,7 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.SlotFurnaceFuel;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBoat;
-import net.minecraft.item.ItemDoor;
-import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
-import net.minecraft.item.ItemTool;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -37,7 +29,7 @@ import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -55,6 +47,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
     private int cookTime;
     private int totalCookTime;
     private String crystallizerCustomName;
+	public boolean keepInventory = false;
     private static HashMap<Item, Integer> fuelList;
     
     public static void init() {
@@ -293,8 +286,8 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
             if (flag != this.isBurning())
             {
                 flag1 = true;
-                IBlockState state1 = getWorld().getBlockState(getPos());
-				BlockCrystallizer.setState(this.isBurning(), this.world, this.pos, state1);
+//                IBlockState state1 = getWorld().getBlockState(getPos());
+				BlockCrystallizer.setState(this.isBurning(), this.world, this.pos);
                 System.out.println("Update 1 !");
                 if (getWorld() != null) {
         	    	IBlockState state = getWorld().getBlockState(getPos());
@@ -311,8 +304,13 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
 
     public int getCookTime(ItemStack stack)
     {
-    	if(CrystallizerRecipes.getCrystalRecipe(stack) == null) return 1;
-        return CrystallizerRecipes.getCrystalRecipe(stack).getProcessTime();
+    	if(CrystallizerRecipe.getCrystalRecipe(stack) == null) return 1;
+        return CrystallizerRecipe.getCrystalRecipe(stack).getProcessTime();
+    }
+    
+    @Override
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
+    	return super.shouldRefresh(world, pos, oldState, newSate) && !keepInventory;
     }
 
     /**
@@ -326,7 +324,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
         }
         else
         {
-            ItemStack itemstack = CrystallizerRecipes.getCrystalRecipe((ItemStack)this.crystallizerItemStacks.get(0)).getOutput();
+            ItemStack itemstack = CrystallizerRecipe.getCrystalRecipe((ItemStack)this.crystallizerItemStacks.get(0)).getOutput();
 
             if (itemstack.isEmpty())
             {
@@ -351,7 +349,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
         if (this.canSmelt())
         {
             ItemStack itemstack = (ItemStack)this.crystallizerItemStacks.get(0);
-            ItemStack itemstack1 = CrystallizerRecipes.getCrystalRecipe(itemstack).getOutput();
+            ItemStack itemstack1 = CrystallizerRecipe.getCrystalRecipe(itemstack).getOutput();
             ItemStack itemstack2 = (ItemStack)this.crystallizerItemStacks.get(2);
 
             if (itemstack2.isEmpty())
@@ -534,4 +532,6 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
                 return (T) handlerSide;
         return super.getCapability(capability, facing);
     }
+    
+    
 }

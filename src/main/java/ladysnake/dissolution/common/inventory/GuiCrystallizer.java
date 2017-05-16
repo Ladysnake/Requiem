@@ -1,7 +1,7 @@
-package ladysnake.tartaros.common.inventory;
+package ladysnake.dissolution.common.inventory;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.tileentities.TileEntityCrystallizer;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.tileentity.TileEntityFurnace;

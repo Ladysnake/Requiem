@@ -1,17 +1,18 @@
-package ladysnake.tartaros.common.items;
+package ladysnake.dissolution.common.items;
 
 import java.util.List;
 import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.Tartaros;
-import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
-import ladysnake.tartaros.common.entity.EntityMinion;
-import ladysnake.tartaros.common.entity.EntityMinionZombie;
-import ladysnake.tartaros.common.init.ModItems;
-import ladysnake.tartaros.common.inventory.Helper;
+import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.entity.EntityMinion;
+import ladysnake.dissolution.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.inventory.Helper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,6 +30,7 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -48,9 +50,9 @@ public class ItemEyeDead extends Item {
 				// System.out.println(entityIn != null &&
 				// (!Helper.findItem((EntityPlayer)entityIn,
 				// ModItems.SOUL_IN_A_BOTTLE).isEmpty()) ? 1.0F : 0.0F);
-				return entityIn != null
-						&& (!Helper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE).isEmpty()) ? 1.0F
-								: 0.0F;
+				return entityIn != null	&& (!Helper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE).isEmpty()) 
+						? 1.0F
+						: 0.0F;
 			}
 		});
 		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + ":resurrecting"), new IItemPropertyGetter() {
@@ -70,33 +72,41 @@ public class ItemEyeDead extends Item {
 
 	@Override
 	public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityLivingBase entityLiving, int timeLeft) {
-		if (!(entityLiving instanceof EntityPlayer) || this.getMaxItemUseDuration(stack) - timeLeft < 30)
-			return;
+		
+		if (!(entityLiving instanceof EntityPlayer) || this.getMaxItemUseDuration(stack) - timeLeft < 30) return;
 		EntityPlayer player = (EntityPlayer) entityLiving;
-		System.out.println(player.capabilities.disableDamage);
-		if (IncorporealDataHandler.getHandler(player).isIncorporeal())
-			return;
+		
+		if (IncorporealDataHandler.getHandler(player).isIncorporeal()) return;
+		if (IncorporealDataHandler.getHandler(player).isIncorporeal() || IncorporealDataHandler.getHandler(player).isIncorporeal()) return;
+		
 		ItemStack ammo = Helper.findItem(player, ModItems.SOUL_IN_A_BOTTLE);
-		if (ammo.isEmpty())
-			return;
-		stack.damageItem(1, player);
-		ammo.shrink(1);
-		List<EntityMinionZombie> minions = worldIn.getEntitiesWithinAABB(EntityMinionZombie.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20));
-		for (EntityMinionZombie m : minions) {
-			System.out.println(m);
-			for(int i = 0; i < 50; i++){
-				System.out.println("spawn Particle!");
+		
+		List<EntityMinion> minions = worldIn.getEntitiesWithinAABB(EntityMinion.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20));
+
+		if(minions.isEmpty()) return;
+		
+		boolean used = false;
+		for (EntityMinion m : minions) {
+			if (ammo.isEmpty() && m.isCorpse()) {
+				((EntityPlayer)entityLiving).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".nosoul", new Object[0]), true);
+				break;
+			}
+			for(int i = 0; i < (m.isCorpse() ? 50 : 5); i++){
 				Random rand = new Random();
 				double motionX = rand.nextGaussian() * 0.1D;
 				double motionY = rand.nextGaussian() * 0.1D;
 				double motionZ = rand.nextGaussian() * 0.1D;
-				worldIn.spawnParticle(EnumParticleTypes.CLOUD, false, m.posX , m.posY+ 1.0D, m.posZ, motionX, motionY, motionZ, new int[0]);
+				worldIn.spawnParticle(m.isCorpse() ? EnumParticleTypes.DRAGON_BREATH : EnumParticleTypes.CLOUD, false, m.posX , m.posY+ 1.0D, m.posZ, motionX, motionY, motionZ, new int[0]);
 			}
-			m.setCorpse(!m.isCorpse());
+			if(m.isCorpse()) {
+				ammo.shrink(1);
+				used = true;
+			}
+			m.setCorpse(false);
 		}
-		ammo.shrink(1);
+		if(used)
+			stack.damageItem(1, player);
 	}
-
 	
 
 	@Override
@@ -126,3 +136,4 @@ public class ItemEyeDead extends Item {
 	}
 
 }
+

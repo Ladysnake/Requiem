@@ -1,7 +1,8 @@
-package ladysnake.tartaros.common.entity;
+package ladysnake.dissolution.common.entity;
 
-import ladysnake.tartaros.common.entity.ai.EntityAIMinionAttack;
-import net.minecraft.entity.Entity;
+import io.netty.buffer.ByteBuf;
+import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
+import net.minecraft.block.Block;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
@@ -12,8 +13,10 @@ import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class EntityMinionZombie extends EntityMinion {
@@ -21,7 +24,7 @@ public class EntityMinionZombie extends EntityMinion {
 	private boolean isHusk;
 
 	public EntityMinionZombie(World worldIn) {
-		this(worldIn, false);
+		this(worldIn, false, false);
 	}
 
 	/**
@@ -31,8 +34,8 @@ public class EntityMinionZombie extends EntityMinion {
 	 * @param zombieType
 	 *            false for the default zombie
 	 */
-	public EntityMinionZombie(World worldIn, boolean isHusk) {
-		super(worldIn);
+	public EntityMinionZombie(World worldIn, boolean isHusk, boolean isChild) {
+		super(worldIn, isChild);
 		this.isHusk = isHusk;
 	}
 
@@ -42,34 +45,66 @@ public class EntityMinionZombie extends EntityMinion {
 		this.tasks.addTask(2, new EntityAIMinionAttack(this, 1.0D, false));
 		this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
 		this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
-		this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-		this.tasks.addTask(8, new EntityAILookIdle(this));
 		this.applyEntityAI();
 	}
-
-	protected void applyEntityAI() {
-		this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[] { EntityPigZombie.class }));
-		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityMob.class, true));
+	
+	public void setHusk(boolean husk) {
+		this.isHusk = husk;
 	}
-
+	
 	public boolean isHusk() {
 		return isHusk;
 	}
 	
+	@Override
+	protected SoundEvent getAmbientSound()
+    {
+        return (isCorpse()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_AMBIENT;
+    }
+
+    protected SoundEvent getHurtSound()
+    {
+    	return (isCorpse()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_HURT;
+    }
+
+    protected SoundEvent getDeathSound()
+    {
+    	return (isCorpse()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_DEATH;
+    }
+
+    protected SoundEvent getStepSound()
+    {
+    	return (isCorpse()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_STEP;
+    }
+
+    protected void playStepSound(BlockPos pos, Block blockIn)
+    {
+        this.playSound(this.getStepSound(), 0.15F, 1.0F);
+    }
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
-		compound.setBoolean("isHusk", this.isHusk);
-		compound.setBoolean("Death01", this.corpse);
+		compound.setBoolean("isHusk", this.isHusk());
 		return compound;
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		this.isHusk = compound.getBoolean("isHusk");
-		this.corpse = compound.getBoolean("Death01");
+		this.setHusk(compound.getBoolean("isHusk"));
+	}
+	
+	@Override
+	public void writeSpawnData(ByteBuf buffer) {
+		super.writeSpawnData(buffer);
+		buffer.writeBoolean(isHusk());
+	}
+	
+	@Override
+	public void readSpawnData(ByteBuf additionalData) {
+		super.readSpawnData(additionalData);
+		setHusk(additionalData.readBoolean());
 	}
 
 }

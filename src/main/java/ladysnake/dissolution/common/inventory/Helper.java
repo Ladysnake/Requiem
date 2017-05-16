@@ -1,6 +1,6 @@
-package ladysnake.tartaros.common.inventory;
+package ladysnake.dissolution.common.inventory;
 
-import ladysnake.tartaros.common.items.ItemSoulInABottle;
+import ladysnake.dissolution.common.items.ItemSoulInABottle;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -73,4 +73,9 @@ public abstract class Helper {
             return ItemStack.EMPTY;
         }
     }
+
+	public static boolean compareItemStacks(ItemStack stack1, ItemStack stack2)
+	{
+	    return stack2.getItem() == stack1.getItem() && (stack2.getMetadata() == 32767 || stack2.getMetadata() == stack1.getMetadata());
+	}
 }

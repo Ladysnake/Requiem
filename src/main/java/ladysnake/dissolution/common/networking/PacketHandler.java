@@ -1,4 +1,4 @@
-package ladysnake.tartaros.common.networking;
+package ladysnake.dissolution.common.networking;
 
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;

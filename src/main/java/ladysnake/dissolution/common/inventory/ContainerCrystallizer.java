@@ -1,7 +1,7 @@
-package ladysnake.tartaros.common.inventory;
+package ladysnake.dissolution.common.inventory;
 
-import ladysnake.tartaros.common.crafting.CrystallizerRecipes;
-import ladysnake.tartaros.common.tileentities.TileEntityCrystallizer;
+import ladysnake.dissolution.common.crafting.CrystallizerRecipe;
+import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -123,7 +123,7 @@ public class ContainerCrystallizer extends Container {
             }
             else if (index != 1 && index != 0)
             {
-                if (CrystallizerRecipes.instance().getCrystalRecipe(itemstack1) != null)
+                if (CrystallizerRecipe.getCrystalRecipe(itemstack1) != null)
                 {
                     if (!this.mergeItemStack(itemstack1, 0, 1, false))
                     {

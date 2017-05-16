@@ -1,4 +1,4 @@
-package ladysnake.tartaros.common.blocks;
+package ladysnake.dissolution.common.blocks;
 
 public interface IRespawnLocation {
 

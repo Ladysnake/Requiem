@@ -1,17 +1,17 @@
 {
     "parent": "block/block",
     "textures": {
-        "particle": "tartaros:blocks/soul_extractor/soul_extractor_front",
-		"0": "tartaros:blocks/soul_extractor/soul_extractor_front",
-        "1": "tartaros:blocks/soul_extractor/soul_extractor_side",
-        "2": "tartaros:blocks/soul_extractor/soul_extractor_top",
-        "3": "tartaros:blocks/soul_extractor/soul_extractor_bottom",
-        "4": "tartaros:blocks/soul_extractor/soul_extractor_inside1_ver",
-        "5": "tartaros:blocks/soul_extractor/soul_extractor_inside1_hor",
-        "6": "tartaros:blocks/soul_extractor/soul_extractor_inside2_ver",
-        "7": "tartaros:blocks/soul_extractor/soul_extractor_inside2_hor",
-        "8": "tartaros:blocks/soul_extractor/soul_extractor_soul",
-        "9": "tartaros:blocks/soul_extractor/soul_extractor_sand",
+        "particle": "dissolution:blocks/soul_extractor/soul_extractor_front",
+		"0": "dissolution:blocks/soul_extractor/soul_extractor_front",
+        "1": "dissolution:blocks/soul_extractor/soul_extractor_side",
+        "2": "dissolution:blocks/soul_extractor/soul_extractor_top",
+        "3": "dissolution:blocks/soul_extractor/soul_extractor_bottom",
+        "4": "dissolution:blocks/soul_extractor/soul_extractor_inside1_ver",
+        "5": "dissolution:blocks/soul_extractor/soul_extractor_inside1_hor",
+        "6": "dissolution:blocks/soul_extractor/soul_extractor_inside2_ver",
+        "7": "dissolution:blocks/soul_extractor/soul_extractor_inside2_hor",
+        "8": "dissolution:blocks/soul_extractor/soul_extractor_soul",
+        "9": "dissolution:blocks/soul_extractor/soul_extractor_sand",
         "inside": "minecraft:blocks/furnace_top"
     },
     "elements": [

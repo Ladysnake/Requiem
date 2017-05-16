@@ -1,22 +1,25 @@
-package ladysnake.tartaros.common.items;
+package ladysnake.dissolution.common.items;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Multimap;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.Tartaros;
-import ladysnake.tartaros.common.init.ModItems;
-import ladysnake.tartaros.common.inventory.Helper;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.inventory.Helper;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
@@ -78,6 +81,7 @@ public abstract class ItemScythe extends ItemSword {
         if(!player.getHeldItemOffhand().isEmpty()) return true;
         if(alreadyRunningAOE) return false;
         Integer initialCooldown = new Integer(100);
+        player.spawnSweepParticles();
         int initialDamage = stack.getItemDamage();
         try {
         	initialCooldown = ObfuscationReflectionHelper.getPrivateValue(EntityLivingBase.class, player, new String[]{"ticksSinceLastSwing", "field_184617_aD"});
@@ -148,7 +152,8 @@ public abstract class ItemScythe extends ItemSword {
 	 * Fills an empty bottle in the wielder's inventory with a soul
 	 * @param p the player wielding this scythe
 	 */
-	public void fillBottle(EntityPlayer p) {
+	public void harvestSoul(EntityPlayer p, EntityLivingBase s) {
+		if(s.getCreatureAttribute() == EnumCreatureAttribute.UNDEAD) return;
 		this.fillBottle(p, 1);
 	}
 	

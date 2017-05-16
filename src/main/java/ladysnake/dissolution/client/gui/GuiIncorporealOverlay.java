@@ -1,14 +1,14 @@
-package ladysnake.tartaros.client.gui;
+package ladysnake.dissolution.client.gui;
 
 import java.io.IOException;
 
 import org.lwjgl.opengl.GL11;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.TartarosConfig;
-import ladysnake.tartaros.common.capabilities.IIncorporealHandler;
-import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
-import ladysnake.tartaros.common.tileentities.TileEntitySoulAnchor;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.TartarosConfig;
+import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -52,10 +52,16 @@ public class GuiIncorporealOverlay extends Gui {
 	        if(TartarosConfig.soulCompass)
 				this.drawOriginIndicator(event.getResolution());
 		}
-        if(pl.isSoulCandleNearby()) {
+        if(pl.isSoulCandleNearby(1)) {
         	if(!usingShader) {
         		Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("shaders/post/desaturate.json"));
         		usingShader = true;
+        	}
+        }
+        else if(pl.isSoulCandleNearby(2)){
+        	if(!usingShader) {
+        		Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("shaders/post/deconverge.json"));
+    			usingShader = true;
         	}
         }
         else {
@@ -127,7 +133,6 @@ public class GuiIncorporealOverlay extends Gui {
 		
 		if(isInFieldOfView) {
 			this.drawTexturedModalRect(i + 3 + (int)Math.round((angleToOrigin - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 200, 0, 7, 10);
-			//TODO make this a great gui
 		}
 		
 		if(!TartarosConfig.soulCompassAnchors) return;

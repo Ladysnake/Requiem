@@ -1,11 +1,11 @@
-package ladysnake.tartaros.common.inventory;
+package ladysnake.dissolution.common.inventory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.Tartaros;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Tartaros;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigElement;

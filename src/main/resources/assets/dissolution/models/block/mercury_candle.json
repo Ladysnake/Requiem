@@ -2,7 +2,7 @@
     "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
     "parent": "block/wall_post",
     "textures": {
-  		"particle": "tartaros:blocks/waystone",
-          "wall": "tartaros:blocks/waystone"
+  		"particle": "dissolution:blocks/waystone",
+          "wall": "dissolution:blocks/waystone"
       }
 }

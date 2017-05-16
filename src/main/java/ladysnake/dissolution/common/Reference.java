@@ -1,23 +1,23 @@
-package ladysnake.tartaros.common;
+package ladysnake.dissolution.common;
 
 import net.minecraft.block.ITileEntityProvider;
 
 public class Reference {
-	public static final String MOD_ID = "tartaros";
-	public static final String MOD_NAME = "Tartaros";
+	public static final String MOD_ID = "dissolution";
+	public static final String MOD_NAME = "Dissolution";
 	public static final String VERSION = "1.0";
 	public static final String MCVERSION = "[1.11.2]";
 	
-	public static final String GUI_FACTORY = "ladysnake.tartaros.common.inventory.TartarosGuiFactory";	
-	public static final String CLIENT_PROXY_CLASS = "ladysnake.tartaros.client.proxy.ClientProxy";
-	public static final String SERVER_PROXY_CLASS = "ladysnake.tartaros.server.proxy.ServerProxy";
+	public static final String GUI_FACTORY = "ladysnake.dissolution.common.inventory.TartarosGuiFactory";	
+	public static final String CLIENT_PROXY_CLASS = "ladysnake.dissolution.client.proxy.ClientProxy";
+	public static final String SERVER_PROXY_CLASS = "ladysnake.dissolution.server.proxy.ServerProxy";
 	
 	public static enum Items {
 		BASE_RESOURCE("base_resource", "itemResource"),
 		DEBUG("debug_item", "itemDebug"),
 		ECTOPLASM("ectoplasm", "itemEctoplasm"),
 		ECTOPLASMA("ectoplasma", "itemEctoplasma"),
-		EYE_DEAD("eye_of_the_undead", "itemEyeDead"),
+		EYE_DEAD("eye_of_the_undead", "itemEyeOfUndead"),
 		GRAND_FAUX("grand_faux", "itemGrandFaux"),
 		SCYTHE_IRON("iron_scythe", "itemIronScythe"),
 		SOULGEM("soul_gem", "itemSoulGem"),
@@ -48,7 +48,8 @@ public class Reference {
 		ECTOPLASM("ectoplasm_block", "blockEctoplasm"),
 		ECTOPLASMA("ectoplasma_block", "blockEctoplasma"),
 		SOUL_ANCHOR("soul_anchor", "blockSoulAnchor"),
-		SOUL_CANDLE("soul_candle", "blockSoulCandle"),
+		MERCURY_CANDLE("mercury_candle", "blockMercuryCandle"),
+		SULFUR_CANDLE("sulfur_candle", "blockSulfurCandle"),
 		SOUL_EXTRACTOR("soul_extractor", "blockSoulExtractor"),
 		MERCURIUS_WAYSTONE("mercurius_waystone", "blockMercuriusWaystone"),
 		SEPULTURE("sepulture", "blockSepulture"),

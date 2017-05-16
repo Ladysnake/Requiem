@@ -1,7 +1,9 @@
-package ladysnake.tartaros.common.tileentities;
+package ladysnake.dissolution.common.tileentities;
 
 import java.util.Random;
 
+import ladysnake.dissolution.common.TartarosConfig;
+import ladysnake.dissolution.common.blocks.BlockSoulExtractor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
@@ -15,6 +17,7 @@ import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -24,6 +27,7 @@ public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 	public static final int MAX_INPUT = 128;
 	private int soulSandCount, soulCount;
 	private short processElapsed;
+	public boolean keepInventory = false;
 
 	@Override
 	public void update() {
@@ -73,7 +77,7 @@ public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 						if(slot != -1)
 							handler.insertItem(slot, outputStack, false);
 					}
-				} else {
+				} else if (TartarosConfig.doSableDrop) {
 					getWorld().spawnEntity(new EntityItem(getWorld(), pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, outputStack));
 				}
 			}
@@ -148,8 +152,7 @@ public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 		soulSandCount--;
 		markDirty();
 	    if (getWorld() != null) {
-	    	IBlockState state = getWorld().getBlockState(getPos());
-	     	getWorld().notifyBlockUpdate(getPos(), state, state, 3);
+	    	BlockSoulExtractor.setState(!this.isEmpty(), this.world, this.pos);
 	    }
 	}
 	
@@ -167,6 +170,11 @@ public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 	public void emptyInWorld(World worldIn) {
 		if(!worldIn.isRemote)
 			worldIn.spawnEntity(new EntityItem(worldIn, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, new ItemStack(Blocks.SOUL_SAND, soulSandCount)));
+	}
+	
+	@Override
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
+		return super.shouldRefresh(world, pos, oldState, newSate) && !keepInventory;
 	}
 
 }

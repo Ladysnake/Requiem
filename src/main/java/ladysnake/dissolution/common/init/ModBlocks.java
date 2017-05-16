@@ -1,15 +1,16 @@
-package ladysnake.tartaros.common.init;
+package ladysnake.dissolution.common.init;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.Tartaros;
-import ladysnake.tartaros.common.blocks.BlockCrystallizer;
-import ladysnake.tartaros.common.blocks.BlockEctoplasm;
-import ladysnake.tartaros.common.blocks.BlockMercuriusWaystone;
-import ladysnake.tartaros.common.blocks.BlockResuscitator;
-import ladysnake.tartaros.common.blocks.BlockSepulture;
-import ladysnake.tartaros.common.blocks.BlockSoulAnchor;
-import ladysnake.tartaros.common.blocks.BlockSoulCandle;
-import ladysnake.tartaros.common.blocks.BlockSoulExtractor;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.blocks.BlockCrystallizer;
+import ladysnake.dissolution.common.blocks.BlockEctoplasm;
+import ladysnake.dissolution.common.blocks.BlockMercuriusWaystone;
+import ladysnake.dissolution.common.blocks.BlockMercuryCandle;
+import ladysnake.dissolution.common.blocks.BlockResuscitator;
+import ladysnake.dissolution.common.blocks.BlockSepulture;
+import ladysnake.dissolution.common.blocks.BlockSoulAnchor;
+import ladysnake.dissolution.common.blocks.BlockSoulExtractor;
+import ladysnake.dissolution.common.blocks.BlockSulfurCandle;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -27,7 +28,8 @@ public class ModBlocks {
     public static BlockCrystallizer CRYSTALLIZER;
     public static BlockMercuriusWaystone MERCURIUS_WAYSTONE;
     public static BlockSoulAnchor SOUL_ANCHOR;
-    public static BlockSoulCandle SOUL_CANDLE;
+    public static BlockMercuryCandle MERCURY_CANDLE;
+    public static BlockSulfurCandle SULFUR_CANDLE;
     public static BlockSoulExtractor SOUL_EXTRACTOR;
     public static BlockSepulture SEPULTURE;
     public static BlockResuscitator RESUSCITATOR;
@@ -41,7 +43,8 @@ public class ModBlocks {
     	ECTOPLASMA.setHardness(0.5f);
     	MERCURIUS_WAYSTONE = new BlockMercuriusWaystone();
     	SOUL_ANCHOR = new BlockSoulAnchor();
-    	SOUL_CANDLE = new BlockSoulCandle();
+    	MERCURY_CANDLE = new BlockMercuryCandle();
+    	SULFUR_CANDLE = new BlockSulfurCandle();
     	SOUL_EXTRACTOR = new BlockSoulExtractor();
     	SEPULTURE = new BlockSepulture();
     	//RESUSCITATOR = new BlockResuscitator();
@@ -53,7 +56,8 @@ public class ModBlocks {
     	registerBlock(ECTOPLASM);
     	registerBlock(MERCURIUS_WAYSTONE).setMaxStackSize(1);
     	registerBlock(SOUL_ANCHOR);
-    	registerBlock(SOUL_CANDLE);
+    	registerBlock(MERCURY_CANDLE);
+    	registerBlock(SULFUR_CANDLE);
     	GameRegistry.register(SEPULTURE);
     	registerBlock(SOUL_EXTRACTOR);
     	//registerBlock(RESUSCITATOR);
@@ -80,7 +84,8 @@ public class ModBlocks {
 
     	//registerRender(RESUSCITATOR);
 
-    	registerRender(SOUL_CANDLE);
+    	registerRender(MERCURY_CANDLE);
+    	registerRender(SULFUR_CANDLE);
     }
     
     @SideOnly(Side.CLIENT)

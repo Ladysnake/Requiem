@@ -1,21 +1,23 @@
-package ladysnake.tartaros.common.proxy;
+package ladysnake.dissolution.common.proxy;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.Tartaros;
-import ladysnake.tartaros.common.capabilities.IncorporealDataHandler;
-import ladysnake.tartaros.common.handlers.EventHandlerCommon;
-import ladysnake.tartaros.common.init.ModBlocks;
-import ladysnake.tartaros.common.init.ModCrafting;
-import ladysnake.tartaros.common.init.ModEntities;
-import ladysnake.tartaros.common.init.ModItems;
-import ladysnake.tartaros.common.inventory.GuiProxy;
-import ladysnake.tartaros.common.networking.PacketHandler;
-import ladysnake.tartaros.common.tileentities.TileEntityCrystallizer;
-import ladysnake.tartaros.common.tileentities.TileEntityResuscitator;
-import ladysnake.tartaros.common.tileentities.TileEntitySepulture;
-import ladysnake.tartaros.common.tileentities.TileEntitySoulAnchor;
-import ladysnake.tartaros.common.tileentities.TileEntitySoulCandle;
-import ladysnake.tartaros.common.tileentities.TileEntitySoulExtractor;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.handlers.EventHandlerCommon;
+import ladysnake.dissolution.common.handlers.LivingDeathHandler;
+import ladysnake.dissolution.common.handlers.PlayerTickHandler;
+import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.init.ModCrafting;
+import ladysnake.dissolution.common.init.ModEntities;
+import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.inventory.GuiProxy;
+import ladysnake.dissolution.common.networking.PacketHandler;
+import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
+import ladysnake.dissolution.common.tileentities.TileEntityResuscitator;
+import ladysnake.dissolution.common.tileentities.TileEntitySepulture;
+import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
+import ladysnake.dissolution.common.tileentities.TileEntitySoulCandle;
+import ladysnake.dissolution.common.tileentities.TileEntitySoulExtractor;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -28,11 +30,14 @@ public abstract class CommonProxy {
 		ModBlocks.register();
 		ModItems.init();
 		ModItems.register();
+		ModItems.registerOres();
 		ModEntities.register();
 	}
 	
 	public void init() {
 		MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
+		MinecraftForge.EVENT_BUS.register(new LivingDeathHandler());
+		MinecraftForge.EVENT_BUS.register(new PlayerTickHandler());
 		System.out.println("init");
 		
 		GameRegistry.registerTileEntity(TileEntityCrystallizer.class, Reference.MOD_ID + "tileentitycrystallizer");

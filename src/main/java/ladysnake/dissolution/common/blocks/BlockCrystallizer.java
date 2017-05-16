@@ -1,11 +1,11 @@
-package ladysnake.tartaros.common.blocks;
+package ladysnake.dissolution.common.blocks;
 
 import java.util.Random;
 
-import ladysnake.tartaros.common.Reference;
-import ladysnake.tartaros.common.Tartaros;
-import ladysnake.tartaros.common.init.ModBlocks;
-import ladysnake.tartaros.common.tileentities.TileEntityCrystallizer;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.ITileEntityProvider;
@@ -42,12 +42,13 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
 	public final int GUI_ID = 1;
 
 	public BlockCrystallizer() {
-		super(Material.PISTON);
+		super(Material.ROCK);
 		setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		setUnlocalizedName(Reference.Blocks.CRYSTALLIZER.getUnlocalizedName());
 		setRegistryName(Reference.Blocks.CRYSTALLIZER.getRegistryName());
 		TileEntityCrystallizer.init();
-		this.setHardness(1.0f);
+		this.setHardness(2.0f);
+		this.setHarvestLevel("pickaxe", 1);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -135,9 +136,29 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
 		return false;
 	}
 	
-	public static void setState(boolean burning, World world, BlockPos pos, IBlockState state) {
-	
-		
-		
-	}
+    public static void setState(boolean active, World worldIn, BlockPos pos)
+    {
+        IBlockState iblockstate = worldIn.getBlockState(pos);
+        TileEntityCrystallizer te = (TileEntityCrystallizer) worldIn.getTileEntity(pos);
+        te.keepInventory = true;
+
+        if (active)
+        {
+            worldIn.setBlockState(pos, ModBlocks.CRYSTALLIZER.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, true), 3);
+            worldIn.setBlockState(pos, ModBlocks.CRYSTALLIZER.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, true), 3);
+        }
+        else
+        {
+            worldIn.setBlockState(pos, ModBlocks.CRYSTALLIZER.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, false), 3);
+            worldIn.setBlockState(pos, ModBlocks.CRYSTALLIZER.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, false), 3);
+        }
+
+        te.keepInventory = false;
+/*
+        if (te != null)
+        {
+            te.validate();
+            worldIn.setTileEntity(pos, te);
+        }*/
+    }
 }

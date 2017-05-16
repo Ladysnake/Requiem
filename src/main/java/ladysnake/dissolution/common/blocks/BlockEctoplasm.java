@@ -1,6 +1,6 @@
-package ladysnake.tartaros.common.blocks;
+package ladysnake.dissolution.common.blocks;
 
-import ladysnake.tartaros.common.Reference;
+import ladysnake.dissolution.common.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
