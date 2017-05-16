@@ -51,7 +51,7 @@ public class BlockSoulAnchor extends Block implements ITileEntityProvider, IResp
 	
 	@Override
 	public BlockRenderLayer getBlockLayer() {
-		return BlockRenderLayer.TRANSLUCENT;
+		return BlockRenderLayer.CUTOUT;
 	}
 	
 	@Override

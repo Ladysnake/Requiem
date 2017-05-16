@@ -49,7 +49,7 @@ public class EventHandlerClient {
 			if(Minecraft.getMinecraft().gameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindJump) && event.player.experienceLevel > 0) {
 				event.player.motionY = SOUL_VERTICAL_SPEED;
 				event.player.velocityChanged = true;
-			} else if(event.player.motionY < SOUL_VERTICAL_SPEED * 0.5f){
+			} else if(event.player.motionY < SOUL_VERTICAL_SPEED * 0.5f && !event.player.isInWater()){
 				event.player.motionY = -0.8f * SOUL_VERTICAL_SPEED;
 				event.player.fallDistance = 0;
 				event.player.velocityChanged = true;

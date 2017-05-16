@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL11;
 
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.TartarosConfig;
+import ladysnake.dissolution.common.blocks.BlockSoulAnchor;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
@@ -15,10 +16,15 @@ import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.tileentity.TileEntityBeaconRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.passive.EntitySheep;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAnchor> {
@@ -26,6 +32,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
 	private static final ResourceLocation TEXTURE;
 	private static final String text = "ancre";
 	private static int height = 2, width = 2;
+	private static final ResourceLocation SOUL_PIPE_TEXTURE = new ResourceLocation(Reference.MOD_ID + ":textures/blocks/soul_anchor/soul_pipe.png");
 	private static final ResourceLocation END_SKY_TEXTURE;
     private static final ResourceLocation END_PORTAL_TEXTURE;
     private static final Random RANDOM = new Random(31100L);
@@ -46,18 +53,20 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
 	@Override
 	public void renderTileEntityAt(TileEntitySoulAnchor te, double x, double y, double z, float partialTicks, int destroyStage) {
 		
-		renderPortalAt(te, x, y, z, partialTicks);
+		//renderPortalAt(te, x, y, z, partialTicks);
 		
 		if(!TartarosConfig.anchorsXRay) return;
 		
 		//System.out.println(text);
 		Minecraft mc = Minecraft.getMinecraft();
 		
-		if(mc.player.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + (double)mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(te.getPos().getX(), te.getPos().getY(), te.getPos().getZ()), false, true, false) == null)
-			return;
-		
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(mc.player);
     	if(!playerCorp.isIncorporeal()) return;
+    	
+		renderSoulPipe(te, x, y, z);
+		
+		if(mc.player.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + (double)mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(te.getPos().getX(), te.getPos().getY(), te.getPos().getZ()), false, true, false) == null)
+			return;
 		
 		GlStateManager.pushMatrix();
 		
@@ -154,6 +163,18 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
 	    Minecraft.getMinecraft().entityRenderer.enableLightmap();
 	    
 	    GlStateManager.popMatrix();
+	}
+	
+	public void renderSoulPipe(TileEntitySoulAnchor te, double x, double y, double z) {
+		GlStateManager.alphaFunc(516, 0.1F);
+        this.bindTexture(SOUL_PIPE_TEXTURE);
+        float f = 0;
+        BlockPos targetPos = te.getExtremityPosition();
+        double d0 = targetPos.getY() - y;
+        f = MathHelper.sin(f * (float)Math.PI);
+        int height = te.getPos().getY() - targetPos.getY();
+        float[] afloat = EntitySheep.getDyeRgb(EnumDyeColor.WHITE);
+        TileEntityBeaconRenderer.renderBeamSegment(x, y, z, 0, 1, 0, 1, -height, afloat, 0.30D, 0);
 	}
 	
 	public void renderPortalAt(TileEntitySoulAnchor te, double x, double y, double z, float partialTicks)

@@ -11,7 +11,7 @@ public class TartarosConfig {
 	public static final int CREATIVE_FLIGHT = 2;
 	public static final int SPECTATOR_FLIGHT = 3;
 
-	public static boolean anchorsXRay = true;
+	public static boolean anchorsXRay = false;
 	public static boolean doSableDrop = true;
 	public static boolean invisibleGhosts = false;
 	public static int flightMode = CUSTOM_FLIGHT;
@@ -40,8 +40,8 @@ public class TartarosConfig {
 	        Property anchorsXRayProp = Tartaros.config.get(
 	        		Configuration.CATEGORY_CLIENT,
 	                "anchorsXRay", // Property name
-	                "true", // Default value
-	                "Whether soul anchors should be visible through blocks to incorporeal players");
+	                "false", // Default value
+	                "Whether soul anchors should be visible through blocks to ghost players (graphical glitches might occur)");
 	        
 	        Property invisibleGhostProp = Tartaros.config.get(
 	        		Configuration.CATEGORY_GENERAL,

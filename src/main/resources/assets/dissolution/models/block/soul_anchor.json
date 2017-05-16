@@ -1,6 +1,66 @@
 {
-    "parent": "block/cube_all",
-    "textures": {
-        "all": "minecraft:blocks/glass"
-    }
+	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
+	"parent": "block/cube_all",
+	"textures": {
+		"0": "dissolution:blocks/soul_anchor/soul_anchor_front",
+		"1": "dissolution:blocks/soul_anchor/soul_anchor_side",
+		"2": "dissolution:blocks/soul_anchor/soul_anchor_top",
+		"3": "dissolution:blocks/soul_anchor/soul_anchor_inside",
+		"4": "dissolution:blocks/soul_anchor/soul_pipe_base"
+	},
+	"elements": [
+		{
+			"name": "main",
+			"from": [0, 0, 0],
+			"to": [16, 16, 16],
+			"shade": true,
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"up": {"uv": [0, 0, 16, 16], "texture": "#2"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#2"}
+			}
+		},
+		{
+			"name": "inside",
+			"from": [5, 2, 6],
+			"to": [11, 14, 0],
+			"shade": true,
+			"faces": {
+				"east": {"uv": [0, 0, 6, 12], "texture": "#3"},
+				"north": {"uv": [0, 0, 6, 12], "texture": "#3"},
+				"west": {"uv": [0, 0, 6, 12], "texture": "#3"},
+				"up": {"uv": [6, 0, 12, 6], "texture": "#3"},
+				"down": {"uv": [6, 0, 12, 6], "texture": "#3"}
+			}
+		},
+		{
+			"name": "pipe_base_outside",
+			"from": [4, 16.1, 12],
+			"to": [12, 19.1, 4],
+			"shade": true,
+			"faces": {
+				"north": {"uv": [0, 0, 8, 3], "texture": "#4"},
+				"east": {"uv": [0, 0, 8, 3], "texture": "#4"},
+				"south": {"uv": [0, 0, 8, 3], "texture": "#4"},
+				"west": {"uv": [0, 0, 8, 3], "texture": "#4"},
+				"down": {"uv": [8, 0, 16, 8], "texture": "#4"}
+			}
+		},
+		{
+			"name": "pipe_base_outside",
+			"from": [4, 16.1, 4],
+			"to": [12, 19.1, 12],
+			"shade": true,
+			"faces": {
+				"north": {"uv": [0, 0, 8, 3], "texture": "#4"},
+				"east": {"uv": [0, 0, 8, 3], "texture": "#4"},
+				"south": {"uv": [0, 0, 8, 3], "texture": "#4"},
+				"west": {"uv": [0, 0, 8, 3], "texture": "#4"},
+				"down": {"uv": [0, 0, 0, 0], "texture": "#4"}
+			}
+		}
+	]
 }
