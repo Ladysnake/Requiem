@@ -8,24 +8,22 @@ buildscript {
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'maven'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = "0.3.0"
-group = "es.esy.ladysnake.tartaros"
-archivesBaseName = "tartaros"
-
+version = "1.0"
+group = "com.yourname.modid" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "modid"
 
 sourceCompatibility = targetCompatibility = "1.6" // Need this here so eclipse task generates correctly.
 compileJava {
-    sourceCompatibility = targetCompatibility = "1.8"
+    sourceCompatibility = targetCompatibility = "1.6"
 }
 
 minecraft {
-    version = "1.11.2-13.20.0.2282"
+    version = "1.11.2-13.20.0.2294"
     runDir = "run"
-
+    
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
     // stable_#            stables are built at the discretion of the MCP team.
@@ -35,18 +33,27 @@ minecraft {
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
-repositories {
-  maven {
-    // location of the maven that hosts JEI files
-    url = "http://dvs1.progwml6.com/files/maven"
-  }
-}
-
 dependencies {
-  // compile against the JEI API
-  deobfCompile "mezz.jei:jei_${mc_version}:${jei_version}:api"
-  // at runtime, use the full JEI jar
-  runtime "mezz.jei:jei_${mc_version}:${jei_version}"
+    // you may put jars on which you depend on in ./libs
+    // or you may define them like so..
+    //compile "some.group:artifact:version:classifier"
+    //compile "some.group:artifact:version"
+      
+    // real examples
+    //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
+    //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
+
+    // the 'provided' configuration is for optional dependencies that exist at compile-time but might not at runtime.
+    //provided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
+
+    // the deobf configurations:  'deobfCompile' and 'deobfProvided' are the same as the normal compile and provided,
+    // except that these dependencies get remapped to your current MCP mappings
+    //deobfCompile 'com.mod-buildcraft:buildcraft:6.0.8:dev'
+    //deobfProvided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
+
+    // for more info...
+    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
+    // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
 }
 
@@ -58,11 +65,11 @@ processResources {
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-
+                
         // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-
+        
     // copy everything else except the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'

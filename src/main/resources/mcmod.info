@@ -1,15 +1,15 @@
 [
 {
-  "modid": "tartaros",
-  "name": "Tartaros",
-  "description": "A mod aimed at making death more interesting",
-  "version": "0.3.0",
+  "modid": "examplemod",
+  "name": "Example Mod",
+  "description": "Example placeholder mod.",
+  "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "https://minecraft.curseforge.com/projects/tartaros",
-  "updateUrl": "https://minecraft.curseforge.com/projects/tartaros",
-  "authorList": ["Pyrofab", "CobraDarkPoney", "Noprotox"],
-  "credits": "MrCrayfish for his amazing model creator.",
-  "logoFile": "/assets/tartaros/textures/tartaros_ico.png",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["ExampleDude"],
+  "credits": "The Forge and FML guys, for making this example",
+  "logoFile": "",
   "screenshots": [],
   "dependencies": []
 }

@@ -1,6 +1,97 @@
 {
-    "parent": "block/cube_all",
-    "textures": {
-        "all": "tartaros:blocks/ectoplasm_block"
-    }
+	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
+	"textures": {
+		"0": "soul_anchor/soul_anchor_side",
+		"1": "soul_anchor/soul_anchor_front",
+		"2": "soul_anchor/soul_anchor_top",
+		"5": "soul_anchor/soul_anchor_inside",
+		"6": "soul_anchor/soul_pipe_base",
+		"particle": "soul_anchor/soul_anchor_side"
+	},
+	"elements": [
+		{
+			"name": "outside",
+			"from": [0, 0, 0],
+			"to": [16, 16, 16],
+			"shade": true,
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#0"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#0"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#0"},
+				"up": {"uv": [0, 0, 16, 16], "texture": "#2"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#2"}
+			}
+		},
+		{
+			"name": "inside",
+			"from": [5, 2, 0],
+			"to": [11, 14, 6],
+			"shade": true,
+			"faces": {
+				"east": {"uv": [0, 0, 6, 12], "texture": "#5"},
+				"south": {"uv": [0, 0, 6, 12], "texture": "#5"},
+				"west": {"uv": [0, 0, 6, 12], "texture": "#5"},
+				"up": {"uv": [6, 0, 12, 6], "texture": "#5"},
+				"down": {"uv": [6, 0, 12, 6], "texture": "#5"}
+			}
+		},
+		{
+			"name": "pipe base",
+			"from": [4, 16, 4],
+			"to": [12, 20, 4],
+			"shade": true,
+			"faces": {
+				"north": {"uv": [0, 0, 8, 4], "texture": "#6"},
+				"south": {"uv": [0, 0, 8, 4], "texture": "#6"}
+			},
+			"rotation": {
+				"origin": [8, 18, 4.5],
+				"axis": "y",
+				"angle": 0
+			}
+		},
+		{
+			"name": "pipe base",
+			"from": [4, 16, 12],
+			"to": [12, 20, 12],
+			"shade": true,
+			"faces": {
+				"north": {"uv": [0, 0, 8, 4], "texture": "#6"},
+				"south": {"uv": [0, 0, 8, 4], "texture": "#6"}
+			},
+			"rotation": {
+				"origin": [8, 18, 12.5],
+				"axis": "y",
+				"angle": 0
+			}
+		},
+		{
+			"name": "pipe base",
+			"from": [4, 16, 4],
+			"to": [4, 20, 12],
+			"shade": true,
+			"faces": {
+				"east": {"uv": [0, 0, 8, 4], "texture": "#6"},
+				"west": {"uv": [0, 0, 8, 4], "texture": "#6"}
+			}
+		},
+		{
+			"name": "pipe base",
+			"from": [12, 16, 4],
+			"to": [12, 20, 12],
+			"shade": true,
+			"faces": {
+				"east": {"uv": [0, 0, 8, 4], "texture": "#6"},
+				"west": {"uv": [0, 0, 8, 4], "texture": "#6"}
+			}
+		},
+		{
+			"name": "pipe base bottom",
+			"from": [4, 16, 4],
+			"to": [12, 16, 12],
+			"shade": true,
+			"faces": {"up": {"uv": [8, 0, 16, 8], "texture": "#6"}}
+		}
+	]
 }
