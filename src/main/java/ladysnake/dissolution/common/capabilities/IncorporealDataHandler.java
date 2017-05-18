@@ -58,7 +58,7 @@ public class IncorporealDataHandler {
 			p.setEntityInvulnerable(enable);
 			if(TartarosConfig.flightMode == TartarosConfig.CUSTOM_FLIGHT)
 				p.capabilities.setFlySpeed(enable ? 0.025f : 0.05f);
-			ObfuscationReflectionHelper.setPrivateValue(Entity.class, p, true, "isImmuneToFire");
+			ObfuscationReflectionHelper.setPrivateValue(Entity.class, p, true, "isImmuneToFire", "field_70178_ae");
 			p.setInvisible(enable && TartarosConfig.invisibleGhosts);
 			if(!p.isCreative()) {
 				boolean enableFlight = (TartarosConfig.flightMode != TartarosConfig.NO_FLIGHT) && (TartarosConfig.flightMode != TartarosConfig.CUSTOM_FLIGHT);
