@@ -45,6 +45,7 @@ public class Reference {
 
 	public static enum Blocks {
 		CRYSTALLIZER("crystallizer", "blockCrystallizer"),
+		DRIED_LAVA("dried_lava", "blockDriedLava"),
 		ECTOPLASM("ectoplasm_block", "blockEctoplasm"),
 		ECTOPLASMA("ectoplasma_block", "blockEctoplasma"),
 		SOUL_ANCHOR("soul_anchor", "blockSoulAnchor"),

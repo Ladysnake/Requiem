@@ -1,17 +1,22 @@
 package ladysnake.dissolution.common.handlers;
 
+import java.util.List;
 import java.util.Random;
 
 import ladysnake.dissolution.common.TartarosConfig;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.entity.EntityMinion;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.passive.EntityLlama;
+import net.minecraft.entity.passive.EntityRabbit;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -34,16 +39,17 @@ public class PlayerTickHandler {
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.player);
 
 		playerCorp.tick(event);
-
+		
 		if (playerCorp.isIncorporeal()) {
-			if(!event.player.isCreative()) {
-				if (TartarosConfig.flightMode == TartarosConfig.SPECTATOR_FLIGHT || TartarosConfig.flightMode == TartarosConfig.CUSTOM_FLIGHT)
+			if (!event.player.isCreative()) {
+				if (TartarosConfig.flightMode == TartarosConfig.SPECTATOR_FLIGHT
+						|| TartarosConfig.flightMode == TartarosConfig.CUSTOM_FLIGHT)
 					event.player.capabilities.isFlying = event.player.experienceLevel > 0;
-				if(TartarosConfig.flightMode == TartarosConfig.CUSTOM_FLIGHT && event.player.experienceLevel > 0) {
+				if (TartarosConfig.flightMode == TartarosConfig.CUSTOM_FLIGHT && event.player.experienceLevel > 0) {
 					event.player.onGround = false;
 					event.player.capabilities.setFlySpeed(event.player.experienceLevel > 0 ? 0.025f : 0.01f);
-				}
-				else if (TartarosConfig.flightMode == TartarosConfig.CREATIVE_FLIGHT && event.player.experienceLevel <= 0)
+				} else if (TartarosConfig.flightMode == TartarosConfig.CREATIVE_FLIGHT
+						&& event.player.experienceLevel <= 0)
 					event.player.capabilities.isFlying = false;
 				if (TartarosConfig.flightMode == TartarosConfig.SPECTATOR_FLIGHT
 						|| TartarosConfig.flightMode == TartarosConfig.CREATIVE_FLIGHT)

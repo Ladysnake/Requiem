@@ -7,6 +7,10 @@ import javax.annotation.Nullable;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.init.ModBlocks;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -17,10 +21,13 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -40,6 +47,38 @@ public class EntityWanderingSoul extends EntityMob {
     @Override
     protected void entityInit() {
         super.entityInit();
+    }
+    
+    @Override
+    public void onUpdate() {
+    	
+    	
+            float f = (float)Math.min(16, 4);
+            
+            BlockPos.MutableBlockPos blockpos = new BlockPos.MutableBlockPos(0, 0, 0);
+
+            for (BlockPos.MutableBlockPos blockpos1 : BlockPos.getAllInBoxMutable(this.getPosition().add((double)(-f), -1.0D, (double)(-f)), this.getPosition().add((double)f, -2.0D, (double)f)))
+            {
+                if (blockpos1.distanceSqToCenter(this.posX, this.posY, this.posZ) <= (double)(f * f))
+                {
+                	blockpos.setPos(blockpos1.getX(), blockpos1.getY() + 1, blockpos1.getZ());
+                    IBlockState iblockstate = this.world.getBlockState(blockpos);
+
+                    if (iblockstate.getMaterial() == Material.AIR)
+                    {
+                        IBlockState iblockstate1 = this.world.getBlockState(blockpos1);
+
+                        if (iblockstate1.getMaterial() == Material.WATER && ((Integer)iblockstate1.getValue(BlockLiquid.LEVEL)).intValue() == 0 && this.world.mayPlace(Blocks.FROSTED_ICE, blockpos1, false, EnumFacing.DOWN, (Entity)null))
+                        {
+                            this.world.setBlockState(blockpos1, Blocks.FROSTED_ICE.getDefaultState());
+                            this.world.scheduleUpdate(blockpos1.toImmutable(), Blocks.FROSTED_ICE, MathHelper.getInt(this.getRNG(), 60, 120));
+                        }
+                    }
+                }
+            }
+        
+    	
+    	super.onUpdate();
     }
     
     @Override
