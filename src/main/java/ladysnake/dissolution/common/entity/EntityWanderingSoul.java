@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.entity;
 
+import java.util.Random;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -25,6 +26,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -52,6 +54,7 @@ public class EntityWanderingSoul extends EntityMob {
     @Override
     public void onUpdate() {
     	
+    		Random r = new Random();
     	
             float f = (float)Math.min(16, 4);
             
@@ -73,6 +76,21 @@ public class EntityWanderingSoul extends EntityMob {
                             this.world.setBlockState(blockpos1, Blocks.FROSTED_ICE.getDefaultState());
                             this.world.scheduleUpdate(blockpos1.toImmutable(), Blocks.FROSTED_ICE, MathHelper.getInt(this.getRNG(), 60, 120));
                         }
+                        if (iblockstate1.getMaterial() == Material.GRASS)
+                        {
+                        	f = (float)Math.min(8, 2);
+                        	if((int)r.nextInt(100) < 1){
+                        		this.world.setBlockState(blockpos1, Blocks.DIRT.getDefaultState());
+                        		for(int i = 0; i < 10; i++){
+                    				Random rand = new Random();
+                    				double motionX = rand.nextGaussian() * 0.05D;
+                    				double motionY = rand.nextGaussian() * 0.05D;
+                    				double motionZ = rand.nextGaussian() * 0.05D;
+                    				this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, false, blockpos1.getX() ,  blockpos1.getY() + 1.0D, blockpos1.getZ(), motionX, motionY, motionZ, new int[0]);
+                    			}
+                        	}
+                        }
+                        
                     }
                 }
             }

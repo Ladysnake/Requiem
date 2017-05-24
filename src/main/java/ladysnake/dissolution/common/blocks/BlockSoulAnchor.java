@@ -60,8 +60,7 @@ public class BlockSoulAnchor extends Block implements ITileEntityProvider, IResp
 		
 		if(state.getValue(PART) == BlockSoulAnchor.EnumPartType.CAP) return false;
 		
-		if (!(worldIn.getTileEntity(pos) instanceof TileEntitySoulAnchor) || 
-				!IncorporealDataHandler.getHandler(playerIn).isIncorporeal()) return false;
+		if (!(worldIn.getTileEntity(pos) instanceof TileEntitySoulAnchor) || !IncorporealDataHandler.getHandler(playerIn).isIncorporeal()) return false;
 		
 		TileEntitySoulAnchor te = (TileEntitySoulAnchor) worldIn.getTileEntity(pos);
 		
