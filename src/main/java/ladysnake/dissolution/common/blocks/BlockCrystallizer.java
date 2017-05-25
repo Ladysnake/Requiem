@@ -3,7 +3,7 @@ package ladysnake.dissolution.common.blocks;
 import java.util.Random;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
 import net.minecraft.block.Block;
@@ -130,7 +130,7 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
 
 		TileEntity tileentity = worldIn.getTileEntity(pos);
 		if (tileentity instanceof TileEntityCrystallizer) {
-			playerIn.openGui(Tartaros.instance, GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
+			playerIn.openGui(Dissolution.instance, GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
 			return true;
 		}
 		return false;

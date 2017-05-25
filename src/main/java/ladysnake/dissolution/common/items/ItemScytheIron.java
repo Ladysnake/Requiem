@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.items;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.Dissolution;
 import net.minecraft.item.Item.ToolMaterial;
 
 public class ItemScytheIron extends ItemScythe {

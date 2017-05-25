@@ -1,8 +1,8 @@
 {
-    "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
-    "parent": "block/wall_post",
+    "parent": "block/orientable",
     "textures": {
-  		"particle": "dissolution:blocks/waystone",
-          "wall": "dissolution:blocks/waystone"
+          "top": "dissolution:blocks/vaporizer/vaporizer_side",
+          "front": "#front",
+          "side": "dissolution:blocks/vaporizer/vaporizer_side"
       }
 }

@@ -6,7 +6,7 @@ import java.util.Random;
 import org.lwjgl.opengl.GL11;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.TartarosConfig;
+import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.blocks.BlockSoulAnchor;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
@@ -55,7 +55,6 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
 		
 		//renderPortalAt(te, x, y, z, partialTicks);
 		
-		if(!TartarosConfig.anchorsXRay) return;
 		
 		//System.out.println(text);
 		Minecraft mc = Minecraft.getMinecraft();
@@ -64,6 +63,8 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
     	if(!playerCorp.isIncorporeal()) return;
     	
 		renderSoulPipe(te, x, y, z);
+
+		if(!DissolutionConfig.anchorsXRay || true) return;
 		
 		if(mc.player.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + (double)mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(te.getPos().getX(), te.getPos().getY(), te.getPos().getZ()), false, true, false) == null)
 			return;
@@ -174,7 +175,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
         f = MathHelper.sin(f * (float)Math.PI);
         int height = te.getPos().getY() - targetPos.getY();
         float[] afloat = EntitySheep.getDyeRgb(EnumDyeColor.WHITE);
-        TileEntityBeaconRenderer.renderBeamSegment(x, y, z, 0, 1, 0, 1, -height, afloat, 0.30D, 0);
+        TileEntityBeaconRenderer.renderBeamSegment(x, y, z, 0, 1, 0, 1, -height, afloat, 0.35D, 0);
 	}
 	
 	public void renderPortalAt(TileEntitySoulAnchor te, double x, double y, double z, float partialTicks)

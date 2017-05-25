@@ -15,12 +15,12 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION, acceptedMinecraftVersions = Reference.MCVERSION,
 		guiFactory = Reference.GUI_FACTORY)
-public class Tartaros {
+public class Dissolution {
 	
 	public static Configuration config;
 	
 	@Instance(Reference.MOD_ID)
-	public static Tartaros instance;
+	public static Dissolution instance;
 	
 	public static final CreativeTabs CREATIVE_TAB = new TartarosTab();
 	
@@ -30,7 +30,7 @@ public class Tartaros {
 	 @EventHandler
 	 public void preInit(FMLPreInitializationEvent event) {
 		 config = new Configuration(event.getSuggestedConfigurationFile());
-		 TartarosConfig.syncConfig();
+		 DissolutionConfig.syncConfig();
 		 proxy.preInit();
 	 }
 	 

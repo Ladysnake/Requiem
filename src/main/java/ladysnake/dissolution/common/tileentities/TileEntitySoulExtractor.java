@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.tileentities;
 
 import java.util.Random;
 
-import ladysnake.dissolution.common.TartarosConfig;
+import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.blocks.BlockSoulExtractor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
@@ -77,7 +77,7 @@ public class TileEntitySoulExtractor extends TileEntity implements ITickable {
 						if(slot != -1)
 							handler.insertItem(slot, outputStack, false);
 					}
-				} else if (TartarosConfig.doSableDrop) {
+				} else if (DissolutionConfig.doSableDrop) {
 					getWorld().spawnEntity(new EntityItem(getWorld(), pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, outputStack));
 				}
 			}

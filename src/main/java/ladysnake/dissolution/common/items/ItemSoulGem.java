@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.items;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.Dissolution;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -11,7 +11,7 @@ public class ItemSoulGem extends Item {
 		super();
 		this.setUnlocalizedName(Reference.Items.SOULGEM.getUnlocalizedName());
         this.setRegistryName(Reference.Items.SOULGEM.getRegistryName());
-        this.setCreativeTab(Tartaros.CREATIVE_TAB);
+        this.setCreativeTab(Dissolution.CREATIVE_TAB);
 	}
 	
 	@Override

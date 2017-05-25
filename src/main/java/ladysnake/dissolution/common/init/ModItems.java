@@ -1,6 +1,10 @@
 package ladysnake.dissolution.common.init;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Reference.Items;
 import ladysnake.dissolution.common.items.ItemBaseResource;
 import ladysnake.dissolution.common.items.ItemDebug;
 import ladysnake.dissolution.common.items.ItemEyeDead;
@@ -51,9 +55,9 @@ public class ModItems {
 	}
 
 	public static void registerOres() {
-		OreDictionary.registerOre("dustSulfur", new ItemStack(BASE_RESOURCE, 1, 2));
-		OreDictionary.registerOre("itemCinnabar", new ItemStack(BASE_RESOURCE, 1, 3));
-		OreDictionary.registerOre("itemMercury", new ItemStack(BASE_RESOURCE, 1, 4));
+		OreDictionary.registerOre("dustSulfur", ItemBaseResource.resourceFromName("sulfur"));
+		OreDictionary.registerOre("itemCinnabar", ItemBaseResource.resourceFromName("cinnabar"));
+		OreDictionary.registerOre("itemMercury", ItemBaseResource.resourceFromName("mercury"));
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -72,10 +76,7 @@ public class ModItems {
 
 	@SideOnly(Side.CLIENT)
 	public static void registerRender(Item item) {
-		registerRender(item, 0, item.getUnlocalizedName().toString().substring(5));
-		// ModelLoader.setCustomModelResourceLocation(item, 0, new
-		// ModelResourceLocation(Reference.MOD_ID + ":" +
-		// item.getUnlocalizedName().toString().substring(5)));
+		registerRender(item, 0, item.getUnlocalizedName().substring(5));
 	}
 
 	@SideOnly(Side.CLIENT)

@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.lwjgl.opengl.GL11;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.TartarosConfig;
+import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
@@ -49,7 +49,7 @@ public class GuiIncorporealOverlay extends Gui {
 		final IIncorporealHandler pl = IncorporealDataHandler.getHandler(this.mc.player);
 		if(pl.isIncorporeal()) {
 			this.drawIncorporealOverlay(event.getResolution());
-	        if(TartarosConfig.soulCompass)
+	        if(DissolutionConfig.soulCompass)
 				this.drawOriginIndicator(event.getResolution());
 		}
         if(pl.isSoulCandleNearby(1)) {
@@ -135,7 +135,7 @@ public class GuiIncorporealOverlay extends Gui {
 			this.drawTexturedModalRect(i + 3 + (int)Math.round((angleToOrigin - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 200, 0, 7, 10);
 		}
 		
-		if(!TartarosConfig.soulCompassAnchors) return;
+		if(!DissolutionConfig.soulCompassAnchors) return;
 		
 		for(TileEntity te : mc.player.world.loadedTileEntityList) {
 			if(te instanceof TileEntitySoulAnchor) {

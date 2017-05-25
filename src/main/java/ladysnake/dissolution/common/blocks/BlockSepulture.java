@@ -38,7 +38,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockSepulture extends BlockHorizontal implements IRespawnLocation, ITileEntityProvider {
+public class BlockSepulture extends BlockHorizontal implements ISoulInteractable, ITileEntityProvider {
 
 	public static final PropertyEnum<BlockSepulture.EnumPartType> PART = PropertyEnum.<BlockSepulture.EnumPartType>create("part", BlockSepulture.EnumPartType.class);
     protected static final AxisAlignedBB SEPULTURE_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5625D, 1.0D);

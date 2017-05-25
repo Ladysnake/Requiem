@@ -207,7 +207,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
                     if (itemstack.getItemDamage() >= itemstack.getMaxDamage())
                     {
                         this.renderBrokenItemStack(itemstack);
-                        this.setItemStackToSlot(EntityEquipmentSlot.HEAD, null);
+                        this.setItemStackToSlot(EntityEquipmentSlot.HEAD, ItemStack.EMPTY);
                     }
                 }
 

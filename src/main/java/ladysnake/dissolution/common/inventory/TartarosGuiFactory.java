@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.Dissolution;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigElement;
@@ -48,7 +48,7 @@ public class TartarosGuiFactory implements IModGuiFactory {
 	
 	public static class GuiTartarosConfig extends GuiConfig {
 		public GuiTartarosConfig(GuiScreen parentScreen) {
-			super(parentScreen, new ConfigElement(Tartaros.config.getCategory(Configuration.CATEGORY_GENERAL)).getChildElements(), Reference.MOD_ID, false, false, GuiConfig.getAbridgedConfigPath(Tartaros.config.toString()));
+			super(parentScreen, new ConfigElement(Dissolution.config.getCategory(Configuration.CATEGORY_GENERAL)).getChildElements(), Reference.MOD_ID, false, false, GuiConfig.getAbridgedConfigPath(Dissolution.config.toString()));
 		}
 	}
 

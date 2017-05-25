@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.init;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.blocks.BlockCrystallizer;
 import ladysnake.dissolution.common.blocks.BlockEctoplasm;
 import ladysnake.dissolution.common.blocks.BlockMercuriusWaystone;
@@ -68,7 +68,7 @@ public class ModBlocks {
     	ItemBlock item = new ItemBlock(block);
     	item.setRegistryName(block.getRegistryName());
     	GameRegistry.register(item);
-    	block.setCreativeTab(Tartaros.CREATIVE_TAB);
+    	block.setCreativeTab(Dissolution.CREATIVE_TAB);
     	return item;
     }
     
