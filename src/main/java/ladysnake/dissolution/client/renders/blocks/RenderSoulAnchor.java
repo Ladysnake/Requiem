@@ -41,10 +41,6 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
     private FloatBuffer buffer = GLAllocation.createDirectFloatBuffer(16);
     
     static {
-/*    	if(Loader.isModLoaded("betweenlands"))
-    		texture = new ResourceLocation(Reference.MOD_ID + ":textures/blocks/soul_anchor_special_render.png");
-    	else
-    		texture = new ResourceLocation("minecraft:textures/blocks/dirt.png");*/
     	TEXTURE = new ResourceLocation(Reference.MOD_ID + ":textures/blocks/soul_anchor_special_render.png");
     	END_SKY_TEXTURE = new ResourceLocation("textures/environment/end_sky.png");
     	END_PORTAL_TEXTURE = new ResourceLocation("textures/entity/end_portal.png");

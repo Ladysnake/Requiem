@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -22,13 +23,10 @@ import net.minecraft.world.World;
 
 public class BlockMercuryCandle extends Block implements ITileEntityProvider {
 	
-	public static final PropertyDirection FACING = BlockDirectional.FACING;
-	
 	public BlockMercuryCandle() {
 		super(Material.GLASS);
 		this.setUnlocalizedName(Reference.Blocks.MERCURY_CANDLE.getUnlocalizedName());
 		this.setRegistryName(Reference.Blocks.MERCURY_CANDLE.getRegistryName());
-		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		this.setHardness(1.0f);
 	}
 	
@@ -38,6 +36,11 @@ public class BlockMercuryCandle extends Block implements ITileEntityProvider {
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(playerIn);
 		playerCorp.setSoulCandleNearby(true, 1);
 		return true;
+	}
+	
+	@Override
+	protected BlockStateContainer createBlockState() {
+		return super.createBlockState();
 	}
 
 	@Override
@@ -54,72 +57,5 @@ public class BlockMercuryCandle extends Block implements ITileEntityProvider {
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
-
-	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, FACING);
-	}
-
-	@Override
-    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
-    {
-        super.onBlockAdded(worldIn, pos, state);
-        this.setDefaultDirection(worldIn, pos, state);
-    }
-	
-    private void setDefaultDirection(World worldIn, BlockPos pos, IBlockState state)
-    {
-        if (!worldIn.isRemote)
-        {
-            EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
-            boolean flag = worldIn.getBlockState(pos.north()).isFullBlock();
-            boolean flag1 = worldIn.getBlockState(pos.south()).isFullBlock();
-
-            if (enumfacing == EnumFacing.NORTH && flag && !flag1)
-            {
-                enumfacing = EnumFacing.SOUTH;
-            }
-            else if (enumfacing == EnumFacing.SOUTH && flag1 && !flag)
-            {
-                enumfacing = EnumFacing.NORTH;
-            }
-            else
-            {
-                boolean flag2 = worldIn.getBlockState(pos.west()).isFullBlock();
-                boolean flag3 = worldIn.getBlockState(pos.east()).isFullBlock();
-
-                if (enumfacing == EnumFacing.WEST && flag2 && !flag3)
-                {
-                    enumfacing = EnumFacing.EAST;
-                }
-                else if (enumfacing == EnumFacing.EAST && flag3 && !flag2)
-                {
-                    enumfacing = EnumFacing.WEST;
-                }
-            }
-
-            worldIn.setBlockState(pos, state.withProperty(FACING, enumfacing), 2);
-        }
-    }
-    
-    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-    {
-        return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
-    }
-
-    public IBlockState getStateFromMeta(int meta)
-    {
-        return this.getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7));
-    }
-
-    /**
-     * Convert the BlockState into the correct metadata value
-     */
-    public int getMetaFromState(IBlockState state)
-    {
-        int i = ((EnumFacing)state.getValue(FACING)).getIndex();
-
-        return i;
-    }
 
 }

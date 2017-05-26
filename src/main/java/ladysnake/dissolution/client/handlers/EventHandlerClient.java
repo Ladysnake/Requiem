@@ -50,10 +50,18 @@ public class EventHandlerClient {
 			if(Minecraft.getMinecraft().gameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindJump) && event.player.experienceLevel > 0) {
 				event.player.motionY = SOUL_VERTICAL_SPEED;
 				event.player.velocityChanged = true;
-			} else if(event.player.motionY <= 0 && !(event.player.world.getBlockState(event.player.getPosition()).getMaterial().isLiquid())) {
-				event.player.motionY = -0.8f * SOUL_VERTICAL_SPEED;
-				event.player.fallDistance = 0;
-				event.player.velocityChanged = true;
+			} else if(event.player.motionY <= 0) {
+				if(event.player.world.getBlockState(event.player.getPosition()).getMaterial().isLiquid() ||
+						event.player.world.getBlockState(event.player.getPosition().down()).getMaterial().isLiquid()) {
+					if(event.player.experienceLevel <= 0 && 
+							!(event.player.world.getBlockState(event.player.getPosition()).getMaterial().isLiquid()))
+						event.player.motionY = 0;
+					event.player.velocityChanged = true;
+				} else {
+					event.player.motionY = -0.8f * SOUL_VERTICAL_SPEED;
+					event.player.fallDistance = 0;
+					event.player.velocityChanged = true;
+				}
 			}
 		}
 	}

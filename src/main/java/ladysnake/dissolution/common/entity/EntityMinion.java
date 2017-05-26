@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.entity;
 
+import java.util.List;
 import java.util.Random;
 
 import io.netty.buffer.ByteBuf;
@@ -30,6 +31,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.EnumDifficulty;

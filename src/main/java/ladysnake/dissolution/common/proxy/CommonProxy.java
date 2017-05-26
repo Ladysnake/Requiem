@@ -10,6 +10,7 @@ import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModCrafting;
 import ladysnake.dissolution.common.init.ModEntities;
 import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.init.ModStructure;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
@@ -32,6 +33,7 @@ public abstract class CommonProxy {
 		ModItems.register();
 		ModItems.registerOres();
 		ModEntities.register();
+		ModStructure.init();
 	}
 	
 	public void init() {

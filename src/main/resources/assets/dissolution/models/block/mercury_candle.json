@@ -2,7 +2,7 @@
     "parent": "block/orientable",
     "textures": {
           "top": "dissolution:blocks/vaporizer/vaporizer_side",
-          "front": "dissolution:blocks/vaporizer/vaporizer_front_cinnabar",
+          "front": "#front",
           "side": "dissolution:blocks/vaporizer/vaporizer_side"
       }
 }

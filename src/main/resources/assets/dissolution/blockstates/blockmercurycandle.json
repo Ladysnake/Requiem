@@ -1,11 +1,29 @@
 {
-    "forge_marker": 1,
-    "variants": {
-        "facing=down":  { "model": "dissolution:mercury_candle", "x": 90 },
-        "facing=up":    { "model": "dissolution:mercury_candle", "x": -90 },
-        "facing=north": { "model": "dissolution:mercury_candle" },
-        "facing=south": { "model": "dissolution:mercury_candle", "y": 180 },
-        "facing=west":  { "model": "dissolution:mercury_candle", "y": 270 },
-        "facing=east":  { "model": "dissolution:mercury_candle", "y": 90 }
+  "forge_marker": 1,
+  "defaults": {
+    "model": "dissolution:mercury_candle",
+    "textures": {
+      "front": "dissolution:blocks/vaporizer/vaporizer_front_off"
     }
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "powered": {
+      "false": {},
+      "true": {
+        "textures": {
+          "front": "dissolution:blocks/vaporizer/vaporizer_front_cinnabar"
+        }
+      }
+    },
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "west": {"y": 270},
+      "east": {"y": 90},
+      "up": {"x": -90},
+      "down": {"x": 90}
+    }
+  }
 }
