@@ -3,7 +3,7 @@ package ladysnake.dissolution.common;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
-public class TartarosConfig {
+public class DissolutionConfig {
 	
 	public static final int NO_FLIGHT = -1;
 	public static final int CUSTOM_FLIGHT = 0;
@@ -22,64 +22,64 @@ public class TartarosConfig {
 	
 	public static void syncConfig() {
 		try {
-	        Tartaros.config.load();
+	        Dissolution.config.load();
 	        
-	        Property versionProp = Tartaros.config.get(
+	        Property versionProp = Dissolution.config.get(
 	        		"Don't touch that", 
 	        		"version", 
 	        		"1.0", 
 	        		"The version of this configuration file. Don't modify this number unless you want your changes randomly reset.");
 
 	        // Read props from config
-	        Property shouldRespawnInNetherProp = Tartaros.config.get(
+	        Property shouldRespawnInNetherProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_GENERAL,
 	                "shouldRespawnInNether", // Property name
 	                "true", // Default value
 	                "Whether players should respawn in the nether when they die");
 	        
-	        Property anchorsXRayProp = Tartaros.config.get(
+	        Property anchorsXRayProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_CLIENT,
 	                "anchorsXRay", // Property name
 	                "false", // Default value
 	                "Whether soul anchors should be visible through blocks to ghost players (graphical glitches might occur)");
 	        
-	        Property invisibleGhostProp = Tartaros.config.get(
+	        Property invisibleGhostProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_GENERAL,
 	        		"invisibleGhosts",
 	        		"false",
 	        		"If set to true, dead players will be fully invisible");
 	        
-	        Property flightModeProp = Tartaros.config.get(
+	        Property flightModeProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_GENERAL,
 	        		"flightMode",
 	        		"0",
 	        		"-1= noflight, 0=custom flight, 1=painful flight, 2=creative, 3=spectator-lite");
 	        
-	        Property showSoulCompassProp = Tartaros.config.get(
+	        Property showSoulCompassProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_CLIENT,
 	                "showSoulCompass", // Property name
 	                "true", // Default value
 	                "Whether the HUD pointing to respawn locations should appear");
 	        
-	        Property showAnchorsInSoulCompassProp = Tartaros.config.get(
+	        Property showAnchorsInSoulCompassProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_CLIENT,
 	                "showAnchorsInSoulCompass", // Property name
 	                "true", // Default value
 	                "Whether soul anchors should have an indicator in the soul compass HUD");
 	        
-	        Property oneUseWaystoneProp = Tartaros.config.get(
+	        Property oneUseWaystoneProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_GENERAL,
 	                "oneUseWaystone", // Property name
 	                "true", // Default value
 	                "Whether Mercurius's waystone should disappear after one use");
 	        
-	        Property interactableBlocksProp = Tartaros.config.get(
+	        Property interactableBlocksProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_GENERAL,
 	        		"soulInteractableBlocks",
 	        		"lever, glass_pane",
 	        		"The blocks that can be right clicked/broken by ghosts (doesn't affect anything currently)");
 	        
-	        Property doSablePopProp = Tartaros.config.get(
+	        Property doSablePopProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_GENERAL,
 	        		"doSablePop",
 	        		"true",
@@ -98,7 +98,7 @@ public class TartarosConfig {
 	        interactableBlocksProp.getArrayEntryClass();
 	    } catch (Exception e) {
 	    } finally {
-	        if (Tartaros.config.hasChanged()) Tartaros.config.save();
+	        if (Dissolution.config.hasChanged()) Dissolution.config.save();
 	    }
 	}
 }

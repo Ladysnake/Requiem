@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.proxy;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.handlers.EventHandlerCommon;
 import ladysnake.dissolution.common.handlers.LivingDeathHandler;
@@ -49,7 +49,7 @@ public abstract class CommonProxy {
 		GameRegistry.registerTileEntity(TileEntityResuscitator.class, Reference.MOD_ID + "tileentityresuscitator");
 		GameRegistry.registerTileEntity(TileEntitySoulCandle.class, Reference.MOD_ID + "tileentitysoulcandle");
 
-		NetworkRegistry.INSTANCE.registerGuiHandler(Tartaros.instance, new GuiProxy());
+		NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
 		PacketHandler.initPackets();
 		ModCrafting.register();
 	}

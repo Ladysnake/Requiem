@@ -1,8 +1,22 @@
 package ladysnake.dissolution.common.init;
 
 import ladysnake.dissolution.common.Reference;
+<<<<<<< HEAD
 import ladysnake.dissolution.common.Tartaros;
 import ladysnake.dissolution.common.blocks.*;
+=======
+import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.blocks.BlockCrystallizer;
+import ladysnake.dissolution.common.blocks.BlockEctoplasm;
+import ladysnake.dissolution.common.blocks.BlockMercuriusWaystone;
+import ladysnake.dissolution.common.blocks.BlockMercuryCandle;
+import ladysnake.dissolution.common.blocks.BlockResuscitator;
+import ladysnake.dissolution.common.blocks.BlockSepulture;
+import ladysnake.dissolution.common.blocks.BlockSoulAnchor;
+import ladysnake.dissolution.common.blocks.BlockSoulExtractor;
+import ladysnake.dissolution.common.blocks.BlockSulfurCandle;
+import ladysnake.dissolution.common.blocks.BlockDriedLava;
+>>>>>>> 8f14c18c1732c6cd36b2dce4e23054b0fae6a79f
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -63,7 +77,7 @@ public class ModBlocks {
     	ItemBlock item = new ItemBlock(block);
     	item.setRegistryName(block.getRegistryName());
     	GameRegistry.register(item);
-    	block.setCreativeTab(Tartaros.CREATIVE_TAB);
+    	block.setCreativeTab(Dissolution.CREATIVE_TAB);
     	return item;
     }
     

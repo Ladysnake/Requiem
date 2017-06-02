@@ -1,8 +1,8 @@
 package ladysnake.dissolution.client.handlers;
 
 import ladysnake.dissolution.client.renders.blocks.RenderSoulAnchor;
-import ladysnake.dissolution.common.TartarosConfig;
-import ladysnake.dissolution.common.blocks.IRespawnLocation;
+import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.networking.PacketHandler;
@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
+import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
@@ -42,17 +43,25 @@ public class EventHandlerClient {
 	public void onPlayerTick(PlayerTickEvent event) {
 		if(event.side == Side.SERVER) 
 			return;
-		if(!(TartarosConfig.flightMode == TartarosConfig.CUSTOM_FLIGHT || TartarosConfig.flightMode == TartarosConfig.PAINFUL_FLIGHT)) 
+		if(!(DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT || DissolutionConfig.flightMode == DissolutionConfig.PAINFUL_FLIGHT)) 
 			return;
 		if(IncorporealDataHandler.getHandler(event.player).isIncorporeal() && !event.player.isCreative()) {
 		
 			if(Minecraft.getMinecraft().gameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindJump) && event.player.experienceLevel > 0) {
 				event.player.motionY = SOUL_VERTICAL_SPEED;
 				event.player.velocityChanged = true;
-			} else if(event.player.motionY < SOUL_VERTICAL_SPEED * 0.5f && !event.player.isInWater()){
-				event.player.motionY = -0.8f * SOUL_VERTICAL_SPEED;
-				event.player.fallDistance = 0;
-				event.player.velocityChanged = true;
+			} else if(event.player.motionY <= 0) {
+				if(event.player.world.getBlockState(event.player.getPosition()).getMaterial().isLiquid() ||
+						event.player.world.getBlockState(event.player.getPosition().down()).getMaterial().isLiquid()) {
+					if(event.player.experienceLevel <= 0 && 
+							!(event.player.world.getBlockState(event.player.getPosition()).getMaterial().isLiquid()))
+						event.player.motionY = 0;
+					event.player.velocityChanged = true;
+				} else {
+					event.player.motionY = -0.8f * SOUL_VERTICAL_SPEED;
+					event.player.fallDistance = 0;
+					event.player.velocityChanged = true;
+				}
 			}
 		}
 	}
@@ -76,7 +85,7 @@ public class EventHandlerClient {
 	public void onDrawBlockHighlight (DrawBlockHighlightEvent event) {
 		try {
 			event.setCanceled(IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal() && 
-					!(event.getPlayer().world.getBlockState(event.getTarget().getBlockPos()).getBlock() instanceof IRespawnLocation));
+					!(event.getPlayer().world.getBlockState(event.getTarget().getBlockPos()).getBlock() instanceof ISoulInteractable));
 		} catch (NullPointerException e) {	}
 	}
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -27,7 +27,7 @@ public class ItemBaseResource extends Item {
 		super();
 		setUnlocalizedName(Reference.Items.BASE_RESOURCE.getUnlocalizedName());
 		setRegistryName(Reference.Items.BASE_RESOURCE.getRegistryName());
-		this.setCreativeTab(Tartaros.CREATIVE_TAB);
+		this.setCreativeTab(Dissolution.CREATIVE_TAB);
 		this.setHasSubtypes(true);
 	}
 

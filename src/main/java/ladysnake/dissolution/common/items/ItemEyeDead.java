@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 
 import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.entity.EntityMinion;
 import ladysnake.dissolution.common.entity.EntityMinionZombie;
@@ -41,7 +41,7 @@ public class ItemEyeDead extends Item {
 		super();
 		this.setUnlocalizedName(Reference.Items.EYE_DEAD.getUnlocalizedName());
 		this.setRegistryName(Reference.Items.EYE_DEAD.getRegistryName());
-		this.setCreativeTab(Tartaros.CREATIVE_TAB);
+		this.setCreativeTab(Dissolution.CREATIVE_TAB);
 		this.setMaxStackSize(1);
 		this.setMaxDamage(50);
 		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + ":fueled"), new IItemPropertyGetter() {

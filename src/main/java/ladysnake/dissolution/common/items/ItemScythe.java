@@ -10,7 +10,7 @@ import java.util.Map;
 import com.google.common.collect.Multimap;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.Helper;
 import net.minecraft.block.material.Material;
@@ -39,7 +39,7 @@ public abstract class ItemScythe extends ItemSword {
 	
 	public ItemScythe(ToolMaterial material) {
 		super(material);
-        this.setCreativeTab(Tartaros.CREATIVE_TAB);
+        this.setCreativeTab(Dissolution.CREATIVE_TAB);
         this.setMaxStackSize(1);
         this.attackSpeed = -3.5f;
         this.attackRadius = 2.0f;

@@ -6,7 +6,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.TartarosConfig;
+import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
@@ -32,7 +32,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
+public class BlockMercuriusWaystone extends Block implements ISoulInteractable {
 	
 	private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(0.0625 * 4, 0, 0.0625 * 4, 0.0625 * 12, 0.0625 * 16, 0.0625 * 12);
 	private static final AxisAlignedBB COLLISION_BOX = new AxisAlignedBB(0.300D, 0.0D, 0.300D, 0.700D, 1.0D, 0.700D);
@@ -54,7 +54,7 @@ public class BlockMercuriusWaystone extends Block implements IRespawnLocation {
 			final IMessage msg = new IncorporealMessage(playerIn.getUniqueID().getMostSignificantBits(), playerIn.getUniqueID().getLeastSignificantBits(), false);
 			PacketHandler.net.sendToAll(msg);
 			
-			if(TartarosConfig.oneUseWaystone)
+			if(DissolutionConfig.oneUseWaystone)
 				worldIn.setBlockToAir(pos);
 
 
