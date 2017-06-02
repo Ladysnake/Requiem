@@ -1,14 +1,7 @@
 package ladysnake.dissolution.common.init;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.items.ItemBaseResource;
-import ladysnake.dissolution.common.items.ItemDebug;
-import ladysnake.dissolution.common.items.ItemEyeDead;
-import ladysnake.dissolution.common.items.ItemGrandFaux;
-import ladysnake.dissolution.common.items.ItemScytheIron;
-import ladysnake.dissolution.common.items.ItemSepulture;
-import ladysnake.dissolution.common.items.ItemSoulGem;
-import ladysnake.dissolution.common.items.ItemSoulInABottle;
+import ladysnake.dissolution.common.items.*;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -28,6 +21,8 @@ public class ModItems {
 	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
 	public static ItemSepulture SEPULTURE;
 
+
+
 	public static void init() {
 		BASE_RESOURCE = new ItemBaseResource();
 		DEBUG_ITEM = new ItemDebug();
@@ -37,6 +32,7 @@ public class ModItems {
 		SOUL_GEM = new ItemSoulGem();
 		SOUL_IN_A_BOTTLE = new ItemSoulInABottle();
 		SEPULTURE = new ItemSepulture();
+
 	}
 
 	public static void register() {
@@ -48,6 +44,7 @@ public class ModItems {
 		GameRegistry.register(SOUL_GEM);
 		GameRegistry.register(SOUL_IN_A_BOTTLE);
 		GameRegistry.register(SEPULTURE);
+
 	}
 
 	public static void registerOres() {
@@ -68,6 +65,7 @@ public class ModItems {
 		registerRender(SOUL_GEM);
 		registerRender(SOUL_IN_A_BOTTLE);
 		registerRender(SEPULTURE);
+
 	}
 
 	@SideOnly(Side.CLIENT)

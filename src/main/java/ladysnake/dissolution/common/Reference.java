@@ -24,6 +24,7 @@ public class Reference {
 		SOULINABOTTLE("soul_in_a_bottle", "itemSoulInABottle"),
 		SEPULTURE("sepulture", "itemSepulture"),
 		SEPULTUREFRAMING("sepulture_framing", "itemSepultureFraming");
+
 		
 		
 		private String unlocalizedName;
@@ -55,7 +56,7 @@ public class Reference {
 		MERCURIUS_WAYSTONE("mercurius_waystone", "blockMercuriusWaystone"),
 		SEPULTURE("sepulture", "blockSepulture"),
 		RESUSCITATOR("resuscitator","blockResuscitator");
-		
+
 		private String unlocalizedName;
 		private String registryName;
 		

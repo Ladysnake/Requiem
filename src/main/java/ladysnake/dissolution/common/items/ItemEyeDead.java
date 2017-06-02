@@ -58,14 +58,8 @@ public class ItemEyeDead extends Item {
 		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + ":resurrecting"), new IItemPropertyGetter() {
 			@SideOnly(Side.CLIENT)
 			public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) {
-				// System.out.println(entityIn == null ? 0.0F :
-				// (entityIn.getActiveItemStack().getItem() !=
-				// ModItems.EYE_OF_THE_UNDEAD ? 0.0F :
-				// (float)(stack.getMaxItemUseDuration() -
-				// entityIn.getItemInUseCount()) / 20.0F));
-				return entityIn == null ? 0.0F
-						: (entityIn.getActiveItemStack().getItem() != ModItems.EYE_OF_THE_UNDEAD ? 0.0F
-								: (float) (stack.getMaxItemUseDuration() - entityIn.getItemInUseCount()) / 20.0F);
+
+				return entityIn == null ? 0.0F : (entityIn.getActiveItemStack().getItem() != ModItems.EYE_OF_THE_UNDEAD ? 0.0F : (float) (stack.getMaxItemUseDuration() - entityIn.getItemInUseCount()) / 20.0F);
 			}
 		});
 	}

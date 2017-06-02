@@ -58,8 +58,7 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer,
-			ItemStack stack) {
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
 		world.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()), 2);
 	}
 
@@ -101,7 +100,7 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
 
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-		// System.out.println("(block)" + getTE(world, pos).isBurning());
+
 		return state.withProperty(LIT, getTE(world, pos).isBurning());
 	}
 	

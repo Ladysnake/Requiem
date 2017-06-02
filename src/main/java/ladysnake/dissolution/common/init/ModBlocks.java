@@ -2,16 +2,7 @@ package ladysnake.dissolution.common.init;
 
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.Tartaros;
-import ladysnake.dissolution.common.blocks.BlockCrystallizer;
-import ladysnake.dissolution.common.blocks.BlockEctoplasm;
-import ladysnake.dissolution.common.blocks.BlockMercuriusWaystone;
-import ladysnake.dissolution.common.blocks.BlockMercuryCandle;
-import ladysnake.dissolution.common.blocks.BlockResuscitator;
-import ladysnake.dissolution.common.blocks.BlockSepulture;
-import ladysnake.dissolution.common.blocks.BlockSoulAnchor;
-import ladysnake.dissolution.common.blocks.BlockSoulExtractor;
-import ladysnake.dissolution.common.blocks.BlockSulfurCandle;
-import ladysnake.dissolution.common.blocks.BlockDriedLava;
+import ladysnake.dissolution.common.blocks.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;

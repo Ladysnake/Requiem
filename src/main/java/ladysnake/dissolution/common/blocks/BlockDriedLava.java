@@ -17,35 +17,31 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class BlockDriedLava extends Block {
+public class BlockDriedLava extends BlockIce {
 	
     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 3);
 
     public BlockDriedLava()
     {
-    	super(Material.LAVA);
         this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, Integer.valueOf(0)));
-        
         this.setUnlocalizedName(Reference.Blocks.DRIED_LAVA.getUnlocalizedName());
     	this.setRegistryName(Reference.Blocks.DRIED_LAVA.getRegistryName());
     }
 
-    @Override
     public int getMetaFromState(IBlockState state)
     {
         return ((Integer)state.getValue(AGE)).intValue();
     }
 
-    @Override
+
     public IBlockState getStateFromMeta(int meta)
     {
         return this.getDefaultState().withProperty(AGE, Integer.valueOf(MathHelper.clamp(meta, 0, 3)));
     }
 
-    @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        if ((rand.nextInt(3) == 0 || this.countNeighbors(worldIn, pos) < 4) && worldIn.getLightFromNeighbors(pos) > 11 - ((Integer)state.getValue(AGE)).intValue() - 2)
+        if ((rand.nextInt(3) == 0 || this.countNeighbors(worldIn, pos) < 4) && worldIn.getLightFromNeighbors(pos) > 11 - ((Integer)state.getValue(AGE)).intValue() - state.getLightOpacity())
         {
             this.slightlyMelt(worldIn, pos, state, rand, true);
         }
@@ -55,7 +51,6 @@ public class BlockDriedLava extends Block {
         }
     }
 
-    @Override
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         if (blockIn == this)
@@ -64,32 +59,27 @@ public class BlockDriedLava extends Block {
 
             if (i < 2)
             {
-                this.turnIntoLava(worldIn, pos);
+                if (worldIn.provider.doesWaterVaporize())
+                {
+                    worldIn.setBlockToAir(pos);
+                }
+                else
+                {
+                    this.dropBlockAsItem(worldIn, pos, worldIn.getBlockState(pos), 0);
+                    worldIn.setBlockState(pos, Blocks.LAVA.getDefaultState());
+                    worldIn.neighborChanged(pos, Blocks.LAVA, pos);
+                }
             }
         }
     }
-    
-    protected void turnIntoLava(World worldIn, BlockPos pos)
-    {
-        if (worldIn.provider.doesWaterVaporize())
-        {
-            worldIn.setBlockToAir(pos);
-        }
-        else
-        {
-            this.dropBlockAsItem(worldIn, pos, worldIn.getBlockState(pos), 0);
-            worldIn.setBlockState(pos, Blocks.LAVA.getDefaultState());
-            worldIn.neighborChanged(pos, Blocks.LAVA, pos);
-        }
-    }
 
-    private int countNeighbors(World world, BlockPos pos)
+    private int countNeighbors(World p_185680_1_, BlockPos p_185680_2_)
     {
         int i = 0;
 
         for (EnumFacing enumfacing : EnumFacing.values())
         {
-            if (world.getBlockState(pos.offset(enumfacing)).getBlock() == this)
+            if (p_185680_1_.getBlockState(p_185680_2_.offset(enumfacing)).getBlock() == this)
             {
                 ++i;
 
@@ -103,42 +93,49 @@ public class BlockDriedLava extends Block {
         return i;
     }
 
-    protected void slightlyMelt(World world, BlockPos pos, IBlockState block, Random r, boolean b)
+    protected void slightlyMelt(World worldIn, BlockPos pos, IBlockState p_185681_3_, Random p_185681_4_, boolean p_185681_5_)
     {
-        int i = ((Integer)block.getValue(AGE)).intValue();
+        int i = ((Integer)p_185681_3_.getValue(AGE)).intValue();
 
         if (i < 3)
         {
-        	world.setBlockState(pos, block.withProperty(AGE, Integer.valueOf(i + 1)), 2);
-        	world.scheduleUpdate(pos, this, MathHelper.getInt(r, 20, 40));
+            worldIn.setBlockState(pos, p_185681_3_.withProperty(AGE, Integer.valueOf(i + 1)), 2);
+            worldIn.scheduleUpdate(pos, this, MathHelper.getInt(p_185681_4_, 20, 40));
         }
         else
         {
-            this.turnIntoLava(world, pos);
+            if (worldIn.provider.doesWaterVaporize())
+            {
+                worldIn.setBlockToAir(pos);
+            }
+            else
+            {
+                this.dropBlockAsItem(worldIn, pos, worldIn.getBlockState(pos), 0);
+                worldIn.setBlockState(pos, Blocks.LAVA.getDefaultState());
+                worldIn.neighborChanged(pos, Blocks.LAVA, pos);
+            }
 
-            if (b)
+            if (p_185681_5_)
             {
                 for (EnumFacing enumfacing : EnumFacing.values())
                 {
                     BlockPos blockpos = pos.offset(enumfacing);
-                    IBlockState iblockstate = world.getBlockState(blockpos);
+                    IBlockState iblockstate = worldIn.getBlockState(blockpos);
 
                     if (iblockstate.getBlock() == this)
                     {
-                        this.slightlyMelt(world, blockpos, iblockstate, r, false);
+                        this.slightlyMelt(worldIn, blockpos, iblockstate, p_185681_4_, false);
                     }
                 }
             }
         }
     }
 
-    @Override
     protected BlockStateContainer createBlockState()
     {
         return new BlockStateContainer(this, new IProperty[] {AGE});
     }
-    
-    @Override
+
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
         return ItemStack.EMPTY;
