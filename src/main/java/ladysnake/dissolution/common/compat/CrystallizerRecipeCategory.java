@@ -9,14 +9,14 @@ import mezz.jei.api.gui.IDrawableAnimated.StartDirection;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.BlankRecipeCategory;
+import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-public class CrystallizerRecipeCategory extends BlankRecipeCategory {
+public class CrystallizerRecipeCategory implements IRecipeCategory {
 
 	public static final ResourceLocation background_texture = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/crystallizer_jei.png");
 	private final IDrawable background;
@@ -65,6 +65,11 @@ public class CrystallizerRecipeCategory extends BlankRecipeCategory {
 		stacks.set(0, ingredients.getInputs(ItemStack.class).get(0));
 		stacks.set(1, ingredients.getInputs(ItemStack.class).get(1));
 		stacks.set(2, ingredients.getOutputs(ItemStack.class).get(0));
+	}
+
+	@Override
+	public String getModName() {
+		return Reference.MOD_NAME;
 	}
 
 }

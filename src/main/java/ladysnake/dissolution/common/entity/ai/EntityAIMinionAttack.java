@@ -59,5 +59,4 @@ public class EntityAIMinionAttack extends EntityAIAttackMelee {
         }
 	}
 
-	//TODO custom behavior
 }

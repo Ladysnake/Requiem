@@ -44,30 +44,17 @@ public class ItemEyeDead extends Item {
 		this.setCreativeTab(Dissolution.CREATIVE_TAB);
 		this.setMaxStackSize(1);
 		this.setMaxDamage(50);
-		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + ":fueled"), new IItemPropertyGetter() {
-			@SideOnly(Side.CLIENT)
-			public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) {
-				// System.out.println(entityIn != null &&
-				// (!Helper.findItem((EntityPlayer)entityIn,
-				// ModItems.SOUL_IN_A_BOTTLE).isEmpty()) ? 1.0F : 0.0F);
-				return entityIn != null	&& (!Helper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE).isEmpty()) 
+		this.addPropertyOverride(
+				new ResourceLocation(Reference.MOD_ID + ":fueled"), 
+				(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) -> 
+				entityIn != null && (!Helper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE).isEmpty()) 
 						? 1.0F
-						: 0.0F;
-			}
-		});
-		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + ":resurrecting"), new IItemPropertyGetter() {
-			@SideOnly(Side.CLIENT)
-			public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) {
-				// System.out.println(entityIn == null ? 0.0F :
-				// (entityIn.getActiveItemStack().getItem() !=
-				// ModItems.EYE_OF_THE_UNDEAD ? 0.0F :
-				// (float)(stack.getMaxItemUseDuration() -
-				// entityIn.getItemInUseCount()) / 20.0F));
-				return entityIn == null ? 0.0F
+						: 0.0F
+		);
+		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + ":resurrecting"), (ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) ->
+				entityIn == null ? 0.0F
 						: (entityIn.getActiveItemStack().getItem() != ModItems.EYE_OF_THE_UNDEAD ? 0.0F
-								: (float) (stack.getMaxItemUseDuration() - entityIn.getItemInUseCount()) / 20.0F);
-			}
-		});
+								: (float) (stack.getMaxItemUseDuration() - entityIn.getItemInUseCount()) / 20.0F));
 	}
 
 	@Override

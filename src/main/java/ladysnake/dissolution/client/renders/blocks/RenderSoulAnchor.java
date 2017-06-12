@@ -5,20 +5,20 @@ import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
 
-import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.DissolutionConfig;
-import ladysnake.dissolution.common.blocks.BlockSoulAnchor;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityBeaconRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.EnumFacing;
@@ -47,7 +47,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
     }
 	
 	@Override
-	public void renderTileEntityAt(TileEntitySoulAnchor te, double x, double y, double z, float partialTicks, int destroyStage) {
+	public void renderTileEntityFast(TileEntitySoulAnchor te, double x, double y, double z, float partialTicks, int destroyStage, float partial, net.minecraft.client.renderer.BufferBuilder buffer) {
 		
 		//renderPortalAt(te, x, y, z, partialTicks);
 		
@@ -60,7 +60,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
     	
 		renderSoulPipe(te, x, y, z);
 
-		if(!DissolutionConfig.anchorsXRay || true) return;
+		if(!DissolutionConfig.anchorsXRay) return;
 		
 		if(mc.player.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + (double)mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(te.getPos().getX(), te.getPos().getY(), te.getPos().getZ()), false, true, false) == null)
 			return;
@@ -81,7 +81,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
 		GL11.glEnable(GL11.GL_BLEND);
 	    GlStateManager.color(0.8f, 0.8f, 1f, 1.0f);
 	    Tessellator tessellator = Tessellator.getInstance();
-	    VertexBuffer tes = tessellator.getBuffer();
+	    BufferBuilder tes = tessellator.getBuffer();
 	    
 	    tes.setTranslation(0.0, -Minecraft.getMinecraft().player.eyeHeight, 0.0);
 	    
@@ -233,7 +233,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
             GlStateManager.multMatrix(PROJECTION);
             GlStateManager.multMatrix(MODELVIEW);
             Tessellator tessellator = Tessellator.getInstance();
-            VertexBuffer vertexbuffer = tessellator.getBuffer();
+            BufferBuilder vertexbuffer = tessellator.getBuffer();
             vertexbuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
             float f3 = (RANDOM.nextFloat() * 0.5F + 0.1F) * f1;
             float f4 = (RANDOM.nextFloat() * 0.5F + 0.4F) * f1;

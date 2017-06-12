@@ -75,6 +75,8 @@ public class PlayerTickHandler {
 				}
 				if (event.player.dimension == -1 && DissolutionConfig.respawnInNether) {
 					BlockPos spawnPos = event.player.getBedLocation(event.player.getSpawnDimension());
+					if(spawnPos == null)
+						spawnPos = event.player.world.getMinecraftServer().worldServerForDimension(0).getSpawnPoint();
 					event.player.setPosition(spawnPos.getX() / 8, spawnPos.getY() / 8, spawnPos.getZ() / 8);
 					CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player,
 							event.player.getSpawnDimension());
@@ -84,7 +86,7 @@ public class PlayerTickHandler {
 			if (event.player.experience > 0 && rand.nextBoolean())
 				event.player.experience--;
 			else if (rand.nextInt() % 300 == 0 && event.player.experienceLevel > 0)
-				event.player.removeExperienceLevel(1);
+				event.player.addExperienceLevel(-1);;
 		}
 
 		if (playerCorp.isIncorporeal() && !playerCorp.isSynced() && !event.player.world.isRemote

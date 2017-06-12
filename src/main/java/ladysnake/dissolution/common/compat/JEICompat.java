@@ -18,15 +18,13 @@ import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
-import mezz.jei.api.recipe.BlankRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.IStackHelper;
 import net.minecraft.item.ItemStack;
 
 @JEIPlugin
 public class JEICompat implements IModPlugin {
 
-	public static IStackHelper stackHelper;
-    public static IJeiHelpers jeiHelpers;
     public static IRecipeRegistry recipeRegistry;
 	
 	@Override
@@ -34,31 +32,27 @@ public class JEICompat implements IModPlugin {
 
 	@Override
 	public void registerIngredients(IModIngredientRegistration registry) {}
+	
+	@Override
+	public void registerCategories(IRecipeCategoryRegistration registry) {
+		registry.addRecipeCategories(new CrystallizerRecipeCategory(registry.getJeiHelpers().getGuiHelper()));
+	}
 
 	@Override
 	public void register(IModRegistry registry) {
-		jeiHelpers = registry.getJeiHelpers();
-        stackHelper = jeiHelpers.getStackHelper();
-        IGuiHelper guiHelper = registry.getJeiHelpers().getGuiHelper();
-        IIngredientBlacklist blacklist = jeiHelpers.getIngredientBlacklist();
-        blacklistStuff(blacklist);
+		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
+        blacklistStuff(jeiHelpers.getIngredientBlacklist());
         
-		registry.addRecipeCategories(new CrystallizerRecipeCategory(guiHelper));
-		registry.handleRecipes(CrystallizerRecipe.class, (CrystallizerRecipe cr) -> new BlankRecipeWrapper() {
-
-			@Override
-			public void getIngredients(IIngredients ingredients) {
+		registry.handleRecipes(CrystallizerRecipe.class, (CrystallizerRecipe cr) -> (IIngredients ingredients) -> {
 				List<ItemStack> inputList = new ArrayList<ItemStack>();
 				inputList.add(cr.getInput());
 				inputList.add(cr.getFuel());
 				ingredients.setInputs(ItemStack.class, inputList);
 				ingredients.setOutput(ItemStack.class, cr.getOutput());
-			}
-			
-		}, Reference.MOD_ID + ".crystallizer");
+			}, Reference.MOD_ID + ".crystallizer");
 		
 		registry.addRecipes(CrystallizerRecipe.crystallizingRecipes, Reference.MOD_ID + ".crystallizer");
-		registry.addRecipeCategoryCraftingItem(new ItemStack(ModBlocks.CRYSTALLIZER), Reference.MOD_ID + ".crystallizer");
+		registry.addRecipeCatalyst(new ItemStack(ModBlocks.CRYSTALLIZER), Reference.MOD_ID + ".crystallizer");
 	}
 	
 	public void blacklistStuff(IIngredientBlacklist blacklist) {

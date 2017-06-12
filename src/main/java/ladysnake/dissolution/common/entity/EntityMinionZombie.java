@@ -107,4 +107,10 @@ public class EntityMinionZombie extends EntityMinion {
 		setHusk(additionalData.readBoolean());
 	}
 
+	@Override
+	public void setSwingingArms(boolean swingingArms) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

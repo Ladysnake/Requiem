@@ -1,16 +1,14 @@
 package ladysnake.dissolution.common.proxy;
 
-import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.handlers.EventHandlerCommon;
 import ladysnake.dissolution.common.handlers.LivingDeathHandler;
 import ladysnake.dissolution.common.handlers.PlayerTickHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
-import ladysnake.dissolution.common.init.ModCrafting;
 import ladysnake.dissolution.common.init.ModEntities;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.init.ModStructure;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
@@ -33,7 +31,7 @@ public abstract class CommonProxy {
 		ModItems.register();
 		ModItems.registerOres();
 		ModEntities.register();
-		ModStructure.init();
+		//ModStructure.init();
 	}
 	
 	public void init() {
@@ -51,7 +49,7 @@ public abstract class CommonProxy {
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
 		PacketHandler.initPackets();
-		ModCrafting.register();
+		//ModCrafting.register();		//TODO reimplement this
 	}
 	
 	public void postInit() {

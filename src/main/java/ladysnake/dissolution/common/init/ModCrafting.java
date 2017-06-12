@@ -1,5 +1,5 @@
 package ladysnake.dissolution.common.init;
-
+/*
 import ladysnake.dissolution.common.items.ItemBaseResource;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -23,4 +23,4 @@ public class ModCrafting {
 		GameRegistry.addShapedRecipe(new ItemStack(Blocks.SOUL_SAND, 8), "SSS", "SBS", "SSS", 'S', Blocks.SAND, 'B', ModItems.SOUL_IN_A_BOTTLE);
 		GameRegistry.addShapelessRecipe(new ItemStack(ModItems.SOUL_GEM), ItemBaseResource.resourceFromName("ectoplasm"), ModItems.SOUL_IN_A_BOTTLE);
 	}
-}
+}*/

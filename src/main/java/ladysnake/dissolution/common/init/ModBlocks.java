@@ -38,7 +38,7 @@ public class ModBlocks {
 
     public static void init() {
     	CRYSTALLIZER = new BlockCrystallizer();
-    	DRIED_LAVA = new BlockDriedLava();
+    	//DRIED_LAVA = new BlockDriedLava();
     	ECTOPLASM = new BlockEctoplasm();
     	ECTOPLASMA = new Block(Material.CLOTH);
     	ECTOPLASMA.setUnlocalizedName(Reference.Blocks.ECTOPLASMA.getUnlocalizedName());
@@ -55,7 +55,7 @@ public class ModBlocks {
     
     public static void register() {
     	registerBlock(CRYSTALLIZER);
-    	registerBlock(DRIED_LAVA);
+    	//registerBlock(DRIED_LAVA);
     	registerBlock(ECTOPLASMA);
     	registerBlock(ECTOPLASM);
     	registerBlock(MERCURIUS_WAYSTONE).setMaxStackSize(1);
@@ -79,7 +79,7 @@ public class ModBlocks {
     @SideOnly(Side.CLIENT)
     public static void registerRenders() {
     	registerRender(CRYSTALLIZER);
-    	registerRender(DRIED_LAVA);
+    	//registerRender(DRIED_LAVA);
     	registerRender(SOUL_EXTRACTOR);
     	registerRender(MERCURIUS_WAYSTONE);
     	registerRender(SEPULTURE);
