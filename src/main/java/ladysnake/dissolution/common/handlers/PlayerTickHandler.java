@@ -1,22 +1,14 @@
 package ladysnake.dissolution.common.handlers;
 
-import java.util.List;
 import java.util.Random;
 
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
-import ladysnake.dissolution.common.entity.EntityMinion;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.passive.EntityLlama;
-import net.minecraft.entity.passive.EntityRabbit;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -36,10 +28,11 @@ public class PlayerTickHandler {
 	@SubscribeEvent
 	public void onPlayerTick(PlayerTickEvent event) {
 
+		
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.player);
 
 		playerCorp.tick(event);
-		
+				
 		if (playerCorp.isIncorporeal()) {
 			if(!event.player.isCreative()) {
 				if (DissolutionConfig.flightMode == DissolutionConfig.SPECTATOR_FLIGHT || DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT)
@@ -88,6 +81,7 @@ public class PlayerTickHandler {
 			else if (rand.nextInt() % 300 == 0 && event.player.experienceLevel > 0)
 				event.player.addExperienceLevel(-1);;
 		}
+
 
 		if (playerCorp.isIncorporeal() && !playerCorp.isSynced() && !event.player.world.isRemote
 				&& DissolutionConfig.respawnInNether) {

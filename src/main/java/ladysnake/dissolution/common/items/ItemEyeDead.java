@@ -51,10 +51,12 @@ public class ItemEyeDead extends Item {
 						? 1.0F
 						: 0.0F
 		);
-		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + ":resurrecting"), (ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) ->
+		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID + ":resurrecting"), 
+				(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) ->
 				entityIn == null ? 0.0F
 						: (entityIn.getActiveItemStack().getItem() != ModItems.EYE_OF_THE_UNDEAD ? 0.0F
 								: (float) (stack.getMaxItemUseDuration() - entityIn.getItemInUseCount()) / 20.0F));
+
 	}
 
 	@Override

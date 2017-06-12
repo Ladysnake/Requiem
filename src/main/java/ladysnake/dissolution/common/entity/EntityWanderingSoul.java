@@ -70,11 +70,17 @@ public class EntityWanderingSoul extends EntityMob {
                     if (iblockstate.getMaterial() == Material.AIR)
                     {
                         IBlockState iblockstate1 = this.world.getBlockState(blockpos1);
+                        IBlockState iblockstate2 = this.world.getBlockState(blockpos1);
 
                         if (iblockstate1.getMaterial() == Material.WATER && ((Integer)iblockstate1.getValue(BlockLiquid.LEVEL)).intValue() == 0 && this.world.mayPlace(Blocks.FROSTED_ICE, blockpos1, false, EnumFacing.DOWN, (Entity)null))
                         {
                             this.world.setBlockState(blockpos1, Blocks.FROSTED_ICE.getDefaultState());
                             this.world.scheduleUpdate(blockpos1.toImmutable(), Blocks.FROSTED_ICE, MathHelper.getInt(this.getRNG(), 60, 120));
+                        }
+                        else if (iblockstate2.getMaterial() == Material.LAVA && ((Integer)iblockstate2.getValue(BlockLiquid.LEVEL)).intValue() == 0 && this.world.mayPlace(ModBlocks.DRIED_LAVA, blockpos1, false, EnumFacing.DOWN, (Entity)null))
+                        {
+                            this.world.setBlockState(blockpos1, ModBlocks.DRIED_LAVA.getDefaultState());
+                            this.world.scheduleUpdate(blockpos1.toImmutable(), ModBlocks.DRIED_LAVA, MathHelper.getInt(this.getRNG(), 60, 120));
                         }
                         if (iblockstate1.getMaterial() == Material.GRASS)
                         {
