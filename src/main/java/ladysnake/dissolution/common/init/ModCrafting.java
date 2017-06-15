@@ -1,14 +1,20 @@
 package ladysnake.dissolution.common.init;
-/*
-import ladysnake.dissolution.common.items.ItemBaseResource;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
+import ladysnake.dissolution.common.Reference;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.crafting.CraftingHelper;
+
+
+/**
+ * Class previously used to register recipes
+ * @author Fabien
+ *
+ */
+@Deprecated
 public class ModCrafting {
 
 	public static void register() {
+		/*
 		GameRegistry.addShapedRecipe(new ItemStack(ModBlocks.CRYSTALLIZER), "SGI", "BIB", "QRS", 'S', Blocks.COBBLESTONE, 'G', Blocks.GLASS, 'I', Items.IRON_INGOT, 'B', Blocks.IRON_BLOCK, 'Q', Items.QUARTZ, 'R', Items.REDSTONE);
 		GameRegistry.addShapedRecipe(new ItemStack(ModBlocks.ECTOPLASM), "EEE", "EEE", "EEE", 'E', ItemBaseResource.resourceFromName("ectoplasm"));
 		GameRegistry.addShapelessRecipe(ItemBaseResource.resourceFromName("ectoplasm", 9), ModBlocks.ECTOPLASM);
@@ -22,5 +28,6 @@ public class ModCrafting {
 		GameRegistry.addShapedRecipe(new ItemStack(ModBlocks.SOUL_EXTRACTOR), "SSD", "GIG", "QRS", 'S', Blocks.COBBLESTONE, 'D', Items.DIAMOND, 'G', Blocks.GLASS, 'I', Items.IRON_INGOT, 'Q', Items.QUARTZ, 'R', Items.REDSTONE);
 		GameRegistry.addShapedRecipe(new ItemStack(Blocks.SOUL_SAND, 8), "SSS", "SBS", "SSS", 'S', Blocks.SAND, 'B', ModItems.SOUL_IN_A_BOTTLE);
 		GameRegistry.addShapelessRecipe(new ItemStack(ModItems.SOUL_GEM), ItemBaseResource.resourceFromName("ectoplasm"), ModItems.SOUL_IN_A_BOTTLE);
+		*/
 	}
-}*/
+}

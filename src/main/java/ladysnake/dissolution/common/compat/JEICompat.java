@@ -43,13 +43,13 @@ public class JEICompat implements IModPlugin {
 		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
         blacklistStuff(jeiHelpers.getIngredientBlacklist());
         
-		registry.handleRecipes(CrystallizerRecipe.class, (CrystallizerRecipe cr) -> (IIngredients ingredients) -> {
+		registry.handleRecipes(CrystallizerRecipe.class, crystallizerRecipe -> (ingredients -> {
 				List<ItemStack> inputList = new ArrayList<ItemStack>();
-				inputList.add(cr.getInput());
-				inputList.add(cr.getFuel());
+				inputList.add(crystallizerRecipe.getInput());
+				inputList.add(crystallizerRecipe.getFuel());
 				ingredients.setInputs(ItemStack.class, inputList);
-				ingredients.setOutput(ItemStack.class, cr.getOutput());
-			}, Reference.MOD_ID + ".crystallizer");
+				ingredients.setOutput(ItemStack.class, crystallizerRecipe.getOutput());
+			}), Reference.MOD_ID + ".crystallizer");
 		
 		registry.addRecipes(CrystallizerRecipe.crystallizingRecipes, Reference.MOD_ID + ".crystallizer");
 		registry.addRecipeCatalyst(new ItemStack(ModBlocks.CRYSTALLIZER), Reference.MOD_ID + ".crystallizer");

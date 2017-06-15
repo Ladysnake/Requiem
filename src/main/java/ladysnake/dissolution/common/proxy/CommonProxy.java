@@ -7,6 +7,7 @@ import ladysnake.dissolution.common.handlers.EventHandlerCommon;
 import ladysnake.dissolution.common.handlers.LivingDeathHandler;
 import ladysnake.dissolution.common.handlers.PlayerTickHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.init.ModCrafting;
 import ladysnake.dissolution.common.init.ModEntities;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.GuiProxy;
@@ -49,7 +50,7 @@ public abstract class CommonProxy {
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
 		PacketHandler.initPackets();
-		//ModCrafting.register();		//TODO reimplement this
+		ModCrafting.register();
 	}
 	
 	public void postInit() {

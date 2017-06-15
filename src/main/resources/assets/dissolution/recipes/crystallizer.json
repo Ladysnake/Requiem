@@ -1,0 +1,33 @@
+{
+  "type": "crafting_shaped",
+  "group": "crystallizer",
+  "pattern": [
+    "SGI",
+    "BIB",
+    "QRS"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:cobblestone",
+      "data": 4
+    },
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "item": "minecraft:iron_block"
+    },
+    "Q": {
+      "item": "minecraft:quartz"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "item": "dissolution:crystallizer"
+  }
+}
