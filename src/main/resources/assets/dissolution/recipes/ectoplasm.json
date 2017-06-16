@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "ectoplasm_block",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "dissolution:itemresource",
+      "data": 0
+    }
+  },
+  "result": {
+    "item": "dissolution:blockectoplasm"
+  }
+}

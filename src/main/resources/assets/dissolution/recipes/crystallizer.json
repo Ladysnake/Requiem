@@ -1,5 +1,5 @@
 {
-  "type": "crafting_shaped",
+  "type": "minecraft:crafting_shaped",
   "group": "crystallizer",
   "pattern": [
     "SGI",
@@ -8,8 +8,7 @@
   ],
   "key": {
     "S": {
-      "item": "minecraft:cobblestone",
-      "data": 4
+      "item": "minecraft:cobblestone"
     },
     "G": {
       "item": "minecraft:glass"
@@ -28,6 +27,6 @@
     }
   },
   "result": {
-    "item": "dissolution:crystallizer"
+    "item": "dissolution:blockcrystallizer"
   }
 }
