@@ -27,7 +27,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-public class BlockSoulAnchor extends Block implements ITileEntityProvider, IRespawnLocation {
+public class BlockSoulAnchor extends Block implements ITileEntityProvider, ISoulInteractable {
 	
 	public static final PropertyEnum<BlockSoulAnchor.EnumPartType> PART = 
 			PropertyEnum.<BlockSoulAnchor.EnumPartType>create("part", BlockSoulAnchor.EnumPartType.class);
@@ -60,8 +60,7 @@ public class BlockSoulAnchor extends Block implements ITileEntityProvider, IResp
 		
 		if(state.getValue(PART) == BlockSoulAnchor.EnumPartType.CAP) return false;
 		
-		if (!(worldIn.getTileEntity(pos) instanceof TileEntitySoulAnchor) || 
-				!IncorporealDataHandler.getHandler(playerIn).isIncorporeal()) return false;
+		if (!(worldIn.getTileEntity(pos) instanceof TileEntitySoulAnchor) || !IncorporealDataHandler.getHandler(playerIn).isIncorporeal()) return false;
 		
 		TileEntitySoulAnchor te = (TileEntitySoulAnchor) worldIn.getTileEntity(pos);
 		

@@ -75,6 +75,7 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
 
         return true;
     }
+
     
     @Override
     public NBTTagCompound getUpdateTag() {
@@ -468,6 +469,10 @@ public class TileEntityCrystallizer extends TileEntityLockable implements ITicka
     public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)
     {
         return new ContainerCrystallizer(playerInventory, this);
+    }
+
+    public World GetWorld(){
+        return this.getWorld();
     }
 
     public int getField(int id)

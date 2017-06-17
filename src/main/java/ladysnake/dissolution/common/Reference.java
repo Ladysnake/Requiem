@@ -24,6 +24,7 @@ public class Reference {
 		SOULINABOTTLE("soul_in_a_bottle", "itemSoulInABottle"),
 		SEPULTURE("sepulture", "itemSepulture"),
 		SEPULTUREFRAMING("sepulture_framing", "itemSepultureFraming");
+
 		
 		
 		private String unlocalizedName;
@@ -45,6 +46,7 @@ public class Reference {
 
 	public static enum Blocks {
 		CRYSTALLIZER("crystallizer", "blockCrystallizer"),
+		DRIED_LAVA("dried_lava", "blockDriedLava"),
 		ECTOPLASM("ectoplasm_block", "blockEctoplasm"),
 		ECTOPLASMA("ectoplasma_block", "blockEctoplasma"),
 		SOUL_ANCHOR("soul_anchor", "blockSoulAnchor"),
@@ -54,7 +56,7 @@ public class Reference {
 		MERCURIUS_WAYSTONE("mercurius_waystone", "blockMercuriusWaystone"),
 		SEPULTURE("sepulture", "blockSepulture"),
 		RESUSCITATOR("resuscitator","blockResuscitator");
-		
+
 		private String unlocalizedName;
 		private String registryName;
 		

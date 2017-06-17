@@ -1,3 +1,6 @@
 {
-    "parent": "dissolution:block/sulfur_candle"
+    "parent": "dissolution:block/sulfur_candle",
+    "textures": {
+          "front": "dissolution:blocks/vaporizer/vaporizer_front_sulfur"
+      }
 }

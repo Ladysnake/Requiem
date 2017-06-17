@@ -1,15 +1,17 @@
 package ladysnake.dissolution.common.items;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.TartarosConfig;
+import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.handlers.CustomTartarosTeleporter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
@@ -35,7 +37,13 @@ public class ItemDebug extends Item {
 		}
 		switch(debugWanted) {
 		case 0 : 
-			playerIn.sendStatusMessage(new TextComponentTranslation("dissolution.jei.recipe.crystallizer", new Object[0]), true);
+			if(worldIn.isRemote) {
+				ResourceLocation shader = new ResourceLocation("dissolution:shaders/post/test.json");
+				if(Minecraft.getMinecraft().entityRenderer.isShaderActive())
+					Minecraft.getMinecraft().entityRenderer.stopUseShader();
+				else
+					Minecraft.getMinecraft().entityRenderer.loadShader(shader);
+			}
 			break;
 		case 1 :	
 			IncorporealDataHandler.getHandler(playerIn).setIncorporeal(!IncorporealDataHandler.getHandler(playerIn).isIncorporeal(), playerIn);
@@ -46,9 +54,9 @@ public class ItemDebug extends Item {
 			break;
 		case 3 :
 			if(!playerIn.world.isRemote) {
-				TartarosConfig.flightMode = TartarosConfig.flightMode + 1;
-				if(TartarosConfig.flightMode > 3) TartarosConfig.flightMode = -1;
-				playerIn.sendStatusMessage(new TextComponentTranslation("flight mode : " + TartarosConfig.flightMode, new Object[0]), true);
+				DissolutionConfig.flightMode = DissolutionConfig.flightMode + 1;
+				if(DissolutionConfig.flightMode > 3) DissolutionConfig.flightMode = -1;
+				playerIn.sendStatusMessage(new TextComponentTranslation("flight mode : " + DissolutionConfig.flightMode, new Object[0]), true);
 			} 
 			break;
 		case 4 :

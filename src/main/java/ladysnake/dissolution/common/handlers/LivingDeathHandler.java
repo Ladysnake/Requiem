@@ -94,6 +94,7 @@ public class LivingDeathHandler {
 				}
 				corpse.onUpdate();
 				victim.world.spawnEntity(corpse);
+				victim.posY = -500;
 			}
 		}
 	}

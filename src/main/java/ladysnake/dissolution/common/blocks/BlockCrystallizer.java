@@ -3,7 +3,7 @@ package ladysnake.dissolution.common.blocks;
 import java.util.Random;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
 import net.minecraft.block.Block;
@@ -58,8 +58,7 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer,
-			ItemStack stack) {
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
 		world.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()), 2);
 	}
 
@@ -101,7 +100,7 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
 
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-		// System.out.println("(block)" + getTE(world, pos).isBurning());
+
 		return state.withProperty(LIT, getTE(world, pos).isBurning());
 	}
 	
@@ -130,7 +129,7 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
 
 		TileEntity tileentity = worldIn.getTileEntity(pos);
 		if (tileentity instanceof TileEntityCrystallizer) {
-			playerIn.openGui(Tartaros.instance, GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
+			playerIn.openGui(Dissolution.instance, GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
 			return true;
 		}
 		return false;

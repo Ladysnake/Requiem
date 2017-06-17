@@ -2,6 +2,7 @@ package ladysnake.dissolution.common.tileentities;
 
 import java.util.List;
 
+import ladysnake.dissolution.common.blocks.AbstractCandle;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -12,13 +13,14 @@ public class TileEntitySoulCandle extends TileEntity implements ITickable {
 
 	@Override
 	public void update() {
-		if (this.world.getTotalWorldTime() % 40L == 0L)
+		if (this.world.getTotalWorldTime() % 40L == 0L/* && this.world.getBlockState(pos).getValue(AbstractCandle.POWERED)*/)
         {
             this.updateCandle();
         }		
 	}
 	
 	public void updateCandle() {
+		System.out.println(pos);
 		int x = this.pos.getX();
 		int y = this.pos.getY();
 		int z = this.pos.getZ();

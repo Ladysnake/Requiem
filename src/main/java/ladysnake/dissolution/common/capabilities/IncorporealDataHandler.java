@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.capabilities;
 
 import java.util.ArrayList;
 
-import ladysnake.dissolution.common.TartarosConfig;
+import ladysnake.dissolution.common.DissolutionConfig;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -56,12 +56,12 @@ public class IncorporealDataHandler {
 		public void setIncorporeal(boolean enable, EntityPlayer p) {
 			incorporeal = enable;
 			p.setEntityInvulnerable(enable);
-			if(TartarosConfig.flightMode == TartarosConfig.CUSTOM_FLIGHT)
+			if(DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT)
 				p.capabilities.setFlySpeed(enable ? 0.025f : 0.05f);
 			ObfuscationReflectionHelper.setPrivateValue(Entity.class, p, true, "isImmuneToFire", "field_70178_ae");
-			p.setInvisible(enable && TartarosConfig.invisibleGhosts);
+			p.setInvisible(enable && DissolutionConfig.invisibleGhosts);
 			if(!p.isCreative()) {
-				boolean enableFlight = (TartarosConfig.flightMode != TartarosConfig.NO_FLIGHT) && (TartarosConfig.flightMode != TartarosConfig.CUSTOM_FLIGHT);
+				boolean enableFlight = (DissolutionConfig.flightMode != DissolutionConfig.NO_FLIGHT) && (DissolutionConfig.flightMode != DissolutionConfig.CUSTOM_FLIGHT);
 				//p.capabilities.allowEdit = (!enable);
 				p.capabilities.disableDamage = enable;
 				p.capabilities.allowFlying = (enable && (p.experienceLevel > 0) && enableFlight);

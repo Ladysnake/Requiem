@@ -2,15 +2,12 @@ package ladysnake.dissolution.common.handlers;
 
 import java.util.Random;
 
-import ladysnake.dissolution.common.TartarosConfig;
+import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
@@ -31,22 +28,23 @@ public class PlayerTickHandler {
 	@SubscribeEvent
 	public void onPlayerTick(PlayerTickEvent event) {
 
+		
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.player);
 
 		playerCorp.tick(event);
-
+				
 		if (playerCorp.isIncorporeal()) {
 			if(!event.player.isCreative()) {
-				if (TartarosConfig.flightMode == TartarosConfig.SPECTATOR_FLIGHT || TartarosConfig.flightMode == TartarosConfig.CUSTOM_FLIGHT)
+				if (DissolutionConfig.flightMode == DissolutionConfig.SPECTATOR_FLIGHT || DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT)
 					event.player.capabilities.isFlying = event.player.experienceLevel > 0;
-				if(TartarosConfig.flightMode == TartarosConfig.CUSTOM_FLIGHT && event.player.experienceLevel > 0) {
+				if(DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT && event.player.experienceLevel > 0) {
 					event.player.onGround = false;
 					event.player.capabilities.setFlySpeed(event.player.experienceLevel > 0 ? 0.025f : 0.01f);
 				}
-				else if (TartarosConfig.flightMode == TartarosConfig.CREATIVE_FLIGHT && event.player.experienceLevel <= 0)
+				else if (DissolutionConfig.flightMode == DissolutionConfig.CREATIVE_FLIGHT && event.player.experienceLevel <= 0)
 					event.player.capabilities.isFlying = false;
-				if (TartarosConfig.flightMode == TartarosConfig.SPECTATOR_FLIGHT
-						|| TartarosConfig.flightMode == TartarosConfig.CREATIVE_FLIGHT)
+				if (DissolutionConfig.flightMode == DissolutionConfig.SPECTATOR_FLIGHT
+						|| DissolutionConfig.flightMode == DissolutionConfig.CREATIVE_FLIGHT)
 					event.player.capabilities.allowFlying = event.player.experienceLevel > 0;
 			}
 
@@ -68,7 +66,7 @@ public class PlayerTickHandler {
 							event.player.posX + 0.5D, event.player.posY + 1.0D, event.player.posZ + 0.5D, 1, 0.3D, 0.3D,
 							0.3D, 0.0D, new int[0]);
 				}
-				if (event.player.dimension == -1 && TartarosConfig.respawnInNether) {
+				if (event.player.dimension == -1 && DissolutionConfig.respawnInNether) {
 					BlockPos spawnPos = event.player.getBedLocation(event.player.getSpawnDimension());
 					event.player.setPosition(spawnPos.getX() / 8, spawnPos.getY() / 8, spawnPos.getZ() / 8);
 					CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player,
@@ -82,8 +80,12 @@ public class PlayerTickHandler {
 				event.player.removeExperienceLevel(1);
 		}
 
+<<<<<<< HEAD
+		if (playerCorp.isIncorporeal() && !playerCorp.isSynced() && !event.player.world.isRemote  && TartarosConfig.respawnInNether) {
+=======
 		if (playerCorp.isIncorporeal() && !playerCorp.isSynced() && !event.player.world.isRemote
-				&& TartarosConfig.respawnInNether) {
+				&& DissolutionConfig.respawnInNether) {
+>>>>>>> 8f14c18c1732c6cd36b2dce4e23054b0fae6a79f
 			CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, -1);
 		}
 		playerCorp.setSynced(true);

@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.items;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.Tartaros;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.blocks.BlockSepulture;
 import ladysnake.dissolution.common.init.ModBlocks;
 import net.minecraft.block.Block;
@@ -25,7 +25,7 @@ public class ItemSepulture extends Item {
 		super();
 		this.setUnlocalizedName(Reference.Items.SEPULTURE.getUnlocalizedName());
         this.setRegistryName(Reference.Items.SEPULTURE.getRegistryName());
-        this.setCreativeTab(Tartaros.CREATIVE_TAB);
+        this.setCreativeTab(Dissolution.CREATIVE_TAB);
         this.setMaxStackSize(1);
 	}
 	

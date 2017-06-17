@@ -1,6 +1,13 @@
 package ladysnake.dissolution.common.init;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import ladysnake.dissolution.common.Reference;
+<<<<<<< HEAD
+import ladysnake.dissolution.common.items.*;
+=======
+import ladysnake.dissolution.common.Reference.Items;
 import ladysnake.dissolution.common.items.ItemBaseResource;
 import ladysnake.dissolution.common.items.ItemDebug;
 import ladysnake.dissolution.common.items.ItemEyeDead;
@@ -9,6 +16,7 @@ import ladysnake.dissolution.common.items.ItemScytheIron;
 import ladysnake.dissolution.common.items.ItemSepulture;
 import ladysnake.dissolution.common.items.ItemSoulGem;
 import ladysnake.dissolution.common.items.ItemSoulInABottle;
+>>>>>>> 8f14c18c1732c6cd36b2dce4e23054b0fae6a79f
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -28,6 +36,8 @@ public class ModItems {
 	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
 	public static ItemSepulture SEPULTURE;
 
+
+
 	public static void init() {
 		BASE_RESOURCE = new ItemBaseResource();
 		DEBUG_ITEM = new ItemDebug();
@@ -37,6 +47,7 @@ public class ModItems {
 		SOUL_GEM = new ItemSoulGem();
 		SOUL_IN_A_BOTTLE = new ItemSoulInABottle();
 		SEPULTURE = new ItemSepulture();
+
 	}
 
 	public static void register() {
@@ -48,12 +59,13 @@ public class ModItems {
 		GameRegistry.register(SOUL_GEM);
 		GameRegistry.register(SOUL_IN_A_BOTTLE);
 		GameRegistry.register(SEPULTURE);
+
 	}
 
 	public static void registerOres() {
-		OreDictionary.registerOre("dustSulfur", new ItemStack(BASE_RESOURCE, 1, 2));
-		OreDictionary.registerOre("itemCinnabar", new ItemStack(BASE_RESOURCE, 1, 3));
-		OreDictionary.registerOre("itemMercury", new ItemStack(BASE_RESOURCE, 1, 4));
+		OreDictionary.registerOre("dustSulfur", ItemBaseResource.resourceFromName("sulfur"));
+		OreDictionary.registerOre("itemCinnabar", ItemBaseResource.resourceFromName("cinnabar"));
+		OreDictionary.registerOre("itemMercury", ItemBaseResource.resourceFromName("mercury"));
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -68,14 +80,12 @@ public class ModItems {
 		registerRender(SOUL_GEM);
 		registerRender(SOUL_IN_A_BOTTLE);
 		registerRender(SEPULTURE);
+
 	}
 
 	@SideOnly(Side.CLIENT)
 	public static void registerRender(Item item) {
-		registerRender(item, 0, item.getUnlocalizedName().toString().substring(5));
-		// ModelLoader.setCustomModelResourceLocation(item, 0, new
-		// ModelResourceLocation(Reference.MOD_ID + ":" +
-		// item.getUnlocalizedName().toString().substring(5)));
+		registerRender(item, 0, item.getUnlocalizedName().substring(5));
 	}
 
 	@SideOnly(Side.CLIENT)

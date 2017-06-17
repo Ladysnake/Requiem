@@ -23,6 +23,8 @@ item.soul_gem.name=Soul Gem
 item.soul_in_a_bottle.name=Soul in a Bottle
 item.sulfur.name=Sulfur
 item.sepulture.name=Stone Burial
+item.explosive_arrow.name=Explosive Arrow
+item.hamer.name=Hammer
 
 entity.wandering_soul.name=Wandering Soul
 entity.minion.name=Minion

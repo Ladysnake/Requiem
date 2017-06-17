@@ -1,8 +1,8 @@
 package ladysnake.dissolution.common.handlers;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.TartarosConfig;
-import ladysnake.dissolution.common.blocks.IRespawnLocation;
+import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler.Provider;
@@ -46,7 +46,7 @@ public class EventHandlerCommon {
 					event.getEntityPlayer().getUniqueID().getLeastSignificantBits(), true);
 			PacketHandler.net.sendToAll(msg);
 			
-			if(TartarosConfig.respawnInNether)
+			if(DissolutionConfig.respawnInNether)
 				event.getEntityPlayer().setPosition(event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ);
 		}
 	}
@@ -63,7 +63,7 @@ public class EventHandlerCommon {
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
 		if (playerCorp.isIncorporeal() && !event.getEntityPlayer().isCreative()) {
 			if (event.isCancelable()
-					&& !(event.getWorld().getBlockState(event.getPos()).getBlock() instanceof IRespawnLocation)
+					&& !(event.getWorld().getBlockState(event.getPos()).getBlock() instanceof ISoulInteractable)
 					&& !(IncorporealDataHandler.soulInteractableBlocks
 							.contains(event.getWorld().getBlockState(event.getPos()).getBlock()))
 					&& !(event.getItemStack() != null && event.getItemStack().getItem() == ModItems.DEBUG_ITEM))
