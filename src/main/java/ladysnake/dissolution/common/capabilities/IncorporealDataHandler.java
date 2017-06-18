@@ -3,13 +3,17 @@ package ladysnake.dissolution.common.capabilities;
 import java.util.ArrayList;
 
 import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.networking.IncorporealMessage;
+import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -46,11 +50,12 @@ public class IncorporealDataHandler {
 	
 	public static class DefaultIncorporealHandler implements IIncorporealHandler {
 		
-		private boolean incorporeal;
+		private boolean incorporeal = false;
+		private int lastFood = -1;
 		private int mercuryCandleNearby = -1;
 		private int sulfurCandleNearby = -1;
 		private String lastDeathMessage;
-		public boolean synced = false;
+		private boolean synced = false;
 	
 		@Override
 		public void setIncorporeal(boolean enable, EntityPlayer p) {
@@ -60,6 +65,9 @@ public class IncorporealDataHandler {
 				p.capabilities.setFlySpeed(enable ? 0.025f : 0.05f);
 			ObfuscationReflectionHelper.setPrivateValue(Entity.class, p, true, "isImmuneToFire", "field_70178_ae");
 			p.setInvisible(enable && DissolutionConfig.invisibleGhosts);
+
+			//p.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(enable ? 0 : 20);
+			
 			if(!p.isCreative()) {
 				boolean enableFlight = (DissolutionConfig.flightMode != DissolutionConfig.NO_FLIGHT) && (DissolutionConfig.flightMode != DissolutionConfig.CUSTOM_FLIGHT);
 				//p.capabilities.allowEdit = (!enable);
@@ -68,7 +76,15 @@ public class IncorporealDataHandler {
 				p.capabilities.isFlying = (enable && p.capabilities.isFlying && p.experienceLevel > 0 && enableFlight);
 				//System.out.println(p.capabilities.allowFlying + " " + (p.experienceLevel > 0));
 			}
-			synced = true;
+			if(!p.world.isRemote) {
+				PacketHandler.net.sendToAll(new IncorporealMessage(p.getUniqueID().getMostSignificantBits(),
+					p.getUniqueID().getLeastSignificantBits(), enable));
+			} else {
+				GuiIngameForge.renderHotbar = !enable;
+				GuiIngameForge.renderHealth = !enable;
+				GuiIngameForge.renderFood = !enable;
+			}
+			setSynced(true);
 		}
 		
 		/**
@@ -77,7 +93,7 @@ public class IncorporealDataHandler {
 		@Override 
 		public void setIncorporeal(boolean ghostMode) {
 			incorporeal = ghostMode;
-			synced = true;
+			this.setSynced(true);
 		}
 		
 		@Override
@@ -131,6 +147,11 @@ public class IncorporealDataHandler {
 		public void tick(PlayerTickEvent event) {
 			if(this.isSoulCandleNearby(1)) this.mercuryCandleNearby--;
 			if(this.isSoulCandleNearby(2)) this.sulfurCandleNearby--;
+			if(isIncorporeal())
+				if(this.lastFood < 0)
+					lastFood = event.player.getFoodStats().getFoodLevel();
+				else
+					event.player.getFoodStats().setFoodLevel(lastFood);
 		}
 	}
 	

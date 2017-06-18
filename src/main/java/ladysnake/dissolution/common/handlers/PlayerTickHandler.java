@@ -48,16 +48,16 @@ public class PlayerTickHandler {
 					event.player.capabilities.allowFlying = event.player.experienceLevel > 0;
 			}
 
-			if (event.side == Side.CLIENT)
+			if (event.side.isClient())
 				return;
 
 			// Makes the player tangible if he is near 0,0
 			if (event.player.getDistance(0, event.player.posY, 0) < SPAWN_RADIUS_FROM_ORIGIN
 					&& ++ticksSpentNearSpawn >= 100) {
 				playerCorp.setIncorporeal(false, event.player);
-				IMessage msg = new IncorporealMessage(event.player.getUniqueID().getMostSignificantBits(),
+				/*IMessage msg = new IncorporealMessage(event.player.getUniqueID().getMostSignificantBits(),
 						event.player.getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporeal());
-				PacketHandler.net.sendToAll(msg);
+				PacketHandler.net.sendToAll(msg);*/		//TODO check if this is necessary
 				for (int i = 0; i < 50; i++) {
 					double motionX = rand.nextGaussian() * 0.02D;
 					double motionY = rand.nextGaussian() * 0.02D + 1;
@@ -79,14 +79,15 @@ public class PlayerTickHandler {
 			if (event.player.experience > 0 && rand.nextBoolean())
 				event.player.experience--;
 			else if (rand.nextInt() % 300 == 0 && event.player.experienceLevel > 0)
-				event.player.addExperienceLevel(-1);;
-		}
+				event.player.addExperienceLevel(-1);
 
 
-		if (playerCorp.isIncorporeal() && !playerCorp.isSynced() && !event.player.world.isRemote
-				&& DissolutionConfig.respawnInNether) {
-			CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, -1);
+				if (!playerCorp.isSynced() && !event.player.world.isRemote
+						&& DissolutionConfig.respawnInNether) {
+					CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, -1);
+				}
 		}
-		playerCorp.setSynced(true);
+		if(event.side.isServer())
+			playerCorp.setSynced(true);
 	}
 }

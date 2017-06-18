@@ -1,0 +1,31 @@
+{
+  "result": {
+    "item": "dissolution:blocksoulextractor"
+  },
+  "pattern": [
+    "SSD",
+    "GIG",
+    "QRS"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "Q": {
+      "item": "minecraft:quartz"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "S": {
+      "item": "minecraft:cobblestone"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  }
+}

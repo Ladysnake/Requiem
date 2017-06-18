@@ -82,8 +82,8 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 		if (playerCorp.isIncorporeal()) {
 			this.getTE(worldIn, pos).setDeathMessage(playerCorp.getLastDeathMessage());
 			playerCorp.setIncorporeal(false, playerIn);
-			IMessage msg = new IncorporealMessage(playerIn.getUniqueID().getMostSignificantBits(), playerIn.getUniqueID().getLeastSignificantBits(), false);
-			PacketHandler.net.sendToAll(msg);
+			/*IMessage msg = new IncorporealMessage(playerIn.getUniqueID().getMostSignificantBits(), playerIn.getUniqueID().getLeastSignificantBits(), false);
+			PacketHandler.net.sendToAll(msg);*/			//TODO Check if this is necessary
 		} else {
 			try {
 				//System.out.println(this.getTE(worldIn, pos));

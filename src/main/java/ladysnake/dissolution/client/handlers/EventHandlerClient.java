@@ -10,10 +10,11 @@ import ladysnake.dissolution.common.networking.PingMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
-import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
@@ -30,9 +31,12 @@ public class EventHandlerClient {
 
 	@SubscribeEvent
 	public void onGameTick(TickEvent event) {
-		if (Minecraft.getMinecraft().player == null || !Minecraft.getMinecraft().player.world.isRemote) return;
+		if (Minecraft.getMinecraft().player == null || event.side.isServer()) return;
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player);
-		if(!playerCorp.isSynced() && refresh++%100 == 0){
+		//System.out.println(refresh);
+		if(!playerCorp.isSynced() && refresh++%100 == 0)
+		{
+			System.out.println("REFRESH");
 			IMessage msg = new PingMessage(Minecraft.getMinecraft().player.getUniqueID().getMostSignificantBits(), 
 					Minecraft.getMinecraft().player.getUniqueID().getLeastSignificantBits());
 			PacketHandler.net.sendToServer(msg);
@@ -40,8 +44,31 @@ public class EventHandlerClient {
 	}
 	
 	@SubscribeEvent
+	public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
+		if(event.getType() == RenderGameOverlayEvent.ElementType.ALL && IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal()) {
+			GuiIngameForge.renderFood = false;
+			GuiIngameForge.renderHotbar = Minecraft.getMinecraft().player.isCreative();
+		}
+	}
+	
+	@SubscribeEvent
+	public void onRenderGameOverlay(RenderGameOverlayEvent.Post event) {
+		if(IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal() && 
+				(event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD
+				|| event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR)) {
+			GlStateManager.color(1.0F,  1.0F, 1.0F, 1.0F);
+		}
+	}
+	/*
+	@SubscribeEvent
+	public void onRenderGameOverlay(RenderGameOverlayEvent event) {
+		if(IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal() && event.getType() == RenderGameOverlayEvent.ElementType.HEALTH)
+			event.setCanceled(false);
+	}*/
+	
+	@SubscribeEvent
 	public void onPlayerTick(PlayerTickEvent event) {
-		if(event.side == Side.SERVER) 
+		if(event.side.isServer()) 
 			return;
 		if(!(DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT || DissolutionConfig.flightMode == DissolutionConfig.PAINFUL_FLIGHT)) 
 			return;

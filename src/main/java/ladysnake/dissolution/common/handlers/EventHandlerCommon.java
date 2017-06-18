@@ -42,9 +42,9 @@ public class EventHandlerCommon {
 			clone.setIncorporeal(true, event.getEntityPlayer());
 			clone.setLastDeathMessage(corpse.getLastDeathMessage());
 			clone.setSynced(false);
-			IMessage msg = new IncorporealMessage(event.getEntityPlayer().getUniqueID().getMostSignificantBits(),
+			/*IMessage msg = new IncorporealMessage(event.getEntityPlayer().getUniqueID().getMostSignificantBits(),
 					event.getEntityPlayer().getUniqueID().getLeastSignificantBits(), true);
-			PacketHandler.net.sendToAll(msg);
+			PacketHandler.net.sendToAll(msg);*/		//TODO check if this is necessary
 			
 			if(DissolutionConfig.respawnInNether)
 				event.getEntityPlayer().setPosition(event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ);
@@ -102,9 +102,9 @@ public class EventHandlerCommon {
 			final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler((EntityPlayer) event.getEntity());
 			if (playerCorp.isIncorporeal()) {
 				playerCorp.setIncorporeal(false, (EntityPlayer) event.getEntity());
-				IMessage msg = new IncorporealMessage(event.getEntity().getUniqueID().getMostSignificantBits(),
+				/*IMessage msg = new IncorporealMessage(event.getEntity().getUniqueID().getMostSignificantBits(),
 						event.getEntity().getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporeal());
-				PacketHandler.net.sendToAll(msg);
+				PacketHandler.net.sendToAll(msg);*/
 			}
 		}
 	}

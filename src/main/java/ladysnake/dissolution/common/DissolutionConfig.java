@@ -1,5 +1,7 @@
 package ladysnake.dissolution.common;
 
+import java.util.regex.Pattern;
+
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
@@ -17,6 +19,7 @@ public class DissolutionConfig {
 	public static int flightMode = CUSTOM_FLIGHT;
 	public static boolean oneUseWaystone = true;
 	public static boolean respawnInNether = true;
+	public static boolean skipDeathScreen = false;
 	public static boolean soulCompass = true;
 	public static boolean soulCompassAnchors = true;
 	
@@ -27,15 +30,21 @@ public class DissolutionConfig {
 	        Property versionProp = Dissolution.config.get(
 	        		"Don't touch that", 
 	        		"version", 
-	        		"1.0", 
+	        		"1.1", 
 	        		"The version of this configuration file. Don't modify this number unless you want your changes randomly reset.");
 
 	        // Read props from config
 	        Property shouldRespawnInNetherProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_GENERAL,
 	                "shouldRespawnInNether", // Property name
-	                "true", // Default value
+	                "false", // Default value
 	                "Whether players should respawn in the nether when they die");
+	        
+	        Property shouldShowDeathScreenProp = Dissolution.config.get(
+	        		Configuration.CATEGORY_GENERAL,
+	                "skipDeathScreen", // Property name
+	                "false", // Default value
+	                "Whether players should respawn instantly as souls without showing death screen (could break other mods)");
 	        
 	        Property anchorsXRayProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_CLIENT,
@@ -85,18 +94,33 @@ public class DissolutionConfig {
 	        		"true",
 	        		"Whether output stacks from the extractor should spawn items in world when there is no appropriate container");
 	        
-	        
+	        // Updating configuration file to v1.1
+	        if(versionProp.getDouble() < 1.1) {
+	        	System.out.println("config changed !");
+	        	shouldRespawnInNetherProp.set(false);
+	        	versionProp.set(1.1);
+	        }
 
-	        anchorsXRay = anchorsXRayProp.getBoolean();
-	        doSableDrop = doSablePopProp.getBoolean();
-	        invisibleGhosts = invisibleGhostProp.getBoolean();
-	        flightMode = flightModeProp.getInt();
-	        oneUseWaystone = oneUseWaystoneProp.getBoolean();
-	        respawnInNether = shouldRespawnInNetherProp.getBoolean();
-	        soulCompass = showSoulCompassProp.getBoolean();
-	        soulCompassAnchors = showAnchorsInSoulCompassProp.getBoolean();
+	        if(anchorsXRayProp.isBooleanValue())
+	        	anchorsXRay = anchorsXRayProp.getBoolean();
+	        if(doSablePopProp.isBooleanValue())
+		        doSableDrop = doSablePopProp.getBoolean();
+	        if(invisibleGhostProp.isBooleanValue())
+		        invisibleGhosts = invisibleGhostProp.getBoolean();
+	        if(flightModeProp.isIntValue())
+	        	flightMode = flightModeProp.getInt();
+	        if(oneUseWaystoneProp.isBooleanValue())
+		        oneUseWaystone = oneUseWaystoneProp.getBoolean();
+	        if(shouldRespawnInNetherProp.isBooleanValue())
+		        respawnInNether = shouldRespawnInNetherProp.getBoolean();
+	        if(shouldShowDeathScreenProp.isBooleanValue())
+		        skipDeathScreen = shouldShowDeathScreenProp.getBoolean();
+	        if(showSoulCompassProp.isBooleanValue())
+		        soulCompass = showSoulCompassProp.getBoolean();
+	        if(showAnchorsInSoulCompassProp.isBooleanValue())
+		        soulCompassAnchors = showAnchorsInSoulCompassProp.getBoolean();
 	        interactableBlocksProp.getArrayEntryClass();
-	    } catch (Exception e) {
+	    } catch (NumberFormatException e) {
 	    } finally {
 	        if (Dissolution.config.hasChanged()) Dissolution.config.save();
 	    }

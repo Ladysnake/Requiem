@@ -1,0 +1,25 @@
+{
+  "result": {
+    "item": "dissolution:itemgrandfaux"
+  },
+  "pattern": [
+    "IBB",
+    "PSS",
+    "SPP"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "B": {
+      "item": "minecraft:iron_block"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  }
+}

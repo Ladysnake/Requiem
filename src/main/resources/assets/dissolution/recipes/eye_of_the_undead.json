@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IGI",
+    "IEI",
+    "I#I"
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:ender_eye"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "#": {
+      "item": "dissolution:itemresource",
+	  "data": 1
+    }
+  },
+  "result": {
+    "item": "dissolution:itemeyeofundead"
+  }
+}

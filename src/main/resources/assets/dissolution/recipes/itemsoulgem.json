@@ -1,0 +1,15 @@
+{
+  "result": {
+    "item": "dissolution:itemsoulgem"
+  },
+  "ingredients": [
+    {
+      "item": "dissolution:itemresource",
+      "data": 0
+    },
+    {
+      "item": "dissolution:itemsoulinabottle"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless"
+}

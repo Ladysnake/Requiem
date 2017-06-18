@@ -17,10 +17,12 @@ public class IncorporealPacket implements IMessageHandler<IncorporealMessage, IM
 		// just to make sure that the side is correct
 		if (ctx.side.isClient()) {
 			Minecraft.getMinecraft().addScheduledTask(() -> {
-				final EntityPlayer player = Minecraft.getMinecraft().player.world
-						.getPlayerEntityByUUID(new UUID(message.playerUUIDMost, message.playerUUIDLeast));
-				final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(player);
-				playerCorp.setIncorporeal(message.simpleBool, player);
+				try {
+					final EntityPlayer player = Minecraft.getMinecraft().player.world
+							.getPlayerEntityByUUID(new UUID(message.playerUUIDMost, message.playerUUIDLeast));
+					final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(player);
+					playerCorp.setIncorporeal(message.simpleBool, player);
+				} catch (NullPointerException e){}
 			});
 		}
 		return null;

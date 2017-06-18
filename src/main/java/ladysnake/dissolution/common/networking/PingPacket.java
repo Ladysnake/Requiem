@@ -20,20 +20,17 @@ public class PingPacket implements IMessageHandler<PingMessage, UpdateMessage>
 	@Override
 	public UpdateMessage onMessage(final PingMessage message, final MessageContext ctx) 
 	{
-		//System.out.println("message get !");
+		System.out.println("message get !");
 	  // just to make sure that the side is correct
 	  if (ctx.side.isServer())
 	  {
-		  FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(new Runnable()
-			{
-			  public void run() {
+		  FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> {
 				  //System.out.println("a ping packet has been processed");
 				  EntityPlayerMP thePlayer = ctx.getServerHandler().playerEntity;
 				  final IIncorporealHandler clone = IncorporealDataHandler.getHandler((EntityPlayer)thePlayer);
 				  IMessage msg = new IncorporealMessage(message.uuidMost, message.uuidLeast, clone.isIncorporeal() || clone.isIncorporeal());
 				  PacketHandler.net.sendToAll(msg);
-			  }
-			});
+		  });
 	  }
 	  return null;
 	}
