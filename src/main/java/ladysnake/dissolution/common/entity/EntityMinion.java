@@ -99,7 +99,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 		return true;
 	}
 	
-	public void DoParticle(EnumParticleTypes part, Entity entity, int amount){
+	public void doParticle(EnumParticleTypes part, Entity entity, int amount){
 		for(int i = 0; i < amount; i++){
 			Random rand = new Random();
 			double motionX = rand.nextGaussian() * 0.1D;
@@ -172,25 +172,25 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 	
 	@Override
 	public void onLivingUpdate() {
-		//if(this.isCorpse()){
-			remainingTicks--;
-			//System.out.println(remainingTicks);
-			if(!this.isCorpse())
-				this.handleSunExposition();
-			if(remainingTicks <= 0){
-				if(!this.isCorpse() && !this.world.isRemote) {
-					for(int i = 0; i < 150; i++) {
-					    double motionX = rand.nextGaussian() * 0.05D;
-					    double motionY = rand.nextGaussian() * 0.05D;
-					    double motionZ = rand.nextGaussian() * 0.05D;
-					    ((WorldServer)this.world).spawnParticle(EnumParticleTypes.SMOKE_NORMAL, false, posX, posY + 1.5D, posZ, 1, 0.3D, 0.3D, 0.3D, 0.0D, new int[0]); 
-					}
-				}
-				this.setDead();
-				return;
-			}
-		//}	
 		super.onLivingUpdate();
+		this.update();
+	}
+	
+	protected void update() {
+		remainingTicks--;
+		if(!this.isCorpse())
+			this.handleSunExposition();
+		if(remainingTicks <= 0){
+			if(!this.isCorpse() && !this.world.isRemote) {
+				for(int i = 0; i < 150; i++) {
+				    double motionX = rand.nextGaussian() * 0.05D;
+				    double motionY = rand.nextGaussian() * 0.05D;
+				    double motionZ = rand.nextGaussian() * 0.05D;
+				    ((WorldServer)this.world).spawnParticle(EnumParticleTypes.SMOKE_NORMAL, false, posX, posY + 1.5D, posZ, 1, 0.3D, 0.3D, 0.3D, 0.0D, new int[0]); 
+				}
+			}
+			this.setDead();
+		}
 	}
 	
 	protected void handleSunExposition() {

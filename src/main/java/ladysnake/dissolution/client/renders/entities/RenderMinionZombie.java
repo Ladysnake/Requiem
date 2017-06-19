@@ -29,9 +29,7 @@ public class RenderMinionZombie extends RenderBiped<EntityMinionZombie> {
 	private static final DataParameter<Boolean> DEATH = EntityDataManager.<Boolean>createKey(EntityMinionZombie.class, DataSerializers.BOOLEAN);
 	private EntityDataManager dataManager;
 
-    public static final Factory FACTORY = new Factory();
-
-    public RenderMinionZombie(RenderManager rendermanagerIn, boolean death) {
+    public RenderMinionZombie(RenderManager rendermanagerIn) {
     		super(rendermanagerIn, new ModelMinionZombie(), 0.5F);
     		LayerBipedArmor layerbipedarmor = new LayerBipedArmor(this)
             {
@@ -50,17 +48,6 @@ public class RenderMinionZombie extends RenderBiped<EntityMinionZombie> {
     	if(entity.isCorpse())
     		return entity.isHusk() ? HUSK_TEXTURES : ZOMBIE_TEXTURES;
     	return entity.isHusk() ? HUSK_MINION_TEXTURES : ZOMBIE_MINION_TEXTURES;
-    }
-
-    public static class Factory implements IRenderFactory<EntityMinionZombie> {
-
-        @Override
-        public Render<EntityMinionZombie> createRenderFor(RenderManager manager) {
-        	
-        		return new RenderMinionZombie(manager, true);	
- 	
-        }
-
     }
     
     @Override

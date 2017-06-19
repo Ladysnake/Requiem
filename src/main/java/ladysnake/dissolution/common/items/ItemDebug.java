@@ -1,6 +1,7 @@
 package ladysnake.dissolution.common.items;
 
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.handlers.CustomTartarosTeleporter;
@@ -30,7 +31,7 @@ public class ItemDebug extends Item {
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
 		if(playerIn.isSneaking()) {
 			if(!worldIn.isRemote) {
-				debugWanted = (debugWanted + 1) % 5;
+				debugWanted = (debugWanted + 1) % 6;
 				playerIn.sendStatusMessage(new TextComponentTranslation("debug: " + debugWanted, new Object[0]), true);
 			}
 			return super.onItemRightClick(worldIn, playerIn, handIn);
@@ -61,6 +62,13 @@ public class ItemDebug extends Item {
 			break;
 		case 4 :
 			playerIn.sendStatusMessage(new TextComponentTranslation("flight speed:" + playerIn.capabilities.getFlySpeed()), true);
+			break;
+		case 5 :
+			if(playerIn.world.isRemote) {
+				CharSequence res = RenderPlayerCorpse.fromFile("/assets/dissolution/shaders/special/corpsedissolution.fsh");
+				System.out.println(res);
+				RenderPlayerCorpse.initShader();
+			}
 			break;
 		default : break;
 		}

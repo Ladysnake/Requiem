@@ -2,6 +2,8 @@ package ladysnake.dissolution.common.handlers;
 
 import java.lang.reflect.InvocationTargetException;
 
+import com.mojang.authlib.GameProfile;
+
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
@@ -12,13 +14,13 @@ import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionStray;
 import ladysnake.dissolution.common.entity.EntityMinionWitherSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.Helper;
 import ladysnake.dissolution.common.items.ItemScythe;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.EntityHusk;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntitySkeleton;
@@ -29,13 +31,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.server.SPacketCombatEvent;
 import net.minecraft.scoreboard.IScoreCriteria;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.DamageSource;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -65,7 +67,13 @@ public class LivingDeathHandler {
 			p.world.spawnEntity(new EntityItemWaystone(p.world, p.posX + 0.5, p.posY + 1.0, p.posZ + 0.5));
 		}
 		
-		if(DissolutionConfig.skipDeathScreen) {
+		if(!p.world.isRemote) {
+			EntityPlayerCorpse body = new EntityPlayerCorpse(p.world);
+			body.setPosition(p.posX, p.posY, p.posZ);
+			p.world.spawnEntity(body);
+		}
+		
+		if(DissolutionConfig.skipDeathScreen || true) {
 			if(!p.world.isRemote)
 				fakePlayerDeath((EntityPlayerMP)p, event.getSource());
 			corp.setIncorporeal(true, p);

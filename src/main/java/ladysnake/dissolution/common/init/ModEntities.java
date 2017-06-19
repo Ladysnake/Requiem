@@ -6,6 +6,7 @@ import ladysnake.dissolution.client.renders.entities.RenderMinionSkeleton;
 import ladysnake.dissolution.client.renders.entities.RenderMinionStray;
 import ladysnake.dissolution.client.renders.entities.RenderMinionWitherSkeleton;
 import ladysnake.dissolution.client.renders.entities.RenderMinionZombie;
+import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
 import ladysnake.dissolution.client.renders.entities.RenderWanderingSoul;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
@@ -16,6 +17,7 @@ import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionStray;
 import ladysnake.dissolution.common.entity.EntityMinionWitherSkeleton;
 import ladysnake.dissolution.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.entity.EntityWanderingSoul;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Biomes;
@@ -39,6 +41,7 @@ public class ModEntities {
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_skeleton"), EntityMinionSkeleton.class, "minion_skeleton", id++, Dissolution.instance, 64, 1, true);
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_stray"), EntityMinionStray.class, "minion_stray", id++, Dissolution.instance, 64, 1, true);
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":minion_wither_skeleton"), EntityMinionWitherSkeleton.class, "minion_wither_skeleton", id++, Dissolution.instance, 64, 1, true);
+    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":player_corpse"), EntityPlayerCorpse.class, "player_corpse", id++, Dissolution.instance, 64, 1, true);
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":maw_of_the_void"), BossMawOfTheVoid.class, "maw_of_the_void", id++, Dissolution.instance, 64, 1, true, 0x000000, 0xffffff);
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":brimstone_fire"), EntityBrimstoneFire.class, "brimstone_fire", id++, Dissolution.instance, 32, 1, false);
     }
@@ -46,11 +49,12 @@ public class ModEntities {
     @SideOnly(Side.CLIENT)
     public static void registerRenders() {
     	RenderingRegistry.registerEntityRenderingHandler(EntityWanderingSoul.class, new RenderWanderingSoul.Factory());
-    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionZombie.class, new RenderMinionZombie.Factory());
+    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionZombie.class, (renderManager) -> new RenderMinionZombie(renderManager));
     	RenderingRegistry.registerEntityRenderingHandler(EntityMinionPigZombie.class, new RenderMinionPigZombie.Factory());
     	RenderingRegistry.registerEntityRenderingHandler(EntityMinionSkeleton.class, new RenderMinionSkeleton.Factory());
     	RenderingRegistry.registerEntityRenderingHandler(EntityMinionStray.class, new RenderMinionStray.Factory());
     	RenderingRegistry.registerEntityRenderingHandler(EntityMinionWitherSkeleton.class, new RenderMinionWitherSkeleton.Factory());
+    	RenderingRegistry.registerEntityRenderingHandler(EntityPlayerCorpse.class, (renderManager) -> new RenderPlayerCorpse(renderManager));
     	RenderingRegistry.registerEntityRenderingHandler(BossMawOfTheVoid.class, new RenderMawOfTheVoidBoss.Factory());
     }
 
