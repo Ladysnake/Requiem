@@ -40,7 +40,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 public abstract class EntityMinion extends EntityCreature implements IEntityAdditionalSpawnData, IRangedAttackMob {
-	public boolean corpse;
+	protected boolean inert;
 	protected int remainingTicks;
 	public static final int MAX_DEAD_TICKS = 1200;
 	public static final int MAX_RISEN_TICKS = 6000;
@@ -57,7 +57,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 	public EntityMinion(World worldIn, boolean isChild) {
 		super(worldIn);
         this.setSize(sizeX, sizeY);
-        this.corpse = true;
+        this.inert = true;
         this.remainingTicks = MAX_DEAD_TICKS;
 		this.setChild(isChild);
 	}
@@ -306,7 +306,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
     }
 
 	public void setCorpse(boolean isCorpse) {
-		this.corpse = isCorpse;
+		this.inert = isCorpse;
 		this.remainingTicks = isCorpse ? MAX_DEAD_TICKS : MAX_RISEN_TICKS;
 		
 		if(isCorpse)
@@ -316,7 +316,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 	}
 	
 	public boolean isCorpse(){
-		return corpse;
+		return inert;
 	}
 	
 	public int getRemainingTicks() {
@@ -336,14 +336,14 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		this.corpse = compound.getBoolean("Corpse");
+		this.inert = compound.getBoolean("Corpse");
 		this.remainingTicks = compound.getInteger("remainingTicks");
 		this.setChild(compound.getBoolean("IsBaby"));
 	}
 
 	@Override
 	public void writeSpawnData(ByteBuf buffer) {
-		buffer.writeBoolean(corpse);
+		buffer.writeBoolean(inert);
 		buffer.writeInt(remainingTicks);
 	}
 

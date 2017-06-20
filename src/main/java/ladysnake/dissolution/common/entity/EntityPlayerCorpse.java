@@ -12,18 +12,6 @@ public class EntityPlayerCorpse extends EntityMinion {
 		super(worldIn);
 	}
 
-	private boolean inert;
-
-	@Override
-	public void setCorpse(boolean inert) {
-		this.inert = inert;
-	}
-
-	@Override
-	public boolean isCorpse() {
-		return inert;
-	}
-
 	@Override
 	public void setSwingingArms(boolean swingingArms) {
 		
