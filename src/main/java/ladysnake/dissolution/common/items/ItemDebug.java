@@ -1,8 +1,9 @@
 package ladysnake.dissolution.common.items;
 
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
 import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.handlers.CustomTartarosTeleporter;
 import net.minecraft.client.Minecraft;
@@ -13,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
@@ -65,9 +67,8 @@ public class ItemDebug extends Item {
 			break;
 		case 5 :
 			if(playerIn.world.isRemote) {
-				CharSequence res = RenderPlayerCorpse.fromFile("/assets/dissolution/shaders/special/corpsedissolution.fsh");
-				System.out.println(res);
-				RenderPlayerCorpse.initShader();
+				ShaderHelper.initShaders();
+				playerIn.sendStatusMessage(new TextComponentString("reloaded shaders"), false);
 			}
 			break;
 		default : break;
