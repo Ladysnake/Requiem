@@ -2,6 +2,7 @@ package ladysnake.dissolution.common.entity;
 
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;

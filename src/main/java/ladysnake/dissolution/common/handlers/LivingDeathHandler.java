@@ -1,7 +1,9 @@
 package ladysnake.dissolution.common.handlers;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.UUID;
 
+import com.google.common.base.Optional;
 import com.mojang.authlib.GameProfile;
 
 import ladysnake.dissolution.common.DissolutionConfig;
@@ -19,6 +21,7 @@ import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.Helper;
 import ladysnake.dissolution.common.items.ItemScythe;
+import net.minecraft.client.main.GameConfiguration;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityHusk;
@@ -31,6 +34,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.scoreboard.IScoreCriteria;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
@@ -71,6 +76,7 @@ public class LivingDeathHandler {
 			EntityPlayerCorpse body = new EntityPlayerCorpse(p.world);
 			body.setPosition(p.posX, p.posY, p.posZ);
 			p.world.spawnEntity(body);
+			body.setTarget(p.getUniqueID());
 		}
 		
 		if(DissolutionConfig.skipDeathScreen || true) {
