@@ -18,6 +18,8 @@ public class ShaderHelper {
 	
 	/**the shader used during the corpse dissolution animation*/
 	public static int corpseDissolution = 0;
+	public static int shadertest = 0;
+	public static int doppleganger = 0;
 	
 	private static int prevProgram = 0, currentProgram = 0;
 	private static final String LOCATION_PREFIX = "/assets/dissolution/shaders/special/";
@@ -31,6 +33,8 @@ public class ShaderHelper {
 	 */
 	public static void initShaders() {
 		corpseDissolution = initShader("corpsedissolution");
+		shadertest = initShader("shadertest");
+		doppleganger = initShader("doppleganger");
 	}
 	
 	/**
