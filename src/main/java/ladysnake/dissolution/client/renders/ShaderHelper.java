@@ -18,10 +18,10 @@ public class ShaderHelper {
 	/**the shader used during the corpse dissolution animation*/
 	public static int corpseDissolution = 0;
 	public static int embersLight = 0;
+	public static int doppleganger = 0;
 	
 	private static int prevProgram = 0, currentProgram = 0;
 	private static final String LOCATION_PREFIX = "/assets/dissolution/shaders/";
-	private static final String MINECRAFT_LOCATION_PREFIX = "/assets/minecraft/shaders/program/";
 	
 	static {
 		initShaders();
@@ -33,6 +33,7 @@ public class ShaderHelper {
 	public static void initShaders() {
 		corpseDissolution = initShader("corpsedissolution");
 		embersLight = initShader("embers_light");
+		doppleganger = initShader("doppleganger");
 	}
 	
 	/**
@@ -132,11 +133,13 @@ public class ShaderHelper {
                 String line;
                 while((line = reader.readLine()) != null)
                     source.append(line).append('\n');
-        }
-        catch(IOException exc) {
+        } catch(IOException exc) {
             exc.printStackTrace();
+        } catch (NullPointerException e) {
+        	System.err.println(e + " : " + filename + " does not exist");
         }
          
+        System.out.println(source);
         return source.toString();
     }
 

@@ -16,7 +16,9 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 import ladysnake.dissolution.client.models.ModelMinionZombie;
+import ladysnake.dissolution.client.models.ModelPlayerCorpse;
 import ladysnake.dissolution.client.renders.ShaderHelper;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -30,8 +32,10 @@ import net.minecraft.world.EnumSkyBlock;
 
 public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
 	
+	private static final ResourceLocation PLAYER_EXPLODING_TEXTURES = new ResourceLocation(Reference.MOD_ID + ":textures/entity/player_corpse/player.png");
+	
 	public RenderPlayerCorpse(RenderManager rendermanagerIn) {
-		super(rendermanagerIn, new ModelMinionZombie(), 0.5F);
+		super(rendermanagerIn, new ModelPlayerCorpse(0.0F, true), 0.5F);
 		LayerBipedArmor layerbipedarmor = new LayerBipedArmor(this)
         {
             protected void initArmor()
@@ -57,6 +61,9 @@ public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
 		ShaderHelper.useShader(ShaderHelper.corpseDissolution);
 		ShaderHelper.setUniform("texture", 0);
 		ShaderHelper.setUniform("lightmap", 1);
+		ShaderHelper.setUniform("animationProgress", 0.2f);
+		GlStateManager.enableBlend();
+		GlStateManager.enableAlpha();
 		float light = Math.max(entity.world.getLightFor(EnumSkyBlock.SKY, entity.getPosition()) * entity.world.getSunBrightnessFactor(1.0f), 
 				entity.world.getLightFor(EnumSkyBlock.BLOCK, entity.getPosition()));
 		ShaderHelper.setUniform("lighting", light);
