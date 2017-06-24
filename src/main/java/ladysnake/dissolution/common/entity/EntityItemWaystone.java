@@ -10,7 +10,7 @@ public class EntityItemWaystone extends EntityItem {
 
 	public EntityItemWaystone(World worldIn, double x, double y, double z) {
 		super(worldIn, x, y, z);
-		this.setEntityItemStack(new ItemStack(ModBlocks.MERCURIUS_WAYSTONE));
+		this.setItem(new ItemStack(ModBlocks.MERCURIUS_WAYSTONE));
 	}
 	
 	@Override

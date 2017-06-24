@@ -1,8 +1,9 @@
 package ladysnake.dissolution.common.entity;
 
 import java.util.LinkedList;
+import java.util.List;
 
-import ladysnake.dissolution.common.entity.ai.boss.EntityAiAttackBrimstoneFires;
+import ladysnake.dissolution.common.entity.ai.boss.BossAiAttackBrimstoneFires;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.math.BlockPos;
@@ -11,19 +12,19 @@ import net.minecraft.world.World;
 public class BossMawOfTheVoid extends EntityCreature {
 	
 	public int lastAttack;
-	private LinkedList<EntityBrimstoneFire> brimstoneFires;
+	private List<EntityBrimstoneFire> brimstoneFires;
 
 	public BossMawOfTheVoid(World worldIn) {
 		super(worldIn);
 		lastAttack = -1;
-		brimstoneFires = new LinkedList<>();
 	}
 	
 	@Override
 	public void initEntityAI() {
+		brimstoneFires = new LinkedList<>();
 		tasks.taskEntries.clear();
     	targetTasks.taskEntries.clear();
-    	tasks.addTask(0, new EntityAiAttackBrimstoneFires(brimstoneFires));
+    	tasks.addTask(0, new BossAiAttackBrimstoneFires(this, brimstoneFires));
     	tasks.addTask(1, new BossMawOfTheVoid.AIDoNothing());
     	tasks.addTask(2, new BossMawOfTheVoid.AITest());
 	}
@@ -38,7 +39,7 @@ public class BossMawOfTheVoid extends EntityCreature {
         @Override
         public boolean shouldExecute()
         {
-            return true;
+            return false;
         }
     }
 	
@@ -55,14 +56,14 @@ public class BossMawOfTheVoid extends EntityCreature {
 		@Override
 		public boolean shouldExecute()
 		{
-//			System.out.println("shouldExecute");
+			i = 0;
 			return rand.nextBoolean();
 		}
 		
 		@Override
-		public boolean continueExecuting() {
+		public boolean shouldContinueExecuting() {
 //			System.out.println("continueExecuting");
-			return i < 200;
+			return ++i < 2000 || true;
 		}
 		
 		@Override
@@ -74,7 +75,8 @@ public class BossMawOfTheVoid extends EntityCreature {
 		@Override
 		public void updateTask() 
 		{
-//			System.out.println(i++);
+			if(i > 1998)
+				lastAttack = 0;
 		}
 	}
 

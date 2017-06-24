@@ -9,9 +9,8 @@ public class DissolutionConfig {
 	
 	public static final int NO_FLIGHT = -1;
 	public static final int CUSTOM_FLIGHT = 0;
-	public static final int PAINFUL_FLIGHT = 1;
-	public static final int CREATIVE_FLIGHT = 2;
-	public static final int SPECTATOR_FLIGHT = 3;
+	public static final int CREATIVE_FLIGHT = 1;
+	public static final int SPECTATOR_FLIGHT = 2;
 
 	public static boolean anchorsXRay = false;
 	public static boolean doSableDrop = true;
@@ -62,7 +61,7 @@ public class DissolutionConfig {
 	        		Configuration.CATEGORY_GENERAL,
 	        		"flightMode",
 	        		"0",
-	        		"-1= noflight, 0=custom flight, 1=painful flight, 2=creative, 3=spectator-lite");
+	        		"-1= noflight, 0=custom flight, 1=creative, 2=spectator-lite");
 	        
 	        Property showSoulCompassProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_CLIENT,

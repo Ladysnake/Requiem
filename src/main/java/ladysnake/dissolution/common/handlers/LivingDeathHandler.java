@@ -50,7 +50,7 @@ public class LivingDeathHandler {
 		if (event.getEntity() instanceof EntityPlayer)
 			this.handlePlayerDeath(event);
 
-		if (event.getSource().getEntity() instanceof EntityPlayer)
+		if (event.getSource().getTrueSource() instanceof EntityPlayer)
 			this.handlePlayerKill(event);
 	}
 	
@@ -157,7 +157,7 @@ public class LivingDeathHandler {
 	}
 	
 	public void handlePlayerKill(LivingDeathEvent event) {
-		EntityPlayer killer = (EntityPlayer) event.getSource().getEntity();
+		EntityPlayer killer = (EntityPlayer) event.getSource().getTrueSource();
 		EntityLivingBase victim = event.getEntityLiving();
 		
 		if (killer.getHeldItemMainhand().getItem() instanceof ItemScythe) {

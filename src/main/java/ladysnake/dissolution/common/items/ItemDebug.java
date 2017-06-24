@@ -1,10 +1,13 @@
 package ladysnake.dissolution.common.items;
 
+import java.util.List;
+
 import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.entity.EntityBrimstoneFire;
 import ladysnake.dissolution.common.handlers.CustomTartarosTeleporter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,14 +37,14 @@ public class ItemDebug extends Item {
 		if(playerIn.isSneaking()) {
 			if(!worldIn.isRemote) {
 				debugWanted = (debugWanted + 1) % 6;
-				playerIn.sendStatusMessage(new TextComponentTranslation("debug: " + debugWanted, new Object[0]), true);
+				playerIn.sendStatusMessage(new TextComponentString("debug: " + debugWanted), true);
 			}
 			return super.onItemRightClick(worldIn, playerIn, handIn);
 		}
 		switch(debugWanted) {
 		case 0 : 
 			if(worldIn.isRemote) {
-				ResourceLocation shader = new ResourceLocation("dissolution:shaders/post/test.json");
+				ResourceLocation shader = new ResourceLocation("minecraft:shaders/post/notch.json");
 				if(Minecraft.getMinecraft().entityRenderer.isShaderActive())
 					Minecraft.getMinecraft().entityRenderer.stopUseShader();
 				else
@@ -58,17 +61,21 @@ public class ItemDebug extends Item {
 		case 3 :
 			if(!playerIn.world.isRemote) {
 				DissolutionConfig.flightMode = DissolutionConfig.flightMode + 1;
-				if(DissolutionConfig.flightMode > 3) DissolutionConfig.flightMode = -1;
-				playerIn.sendStatusMessage(new TextComponentTranslation("flight mode : " + DissolutionConfig.flightMode, new Object[0]), true);
+				if(DissolutionConfig.flightMode > 2) DissolutionConfig.flightMode = -1;
+				playerIn.sendStatusMessage(new TextComponentString("flight mode : " + DissolutionConfig.flightMode), true);
 			} 
 			break;
 		case 4 :
-			playerIn.sendStatusMessage(new TextComponentTranslation("flight speed:" + playerIn.capabilities.getFlySpeed()), true);
+			if(playerIn.world.isRemote) {
+				playerIn.sendStatusMessage(new TextComponentString("Printing fire information"), true);
+				List<EntityBrimstoneFire> fires = playerIn.world.getEntities(EntityBrimstoneFire.class, e -> true);
+				fires.forEach(System.out::println);
+			}
 			break;
 		case 5 :
 			if(playerIn.world.isRemote) {
 				ShaderHelper.initShaders();
-				playerIn.sendStatusMessage(new TextComponentString("reloaded shaders"), false);
+				playerIn.sendStatusMessage(new TextComponentString("Reloaded shaders"), false);
 			}
 			break;
 		default : break;

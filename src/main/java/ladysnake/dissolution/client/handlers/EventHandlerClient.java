@@ -25,7 +25,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class EventHandlerClient {
 	
-	public static final float SOUL_VERTICAL_SPEED = 0.1f;
+	private static final float SOUL_VERTICAL_SPEED = 0.1f;
 	private static RenderSoulAnchor renderAnch = new RenderSoulAnchor();
 	private static int refresh = 0;
 
@@ -70,7 +70,7 @@ public class EventHandlerClient {
 	public void onPlayerTick(PlayerTickEvent event) {
 		if(event.side.isServer()) 
 			return;
-		if(!(DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT || DissolutionConfig.flightMode == DissolutionConfig.PAINFUL_FLIGHT)) 
+		if(DissolutionConfig.flightMode != DissolutionConfig.CUSTOM_FLIGHT) 
 			return;
 		if(IncorporealDataHandler.getHandler(event.player).isIncorporeal() && !event.player.isCreative()) {
 		

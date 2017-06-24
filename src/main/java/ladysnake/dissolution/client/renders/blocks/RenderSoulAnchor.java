@@ -202,7 +202,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
             {
                 this.bindTexture(END_PORTAL_TEXTURE);
                 flag = true;
-                Minecraft.getMinecraft().entityRenderer.func_191514_d(true);
+                //Minecraft.getMinecraft().entityRenderer.func_191514_d(true);
             }
 /*
             if (j == 1)
@@ -303,7 +303,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
 
         if (flag)
         {
-            Minecraft.getMinecraft().entityRenderer.func_191514_d(false);
+            //Minecraft.getMinecraft().entityRenderer.func_191514_d(false);
         }
     }
 	

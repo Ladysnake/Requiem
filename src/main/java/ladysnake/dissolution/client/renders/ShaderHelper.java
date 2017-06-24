@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.GL11;
@@ -13,14 +11,17 @@ import org.lwjgl.opengl.GL20;
 
 import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.OpenGlHelper;
 
 public class ShaderHelper {
 	
 	/**the shader used during the corpse dissolution animation*/
 	public static int corpseDissolution = 0;
+	public static int embersLight = 0;
 	
 	private static int prevProgram = 0, currentProgram = 0;
-	private static final String LOCATION_PREFIX = "/assets/dissolution/shaders/special/";
+	private static final String LOCATION_PREFIX = "/assets/dissolution/shaders/";
+	private static final String MINECRAFT_LOCATION_PREFIX = "/assets/minecraft/shaders/program/";
 	
 	static {
 		initShaders();
@@ -31,6 +32,7 @@ public class ShaderHelper {
 	 */
 	public static void initShaders() {
 		corpseDissolution = initShader("corpsedissolution");
+		embersLight = initShader("embers_light");
 	}
 	
 	/**
@@ -49,40 +51,27 @@ public class ShaderHelper {
 	 * @return the reference to the initialized program
 	 */
 	public static int initShader(String vertexLocation, String fragmentLocation) {
-		int fragmentShader = 0;
-		int vertexShader = 0;
 
-		String vertexShaderSource = "";
-		String fragmentShaderSource = "";
-		// source code for the vertex shader
-		if(!vertexLocation.trim().isEmpty())
-			vertexShaderSource = fromFile(LOCATION_PREFIX + vertexLocation);
-		// source code for the fragment shader
-		if(!fragmentLocation.trim().isEmpty())
-			fragmentShaderSource = fromFile(LOCATION_PREFIX + fragmentLocation);
+		// program creation
+		int program = OpenGlHelper.glCreateProgram();
 		
 		// vertex shader creation
-		if(!vertexShaderSource.isEmpty()) {
-			vertexShader = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
-			GL20.glShaderSource(vertexShader, vertexShaderSource);
-			GL20.glCompileShader(vertexShader);
+		if(vertexLocation != null && !vertexLocation.trim().isEmpty()) {
+			int vertexShader = OpenGlHelper.glCreateShader(OpenGlHelper.GL_VERTEX_SHADER);
+			ARBShaderObjects.glShaderSourceARB(vertexShader, fromFile(LOCATION_PREFIX + vertexLocation));
+			OpenGlHelper.glCompileShader(vertexShader);
+			OpenGlHelper.glAttachShader(program, vertexShader);
 		}
 		
 		// fragment shader creation
-		if(!fragmentShaderSource.isEmpty()) {
-			fragmentShader = GL20.glCreateShader(GL20.GL_FRAGMENT_SHADER);
-			GL20.glShaderSource(fragmentShader, fragmentShaderSource);
-			GL20.glCompileShader(fragmentShader);
+		if(fragmentLocation != null && !fragmentLocation.trim().isEmpty()) {
+			int fragmentShader = OpenGlHelper.glCreateShader(OpenGlHelper.GL_FRAGMENT_SHADER);
+			ARBShaderObjects.glShaderSourceARB(fragmentShader, fromFile(LOCATION_PREFIX + fragmentLocation));
+			OpenGlHelper.glCompileShader(fragmentShader);
+			OpenGlHelper.glAttachShader(program, fragmentShader);
 		}
 
-		// program creation
-		int program = GL20.glCreateProgram();
-		if(fragmentShader != 0)
-			GL20.glAttachShader(program, fragmentShader);
-		if(vertexShader != 0)
-			GL20.glAttachShader(program, vertexShader);
-
-		GL20.glLinkProgram(program);
+		OpenGlHelper.glLinkProgram(program);
 		
 		return program;
 	}
@@ -93,7 +82,7 @@ public class ShaderHelper {
 	 */
 	public static void useShader(int program) {
 		prevProgram = GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
-		GL20.glUseProgram(program);
+		OpenGlHelper.glUseProgram(program);
 		
 		currentProgram = program;
 		
@@ -126,7 +115,7 @@ public class ShaderHelper {
 	 * Reverts to the previous shader used
 	 */
 	public static void revert() {
-		GL20.glUseProgram(prevProgram);
+		OpenGlHelper.glUseProgram(prevProgram);
 	}
 	
 	/**

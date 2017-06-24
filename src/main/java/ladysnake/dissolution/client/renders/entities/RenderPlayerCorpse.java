@@ -19,12 +19,14 @@ import ladysnake.dissolution.client.models.ModelMinionZombie;
 import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.EnumSkyBlock;
 
 public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
 	
@@ -53,6 +55,11 @@ public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
 	@Override
 	public void doRender(EntityPlayerCorpse entity, double x, double y, double z, float entityYaw, float partialTicks) {
 		ShaderHelper.useShader(ShaderHelper.corpseDissolution);
+		ShaderHelper.setUniform("texture", 0);
+		ShaderHelper.setUniform("lightmap", 1);
+		float light = Math.max(entity.world.getLightFor(EnumSkyBlock.SKY, entity.getPosition()) * entity.world.getSunBrightnessFactor(1.0f), 
+				entity.world.getLightFor(EnumSkyBlock.BLOCK, entity.getPosition()));
+		ShaderHelper.setUniform("lighting", light);
 		super.doRender(entity, x, y, z, entityYaw, partialTicks);
 		ShaderHelper.revert();
 	}

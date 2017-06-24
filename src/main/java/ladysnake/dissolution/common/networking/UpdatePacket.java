@@ -15,7 +15,7 @@ public class UpdatePacket implements IMessageHandler<UpdateMessage, IMessage>
 	@Override
 	public IMessage onMessage(final UpdateMessage message, MessageContext ctx) 
 	{
-		System.out.println("message get !");
+		//System.out.println("message get !");
 	  // just to make sure that the side is correct
 	  if (ctx.side.isClient())
 	  {

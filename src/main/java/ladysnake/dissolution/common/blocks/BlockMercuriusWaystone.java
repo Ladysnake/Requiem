@@ -85,7 +85,7 @@ public class BlockMercuriusWaystone extends Block implements ISoulInteractable {
 	
 	public void placeSoulAnchor(World worldIn, BlockPos pos, Entity placer) {
 		if (worldIn.provider.getDimensionType().getId() != -1) {
-			WorldServer worldservernether = worldIn.getMinecraftServer().worldServerForDimension(-1);
+			WorldServer worldservernether = worldIn.getMinecraftServer().getWorld(-1);
 		    BlockPos bp = getAnchorBaseSpawnPos(worldservernether, pos);
 		    if(bp.getY() > 0)  {
 		    	BlockSoulAnchor.scheduledBP.add(pos);
@@ -184,7 +184,7 @@ public class BlockMercuriusWaystone extends Block implements ISoulInteractable {
 			return;
 		
 		BlockPos bp = new BlockPos(pos.getX()/8, 120, pos.getZ()/8);
-		WorldServer worldserver = worldIn.getMinecraftServer().worldServerForDimension(-1);
+		WorldServer worldserver = worldIn.getMinecraftServer().getWorld(-1);
 		while((worldserver.getBlockState(bp) != ModBlocks.SOUL_ANCHOR.getDefaultState()) && bp.getY() > 0)
 	    	bp = bp.down();
 		if(bp.getY() > 0)

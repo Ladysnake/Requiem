@@ -240,7 +240,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 			if(super.isEntityInvulnerable(source))
 				return true;
 			
-			if (source.getEntity() instanceof EntityPlayer || source.canHarmInCreative()){
+			if (source.getTrueSource() instanceof EntityPlayer || source.canHarmInCreative()){
 				return false;
 			}
 		    return true;

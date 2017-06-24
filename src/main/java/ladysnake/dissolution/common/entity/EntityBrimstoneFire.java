@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 
 public class EntityBrimstoneFire extends Entity {
 	
-	private DataParameter<Optional<BlockPos>> TARGET_FIRE = EntityDataManager.<Optional<BlockPos>>createKey(EntityBrimstoneFire.class, DataSerializers.OPTIONAL_BLOCK_POS);
+	private static DataParameter<Optional<BlockPos>> TARGET_FIRE = EntityDataManager.<Optional<BlockPos>>createKey(EntityBrimstoneFire.class, DataSerializers.OPTIONAL_BLOCK_POS);
 	private int ticksFired;
 	public static final int MAX_FIRE_TIME = 10;
 
@@ -24,10 +24,14 @@ public class EntityBrimstoneFire extends Entity {
 		super(worldIn);
         this.setSize(0.25F, 0.25F);
         this.ticksFired = -1;
+        this.ignoreFrustumCheck = true;
+        this.updateBlocked = true;
 	}
 	
 	public void fire() {
+		System.out.println(this.getTarget());
 		this.ticksFired = 0;
+		//this.setDead();
 	}
 	
 	/**
@@ -48,11 +52,13 @@ public class EntityBrimstoneFire extends Entity {
 	
 	public void setTarget(BlockPos pos) {
 		this.getDataManager().set(TARGET_FIRE, Optional.of(pos));
-		this.getDataManager().setDirty(TARGET_FIRE);
+//		System.out.println(pos + " " + getDataManager().get(TARGET_FIRE));
 	}
 	
 	public BlockPos getTarget() {
-		return this.getDataManager().get(TARGET_FIRE).get();
+		if(this.getDataManager().get(TARGET_FIRE).isPresent())
+			return this.getDataManager().get(TARGET_FIRE).get();
+		return BlockPos.ORIGIN;
 	}
 
 	@Override
@@ -61,24 +67,14 @@ public class EntityBrimstoneFire extends Entity {
 	}
 
 	@Override
-	protected void readEntityFromNBT(NBTTagCompound compound) {
-		this.setTarget(new BlockPos(
-				compound.getInteger("targetX"),
-				compound.getInteger("targetY"),
-				compound.getInteger("targetZ")));
-	}
-
-	@Override
-	protected void writeEntityToNBT(NBTTagCompound compound) {
-		BlockPos bp = this.getTarget();
-		compound.setInteger("targetX", bp.getX());
-		compound.setInteger("targetY", bp.getY());
-		compound.setInteger("targetZ", bp.getZ());
-	}
-
-	@Override
 	public String toString() {
-		return "EntityBrimstoneFire [TARGET_FIRE=" + TARGET_FIRE + ", ticksFired=" + ticksFired + "]";
+		return "EntityBrimstoneFire [TARGET_FIRE=" + this.getTarget() + ", ticksFired=" + ticksFired + "]";
 	}
+
+	@Override
+	protected void readEntityFromNBT(NBTTagCompound compound) {}
+
+	@Override
+	protected void writeEntityToNBT(NBTTagCompound compound) {}
 	
 }

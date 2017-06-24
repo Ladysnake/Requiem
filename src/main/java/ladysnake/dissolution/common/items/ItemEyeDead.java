@@ -62,7 +62,7 @@ public class ItemEyeDead extends Item {
 		
 		ItemStack ammo = Helper.findItem(player, ModItems.SOUL_IN_A_BOTTLE);
 		
-		List<EntityMinion> minions = (worldIn.getEntitiesWithinAABB(EntityMinion.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).expandXyz(20)));
+		List<EntityMinion> minions = (worldIn.getEntitiesWithinAABB(EntityMinion.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).grow(20)));
 		
 		if(minions.isEmpty()) return;
 		
