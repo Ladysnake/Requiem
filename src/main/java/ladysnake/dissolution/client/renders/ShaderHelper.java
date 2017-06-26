@@ -139,7 +139,7 @@ public class ShaderHelper {
         	System.err.println(e + " : " + filename + " does not exist");
         }
          
-        System.out.println(source);
+       // System.out.println(source);
         return source.toString();
     }
 

@@ -1,5 +1,8 @@
 package ladysnake.dissolution.common.init;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.items.ItemBaseResource;
 import ladysnake.dissolution.common.items.ItemDebug;
@@ -11,11 +14,14 @@ import ladysnake.dissolution.common.items.ItemSoulGem;
 import ladysnake.dissolution.common.items.ItemSoulInABottle;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.registries.IForgeRegistry;
 
 public class ModItems {
 	public static ItemDebug DEBUG_ITEM;
@@ -26,8 +32,10 @@ public class ModItems {
 	public static ItemSoulGem SOUL_GEM;
 	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
 	public static ItemSepulture SEPULTURE;
+	
+	protected static List<Item> blocks = new ArrayList<>();
 
-
+	private IForgeRegistry<Item> reg;
 
 	public static void init() {
 		BASE_RESOURCE = new ItemBaseResource();
@@ -41,16 +49,22 @@ public class ModItems {
 
 	}
 
-	public static void register() {
-		GameRegistry.register(BASE_RESOURCE);
-		GameRegistry.register(DEBUG_ITEM);
-		GameRegistry.register(EYE_OF_THE_UNDEAD);
-		GameRegistry.register(GRAND_FAUX);
-		GameRegistry.register(SCYTHE_IRON);
-		GameRegistry.register(SOUL_GEM);
-		GameRegistry.register(SOUL_IN_A_BOTTLE);
-		GameRegistry.register(SEPULTURE);
-
+	@SubscribeEvent
+	public void onRegister(RegistryEvent.Register<Item> event) {
+		reg = event.getRegistry();
+		this.register();
+	}
+	
+	public void register() {
+		reg.register(BASE_RESOURCE);
+		reg.register(DEBUG_ITEM);
+		reg.register(EYE_OF_THE_UNDEAD);
+		reg.register(GRAND_FAUX);
+		reg.register(SCYTHE_IRON);
+		reg.register(SOUL_GEM);
+		reg.register(SOUL_IN_A_BOTTLE);
+		reg.register(SEPULTURE);
+		blocks.forEach(reg::register);
 	}
 
 	public static void registerOres() {
@@ -60,7 +74,8 @@ public class ModItems {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void registerRenders() {
+	@SubscribeEvent
+	public void registerRenders(ModelRegistryEvent event) {
 		for (int i = 0; i < BASE_RESOURCE.variants.size(); ++i) {
 			registerRender(BASE_RESOURCE, i, BASE_RESOURCE.variants.get(i));
 		}

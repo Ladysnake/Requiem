@@ -25,12 +25,13 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public abstract class CommonProxy {
 	
 	public void preInit() {
+		MinecraftForge.EVENT_BUS.register(new ModBlocks());
+		MinecraftForge.EVENT_BUS.register(new ModItems());
 		IncorporealDataHandler.register();
 		ModBlocks.init();
-		ModBlocks.register();
+//		ModBlocks.register();
 		ModItems.init();
-		ModItems.register();
-		ModItems.registerOres();
+//		ModItems.register();
 		ModEntities.register();
 		//ModStructure.init();
 	}
@@ -40,6 +41,8 @@ public abstract class CommonProxy {
 		MinecraftForge.EVENT_BUS.register(new LivingDeathHandler());
 		MinecraftForge.EVENT_BUS.register(new PlayerTickHandler());
 		System.out.println("init");
+		
+		ModItems.registerOres();
 		
 		GameRegistry.registerTileEntity(TileEntityCrystallizer.class, Reference.MOD_ID + "tileentitycrystallizer");
 		GameRegistry.registerTileEntity(TileEntitySoulExtractor.class, Reference.MOD_ID + "tileentitysoulextractor");

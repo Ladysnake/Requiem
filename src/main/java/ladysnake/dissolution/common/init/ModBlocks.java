@@ -17,10 +17,14 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.registries.IForgeRegistry;
 
 public class ModBlocks {
 
@@ -35,6 +39,8 @@ public class ModBlocks {
     public static BlockSoulExtractor SOUL_EXTRACTOR;
     public static BlockSepulture SEPULTURE;
     public static BlockResuscitator RESUSCITATOR;
+    
+    private IForgeRegistry<Block> reg;
 
     public static void init() {
     	CRYSTALLIZER = new BlockCrystallizer();
@@ -53,7 +59,13 @@ public class ModBlocks {
     	//RESUSCITATOR = new BlockResuscitator();
     }
     
-    public static void register() {
+    @SubscribeEvent
+    public void onRegister(RegistryEvent.Register<Block> event) {
+    	reg = event.getRegistry();
+    	this.register();
+    }
+    
+    public void register() {
     	registerBlock(CRYSTALLIZER);
     	//registerBlock(DRIED_LAVA);
     	registerBlock(ECTOPLASMA);
@@ -62,22 +74,23 @@ public class ModBlocks {
     	registerBlock(SOUL_ANCHOR);
     	registerBlock(MERCURY_CANDLE);
     	registerBlock(SULFUR_CANDLE);
-    	GameRegistry.register(SEPULTURE);
+    	reg.register(SEPULTURE);
     	registerBlock(SOUL_EXTRACTOR);
     	//registerBlock(RESUSCITATOR);
     }
     
-    private static Item registerBlock(Block block) {
-    	GameRegistry.register(block);
+    private Item registerBlock(Block block) {
+    	reg.register(block);
     	ItemBlock item = new ItemBlock(block);
     	item.setRegistryName(block.getRegistryName());
-    	GameRegistry.register(item);
+    	ModItems.blocks.add(item);
     	block.setCreativeTab(Dissolution.CREATIVE_TAB);
     	return item;
     }
     
     @SideOnly(Side.CLIENT)
-    public static void registerRenders() {
+    @SubscribeEvent
+    public void registerRenders(ModelRegistryEvent event) {
     	registerRender(CRYSTALLIZER);
     	//registerRender(DRIED_LAVA);
     	registerRender(SOUL_EXTRACTOR);

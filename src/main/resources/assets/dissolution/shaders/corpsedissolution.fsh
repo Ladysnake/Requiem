@@ -17,7 +17,7 @@ void main() {
     vec4 color = texture2D(texture, texcoord);
     vec4 light = texture2D(lightmap, texcoord);
 
-    float gs = (color.r + color.g + color.b) / 50.0;
+    float gs = (color.r + color.g + color.b);
 
     float lightRatio = max(lighting, 1) / 17.0;
 
@@ -26,5 +26,8 @@ void main() {
     float b = color.b - rand(texcoord) * 0.25 + vPosition.b;
 
 //    	gl_FragColor = vec4(color.r, color.g, color.b, color.a/* * rand(vec2(g, r))*0.25*/);
-    gl_FragColor = vec4(color.r * lightRatio, color.g * lightRatio, color.b * lightRatio, animationProgress);
+    float alpha = 0;
+    if(animationProgress * gs < 0.5)
+      alpha = color.a;
+    gl_FragColor = vec4(color.r * lightRatio, color.g * lightRatio, color.b * lightRatio, alpha);
 }

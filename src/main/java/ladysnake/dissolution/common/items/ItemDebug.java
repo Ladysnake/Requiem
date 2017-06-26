@@ -10,6 +10,7 @@ import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.entity.EntityBrimstoneFire;
 import ladysnake.dissolution.common.handlers.CustomTartarosTeleporter;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -66,9 +67,9 @@ public class ItemDebug extends Item {
 			} 
 			break;
 		case 4 :
-			if(playerIn.world.isRemote) {
+			if(!playerIn.world.isRemote) {
 				playerIn.sendStatusMessage(new TextComponentString("Printing fire information"), true);
-				List<EntityBrimstoneFire> fires = playerIn.world.getEntities(EntityBrimstoneFire.class, e -> true);
+				List<Entity> fires = playerIn.world.getEntities(Entity.class, e -> e.getDistanceToEntity(playerIn) < 20);
 				fires.forEach(System.out::println);
 			}
 			break;

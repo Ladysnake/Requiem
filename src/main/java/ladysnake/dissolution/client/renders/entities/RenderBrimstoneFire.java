@@ -127,11 +127,12 @@ public class RenderBrimstoneFire extends RenderEntity {
         {
             d24 = 0.5D;
         }
-
+        /*
         bufferbuilder.pos(d4, d0, d5).tex(0.5D, d24 + 0.5D).color(j, k, l, 255).endVertex();
         bufferbuilder.pos(d6, d0, d7).tex(1.0D, d24 + 0.5D).color(j, k, l, 255).endVertex();
         bufferbuilder.pos(d10, d0, d11).tex(1.0D, d24).color(j, k, l, 255).endVertex();
         bufferbuilder.pos(d8, d0, d9).tex(0.5D, d24).color(j, k, l, 255).endVertex();
+        */
         tessellator.draw();
         GlStateManager.popMatrix();
 	}

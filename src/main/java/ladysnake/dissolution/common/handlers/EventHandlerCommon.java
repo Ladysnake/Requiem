@@ -12,6 +12,7 @@ import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
@@ -66,7 +67,8 @@ public class EventHandlerCommon {
 					&& !(event.getWorld().getBlockState(event.getPos()).getBlock() instanceof ISoulInteractable)
 					&& !(IncorporealDataHandler.soulInteractableBlocks
 							.contains(event.getWorld().getBlockState(event.getPos()).getBlock()))
-					&& !(event.getItemStack() != null && event.getItemStack().getItem() == ModItems.DEBUG_ITEM))
+					&& !(event.getItemStack() != null && event.getItemStack().getItem() == ModItems.DEBUG_ITEM)
+					&& !(event.getWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(event.getPos())).get(0) instanceof ISoulInteractable))
 				event.setCanceled(true);
 		}
 	}

@@ -1,7 +1,9 @@
 package ladysnake.dissolution.common.handlers;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.UUID;
 
+import com.google.common.base.Optional;
 import com.mojang.authlib.GameProfile;
 
 import ladysnake.dissolution.common.DissolutionConfig;
@@ -18,8 +20,11 @@ import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.Helper;
+import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
 import ladysnake.dissolution.common.items.ItemScythe;
+import net.minecraft.client.main.GameConfiguration;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityHusk;
 import net.minecraft.entity.monster.EntityPigZombie;
@@ -29,14 +34,18 @@ import net.minecraft.entity.monster.EntityWitherSkeleton;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.scoreboard.IScoreCriteria;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -70,7 +79,20 @@ public class LivingDeathHandler {
 		if(!p.world.isRemote) {
 			EntityPlayerCorpse body = new EntityPlayerCorpse(p.world);
 			body.setPosition(p.posX, p.posY, p.posZ);
+			body.setCustomNameTag(p.getName());
+
+			if(DissolutionConfig.bodiesHoldInventory) {
+				transferEquipment(p, body);
+				body.setInventory(new InventoryPlayerCorpse(p.inventory.mainInventory, p.getName()));
+				p.inventory.clear();
+				p.posX += p.world.rand.nextGaussian() * 20;
+				p.posY += 100;
+				p.posZ += p.world.rand.nextGaussian() * 20;
+			}
+			body.onUpdate();
+			
 			p.world.spawnEntity(body);
+			body.setPlayer(p.getUniqueID());
 		}
 		
 		if(DissolutionConfig.skipDeathScreen || true) {
@@ -183,24 +205,32 @@ public class LivingDeathHandler {
 
 			if (corpse != null) {
 				corpse.setPosition(victim.posX, victim.posY, victim.posZ);
-				for (ItemStack stuff : victim.getEquipmentAndArmor()) {
-					if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.HEAD, victim))
-						corpse.setItemStackToSlot(EntityEquipmentSlot.HEAD, stuff);
-					else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.CHEST, victim))
-						corpse.setItemStackToSlot(EntityEquipmentSlot.CHEST, stuff);
-					else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.LEGS, victim))
-						corpse.setItemStackToSlot(EntityEquipmentSlot.LEGS, stuff);
-					else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.FEET, victim))
-						corpse.setItemStackToSlot(EntityEquipmentSlot.FEET, stuff);
-					
-					else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.MAINHAND, victim) && !stuff.isEmpty())
-						corpse.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stuff);
-					else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.OFFHAND, victim) && !stuff.isEmpty())
-						corpse.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, stuff);
-				}
+				transferEquipment(victim, corpse);
 				corpse.onUpdate();
 				victim.world.spawnEntity(corpse);
 				victim.posY = -500;
+			}
+		}
+	}
+	
+	public static void transferEquipment(EntityLivingBase source, EntityLivingBase dest) {
+		for (ItemStack stuff : source.getEquipmentAndArmor()) {
+			EntityEquipmentSlot slot = null;
+			if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.HEAD, source))
+				slot = EntityEquipmentSlot.HEAD;
+			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.CHEST, source))
+				slot = EntityEquipmentSlot.CHEST;
+			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.LEGS, source))
+				slot = EntityEquipmentSlot.LEGS;
+			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.FEET, source))
+				slot = EntityEquipmentSlot.FEET;
+			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.MAINHAND, source) && !stuff.isEmpty())
+				slot = EntityEquipmentSlot.MAINHAND;
+			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.OFFHAND, source) && !stuff.isEmpty())
+				slot = EntityEquipmentSlot.OFFHAND;
+			if(slot != null) {
+				dest.setItemStackToSlot(slot, stuff);
+				source.setItemStackToSlot(slot, ItemStack.EMPTY);
 			}
 		}
 	}

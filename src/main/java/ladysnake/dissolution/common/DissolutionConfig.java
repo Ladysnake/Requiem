@@ -13,6 +13,7 @@ public class DissolutionConfig {
 	public static final int SPECTATOR_FLIGHT = 2;
 
 	public static boolean anchorsXRay = false;
+	public static boolean bodiesHoldInventory = true;
 	public static boolean doSableDrop = true;
 	public static boolean invisibleGhosts = false;
 	public static int flightMode = CUSTOM_FLIGHT;
@@ -44,6 +45,12 @@ public class DissolutionConfig {
 	                "skipDeathScreen", // Property name
 	                "false", // Default value
 	                "Whether players should respawn instantly as souls without showing death screen (could break other mods)");
+	        
+	        Property playerBodiesHoldInventoryProp = Dissolution.config.get(
+	        		Configuration.CATEGORY_GENERAL, 
+	        		"playerBodiesHoldInventoryProp", 
+	        		"false",
+	        		"Whether player corpses hold their inventory upon death (default : false)");
 	        
 	        Property anchorsXRayProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_CLIENT,
