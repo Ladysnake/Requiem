@@ -16,8 +16,8 @@ import net.minecraft.client.renderer.OpenGlHelper;
 public class ShaderHelper {
 	
 	/**the shader used during the corpse dissolution animation*/
-	public static int corpseDissolution = 0;
-	public static int embersLight = 0;
+	public static int dissolution = 0;
+	public static int intangible = 0;
 	public static int doppleganger = 0;
 	
 	private static int prevProgram = 0, currentProgram = 0;
@@ -31,8 +31,8 @@ public class ShaderHelper {
 	 * Initializes all known shaders
 	 */
 	public static void initShaders() {
-		corpseDissolution = initShader("corpsedissolution");
-		embersLight = initShader("embers_light");
+		dissolution = initShader("corpsedissolution");
+		intangible = initShader("corpsedissolution.vsh", "intangible.fsh");
 		doppleganger = initShader("doppleganger");
 	}
 	

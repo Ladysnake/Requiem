@@ -64,7 +64,8 @@ public class EventHandlerCommon {
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
 		if (playerCorp.isIncorporeal() && !event.getEntityPlayer().isCreative()) {
 			if (event.isCancelable()
-					&& !(event.getWorld().getBlockState(event.getPos()).getBlock() instanceof ISoulInteractable)
+					&& !(event.getWorld().getBlockState(event.getPos()).getBlock() instanceof ISoulInteractable && 
+							(!event.getEntityPlayer().isSneaking() || event.getEntityPlayer().getHeldItemMainhand().isEmpty()))
 					&& !(IncorporealDataHandler.soulInteractableBlocks
 							.contains(event.getWorld().getBlockState(event.getPos()).getBlock()))
 					&& !(event.getItemStack() != null && event.getItemStack().getItem() == ModItems.DEBUG_ITEM)

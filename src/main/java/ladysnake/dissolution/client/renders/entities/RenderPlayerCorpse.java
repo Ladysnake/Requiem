@@ -75,7 +75,7 @@ public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
 	
 	@Override
 	public void doRender(EntityPlayerCorpse entity, double x, double y, double z, float entityYaw, float partialTicks) {
-		ShaderHelper.useShader(ShaderHelper.corpseDissolution);
+		ShaderHelper.useShader(ShaderHelper.dissolution);
 		ShaderHelper.setUniform("texture", 0);
 		ShaderHelper.setUniform("lightmap", 1);
 		ShaderHelper.setUniform("animationProgress", 0.2f);
