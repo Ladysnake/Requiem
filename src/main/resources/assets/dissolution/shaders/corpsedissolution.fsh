@@ -30,7 +30,7 @@ void main() {
     if(animationProgress * gs < 0.5)
       alpha = color.a;
     else if(animationProgress * gs < 0.8)
-      alpha = sin(texcoord.x + texcoord.y) - rand(texcoord);
+      alpha = sin((texcoord.x + texcoord.y)/20.0);// - rand(texcoord);
     if(animationProgress > 0.8)
       alpha *= animationProgress / 0.2;
     gl_FragColor = vec4(color.r * lightRatio, color.g * lightRatio, color.b * lightRatio, alpha);

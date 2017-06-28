@@ -1,13 +1,17 @@
 package ladysnake.dissolution.common.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
+import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.IRangedAttackMob;
@@ -15,6 +19,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,10 +36,12 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -43,6 +50,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 public abstract class EntityMinion extends EntityCreature implements IEntityAdditionalSpawnData, IRangedAttackMob {
 	protected boolean inert;
 	protected int remainingTicks;
+	public static final List<Class<? extends EntityCreature>> TARGET_BLACKLIST = new ArrayList();
 	public static final int MAX_DEAD_TICKS = 1200;
 	public static final int MAX_RISEN_TICKS = 6000;
 	public static final int SUN_TICKS_PENALTY = 9;
@@ -50,6 +58,11 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 	private static final DataParameter<Boolean> IS_CHILD = EntityDataManager.<Boolean>createKey(EntityMinion.class, DataSerializers.BOOLEAN);
     private final EntityAIMinionRangedAttack aiArrowAttack = new EntityAIMinionRangedAttack(this, 1.0D, 20, 15.0F);
     private final EntityAIAttackMelee aiAttackOnCollide = new EntityAIAttackMelee(this, 1.2D, false);
+    
+    static {
+    	if(!DissolutionConfig.minionsAttackCreepers)
+    		TARGET_BLACKLIST.add(EntityCreeper.class);
+    }
 	
 	public EntityMinion(World worldIn) {
 		this(worldIn, false);
@@ -73,7 +86,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 				return super.isSuitableTarget(target, includeInvincibles) && !(target instanceof EntityPlayer);
 			}
 		});
-		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityMob.class, true));
+		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityMob.class, 10, true, false, e -> !TARGET_BLACKLIST.contains(e.getClass())));
 	}
 	
 	@Override
@@ -109,6 +122,121 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 			entity.world.spawnParticle(part, false, entity.posX , entity.posY+ 1.0D, entity.posZ, motionX, motionY, motionZ, new int[0]);
 		}
 	}
+	
+	/**
+     * Applies the given player interaction to this Entity.
+     */
+    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand)
+    {
+    	
+    	if(IncorporealDataHandler.getHandler(player).isIncorporeal() && !player.isCreative())
+    		return EnumActionResult.PASS;
+    	
+        ItemStack itemstack = player.getHeldItem(hand);
+
+        if (itemstack.getItem() != Items.NAME_TAG)
+        {
+            if (!this.world.isRemote && !player.isSpectator())
+            {
+                EntityEquipmentSlot entityequipmentslot = EntityLiving.getSlotForItemStack(itemstack);
+
+                if (itemstack.isEmpty())
+                {
+                    EntityEquipmentSlot entityequipmentslot2 = this.getClickedSlot(vec);
+
+                    if (this.hasItemInSlot(entityequipmentslot2))
+                    {
+                        this.swapItem(player, entityequipmentslot2, itemstack, hand);
+                    }
+                    else 
+                    {
+                    	return EnumActionResult.PASS;
+                    }
+                }
+                else
+                {
+
+                    this.swapItem(player, entityequipmentslot, itemstack, hand);
+                }
+
+                return EnumActionResult.SUCCESS;
+            }
+            else
+            {
+                return EnumActionResult.SUCCESS;
+            }
+        }
+        else
+        {
+            return EnumActionResult.PASS;
+        }
+    }
+
+    
+    /**
+     * Vanilla code from the armor stand
+     * @param raytrace the look vector of the player
+     * @return the targeted equipment slot
+     */
+    protected EntityEquipmentSlot getClickedSlot(Vec3d raytrace)
+    {
+        EntityEquipmentSlot entityequipmentslot = EntityEquipmentSlot.MAINHAND;
+        boolean flag = this.isChild();
+        double d0 = (this.isCorpse() ? raytrace.z : raytrace.y) * (flag ? 2.0D : 1.0D);
+        EntityEquipmentSlot entityequipmentslot1 = EntityEquipmentSlot.FEET;
+
+        if (d0 >= 0.1D && d0 < 0.1D + (flag ? 0.8D : 0.45D) && this.hasItemInSlot(entityequipmentslot1))
+        {
+            entityequipmentslot = EntityEquipmentSlot.FEET;
+        }
+        else if (d0 >= 0.9D + (flag ? 0.3D : 0.0D) && d0 < 0.9D + (flag ? 1.0D : 0.7D) && this.hasItemInSlot(EntityEquipmentSlot.CHEST))
+        {
+            entityequipmentslot = EntityEquipmentSlot.CHEST;
+        }
+        else if (d0 >= 0.4D && d0 < 0.4D + (flag ? 1.0D : 0.8D) && this.hasItemInSlot(EntityEquipmentSlot.LEGS))
+        {
+            entityequipmentslot = EntityEquipmentSlot.LEGS;
+        }
+        else if (d0 >= 1.6D && this.hasItemInSlot(EntityEquipmentSlot.HEAD))
+        {
+            entityequipmentslot = EntityEquipmentSlot.HEAD;
+        }
+
+        return entityequipmentslot;
+    }
+    
+    private void swapItem(EntityPlayer player, EntityEquipmentSlot targetedSlot, ItemStack playerItemStack, EnumHand hand)
+    {
+        ItemStack itemstack = this.getItemStackFromSlot(targetedSlot);
+
+//        if (itemstack.isEmpty() || (this.disabledSlots & 1 << p_184795_2_.getSlotIndex() + 8) == 0)
+        {
+//            if (!itemstack.isEmpty() || (this.disabledSlots & 1 << p_184795_2_.getSlotIndex() + 16) == 0)
+            {
+                if (player.capabilities.isCreativeMode && itemstack.isEmpty() && !playerItemStack.isEmpty())
+                {
+                    ItemStack itemstack2 = playerItemStack.copy();
+                    itemstack2.setCount(1);
+                    this.setItemStackToSlot(targetedSlot, itemstack2);
+                }
+                else if (!playerItemStack.isEmpty() && playerItemStack.getCount() > 1)
+                {
+                    if (itemstack.isEmpty())
+                    {
+                        ItemStack itemstack1 = playerItemStack.copy();
+                        itemstack1.setCount(1);
+                        this.setItemStackToSlot(targetedSlot, itemstack1);
+                        playerItemStack.shrink(1);
+                    }
+                }
+                else
+                {
+                    this.setItemStackToSlot(targetedSlot, playerItemStack);
+                    player.setHeldItem(hand, itemstack);
+                }
+            }
+        }
+    }
 	
 	@Override
 	public boolean attackEntityAsMob(Entity entityIn)
@@ -344,6 +472,23 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 	public void readSpawnData(ByteBuf additionalData) {
 		setCorpse(additionalData.readBoolean());
 		remainingTicks = additionalData.readInt();
+	}
+	
+	@Override
+	protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier) {
+		for(EntityEquipmentSlot entityequipmentslot : EntityEquipmentSlot.values()) {
+			ItemStack itemstack = this.getItemStackFromSlot(entityequipmentslot);
+			if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack))
+            {
+                if (itemstack.isItemStackDamageable())
+                {
+                    itemstack.setItemDamage(this.rand.nextInt(Math.min(itemstack.getMaxDamage() / 10, 50)));
+                }
+
+                this.entityDropItem(itemstack, 0.0F);
+            }
+
+		}
 	}
 	
 }

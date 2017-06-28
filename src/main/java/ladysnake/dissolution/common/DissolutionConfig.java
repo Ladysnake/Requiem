@@ -17,6 +17,7 @@ public class DissolutionConfig {
 	public static boolean doSableDrop = true;
 	public static boolean invisibleGhosts = false;
 	public static int flightMode = CUSTOM_FLIGHT;
+	public static boolean minionsAttackCreepers = true;
 	public static boolean oneUseWaystone = true;
 	public static boolean respawnInNether = true;
 	public static boolean skipDeathScreen = false;
@@ -89,6 +90,12 @@ public class DissolutionConfig {
 	        
 	        // GENERAL SETTINGS
 	        
+	        Property minionsAttackCreepersProp = Dissolution.config.get(
+	        		Configuration.CATEGORY_GENERAL, 
+	        		"minionsAttackCreepers",
+	        		true,
+	        		"If set to true, minions will attack creepers (and probably die in the process) (default: They didn't deserve to live anyway)");
+	        
 	        Property doSablePopProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_GENERAL,
 	        		"doSablePop",
@@ -125,6 +132,7 @@ public class DissolutionConfig {
 	        doSableDrop = doSablePopProp.getBoolean();
 	        invisibleGhosts = invisibleGhostProp.getBoolean();
         	flightMode = flightModeProp.getInt();
+        	minionsAttackCreepers = minionsAttackCreepersProp.getBoolean();
 	        respawnInNether = shouldRespawnInNetherProp.getBoolean();
 	        skipDeathScreen = shouldShowDeathScreenProp.getBoolean();
 	        soulCompass = showSoulCompassProp.getBoolean();

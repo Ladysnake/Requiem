@@ -71,16 +71,15 @@ public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
 	}
 	
 	@Override
-	protected void preRenderCallback(EntityPlayerCorpse entitylivingbaseIn, float partialTickTime) {
-	}
+	protected void preRenderCallback(EntityPlayerCorpse entitylivingbaseIn, float partialTickTime) {}
 	
 	@Override
 	public void doRender(EntityPlayerCorpse entity, double x, double y, double z, float entityYaw, float partialTicks) {
 		ShaderHelper.useShader(ShaderHelper.dissolution);
 		ShaderHelper.setUniform("texture", 0);
 		ShaderHelper.setUniform("lightmap", 1);
-		System.out.println(Math.abs(entity.getRemainingTicks() / (float) entity.getMaxTimeRemaining()));
-		ShaderHelper.setUniform("animationProgress", 1 - Math.abs(entity.getRemainingTicks() / (float) entity.getMaxTimeRemaining()));
+		//System.out.println(Math.abs(entity.getRemainingTicks() / (float) entity.getMaxTimeRemaining()));
+		ShaderHelper.setUniform("animationProgress", entity.isDecaying() ? 1 - (entity.getRemainingTicks() / (float) entity.getMaxTimeRemaining()) : 0);
 		GlStateManager.enableBlend();
 		GlStateManager.enableAlpha();
 		float light = Math.max(entity.world.getLightFor(EnumSkyBlock.SKY, entity.getPosition()) * entity.world.getSunBrightnessFactor(1.0f), 

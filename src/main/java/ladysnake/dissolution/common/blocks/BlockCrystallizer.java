@@ -5,6 +5,7 @@ import java.util.Random;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.inventory.GuiCrystallizer;
 import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -39,7 +40,6 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
 
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 	public static final PropertyBool LIT = PropertyBool.create("lit");
-	public final int GUI_ID = 1;
 
 	public BlockCrystallizer() {
 		super(Material.ROCK);
@@ -129,7 +129,7 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
 
 		TileEntity tileentity = worldIn.getTileEntity(pos);
 		if (tileentity instanceof TileEntityCrystallizer) {
-			playerIn.openGui(Dissolution.instance, GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
+			playerIn.openGui(Dissolution.instance, GuiCrystallizer.GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
 			return true;
 		}
 		return false;

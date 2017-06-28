@@ -64,7 +64,7 @@ public class LivingDeathHandler {
 			this.handlePlayerKill(event);
 	}
 	
-	public void handlePlayerDeath(LivingDeathEvent event) {
+	protected void handlePlayerDeath(LivingDeathEvent event) {
 		
 		final EntityPlayer p = (EntityPlayer) event.getEntity();
 		final IIncorporealHandler corp = IncorporealDataHandler.getHandler(p);
@@ -82,10 +82,22 @@ public class LivingDeathHandler {
 			body.setPosition(p.posX, p.posY, p.posZ);
 			body.setCustomNameTag(p.getName());
 
+			boolean flag = false;
+			if(event.getSource().getTrueSource() instanceof EntityPlayer) {
+				EntityPlayer killer = (EntityPlayer) event.getSource().getTrueSource();
+				if(!Helper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD).isEmpty())
+					flag = true;
+			}
+
+			body.setDecaying(!flag);
+			
 			if(DissolutionConfig.bodiesHoldInventory) {
-				transferEquipment(p, body);
-				body.setInventory(new InventoryPlayerCorpse(p.inventory.mainInventory, p.getName()));
-				p.inventory.clear();
+				
+				if(flag) {
+					transferEquipment(p, body);
+					body.setInventory(new InventoryPlayerCorpse(p.inventory.mainInventory, p.getName()));
+					p.inventory.clear();
+				}
 			}
 			
 			body.onUpdate();
@@ -98,7 +110,7 @@ public class LivingDeathHandler {
 			if(!p.world.isRemote)
 				fakePlayerDeath((EntityPlayerMP)p, event.getSource());
 			corp.setIncorporeal(true, p);
-			p.setHealth(1);
+			p.setHealth(20);
 			if(!DissolutionConfig.respawnInNether && DissolutionConfig.wowRespawn) {
 				BlockPos respawnLoc = p.getBedLocation() != null ? p.getBedLocation() : p.world.getSpawnPoint();
 				p.setPosition(respawnLoc.getX(), respawnLoc.getY(), respawnLoc.getZ());
@@ -109,7 +121,7 @@ public class LivingDeathHandler {
 		}
 	}
 	
-	public void fakePlayerDeath(EntityPlayerMP player, DamageSource cause) {
+	public static void fakePlayerDeath(EntityPlayerMP player, DamageSource cause) {
         boolean flag = player.world.getGameRules().getBoolean("showDeathMessages");
 
         if (flag)
@@ -181,7 +193,7 @@ public class LivingDeathHandler {
         player.getCombatTracker().reset();
 	}
 	
-	public void handlePlayerKill(LivingDeathEvent event) {
+	protected void handlePlayerKill(LivingDeathEvent event) {
 		EntityPlayer killer = (EntityPlayer) event.getSource().getTrueSource();
 		EntityLivingBase victim = event.getEntityLiving();
 		

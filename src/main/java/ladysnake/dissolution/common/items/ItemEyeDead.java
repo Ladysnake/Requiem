@@ -39,7 +39,7 @@ public class ItemEyeDead extends Item {
 		this.addPropertyOverride(
 				new ResourceLocation(Reference.MOD_ID + ":fueled"), 
 				(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) -> 
-				entityIn != null && (!Helper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE).isEmpty()) 
+				entityIn instanceof EntityPlayer && (!Helper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE).isEmpty()) 
 						? 1.0F
 						: 0.0F
 		);
@@ -57,8 +57,7 @@ public class ItemEyeDead extends Item {
 		if (!(entityLiving instanceof EntityPlayer) || this.getMaxItemUseDuration(stack) - timeLeft < 30) return;
 		EntityPlayer player = (EntityPlayer) entityLiving;
 		
-		if (IncorporealDataHandler.getHandler(player).isIncorporeal()) return;
-		if (IncorporealDataHandler.getHandler(player).isIncorporeal() || IncorporealDataHandler.getHandler(player).isIncorporeal()) return;
+		if (IncorporealDataHandler.getHandler(player).isIncorporeal() && !player.isCreative()) return;
 		
 		ItemStack ammo = Helper.findItem(player, ModItems.SOUL_IN_A_BOTTLE);
 		
