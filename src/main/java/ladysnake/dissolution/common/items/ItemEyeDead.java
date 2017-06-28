@@ -67,23 +67,26 @@ public class ItemEyeDead extends Item {
 		if(minions.isEmpty()) return;
 		
 		boolean used = false;
-		for (EntityMinion m : minions) {
-			if (ammo.isEmpty() && m.isCorpse()) {
-				((EntityPlayer)entityLiving).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".nosoul", new Object[0]), true);
-				break;
+		if(!(minions instanceof EntityPlayer)){
+			for (EntityMinion m : minions) {
+				if (ammo.isEmpty() && m.isCorpse()) {
+					((EntityPlayer)entityLiving).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".nosoul", new Object[0]), true);
+					break;
+				}
+				for(int i = 0; i < (m.isCorpse() ? 50 : 5); i++){
+					Random rand = new Random();
+					double motionX = rand.nextGaussian() * 0.1D;
+					double motionY = rand.nextGaussian() * 0.1D;
+					double motionZ = rand.nextGaussian() * 0.1D;
+					worldIn.spawnParticle(m.isCorpse() ? EnumParticleTypes.DRAGON_BREATH : EnumParticleTypes.CLOUD, false, m.posX , m.posY + 1.0D, m.posZ, motionX, motionY, motionZ, new int[0]);
+				}
+				if(m.isCorpse()) {
+					ammo.shrink(1);
+					used = true;
+				}
+				m.setCorpse(false);
 			}
-			for(int i = 0; i < (m.isCorpse() ? 50 : 5); i++){
-				Random rand = new Random();
-				double motionX = rand.nextGaussian() * 0.1D;
-				double motionY = rand.nextGaussian() * 0.1D;
-				double motionZ = rand.nextGaussian() * 0.1D;
-				worldIn.spawnParticle(m.isCorpse() ? EnumParticleTypes.DRAGON_BREATH : EnumParticleTypes.CLOUD, false, m.posX , m.posY + 1.0D, m.posZ, motionX, motionY, motionZ, new int[0]);
-			}
-			if(m.isCorpse()) {
-				ammo.shrink(1);
-				used = true;
-			}
-			m.setCorpse(false);
+		
 		}
 		if(used)
 			stack.damageItem(1, player);

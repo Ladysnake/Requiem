@@ -1,5 +1,6 @@
 package ladysnake.dissolution.client.gui;
 
+import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
@@ -11,10 +12,12 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -26,7 +29,12 @@ public class GuiIncorporealOverlay extends Gui {
 	
 	private static final ResourceLocation INCORPOREAL_PATH = new ResourceLocation(Reference.MOD_ID + ":textures/gui/soul_overlay.png");
 	private static final ResourceLocation ORIGIN_PATH = new ResourceLocation(Reference.MOD_ID + ":textures/gui/soul_compass.png");
+	protected static final ResourceLocation ENCHANTED_ITEM_GLINT_RES = new ResourceLocation(Reference.MOD_ID + ":textures/misc/enchanted_item_glint.png");
 	private boolean usingShader;
+	
+	private float inc = 0.001F;
+	private float b = 0.0F;
+	private boolean shade = false;
 
 	private Minecraft mc;
 	
@@ -40,10 +48,16 @@ public class GuiIncorporealOverlay extends Gui {
 	public void onRenderExperienceBar(RenderGameOverlayEvent.Post event) {
 		if (event.getType() != ElementType.EXPERIENCE) return;
 		final IIncorporealHandler pl = IncorporealDataHandler.getHandler(this.mc.player);
+		
+		/* Draw Incorporeal Overlay */
 		if(pl.isIncorporeal()) {
+			
 			this.drawIncorporealOverlay(event.getResolution());
+						
 	        if(DissolutionConfig.soulCompass)
+	        	
 				this.drawOriginIndicator(event.getResolution());
+	        
 		}
         if(pl.isSoulCandleNearby(1)) {
         	if(!usingShader) {
@@ -72,12 +86,15 @@ public class GuiIncorporealOverlay extends Gui {
 	public void drawIncorporealOverlay(ScaledResolution scaledRes)
     {
 		
-		GlStateManager.pushAttrib();
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F);
+		b += inc;
+		System.out.println(Math.cos(b));
+		
+		/*GlStateManager.pushAttrib();
+		GlStateManager.color((float) Math.cos(b), 1.0F, 1.0F, 0.5F);
 		GlStateManager.disableLighting();
 		GlStateManager.enableAlpha();
 		GlStateManager.enableBlend();
-		
+				
         this.mc.getTextureManager().bindTexture(INCORPOREAL_PATH);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder vertexbuffer = tessellator.getBuffer();
@@ -89,6 +106,32 @@ public class GuiIncorporealOverlay extends Gui {
         vertexbuffer.pos(0.0D, 0.0D, -90.0D).tex(0.0D, 0.0D).endVertex();
         tessellator.draw();
 		
+        GlStateManager.popAttrib();*/
+		
+		GlStateManager.pushAttrib();
+		GlStateManager.depthMask(false);
+        GlStateManager.depthFunc(514);
+        GlStateManager.disableLighting();
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE);
+        this.mc.getTextureManager().bindTexture(ENCHANTED_ITEM_GLINT_RES);
+        GlStateManager.matrixMode(5890);
+        GlStateManager.pushMatrix();
+        GlStateManager.scale(8.0F, 8.0F, 8.0F);
+        float f = (float)(Minecraft.getSystemTime() % 3000L) / 3000.0F / 8.0F;
+        GlStateManager.translate(f, 0.0F, 0.0F);
+        GlStateManager.rotate(-50.0F, 0.0F, 0.0F, 1.0F);
+        GlStateManager.popMatrix();
+        GlStateManager.pushMatrix();
+        GlStateManager.scale(8.0F, 8.0F, 8.0F);
+        float f1 = (float)(Minecraft.getSystemTime() % 4873L) / 4873.0F / 8.0F;
+        GlStateManager.translate(-f1, 0.0F, 0.0F);
+        GlStateManager.rotate(10.0F, 0.0F, 0.0F, 1.0F);
+        GlStateManager.popMatrix();
+        GlStateManager.matrixMode(5888);
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        GlStateManager.enableLighting();
+        GlStateManager.depthFunc(515);
+        GlStateManager.depthMask(true);
         GlStateManager.popAttrib();
     }
 	
