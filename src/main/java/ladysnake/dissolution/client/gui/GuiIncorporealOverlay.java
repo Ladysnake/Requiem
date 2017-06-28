@@ -1,5 +1,6 @@
 package ladysnake.dissolution.client.gui;
 
+import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
@@ -25,7 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class GuiIncorporealOverlay extends Gui {
 	
 	private static final ResourceLocation INCORPOREAL_PATH = new ResourceLocation(Reference.MOD_ID + ":textures/gui/soul_overlay.png");
-	private static final ResourceLocation ORIGIN_PATH = new ResourceLocation(Reference.MOD_ID + ":textures/gui/soul_compass.png");
+	private static final ResourceLocation ORIGIN_PATH = new ResourceLocation(Reference.MOD_ID + ":textures/gui/soul_compass_legacy.png");
 	private boolean usingShader;
 
 	private Minecraft mc;
@@ -41,7 +42,9 @@ public class GuiIncorporealOverlay extends Gui {
 		if (event.getType() != ElementType.EXPERIENCE) return;
 		final IIncorporealHandler pl = IncorporealDataHandler.getHandler(this.mc.player);
 		if(pl.isIncorporeal()) {
+			//ShaderHelper.useShader(ShaderHelper.intangible);
 			this.drawIncorporealOverlay(event.getResolution());
+			//ShaderHelper.revert();
 	        if(DissolutionConfig.soulCompass)
 				this.drawOriginIndicator(event.getResolution());
 		}

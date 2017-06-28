@@ -3,6 +3,11 @@ package ladysnake.dissolution.common.capabilities;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 
+/**
+ * The interface providing methods related to the Incorporeal capability
+ * @author Fabien
+ *
+ */
 public interface IIncorporealHandler {
 	
 	public void setSynced (boolean synced);

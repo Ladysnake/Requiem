@@ -128,11 +128,7 @@ public class ModelPlayerCorpse extends ModelBiped{
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
     {
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
-        copyModelAngles(this.bipedLeftLeg, this.bipedLeftLegwear);
-        copyModelAngles(this.bipedRightLeg, this.bipedRightLegwear);
-        copyModelAngles(this.bipedLeftArm, this.bipedLeftArmwear);
-        copyModelAngles(this.bipedRightArm, this.bipedRightArmwear);
-        copyModelAngles(this.bipedBody, this.bipedBodyWear);
+
         ((EntityPlayerCorpse) entityIn).isAIDisabled();
 		// right arm
 		this.bipedRightArm.rotateAngleX = 1.5F;
@@ -192,6 +188,12 @@ public class ModelPlayerCorpse extends ModelBiped{
         {
             this.bipedCape.rotationPointY = 0.0F;
         }
+        
+        copyModelAngles(this.bipedLeftLeg, this.bipedLeftLegwear);
+        copyModelAngles(this.bipedRightLeg, this.bipedRightLegwear);
+        copyModelAngles(this.bipedLeftArm, this.bipedLeftArmwear);
+        copyModelAngles(this.bipedRightArm, this.bipedRightArmwear);
+        copyModelAngles(this.bipedBody, this.bipedBodyWear);
     }
 
     @Override

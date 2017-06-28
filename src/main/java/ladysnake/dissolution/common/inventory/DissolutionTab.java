@@ -6,9 +6,9 @@ import ladysnake.dissolution.common.items.ItemBaseResource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 
-public class TartarosTab extends CreativeTabs {
+public class DissolutionTab extends CreativeTabs {
 
-	public TartarosTab() {
+	public DissolutionTab() {
 		super(Reference.MOD_ID);
 	}
 	

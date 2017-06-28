@@ -128,13 +128,11 @@ public class EntityMinionWitherSkeleton extends EntityMinion {
     
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-    	// TODO Auto-generated method stub
     	super.readFromNBT(compound);
     }
     
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-    	//this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
     	return super.writeToNBT(compound);
     }
 

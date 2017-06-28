@@ -97,7 +97,7 @@ public class BlockSoulAnchor extends Block implements ITileEntityProvider, ISoul
 		do {
 			pos = pos.up();
 		} while((worldIn.getBlockState(pos.up()) == Blocks.AIR.getDefaultState()) && pos.getY() < 250);
-		worldIn.setBlockState(pos, getDefaultState().withProperty(PART, EnumPartType.CAP));		//TODO I did not test this
+		worldIn.setBlockState(pos, getDefaultState().withProperty(PART, EnumPartType.CAP));
 	}
 	
 	@Override

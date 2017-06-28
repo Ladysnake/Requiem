@@ -17,6 +17,7 @@ public class ShaderHelper {
 	
 	/**the shader used during the corpse dissolution animation*/
 	public static int dissolution = 0;
+	/**the shader used with the blue overlay*/
 	public static int intangible = 0;
 	public static int doppleganger = 0;
 	
@@ -32,8 +33,8 @@ public class ShaderHelper {
 	 */
 	public static void initShaders() {
 		dissolution = initShader("corpsedissolution");
-		intangible = initShader("corpsedissolution.vsh", "intangible.fsh");
 		doppleganger = initShader("doppleganger");
+		intangible = initShader("intangible");
 	}
 	
 	/**

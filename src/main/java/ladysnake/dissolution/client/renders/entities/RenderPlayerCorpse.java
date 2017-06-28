@@ -43,6 +43,7 @@ import net.minecraft.world.EnumSkyBlock;
 public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
 	
 	private ResourceLocation texture;
+	private boolean shouldRenderName = false;
 		
 	public RenderPlayerCorpse(RenderManager rendermanagerIn) {
 		super(rendermanagerIn, new ModelPlayerCorpse(0.0F, true), 0.5F);
@@ -78,14 +79,23 @@ public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
 		ShaderHelper.useShader(ShaderHelper.dissolution);
 		ShaderHelper.setUniform("texture", 0);
 		ShaderHelper.setUniform("lightmap", 1);
-		ShaderHelper.setUniform("animationProgress", 0.2f);
+		System.out.println(Math.abs(entity.getRemainingTicks() / (float) entity.getMaxTimeRemaining()));
+		ShaderHelper.setUniform("animationProgress", 1 - Math.abs(entity.getRemainingTicks() / (float) entity.getMaxTimeRemaining()));
 		GlStateManager.enableBlend();
 		GlStateManager.enableAlpha();
 		float light = Math.max(entity.world.getLightFor(EnumSkyBlock.SKY, entity.getPosition()) * entity.world.getSunBrightnessFactor(1.0f), 
 				entity.world.getLightFor(EnumSkyBlock.BLOCK, entity.getPosition()));
 		ShaderHelper.setUniform("lighting", light);
+		this.shouldRenderName = false;
 		super.doRender(entity, x, y, z, entityYaw, partialTicks);
 		ShaderHelper.revert();
+		this.shouldRenderName = true;
+		this.renderName(entity, x, y, z);
+	}
+	
+	@Override
+	protected boolean canRenderName(EntityPlayerCorpse entity) {
+		return super.canRenderName(entity) && this.shouldRenderName;
 	}
 
 }

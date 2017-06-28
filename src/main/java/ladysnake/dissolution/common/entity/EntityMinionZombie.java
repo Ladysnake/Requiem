@@ -108,9 +108,6 @@ public class EntityMinionZombie extends EntityMinion {
 	}
 
 	@Override
-	public void setSwingingArms(boolean swingingArms) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void setSwingingArms(boolean swingingArms) {	}
 
 }

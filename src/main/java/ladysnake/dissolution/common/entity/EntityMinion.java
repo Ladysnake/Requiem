@@ -59,7 +59,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 		super(worldIn);
         this.setSize(sizeX, sizeY);
         this.inert = true;
-        this.remainingTicks = MAX_DEAD_TICKS;
+        this.remainingTicks = this.getMaxTimeRemaining();
 		this.setChild(isChild);
 	}
 	
@@ -174,10 +174,10 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 	@Override
 	public void onLivingUpdate() {
 		super.onLivingUpdate();
-		this.update();
+		this.updateMinion();
 	}
 	
-	protected void update() {
+	protected void updateMinion() {
 		remainingTicks--;
 		if(!this.isCorpse())
 			this.handleSunExposition();
@@ -255,18 +255,6 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 	public void setChild(boolean childMinion)
     {
         this.getDataManager().set(IS_CHILD, Boolean.valueOf(childMinion));
-        /*
-        if (this.world != null && !this.world.isRemote)
-        {
-            IAttributeInstance iattributeinstance = this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-            //iattributeinstance.removeModifier(BABY_SPEED_BOOST);
-
-            if (childMinion)
-            {
-            //    iattributeinstance.applyModifier(BABY_SPEED_BOOST);
-            }
-        }*/
-
         this.setChildSize(childMinion);
     }
 	
@@ -308,12 +296,16 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 
 	public void setCorpse(boolean isCorpse) {
 		this.inert = isCorpse;
-		this.remainingTicks = isCorpse ? MAX_DEAD_TICKS : MAX_RISEN_TICKS;
+		this.remainingTicks = getMaxTimeRemaining();
 		
 		if(isCorpse)
 			this.setSize(sizeY, sizeX);
 		else
 			this.setSize(sizeX, sizeY);
+	}
+	
+	public int getMaxTimeRemaining() {
+		return this.inert ? MAX_DEAD_TICKS : MAX_RISEN_TICKS;
 	}
 	
 	public boolean isCorpse(){

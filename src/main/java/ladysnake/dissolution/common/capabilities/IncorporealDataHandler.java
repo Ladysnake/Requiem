@@ -23,8 +23,16 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 
+/**
+ * This set of classes handles the Incorporeal capability. 
+ * It is used to store and read all the additional information (related to the ghost state) on players. <br>
+ * The IncorporealDataHandler class itself is used to register the capability and query the right handler
+ * @author Pyrofab
+ * 
+ */
 public class IncorporealDataHandler {
 	
+	/**this is a list of hardcoded vanilla blocks that players can interact with*/
 	public static ArrayList<Block> soulInteractableBlocks = new ArrayList<Block>();
 	
 	static {
@@ -40,6 +48,11 @@ public class IncorporealDataHandler {
         MinecraftForge.EVENT_BUS.register(new IncorporealDataHandler());
     }
     
+    /**
+     * This is a utility method to get the handler attached to an entity
+     * @param entity an entity that has the capability attached (in this case, a player)
+     * @return the IncorporealHandler attached or null if there is none
+     */
     public static IIncorporealHandler getHandler(Entity entity) {
 
         if (entity.hasCapability(CAPABILITY_INCORPOREAL, EnumFacing.DOWN))
@@ -48,6 +61,11 @@ public class IncorporealDataHandler {
         return null;
     }
 	
+    /**
+     * This is the class that does most of the work, and the one other classes interact with
+     * @author Pyrofab
+     *
+     */
 	public static class DefaultIncorporealHandler implements IIncorporealHandler {
 		
 		private boolean incorporeal = false;
@@ -184,6 +202,11 @@ public class IncorporealDataHandler {
 	        }
 	    }
 	 
+	 /**
+	  * This is what stores to and reads from the disk
+	  * @author Pyrofab
+	  *
+	  */
 	 public static class Storage implements Capability.IStorage<IIncorporealHandler> {
 
 		    @Override

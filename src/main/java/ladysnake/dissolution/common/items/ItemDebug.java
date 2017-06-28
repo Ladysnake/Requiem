@@ -6,6 +6,7 @@ import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.entity.EntityBrimstoneFire;
 import ladysnake.dissolution.common.handlers.CustomTartarosTeleporter;
@@ -22,7 +23,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-public class ItemDebug extends Item {
+public class ItemDebug extends Item implements ISoulInteractable {
 	
 	protected int debugWanted = 0;
 
@@ -45,7 +46,7 @@ public class ItemDebug extends Item {
 		switch(debugWanted) {
 		case 0 : 
 			if(worldIn.isRemote) {
-				ResourceLocation shader = new ResourceLocation("minecraft:shaders/post/notch.json");
+				ResourceLocation shader = new ResourceLocation("minecraft:shaders/post/intangible.json");
 				if(Minecraft.getMinecraft().entityRenderer.isShaderActive())
 					Minecraft.getMinecraft().entityRenderer.stopUseShader();
 				else

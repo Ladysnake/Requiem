@@ -22,6 +22,10 @@ public class DissolutionConfig {
 	public static boolean skipDeathScreen = false;
 	public static boolean soulCompass = true;
 	public static boolean soulCompassAnchors = true;
+	public static boolean wowRespawn = false;
+	
+	public static final String CATEGORY_RESPAWN = "Respawn";
+	public static final String CATEGORY_GHOST = "Ghost";
 	
 	public static void syncConfig() {
 		try {
@@ -30,103 +34,103 @@ public class DissolutionConfig {
 	        Property versionProp = Dissolution.config.get(
 	        		"Don't touch that", 
 	        		"version", 
-	        		"1.1", 
+	        		1.1, 
 	        		"The version of this configuration file. Don't modify this number unless you want your changes randomly reset.");
 
-	        // Read props from config
+	        // RESPAWN SETTINGS
+	        
+	        Dissolution.config.addCustomCategoryComment(CATEGORY_RESPAWN, "Settings related to respawn mechanics. Please report any unwanted behaviour due to some combination of these.");
+	        
+	        Property wowRespawnProp = Dissolution.config.get(
+	        		CATEGORY_RESPAWN, 
+	        		"WoWlikeRespawn", 
+	        		false,
+	        		"If set to true, the player will respawn as a ghost at their spawnpoint. They will then have the choice to go to 0,0 to respawn without stuff or to reach their corpse under 5 minutes. (default : false)");
+	        
 	        Property shouldRespawnInNetherProp = Dissolution.config.get(
-	        		Configuration.CATEGORY_GENERAL,
-	                "shouldRespawnInNether", // Property name
-	                "false", // Default value
+	        		CATEGORY_RESPAWN,
+	                "shouldRespawnInNether",
+	                false,
 	                "Whether players should respawn in the nether when they die");
 	        
 	        Property shouldShowDeathScreenProp = Dissolution.config.get(
-	        		Configuration.CATEGORY_GENERAL,
-	                "skipDeathScreen", // Property name
-	                "false", // Default value
+	        		CATEGORY_RESPAWN,
+	                "skipDeathScreen",
+	                false,
 	                "Whether players should respawn instantly as souls without showing death screen (could break other mods)");
 	        
 	        Property playerBodiesHoldInventoryProp = Dissolution.config.get(
-	        		Configuration.CATEGORY_GENERAL, 
+	        		CATEGORY_RESPAWN, 
 	        		"playerBodiesHoldInventoryProp", 
-	        		"false",
-	        		"Whether player corpses hold their inventory upon death (default : false)");
+	        		true,
+	        		"Whether player corpses hold their inventory upon death. Recommended with WoWlikeRespawn. (default : true)");
 	        
-	        Property anchorsXRayProp = Dissolution.config.get(
-	        		Configuration.CATEGORY_CLIENT,
-	                "anchorsXRay", // Property name
-	                "false", // Default value
-	                "Whether soul anchors should be visible through blocks to ghost players (graphical glitches might occur)");
+	        // GHOST SETTINGS
+	        
+	        Dissolution.config.addCustomCategoryComment(CATEGORY_GHOST, "Settings related to the spirit form.");
 	        
 	        Property invisibleGhostProp = Dissolution.config.get(
-	        		Configuration.CATEGORY_GENERAL,
+	        		CATEGORY_GHOST,
 	        		"invisibleGhosts",
-	        		"false",
-	        		"If set to true, dead players will be fully invisible");
+	        		false,
+	        		"If set to true, dead players will be fully invisible (default: false)");
 	        
 	        Property flightModeProp = Dissolution.config.get(
-	        		Configuration.CATEGORY_GENERAL,
+	        		CATEGORY_GHOST,
 	        		"flightMode",
-	        		"0",
-	        		"-1= noflight, 0=custom flight, 1=creative, 2=spectator-lite");
-	        
-	        Property showSoulCompassProp = Dissolution.config.get(
-	        		Configuration.CATEGORY_CLIENT,
-	                "showSoulCompass", // Property name
-	                "true", // Default value
-	                "Whether the HUD pointing to respawn locations should appear");
-	        
-	        Property showAnchorsInSoulCompassProp = Dissolution.config.get(
-	        		Configuration.CATEGORY_CLIENT,
-	                "showAnchorsInSoulCompass", // Property name
-	                "true", // Default value
-	                "Whether soul anchors should have an indicator in the soul compass HUD");
-	        
-	        Property oneUseWaystoneProp = Dissolution.config.get(
-	        		Configuration.CATEGORY_GENERAL,
-	                "oneUseWaystone", // Property name
-	                "true", // Default value
-	                "Whether Mercurius's waystone should disappear after one use");
-	        
+	        		0,
+	        		"-1= noflight, 0=custom flight, 1=creative, 2=spectator-lite (default: 0)");
+
 	        Property interactableBlocksProp = Dissolution.config.get(
-	        		Configuration.CATEGORY_GENERAL,
+	        		CATEGORY_GHOST,
 	        		"soulInteractableBlocks",
 	        		"lever, glass_pane",
-	        		"The blocks that can be right clicked/broken by ghosts (doesn't affect anything currently)");
+	        		"The blocks that can be right clicked/broken by ghosts (this config option doesn't affect anything currently)");
+	        
+	        // GENERAL SETTINGS
 	        
 	        Property doSablePopProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_GENERAL,
 	        		"doSablePop",
-	        		"true",
-	        		"Whether output stacks from the extractor should spawn items in world when there is no appropriate container");
+	        		true,
+	        		"Whether output stacks from the extractor should spawn items in world when there is no appropriate container (default: true)");
+
+	        // CLIENT SETTINGS
+	        
+	        Property anchorsXRayProp = Dissolution.config.get(
+	        		Configuration.CATEGORY_CLIENT,
+	                "anchorsXRay", // Property name
+	                false, // Default value
+	                "Whether soul anchors should be visible through blocks to ghost players (graphical glitches might occur)");
+	        
+	        Property showSoulCompassProp = Dissolution.config.get(
+	        		Configuration.CATEGORY_CLIENT,
+	                "showSoulCompass", // Property name
+	                true, // Default value
+	                "Whether the HUD pointing to respawn locations should appear (default: true)");
+	        
+	        Property showAnchorsInSoulCompassProp = Dissolution.config.get(
+	        		Configuration.CATEGORY_CLIENT,
+	                "showAnchorsInSoulCompass", // Property name
+	                true, // Default value
+	                "Whether soul anchors should have an indicator in the soul compass HUD (default: true)");
 	        
 	        // Updating configuration file to v1.1
 	        if(versionProp.getDouble() < 1.1) {
-	        	System.out.println("config changed !");
 	        	shouldRespawnInNetherProp.set(false);
 	        	versionProp.set(1.1);
 	        }
 
-	        if(anchorsXRayProp.isBooleanValue())
-	        	anchorsXRay = anchorsXRayProp.getBoolean();
-	        if(doSablePopProp.isBooleanValue())
-		        doSableDrop = doSablePopProp.getBoolean();
-	        if(invisibleGhostProp.isBooleanValue())
-		        invisibleGhosts = invisibleGhostProp.getBoolean();
-	        if(flightModeProp.isIntValue())
-	        	flightMode = flightModeProp.getInt();
-	        if(oneUseWaystoneProp.isBooleanValue())
-		        oneUseWaystone = oneUseWaystoneProp.getBoolean();
-	        if(shouldRespawnInNetherProp.isBooleanValue())
-		        respawnInNether = shouldRespawnInNetherProp.getBoolean();
-	        if(shouldShowDeathScreenProp.isBooleanValue())
-		        skipDeathScreen = shouldShowDeathScreenProp.getBoolean();
-	        if(showSoulCompassProp.isBooleanValue())
-		        soulCompass = showSoulCompassProp.getBoolean();
-	        if(showAnchorsInSoulCompassProp.isBooleanValue())
-		        soulCompassAnchors = showAnchorsInSoulCompassProp.getBoolean();
+        	anchorsXRay = anchorsXRayProp.getBoolean();
+	        doSableDrop = doSablePopProp.getBoolean();
+	        invisibleGhosts = invisibleGhostProp.getBoolean();
+        	flightMode = flightModeProp.getInt();
+	        respawnInNether = shouldRespawnInNetherProp.getBoolean();
+	        skipDeathScreen = shouldShowDeathScreenProp.getBoolean();
+	        soulCompass = showSoulCompassProp.getBoolean();
+	        soulCompassAnchors = showAnchorsInSoulCompassProp.getBoolean();
+	        wowRespawn = wowRespawnProp.getBoolean();
 	        interactableBlocksProp.getArrayEntryClass();
-	    } catch (NumberFormatException e) {
 	    } finally {
 	        if (Dissolution.config.hasChanged()) Dissolution.config.save();
 	    }

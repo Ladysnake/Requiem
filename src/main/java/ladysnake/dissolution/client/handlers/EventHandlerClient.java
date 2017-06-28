@@ -25,6 +25,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class EventHandlerClient {
 	
+	public static int cameraAnimation = 0;
+	
 	private static final float SOUL_VERTICAL_SPEED = 0.1f;
 	private static RenderSoulAnchor renderAnch = new RenderSoulAnchor();
 	private static int refresh = 0;
@@ -36,7 +38,6 @@ public class EventHandlerClient {
 		//System.out.println(refresh);
 		if(!playerCorp.isSynced() && refresh++%100 == 0)
 		{
-			System.out.println("REFRESH");
 			IMessage msg = new PingMessage(Minecraft.getMinecraft().player.getUniqueID().getMostSignificantBits(), 
 					Minecraft.getMinecraft().player.getUniqueID().getLeastSignificantBits());
 			PacketHandler.net.sendToServer(msg);
@@ -70,6 +71,9 @@ public class EventHandlerClient {
 	public void onPlayerTick(PlayerTickEvent event) {
 		if(event.side.isServer()) 
 			return;
+		if(cameraAnimation-- > 0 && event.player.eyeHeight < 1.8f)
+			event.player.eyeHeight += 1.8f / 20f;
+			
 		if(DissolutionConfig.flightMode != DissolutionConfig.CUSTOM_FLIGHT) 
 			return;
 		if(IncorporealDataHandler.getHandler(event.player).isIncorporeal() && !event.player.isCreative()) {

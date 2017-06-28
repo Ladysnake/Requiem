@@ -51,8 +51,6 @@ public class BlockMercuriusWaystone extends Block implements ISoulInteractable {
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(playerIn);
 		if(playerCorp.isIncorporeal()){
 			playerCorp.setIncorporeal(false, playerIn);
-			/*final IMessage msg = new IncorporealMessage(playerIn.getUniqueID().getMostSignificantBits(), playerIn.getUniqueID().getLeastSignificantBits(), false);
-			PacketHandler.net.sendToAll(msg);*/		//TODO check if this is necessary
 			
 			if(DissolutionConfig.oneUseWaystone)
 				worldIn.setBlockToAir(pos);

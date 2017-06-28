@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.google.common.base.Optional;
 
+import ladysnake.dissolution.client.handlers.EventHandlerClient;
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
@@ -16,6 +17,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class EntityPlayerCorpse extends EntityMinion implements ISoulInteractable {
@@ -30,13 +32,21 @@ public class EntityPlayerCorpse extends EntityMinion implements ISoulInteractabl
 	
 	@Override
 	protected boolean processInteract(EntityPlayer player, EnumHand hand) {
-		// TODO Auto-generated method stub
 		final IIncorporealHandler handler = IncorporealDataHandler.getHandler(player);
-		if(!handler.isIncorporeal() || player.world.isRemote)
-			return false;
-		this.onDeath(DamageSource.GENERIC);
-		this.setDead();
-		handler.setIncorporeal(false, player);
+
+		if(handler.isIncorporeal()) {
+			this.onDeath(DamageSource.GENERIC);
+			this.setDead();
+			player.setPositionAndRotation(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
+			player.cameraPitch = 90;
+			player.prevCameraPitch = 90;
+			if(player.world.isRemote) {
+				player.eyeHeight = 0.5f;
+				EventHandlerClient.cameraAnimation = 20;
+			}
+			handler.setIncorporeal(false, player);
+		}
+		
 		return true;
 	}
 	
@@ -65,8 +75,18 @@ public class EntityPlayerCorpse extends EntityMinion implements ISoulInteractabl
 	}
 	
 	@Override
-	protected void update() {
-		// TODO something I guess ?
+	protected void updateMinion() {
+		if(this.isCorpse())
+			super.updateMinion();
+	}
+	
+	@Override
+	public int getMaxTimeRemaining() {
+		return inert ? 6000 : -1;
+	}
+	
+	@Override
+	protected void handleSunExposition() {
 	}
 	
 	public UUID getPlayer() {

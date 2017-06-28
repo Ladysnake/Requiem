@@ -6,7 +6,7 @@ import java.util.List;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.inventory.TartarosTab;
+import ladysnake.dissolution.common.inventory.DissolutionTab;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -34,7 +34,7 @@ public class ItemBaseResource extends Item {
 
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
-		if(tab instanceof TartarosTab)
+		if(tab instanceof DissolutionTab)
 			for (int i = 0; i < variants.size(); ++i) {
 				subItems.add(new ItemStack(this, 1, i));
 			}

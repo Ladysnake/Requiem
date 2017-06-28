@@ -46,6 +46,7 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -65,7 +66,7 @@ public class LivingDeathHandler {
 	
 	public void handlePlayerDeath(LivingDeathEvent event) {
 		
-		EntityPlayer p = (EntityPlayer) event.getEntity();
+		final EntityPlayer p = (EntityPlayer) event.getEntity();
 		final IIncorporealHandler corp = IncorporealDataHandler.getHandler(p);
 		corp.setLastDeathMessage(
 				p.getDisplayNameString() + event.getSource().getDeathMessage(p).getUnformattedComponentText());
@@ -77,7 +78,7 @@ public class LivingDeathHandler {
 		}
 		
 		if(!p.world.isRemote) {
-			EntityPlayerCorpse body = new EntityPlayerCorpse(p.world);
+			final EntityPlayerCorpse body = new EntityPlayerCorpse(p.world);
 			body.setPosition(p.posX, p.posY, p.posZ);
 			body.setCustomNameTag(p.getName());
 
@@ -85,10 +86,8 @@ public class LivingDeathHandler {
 				transferEquipment(p, body);
 				body.setInventory(new InventoryPlayerCorpse(p.inventory.mainInventory, p.getName()));
 				p.inventory.clear();
-				p.posX += p.world.rand.nextGaussian() * 20;
-				p.posY += 100;
-				p.posZ += p.world.rand.nextGaussian() * 20;
 			}
+			
 			body.onUpdate();
 			
 			p.world.spawnEntity(body);
@@ -100,6 +99,10 @@ public class LivingDeathHandler {
 				fakePlayerDeath((EntityPlayerMP)p, event.getSource());
 			corp.setIncorporeal(true, p);
 			p.setHealth(1);
+			if(!DissolutionConfig.respawnInNether && DissolutionConfig.wowRespawn) {
+				BlockPos respawnLoc = p.getBedLocation() != null ? p.getBedLocation() : p.world.getSpawnPoint();
+				p.setPosition(respawnLoc.getX(), respawnLoc.getY(), respawnLoc.getZ());
+			}
 			if(DissolutionConfig.respawnInNether && !p.world.isRemote)
 				CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) p, -1);
 			event.setCanceled(true);

@@ -58,9 +58,7 @@ public class PlayerTickHandler {
 			if (event.player.getDistance(0, event.player.posY, 0) < SPAWN_RADIUS_FROM_ORIGIN
 					&& ++ticksSpentNearSpawn >= 100) {
 				playerCorp.setIncorporeal(false, event.player);
-				/*IMessage msg = new IncorporealMessage(event.player.getUniqueID().getMostSignificantBits(),
-						event.player.getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporeal());
-				PacketHandler.net.sendToAll(msg);*/		//TODO check if this is necessary
+
 				for (int i = 0; i < 50; i++) {
 					double motionX = rand.nextGaussian() * 0.02D;
 					double motionY = rand.nextGaussian() * 0.02D + 1;
@@ -69,6 +67,7 @@ public class PlayerTickHandler {
 							event.player.posX + 0.5D, event.player.posY + 1.0D, event.player.posZ + 0.5D, 1, 0.3D, 0.3D,
 							0.3D, 0.0D, new int[0]);
 				}
+				
 				if (event.player.dimension == -1 && DissolutionConfig.respawnInNether) {
 					BlockPos spawnPos = event.player.getBedLocation(event.player.getSpawnDimension());
 					if(spawnPos == null)
