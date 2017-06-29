@@ -8,6 +8,7 @@ import ladysnake.dissolution.common.items.ItemBaseResource;
 import ladysnake.dissolution.common.items.ItemDebug;
 import ladysnake.dissolution.common.items.ItemEyeDead;
 import ladysnake.dissolution.common.items.ItemGrandFaux;
+import ladysnake.dissolution.common.items.ItemLifeProtectionRing;
 import ladysnake.dissolution.common.items.ItemScytheIron;
 import ladysnake.dissolution.common.items.ItemSepulture;
 import ladysnake.dissolution.common.items.ItemSoulGem;
@@ -28,6 +29,7 @@ public class ModItems {
 	public static ItemEyeDead EYE_OF_THE_UNDEAD;
 	public static ItemGrandFaux GRAND_FAUX;
 	public static ItemBaseResource BASE_RESOURCE;
+	public static ItemLifeProtectionRing LIFE_PROTECTION_RING;
 	public static ItemScytheIron SCYTHE_IRON;
 	public static ItemSoulGem SOUL_GEM;
 	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
@@ -35,38 +37,35 @@ public class ModItems {
 	
 	protected static List<Item> blocks = new ArrayList<>();
 
-	private IForgeRegistry<Item> reg;
+//	private IForgeRegistry<Item> reg;
 
 	public static void init() {
 		BASE_RESOURCE = new ItemBaseResource();
 		DEBUG_ITEM = new ItemDebug();
 		EYE_OF_THE_UNDEAD = new ItemEyeDead();
-		SCYTHE_IRON = new ItemScytheIron();
 		GRAND_FAUX = new ItemGrandFaux();
+		LIFE_PROTECTION_RING = new ItemLifeProtectionRing();
+		SCYTHE_IRON = new ItemScytheIron();
 		SOUL_GEM = new ItemSoulGem();
 		SOUL_IN_A_BOTTLE = new ItemSoulInABottle();
 		SEPULTURE = new ItemSepulture();
-
 	}
 
 	@SubscribeEvent
 	public void onRegister(RegistryEvent.Register<Item> event) {
-		reg = event.getRegistry();
-		this.register();
-	}
-	
-	public void register() {
+		IForgeRegistry<Item> reg = event.getRegistry();
 		reg.register(BASE_RESOURCE);
 		reg.register(DEBUG_ITEM);
 		reg.register(EYE_OF_THE_UNDEAD);
 		reg.register(GRAND_FAUX);
+		reg.register(LIFE_PROTECTION_RING);
 		reg.register(SCYTHE_IRON);
 		reg.register(SOUL_GEM);
 		reg.register(SOUL_IN_A_BOTTLE);
 		reg.register(SEPULTURE);
 		blocks.forEach(reg::register);
 	}
-
+	
 	public static void registerOres() {
 		OreDictionary.registerOre("dustSulfur", ItemBaseResource.resourceFromName("sulfur"));
 		OreDictionary.registerOre("itemCinnabar", ItemBaseResource.resourceFromName("cinnabar"));
@@ -82,6 +81,7 @@ public class ModItems {
 		registerRender(DEBUG_ITEM);
 		registerRender(EYE_OF_THE_UNDEAD);
 		registerRender(GRAND_FAUX);
+		registerRender(LIFE_PROTECTION_RING);
 		registerRender(SCYTHE_IRON);
 		registerRender(SOUL_GEM);
 		registerRender(SOUL_IN_A_BOTTLE);

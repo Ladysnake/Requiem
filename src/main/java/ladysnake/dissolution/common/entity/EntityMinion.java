@@ -128,7 +128,6 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
      */
     public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand)
     {
-    	
     	if(IncorporealDataHandler.getHandler(player).isIncorporeal() && !player.isCreative())
     		return EnumActionResult.PASS;
     	
@@ -163,7 +162,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
             }
             else
             {
-                return EnumActionResult.SUCCESS;
+                return itemstack.isEmpty() && !this.hasItemInSlot(this.getClickedSlot(vec)) ? EnumActionResult.PASS : EnumActionResult.SUCCESS;
             }
         }
         else
@@ -182,7 +181,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
     {
         EntityEquipmentSlot entityequipmentslot = EntityEquipmentSlot.MAINHAND;
         boolean flag = this.isChild();
-        double d0 = (this.isCorpse() ? raytrace.z : raytrace.y) * (flag ? 2.0D : 1.0D);
+        double d0 = (this.isCorpse() ? raytrace.z + 1.2 : raytrace.y) * (flag ? 2.0D : 1.0D);
         EntityEquipmentSlot entityequipmentslot1 = EntityEquipmentSlot.FEET;
 
         if (d0 >= 0.1D && d0 < 0.1D + (flag ? 0.8D : 0.45D) && this.hasItemInSlot(entityequipmentslot1))

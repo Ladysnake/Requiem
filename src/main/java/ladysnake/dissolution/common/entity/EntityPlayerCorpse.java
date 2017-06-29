@@ -12,8 +12,7 @@ import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
 import ladysnake.dissolution.common.handlers.LivingDeathHandler;
-import ladysnake.dissolution.common.inventory.GuiCrystallizer;
-import ladysnake.dissolution.common.inventory.GuiPlayerCorpse;
+import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
 import net.minecraft.entity.ai.EntityAISwimming;
@@ -26,7 +25,6 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class EntityPlayerCorpse extends EntityMinion implements ISoulInteractable {
@@ -38,7 +36,7 @@ public class EntityPlayerCorpse extends EntityMinion implements ISoulInteractabl
 	
 	public EntityPlayerCorpse(World worldIn) {
 		super(worldIn);
-		inventory = new InventoryPlayerCorpse("Corpse");
+		inventory = new InventoryPlayerCorpse(this);
 	}
 	
 	@Override
@@ -58,7 +56,7 @@ public class EntityPlayerCorpse extends EntityMinion implements ISoulInteractabl
 			}
 			handler.setIncorporeal(false, player);
 		} else if (!player.world.isRemote) {
-			//player.openGui(Dissolution.instance, GuiPlayerCorpse.GUI_ID, world, this.getPosition().getX(), this.getPosition().getY(), this.getPosition().getZ());
+			player.openGui(Dissolution.instance, GuiProxy.PLAYER_CORPSE, world, this.getPosition().getX(), this.getPosition().getY(), this.getPosition().getZ());
 		}
 		
 		return true;
@@ -89,7 +87,6 @@ public class EntityPlayerCorpse extends EntityMinion implements ISoulInteractabl
 	@Override
 	public void setCustomNameTag(String name) {
 		super.setCustomNameTag(name);
-		this.inventory.setName(name);
 	}
 	
 	@Override
@@ -149,7 +146,6 @@ public class EntityPlayerCorpse extends EntityMinion implements ISoulInteractabl
 	public void readEntityFromNBT(NBTTagCompound compound) {
 		super.readEntityFromNBT(compound);
         this.inventory.readFromNBT(compound.getTagList("Inventory", 10));
-        this.inventory.setName(this.getName());
         setPlayer(compound.getUniqueId("player"));
         setDecaying(compound.getBoolean("decaying"));
 	}

@@ -8,7 +8,7 @@ public class Reference {
 	public static final String VERSION = "0.4.0";
 	public static final String MCVERSION = "[1.12]";
 	
-	public static final String GUI_FACTORY = "ladysnake.dissolution.common.inventory.TartarosGuiFactory";	
+//	public static final String GUI_FACTORY = "ladysnake.dissolution.common.inventory.TartarosGuiFactory";	
 	public static final String CLIENT_PROXY_CLASS = "ladysnake.dissolution.client.proxy.ClientProxy";
 	public static final String SERVER_PROXY_CLASS = "ladysnake.dissolution.server.proxy.ServerProxy";
 	
@@ -18,6 +18,7 @@ public class Reference {
 		ECTOPLASM("ectoplasm", "itemEctoplasm"),
 		ECTOPLASMA("ectoplasma", "itemEctoplasma"),
 		EYE_DEAD("eye_of_the_undead", "itemEyeOfUndead"),
+		LIFE_PROTECTION_RING("life_protection_ring", "itemLifeProtectionRing"),
 		GRAND_FAUX("grand_faux", "itemGrandFaux"),
 		SCYTHE_IRON("iron_scythe", "itemIronScythe"),
 		SOULGEM("soul_gem", "itemSoulGem"),

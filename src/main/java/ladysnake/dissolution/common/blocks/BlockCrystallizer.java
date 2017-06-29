@@ -6,6 +6,7 @@ import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.inventory.GuiCrystallizer;
+import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -129,7 +130,7 @@ public class BlockCrystallizer extends BlockContainer implements ITileEntityProv
 
 		TileEntity tileentity = worldIn.getTileEntity(pos);
 		if (tileentity instanceof TileEntityCrystallizer) {
-			playerIn.openGui(Dissolution.instance, GuiCrystallizer.GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
+			playerIn.openGui(Dissolution.instance, GuiProxy.CRYSTALLIZER, worldIn, pos.getX(), pos.getY(), pos.getZ());
 			return true;
 		}
 		return false;

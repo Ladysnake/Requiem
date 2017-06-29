@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.inventory;
 
+import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -17,37 +18,33 @@ public class InventoryPlayerCorpse implements IInventory {
 	
 	/** An array of 36 item stacks indicating the main player inventory (including the visible bar). */
     public NonNullList<ItemStack> mainInventory = NonNullList.<ItemStack>withSize(36, ItemStack.EMPTY);
-    private String playerName;
+    private EntityPlayerCorpse corpseEntity;
     private boolean dirty;
     
-    public InventoryPlayerCorpse(String name) {
-    	this(NonNullList.withSize(36, ItemStack.EMPTY), name);
+    public InventoryPlayerCorpse(EntityPlayerCorpse corpse) {
+    	this(NonNullList.withSize(36, ItemStack.EMPTY), corpse);
 	}
     
-	public InventoryPlayerCorpse(NonNullList<ItemStack> inv, String name) {
+	public InventoryPlayerCorpse(NonNullList<ItemStack> inv, EntityPlayerCorpse corpse) {
 		super();
 		for(int i = 0; i < inv.size(); i++)
 			this.mainInventory.set(i, inv.get(i));
-		this.playerName = name;
+		this.corpseEntity = corpse;
 	}
 
 	@Override
 	public String getName() {
-		return this.playerName;
-	}
-	
-	public void setName(String name) {
-		this.playerName = name;
+		return this.corpseEntity.getName() + "'s stuff";
 	}
 
 	@Override
 	public boolean hasCustomName() {
-		return playerName.isEmpty();
+		return false;
 	}
 
 	@Override
 	public ITextComponent getDisplayName() {
-		return (this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName()));
+		return new TextComponentTranslation(this.getName());
 	}
 
 	@Override
@@ -57,7 +54,7 @@ public class InventoryPlayerCorpse implements IInventory {
 
 	@Override
 	public boolean isEmpty() {
-		return this.mainInventory.stream().anyMatch(e -> !e.isEmpty());
+		return !this.mainInventory.stream().anyMatch(e -> !e.isEmpty());
 	}
 
 	@Override
@@ -98,7 +95,7 @@ public class InventoryPlayerCorpse implements IInventory {
 
 	@Override
 	public boolean isUsableByPlayer(EntityPlayer player) {
-		return false;
+		return this.corpseEntity.getDistanceSqToEntity(player) < 50;
 	}
 
 	@Override
@@ -176,7 +173,7 @@ public class InventoryPlayerCorpse implements IInventory {
 
 	@Override
 	public String toString() {
-		return "InventoryPlayerCorpse [mainInventory=" + mainInventory + ", playerName=" + playerName + ", dirty="
+		return "InventoryPlayerCorpse [mainInventory=" + mainInventory + ", dirty="
 				+ dirty + "]";
 	}
 	

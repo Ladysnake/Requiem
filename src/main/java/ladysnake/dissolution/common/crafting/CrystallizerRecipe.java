@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ladysnake.dissolution.common.init.ModBlocks;
-import ladysnake.dissolution.common.inventory.Helper;
+import ladysnake.dissolution.common.inventory.InventorySearchHelper;
 import ladysnake.dissolution.common.items.ItemBaseResource;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -86,7 +86,7 @@ public class CrystallizerRecipe {
 	public static CrystallizerRecipe getCrystalRecipe(ItemStack input) {
 		for (CrystallizerRecipe cr : CrystallizerRecipe.crystallizingRecipes)
 	    {
-	        if (Helper.compareItemStacks(input, cr.getInput()))
+	        if (InventorySearchHelper.compareItemStacks(input, cr.getInput()))
 	        {
 	            return cr;
 	        }

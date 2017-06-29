@@ -10,7 +10,7 @@ import com.google.common.collect.Multimap;
 
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.inventory.Helper;
+import ladysnake.dissolution.common.inventory.InventorySearchHelper;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -153,7 +153,7 @@ public abstract class ItemScythe extends ItemSword {
 	}
 	
 	public void fillBottle(EntityPlayer p, int nb) {
-		ItemStack bottle = Helper.findItem(p, Items.GLASS_BOTTLE);
+		ItemStack bottle = InventorySearchHelper.findItem(p, Items.GLASS_BOTTLE);
 		if (!bottle.isEmpty()) {
 			bottle.shrink(nb);
 			p.inventory.addItemStackToInventory(new ItemStack(ModItems.SOUL_IN_A_BOTTLE, nb));

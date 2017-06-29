@@ -10,7 +10,6 @@ import net.minecraft.util.ResourceLocation;
 public class GuiCrystallizer extends GuiContainer {
 	public static final int WIDTH = 176;
     public static final int HEIGHT = 166;
-    public static final int GUI_ID = 1;
     
     private static final ResourceLocation background = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/crystallizer.png");
 	

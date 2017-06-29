@@ -20,6 +20,7 @@ public class ShaderHelper {
 	/**the shader used with the blue overlay*/
 	public static int intangible = 0;
 	public static int doppleganger = 0;
+	public static int incorp = 0;
 	
 	private static int prevProgram = 0, currentProgram = 0;
 	private static final String LOCATION_PREFIX = "/assets/dissolution/shaders/";
@@ -35,6 +36,7 @@ public class ShaderHelper {
 		dissolution = initShader("corpsedissolution");
 		doppleganger = initShader("doppleganger");
 		intangible = initShader("intangible");
+		incorp = initShader("Inco");
 	}
 	
 	/**

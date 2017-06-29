@@ -19,7 +19,7 @@ import ladysnake.dissolution.common.entity.EntityMinionZombie;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.inventory.Helper;
+import ladysnake.dissolution.common.inventory.InventorySearchHelper;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
 import ladysnake.dissolution.common.items.ItemScythe;
 import net.minecraft.client.main.GameConfiguration;
@@ -85,8 +85,14 @@ public class LivingDeathHandler {
 			boolean flag = false;
 			if(event.getSource().getTrueSource() instanceof EntityPlayer) {
 				EntityPlayer killer = (EntityPlayer) event.getSource().getTrueSource();
-				if(!Helper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD).isEmpty())
+				if(!InventorySearchHelper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD).isEmpty())
 					flag = true;
+			}
+			
+			ItemStack lifeProtectionRing = InventorySearchHelper.findItem(p, ModItems.LIFE_PROTECTION_RING);
+			if(!lifeProtectionRing.isEmpty()) {
+				p.inventory.setInventorySlotContents(p.inventory.getSlotFor(lifeProtectionRing), ItemStack.EMPTY);
+				flag = true;
 			}
 
 			body.setDecaying(!flag);
@@ -95,7 +101,7 @@ public class LivingDeathHandler {
 				
 				if(flag) {
 					transferEquipment(p, body);
-					body.setInventory(new InventoryPlayerCorpse(p.inventory.mainInventory, p.getName()));
+					body.setInventory(new InventoryPlayerCorpse(p.inventory.mainInventory, body));
 					p.inventory.clear();
 				}
 			}
@@ -201,7 +207,7 @@ public class LivingDeathHandler {
 			((ItemScythe) killer.getHeldItemMainhand().getItem()).harvestSoul(killer, victim);
 		}
 
-		ItemStack eye = Helper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD);
+		ItemStack eye = InventorySearchHelper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD);
 		if (killer.world.rand.nextInt(1) == 0 && !eye.isEmpty() && !killer.world.isRemote) {
 
 			EntityMinion corpse = null;

@@ -17,7 +17,7 @@ import net.minecraft.world.World;
  * @author Pyrofab
  *
  */
-public abstract class Helper {
+public abstract class InventorySearchHelper {
 
 	/**
 	 * Finds an item in the player inventory
