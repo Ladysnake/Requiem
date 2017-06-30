@@ -11,6 +11,7 @@ public class ItemScarabOfEternity extends Item {
 		setUnlocalizedName(Reference.Items.SCARAB_OF_ETERNITY.getUnlocalizedName());
         setRegistryName(Reference.Items.SCARAB_OF_ETERNITY.getRegistryName());
         this.setCreativeTab(Dissolution.CREATIVE_TAB);
+        this.setMaxStackSize(1);
 	}
 	
 }

@@ -20,6 +20,7 @@ public class DissolutionConfig {
 	public static boolean minionsAttackCreepers = true;
 	public static boolean oneUseWaystone = true;
 	public static boolean respawnInNether = true;
+	public static int respawnDimension = -1;
 	public static boolean skipDeathScreen = false;
 	public static boolean soulCompass = true;
 	public static boolean soulCompassAnchors = true;
@@ -54,6 +55,12 @@ public class DissolutionConfig {
 	                false,
 	                "Whether players should respawn in the nether when they die");
 	        
+	        Property respawnDimensionProp = Dissolution.config.get(
+	        		CATEGORY_RESPAWN, 
+	        		"respawnDimension",
+	        		-1,
+	        		"If nether respawn is on, the player will respawn in this dimension instead.");
+	        
 	        Property shouldShowDeathScreenProp = Dissolution.config.get(
 	        		CATEGORY_RESPAWN,
 	                "skipDeathScreen",
@@ -64,7 +71,7 @@ public class DissolutionConfig {
 	        		CATEGORY_RESPAWN, 
 	        		"playerBodiesHoldInventoryProp", 
 	        		true,
-	        		"Whether player corpses hold their inventory upon death. Recommended with WoWlikeRespawn. (default : true)");
+	        		"Whether long-lasting player corpses hold their inventory upon death. Recommended with WoWlikeRespawn. (default : true)");
 	        
 	        // GHOST SETTINGS
 	        
@@ -134,6 +141,7 @@ public class DissolutionConfig {
         	flightMode = flightModeProp.getInt();
         	minionsAttackCreepers = minionsAttackCreepersProp.getBoolean();
 	        respawnInNether = shouldRespawnInNetherProp.getBoolean();
+	        respawnDimension = respawnDimensionProp.getInt();
 	        skipDeathScreen = shouldShowDeathScreenProp.getBoolean();
 	        soulCompass = showSoulCompassProp.getBoolean();
 	        soulCompassAnchors = showAnchorsInSoulCompassProp.getBoolean();

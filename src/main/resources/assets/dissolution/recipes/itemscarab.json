@@ -1,0 +1,15 @@
+{
+  "result": {
+    "item": "dissolution:itemscarabofeternity"
+  },
+  "ingredients": [
+    {
+      "item": "dissolution:itemsoulgem",
+      "data": 0
+    },
+    {
+      "item": "minecraft:iron_ingot"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless"
+}

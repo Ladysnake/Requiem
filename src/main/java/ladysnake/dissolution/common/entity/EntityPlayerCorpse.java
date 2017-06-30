@@ -54,6 +54,7 @@ public class EntityPlayerCorpse extends EntityMinion implements ISoulInteractabl
 				player.eyeHeight = 0.5f;
 				EventHandlerClient.cameraAnimation = 20;
 			}
+			player.setHealth(4f);
 			handler.setIncorporeal(false, player);
 		} else if (!player.world.isRemote) {
 			player.openGui(Dissolution.instance, GuiProxy.PLAYER_CORPSE, world, this.getPosition().getX(), this.getPosition().getY(), this.getPosition().getZ());
