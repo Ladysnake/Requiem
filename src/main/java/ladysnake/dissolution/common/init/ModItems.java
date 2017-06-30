@@ -8,7 +8,7 @@ import ladysnake.dissolution.common.items.ItemBaseResource;
 import ladysnake.dissolution.common.items.ItemDebug;
 import ladysnake.dissolution.common.items.ItemEyeDead;
 import ladysnake.dissolution.common.items.ItemGrandFaux;
-import ladysnake.dissolution.common.items.ItemLifeProtectionRing;
+import ladysnake.dissolution.common.items.ItemScarabOfEternity;
 import ladysnake.dissolution.common.items.ItemScytheIron;
 import ladysnake.dissolution.common.items.ItemSepulture;
 import ladysnake.dissolution.common.items.ItemSoulGem;
@@ -29,7 +29,7 @@ public class ModItems {
 	public static ItemEyeDead EYE_OF_THE_UNDEAD;
 	public static ItemGrandFaux GRAND_FAUX;
 	public static ItemBaseResource BASE_RESOURCE;
-	public static ItemLifeProtectionRing LIFE_PROTECTION_RING;
+	public static ItemScarabOfEternity LIFE_PROTECTION_RING;
 	public static ItemScytheIron SCYTHE_IRON;
 	public static ItemSoulGem SOUL_GEM;
 	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
@@ -44,7 +44,7 @@ public class ModItems {
 		DEBUG_ITEM = new ItemDebug();
 		EYE_OF_THE_UNDEAD = new ItemEyeDead();
 		GRAND_FAUX = new ItemGrandFaux();
-		LIFE_PROTECTION_RING = new ItemLifeProtectionRing();
+		LIFE_PROTECTION_RING = new ItemScarabOfEternity();
 		SCYTHE_IRON = new ItemScytheIron();
 		SOUL_GEM = new ItemSoulGem();
 		SOUL_IN_A_BOTTLE = new ItemSoulInABottle();

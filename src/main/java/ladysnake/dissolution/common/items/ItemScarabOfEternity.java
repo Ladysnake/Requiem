@@ -4,12 +4,12 @@ import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import net.minecraft.item.Item;
 
-public class ItemLifeProtectionRing extends Item {
+public class ItemScarabOfEternity extends Item {
 
-	public ItemLifeProtectionRing() {
+	public ItemScarabOfEternity() {
 		super();
-		setUnlocalizedName(Reference.Items.LIFE_PROTECTION_RING.getUnlocalizedName());
-        setRegistryName(Reference.Items.LIFE_PROTECTION_RING.getRegistryName());
+		setUnlocalizedName(Reference.Items.SCARAB_OF_ETERNITY.getUnlocalizedName());
+        setRegistryName(Reference.Items.SCARAB_OF_ETERNITY.getRegistryName());
         this.setCreativeTab(Dissolution.CREATIVE_TAB);
 	}
 	
