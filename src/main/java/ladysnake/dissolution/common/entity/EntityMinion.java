@@ -8,6 +8,7 @@ import io.netty.buffer.ByteBuf;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;
+import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
@@ -133,7 +134,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
     	
         ItemStack itemstack = player.getHeldItem(hand);
 
-        if (itemstack.getItem() != Items.NAME_TAG)
+        if (itemstack.getItem() != Items.NAME_TAG && itemstack.getItem() != ModItems.EYE_OF_THE_UNDEAD)
         {
             if (!this.world.isRemote && !player.isSpectator())
             {

@@ -12,6 +12,7 @@ import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
 import ladysnake.dissolution.common.handlers.LivingDeathHandler;
+import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
@@ -56,7 +57,7 @@ public class EntityPlayerCorpse extends EntityMinion implements ISoulInteractabl
 			}
 			player.setHealth(4f);
 			handler.setIncorporeal(false, player);
-		} else if (!player.world.isRemote) {
+		} else if (!player.world.isRemote && player.getHeldItem(hand).getItem() != ModItems.EYE_OF_THE_UNDEAD) {
 			player.openGui(Dissolution.instance, GuiProxy.PLAYER_CORPSE, world, this.getPosition().getX(), this.getPosition().getY(), this.getPosition().getZ());
 		}
 		

@@ -44,7 +44,6 @@ public class ModBlocks {
 
     public static void init() {
     	CRYSTALLIZER = new BlockCrystallizer();
-    	//DRIED_LAVA = new BlockDriedLava();
     	ECTOPLASM = new BlockEctoplasm();
     	ECTOPLASMA = new Block(Material.CLOTH);
     	ECTOPLASMA.setUnlocalizedName(Reference.Blocks.ECTOPLASMA.getUnlocalizedName());
@@ -56,7 +55,6 @@ public class ModBlocks {
     	SULFUR_CANDLE = new BlockSulfurCandle();
     	SOUL_EXTRACTOR = new BlockSoulExtractor();
     	SEPULTURE = new BlockSepulture();
-    	//RESUSCITATOR = new BlockResuscitator();
     }
     
     @SubscribeEvent

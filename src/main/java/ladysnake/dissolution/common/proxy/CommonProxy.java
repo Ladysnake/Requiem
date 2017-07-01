@@ -10,6 +10,7 @@ import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModCrafting;
 import ladysnake.dissolution.common.init.ModEntities;
 import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.init.ModSounds;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
@@ -27,6 +28,7 @@ public abstract class CommonProxy {
 	public void preInit() {
 		MinecraftForge.EVENT_BUS.register(new ModBlocks());
 		MinecraftForge.EVENT_BUS.register(new ModItems());
+		MinecraftForge.EVENT_BUS.register(ModSounds.lost_soul_ambient_1);	//this is bad.
 		IncorporealDataHandler.register();
 		ModBlocks.init();
 //		ModBlocks.register();
