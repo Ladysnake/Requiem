@@ -1,0 +1,21 @@
+{
+	"lost_soul_ambient": {
+		"dissolution": "passive",
+		"sounds": [
+			{"name": "dissolution:lost_soul_ambient_1","stream": false},
+			{"name": "dissolution:lost_soul_ambient_2","stream": false}
+		]
+	},
+	"lost_soul_pain": {
+		"dissolution": "passive",
+		"sounds": [
+			{"name": "dissolution:lost_soul_pain","stream": false}
+		]
+	},
+	"lost_soul_death": {
+		"dissolution": "passive",
+		"sounds": [
+			{"name": "dissolution:lost_soul_death","stream": false}
+		]
+	}
+}

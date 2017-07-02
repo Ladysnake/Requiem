@@ -9,6 +9,7 @@ import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.init.ModSounds;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -174,8 +175,17 @@ public class EntityWanderingSoul extends EntityMob {
     
     @Override
     protected SoundEvent getAmbientSound() {
-    	return super.getAmbientSound();
+    	return ModSounds.lost_soul_ambient.sound;
     }
-
+    
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+    	return ModSounds.lost_soul_pain.sound;
+    }
+    
+    @Override
+    protected SoundEvent getDeathSound() {
+    	return ModSounds.lost_soul_death.sound;
+    }
 
 }

@@ -61,6 +61,7 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
     private final EntityAIAttackMelee aiAttackOnCollide = new EntityAIAttackMelee(this, 1.2D, false);
     
     static {
+    	TARGET_BLACKLIST.add(EntityWanderingSoul.class);
     	if(!DissolutionConfig.minionsAttackCreepers)
     		TARGET_BLACKLIST.add(EntityCreeper.class);
     }

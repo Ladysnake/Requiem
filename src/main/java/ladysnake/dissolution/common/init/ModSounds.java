@@ -8,15 +8,16 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public enum ModSounds {
-	lost_soul_ambient_1,
-	lost_soul_ambient_2,
+	lost_soul_ambient,
 	lost_soul_pain,
 	lost_soul_death;
 		
 	public final SoundEvent sound;
 		
 	ModSounds() {
-		this.sound = new SoundEvent(new ResourceLocation(Reference.MOD_ID, this.name()));
+		ResourceLocation soundLocation = new ResourceLocation(Reference.MOD_ID, this.name());
+		this.sound = new SoundEvent(soundLocation);
+		this.sound.setRegistryName(soundLocation);
 	}
 
 	@SubscribeEvent

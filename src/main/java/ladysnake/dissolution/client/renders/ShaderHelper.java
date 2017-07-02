@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
+import ladysnake.dissolution.common.DissolutionConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 
@@ -29,14 +30,18 @@ public class ShaderHelper {
 		initShaders();
 	}
 	
+	public static boolean shouldUseShaders() {
+		return OpenGlHelper.shadersSupported && DissolutionConfig.useShaders;
+	}
+	
 	/**
 	 * Initializes all known shaders
 	 */
 	public static void initShaders() {
+		if(!OpenGlHelper.shadersSupported)
+			return;
 		dissolution = initShader("corpsedissolution");
-		doppleganger = initShader("doppleganger");
 		intangible = initShader("intangible");
-		incorp = initShader("Inco");
 	}
 	
 	/**
@@ -85,6 +90,9 @@ public class ShaderHelper {
 	 * @param program the reference to the desired shader (0 to remove any current shader)
 	 */
 	public static void useShader(int program) {
+		if(!OpenGlHelper.shadersSupported)
+			return;
+
 		prevProgram = GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
 		OpenGlHelper.glUseProgram(program);
 		
@@ -99,6 +107,9 @@ public class ShaderHelper {
 	 * @param value an int value for this uniform
 	 */
 	public static void setUniform(String uniformName, int value) {
+		if(!OpenGlHelper.shadersSupported)
+			return;
+
 		int uniform = GL20.glGetUniformLocation(currentProgram, uniformName);
 		if(uniform != -1)
 			GL20.glUniform1i(uniform, value);
@@ -110,6 +121,9 @@ public class ShaderHelper {
 	 * @param value a float value for this uniform
 	 */
 	public static void setUniform(String uniformName, float value) {
+		if(!OpenGlHelper.shadersSupported)
+			return;
+
 		int uniform = GL20.glGetUniformLocation(currentProgram, uniformName);
 		if(uniform != -1)
 			GL20.glUniform1f(uniform, value);
@@ -119,7 +133,7 @@ public class ShaderHelper {
 	 * Reverts to the previous shader used
 	 */
 	public static void revert() {
-		OpenGlHelper.glUseProgram(prevProgram);
+		useShader(prevProgram);
 	}
 	
 	/**

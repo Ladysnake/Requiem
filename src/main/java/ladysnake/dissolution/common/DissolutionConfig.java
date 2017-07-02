@@ -24,6 +24,7 @@ public class DissolutionConfig {
 	public static boolean skipDeathScreen = false;
 	public static boolean soulCompass = true;
 	public static boolean soulCompassAnchors = true;
+	public static boolean useShaders = true;
 	public static boolean wowRespawn = false;
 	
 	public static final String CATEGORY_RESPAWN = "Respawn";
@@ -53,19 +54,19 @@ public class DissolutionConfig {
 	        		CATEGORY_RESPAWN,
 	                "shouldRespawnInNether",
 	                false,
-	                "Whether players should respawn in the nether when they die");
+	                "Whether players should respawn in the nether when they die (default: false)");
 	        
 	        Property respawnDimensionProp = Dissolution.config.get(
 	        		CATEGORY_RESPAWN, 
 	        		"respawnDimension",
 	        		-1,
-	        		"If nether respawn is on, the player will respawn in this dimension instead.");
+	        		"If nether respawn is on, the player will respawn in this dimension instead. (default: -1)");
 	        
 	        Property shouldShowDeathScreenProp = Dissolution.config.get(
 	        		CATEGORY_RESPAWN,
 	                "skipDeathScreen",
 	                false,
-	                "Whether players should respawn instantly as souls without showing death screen (could break other mods)");
+	                "Whether players should respawn instantly as souls without showing death screen (could mess with other mods) (default: false)");
 	        
 	        Property playerBodiesHoldInventoryProp = Dissolution.config.get(
 	        		CATEGORY_RESPAWN, 
@@ -111,11 +112,17 @@ public class DissolutionConfig {
 
 	        // CLIENT SETTINGS
 	        
+	        Property shadersProp = Dissolution.config.get(
+	        		Configuration.CATEGORY_CLIENT, 
+	        		"useShaders", 
+	        		true, 
+	        		"Whether this mod should use shaders to try to make things prettier (default: true)");
+	        
 	        Property anchorsXRayProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_CLIENT,
 	                "anchorsXRay", // Property name
 	                false, // Default value
-	                "Whether soul anchors should be visible through blocks to ghost players (graphical glitches might occur)");
+	                "Whether soul anchors should be visible through blocks to ghost players (graphical glitches might occur) (default: false)");
 	        
 	        Property showSoulCompassProp = Dissolution.config.get(
 	        		Configuration.CATEGORY_CLIENT,
@@ -145,6 +152,7 @@ public class DissolutionConfig {
 	        skipDeathScreen = shouldShowDeathScreenProp.getBoolean();
 	        soulCompass = showSoulCompassProp.getBoolean();
 	        soulCompassAnchors = showAnchorsInSoulCompassProp.getBoolean();
+	        useShaders = shadersProp.getBoolean();
 	        wowRespawn = wowRespawnProp.getBoolean();
 	        interactableBlocksProp.getArrayEntryClass();
 	    } finally {

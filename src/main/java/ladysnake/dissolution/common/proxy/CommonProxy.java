@@ -28,7 +28,7 @@ public abstract class CommonProxy {
 	public void preInit() {
 		MinecraftForge.EVENT_BUS.register(new ModBlocks());
 		MinecraftForge.EVENT_BUS.register(new ModItems());
-		MinecraftForge.EVENT_BUS.register(ModSounds.lost_soul_ambient_1);	//this is bad.
+		MinecraftForge.EVENT_BUS.register(ModSounds.lost_soul_ambient);	//this is bad.
 		IncorporealDataHandler.register();
 		ModBlocks.init();
 //		ModBlocks.register();
