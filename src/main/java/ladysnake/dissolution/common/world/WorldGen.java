@@ -39,7 +39,6 @@ public class WorldGen implements IWorldGenerator {
 	}
 
 	private void GenerateOverWorld(World world, int i, int j, Random random) {
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> OVERWORLD");
 		
 		int Xpos = i + random.nextInt(16);
 		int Ypos = random.nextInt(128);

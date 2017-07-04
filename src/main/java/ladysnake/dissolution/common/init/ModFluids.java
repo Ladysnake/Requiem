@@ -2,6 +2,7 @@ package ladysnake.dissolution.common.init;
 
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.blocks.BlockFluidMercury;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.block.Block;
@@ -31,7 +32,7 @@ public class ModFluids {
 
 	public static final Fluid NORMAL = createFluid("mercury", true,
 			fluid -> fluid.setLuminosity(10).setDensity(1600).setViscosity(1000),
-			fluid -> new BlockFluidClassic(fluid, new MaterialLiquid(MapColor.LIGHT_BLUE)));
+			fluid -> new BlockFluidMercury(fluid, new MaterialLiquid(MapColor.LIGHT_BLUE)));
 
 	private static <T extends Block & IFluidBlock> Fluid createFluid(final String name, final boolean hasFlowIcon, final Consumer<Fluid> fluidPropertyApplier, final Function<Fluid, T> blockFactory) {
 		final String texturePrefix = Reference.MOD_ID + ":" + "blocks/fluid_";

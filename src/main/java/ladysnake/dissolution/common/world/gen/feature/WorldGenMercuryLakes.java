@@ -128,7 +128,7 @@ public class WorldGenMercuryLakes extends WorldGenerator{
                                 }
                                 else
                                 {
-                                    worldIn.setBlockState(blockpos, Blocks.GRASS.getDefaultState(), 2);
+                                    worldIn.setBlockState(blockpos, Blocks.STONE.getDefaultState(), 2);
                                 }
                             }
                         }
