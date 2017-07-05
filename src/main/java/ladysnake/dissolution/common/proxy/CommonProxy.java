@@ -12,6 +12,7 @@ import ladysnake.dissolution.common.init.ModCrafting;
 import ladysnake.dissolution.common.init.ModEntities;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.init.ModSounds;
+import ladysnake.dissolution.common.init.ModStructure;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
@@ -37,7 +38,7 @@ public abstract class CommonProxy {
 		ModItems.init();
 //		ModItems.register();
 		ModEntities.register();
-		//ModStructure.init();
+		ModStructure.init();
 	}
 	
 	public void init() {
