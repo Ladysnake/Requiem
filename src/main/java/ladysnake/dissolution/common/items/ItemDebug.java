@@ -8,6 +8,7 @@ import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.SoulInventoryDataHandler;
 import ladysnake.dissolution.common.entity.EntityBrimstoneFire;
 import ladysnake.dissolution.common.handlers.CustomTartarosTeleporter;
 import net.minecraft.client.Minecraft;
@@ -38,7 +39,7 @@ public class ItemDebug extends Item implements ISoulInteractable {
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
 		if(playerIn.isSneaking()) {
 			if(!worldIn.isRemote) {
-				debugWanted = (debugWanted + 1) % 6;
+				debugWanted = (debugWanted + 1) % 7;
 				playerIn.sendStatusMessage(new TextComponentString("debug: " + debugWanted), true);
 			}
 			return super.onItemRightClick(worldIn, playerIn, handIn);
@@ -80,6 +81,9 @@ public class ItemDebug extends Item implements ISoulInteractable {
 				playerIn.sendStatusMessage(new TextComponentString("Reloaded shaders"), false);
 			}
 			break;
+		case 6 :
+			playerIn.sendStatusMessage(new TextComponentString(playerIn.world.isRemote ? "clientSide" : "serverSide"), false);
+			SoulInventoryDataHandler.getHandler(playerIn).forEach(soul -> playerIn.sendStatusMessage(new TextComponentString(soul.toString()), false));
 		default : break;
 		}
 		return super.onItemRightClick(worldIn, playerIn, handIn);

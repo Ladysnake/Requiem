@@ -191,13 +191,11 @@ public class IncorporealDataHandler {
 
 	        @Override
 	        public NBTTagCompound serializeNBT() {
-	            
 	            return (NBTTagCompound) CAPABILITY_INCORPOREAL.getStorage().writeNBT(CAPABILITY_INCORPOREAL, instance, null);
 	        }
 
 	        @Override
 	        public void deserializeNBT(NBTTagCompound nbt) {
-	            
 	            CAPABILITY_INCORPOREAL.getStorage().readNBT(CAPABILITY_INCORPOREAL, instance, null, nbt);
 	        }
 	    }
@@ -211,7 +209,6 @@ public class IncorporealDataHandler {
 
 		    @Override
 		    public NBTBase writeNBT (Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side) {
-		        
 		        final NBTTagCompound tag = new NBTTagCompound();           
 		        tag.setBoolean("incorporeal", instance.isIncorporeal());    
 		        tag.setString("lastDeath", instance.getLastDeathMessage() == null || instance.getLastDeathMessage().isEmpty() ? "This player has no recorded death" : instance.getLastDeathMessage());
@@ -220,7 +217,6 @@ public class IncorporealDataHandler {
 
 		    @Override
 		    public void readNBT (Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side, NBTBase nbt) {
-		        
 		        final NBTTagCompound tag = (NBTTagCompound) nbt;
 		        instance.setIncorporeal(tag.getBoolean("incorporeal"));
 		        instance.setLastDeathMessage(tag.getString("lastDeath"));

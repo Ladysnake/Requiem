@@ -1,28 +1,20 @@
 package ladysnake.dissolution.common.handlers;
 
-import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.DissolutionConfig;
-import ladysnake.dissolution.common.blocks.ISoulInteractable;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler.Provider;
-import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.networking.IncorporealMessage;
-import ladysnake.dissolution.common.networking.PacketHandler;
+import ladysnake.dissolution.common.capabilities.SoulInventoryDataHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 
 /**
@@ -43,7 +35,8 @@ public class EventHandlerCommon {
 		if (!(event.getObject() instanceof EntityPlayer))
 			return;
 
-		event.addCapability(new ResourceLocation(Reference.MOD_ID, "incorporeal"), new Provider());
+		event.addCapability(new ResourceLocation(Reference.MOD_ID, "incorporeal"), new IncorporealDataHandler.Provider());
+		event.addCapability(new ResourceLocation(Reference.MOD_ID, "soul_inventory"), new SoulInventoryDataHandler.Provider());
 	}
 
 	@SubscribeEvent
@@ -55,9 +48,6 @@ public class EventHandlerCommon {
 			clone.setIncorporeal(true, event.getEntityPlayer());
 			clone.setLastDeathMessage(corpse.getLastDeathMessage());
 			clone.setSynced(false);
-			/*IMessage msg = new IncorporealMessage(event.getEntityPlayer().getUniqueID().getMostSignificantBits(),
-					event.getEntityPlayer().getUniqueID().getLeastSignificantBits(), true);
-			PacketHandler.net.sendToAll(msg);*/
 			
 			if(DissolutionConfig.respawnInNether && !DissolutionConfig.wowRespawn)
 				event.getEntityPlayer().setPosition(event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ);
@@ -73,37 +63,6 @@ public class EventHandlerCommon {
 		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
 		if (playerCorp.isIncorporeal())
 			event.modifyVisibility(0D);
-	}
-
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onPlayerRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-		if (intangible(event) && !(event.getWorld().getBlockState(event.getPos()).getBlock() instanceof ISoulInteractable)) {
-			event.setCanceled(true);
-		}
-	}
-	
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onPlayerLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
-		if(intangible(event))
-			event.setCanceled(true);
-	}
-	
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onPlayerRightClickItem(PlayerInteractEvent.RightClickItem event) {
-		if(intangible(event) && !(event.getItemStack().getItem() instanceof ISoulInteractable))
-			event.setCanceled(true);
-	}
-	
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onPlayerEntityInteractSpecific(PlayerInteractEvent.EntityInteractSpecific event) {
-		if(intangible(event) && !(event.getTarget() instanceof ISoulInteractable))
-			event.setCanceled(true);
-	}
-	
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onPlayerEntityInteract(PlayerInteractEvent.EntityInteract event) {
-		if(intangible(event) && !(event.getTarget() instanceof ISoulInteractable))
-			event.setCanceled(true);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -146,24 +105,6 @@ public class EventHandlerCommon {
 				PacketHandler.net.sendToAll(msg);*/
 			}
 		}
-	}
-	
-	/**
-	 * Checks if the player from the event is intangible
-	 * @param event
-	 * @return true if the event's entity is a non-creative player and a ghost
-	 */
-	private boolean intangible(EntityEvent event) {
-		return event.getEntity() instanceof EntityPlayer && 
-				IncorporealDataHandler.getHandler((EntityPlayer) event.getEntity()).isIncorporeal() && 
-				!((EntityPlayer)event.getEntity()).isCreative();
-	}
-	
-	/**
-	 * Same as {@link #intangible(EntityEvent)} except optimized for player events.
-	 */
-	private boolean intangible(PlayerEvent event) {
-		return IncorporealDataHandler.getHandler(event.getEntityPlayer()).isIncorporeal() && !event.getEntityPlayer().isCreative();
 	}
 
 }

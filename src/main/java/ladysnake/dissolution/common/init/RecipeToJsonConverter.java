@@ -144,9 +144,9 @@ public class RecipeToJsonConverter {
 		if (thing instanceof String) {
 			Map<String, Object> ret = new HashMap<>();
 			ret.put("item", "#" + ((String) thing)); // NOTE you need to add this to your _constants.json!
-			// todo autogenerate constants.json as well
+			// TODO autogenerate constants.json as well
 		}
 
 		throw new IllegalArgumentException("Not a block, item, stack, or od name");
-}
+	}
 }

@@ -14,7 +14,7 @@ import ladysnake.dissolution.common.DissolutionConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 
-public class ShaderHelper {
+public final class ShaderHelper {
 	
 	/**the shader used during the corpse dissolution animation*/
 	public static int dissolution = 0;
@@ -159,5 +159,7 @@ public class ShaderHelper {
        // System.out.println(source);
         return source.toString();
     }
+	
+	private ShaderHelper(){}
 
 }

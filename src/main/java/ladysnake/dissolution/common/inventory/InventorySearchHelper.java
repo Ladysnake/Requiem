@@ -17,7 +17,7 @@ import net.minecraft.world.World;
  * @author Pyrofab
  *
  */
-public abstract class InventorySearchHelper {
+public final class InventorySearchHelper {
 
 	/**
 	 * Finds an item in the player inventory
@@ -47,6 +47,7 @@ public abstract class InventorySearchHelper {
 		}
 	}
 
+	/*
 	public static ItemStack findItemInstance(EntityPlayer player, Item item) {
 		return findItemInstance(player, item.getClass());
 	}
@@ -67,10 +68,13 @@ public abstract class InventorySearchHelper {
 
 			return ItemStack.EMPTY;
 		}
-	}
+	}*/
 
 	public static boolean compareItemStacks(ItemStack stack1, ItemStack stack2) {
 		return stack2.getItem() == stack1.getItem()
 				&& (stack2.getMetadata() == 32767 || stack2.getMetadata() == stack1.getMetadata());
 	}
+	
+	private InventorySearchHelper(){}
+	
 }

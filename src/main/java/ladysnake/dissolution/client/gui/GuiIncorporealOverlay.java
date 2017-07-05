@@ -196,4 +196,8 @@ public class GuiIncorporealOverlay extends Gui {
 		
         GlStateManager.popAttrib();
 	}
+	
+	public void drawPowerIndicator() {
+		if(Minecraft.getMinecraft().player.inventory.currentItem == 0);
+	}
 }
