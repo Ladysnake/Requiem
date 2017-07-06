@@ -30,19 +30,17 @@ public class BlockFluidMercury extends BlockFluidClassic {
 	
 			if (entityIn instanceof EntityPlayer) {
 				
+				EntityPlayer player = (EntityPlayer)entityIn;
 				
-				if(((EntityPlayer) entityIn).getActivePotionEffects().isEmpty()){
-					
-					world.playSound((EntityPlayer) entityIn, ((EntityPlayer) entityIn).getPosition(), SoundEvents.ITEM_TOTEM_USE, SoundCategory.HOSTILE, 9.0F, 0.8F + ran.nextFloat() * 0.3F);
-					
-					EntityPlayer player = 	(EntityPlayer)entityIn;
+				if(player.getActivePotionEffects().isEmpty()){
 					player.addPotionEffect(new PotionEffect(Potion.getPotionById(19), 200, 2));
 					
-					if (IncorporealDataHandler.getHandler(player).isIncorporeal()) {
-						
-						IncorporealDataHandler.getHandler(player).setIncorporeal(false, player);
-						
-					}
+				}
+				
+				if (IncorporealDataHandler.getHandler(player).isIncorporeal()) {
+					
+					world.playSound(player, player.getPosition(), SoundEvents.ITEM_TOTEM_USE, SoundCategory.HOSTILE, 9.0F, 0.8F + ran.nextFloat() * 0.3F);
+					IncorporealDataHandler.getHandler(player).setIncorporeal(false, player);
 					
 				}
 			}

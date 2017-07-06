@@ -23,8 +23,15 @@ public enum SoulTypes {
 	PREDATORY(EntityMob.class), 
 	WISE(EntityVillager.class), 
 	UNTYPED;
+
+	static {
+		byte idCount = 0;
+		for(SoulTypes s : SoulTypes.values())
+			s.id = idCount++;
+	}
 	
 	private List<Class<? extends EntityLiving>> sources;
+	private byte id;
 	
 	SoulTypes(Class<? extends EntityLiving>... sources) {
 		this.sources = Arrays.asList(sources);
@@ -32,6 +39,17 @@ public enum SoulTypes {
 	
 	public List<Class<? extends EntityLiving>> getSources () {
 		return this.sources;
+	}
+	
+	public Byte getId() {
+		return id;
+	}
+	
+	public static SoulTypes getById(byte id) {
+		for(SoulTypes soul : SoulTypes.values())
+			if(soul.id == id)
+				return soul;
+		return SoulTypes.UNTYPED;
 	}
 	
 	public static SoulTypes getSoulFor(EntityLiving entityIn) {

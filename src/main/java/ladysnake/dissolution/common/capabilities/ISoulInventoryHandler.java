@@ -41,4 +41,6 @@ public interface ISoulInventoryHandler {
 	Soul get(Predicate<Soul> condition);
 
 	void forEach(Consumer<Soul> action);
+	
+	List<Soul> getSoulList();
 }

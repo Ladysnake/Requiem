@@ -2,6 +2,7 @@ package ladysnake.dissolution.common.world;
 
 import java.util.Random;
 
+import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.init.ModFluids;
 import ladysnake.dissolution.common.structure.StructureCandle;
 import ladysnake.dissolution.common.world.gen.feature.WorldGenMercuryLakes;
@@ -45,10 +46,11 @@ public class WorldGen implements IWorldGenerator {
 		int Zpos = j + random.nextInt(16);
 		
 		/*CANDLE*/
-		new StructureCandle().generate(world, new BlockPos(Xpos, Ypos, Zpos), random);
+		//new StructureCandle().generate(world, new BlockPos(Xpos, Ypos, Zpos), random);
 		
 		/*MERCURY_LAKES*/
-		new WorldGenMercuryLakes(ModFluids.NORMAL.getBlock()).generate(world, random, new BlockPos(Xpos, Ypos, Zpos));
+		if(DissolutionConfig.spawnMercuryLakes)
+			new WorldGenMercuryLakes(ModFluids.NORMAL.getBlock()).generate(world, random, new BlockPos(Xpos, Ypos, Zpos));
 		
 	}
 		

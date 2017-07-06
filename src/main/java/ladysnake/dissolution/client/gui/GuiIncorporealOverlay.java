@@ -15,7 +15,9 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -28,6 +30,7 @@ public class GuiIncorporealOverlay extends Gui {
 	
 	private static final ResourceLocation INCORPOREAL_PATH = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_overlay.png");
 	private static final ResourceLocation ORIGIN_PATH = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_compass_legacy.png");
+	private static final ResourceLocation MAGIC_BAR_PATH = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_magic_bar.png");
 	protected static final ResourceLocation ENCHANTED_ITEM_GLINT_RES = new ResourceLocation(Reference.MOD_ID, "textures/misc/enchanted_item_glint.png");
 	private boolean usingShader;
 	
@@ -54,8 +57,8 @@ public class GuiIncorporealOverlay extends Gui {
 			this.drawIncorporealOverlay(event.getResolution());
 			//ShaderHelper.revert();
 	        if(DissolutionConfig.soulCompass)
-	        	
 				this.drawOriginIndicator(event.getResolution());
+	        this.drawMagicBar(event.getResolution());
 	        
 		}
         if(pl.isSoulCandleNearby(1)) {
@@ -197,7 +200,18 @@ public class GuiIncorporealOverlay extends Gui {
         GlStateManager.popAttrib();
 	}
 	
-	public void drawPowerIndicator() {
-		if(Minecraft.getMinecraft().player.inventory.currentItem == 0);
+	public void drawMagicBar(ScaledResolution scaledRes) {
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        this.mc.getTextureManager().bindTexture(MAGIC_BAR_PATH);
+        EntityPlayer entityplayer = (EntityPlayer)this.mc.getRenderViewEntity();
+        int i = scaledRes.getScaledWidth() / 2;
+        float f = this.zLevel;
+        int j = 182;
+        int k = 91;
+        this.zLevel = -90.0F;
+        this.drawTexturedModalRect(i - 91, scaledRes.getScaledHeight() - 22, 0, 0, 182, 22);
+        int currentItem = 4;
+        this.drawTexturedModalRect(i - 91 - 1 + currentItem * 20, scaledRes.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
+        
 	}
 }

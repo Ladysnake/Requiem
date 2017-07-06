@@ -89,6 +89,11 @@ public class SoulInventoryDataHandler {
 		public Soul get(Predicate<Soul> condition) {
 			return this.soulInventory.stream().filter(condition).findFirst().orElse(Soul.UNDEFINED);
 		}
+		
+		@Override
+		public List<Soul> getSoulList() {
+			return this.soulInventory;
+		}
 	
 	}
 	

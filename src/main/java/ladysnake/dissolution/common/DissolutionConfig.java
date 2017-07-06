@@ -24,11 +24,13 @@ public class DissolutionConfig {
 	public static boolean skipDeathScreen = false;
 	public static boolean soulCompass = true;
 	public static boolean soulCompassAnchors = true;
+	public static boolean spawnMercuryLakes = true;
 	public static boolean useShaders = true;
 	public static boolean wowRespawn = false;
 	
 	public static final String CATEGORY_RESPAWN = "Respawn";
 	public static final String CATEGORY_GHOST = "Ghost";
+	public static final String CATEGORY_WORLDGEN = "Worldgen";
 	
 	public static void syncConfig() {
 		try {
@@ -96,6 +98,16 @@ public class DissolutionConfig {
 	        		"lever, glass_pane",
 	        		"The blocks that can be right clicked/broken by ghosts (this config option doesn't affect anything currently)");
 	        
+	        // WORLD GEN SETTINGS
+	        
+	        Dissolution.config.addCustomCategoryComment(CATEGORY_WORLDGEN, "Settings related to world generation and structures");
+	        
+	        Property spawnMercuryLakesProp = Dissolution.config.get(
+	        		CATEGORY_WORLDGEN,
+	        		"spawnMercuryLakes",
+	        		true,
+	        		"If set to false, mercury lakes won't spawn in newly generated areas.");
+	        
 	        // GENERAL SETTINGS
 	        
 	        Property minionsAttackCreepersProp = Dissolution.config.get(
@@ -152,6 +164,7 @@ public class DissolutionConfig {
 	        skipDeathScreen = shouldShowDeathScreenProp.getBoolean();
 	        soulCompass = showSoulCompassProp.getBoolean();
 	        soulCompassAnchors = showAnchorsInSoulCompassProp.getBoolean();
+	        spawnMercuryLakes = spawnMercuryLakesProp.getBoolean();
 	        useShaders = shadersProp.getBoolean();
 	        wowRespawn = wowRespawnProp.getBoolean();
 	        interactableBlocksProp.getArrayEntryClass();

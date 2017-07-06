@@ -1,5 +1,7 @@
 package ladysnake.dissolution.client.handlers;
 
+import java.lang.reflect.Field;
+
 import ladysnake.dissolution.client.renders.blocks.RenderSoulAnchor;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
@@ -8,6 +10,7 @@ import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PingMessage;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.GuiIngameForge;
@@ -19,6 +22,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -29,7 +33,12 @@ public class EventHandlerClient {
 	
 	private static final float SOUL_VERTICAL_SPEED = 0.1f;
 	private static RenderSoulAnchor renderAnch = new RenderSoulAnchor();
+	private static Field highlightingItemStack;
 	private static int refresh = 0;
+	
+	static {
+		highlightingItemStack = ReflectionHelper.findField(GuiIngame.class, "highlightingItemStack");
+	}
 
 	@SubscribeEvent
 	public void onGameTick(TickEvent event) {
