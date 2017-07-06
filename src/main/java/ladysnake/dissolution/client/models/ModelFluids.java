@@ -46,7 +46,7 @@ public class ModelFluids {
 	}
 
 	private void registerFluidModels() {
-		ModFluids.MOD_FLUID_BLOCKS.forEach(this::registerFluidModel);
+		ModFluids.MOD_FLUID_BLOCKS.values().forEach(this::registerFluidModel);
 	}
 
 	private void registerFluidModel(final IFluidBlock fluidBlock) {

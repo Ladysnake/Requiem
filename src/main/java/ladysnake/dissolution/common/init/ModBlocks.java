@@ -20,6 +20,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -60,10 +61,6 @@ public class ModBlocks {
     @SubscribeEvent
     public void onRegister(RegistryEvent.Register<Block> event) {
     	reg = event.getRegistry();
-    	this.register();
-    }
-    
-    public void register() {
     	registerBlock(CRYSTALLIZER);
     	//registerBlock(DRIED_LAVA);
     	registerBlock(ECTOPLASMA);
@@ -75,6 +72,12 @@ public class ModBlocks {
     	reg.register(SEPULTURE);
     	registerBlock(SOUL_EXTRACTOR);
     	//registerBlock(RESUSCITATOR);
+    	for (final IFluidBlock fluidBlock : ModFluids.MOD_FLUID_BLOCKS.values()) {
+			final Block block = (Block) fluidBlock;
+			block.setRegistryName(Reference.MOD_ID, "fluid." + fluidBlock.getFluid().getName());
+			block.setUnlocalizedName(Reference.MOD_ID + ":" + fluidBlock.getFluid().getUnlocalizedName());
+			registerBlock(block);
+		}
     }
     
     private Item registerBlock(Block block) {

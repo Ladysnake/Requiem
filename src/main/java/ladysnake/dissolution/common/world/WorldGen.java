@@ -50,7 +50,7 @@ public class WorldGen implements IWorldGenerator {
 		
 		/*MERCURY_LAKES*/
 		if(DissolutionConfig.spawnMercuryLakes)
-			new WorldGenMercuryLakes(ModFluids.NORMAL.getBlock()).generate(world, random, new BlockPos(Xpos, Ypos, Zpos));
+			new WorldGenMercuryLakes(ModFluids.MERCURY.getBlock()).generate(world, random, new BlockPos(Xpos, Ypos, Zpos));
 		
 	}
 		
