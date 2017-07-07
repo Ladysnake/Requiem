@@ -13,6 +13,7 @@ public enum ModSounds {
 	lost_soul_death;
 		
 	public final SoundEvent sound;
+	static final RegisterManager REGISTRY_MANAGER = new RegisterManager();
 		
 	ModSounds() {
 		ResourceLocation soundLocation = new ResourceLocation(Reference.MOD_ID, this.name());
@@ -20,10 +21,16 @@ public enum ModSounds {
 		this.sound.setRegistryName(soundLocation);
 	}
 
-	@SubscribeEvent
-    public void onRegister(RegistryEvent.Register<SoundEvent> event) {
-		IForgeRegistry<SoundEvent> reg = event.getRegistry();
-		for(ModSounds s : ModSounds.values())
-			reg.register(s.sound);
+	public static final class RegisterManager {
+
+		@SubscribeEvent
+	    public void onRegister(RegistryEvent.Register<SoundEvent> event) {
+			IForgeRegistry<SoundEvent> reg = event.getRegistry();
+			for(ModSounds s : ModSounds.values())
+				reg.register(s.sound);
+		}
+		
+		private RegisterManager() {}
+
 	}
 }
