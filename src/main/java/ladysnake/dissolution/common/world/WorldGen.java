@@ -19,15 +19,15 @@ public class WorldGen implements IWorldGenerator {
 		
 		switch (world.provider.getDimension()) {
 		case -1:
-			GenerateNether(world, chunkX * 16, chunkZ * 16, random);
+			generateNether(world, chunkX * 16, chunkZ * 16, random);
 			break;
 
 		case 0:
-			GenerateOverWorld(world, chunkX * 16, chunkZ * 16, random);
+			generateOverWorld(world, chunkX * 16, chunkZ * 16, random);
 			break;
 
 		case 1:
-			GenerateEnd(world, chunkX * 16, chunkZ * 16, random);
+			generateEnd(world, chunkX * 16, chunkZ * 16, random);
 			break;
 		}
 
@@ -35,26 +35,26 @@ public class WorldGen implements IWorldGenerator {
 
 
 
-	private void GenerateNether(World world, int i, int j, Random random) {
+	private void generateNether(World world, int i, int j, Random random) {
 
 	}
 
-	private void GenerateOverWorld(World world, int i, int j, Random random) {
+	private void generateOverWorld(World world, int i, int j, Random random) {
 		
-		int Xpos = i + random.nextInt(16);
+		int Xpos = i + random.nextInt(8);
 		int Ypos = random.nextInt(128);
-		int Zpos = j + random.nextInt(16);
+		int Zpos = j + random.nextInt(8);
 		
 		/*CANDLE*/
 		//new StructureCandle().generate(world, new BlockPos(Xpos, Ypos, Zpos), random);
 		
 		/*MERCURY_LAKES*/
 		if(DissolutionConfig.spawnMercuryLakes)
-			new WorldGenMercuryLakes(ModFluids.MERCURY.getBlock()).generate(world, random, new BlockPos(Xpos, Ypos, Zpos));
+			new WorldGenMercuryLakes(ModFluids.MERCURY.fluidBlock).generate(world, random, new BlockPos(Xpos, Ypos, Zpos));
 		
 	}
 		
-	private void GenerateEnd(World world, int i, int j, Random random) {
+	private void generateEnd(World world, int i, int j, Random random) {
 
 	}
 

@@ -18,7 +18,6 @@ public class SoulPacket implements IMessageHandler<SoulMessage, IMessage> {
 				{
 				  public void run() {
 					  final ISoulInventoryHandler soulInv = SoulInventoryDataHandler.getHandler(Minecraft.getMinecraft().player);
-					  System.out.println("packet type: " + message.type);
 					  switch(message.type) {
 					  case SoulMessage.FULL_UPDATE:
 						  soulInv.getSoulList().clear();

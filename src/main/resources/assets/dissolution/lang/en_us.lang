@@ -1,6 +1,9 @@
 itemGroup.dissolution=Dissolution
 dissolution.jei.recipe.crystallizer=Crystallizing
 
+dissolution.advancements.main.root.title=Dissolution
+dissolution.advancements.main.root.description=The law of the cycle
+
 tile.crystallizer.name=Crystallizer
 tile.ectoplasm_block.name=Block of Ectoplasm
 tile.ectoplasma_block.name=Block of Ectoplasma

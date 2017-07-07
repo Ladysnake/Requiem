@@ -72,20 +72,25 @@ public class ModBlocks {
     	reg.register(SEPULTURE);
     	registerBlock(SOUL_EXTRACTOR);
     	//registerBlock(RESUSCITATOR);
-    	for (final IFluidBlock fluidBlock : ModFluids.MOD_FLUID_BLOCKS.values()) {
-			final Block block = (Block) fluidBlock;
-			block.setRegistryName(Reference.MOD_ID, "fluid." + fluidBlock.getFluid().getName());
-			block.setUnlocalizedName(Reference.MOD_ID + ":" + fluidBlock.getFluid().getUnlocalizedName());
-			registerBlock(block);
+    	for (final ModFluids modFluid : ModFluids.values()) {
+			final Block block = (Block) modFluid.fluidBlock;
+			block.setRegistryName(Reference.MOD_ID, "fluid." + modFluid.fluidBlock.getFluid().getName());
+			block.setUnlocalizedName(Reference.MOD_ID + ":" + modFluid.fluidBlock.getFluid().getUnlocalizedName());
+			registerBlock(block, false);
 		}
     }
     
     private Item registerBlock(Block block) {
+    	return registerBlock(block, true);
+    }
+    
+    private Item registerBlock(Block block, boolean addToTab) {
     	reg.register(block);
     	ItemBlock item = new ItemBlock(block);
     	item.setRegistryName(block.getRegistryName());
     	ModItems.blocks.add(item);
-    	block.setCreativeTab(Dissolution.CREATIVE_TAB);
+    	if(addToTab)
+    		block.setCreativeTab(Dissolution.CREATIVE_TAB);
     	return item;
     }
     

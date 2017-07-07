@@ -15,18 +15,17 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.IFluidBlock;
 
-public class ModFluids {
-
-	public static final Set<Fluid> FLUIDS = new HashSet<>();
-
-	public static final Map<String, IFluidBlock> MOD_FLUID_BLOCKS = new HashMap<>();
+public enum ModFluids {
 	
-
-	public static final Fluid MERCURY = createFluid("mercury", false,
+	MERCURY("mercury", false,
 			fluid -> fluid.setLuminosity(10).setDensity(1600).setViscosity(1000),
 			BlockFluidMercury::new);
 
-	private static Fluid createFluid(final String name, final boolean hasFlowIcon, final Consumer<Fluid> fluidPropertyApplier, final Function<Fluid, BlockFluidBase> blockFactory) {
+	public final Fluid fluid;
+
+	public final BlockFluidBase fluidBlock;
+	
+	ModFluids(final String name, final boolean hasFlowIcon, final Consumer<Fluid> fluidPropertyApplier, final Function<Fluid, BlockFluidBase> blockFactory) {
 		final String texturePrefix = Reference.MOD_ID + ":" + "blocks/fluid_";
 
 		final ResourceLocation still = new ResourceLocation(texturePrefix + name + "_still");
@@ -37,14 +36,12 @@ public class ModFluids {
 
 		if (useOwnFluid) {
 			fluidPropertyApplier.accept(fluid);
-			MOD_FLUID_BLOCKS.put(name, blockFactory.apply(fluid));
 		} else {
 			fluid = FluidRegistry.getFluid(name);
 		}
-
-		FLUIDS.add(fluid);
-
-		return fluid;
+		
+		this.fluidBlock = blockFactory.apply(fluid);
+		this.fluid = fluid;
 	}
 
 	private static void registerFluidContainers() {
