@@ -14,6 +14,11 @@ import ladysnake.dissolution.common.DissolutionConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 
+/**
+ * Helper class for shader creation and usage
+ * @author Pyrofab
+ *
+ */
 public final class ShaderHelper {
 	
 	/**the shader used during the corpse dissolution animation*/
@@ -38,7 +43,7 @@ public final class ShaderHelper {
 	 * Initializes all known shaders
 	 */
 	public static void initShaders() {
-		if(!OpenGlHelper.shadersSupported)
+		if(!shouldUseShaders())
 			return;
 		dissolution = initShader("corpsedissolution");
 		intangible = initShader("intangible");
@@ -90,7 +95,7 @@ public final class ShaderHelper {
 	 * @param program the reference to the desired shader (0 to remove any current shader)
 	 */
 	public static void useShader(int program) {
-		if(!OpenGlHelper.shadersSupported)
+		if(!shouldUseShaders())
 			return;
 
 		prevProgram = GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
@@ -107,7 +112,7 @@ public final class ShaderHelper {
 	 * @param value an int value for this uniform
 	 */
 	public static void setUniform(String uniformName, int value) {
-		if(!OpenGlHelper.shadersSupported)
+		if(!shouldUseShaders() || currentProgram == 0)
 			return;
 
 		int uniform = GL20.glGetUniformLocation(currentProgram, uniformName);
@@ -121,7 +126,7 @@ public final class ShaderHelper {
 	 * @param value a float value for this uniform
 	 */
 	public static void setUniform(String uniformName, float value) {
-		if(!OpenGlHelper.shadersSupported)
+		if(!shouldUseShaders())
 			return;
 
 		int uniform = GL20.glGetUniformLocation(currentProgram, uniformName);

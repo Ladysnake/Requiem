@@ -4,11 +4,11 @@ import javax.annotation.Nonnull;
 
 import org.lwjgl.opengl.GL11;
 
-import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
-import ladysnake.dissolution.common.entity.EntityMinionZombie;
 import ladysnake.dissolution.client.models.ModelMinionSkeleton;
-import ladysnake.dissolution.common.entity.EntityMinion;
 import ladysnake.dissolution.common.entity.EntityWanderingSoul;
+import ladysnake.dissolution.common.entity.minion.AbstractMinion;
+import ladysnake.dissolution.common.entity.minion.EntityMinionSkeleton;
+import ladysnake.dissolution.common.entity.minion.EntityMinionZombie;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelZombie;

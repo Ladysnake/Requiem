@@ -3,7 +3,7 @@ package ladysnake.dissolution.client.gui;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
 import net.minecraft.client.Minecraft;
@@ -44,7 +44,7 @@ public class GuiIncorporealOverlay extends Gui {
 	@SubscribeEvent
 	public void onRenderExperienceBar(RenderGameOverlayEvent.Post event) {
 		if (event.getType() != ElementType.EXPERIENCE) return;
-		final IIncorporealHandler pl = IncorporealDataHandler.getHandler(this.mc.player);
+		final IIncorporealHandler pl = CapabilityIncorporealHandler.getHandler(this.mc.player);
 		
 		OverlaysRenderer.INSTANCE.renderOverlays(event);
 		

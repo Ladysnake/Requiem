@@ -9,8 +9,11 @@ import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.ISoulHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
+import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.handlers.LivingDeathHandler;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.GuiProxy;
@@ -25,10 +28,12 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 
-public class EntityPlayerCorpse extends EntityMinion implements ISoulInteractable {
+public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteractable {
 	
 	private static DataParameter<Optional<UUID>> PLAYER = EntityDataManager.<Optional<UUID>>createKey(EntityPlayerCorpse.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 	private static DataParameter<Boolean> DECAY = EntityDataManager.<Boolean>createKey(EntityPlayerCorpse.class, DataSerializers.BOOLEAN);
@@ -42,7 +47,7 @@ public class EntityPlayerCorpse extends EntityMinion implements ISoulInteractabl
 	
 	@Override
 	protected boolean processInteract(EntityPlayer player, EnumHand hand) {
-		final IIncorporealHandler handler = IncorporealDataHandler.getHandler(player);
+		final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
 
 		if(handler.isIncorporeal() && (!this.isDecaying() || DissolutionConfig.wowRespawn)) {
 			LivingDeathHandler.transferEquipment(this, player);
@@ -111,7 +116,7 @@ public class EntityPlayerCorpse extends EntityMinion implements ISoulInteractabl
 	
 	@Override
 	public int getMaxTimeRemaining() {
-		return inert ? (DissolutionConfig.wowRespawn ? 6000 : 50) : -1;
+		return this.isDecaying() ? (DissolutionConfig.wowRespawn ? 6000 : 50) : -1;
 	}
 	
 	@Override
@@ -148,6 +153,7 @@ public class EntityPlayerCorpse extends EntityMinion implements ISoulInteractabl
 	public void readEntityFromNBT(NBTTagCompound compound) {
 		super.readEntityFromNBT(compound);
         this.inventory.readFromNBT(compound.getTagList("Inventory", 10));
+        this.soulInventoryProvider.deserializeNBT((NBTTagCompound) compound.getTag("SoulInventory"));
         setPlayer(compound.getUniqueId("player"));
         setDecaying(compound.getBoolean("decaying"));
 	}
@@ -155,6 +161,7 @@ public class EntityPlayerCorpse extends EntityMinion implements ISoulInteractabl
 	@Override
 	public void writeEntityToNBT(NBTTagCompound compound) {
 		super.writeEntityToNBT(compound);
+		compound.setTag("SoulInventory", this.soulInventoryProvider.serializeNBT());
         compound.setTag("Inventory", this.inventory.writeToNBT(new NBTTagList()));
         compound.setUniqueId("player", getPlayer());
         compound.setBoolean("decaying", isDecaying());
@@ -162,8 +169,27 @@ public class EntityPlayerCorpse extends EntityMinion implements ISoulInteractabl
 
 	@Override
 	public String toString() {
-		return "EntityPlayerCorpse [inventory=" + inventory + ", player=" + this.getPlayer() + "]";
+		return "EntityPlayerCorpse [inventory=" + inventory + ",\n player=" + this.getPlayer() + ",\n soulInventory=" + this.getSoulHandlerCapability() + "]";
 	}
 	
+	private CapabilitySoulHandler.Provider soulInventoryProvider = new CapabilitySoulHandler.Provider();
+	
+	public ISoulHandler getSoulHandlerCapability() {
+		return getCapability(CapabilitySoulHandler.CAPABILITY_SOUL_INVENTORY, EnumFacing.DOWN);
+	}
+	
+	@Override
+	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+		if(capability == CapabilitySoulHandler.CAPABILITY_SOUL_INVENTORY)
+			return soulInventoryProvider.hasCapability(capability, facing);
+		return super.hasCapability(capability, facing);
+	}
+	
+	@Override
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+		if(capability == CapabilitySoulHandler.CAPABILITY_SOUL_INVENTORY)
+			return soulInventoryProvider.getCapability(capability, facing);
+		return super.getCapability(capability, facing);
+	}
 	
 }

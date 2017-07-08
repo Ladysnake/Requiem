@@ -6,7 +6,7 @@ import javax.vecmath.Vector3f;
 import org.lwjgl.opengl.GL11;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.entity.EntityBrimstoneFire;
+import ladysnake.dissolution.common.entity.item.EntityBrimstoneFire;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;

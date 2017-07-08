@@ -4,7 +4,7 @@ import java.util.Random;
 
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
@@ -78,7 +78,7 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(playerIn);
+		IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(playerIn);
 		if (playerCorp.isIncorporeal()) {
 			this.getTE(worldIn, pos).setDeathMessage(playerCorp.getLastDeathMessage());
 			playerCorp.setIncorporeal(false, playerIn);

@@ -11,14 +11,18 @@ public enum ModSounds {
 	lost_soul_ambient,
 	lost_soul_pain,
 	lost_soul_death;
-		
-	public final SoundEvent sound;
+
+	private final SoundEvent sound;
 	static final RegisterManager REGISTRY_MANAGER = new RegisterManager();
-		
+
 	ModSounds() {
 		ResourceLocation soundLocation = new ResourceLocation(Reference.MOD_ID, this.name());
 		this.sound = new SoundEvent(soundLocation);
 		this.sound.setRegistryName(soundLocation);
+	}
+
+	public SoundEvent sound() {
+		return this.sound;
 	}
 
 	public static final class RegisterManager {

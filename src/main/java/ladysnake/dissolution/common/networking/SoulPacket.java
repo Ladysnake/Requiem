@@ -1,8 +1,8 @@
 package ladysnake.dissolution.common.networking;
 
-import ladysnake.dissolution.common.capabilities.ISoulInventoryHandler;
+import ladysnake.dissolution.common.capabilities.ISoulHandler;
 import ladysnake.dissolution.common.capabilities.Soul;
-import ladysnake.dissolution.common.capabilities.SoulInventoryDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -17,7 +17,7 @@ public class SoulPacket implements IMessageHandler<SoulMessage, IMessage> {
 			  Minecraft.getMinecraft().addScheduledTask(new Runnable()
 				{
 				  public void run() {
-					  final ISoulInventoryHandler soulInv = SoulInventoryDataHandler.getHandler(Minecraft.getMinecraft().player);
+					  final ISoulHandler soulInv = CapabilitySoulHandler.getHandler(Minecraft.getMinecraft().player);
 					  switch(message.type) {
 					  case SoulMessage.FULL_UPDATE:
 						  soulInv.getSoulList().clear();

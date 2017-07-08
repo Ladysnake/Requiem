@@ -30,7 +30,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
  * @author Pyrofab
  * 
  */
-public class IncorporealDataHandler {
+public class CapabilityIncorporealHandler {
 	
 	/**this is a list of hardcoded vanilla blocks that players can interact with*/
 	public static ArrayList<Block> soulInteractableBlocks = new ArrayList<Block>();
@@ -45,7 +45,7 @@ public class IncorporealDataHandler {
 	
     public static void register() {
         CapabilityManager.INSTANCE.register(IIncorporealHandler.class, new Storage(), DefaultIncorporealHandler.class);
-        MinecraftForge.EVENT_BUS.register(new IncorporealDataHandler());
+        MinecraftForge.EVENT_BUS.register(new CapabilityIncorporealHandler());
     }
     
     /**

@@ -24,7 +24,7 @@ public class DissolutionConfig {
 	public static boolean skipDeathScreen = false;
 	public static boolean soulCompass = true;
 	public static boolean soulCompassAnchors = true;
-	public static boolean spawnMercuryLakes = true;
+	public static int spawnMercuryLakesFreq = 100;
 	public static boolean useShaders = true;
 	public static boolean wowRespawn = false;
 	
@@ -105,8 +105,8 @@ public class DissolutionConfig {
 	        Property spawnMercuryLakesProp = Dissolution.config.get(
 	        		CATEGORY_WORLDGEN,
 	        		"spawnMercuryLakes",
-	        		true,
-	        		"If set to false, mercury lakes won't spawn in newly generated areas.");
+	        		spawnMercuryLakesFreq,
+	        		"A mercury lake has a 1 in N chances to spawn in a given chunk (the higher the number here, the less lakes). -1 to disable.");
 	        
 	        // GENERAL SETTINGS
 	        
@@ -164,7 +164,7 @@ public class DissolutionConfig {
 	        skipDeathScreen = shouldShowDeathScreenProp.getBoolean();
 	        soulCompass = showSoulCompassProp.getBoolean();
 	        soulCompassAnchors = showAnchorsInSoulCompassProp.getBoolean();
-	        spawnMercuryLakes = spawnMercuryLakesProp.getBoolean();
+	        spawnMercuryLakesFreq = spawnMercuryLakesProp.getInt();
 	        useShaders = shadersProp.getBoolean();
 	        wowRespawn = wowRespawnProp.getBoolean();
 	        interactableBlocksProp.getArrayEntryClass();

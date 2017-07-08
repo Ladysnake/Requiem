@@ -33,9 +33,9 @@ public enum ModFluids {
 	// just add new fluids here
 
 	/**The forge fluid associated with this block*/
-	public final Fluid fluid;
+	private final Fluid fluid;
 	/**The fluid block*/
-	public final BlockFluidBase fluidBlock;
+	private final BlockFluidBase fluidBlock;
 	
 	/**The register manager*/
 	static final RegisterManager REGISTRY_MANAGER = new RegisterManager();
@@ -67,6 +67,14 @@ public enum ModFluids {
 		
 		this.fluidBlock = blockFactory.apply(fluid);
 		this.fluid = fluid;
+	}
+	
+	public Fluid fluid() {
+		return fluid;
+	}
+	
+	public BlockFluidBase fluidBlock() {
+		return fluidBlock;
 	}
 	
 	private void registerFluidBlock() {
@@ -118,20 +126,5 @@ public enum ModFluids {
 		
 		private RegisterManager() {}
 	}
-	/*
-	private static interface MeshDefinitionFix extends ItemMeshDefinition {
-		ModelResourceLocation getLocation(final ItemStack stack);
-
-		static ItemMeshDefinition create(final MeshDefinitionFix lambda) {
-			return lambda;
-		}
-
-		@Override
-		default ModelResourceLocation getModelLocation(final ItemStack stack) {
-			return getLocation(stack);
-		}
-	}*/
-
-
 
 }

@@ -3,8 +3,8 @@ package ladysnake.dissolution.common.handlers;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
-import ladysnake.dissolution.common.capabilities.SoulInventoryDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -26,7 +26,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class EventHandlerCommon {
 
 	/**
-	 * Attaches a {@link IncorporealDataHandler} to players.
+	 * Attaches a {@link CapabilityIncorporealHandler} to players.
 	 * @param event
 	 */
 	@SubscribeEvent
@@ -35,16 +35,15 @@ public class EventHandlerCommon {
 		if (!(event.getObject() instanceof EntityPlayer))
 			return;
 
-		event.addCapability(new ResourceLocation(Reference.MOD_ID, "incorporeal"), new IncorporealDataHandler.Provider());
-		event.addCapability(new ResourceLocation(Reference.MOD_ID, "soul_inventory"), new SoulInventoryDataHandler.Provider());
+		event.addCapability(new ResourceLocation(Reference.MOD_ID, "incorporeal"), new CapabilityIncorporealHandler.Provider());
 	}
 
 	@SubscribeEvent
 	public void clonePlayer(PlayerEvent.Clone event) {
 		if (event.isWasDeath() && !event.getEntityPlayer().isCreative()) {
 			event.getEntityPlayer().experienceLevel = event.getOriginal().experienceLevel;
-			final IIncorporealHandler corpse = IncorporealDataHandler.getHandler(event.getOriginal());
-			final IIncorporealHandler clone = IncorporealDataHandler.getHandler(event.getEntityPlayer());
+			final IIncorporealHandler corpse = CapabilityIncorporealHandler.getHandler(event.getOriginal());
+			final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
 			clone.setIncorporeal(true, event.getEntityPlayer());
 			clone.setLastDeathMessage(corpse.getLastDeathMessage());
 			clone.setSynced(false);
@@ -60,21 +59,21 @@ public class EventHandlerCommon {
 	 */
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onVisibilityPlayer(PlayerEvent.Visibility event) {
-		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
+		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
 		if (playerCorp.isIncorporeal())
 			event.modifyVisibility(0D);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerAttackEntity(AttackEntityEvent event) {
-		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
+		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
 		if (playerCorp.isIncorporeal() && !event.getEntityPlayer().isCreative()) {
 			if (event.isCancelable())
 				event.setCanceled(true);
 			return;
 		}
 		if (event.getTarget() instanceof EntityPlayer) {
-			final IIncorporealHandler targetCorp = IncorporealDataHandler.getHandler(event.getTarget());
+			final IIncorporealHandler targetCorp = CapabilityIncorporealHandler.getHandler(event.getTarget());
 			if (playerCorp.isIncorporeal() && !event.getEntityPlayer().isCreative())
 				if (event.isCancelable())
 					event.setCanceled(true);
@@ -83,7 +82,7 @@ public class EventHandlerCommon {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityItemPickup(EntityItemPickupEvent event) {
-		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.getEntityPlayer());
+		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
 		if (playerCorp.isIncorporeal() && !event.getEntityPlayer().isCreative()) {
 			if (event.isCancelable())
 				event.setCanceled(true);
@@ -97,7 +96,7 @@ public class EventHandlerCommon {
 	@SubscribeEvent
 	public void onEntityStruckByLightning(EntityStruckByLightningEvent event) {
 		if (event.getEntity() instanceof EntityPlayer) {
-			final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler((EntityPlayer) event.getEntity());
+			final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity());
 			if (playerCorp.isIncorporeal()) {
 				playerCorp.setIncorporeal(false, (EntityPlayer) event.getEntity());
 				/*IMessage msg = new IncorporealMessage(event.getEntity().getUniqueID().getMostSignificantBits(),

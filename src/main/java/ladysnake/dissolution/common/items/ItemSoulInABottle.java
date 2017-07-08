@@ -5,7 +5,7 @@ import java.util.List;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.Soul;
-import ladysnake.dissolution.common.capabilities.SoulInventoryDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.capabilities.SoulTypes;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -45,7 +45,7 @@ public class ItemSoulInABottle extends Item {
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
 		ItemStack stack = playerIn.getHeldItem(handIn);
 		Soul soul = getSoul(stack);
-		SoulInventoryDataHandler.getHandler(playerIn).addSoul(soul);
+		CapabilitySoulHandler.getHandler(playerIn).addSoul(soul);
 		stack.shrink(1);
 		return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
 	}

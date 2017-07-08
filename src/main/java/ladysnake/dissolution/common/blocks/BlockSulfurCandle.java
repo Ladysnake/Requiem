@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.blocks;
 
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulCandle;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
@@ -33,7 +33,7 @@ public class BlockSulfurCandle extends AbstractCandle {
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(playerIn);
+		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(playerIn);
 		playerCorp.setSoulCandleNearby(true, 2);
 		return true;
 	}

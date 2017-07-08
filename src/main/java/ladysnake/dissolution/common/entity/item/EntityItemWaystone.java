@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.entity;
+package ladysnake.dissolution.common.entity.item;
 
 import ladysnake.dissolution.common.init.ModBlocks;
 import net.minecraft.block.state.IBlockState;

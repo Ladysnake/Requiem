@@ -6,7 +6,7 @@ import ladysnake.dissolution.client.renders.blocks.RenderSoulAnchor;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PingMessage;
 import net.minecraft.client.Minecraft;
@@ -43,7 +43,7 @@ public class EventHandlerClient {
 	@SubscribeEvent
 	public void onGameTick(TickEvent event) {
 		if (Minecraft.getMinecraft().player == null || event.side.isServer()) return;
-		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player);
+		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player);
 		//System.out.println(refresh);
 		if(!playerCorp.isSynced() && refresh++%100 == 0)
 		{
@@ -55,7 +55,7 @@ public class EventHandlerClient {
 	
 	@SubscribeEvent
 	public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
-		if(event.getType() == RenderGameOverlayEvent.ElementType.ALL && IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal()) {
+		if(event.getType() == RenderGameOverlayEvent.ElementType.ALL && CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal()) {
 			GuiIngameForge.renderFood = false;
 			GuiIngameForge.renderHotbar = Minecraft.getMinecraft().player.isCreative();
 		}
@@ -63,7 +63,7 @@ public class EventHandlerClient {
 	
 	@SubscribeEvent
 	public void onRenderGameOverlay(RenderGameOverlayEvent.Post event) {
-		if(IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal() && 
+		if(CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal() && 
 				(event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD
 				|| event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR)) {
 			GlStateManager.color(1.0F,  1.0F, 1.0F, 1.0F);
@@ -85,7 +85,7 @@ public class EventHandlerClient {
 			
 		if(DissolutionConfig.flightMode != DissolutionConfig.CUSTOM_FLIGHT) 
 			return;
-		if(IncorporealDataHandler.getHandler(event.player).isIncorporeal() && !event.player.isCreative()) {
+		if(CapabilityIncorporealHandler.getHandler(event.player).isIncorporeal() && !event.player.isCreative()) {
 		
 			if(Minecraft.getMinecraft().gameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindJump) && event.player.experienceLevel > 0) {
 				event.player.motionY = SOUL_VERTICAL_SPEED;
@@ -109,7 +109,7 @@ public class EventHandlerClient {
 	@SubscribeEvent
 	public void onEntityRender(RenderLivingEvent.Pre event) {
 	    if(event.getEntity() instanceof EntityPlayer){
-	    	final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler((EntityPlayer)event.getEntity());
+	    	final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler((EntityPlayer)event.getEntity());
 	    	if(playerCorp.isIncorporeal()){
 	    		GlStateManager.color(0.9F, 0.9F, 1.0F, 0.5F); //0.5F being alpha
 	    	}
@@ -118,13 +118,13 @@ public class EventHandlerClient {
 	
 	@SubscribeEvent
 	public void onRenderSpecificHand(RenderSpecificHandEvent event) {
-   		event.setCanceled(IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal());
+   		event.setCanceled(CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal());
 	}
 	
 	@SubscribeEvent
 	public void onDrawBlockHighlight (DrawBlockHighlightEvent event) {
 		try {
-			event.setCanceled(IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal() && 
+			event.setCanceled(CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal() && 
 					!(event.getPlayer().world.getBlockState(event.getTarget().getBlockPos()).getBlock() instanceof ISoulInteractable));
 		} catch (NullPointerException e) {	}
 	}

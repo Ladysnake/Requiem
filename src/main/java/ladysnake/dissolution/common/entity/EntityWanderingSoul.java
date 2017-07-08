@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModSounds;
 import net.minecraft.block.BlockLiquid;
@@ -38,14 +38,21 @@ import net.minecraft.world.World;
 public class EntityWanderingSoul extends EntityMob {
 
 	public static final ResourceLocation LOOT = new ResourceLocation(Reference.MOD_ID, "entities/wandering_soul");
+	
+	/**The texture displayed by this soul*/
 	public int texture_id;
-	public static final int texture_total = 4;
+	
+	private static final int TEXTURE_TOTAL = 4;
+
+	/**Whether this entity has the permission to alter terrain*/
+	private boolean canAlterTerrain;
 
     public EntityWanderingSoul(World worldIn)
     {
         super(worldIn);
-        texture_id = this.world.rand.nextInt(texture_total) + 1;
+        texture_id = this.world.rand.nextInt(TEXTURE_TOTAL) + 1;
         setSize(0.6F, 1.95F);
+        this.canAlterTerrain = this.getRNG().nextInt(200) == 0;
     }
     
     @Override
@@ -55,56 +62,55 @@ public class EntityWanderingSoul extends EntityMob {
     
     @Override
     public void onUpdate() {
+    	super.onUpdate();
     	
-    		Random r = new Random();
+    	if(!this.canAlterTerrain)
+    		return;
     	
-            float f = (float)Math.min(16, 4);
-            
-            BlockPos.MutableBlockPos blockpos = new BlockPos.MutableBlockPos(0, 0, 0);
+        float f = (float)Math.min(16, 4);
+        
+        BlockPos.MutableBlockPos blockpos = new BlockPos.MutableBlockPos(0, 0, 0);
 
-            for (BlockPos.MutableBlockPos blockpos1 : BlockPos.getAllInBoxMutable(this.getPosition().add((double)(-f), -1.0D, (double)(-f)), this.getPosition().add((double)f, -2.0D, (double)f)))
+        for (BlockPos.MutableBlockPos blockpos1 : BlockPos.getAllInBoxMutable(this.getPosition().add((double)(-f), -1.0D, (double)(-f)), this.getPosition().add((double)f, -2.0D, (double)f)))
+        {
+            if (blockpos1.distanceSqToCenter(this.posX, this.posY, this.posZ) <= (double)(f * f))
             {
-                if (blockpos1.distanceSqToCenter(this.posX, this.posY, this.posZ) <= (double)(f * f))
+            	blockpos.setPos(blockpos1.getX(), blockpos1.getY() + 1, blockpos1.getZ());
+                IBlockState iblockstate = this.world.getBlockState(blockpos);
+
+                if (iblockstate.getMaterial() == Material.AIR)
                 {
-                	blockpos.setPos(blockpos1.getX(), blockpos1.getY() + 1, blockpos1.getZ());
-                    IBlockState iblockstate = this.world.getBlockState(blockpos);
+                    IBlockState iblockstate1 = this.world.getBlockState(blockpos1);
+                    IBlockState iblockstate2 = this.world.getBlockState(blockpos1);
 
-                    if (iblockstate.getMaterial() == Material.AIR)
+                    if (iblockstate1.getMaterial() == Material.WATER && ((Integer)iblockstate1.getValue(BlockLiquid.LEVEL)).intValue() == 0 && this.world.mayPlace(Blocks.FROSTED_ICE, blockpos1, false, EnumFacing.DOWN, (Entity)null))
                     {
-                        IBlockState iblockstate1 = this.world.getBlockState(blockpos1);
-                        IBlockState iblockstate2 = this.world.getBlockState(blockpos1);
-
-                        if (iblockstate1.getMaterial() == Material.WATER && ((Integer)iblockstate1.getValue(BlockLiquid.LEVEL)).intValue() == 0 && this.world.mayPlace(Blocks.FROSTED_ICE, blockpos1, false, EnumFacing.DOWN, (Entity)null))
-                        {
-                            this.world.setBlockState(blockpos1, Blocks.FROSTED_ICE.getDefaultState());
-                            this.world.scheduleUpdate(blockpos1.toImmutable(), Blocks.FROSTED_ICE, MathHelper.getInt(this.getRNG(), 60, 120));
-                        }
-                        else if (iblockstate2.getMaterial() == Material.LAVA && ((Integer)iblockstate2.getValue(BlockLiquid.LEVEL)).intValue() == 0 && this.world.mayPlace(ModBlocks.DRIED_LAVA, blockpos1, false, EnumFacing.DOWN, (Entity)null))
-                        {
-                            this.world.setBlockState(blockpos1, ModBlocks.DRIED_LAVA.getDefaultState());
-                            this.world.scheduleUpdate(blockpos1.toImmutable(), ModBlocks.DRIED_LAVA, MathHelper.getInt(this.getRNG(), 60, 120));
-                        }
-                        if (iblockstate1.getMaterial() == Material.GRASS)
-                        {
-                        	f = (float)Math.min(8, 2);
-                        	if((int)r.nextInt(100) < 1){
-                        		this.world.setBlockState(blockpos1, Blocks.DIRT.getDefaultState());
-                        		for(int i = 0; i < 10; i++){
-                    				Random rand = new Random();
-                    				double motionX = rand.nextGaussian() * 0.05D;
-                    				double motionY = rand.nextGaussian() * 0.05D;
-                    				double motionZ = rand.nextGaussian() * 0.05D;
-                    				this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, false, blockpos1.getX() ,  blockpos1.getY() + 1.0D, blockpos1.getZ(), motionX, motionY, motionZ, new int[0]);
-                    			}
-                        	}
-                        }
-                        
+                        this.world.setBlockState(blockpos1, Blocks.FROSTED_ICE.getDefaultState());
+                        this.world.scheduleUpdate(blockpos1.toImmutable(), Blocks.FROSTED_ICE, MathHelper.getInt(this.getRNG(), 60, 120));
                     }
+                    else if (iblockstate2.getMaterial() == Material.LAVA && ((Integer)iblockstate2.getValue(BlockLiquid.LEVEL)).intValue() == 0 && this.world.mayPlace(Blocks.MAGMA, blockpos1, false, EnumFacing.DOWN, (Entity)null))
+                    {
+                        this.world.setBlockState(blockpos1, Blocks.MAGMA.getDefaultState());
+                        this.world.scheduleUpdate(blockpos1.toImmutable(), Blocks.MAGMA, MathHelper.getInt(this.getRNG(), 60, 120));
+                    }
+                    if (iblockstate1.getMaterial() == Material.GRASS)
+                    {
+                    	f = (float)Math.min(8, 2);
+                    	if((int)getRNG().nextInt(100) < 1){
+                    		this.world.setBlockState(blockpos1, Blocks.DIRT.getDefaultState());
+                    		for(int i = 0; i < 10; i++){
+                				Random rand = new Random();
+                				double motionX = rand.nextGaussian() * 0.05D;
+                				double motionY = rand.nextGaussian() * 0.05D;
+                				double motionZ = rand.nextGaussian() * 0.05D;
+                				this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, false, blockpos1.getX() ,  blockpos1.getY() + 1.0D, blockpos1.getZ(), motionX, motionY, motionZ, new int[0]);
+                			}
+                    	}
+                    }
+                    
                 }
             }
-        
-    	
-    	super.onUpdate();
+        }
     }
     
     @Override
@@ -175,17 +181,17 @@ public class EntityWanderingSoul extends EntityMob {
     
     @Override
     protected SoundEvent getAmbientSound() {
-    	return ModSounds.lost_soul_ambient.sound;
+    	return ModSounds.lost_soul_ambient.sound();
     }
     
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-    	return ModSounds.lost_soul_pain.sound;
+    	return ModSounds.lost_soul_pain.sound();
     }
     
     @Override
     protected SoundEvent getDeathSound() {
-    	return ModSounds.lost_soul_death.sound;
+    	return ModSounds.lost_soul_death.sound();
     }
 
 }

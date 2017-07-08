@@ -3,9 +3,9 @@ package ladysnake.dissolution.common.networking;
 import java.util.UUID;
 
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.ISoulInventoryHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
-import ladysnake.dissolution.common.capabilities.SoulInventoryDataHandler;
+import ladysnake.dissolution.common.capabilities.ISoulHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -27,9 +27,9 @@ public class PingPacket implements IMessageHandler<PingMessage, UpdateMessage>
 	  {
 		  FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> {
 				  EntityPlayerMP thePlayer = ctx.getServerHandler().player;
-				  final IIncorporealHandler clone = IncorporealDataHandler.getHandler(thePlayer);
+				  final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(thePlayer);
 				  PacketHandler.net.sendToAll(new IncorporealMessage(message.uuidMost, message.uuidLeast, clone.isIncorporeal() || clone.isIncorporeal()));
-				  PacketHandler.net.sendTo(new SoulMessage(SoulMessage.FULL_UPDATE, SoulInventoryDataHandler.getHandler(thePlayer).getSoulList()), thePlayer);
+				  PacketHandler.net.sendTo(new SoulMessage(SoulMessage.FULL_UPDATE, CapabilitySoulHandler.getHandler(thePlayer).getSoulList()), thePlayer);
 		  });
 	  }
 	  return null;

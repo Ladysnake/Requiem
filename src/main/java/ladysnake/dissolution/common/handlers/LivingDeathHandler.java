@@ -7,15 +7,15 @@ import java.util.Iterator;
 
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
-import ladysnake.dissolution.common.entity.EntityItemWaystone;
-import ladysnake.dissolution.common.entity.EntityMinion;
-import ladysnake.dissolution.common.entity.EntityMinionPigZombie;
-import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
-import ladysnake.dissolution.common.entity.EntityMinionStray;
-import ladysnake.dissolution.common.entity.EntityMinionWitherSkeleton;
-import ladysnake.dissolution.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
+import ladysnake.dissolution.common.entity.item.EntityItemWaystone;
+import ladysnake.dissolution.common.entity.minion.AbstractMinion;
+import ladysnake.dissolution.common.entity.minion.EntityMinionPigZombie;
+import ladysnake.dissolution.common.entity.minion.EntityMinionSkeleton;
+import ladysnake.dissolution.common.entity.minion.EntityMinionStray;
+import ladysnake.dissolution.common.entity.minion.EntityMinionWitherSkeleton;
+import ladysnake.dissolution.common.entity.minion.EntityMinionZombie;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
@@ -66,7 +66,7 @@ public class LivingDeathHandler {
 	protected void handlePlayerDeath(LivingDeathEvent event) {
 		
 		final EntityPlayer p = (EntityPlayer) event.getEntity();
-		final IIncorporealHandler corp = IncorporealDataHandler.getHandler(p);
+		final IIncorporealHandler corp = CapabilityIncorporealHandler.getHandler(p);
 		corp.setLastDeathMessage(
 				p.getDisplayNameString() + event.getSource().getDeathMessage(p).getUnformattedComponentText());
 
@@ -210,7 +210,7 @@ public class LivingDeathHandler {
 		ItemStack eye = InventorySearchHelper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD);
 		if (killer.world.rand.nextInt(1) == 0 && !eye.isEmpty() && !killer.world.isRemote) {
 
-			EntityMinion corpse = null;
+			AbstractMinion corpse = null;
 			
 			if(victim instanceof EntityPigZombie) {
 				corpse = new EntityMinionPigZombie(victim.world, ((EntityZombie)victim).isChild());

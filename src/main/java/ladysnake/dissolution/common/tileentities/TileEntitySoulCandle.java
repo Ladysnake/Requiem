@@ -3,7 +3,7 @@ package ladysnake.dissolution.common.tileentities;
 import java.util.List;
 
 import ladysnake.dissolution.common.blocks.AbstractCandle;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
@@ -27,7 +27,7 @@ public class TileEntitySoulCandle extends TileEntity implements ITickable {
 		AxisAlignedBB affectedArea = new AxisAlignedBB(x, y, z, x +1, y + 1, z+1).grow(20);
 		List<EntityPlayer> players = this.world.getEntitiesWithinAABB(EntityPlayer.class, affectedArea);
 		for(EntityPlayer p : players) {
-			IncorporealDataHandler.getHandler(p).setSoulCandleNearby(true, 1);
+			CapabilityIncorporealHandler.getHandler(p).setSoulCandleNearby(true, 1);
 		}
 	}
 }

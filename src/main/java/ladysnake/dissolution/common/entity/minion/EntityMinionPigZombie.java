@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.entity;
+package ladysnake.dissolution.common.entity.minion;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Items;

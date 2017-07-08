@@ -1,7 +1,7 @@
 package ladysnake.dissolution.client.gui;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModFluids;
 import net.minecraft.block.material.Material;
@@ -28,9 +28,9 @@ public class OverlaysRenderer {
 	
 	public void renderOverlays(RenderGameOverlayEvent.Post event) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
-		if(IncorporealDataHandler.getHandler(player).isIncorporeal())
+		if(CapabilityIncorporealHandler.getHandler(player).isIncorporeal())
 			drawIncorporealOverlay(event.getResolution());
-		if(player.world.getBlockState(player.getPosition().up()).getBlock() == ModFluids.MERCURY.fluidBlock) {
+		if(player.world.getBlockState(player.getPosition().up()).getBlock() == ModFluids.MERCURY.fluidBlock()) {
 			renderWaterOverlayTexture(event.getPartialTicks());
 //			System.out.println("in mercury");
 		}

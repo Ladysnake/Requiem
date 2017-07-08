@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.entity.ai;
 
-import ladysnake.dissolution.common.entity.EntityMinion;
+import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
@@ -10,13 +10,13 @@ import net.minecraft.util.EnumHand;
 
 public class EntityAIMinionAttack extends EntityAIAttackMelee {
 
-	protected EntityMinion minion;
+	protected AbstractMinion minion;
     private final float maxAttackDistance;
     private int attackTime = -1;
     private int seeTime;
     private int attackCooldown;
 	
-	public EntityAIMinionAttack(EntityMinion minion, double speedIn, boolean useLongMemory) {
+	public EntityAIMinionAttack(AbstractMinion minion, double speedIn, boolean useLongMemory) {
 		super(minion, speedIn, useLongMemory);
 		this.maxAttackDistance = 16;
 		this.attackCooldown = 30;

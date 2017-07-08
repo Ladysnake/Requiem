@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.entity.ai;
 
-import ladysnake.dissolution.common.entity.EntityMinion;
-import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
+import ladysnake.dissolution.common.entity.minion.AbstractMinion;
+import ladysnake.dissolution.common.entity.minion.EntityMinionSkeleton;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Items;
@@ -10,7 +10,7 @@ import net.minecraft.util.EnumHand;
 
 public class EntityAIMinionRangedAttack extends EntityAIBase {
 
-	private final EntityMinion entity;
+	private final AbstractMinion entity;
     private final double moveSpeedAmp;
     private int attackCooldown;
     private final float maxAttackDistance;
@@ -20,7 +20,7 @@ public class EntityAIMinionRangedAttack extends EntityAIBase {
     private boolean strafingBackwards;
     private int strafingTime = -1;
 
-    public EntityAIMinionRangedAttack(EntityMinion entityMinion, double speedAmplifier, int delay, float maxDistance)
+    public EntityAIMinionRangedAttack(AbstractMinion entityMinion, double speedAmplifier, int delay, float maxDistance)
     {
         this.entity = entityMinion;
         this.moveSpeedAmp = speedAmplifier;

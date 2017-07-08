@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.entity;
+package ladysnake.dissolution.common.entity.item;
 
 import java.util.List;
 

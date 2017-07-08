@@ -5,7 +5,7 @@ import java.util.Random;
 import ibxm.Player;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,7 +31,7 @@ public class PlayerTickHandler {
 	public void onPlayerTick(PlayerTickEvent event) {
 
 		
-		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(event.player);
+		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.player);
 		
 		
 		playerCorp.tick(event);

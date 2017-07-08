@@ -35,14 +35,12 @@ public final class ModBlocks {
 	public static Block ECTOPLASMA;
 	public static BlockEctoplasm ECTOPLASM;
     public static BlockCrystallizer CRYSTALLIZER;
-    public static BlockDriedLava DRIED_LAVA;
     public static BlockMercuriusWaystone MERCURIUS_WAYSTONE;
     public static BlockSoulAnchor SOUL_ANCHOR;
     public static BlockMercuryCandle MERCURY_CANDLE;
     public static BlockSulfurCandle SULFUR_CANDLE;
     public static BlockSoulExtractor SOUL_EXTRACTOR;
     public static BlockSepulture SEPULTURE;
-    public static BlockResuscitator RESUSCITATOR;
     
     private IForgeRegistry<Block> reg;
 

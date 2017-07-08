@@ -1,20 +1,21 @@
-package ladysnake.dissolution.common.entity;
+package ladysnake.dissolution.common.entity.boss;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import ladysnake.dissolution.common.entity.ai.boss.BossAiAttackBrimstoneFires;
+import ladysnake.dissolution.common.entity.item.EntityBrimstoneFire;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BossMawOfTheVoid extends EntityCreature {
+public class EntityMawOfTheVoid extends EntityCreature {
 	
 	public int lastAttack;
 	private List<EntityBrimstoneFire> brimstoneFires;
 
-	public BossMawOfTheVoid(World worldIn) {
+	public EntityMawOfTheVoid(World worldIn) {
 		super(worldIn);
 		lastAttack = -1;
 	}
@@ -25,8 +26,8 @@ public class BossMawOfTheVoid extends EntityCreature {
 		tasks.taskEntries.clear();
     	targetTasks.taskEntries.clear();
     	tasks.addTask(0, new BossAiAttackBrimstoneFires(this, brimstoneFires));
-    	tasks.addTask(1, new BossMawOfTheVoid.AIDoNothing());
-    	tasks.addTask(2, new BossMawOfTheVoid.AITest());
+    	tasks.addTask(1, new EntityMawOfTheVoid.AIDoNothing());
+    	tasks.addTask(2, new EntityMawOfTheVoid.AITest());
 	}
 	
 	class AIDoNothing extends EntityAIBase

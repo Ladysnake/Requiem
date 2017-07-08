@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.handlers;
 
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -49,7 +49,7 @@ public class InteractEventsHandler {
 	 */
 	private boolean intangible(EntityEvent event) {
 		return event.getEntity() instanceof EntityPlayer && 
-				IncorporealDataHandler.getHandler((EntityPlayer) event.getEntity()).isIncorporeal() && 
+				CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity()).isIncorporeal() && 
 				!((EntityPlayer)event.getEntity()).isCreative();
 	}
 	
@@ -57,7 +57,7 @@ public class InteractEventsHandler {
 	 * Same as {@link #intangible(EntityEvent)} except optimized for player events.
 	 */
 	private boolean intangible(PlayerEvent event) {
-		return IncorporealDataHandler.getHandler(event.getEntityPlayer()).isIncorporeal() && !event.getEntityPlayer().isCreative();
+		return CapabilityIncorporealHandler.getHandler(event.getEntityPlayer()).isIncorporeal() && !event.getEntityPlayer().isCreative();
 	}
 
 }

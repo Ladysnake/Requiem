@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.handlers.CustomTartarosTeleporter;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
@@ -60,7 +60,7 @@ public class BlockSoulAnchor extends Block implements ITileEntityProvider, ISoul
 		
 		if(state.getValue(PART) == BlockSoulAnchor.EnumPartType.CAP) return false;
 		
-		if (!(worldIn.getTileEntity(pos) instanceof TileEntitySoulAnchor) || !IncorporealDataHandler.getHandler(playerIn).isIncorporeal()) return false;
+		if (!(worldIn.getTileEntity(pos) instanceof TileEntitySoulAnchor) || !CapabilityIncorporealHandler.getHandler(playerIn).isIncorporeal()) return false;
 		
 		TileEntitySoulAnchor te = (TileEntitySoulAnchor) worldIn.getTileEntity(pos);
 		
