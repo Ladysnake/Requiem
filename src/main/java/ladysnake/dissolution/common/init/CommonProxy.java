@@ -5,6 +5,7 @@ import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.handlers.EventHandlerCommon;
+import ladysnake.dissolution.common.handlers.InteractEventsHandler;
 import ladysnake.dissolution.common.handlers.LivingDeathHandler;
 import ladysnake.dissolution.common.handlers.PlayerTickHandler;
 import ladysnake.dissolution.common.inventory.GuiProxy;
@@ -22,14 +23,14 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public abstract class CommonProxy {
 	
 	public void preInit() {
+		ModBlocks.INSTANCE.init();
+		ModItems.INSTANCE.init();
 		MinecraftForge.EVENT_BUS.register(ModBlocks.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(ModItems.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(ModFluids.REGISTRY_MANAGER);
 		MinecraftForge.EVENT_BUS.register(ModSounds.REGISTRY_MANAGER);
 		CapabilityIncorporealHandler.register();
 		CapabilitySoulHandler.register();
-		ModBlocks.INSTANCE.init();
-		ModItems.INSTANCE.init();
 		ModEntities.register();
 		ModStructure.init();
 	}
@@ -38,6 +39,7 @@ public abstract class CommonProxy {
 		MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
 		MinecraftForge.EVENT_BUS.register(new LivingDeathHandler());
 		MinecraftForge.EVENT_BUS.register(new PlayerTickHandler());
+		MinecraftForge.EVENT_BUS.register(new InteractEventsHandler());
 		
 		ModItems.INSTANCE.registerOres();
 		

@@ -35,7 +35,7 @@ public class EventHandlerCommon {
 		if (!(event.getObject() instanceof EntityPlayer))
 			return;
 
-		event.addCapability(new ResourceLocation(Reference.MOD_ID, "incorporeal"), new CapabilityIncorporealHandler.Provider());
+		event.addCapability(new ResourceLocation(Reference.MOD_ID, "incorporeal"), new CapabilityIncorporealHandler.Provider((EntityPlayer) event.getObject()));
 	}
 
 	@SubscribeEvent
@@ -44,7 +44,7 @@ public class EventHandlerCommon {
 			event.getEntityPlayer().experienceLevel = event.getOriginal().experienceLevel;
 			final IIncorporealHandler corpse = CapabilityIncorporealHandler.getHandler(event.getOriginal());
 			final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
-			clone.setIncorporeal(true, event.getEntityPlayer());
+			clone.setIncorporeal(true);
 			clone.setLastDeathMessage(corpse.getLastDeathMessage());
 			clone.setSynced(false);
 			
@@ -98,7 +98,7 @@ public class EventHandlerCommon {
 		if (event.getEntity() instanceof EntityPlayer) {
 			final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity());
 			if (playerCorp.isIncorporeal()) {
-				playerCorp.setIncorporeal(false, (EntityPlayer) event.getEntity());
+				playerCorp.setIncorporeal(false);
 				/*IMessage msg = new IncorporealMessage(event.getEntity().getUniqueID().getMostSignificantBits(),
 						event.getEntity().getUniqueID().getLeastSignificantBits(), playerCorp.isIncorporeal());
 				PacketHandler.net.sendToAll(msg);*/

@@ -50,7 +50,7 @@ public class BlockMercuriusWaystone extends Block implements ISoulInteractable {
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(playerIn);
 		if(playerCorp.isIncorporeal()){
-			playerCorp.setIncorporeal(false, playerIn);
+			playerCorp.setIncorporeal(false);
 			
 			if(DissolutionConfig.oneUseWaystone)
 				worldIn.setBlockToAir(pos);

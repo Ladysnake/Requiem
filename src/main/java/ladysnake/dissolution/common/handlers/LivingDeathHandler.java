@@ -90,7 +90,7 @@ public class LivingDeathHandler {
 			
 			ItemStack lifeProtectionRing = InventorySearchHelper.findItem(p, ModItems.LIFE_PROTECTION_RING);
 			if(!lifeProtectionRing.isEmpty()) {
-				p.inventory.setInventorySlotContents(p.inventory.getSlotFor(lifeProtectionRing), ItemStack.EMPTY);
+				p.inventory.setInventorySlotContents(InventorySearchHelper.getSlotFor(p.inventory, lifeProtectionRing), ItemStack.EMPTY);
 				flag = true;
 			}
 
@@ -114,14 +114,14 @@ public class LivingDeathHandler {
 		if(DissolutionConfig.skipDeathScreen) {
 			if(!p.world.isRemote)
 				fakePlayerDeath((EntityPlayerMP)p, event.getSource());
-			corp.setIncorporeal(true, p);
+			corp.setIncorporeal(true);
 			p.setHealth(20f);
 			if(!DissolutionConfig.respawnInNether && DissolutionConfig.wowRespawn) {
 				BlockPos respawnLoc = p.getBedLocation() != null ? p.getBedLocation() : p.world.getSpawnPoint();
 				p.setPosition(respawnLoc.getX(), respawnLoc.getY(), respawnLoc.getZ());
 			}
 			if(DissolutionConfig.respawnInNether && !p.world.isRemote)
-				CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) p, DissolutionConfig.respawnDimension);
+				CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) p, DissolutionConfig.respawnDimension);
 			event.setCanceled(true);
 		}
 	}

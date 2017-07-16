@@ -132,7 +132,6 @@ public abstract class AbstractMinion extends EntityCreature implements IEntityAd
     public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand)
     {
     	
-    	System.out.println(this);	//TODO this is only for debug
     	if(CapabilityIncorporealHandler.getHandler(player).isIncorporeal() && !player.isCreative())
     		return EnumActionResult.PASS;
     	

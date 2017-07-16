@@ -52,7 +52,7 @@ public class GuiIncorporealOverlay extends Gui {
 		if(pl.isIncorporeal()) {
 	        if(DissolutionConfig.soulCompass)
 				this.drawOriginIndicator(event.getResolution());
-	        this.drawMagicBar(event.getResolution());
+	        //this.drawMagicBar(event.getResolution());
 	        
 		}
         if(pl.isSoulCandleNearby(1)) {

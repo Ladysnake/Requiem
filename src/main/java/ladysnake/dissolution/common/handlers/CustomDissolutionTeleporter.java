@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldServer;
 
-public class CustomTartarosTeleporter {
+public class CustomDissolutionTeleporter {
 
 	public static void transferPlayerToDimension(EntityPlayerMP player, int dimensionIn)
     {

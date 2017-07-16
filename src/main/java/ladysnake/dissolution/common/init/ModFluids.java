@@ -83,6 +83,7 @@ public enum ModFluids {
 		ModBlocks.INSTANCE.registerBlock(fluidBlock, false);
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void registerFluidModel() {
 		final Item item = Item.getItemFromBlock((Block) fluidBlock);
 		if(item == Items.AIR) {

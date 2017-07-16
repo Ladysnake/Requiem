@@ -5,7 +5,7 @@ import net.minecraft.block.ITileEntityProvider;
 public class Reference {
 	public static final String MOD_ID = "dissolution";
 	public static final String MOD_NAME = "Dissolution";
-	public static final String VERSION = "0.4.0";
+	public static final String VERSION = "0.4.2";
 	public static final String MCVERSION = "[1.12]";
 	
 //	public static final String GUI_FACTORY = "ladysnake.dissolution.common.inventory.TartarosGuiFactory";	

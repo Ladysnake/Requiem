@@ -10,7 +10,7 @@ import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.capabilities.Soul;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
-import ladysnake.dissolution.common.handlers.CustomTartarosTeleporter;
+import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -54,11 +54,11 @@ public class ItemDebug extends Item implements ISoulInteractable {
 			}
 			break;
 		case 1 :	
-			CapabilityIncorporealHandler.getHandler(playerIn).setIncorporeal(!CapabilityIncorporealHandler.getHandler(playerIn).isIncorporeal(), playerIn);
+			CapabilityIncorporealHandler.getHandler(playerIn).setIncorporeal(!CapabilityIncorporealHandler.getHandler(playerIn).isIncorporeal());
 			break;
 		case 2 :
 			if(!playerIn.world.isRemote)
-				CustomTartarosTeleporter.transferPlayerToDimension((EntityPlayerMP) playerIn, playerIn.dimension == -1 ? 0 : -1);
+				CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) playerIn, playerIn.dimension == -1 ? 0 : -1);
 			break;
 		case 3 :
 			if(!playerIn.world.isRemote) {

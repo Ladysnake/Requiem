@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.capabilities;
 
+import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.entity.EntityLiving;
@@ -11,7 +12,6 @@ import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityVillager;
-import scala.actors.threadpool.Arrays;
 
 public enum SoulTypes {
 

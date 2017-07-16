@@ -43,6 +43,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	public EntityPlayerCorpse(World worldIn) {
 		super(worldIn);
 		inventory = new InventoryPlayerCorpse(this);
+		decaying = !DissolutionConfig.bodiesDespawn;
 	}
 	
 	@Override
@@ -61,7 +62,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 				EventHandlerClient.cameraAnimation = 20;
 			}
 			player.setHealth(4f);
-			handler.setIncorporeal(false, player);
+			handler.setIncorporeal(false);
 		} else if (!player.world.isRemote && player.getHeldItem(hand).getItem() != ModItems.EYE_OF_THE_UNDEAD) {
 			player.openGui(Dissolution.instance, GuiProxy.PLAYER_CORPSE, world, this.getPosition().getX(), this.getPosition().getY(), this.getPosition().getZ());
 		}

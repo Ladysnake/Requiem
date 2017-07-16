@@ -81,7 +81,7 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 		IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(playerIn);
 		if (playerCorp.isIncorporeal()) {
 			this.getTE(worldIn, pos).setDeathMessage(playerCorp.getLastDeathMessage());
-			playerCorp.setIncorporeal(false, playerIn);
+			playerCorp.setIncorporeal(false);
 		} else {
 			try {
 				//System.out.println(this.getTE(worldIn, pos));

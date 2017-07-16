@@ -23,7 +23,7 @@ public class UpdatePacket implements IMessageHandler<UpdateMessage, IMessage>
 			{
 			  public void run() {
 				  final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player);
-				  playerCorp.setIncorporeal(message.isIncorporeal, Minecraft.getMinecraft().player);
+				  playerCorp.setIncorporeal(message.isIncorporeal);
 				  System.out.println("client" + playerCorp);				  
 			  }
 			});

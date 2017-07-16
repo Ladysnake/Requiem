@@ -13,6 +13,7 @@ public class DissolutionConfig {
 	public static final int SPECTATOR_FLIGHT = 2;
 
 	public static boolean anchorsXRay = false;
+	public static boolean bodiesDespawn = true;
 	public static boolean bodiesHoldInventory = true;
 	public static boolean doSableDrop = true;
 	public static boolean invisibleGhosts = false;
@@ -26,7 +27,7 @@ public class DissolutionConfig {
 	public static boolean soulCompassAnchors = true;
 	public static int spawnMercuryLakesFreq = 100;
 	public static boolean useShaders = true;
-	public static boolean wowRespawn = false;
+	public static boolean wowRespawn = true;
 	
 	public static final String CATEGORY_RESPAWN = "Respawn";
 	public static final String CATEGORY_GHOST = "Ghost";
@@ -49,8 +50,8 @@ public class DissolutionConfig {
 	        Property wowRespawnProp = Dissolution.config.get(
 	        		CATEGORY_RESPAWN, 
 	        		"WoWlikeRespawn", 
-	        		false,
-	        		"If set to true, the player will respawn as a ghost at their spawnpoint. They will then have the choice to go to 0,0 to respawn without stuff or to reach their corpse under 5 minutes. (default : false)");
+	        		true,
+	        		"If set to true, the player will respawn as a ghost at their spawnpoint. They will then have the choice to go to 0,0 to respawn without stuff or to reach their corpse under 5 minutes. (default : true)");
 	        
 	        Property shouldRespawnInNetherProp = Dissolution.config.get(
 	        		CATEGORY_RESPAWN,
@@ -75,6 +76,12 @@ public class DissolutionConfig {
 	        		"playerBodiesHoldInventoryProp", 
 	        		true,
 	        		"Whether long-lasting player corpses hold their inventory upon death. Recommended with WoWlikeRespawn. (default : true)");
+	        
+	        Property playerBodiesDecayProp = Dissolution.config.get(
+	        		CATEGORY_RESPAWN,
+	        		"playerBodiesDespawn",
+	        		true,
+	        		"If set to false, player bodies will not require any special circumstances to prevent decay. (default: true)");
 	        
 	        // GHOST SETTINGS
 	        
@@ -155,6 +162,8 @@ public class DissolutionConfig {
 	        }
 
         	anchorsXRay = anchorsXRayProp.getBoolean();
+        	bodiesHoldInventory = playerBodiesHoldInventoryProp.getBoolean();
+        	bodiesDespawn = playerBodiesDecayProp.getBoolean();
 	        doSableDrop = doSablePopProp.getBoolean();
 	        invisibleGhosts = invisibleGhostProp.getBoolean();
         	flightMode = flightModeProp.getInt();
