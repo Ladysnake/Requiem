@@ -3,7 +3,7 @@ package ladysnake.dissolution.common.networking;
 import java.util.UUID;
 
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -20,8 +20,8 @@ public class IncorporealPacket implements IMessageHandler<IncorporealMessage, IM
 				try {
 					final EntityPlayer player = Minecraft.getMinecraft().player.world
 							.getPlayerEntityByUUID(new UUID(message.playerUUIDMost, message.playerUUIDLeast));
-					final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(player);
-					playerCorp.setIncorporeal(message.simpleBool, player);
+					final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
+					playerCorp.setIncorporeal(message.simpleBool);
 				} catch (NullPointerException e){}
 			});
 		}

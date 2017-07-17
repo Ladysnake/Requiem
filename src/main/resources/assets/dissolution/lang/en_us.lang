@@ -1,6 +1,9 @@
 itemGroup.dissolution=Dissolution
 dissolution.jei.recipe.crystallizer=Crystallizing
 
+dissolution.advancements.main.root.title=Dissolution
+dissolution.advancements.main.root.description=The law of the cycle
+
 tile.crystallizer.name=Crystallizer
 tile.ectoplasm_block.name=Block of Ectoplasm
 tile.ectoplasma_block.name=Block of Ectoplasma
@@ -10,6 +13,7 @@ tile.soul_anchor.name=Soul Anchor
 tile.soul_extractor.name=Soul Extractor
 tile.mercury_candle.name=Mercury Candle
 tile.sulfur_candle.name=Sulfur Candle
+tile.dissolution:fluid.mercury.name=Mercury
 
 item.cinnabar.name=Cinnabar
 item.ectoplasm.name=Ectoplasm

@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import ladysnake.dissolution.common.entity.BossMawOfTheVoid;
-import ladysnake.dissolution.common.entity.EntityBrimstoneFire;
+import ladysnake.dissolution.common.entity.boss.EntityMawOfTheVoid;
+import ladysnake.dissolution.common.entity.item.EntityBrimstoneFire;
 import net.minecraft.entity.ai.EntityAIBase;
 
 public class BossAiAttackBrimstoneFires extends EntityAIBase {
@@ -14,14 +14,14 @@ public class BossAiAttackBrimstoneFires extends EntityAIBase {
 	public static final int MAX_FIRES = 20;
 	private static final int PAUSE = 5;
 	
-	protected BossMawOfTheVoid attacker;
+	protected EntityMawOfTheVoid attacker;
 	/**The amount of ticks this attack has been active*/
 	protected int attackTicks;
 	/**The max duration for this attack <br> not actually used*/
 	protected int maxAttackDuration;
 	private List<EntityBrimstoneFire> allFires;
 	
-	public BossAiAttackBrimstoneFires(BossMawOfTheVoid entity, List<EntityBrimstoneFire> allFires) {
+	public BossAiAttackBrimstoneFires(EntityMawOfTheVoid entity, List<EntityBrimstoneFire> allFires) {
 		this.setMutexBits(0b0111);
 		this.allFires = allFires;
 		this.attacker = entity;

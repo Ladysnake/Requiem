@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.entity;
+package ladysnake.dissolution.common.entity.minion;
 
 import io.netty.buffer.ByteBuf;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
@@ -19,7 +19,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class EntityMinionZombie extends EntityMinion {
+public class EntityMinionZombie extends AbstractMinion {
 
 	private boolean isHusk;
 

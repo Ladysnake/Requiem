@@ -1,0 +1,29 @@
+{
+    "display": {
+        "icon": {
+            "item": "dissolution:itemresource",
+			"meta": 1
+        },
+        "title": {
+            "translate": "dissolution.advancements.main.root.title"
+        },
+        "description": {
+            "translate": "dissolution.advancements.main.root.description"
+        },
+        "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
+        "show_toast": true,
+        "announce_to_chat": false
+    },
+    "criteria": {
+        "crafting_table": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "dissolution:itemresource"
+                    }
+                ]
+            }
+        }
+    }
+}

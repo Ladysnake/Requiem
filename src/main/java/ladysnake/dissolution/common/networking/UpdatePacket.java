@@ -3,7 +3,7 @@ package ladysnake.dissolution.common.networking;
 import java.util.UUID;
 
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -22,9 +22,8 @@ public class UpdatePacket implements IMessageHandler<UpdateMessage, IMessage>
 		  Minecraft.getMinecraft().addScheduledTask(new Runnable()
 			{
 			  public void run() {
-				  System.out.println("a packet has been processed");
-				  final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player);
-				  playerCorp.setIncorporeal(message.isIncorporeal, Minecraft.getMinecraft().player);
+				  final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player);
+				  playerCorp.setIncorporeal(message.isIncorporeal);
 				  System.out.println("client" + playerCorp);				  
 			  }
 			});

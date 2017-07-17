@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.entity;
+package ladysnake.dissolution.common.entity.minion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,10 @@ import java.util.Random;
 
 import io.netty.buffer.ByteBuf;
 import ladysnake.dissolution.common.DissolutionConfig;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.entity.EntityWanderingSoul;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;
+import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
@@ -47,7 +49,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
-public abstract class EntityMinion extends EntityCreature implements IEntityAdditionalSpawnData, IRangedAttackMob {
+public abstract class AbstractMinion extends EntityCreature implements IEntityAdditionalSpawnData, IRangedAttackMob {
 	protected boolean inert;
 	protected int remainingTicks;
 	public static final List<Class<? extends EntityCreature>> TARGET_BLACKLIST = new ArrayList();
@@ -55,20 +57,21 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
 	public static final int MAX_RISEN_TICKS = 6000;
 	public static final int SUN_TICKS_PENALTY = 9;
 	protected static float sizeX = 0.6F, sizeY = 1.95F;
-	private static final DataParameter<Boolean> IS_CHILD = EntityDataManager.<Boolean>createKey(EntityMinion.class, DataSerializers.BOOLEAN);
+	private static final DataParameter<Boolean> IS_CHILD = EntityDataManager.<Boolean>createKey(AbstractMinion.class, DataSerializers.BOOLEAN);
     private final EntityAIMinionRangedAttack aiArrowAttack = new EntityAIMinionRangedAttack(this, 1.0D, 20, 15.0F);
     private final EntityAIAttackMelee aiAttackOnCollide = new EntityAIAttackMelee(this, 1.2D, false);
     
     static {
+    	TARGET_BLACKLIST.add(EntityWanderingSoul.class);
     	if(!DissolutionConfig.minionsAttackCreepers)
     		TARGET_BLACKLIST.add(EntityCreeper.class);
     }
 	
-	public EntityMinion(World worldIn) {
+	public AbstractMinion(World worldIn) {
 		this(worldIn, false);
 	}
 	
-	public EntityMinion(World worldIn, boolean isChild) {
+	public AbstractMinion(World worldIn, boolean isChild) {
 		super(worldIn);
         this.setSize(sizeX, sizeY);
         this.inert = true;
@@ -128,12 +131,13 @@ public abstract class EntityMinion extends EntityCreature implements IEntityAddi
      */
     public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand)
     {
-    	if(IncorporealDataHandler.getHandler(player).isIncorporeal() && !player.isCreative())
+    	
+    	if(CapabilityIncorporealHandler.getHandler(player).isIncorporeal() && !player.isCreative())
     		return EnumActionResult.PASS;
     	
         ItemStack itemstack = player.getHeldItem(hand);
 
-        if (itemstack.getItem() != Items.NAME_TAG)
+        if (itemstack.getItem() != Items.NAME_TAG && itemstack.getItem() != ModItems.EYE_OF_THE_UNDEAD)
         {
             if (!this.world.isRemote && !player.isSpectator())
             {

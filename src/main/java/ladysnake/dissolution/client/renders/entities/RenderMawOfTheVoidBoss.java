@@ -1,6 +1,6 @@
 package ladysnake.dissolution.client.renders.entities;
 
-import ladysnake.dissolution.common.entity.BossMawOfTheVoid;
+import ladysnake.dissolution.common.entity.boss.EntityMawOfTheVoid;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderBiped;

@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL11;
 
 import ladysnake.dissolution.client.models.ModelMinionZombie;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.entity.minion.EntityMinionZombie;
 import net.minecraft.client.model.ModelZombie;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;

@@ -24,7 +24,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
 
-public class ModItems {
+public final class ModItems {
+	
+	/**Used to register stuff*/
+	static final ModItems INSTANCE = new ModItems();
+	
 	public static ItemDebug DEBUG_ITEM;
 	public static ItemEyeDead EYE_OF_THE_UNDEAD;
 	public static ItemGrandFaux GRAND_FAUX;
@@ -35,11 +39,11 @@ public class ModItems {
 	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
 	public static ItemSepulture SEPULTURE;
 	
-	protected static List<Item> blocks = new ArrayList<>();
+	static List<Item> blocks = new ArrayList<>();
 
 //	private IForgeRegistry<Item> reg;
 
-	public static void init() {
+	void init() {
 		BASE_RESOURCE = new ItemBaseResource();
 		DEBUG_ITEM = new ItemDebug();
 		EYE_OF_THE_UNDEAD = new ItemEyeDead();
@@ -66,7 +70,7 @@ public class ModItems {
 		blocks.forEach(reg::register);
 	}
 	
-	public static void registerOres() {
+	void registerOres() {
 		OreDictionary.registerOre("dustSulfur", ItemBaseResource.resourceFromName("sulfur"));
 		OreDictionary.registerOre("itemCinnabar", ItemBaseResource.resourceFromName("cinnabar"));
 		OreDictionary.registerOre("itemMercury", ItemBaseResource.resourceFromName("mercury"));
@@ -90,13 +94,15 @@ public class ModItems {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void registerRender(Item item) {
+	private void registerRender(Item item) {
 		registerRender(item, 0, item.getUnlocalizedName().substring(5));
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void registerRender(Item item, int metadata, String name) {
+	private void registerRender(Item item, int metadata, String name) {
 		ModelLoader.setCustomModelResourceLocation(item, metadata,
 				new ModelResourceLocation(Reference.MOD_ID + ":" + name));
 	}
+	
+	private ModItems() {}
 }

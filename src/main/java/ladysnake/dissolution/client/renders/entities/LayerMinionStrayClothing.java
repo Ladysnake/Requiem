@@ -1,7 +1,7 @@
 package ladysnake.dissolution.client.renders.entities;
 
 import ladysnake.dissolution.client.models.ModelMinionStray;
-import ladysnake.dissolution.common.entity.EntityMinionStray;
+import ladysnake.dissolution.common.entity.minion.EntityMinionStray;
 import net.minecraft.client.model.ModelSkeleton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLivingBase;

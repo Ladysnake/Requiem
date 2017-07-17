@@ -1,10 +1,8 @@
-package ladysnake.dissolution.common.entity;
+package ladysnake.dissolution.common.entity.minion;
 
 import io.netty.buffer.ByteBuf;
-import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;
 import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.IRangedAttackMob;
@@ -32,12 +30,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class EntityMinionWitherSkeleton extends EntityMinion {
+public class EntityMinionSkeleton extends AbstractMinion {
 	
-	protected static final DataParameter<Boolean> SWINGING_ARMS = EntityDataManager.<Boolean>createKey(EntityMinionWitherSkeleton.class, DataSerializers.BOOLEAN);
+	protected static final DataParameter<Boolean> SWINGING_ARMS = EntityDataManager.<Boolean>createKey(EntityMinionSkeleton.class, DataSerializers.BOOLEAN);
 	protected boolean isStray;
 
-	public EntityMinionWitherSkeleton(World worldIn) {
+	public EntityMinionSkeleton(World worldIn) {
 		super(worldIn);
 		this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
 	}
@@ -45,7 +43,7 @@ public class EntityMinionWitherSkeleton extends EntityMinion {
 	@Override
 	protected void initEntityAI() {
 		this.tasks.addTask(0, new EntityAISwimming(this));
-		this.tasks.addTask(2, new EntityAIMinionAttack(this, 1.0D, false));
+		this.tasks.addTask(2, new EntityAIMinionRangedAttack(this, 1.0D, 20, 15.0F));
 		this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
 		this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
 		this.applyEntityAI();
@@ -60,22 +58,22 @@ public class EntityMinionWitherSkeleton extends EntityMinion {
 	@Override
 	protected SoundEvent getAmbientSound()
     {
-        return (isCorpse()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_AMBIENT;
+        return (isCorpse()) ? null : (this instanceof EntityMinionStray) ? SoundEvents.ENTITY_STRAY_AMBIENT : SoundEvents.ENTITY_SKELETON_AMBIENT;
     }
 
     protected SoundEvent getHurtSound()
     {
-    	return (isCorpse()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_HURT;
+    	return (isCorpse()) ? null : (this instanceof EntityMinionStray) ? SoundEvents.ENTITY_STRAY_HURT : SoundEvents.ENTITY_SKELETON_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-    	return (isCorpse()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_DEATH;
+    	return (isCorpse()) ? null : (this instanceof EntityMinionStray) ? SoundEvents.ENTITY_STRAY_DEATH : SoundEvents.ENTITY_SKELETON_DEATH;
     }
 
     protected SoundEvent getStepSound()
     {
-    	return (isCorpse()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_STEP;
+    	return (isCorpse()) ? null : (this instanceof EntityMinionStray) ? SoundEvents.ENTITY_STRAY_STEP : SoundEvents.ENTITY_SKELETON_STEP;
     }
 
     protected void playStepSound(BlockPos pos, Block blockIn)
@@ -104,27 +102,6 @@ public class EntityMinionWitherSkeleton extends EntityMinion {
     {
         this.dataManager.set(SWINGING_ARMS, Boolean.valueOf(swingingArms));
     }
-    
-    @Override
-    public boolean attackEntityAsMob(Entity entityIn)
-    {
-        if (!super.attackEntityAsMob(entityIn))
-        {
-            return false;
-        }
-        else
-        {
-            if (entityIn instanceof EntityLivingBase)
-            {
-                ((EntityLivingBase)entityIn).addPotionEffect(new PotionEffect(MobEffects.WITHER, 200));
-            }
-
-            return true;
-        }
-    }
-    
-    @Override
-    protected void handleSunExposition() {}
     
     @Override
     public void readFromNBT(NBTTagCompound compound) {

@@ -1,15 +1,10 @@
 package ladysnake.dissolution.common.inventory;
 
-import java.util.List;
-
-import ladysnake.dissolution.common.items.ItemSoulInABottle;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.world.World;
 
 /**
  * Provides various methods for managing inventories
@@ -17,7 +12,7 @@ import net.minecraft.world.World;
  * @author Pyrofab
  *
  */
-public abstract class InventorySearchHelper {
+public final class InventorySearchHelper {
 
 	/**
 	 * Finds an item in the player inventory
@@ -46,7 +41,21 @@ public abstract class InventorySearchHelper {
 			return ItemStack.EMPTY;
 		}
 	}
+	
+	public static int getSlotFor(InventoryPlayer inv, ItemStack stack)
+    {
+        for (int i = 0; i < inv.mainInventory.size(); ++i)
+        {
+            if (!((ItemStack)inv.mainInventory.get(i)).isEmpty() && compareItemStacksExact(stack, inv.mainInventory.get(i)))
+            {
+                return i;
+            }
+        }
 
+        return -1;
+    }
+
+	/*
 	public static ItemStack findItemInstance(EntityPlayer player, Item item) {
 		return findItemInstance(player, item.getClass());
 	}
@@ -67,10 +76,18 @@ public abstract class InventorySearchHelper {
 
 			return ItemStack.EMPTY;
 		}
-	}
+	}*/
+	
+	public static boolean compareItemStacksExact(ItemStack stack1, ItemStack stack2)
+    {
+        return stack1.getItem() == stack2.getItem() && (!stack1.getHasSubtypes() || stack1.getMetadata() == stack2.getMetadata()) && ItemStack.areItemStackTagsEqual(stack1, stack2);
+    }
 
 	public static boolean compareItemStacks(ItemStack stack1, ItemStack stack2) {
 		return stack2.getItem() == stack1.getItem()
 				&& (stack2.getMetadata() == 32767 || stack2.getMetadata() == stack1.getMetadata());
 	}
+	
+	private InventorySearchHelper(){}
+	
 }

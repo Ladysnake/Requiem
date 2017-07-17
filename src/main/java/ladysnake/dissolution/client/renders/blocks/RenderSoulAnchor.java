@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL11;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -55,7 +55,7 @@ public class RenderSoulAnchor extends TileEntitySpecialRenderer<TileEntitySoulAn
 		//System.out.println(text);
 		Minecraft mc = Minecraft.getMinecraft();
 		
-		final IIncorporealHandler playerCorp = IncorporealDataHandler.getHandler(mc.player);
+		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(mc.player);
     	if(!playerCorp.isIncorporeal()) return;
     	
 		renderSoulPipe(te, x, y, z);

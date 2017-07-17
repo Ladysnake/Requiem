@@ -5,7 +5,7 @@
   "ingredients": [
     {
       "item": "dissolution:itemresource",
-      "data": 0
+      "data": 1
     },
     {
       "item": "dissolution:itemsoulinabottle"

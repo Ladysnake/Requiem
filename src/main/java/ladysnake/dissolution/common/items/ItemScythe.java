@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Multimap;
 
 import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.capabilities.SoulTypes;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.InventorySearchHelper;
 import net.minecraft.block.material.Material;
@@ -31,6 +32,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 public abstract class ItemScythe extends ItemSword {
+
+	protected float attackSpeed, attackRadius;
+	protected boolean alreadyRunningAOE;
 	
 	public ItemScythe(ToolMaterial material) {
 		super(material);
@@ -49,10 +53,6 @@ public abstract class ItemScythe extends ItemSword {
 		effectiveBlocks.put(Material.LEAVES, 1.5f);
 	}
 
-	protected float attackSpeed, attackRadius;
-	protected boolean alreadyRunningAOE;
-
-	
 	
 	@Override
 	public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
@@ -145,18 +145,19 @@ public abstract class ItemScythe extends ItemSword {
 	
 	/**
 	 * Fills an empty bottle in the wielder's inventory with a soul
-	 * @param p the player wielding this scythe
+	 * @param killer the player wielding this scythe
 	 */
-	public void harvestSoul(EntityPlayer p, EntityLivingBase s) {
-		if(s.getCreatureAttribute() == EnumCreatureAttribute.UNDEAD) return;
-		this.fillBottle(p, 1);
+	public void harvestSoul(EntityPlayer killer, EntityLivingBase victim) {
+		if(victim.getCreatureAttribute() == EnumCreatureAttribute.UNDEAD) return;
+		if(!(victim instanceof EntityLiving)) return;
+		this.fillBottle(killer, 1, SoulTypes.getSoulFor((EntityLiving)victim));
 	}
 	
-	public void fillBottle(EntityPlayer p, int nb) {
+	public void fillBottle(EntityPlayer p, int nb, SoulTypes soul) {
 		ItemStack bottle = InventorySearchHelper.findItem(p, Items.GLASS_BOTTLE);
 		if (!bottle.isEmpty()) {
 			bottle.shrink(nb);
-			p.inventory.addItemStackToInventory(new ItemStack(ModItems.SOUL_IN_A_BOTTLE, nb));
+			p.inventory.addItemStackToInventory(ModItems.SOUL_IN_A_BOTTLE.newTypedSoul(soul));
 		}
 	}
 	

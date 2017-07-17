@@ -1,8 +1,8 @@
 package ladysnake.dissolution.client.models;
 
-import ladysnake.dissolution.common.entity.EntityMinionSkeleton;
-import ladysnake.dissolution.common.entity.EntityMinionStray;
-import ladysnake.dissolution.common.entity.EntityMinionZombie;
+import ladysnake.dissolution.common.entity.minion.EntityMinionSkeleton;
+import ladysnake.dissolution.common.entity.minion.EntityMinionStray;
+import ladysnake.dissolution.common.entity.minion.EntityMinionZombie;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;

@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.capabilities.IncorporealDataHandler;
-import ladysnake.dissolution.common.entity.EntityMinion;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.InventorySearchHelper;
 import net.minecraft.entity.EntityLivingBase;
@@ -57,17 +57,17 @@ public class ItemEyeDead extends Item {
 		if (!(entityLiving instanceof EntityPlayer) || this.getMaxItemUseDuration(stack) - timeLeft < 30) return;
 		EntityPlayer player = (EntityPlayer) entityLiving;
 		
-		if (IncorporealDataHandler.getHandler(player).isIncorporeal() && !player.isCreative()) return;
+		if (CapabilityIncorporealHandler.getHandler(player).isIncorporeal() && !player.isCreative()) return;
 		
 		ItemStack ammo = InventorySearchHelper.findItem(player, ModItems.SOUL_IN_A_BOTTLE);
 		
-		List<EntityMinion> minions = (worldIn.getEntitiesWithinAABB(EntityMinion.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).grow(20)));
+		List<AbstractMinion> minions = (worldIn.getEntitiesWithinAABB(AbstractMinion.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).grow(20)));
 		
 		if(minions.isEmpty()) return;
 		
 		boolean used = false;
 		if(!(minions instanceof EntityPlayer)){
-			for (EntityMinion m : minions) {
+			for (AbstractMinion m : minions) {
 				if (ammo.isEmpty() && m.isCorpse()) {
 					((EntityPlayer)entityLiving).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".nosoul", new Object[0]), true);
 					break;
