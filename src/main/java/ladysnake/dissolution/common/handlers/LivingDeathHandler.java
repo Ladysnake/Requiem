@@ -99,7 +99,7 @@ public class LivingDeathHandler {
 			
 			if(DissolutionConfig.bodiesHoldInventory) {
 				
-				if(flag) {
+				if(flag && !p.world.getGameRules().getBoolean("keepInventory") && !p.isSpectator()) {
 					transferEquipment(p, body);
 					body.setInventory(new InventoryPlayerCorpse(p.inventory.mainInventory, body));
 					p.inventory.clear();
