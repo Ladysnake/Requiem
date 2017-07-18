@@ -52,11 +52,6 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
 	}
 	
 	@Override
-	public void addInformation(ItemStack stack, @Nullable World playerIn, List<String> tooltip, ITooltipFlag advanced) {
-		tooltip.add("Can extract souls from soulsand. Right click with an empty bottle to obtain said souls.");
-	}
-	
-	@Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         world.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()), 2);
     }

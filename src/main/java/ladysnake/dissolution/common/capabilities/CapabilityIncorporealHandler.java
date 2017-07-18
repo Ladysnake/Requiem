@@ -117,7 +117,7 @@ public class CapabilityIncorporealHandler {
 				GuiIngameForge.renderHealth = !enable;
 				GuiIngameForge.renderFood = !enable;
 				GuiIngameForge.renderArmor = !enable;
-				
+				GuiIngameForge.renderAir = !enable;
 			}
 			setSynced(true);
 		}
@@ -182,7 +182,6 @@ public class CapabilityIncorporealHandler {
 				final boolean prevIntangible = isIntangible();
 				intangibleTimer--;
 				if(prevIntangible && !isIntangible()) {
-					System.out.println("timer ended");
 					setIntangible(false);
 				}
 			}
@@ -190,16 +189,13 @@ public class CapabilityIncorporealHandler {
 
 		@Override
 		public boolean setIntangible(boolean intangible) {
-			System.out.println(this.intangibleTimer);
 			if(intangible && this.isIncorporeal() && intangibleTimer <= -1000) {
-				System.out.println("tangible -> intangible");
 				this.intangibleTimer = 100;
 				if(owner != null && !owner.world.isRemote) {
 					this.prevGamemode = ((EntityPlayerMP)owner).interactionManager.getGameType().getID();
 					owner.setGameType(GameType.SPECTATOR);
 				}
 			} else if (!intangible) {
-				System.out.println("intangible -> tangible");
 				this.intangibleTimer = -1;
 				if(owner != null && !owner.world.isRemote)
 					owner.setGameType(GameType.getByID(this.prevGamemode));

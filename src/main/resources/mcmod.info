@@ -3,7 +3,7 @@
   "modid": "dissolution",
   "name": "Dissolution",
   "description": "A mod aimed at making death more interesting",
-  "version": "0.3.0",
+  "version": "0.4.2",
   "mcversion": "${mcversion}",
   "url": "https://minecraft.curseforge.com/projects/dissolution",
   "updateUrl": "https://minecraft.curseforge.com/projects/tartaros",

@@ -19,6 +19,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -59,44 +60,61 @@ public class EventHandlerClient {
 
 	@SubscribeEvent
 	public void onGameTick(TickEvent event) {
-		if (Minecraft.getMinecraft().player == null || event.side.isServer()) return;
-		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player);
-		//System.out.println(refresh);
-		if(!playerCorp.isSynced() && refresh++%100 == 0)
+		final EntityPlayer player = Minecraft.getMinecraft().player;
+		if (player == null || event.side.isServer()) return;
+		
+		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
+		
+		// Sends a request to the server
+		if(!playerCorp.isSynced() && refresh++%100 == 0 && refresh <= 1000)
 		{
-			IMessage msg = new PingMessage(Minecraft.getMinecraft().player.getUniqueID().getMostSignificantBits(), 
-					Minecraft.getMinecraft().player.getUniqueID().getLeastSignificantBits());
+			IMessage msg = new PingMessage(player.getUniqueID().getMostSignificantBits(), 
+					player.getUniqueID().getLeastSignificantBits());
 			PacketHandler.net.sendToServer(msg);
+		}
+
+		// Convoluted way of displaying the health of the possessed entity
+		if(player.isRiding() && player.getRidingEntity() instanceof EntityLiving) {
+			if(!this.wasRidingLastTick) {
+				this.prevHealth = player.getHealth();
+				IAttributeInstance maxHealth = player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
+				this.prevMaxHealth = maxHealth.getAttributeValue();
+				maxHealth.setBaseValue(
+						((EntityLiving)player.getRidingEntity()).getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
+				this.wasRidingLastTick = true;
+			}
+			player.setHealth(((EntityLiving)player.getRidingEntity()).getHealth());
+		} else if(this.wasRidingLastTick) {
+			player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(prevMaxHealth);
+			player.setHealth(prevHealth);
+			this.wasRidingLastTick = false;
 		}
 	}
 	
 	@SubscribeEvent
 	public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
-		if(event.getType() == RenderGameOverlayEvent.ElementType.ALL && CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal()) {
-			EntityPlayer player = Minecraft.getMinecraft().player;
+		EntityPlayer player = Minecraft.getMinecraft().player;
+		if(event.getType() == RenderGameOverlayEvent.ElementType.ALL && CapabilityIncorporealHandler.getHandler(player).isIncorporeal()) {
+
+			// Disables most gui renders
 			GuiIngameForge.renderFood = false;
 			GuiIngameForge.renderHotbar = player.isCreative();
 			GuiIngameForge.renderHealthMount = false;
 			GuiIngameForge.renderArmor = false;
-			if(player.isRiding() && player.getRidingEntity() instanceof EntityLiving) {
-				if(!this.wasRidingLastTick) {
-					this.prevHealth = player.getHealth();
-					IAttributeInstance maxHealth = player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
-					this.prevMaxHealth = maxHealth.getAttributeValue();
-					maxHealth.setBaseValue(
-							((EntityLiving)player.getRidingEntity()).getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
-					this.wasRidingLastTick = true;
+			GuiIngameForge.renderHealth = player.isRiding();
+			GuiIngameForge.renderAir = false;
+
+			// Prevents the display of the name of the selected ItemStack
+			if(!player.isCreative()) {
+				try {
+					highlightingItemStack.set(Minecraft.getMinecraft().ingameGUI, ItemStack.EMPTY);
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					e.printStackTrace();
 				}
-				player.setHealth(((EntityLiving)player.getRidingEntity()).getHealth());
-			} else if(this.wasRidingLastTick) {
-				player.setHealth(prevHealth);
-				player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(prevMaxHealth);
-				this.wasRidingLastTick = false;
 			}
-			GuiIngameForge.renderHealth = Minecraft.getMinecraft().player.isRiding();
 		}
 	}
-	
+/*	
 	@SubscribeEvent
 	public void onRenderGameOverlay(RenderGameOverlayEvent.Post event) {
 		if(CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal() && 
@@ -105,48 +123,41 @@ public class EventHandlerClient {
 			GlStateManager.color(1.0F,  1.0F, 1.0F, 1.0F);
 		}
 	}
-	/*
-	@SubscribeEvent
-	public void onRenderGameOverlay(RenderGameOverlayEvent event) {
-		if(IncorporealDataHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal() && event.getType() == RenderGameOverlayEvent.ElementType.HEALTH)
-			event.setCanceled(false);
-	}*/
-	
+*/
 	@SubscribeEvent
 	public void onPlayerTick(PlayerTickEvent event) {
 		if(event.side.isServer()) 
 			return;
 
-		EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
+		final EntityPlayer player = event.player;
+		final EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
+		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
 		
 		if(cameraAnimation-- > 0 && event.player.eyeHeight < 1.8f)
-			event.player.eyeHeight += event.player.getDefaultEyeHeight() / 20f;
+			player.eyeHeight += player.getDefaultEyeHeight() / 20f;
 			
-		if(CapabilityIncorporealHandler.getHandler(event.player).isIncorporeal() && event.player.getRidingEntity() instanceof EntityLivingBase) {
-			EntityLivingBase possessed = (EntityLivingBase) event.player.getRidingEntity();
-			if(playerSP.movementInput.forwardKeyDown)
-				playerSP.moveForward = 1;
-		}
-		
 		if(DissolutionConfig.flightMode != DissolutionConfig.CUSTOM_FLIGHT) 
 			return;
 		
-		if(CapabilityIncorporealHandler.getHandler(event.player).isIncorporeal() && !event.player.isCreative()) {
+		if(playerCorp.isIncorporeal() && !player.isCreative()) {
 		
-			if(playerSP.movementInput.jump && event.player.experienceLevel > 0) {
-				event.player.motionY = SOUL_VERTICAL_SPEED;
-				event.player.velocityChanged = true;
-			} else if(event.player.motionY <= 0) {
-				if(event.player.world.getBlockState(event.player.getPosition()).getMaterial().isLiquid() ||
-						event.player.world.getBlockState(event.player.getPosition().down()).getMaterial().isLiquid()) {
-					if(event.player.experienceLevel <= 0 && 
-							!(event.player.world.getBlockState(event.player.getPosition()).getMaterial().isLiquid()))
-						event.player.motionY = 0;
-					event.player.velocityChanged = true;
-				} else {
-					event.player.motionY = -0.8f * SOUL_VERTICAL_SPEED;
-					event.player.fallDistance = 0;
-					event.player.velocityChanged = true;
+			if(DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT) {
+				// Makes the player glide and stuff
+				if(playerSP.movementInput.jump && player.experienceLevel > 0 && player.getRidingEntity() == null) {
+					player.motionY = SOUL_VERTICAL_SPEED;
+					player.velocityChanged = true;
+				} else if(player.motionY <= 0 && player.getRidingEntity() == null) {
+					if(player.world.getBlockState(player.getPosition()).getMaterial().isLiquid() ||
+							player.world.getBlockState(player.getPosition().down()).getMaterial().isLiquid()) {
+						if(event.player.experienceLevel <= 0 && 
+								!(player.world.getBlockState(player.getPosition()).getMaterial().isLiquid()))
+							player.motionY = 0;
+						player.velocityChanged = true;
+					} else {
+						player.motionY = -0.8f * SOUL_VERTICAL_SPEED;
+						player.fallDistance = 0;
+						player.velocityChanged = true;
+					}
 				}
 			}
 		}
@@ -157,7 +168,7 @@ public class EventHandlerClient {
 	    if(event.getEntity() instanceof EntityPlayer){
 	    	final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler((EntityPlayer)event.getEntity());
 	    	if(playerCorp.isIncorporeal()){
-	    		GlStateManager.color(0.9F, 0.9F, 1.0F, 0.5F); //0.5F being alpha
+	    		GlStateManager.color(0.9F, 0.9F, 1.0F, 0.5F); // Tints the player blue and halves the transparency
 	    	}
 	    }
 	}
@@ -170,8 +181,8 @@ public class EventHandlerClient {
 	@SubscribeEvent
 	public void onDrawBlockHighlight (DrawBlockHighlightEvent event) {
 		try {
-			event.setCanceled(CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal() && 
+			event.setCanceled(CapabilityIncorporealHandler.getHandler(event.getPlayer()).isIncorporeal() && 
 					!(event.getPlayer().world.getBlockState(event.getTarget().getBlockPos()).getBlock() instanceof ISoulInteractable));
-		} catch (NullPointerException e) {	}
+		} catch (NullPointerException e) {}
 	}
 }

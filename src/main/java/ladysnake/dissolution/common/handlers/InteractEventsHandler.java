@@ -45,6 +45,8 @@ public class InteractEventsHandler {
 		if(isGhost(event)) {
 			event.setCanceled(true);
 			
+			if(!DissolutionConfig.enableSoulDash) return;
+			
 			final IIncorporealHandler ghostHandler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
 			ghostHandler.setIntangible(true);
 			

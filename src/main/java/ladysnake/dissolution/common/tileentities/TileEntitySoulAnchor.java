@@ -31,8 +31,6 @@ public class TileEntitySoulAnchor extends TileEntity {
 	public BlockPos getExtremityPosition() {
 		if(this.pipeExtremity != null) return pipeExtremity;
 		
-		System.out.println("calculating extremity");
-		
 		pipeExtremity = this.pos;
 		try {
 			IBlockState thisState = world.getBlockState(this.pos);

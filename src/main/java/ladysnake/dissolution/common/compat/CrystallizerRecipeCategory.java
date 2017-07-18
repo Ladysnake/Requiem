@@ -1,8 +1,14 @@
 package ladysnake.dissolution.common.compat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.crafting.CrystallizerRecipe;
+import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.inventory.GuiCrystallizer;
 import mezz.jei.api.IGuiHelper;
+import mezz.jei.api.IModRegistry;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableAnimated.StartDirection;
@@ -31,6 +37,19 @@ public class CrystallizerRecipeCategory implements IRecipeCategory {
 		this.progressBar = helper.createAnimatedDrawable(helper.createDrawable(background_texture, 176, 14, 25, 13), 200, StartDirection.LEFT, false);
 		this.fuelBar = helper.createAnimatedDrawable(helper.createDrawable(background_texture, 176, 13, 14, 1), 600, StartDirection.BOTTOM, true);
 		this.name = I18n.format("dissolution.jei.recipe.crystallizer");
+	}
+
+	protected static void register(IModRegistry registry) {
+		registry.handleRecipes(CrystallizerRecipe.class, crystallizerRecipe -> (ingredients -> {
+			List<ItemStack> inputList = new ArrayList<ItemStack>();
+			inputList.add(crystallizerRecipe.getInput());
+			inputList.add(crystallizerRecipe.getFuel());
+			ingredients.setInputs(ItemStack.class, inputList);
+			ingredients.setOutput(ItemStack.class, crystallizerRecipe.getOutput());
+		}), Reference.MOD_ID + ".crystallizer");
+	
+		registry.addRecipes(CrystallizerRecipe.crystallizingRecipes, Reference.MOD_ID + ".crystallizer");
+		registry.addRecipeCatalyst(new ItemStack(ModBlocks.CRYSTALLIZER), Reference.MOD_ID + ".crystallizer");
 	}
 	
 	@Override

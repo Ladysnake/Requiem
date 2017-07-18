@@ -88,7 +88,7 @@ public class LivingDeathHandler {
 					flag = true;
 			}
 			
-			ItemStack lifeProtectionRing = InventorySearchHelper.findItem(p, ModItems.LIFE_PROTECTION_RING);
+			ItemStack lifeProtectionRing = InventorySearchHelper.findItem(p, ModItems.SCARAB_OF_ETERNITY);
 			if(!lifeProtectionRing.isEmpty()) {
 				p.inventory.setInventorySlotContents(InventorySearchHelper.getSlotFor(p.inventory, lifeProtectionRing), ItemStack.EMPTY);
 				flag = true;
@@ -98,7 +98,7 @@ public class LivingDeathHandler {
 			
 			if(DissolutionConfig.bodiesHoldInventory) {
 				
-				if(flag && !p.world.getGameRules().getBoolean("keepInventory") && !p.isSpectator()) {
+				if((flag || DissolutionConfig.bodiesHoldInventory) && !p.isSpectator() && !p.world.getGameRules().getBoolean("keepInventory")) {
 					transferEquipment(p, body);
 					body.setInventory(new InventoryPlayerCorpse(p.inventory.mainInventory, body));
 					p.inventory.clear();
@@ -250,7 +250,10 @@ public class LivingDeathHandler {
 			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.OFFHAND, source) && !stuff.isEmpty())
 				slot = EntityEquipmentSlot.OFFHAND;
 			if(slot != null) {
-				dest.setItemStackToSlot(slot, stuff);
+				if(dest.getItemStackFromSlot(slot) != ItemStack.EMPTY)
+					dest.entityDropItem(stuff, 0.5f);
+				else
+					dest.setItemStackToSlot(slot, stuff);
 				source.setItemStackToSlot(slot, ItemStack.EMPTY);
 			}
 		}

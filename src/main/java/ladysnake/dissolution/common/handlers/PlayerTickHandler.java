@@ -1,19 +1,17 @@
 package ladysnake.dissolution.common.handlers;
 
+import java.lang.reflect.Field;
 import java.util.Random;
 
-import ibxm.Player;
 import ladysnake.dissolution.common.DissolutionConfig;
-import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.networking.IncorporealMessage;
-import ladysnake.dissolution.common.networking.PacketHandler;
+import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.FoodStats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
@@ -21,17 +19,25 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
 
 public class PlayerTickHandler {
 
 	protected static final Random rand = new Random();
 	public static final int SPAWN_RADIUS_FROM_ORIGIN = 10;
+	private static Field foodTimer, foodExhaustionLevel;
+
 	protected int ticksSpentNearSpawn = 0;
-	private static float accelerationX = 0;
-	private static float accelerationY = 0;
-	private static float accelerationZ = 0;
+	
+	static {
+		try {
+			foodTimer = ReflectionHelper.findField(FoodStats.class, "foodTimer", "field_75123_d");
+			foodExhaustionLevel = ReflectionHelper.findField(FoodStats.class, "foodExhaustionLevel", "field_75126_c");
+		} catch (UnableToFindFieldException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@SubscribeEvent
 	public void onPlayerTick(PlayerTickEvent event) {
@@ -46,6 +52,13 @@ public class PlayerTickHandler {
 				handleSoulFlight(event.player);
 			
 			handlePossessingTick(event.player);
+			
+			try {
+				foodTimer.setInt(event.player.getFoodStats(), 20);
+				foodExhaustionLevel.setFloat(event.player.getFoodStats(), 0f);
+			} catch (IllegalArgumentException | IllegalAccessException | NullPointerException e) {
+				e.printStackTrace();
+			}
 
 			if (event.side.isClient())
 				return;
@@ -56,16 +69,17 @@ public class PlayerTickHandler {
 				respawnPlayerOrigin(event.player);
 			}
 			
+			// Randomly removes experience from the player
 			if (event.player.experience > 0 && rand.nextBoolean())
 				event.player.experience--;
 			else if (rand.nextInt() % 300 == 0 && event.player.experienceLevel > 0)
 				event.player.addExperienceLevel(-1);
 
-
-				if (!playerCorp.isSynced() && !event.player.world.isRemote
-						&& DissolutionConfig.respawnInNether) {
-					CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, -1);
-				}
+			// Teleports the player to the nether if needed
+			if (!playerCorp.isSynced() && !event.player.world.isRemote
+					&& DissolutionConfig.respawnInNether) {
+				CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, DissolutionConfig.respawnDimension);
+			}
 		}
 		if(event.side.isServer())
 			playerCorp.setSynced(true);
@@ -76,6 +90,8 @@ public class PlayerTickHandler {
 	 * @param player
 	 */
 	private void handleSoulFlight(EntityPlayer player) {
+		if(player.getRidingEntity() != null) return;
+		
 		if (DissolutionConfig.flightMode == DissolutionConfig.SPECTATOR_FLIGHT || DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT)
 			player.capabilities.isFlying = player.experienceLevel > 0;
 		if(DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT && player.experienceLevel > 0) {

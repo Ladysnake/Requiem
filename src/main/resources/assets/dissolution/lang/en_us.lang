@@ -1,5 +1,11 @@
 itemGroup.dissolution=Dissolution
+
 dissolution.jei.recipe.crystallizer=Crystallizing
+
+jei.description.dissolution.tile.soul_extractor=Can extract souls from the hellish sand that traps them. \nRight click with an empty bottle to obtain said souls.
+jei.description.dissolution.tile.mercurius_waystone=This standing stone will give a new body to those in need, shattering in the process.\nIt anchors in the nether, acting as a beacon for those who have been banished there.
+jei.description.dissolution.item.sepulture=This sepulture gives rest to worried souls by giving them a new body and assuring that their death will be remembered by the livings.
+jei.description.dissolution.item.scarab_of_eternity=This artifact from another time will preserve your remains from the assaults of time.
 
 dissolution.advancements.main.root.title=Dissolution
 dissolution.advancements.main.root.description=The law of the cycle
