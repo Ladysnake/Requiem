@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
@@ -44,7 +45,9 @@ public class EventHandlerClient {
 	private static Field highlightingItemStack;
 	private static int refresh = 0;
 	
-	private int prevHealth = 20;
+	private float prevHealth = 20;
+	private double prevMaxHealth = 20;
+	private boolean wasRidingLastTick = false;
 	
 	static {
 		try {
@@ -74,10 +77,21 @@ public class EventHandlerClient {
 			GuiIngameForge.renderFood = false;
 			GuiIngameForge.renderHotbar = player.isCreative();
 			GuiIngameForge.renderHealthMount = false;
+			GuiIngameForge.renderArmor = false;
 			if(player.isRiding() && player.getRidingEntity() instanceof EntityLiving) {
+				if(!this.wasRidingLastTick) {
+					this.prevHealth = player.getHealth();
+					IAttributeInstance maxHealth = player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
+					this.prevMaxHealth = maxHealth.getAttributeValue();
+					maxHealth.setBaseValue(
+							((EntityLiving)player.getRidingEntity()).getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
+					this.wasRidingLastTick = true;
+				}
 				player.setHealth(((EntityLiving)player.getRidingEntity()).getHealth());
-				player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(
-						((EntityLiving)player.getRidingEntity()).getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
+			} else if(this.wasRidingLastTick) {
+				player.setHealth(prevHealth);
+				player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(prevMaxHealth);
+				this.wasRidingLastTick = false;
 			}
 			GuiIngameForge.renderHealth = Minecraft.getMinecraft().player.isRiding();
 		}

@@ -15,6 +15,7 @@ import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -43,6 +44,11 @@ public class BlockMercuriusWaystone extends Block implements ISoulInteractable {
 		this.setUnlocalizedName(Reference.Blocks.MERCURIUS_WAYSTONE.getUnlocalizedName());
 		this.setRegistryName(Reference.Blocks.MERCURIUS_WAYSTONE.getRegistryName());
 		this.setHardness(1.0f);
+	}
+	
+	@Override
+	public void addInformation(ItemStack stack, @Nullable World playerIn, List<String> tooltip, ITooltipFlag advanced) {
+		tooltip.add("A beacon for the dead. Will shatter after giving life.");
 	}
 	
 	@Override

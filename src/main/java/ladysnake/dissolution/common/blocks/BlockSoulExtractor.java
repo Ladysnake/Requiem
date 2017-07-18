@@ -1,5 +1,9 @@
 package ladysnake.dissolution.common.blocks;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
@@ -13,6 +17,7 @@ import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -46,10 +51,10 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
 		this.setHarvestLevel("pickaxe", 1);
 	}
 	
-	@SideOnly(Side.CLIENT)
-    public void initModel() {
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
-    }
+	@Override
+	public void addInformation(ItemStack stack, @Nullable World playerIn, List<String> tooltip, ITooltipFlag advanced) {
+		tooltip.add("Can extract souls from soulsand. Right click with an empty bottle to obtain said souls.");
+	}
 	
 	@Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {

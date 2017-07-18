@@ -38,12 +38,10 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	private static DataParameter<Optional<UUID>> PLAYER = EntityDataManager.<Optional<UUID>>createKey(EntityPlayerCorpse.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 	private static DataParameter<Boolean> DECAY = EntityDataManager.<Boolean>createKey(EntityPlayerCorpse.class, DataSerializers.BOOLEAN);
 	protected InventoryPlayerCorpse inventory;
-	protected boolean decaying;
 	
 	public EntityPlayerCorpse(World worldIn) {
 		super(worldIn);
 		inventory = new InventoryPlayerCorpse(this);
-		decaying = !DissolutionConfig.bodiesDespawn;
 	}
 	
 	@Override
@@ -85,7 +83,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	}
 	
 	public boolean isDecaying() {
-		return this.getDataManager().get(DECAY);
+		return this.getDataManager().get(DECAY) && DissolutionConfig.bodiesDespawn;
 	}
 	
 	public void setDecaying(boolean decaying) {
@@ -135,7 +133,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	protected void entityInit() {
 		super.entityInit();
 		this.getDataManager().register(PLAYER, Optional.absent());
-		this.getDataManager().register(DECAY, true);
+		this.getDataManager().register(DECAY, DissolutionConfig.bodiesDespawn);
 	}
 	
 	@Override

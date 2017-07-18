@@ -39,17 +39,18 @@ public class InteractEventsHandler {
 	
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
-		String debugPrefix = "[InteractEventsHandler.onPlayerLeftClickBlock] ";
-		System.out.println("");
+		String debugPrefix = null; // "[InteractEventsHandler.onPlayerLeftClickBlock] ";
+		if(debugPrefix != null)
+			System.out.println("");
 		if(isGhost(event)) {
 			event.setCanceled(true);
 			
-			if(true)
-				return;
 			final IIncorporealHandler ghostHandler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
-			ghostHandler.setIntangible(!ghostHandler.isIntangible());
-			if(event.getSide() == Side.SERVER) {
-				System.out.println(debugPrefix + "player position : " + event.getEntityPlayer().getPosition());
+			ghostHandler.setIntangible(true);
+			
+			if(event.getSide() == Side.SERVER && false) {
+				if(debugPrefix != null)
+					System.out.println(debugPrefix + "player position : " + event.getEntityPlayer().getPosition());
 				EntitySoulCamera mount = new EntitySoulCamera((EntityPlayerMP)event.getEntityPlayer());
 				event.getWorld().spawnEntity(mount);
 				Vec3i vec = event.getFace().getOpposite().getDirectionVec();

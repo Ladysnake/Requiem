@@ -106,7 +106,7 @@ public class PlayerTickHandler {
 			if(possessed instanceof EntityLiving) {
 				((EntityLiving)possessed).cameraPitch = player.cameraPitch;
 				((EntityLiving) possessed).randomYawVelocity = 0;
-				((EntityLiving)possessed).moveRelative(player.moveStrafing, player.moveVertical, player.moveForward, 0.02f);
+				((EntityLiving)possessed).moveRelative(player.moveStrafing, 0.5f, player.moveForward, 0.02f);
 				float f1 = MathHelper.sin(player.rotationYaw * 0.017453292F);
 	            float f2 = MathHelper.cos(player.rotationYaw * 0.017453292F);
 	            BlockPos target = rayTrace(player,100, 1.0f).getBlockPos();

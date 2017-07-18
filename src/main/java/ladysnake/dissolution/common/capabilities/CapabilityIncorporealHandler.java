@@ -8,6 +8,7 @@ import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,7 +21,6 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToAccessFieldException;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
 
@@ -71,12 +71,13 @@ public class CapabilityIncorporealHandler {
 		
 		private boolean incorporeal = false;
 		/**How much time this entity will be intangible*/
-		private int intangible = -1;
+		private int intangibleTimer = -1;
 		private int lastFood = -1;
 		private int mercuryCandleNearby = -1;
 		private int sulfurCandleNearby = -1;
 		private String lastDeathMessage;
 		private boolean synced = false;
+		private int prevGamemode = 0;
 		
 		private EntityPlayer owner;
 		
@@ -115,6 +116,8 @@ public class CapabilityIncorporealHandler {
 				GuiIngameForge.renderHotbar = !enable;
 				GuiIngameForge.renderHealth = !enable;
 				GuiIngameForge.renderFood = !enable;
+				GuiIngameForge.renderArmor = !enable;
+				
 			}
 			setSynced(true);
 		}
@@ -175,9 +178,11 @@ public class CapabilityIncorporealHandler {
 					lastFood = owner.getFoodStats().getFoodLevel();
 				else
 					owner.getFoodStats().setFoodLevel(lastFood);
-			if(isIntangible()) {
-				intangible--;
-				if(!isIntangible()) {
+			if(intangibleTimer > -1000) {
+				final boolean prevIntangible = isIntangible();
+				intangibleTimer--;
+				if(prevIntangible && !isIntangible()) {
+					System.out.println("timer ended");
 					setIntangible(false);
 				}
 			}
@@ -185,16 +190,26 @@ public class CapabilityIncorporealHandler {
 
 		@Override
 		public boolean setIntangible(boolean intangible) {
-			this.intangible = intangible ? 100 : -1;
-			if(owner != null) {
-				//owner.setGameType(intangible ? GameType.SPECTATOR : GameType.SURVIVAL);	//FIXME don't do that in the release you fool !
+			System.out.println(this.intangibleTimer);
+			if(intangible && this.isIncorporeal() && intangibleTimer <= -1000) {
+				System.out.println("tangible -> intangible");
+				this.intangibleTimer = 100;
+				if(owner != null && !owner.world.isRemote) {
+					this.prevGamemode = ((EntityPlayerMP)owner).interactionManager.getGameType().getID();
+					owner.setGameType(GameType.SPECTATOR);
+				}
+			} else if (!intangible) {
+				System.out.println("intangible -> tangible");
+				this.intangibleTimer = -1;
+				if(owner != null && !owner.world.isRemote)
+					owner.setGameType(GameType.getByID(this.prevGamemode));
 			}
 			return true;
 		}
 		
 		@Override
 		public boolean isIntangible() {
-			return this.intangible >= 0;
+			return this.intangibleTimer >= 0;
 		}
 	}
 	
@@ -240,10 +255,12 @@ public class CapabilityIncorporealHandler {
 		    public NBTBase writeNBT (Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side) {
 		        final NBTTagCompound tag = new NBTTagCompound();           
 		        tag.setBoolean("incorporeal", instance.isIncorporeal());    
-		        if(instance instanceof DefaultIncorporealHandler)
-		        	tag.setInteger("intangible", ((DefaultIncorporealHandler)instance).intangible);
-		        else
+		        if(instance instanceof DefaultIncorporealHandler) {
+		        	tag.setInteger("intangible", ((DefaultIncorporealHandler)instance).intangibleTimer);
+		        	tag.setInteger("prevGamemode", ((DefaultIncorporealHandler)instance).prevGamemode);
+		        } else {
 		        	tag.setBoolean("intangible", instance.isIntangible());
+		        }
 		        tag.setString("lastDeath", instance.getLastDeathMessage() == null || instance.getLastDeathMessage().isEmpty() ? "This player has no recorded death" : instance.getLastDeathMessage());
 		        return tag;
 		    }
@@ -252,10 +269,12 @@ public class CapabilityIncorporealHandler {
 		    public void readNBT (Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side, NBTBase nbt) {
 		        final NBTTagCompound tag = (NBTTagCompound) nbt;
 		        instance.setIncorporeal(tag.getBoolean("incorporeal"));
-		        if(instance instanceof DefaultIncorporealHandler)
-		        	((DefaultIncorporealHandler)instance).intangible = tag.getInteger("intangible");
-		        else
+		        if(instance instanceof DefaultIncorporealHandler) {
+		        	((DefaultIncorporealHandler)instance).intangibleTimer = tag.getInteger("intangible");
+		        	((DefaultIncorporealHandler)instance).prevGamemode = tag.getInteger("prevGamemode");
+		        } else {
 		        	instance.setIntangible(tag.getBoolean("intangible"));
+		        }
 		        instance.setLastDeathMessage(tag.getString("lastDeath"));
 		    }
 		}

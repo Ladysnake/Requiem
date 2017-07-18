@@ -1,6 +1,9 @@
 package ladysnake.dissolution.common.blocks;
 
+import java.util.List;
 import java.util.Random;
+
+import javax.annotation.Nullable;
 
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
@@ -18,6 +21,7 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -50,6 +54,11 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 		this.setRegistryName(Reference.Blocks.SEPULTURE.getRegistryName());
 		this.setHardness(1f);
 		this.setHarvestLevel("pickaxe", 0);
+	}
+	
+	@Override
+	public void addInformation(ItemStack stack, @Nullable World playerIn, List<String> tooltip, ITooltipFlag advanced) {
+		tooltip.add("A fixed location for the souls in search of a new life.");
 	}
 	
 	public static enum EnumPartType implements IStringSerializable
