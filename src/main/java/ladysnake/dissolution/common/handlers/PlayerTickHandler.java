@@ -96,7 +96,6 @@ public class PlayerTickHandler {
 			player.capabilities.isFlying = player.experienceLevel > 0;
 		if(DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT && player.experienceLevel > 0) {
 			player.onGround = false;
-			player.capabilities.setFlySpeed(player.experienceLevel > 0 ? 0.025f : 0.01f);
 		}
 		else if (DissolutionConfig.flightMode == DissolutionConfig.CREATIVE_FLIGHT && player.experienceLevel <= 0)
 			player.capabilities.isFlying = false;
