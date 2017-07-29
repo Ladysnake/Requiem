@@ -2,7 +2,9 @@ package ladysnake.dissolution.common.capabilities;
 
 import java.util.ArrayList;
 
-import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.config.DissolutionConfig;
+import ladysnake.dissolution.common.config.DissolutionConfigManager;
+import ladysnake.dissolution.common.config.DissolutionConfigManager.FlightModes;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.block.Block;
@@ -92,7 +94,7 @@ public class CapabilityIncorporealHandler {
 		public void setIncorporeal(boolean enable) {
 			incorporeal = enable;
 			owner.setEntityInvulnerable(enable);
-			if(DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT && owner.world.isRemote)
+			if(DissolutionConfigManager.isFlightEnabled(FlightModes.CUSTOM_FLIGHT) && owner.world.isRemote)
 				owner.capabilities.setFlySpeed(enable ? 0.025f : 0.05f);
 			
 			try {
@@ -101,10 +103,10 @@ public class CapabilityIncorporealHandler {
 				e.printStackTrace();
 			}
 			
-			owner.setInvisible(enable && DissolutionConfig.invisibleGhosts);
+			owner.setInvisible(enable && DissolutionConfig.ghost.invisibleGhosts);
 
 			if(!owner.isCreative()) {
-				boolean enableFlight = (DissolutionConfig.flightMode != DissolutionConfig.NO_FLIGHT) && (DissolutionConfig.flightMode != DissolutionConfig.CUSTOM_FLIGHT);
+				boolean enableFlight = (!DissolutionConfigManager.isFlightEnabled(FlightModes.NO_FLIGHT)) && (!DissolutionConfigManager.isFlightEnabled(FlightModes.CUSTOM_FLIGHT));
 				owner.capabilities.disableDamage = enable;
 				owner.capabilities.allowFlying = (enable && (owner.experienceLevel > 0) && enableFlight);
 				owner.capabilities.isFlying = (enable && owner.capabilities.isFlying && owner.experienceLevel > 0 && enableFlight);

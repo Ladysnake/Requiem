@@ -6,10 +6,10 @@ import com.google.common.base.Optional;
 
 import ladysnake.dissolution.client.handlers.EventHandlerClient;
 import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.ISoulHandler;
+import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
@@ -48,7 +48,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	protected boolean processInteract(EntityPlayer player, EnumHand hand) {
 		final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
 
-		if(handler.isIncorporeal() && (!this.isDecaying() || DissolutionConfig.wowRespawn)) {
+		if(handler.isIncorporeal() && (!this.isDecaying() || DissolutionConfig.respawn.wowLikeRespawn)) {
 			LivingDeathHandler.transferEquipment(this, player);
 			this.onDeath(DamageSource.GENERIC);
 			this.setDead();
@@ -83,7 +83,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	}
 	
 	public boolean isDecaying() {
-		return this.getDataManager().get(DECAY) && DissolutionConfig.bodiesDespawn;
+		return this.getDataManager().get(DECAY) && DissolutionConfig.respawn.bodiesDespawn;
 	}
 	
 	public void setDecaying(boolean decaying) {
@@ -115,7 +115,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	
 	@Override
 	public int getMaxTimeRemaining() {
-		return this.isDecaying() ? (DissolutionConfig.wowRespawn ? 6000 : 50) : -1;
+		return this.isDecaying() ? (DissolutionConfig.respawn.wowLikeRespawn ? 6000 : 50) : -1;
 	}
 	
 	@Override
@@ -133,7 +133,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	protected void entityInit() {
 		super.entityInit();
 		this.getDataManager().register(PLAYER, Optional.absent());
-		this.getDataManager().register(DECAY, DissolutionConfig.bodiesDespawn);
+		this.getDataManager().register(DECAY, DissolutionConfig.respawn.bodiesDespawn);
 	}
 	
 	@Override

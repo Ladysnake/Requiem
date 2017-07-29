@@ -2,11 +2,11 @@ package ladysnake.dissolution.common.handlers;
 
 import java.util.List;
 
-import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.SoulTypes;
+import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.entity.soul.EntitySoulCamera;
 import net.minecraft.entity.Entity;
@@ -45,7 +45,7 @@ public class InteractEventsHandler {
 		if(isGhost(event)) {
 			event.setCanceled(true);
 			
-			if(!DissolutionConfig.enableSoulDash) return;
+			if(!DissolutionConfig.wip.enableSoulDash) return;
 			
 			final IIncorporealHandler ghostHandler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
 			ghostHandler.setIntangible(true);
@@ -126,7 +126,7 @@ public class InteractEventsHandler {
 		} else if(isGhost(event)) {
 			final EntityPlayer player = (EntityPlayer)event.getEntity();
 			((EntityPlayer)event.getEntity()).eyeHeight = ((EntityPlayer)event.getEntity()).getDefaultEyeHeight();
-			((EntityPlayer)event.getEntity()).setInvisible(DissolutionConfig.invisibleGhosts);
+			((EntityPlayer)event.getEntity()).setInvisible(DissolutionConfig.ghost.invisibleGhosts);
 			if(!player.world.isRemote) {
 				fakeSpectator((EntityPlayerMP)player, player);
 			}

@@ -3,12 +3,12 @@ package ladysnake.dissolution.common.items;
 import java.util.List;
 
 import ladysnake.dissolution.client.renders.ShaderHelper;
-import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.capabilities.Soul;
+import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
 import net.minecraft.client.Minecraft;
@@ -62,9 +62,9 @@ public class ItemDebug extends Item implements ISoulInteractable {
 			break;
 		case 3 :
 			if(!playerIn.world.isRemote) {
-				DissolutionConfig.flightMode = DissolutionConfig.flightMode + 1;
-				if(DissolutionConfig.flightMode > 2) DissolutionConfig.flightMode = -1;
-				playerIn.sendStatusMessage(new TextComponentString("flight mode : " + DissolutionConfig.flightMode), true);
+				DissolutionConfig.ghost.flightMode = DissolutionConfig.ghost.flightMode + 1;
+				if(DissolutionConfig.ghost.flightMode > 2) DissolutionConfig.ghost.flightMode = -1;
+				playerIn.sendStatusMessage(new TextComponentString("flight mode : " + DissolutionConfig.ghost.flightMode), true);
 			} 
 			break;
 		case 4 :

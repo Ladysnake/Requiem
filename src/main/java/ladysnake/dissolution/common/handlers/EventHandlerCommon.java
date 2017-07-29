@@ -1,8 +1,8 @@
 package ladysnake.dissolution.common.handlers;
 
-import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
+import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import net.minecraft.entity.Entity;
@@ -48,7 +48,7 @@ public class EventHandlerCommon {
 			clone.setLastDeathMessage(corpse.getLastDeathMessage());
 			clone.setSynced(false);
 			
-			if(DissolutionConfig.respawnInNether && !DissolutionConfig.wowRespawn)
+			if(DissolutionConfig.respawn.respawnInNether && !DissolutionConfig.respawn.wowLikeRespawn)
 				event.getEntityPlayer().setPosition(event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ);
 		}
 	}

@@ -29,7 +29,7 @@ public class Dissolution {
 	 @EventHandler
 	 public void preInit(FMLPreInitializationEvent event) {
 		 config = new Configuration(event.getSuggestedConfigurationFile());
-		 DissolutionConfig.syncConfig();
+		 //DissolutionConfig.syncConfig();
 		 proxy.preInit();
 	 }
 	 

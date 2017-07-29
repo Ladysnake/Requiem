@@ -3,11 +3,11 @@ package ladysnake.dissolution.client.handlers;
 import java.lang.reflect.Field;
 
 import ladysnake.dissolution.client.renders.blocks.RenderSoulAnchor;
-import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.handlers.InteractEventsHandler;
+import ladysnake.dissolution.common.config.DissolutionConfigManager;
+import ladysnake.dissolution.common.config.DissolutionConfigManager.FlightModes;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PingMessage;
 import net.minecraft.client.Minecraft;
@@ -15,7 +15,6 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,8 +24,6 @@ import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
-import net.minecraftforge.event.entity.EntityMountEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
@@ -71,6 +68,8 @@ public class EventHandlerClient {
 			IMessage msg = new PingMessage(player.getUniqueID().getMostSignificantBits(), 
 					player.getUniqueID().getLeastSignificantBits());
 			PacketHandler.net.sendToServer(msg);
+		} else if(playerCorp.isSynced()) {
+			refresh = 0;
 		}
 
 		// Convoluted way of displaying the health of the possessed entity
@@ -138,7 +137,7 @@ public class EventHandlerClient {
 			
 		if(playerCorp.isIncorporeal() && !player.isCreative()) {
 		
-			if(DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT) {
+			if(DissolutionConfigManager.isFlightEnabled(FlightModes.CUSTOM_FLIGHT)) {
 				player.capabilities.setFlySpeed(player.experienceLevel > 0 ? 0.025f : 0.01f);
 				// Makes the player glide and stuff
 				if(playerSP.movementInput.jump && player.experienceLevel > 0 && player.getRidingEntity() == null) {

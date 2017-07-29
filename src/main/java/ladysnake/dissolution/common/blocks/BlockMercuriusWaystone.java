@@ -6,8 +6,8 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
+import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
@@ -53,7 +53,7 @@ public class BlockMercuriusWaystone extends Block implements ISoulInteractable {
 		if(playerCorp.isIncorporeal()){
 			playerCorp.setIncorporeal(false);
 			
-			if(DissolutionConfig.oneUseWaystone)
+			if(DissolutionConfig.blocks.oneUseWaystone)
 				worldIn.setBlockToAir(pos);
 
 
