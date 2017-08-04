@@ -11,7 +11,7 @@ import ladysnake.dissolution.common.handlers.PlayerTickHandler;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
-import ladysnake.dissolution.common.tileentities.TileEntityResuscitator;
+import ladysnake.dissolution.common.tileentities.TileEntityPowerCore;
 import ladysnake.dissolution.common.tileentities.TileEntitySepulture;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulCandle;
@@ -44,6 +44,7 @@ public abstract class CommonProxy {
 		ModItems.INSTANCE.registerOres();
 		
 		GameRegistry.registerTileEntity(TileEntityCrystallizer.class, Reference.MOD_ID + "tileentitycrystallizer");
+		GameRegistry.registerTileEntity(TileEntityPowerCore.class, Reference.MOD_ID + "tileentitypowercore");
 		GameRegistry.registerTileEntity(TileEntitySoulExtractor.class, Reference.MOD_ID + "tileentitysoulextractor");
 		GameRegistry.registerTileEntity(TileEntitySepulture.class, Reference.MOD_ID + "tileentitysepulture");
 		GameRegistry.registerTileEntity(TileEntitySoulAnchor.class, Reference.MOD_ID + "tileentitysoulanchor");

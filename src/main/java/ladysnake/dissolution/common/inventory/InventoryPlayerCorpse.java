@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.inventory;
 
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -100,13 +101,11 @@ public class InventoryPlayerCorpse implements IInventory {
 
 	@Override
 	public void openInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
-		
+		player.openGui(Dissolution.instance, GuiProxy.PLAYER_CORPSE, corpseEntity.world, corpseEntity.getPosition().getX(), corpseEntity.getPosition().getY(), corpseEntity.getPosition().getZ());
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
 		
 	}
 

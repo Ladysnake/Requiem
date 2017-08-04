@@ -2,12 +2,13 @@ package ladysnake.dissolution.common.init;
 
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.blocks.BlockBaseMachine;
 import ladysnake.dissolution.common.blocks.BlockCrystallizer;
-import ladysnake.dissolution.common.blocks.BlockDriedLava;
 import ladysnake.dissolution.common.blocks.BlockEctoplasm;
 import ladysnake.dissolution.common.blocks.BlockMercuriusWaystone;
 import ladysnake.dissolution.common.blocks.BlockMercuryCandle;
-import ladysnake.dissolution.common.blocks.BlockResuscitator;
+import ladysnake.dissolution.common.blocks.BlockPowerCable;
+import ladysnake.dissolution.common.blocks.BlockPowerCore;
 import ladysnake.dissolution.common.blocks.BlockSepulture;
 import ladysnake.dissolution.common.blocks.BlockSoulAnchor;
 import ladysnake.dissolution.common.blocks.BlockSoulExtractor;
@@ -20,9 +21,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -33,14 +32,17 @@ public final class ModBlocks {
 	static final ModBlocks INSTANCE = new ModBlocks();
 
 	public static Block ECTOPLASMA;
-	public static BlockEctoplasm ECTOPLASM;
+	public static BlockBaseMachine BASE_MACHINE = new BlockBaseMachine();
     public static BlockCrystallizer CRYSTALLIZER;
+	public static BlockEctoplasm ECTOPLASM;
+	public static BlockPowerCable POWER_CABLE = new BlockPowerCable();
+	public static BlockPowerCore POWER_CORE = new BlockPowerCore();
     public static BlockMercuriusWaystone MERCURIUS_WAYSTONE;
-    public static BlockSoulAnchor SOUL_ANCHOR;
     public static BlockMercuryCandle MERCURY_CANDLE;
-    public static BlockSulfurCandle SULFUR_CANDLE;
-    public static BlockSoulExtractor SOUL_EXTRACTOR;
     public static BlockSepulture SEPULTURE;
+    public static BlockSoulAnchor SOUL_ANCHOR;
+    public static BlockSoulExtractor SOUL_EXTRACTOR;
+    public static BlockSulfurCandle SULFUR_CANDLE;
     
     private IForgeRegistry<Block> reg;
 
@@ -62,14 +64,17 @@ public final class ModBlocks {
     @SubscribeEvent
     public void onRegister(RegistryEvent.Register<Block> event) {
     	reg = event.getRegistry();
+    	registerBlock(BASE_MACHINE);
     	registerBlock(CRYSTALLIZER);
     	registerBlock(ECTOPLASMA);
     	registerBlock(ECTOPLASM);
     	registerBlock(MERCURIUS_WAYSTONE).setMaxStackSize(1);
-    	registerBlock(SOUL_ANCHOR);
     	registerBlock(MERCURY_CANDLE);
-    	registerBlock(SULFUR_CANDLE);
+    	registerBlock(POWER_CABLE);
+    	registerBlock(POWER_CORE);
     	reg.register(SEPULTURE);
+    	registerBlock(SOUL_ANCHOR);
+    	registerBlock(SULFUR_CANDLE);
     	registerBlock(SOUL_EXTRACTOR);
     }
     

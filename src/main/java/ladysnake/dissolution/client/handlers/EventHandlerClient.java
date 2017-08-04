@@ -44,7 +44,7 @@ public class EventHandlerClient {
 	private static final float SOUL_VERTICAL_SPEED = 0.1f;
 	private static RenderSoulAnchor renderAnch = new RenderSoulAnchor();
 	private static Field highlightingItemStack;
-	private static int refresh = 0;
+	private static int refreshTimer = 0;
 	
 	private float prevHealth = 20;
 	private double prevMaxHealth = 20;
@@ -66,12 +66,13 @@ public class EventHandlerClient {
 		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
 		
 		// Sends a request to the server
-		if(!playerCorp.isSynced() && refresh++%100 == 0 && refresh <= 1000)
+		if(!playerCorp.isSynced() && refreshTimer++%100 == 0 && refreshTimer <= 1000)
 		{
 			IMessage msg = new PingMessage(player.getUniqueID().getMostSignificantBits(), 
 					player.getUniqueID().getLeastSignificantBits());
 			PacketHandler.net.sendToServer(msg);
-		}
+		} else if(playerCorp.isSynced())
+			refreshTimer = 0;
 
 		// Convoluted way of displaying the health of the possessed entity
 		if(player.isRiding() && player.getRidingEntity() instanceof EntityLiving) {

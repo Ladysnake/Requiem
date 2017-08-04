@@ -54,6 +54,10 @@ public final class ModItems {
 		SOUL_IN_A_BOTTLE = new ItemSoulInABottle();
 		SEPULTURE = new ItemSepulture();
 	}
+	
+	private Item generateBase(Reference.Items names) {
+		return new Item().setUnlocalizedName(names.getUnlocalizedName()).setRegistryName(names.getRegistryName());
+	}
 
 	@SubscribeEvent
 	public void onRegister(RegistryEvent.Register<Item> event) {
