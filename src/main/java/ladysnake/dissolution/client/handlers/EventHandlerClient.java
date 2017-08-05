@@ -71,6 +71,8 @@ public class EventHandlerClient {
 			IMessage msg = new PingMessage(player.getUniqueID().getMostSignificantBits(), 
 					player.getUniqueID().getLeastSignificantBits());
 			PacketHandler.net.sendToServer(msg);
+		} else {
+			refresh = 0;
 		}
 
 		// Convoluted way of displaying the health of the possessed entity

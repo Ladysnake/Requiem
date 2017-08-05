@@ -5,13 +5,13 @@ import net.minecraft.block.ITileEntityProvider;
 public class Reference {
 	public static final String MOD_ID = "dissolution";
 	public static final String MOD_NAME = "Dissolution";
-	public static final String VERSION = "0.4.2.1";
+	public static final String VERSION = "0.4.2.3";
 	public static final String MCVERSION = "[1.12]";
-	
-//	public static final String GUI_FACTORY = "ladysnake.dissolution.common.inventory.TartarosGuiFactory";	
+
+//	public static final String GUI_FACTORY = "ladysnake.dissolution.common.inventory.TartarosGuiFactory";
 	public static final String CLIENT_PROXY_CLASS = "ladysnake.dissolution.client.proxy.ClientProxy";
 	public static final String SERVER_PROXY_CLASS = "ladysnake.dissolution.server.proxy.ServerProxy";
-	
+
 	public static enum Items {
 		BASE_RESOURCE("base_resource", "itemResource"),
 		DEBUG("debug_item", "itemDebug"),
@@ -26,20 +26,20 @@ public class Reference {
 		SEPULTURE("sepulture", "itemSepulture"),
 		SEPULTUREFRAMING("sepulture_framing", "itemSepultureFraming");
 
-		
-		
+
+
 		private String unlocalizedName;
 		private String registryName;
-		
+
 		Items(String unlocalizedName, String registryName) {
 			this.unlocalizedName = unlocalizedName;
 			this.registryName = registryName;
 		}
-		
+
 		public String getRegistryName() {
 			return registryName;
 		}
-		
+
 		public String getUnlocalizedName() {
 			return unlocalizedName;
 		}
@@ -60,16 +60,16 @@ public class Reference {
 
 		private String unlocalizedName;
 		private String registryName;
-		
+
 		Blocks(String unlocalizedName, String registryName) {
 			this.unlocalizedName = unlocalizedName;
 			this.registryName = registryName;
 		}
-		
+
 		public String getRegistryName() {
 			return this.registryName;
 		}
-		
+
 		public String getUnlocalizedName() {
 			return this.unlocalizedName;
 		}
