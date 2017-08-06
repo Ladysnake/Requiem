@@ -31,9 +31,6 @@ public class ItemEyeDead extends Item {
 
 	public ItemEyeDead() {
 		super();
-		this.setUnlocalizedName(Reference.Items.EYE_DEAD.getUnlocalizedName());
-		this.setRegistryName(Reference.Items.EYE_DEAD.getRegistryName());
-		this.setCreativeTab(Dissolution.CREATIVE_TAB);
 		this.setMaxStackSize(1);
 		this.setMaxDamage(50);
 		this.addPropertyOverride(

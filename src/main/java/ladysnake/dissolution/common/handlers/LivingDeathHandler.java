@@ -5,8 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 
-import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
+import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.entity.item.EntityItemWaystone;
@@ -96,9 +96,9 @@ public class LivingDeathHandler {
 
 			body.setDecaying(!flag);
 			
-			if(DissolutionConfig.bodiesHoldInventory) {
+			if(DissolutionConfig.respawn.bodiesHoldInventory) {
 				
-				if((flag || DissolutionConfig.bodiesHoldInventory) && !p.isSpectator() && !p.world.getGameRules().getBoolean("keepInventory")) {
+				if((flag || DissolutionConfig.respawn.bodiesHoldInventory) && !p.isSpectator() && !p.world.getGameRules().getBoolean("keepInventory")) {
 					transferEquipment(p, body);
 					body.setInventory(new InventoryPlayerCorpse(p.inventory.mainInventory, body));
 					p.inventory.clear();
@@ -111,17 +111,17 @@ public class LivingDeathHandler {
 			body.setPlayer(p.getUniqueID());
 		}
 		
-		if(DissolutionConfig.skipDeathScreen) {
+		if(DissolutionConfig.respawn.skipDeathScreen) {
 			if(!p.world.isRemote)
 				fakePlayerDeath((EntityPlayerMP)p, event.getSource());
 			corp.setIncorporeal(true);
 			p.setHealth(20f);
-			if(!DissolutionConfig.respawnInNether && DissolutionConfig.wowRespawn) {
+			if(!DissolutionConfig.respawn.respawnInNether && DissolutionConfig.respawn.wowLikeRespawn) {
 				BlockPos respawnLoc = p.getBedLocation() != null ? p.getBedLocation() : p.world.getSpawnPoint();
 				p.setPosition(respawnLoc.getX(), respawnLoc.getY(), respawnLoc.getZ());
 			}
-			if(DissolutionConfig.respawnInNether && !p.world.isRemote)
-				CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) p, DissolutionConfig.respawnDimension);
+			if(DissolutionConfig.respawn.respawnInNether && !p.world.isRemote)
+				CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) p, DissolutionConfig.respawn.respawnDimension);
 			event.setCanceled(true);
 		}
 	}

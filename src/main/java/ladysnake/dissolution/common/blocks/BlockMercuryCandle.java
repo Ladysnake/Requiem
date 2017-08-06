@@ -25,8 +25,6 @@ public class BlockMercuryCandle extends Block implements ITileEntityProvider {
 	
 	public BlockMercuryCandle() {
 		super(Material.GLASS);
-		this.setUnlocalizedName(Reference.Blocks.MERCURY_CANDLE.getUnlocalizedName());
-		this.setRegistryName(Reference.Blocks.MERCURY_CANDLE.getRegistryName());
 		this.setHardness(1.0f);
 	}
 	

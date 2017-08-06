@@ -1,8 +1,8 @@
-package ladysnake.dissolution.client.gui;
+ package ladysnake.dissolution.client.gui;
 
-import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
+import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
@@ -50,7 +50,7 @@ public class GuiIncorporealOverlay extends Gui {
 		
 		/* Draw Incorporeal Ingame Gui */
 		if(pl.isIncorporeal()) {
-	        if(DissolutionConfig.soulCompass)
+	        if(DissolutionConfig.client.soulCompass)
 				this.drawOriginIndicator(event.getResolution());
 	        //this.drawMagicBar(event.getResolution());
 	        
@@ -111,7 +111,7 @@ public class GuiIncorporealOverlay extends Gui {
 			this.drawTexturedModalRect(i + 3 + (int)Math.round((angleToOrigin - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 200, 0, 7, 10);
 		}
 		
-		if(!DissolutionConfig.soulCompassAnchors) return;
+		if(!DissolutionConfig.client.soulCompassAnchors) return;
 		
 		for(TileEntity te : mc.player.world.loadedTileEntityList) {
 			if(te instanceof TileEntitySoulAnchor) {

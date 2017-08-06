@@ -15,9 +15,6 @@ public class BlockEctoplasm extends Block {
 	public BlockEctoplasm() 
 	{
 		super(Material.ICE);
-
-    	this.setUnlocalizedName(Reference.Blocks.ECTOPLASM.getUnlocalizedName());
-    	this.setRegistryName(Reference.Blocks.ECTOPLASM.getRegistryName());
     	this.setHardness(0.5f);
 	}
 

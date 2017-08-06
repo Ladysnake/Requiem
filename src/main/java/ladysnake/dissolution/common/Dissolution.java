@@ -1,6 +1,7 @@
 package ladysnake.dissolution.common;
 
 
+import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.inventory.DissolutionTab;
 import net.minecraft.creativetab.CreativeTabs;
@@ -16,8 +17,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION, acceptedMinecraftVersions = Reference.MCVERSION)
 public class Dissolution {
 	
-	public static Configuration config;
-	
 	@Instance(Reference.MOD_ID)
 	public static Dissolution instance;
 	
@@ -28,8 +27,7 @@ public class Dissolution {
 	 
 	 @EventHandler
 	 public void preInit(FMLPreInitializationEvent event) {
-		 config = new Configuration(event.getSuggestedConfigurationFile());
-		 DissolutionConfig.syncConfig();
+		 DissolutionConfigManager.loadConfig(event.getSuggestedConfigurationFile());
 		 proxy.preInit();
 	 }
 	 

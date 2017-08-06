@@ -3,9 +3,11 @@ package ladysnake.dissolution.common.handlers;
 import java.lang.reflect.Field;
 import java.util.Random;
 
-import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
+import ladysnake.dissolution.common.config.DissolutionConfig;
+import ladysnake.dissolution.common.config.DissolutionConfigManager;
+import ladysnake.dissolution.common.config.DissolutionConfigManager.FlightModes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
@@ -77,8 +79,8 @@ public class PlayerTickHandler {
 
 			// Teleports the player to the nether if needed
 			if (!playerCorp.isSynced() && !event.player.world.isRemote
-					&& DissolutionConfig.respawnInNether) {
-				CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, DissolutionConfig.respawnDimension);
+					&& DissolutionConfig.respawn.respawnInNether) {
+				CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, DissolutionConfig.respawn.respawnDimension);
 			}
 		}
 		if(event.side.isServer())
@@ -92,15 +94,15 @@ public class PlayerTickHandler {
 	private void handleSoulFlight(EntityPlayer player) {
 		if(player.getRidingEntity() != null) return;
 		
-		if (DissolutionConfig.flightMode == DissolutionConfig.SPECTATOR_FLIGHT || DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT)
+		if (DissolutionConfigManager.isFlightEnabled(FlightModes.SPECTATOR_FLIGHT) || DissolutionConfigManager.isFlightEnabled(FlightModes.CUSTOM_FLIGHT))
 			player.capabilities.isFlying = player.experienceLevel > 0;
-		if(DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT && player.experienceLevel > 0) {
+		if(DissolutionConfigManager.isFlightEnabled(FlightModes.CUSTOM_FLIGHT) && player.experienceLevel > 0) {
 			player.onGround = false;
 		}
-		else if (DissolutionConfig.flightMode == DissolutionConfig.CREATIVE_FLIGHT && player.experienceLevel <= 0)
+		else if (DissolutionConfigManager.isFlightEnabled(FlightModes.CREATIVE_FLIGHT) && player.experienceLevel <= 0)
 			player.capabilities.isFlying = false;
-		if (DissolutionConfig.flightMode == DissolutionConfig.SPECTATOR_FLIGHT
-				|| DissolutionConfig.flightMode == DissolutionConfig.CREATIVE_FLIGHT)
+		if (DissolutionConfigManager.isFlightEnabled(FlightModes.SPECTATOR_FLIGHT)
+				|| DissolutionConfigManager.isFlightEnabled(FlightModes.CREATIVE_FLIGHT))
 			player.capabilities.allowFlying = player.experienceLevel > 0;
 	}
 	
@@ -158,7 +160,7 @@ public class PlayerTickHandler {
 					0.3D, 0.0D, new int[0]);
 		}
 		
-		if (player.dimension == -1 && DissolutionConfig.respawnInNether) {
+		if (player.dimension == -1 && DissolutionConfig.respawn.respawnInNether) {
 			BlockPos spawnPos = player.getBedLocation(player.getSpawnDimension());
 			if(spawnPos == null)
 				spawnPos = player.world.getMinecraftServer().getWorld(0).getSpawnPoint();

@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Multimap;
 
 import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.SoulTypes;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.InventorySearchHelper;
@@ -31,14 +32,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
-public abstract class ItemScythe extends ItemSword {
+public class ItemScythe extends ItemSword {
 
 	protected float attackSpeed, attackRadius;
 	protected boolean alreadyRunningAOE;
 	
 	public ItemScythe(ToolMaterial material) {
 		super(material);
-        this.setCreativeTab(Dissolution.CREATIVE_TAB);
         this.setMaxStackSize(1);
         this.attackSpeed = -3.5f;
         this.attackRadius = 2.0f;

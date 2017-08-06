@@ -20,8 +20,6 @@ public class BlockPowerCore extends Block implements ITileEntityProvider, IPower
 	
 	public BlockPowerCore() {
 		super(Material.CIRCUITS);
-		this.setUnlocalizedName(Reference.Blocks.POWER_CORE.getUnlocalizedName());
-		this.setRegistryName(Reference.Blocks.POWER_CORE.getRegistryName());
 		this.setDefaultState(this.blockState.getBaseState().withProperty(ENABLED, false));
 	}
 	

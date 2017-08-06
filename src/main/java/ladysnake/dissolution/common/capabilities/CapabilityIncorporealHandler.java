@@ -2,7 +2,9 @@ package ladysnake.dissolution.common.capabilities;
 
 import java.util.ArrayList;
 
-import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.config.DissolutionConfig;
+import ladysnake.dissolution.common.config.DissolutionConfigManager;
+import ladysnake.dissolution.common.config.DissolutionConfigManager.FlightModes;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.block.Block;
@@ -25,30 +27,30 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToAccessFieldExc
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
 
 /**
- * This set of classes handles the Incorporeal capability. 
+ * This set of classes handles the Incorporeal capability.
  * It is used to store and read all the additional information (related to the ghost state) on players. <br>
  * The IncorporealDataHandler class itself is used to register the capability and query the right handler
  * @author Pyrofab
- * 
+ *
  */
 public class CapabilityIncorporealHandler {
-	
+
 	/**this is a list of hardcoded vanilla blocks that players can interact with*/
 	public static ArrayList<Block> soulInteractableBlocks = new ArrayList<Block>();
-	
+
 	static {
 		soulInteractableBlocks.add(Blocks.LEVER);
 		soulInteractableBlocks.add(Blocks.GLASS_PANE);
 	}
-	
+
 	@CapabilityInject(IIncorporealHandler.class)
     public static final Capability<IIncorporealHandler> CAPABILITY_INCORPOREAL = null;
-	
+
     public static void register() {
         CapabilityManager.INSTANCE.register(IIncorporealHandler.class, new Storage(), DefaultIncorporealHandler.class);
         MinecraftForge.EVENT_BUS.register(new CapabilityIncorporealHandler());
     }
-    
+
     /**
      * This is a utility method to get the handler attached to an entity
      * @param entity an entity that has the capability attached (in this case, a player)
@@ -58,17 +60,17 @@ public class CapabilityIncorporealHandler {
 
         if (entity.hasCapability(CAPABILITY_INCORPOREAL, EnumFacing.DOWN))
             return entity.getCapability(CAPABILITY_INCORPOREAL, EnumFacing.DOWN);
-        
+
         return null;
     }
-	
+
     /**
      * This is the class that does most of the work, and the one other classes interact with
      * @author Pyrofab
      *
      */
 	public static class DefaultIncorporealHandler implements IIncorporealHandler {
-		
+
 		private boolean incorporeal = false;
 		/**How much time this entity will be intangible*/
 		private int intangibleTimer = -1;
@@ -78,33 +80,33 @@ public class CapabilityIncorporealHandler {
 		private String lastDeathMessage;
 		private boolean synced = false;
 		private int prevGamemode = 0;
-		
+
 		private EntityPlayer owner;
-		
+
 		/**Only there in case of reflection by forge*/
 		public DefaultIncorporealHandler () {}
-		
+
 		public DefaultIncorporealHandler (EntityPlayer owner) {
 			this.owner = owner;
 		}
-	
+
 		@Override
 		public void setIncorporeal(boolean enable) {
 			incorporeal = enable;
 			owner.setEntityInvulnerable(enable);
-			if(DissolutionConfig.flightMode == DissolutionConfig.CUSTOM_FLIGHT && owner.world.isRemote)
+			if(DissolutionConfigManager.isFlightEnabled(FlightModes.CUSTOM_FLIGHT) && owner.world.isRemote)
 				owner.capabilities.setFlySpeed(enable ? 0.025f : 0.05f);
-			
+
 			try {
 				ObfuscationReflectionHelper.setPrivateValue(Entity.class, owner, enable, "isImmuneToFire", "field_70178_ae");
 			} catch (UnableToFindFieldException | UnableToAccessFieldException e) {
 				e.printStackTrace();
 			}
 			
-			owner.setInvisible(enable && DissolutionConfig.invisibleGhosts);
+			owner.setInvisible(enable && DissolutionConfig.ghost.invisibleGhosts);
 
 			if(!owner.isCreative()) {
-				boolean enableFlight = (DissolutionConfig.flightMode != DissolutionConfig.NO_FLIGHT) && (DissolutionConfig.flightMode != DissolutionConfig.CUSTOM_FLIGHT);
+				boolean enableFlight = (!DissolutionConfigManager.isFlightEnabled(FlightModes.NO_FLIGHT)) && (!DissolutionConfigManager.isFlightEnabled(FlightModes.CUSTOM_FLIGHT));
 				owner.capabilities.disableDamage = enable;
 				owner.capabilities.allowFlying = (enable && (owner.experienceLevel > 0) && enableFlight);
 				owner.capabilities.isFlying = (enable && owner.capabilities.isFlying && owner.experienceLevel > 0 && enableFlight);
@@ -112,16 +114,16 @@ public class CapabilityIncorporealHandler {
 			if(!owner.world.isRemote) {
 				PacketHandler.net.sendToAll(new IncorporealMessage(owner.getUniqueID().getMostSignificantBits(),
 					owner.getUniqueID().getLeastSignificantBits(), enable));
-			} else {
-				GuiIngameForge.renderHotbar = !enable;
-				GuiIngameForge.renderHealth = !enable;
-				GuiIngameForge.renderFood = !enable;
-				GuiIngameForge.renderArmor = !enable;
-				GuiIngameForge.renderAir = !enable;
+			} else if(!enable){
+				GuiIngameForge.renderHotbar = true;
+				GuiIngameForge.renderHealth = true;
+				GuiIngameForge.renderFood = true;
+				GuiIngameForge.renderArmor = true;
+				GuiIngameForge.renderAir = true;
 			}
 			setSynced(true);
 		}
-		
+
 		@Override
 		public void setSoulCandleNearby(boolean soulCandle, int CandleType) {
 			if(CandleType == 1){
@@ -130,9 +132,9 @@ public class CapabilityIncorporealHandler {
 			else if(CandleType == 2){
 				this.sulfurCandleNearby = soulCandle ? 100 : -1;
 			}
-			
+
 		}
-		
+
 		@Override
 		public boolean isSoulCandleNearby(int CandleType) {
 			if(CandleType == 1){
@@ -143,12 +145,12 @@ public class CapabilityIncorporealHandler {
 			}
 			else return this.mercuryCandleNearby > 0;
 		}
-	
+
 		@Override
 		public boolean isIncorporeal() {
 			return this.incorporeal && !this.isSoulCandleNearby(1) || this.incorporeal && !this.isSoulCandleNearby(2);
 		}
-		
+
 		@Override
 		public void setSynced(boolean synced) {
 			this.synced = synced;
@@ -168,7 +170,7 @@ public class CapabilityIncorporealHandler {
 		public void setLastDeathMessage(String deathMessage) {
 			this.lastDeathMessage = deathMessage;
 		}
-		
+
 		@Override
 		public void tick() {
 			if(this.isSoulCandleNearby(1)) this.mercuryCandleNearby--;
@@ -202,30 +204,30 @@ public class CapabilityIncorporealHandler {
 			}
 			return true;
 		}
-		
+
 		@Override
 		public boolean isIntangible() {
 			return this.intangibleTimer >= 0;
 		}
 	}
-	
+
 	 public static class Provider implements ICapabilitySerializable<NBTTagCompound> {
-	        
+
 	        IIncorporealHandler instance;
-	        
+
 	        public Provider(EntityPlayer owner) {
 	        	this.instance = new DefaultIncorporealHandler(owner);
 			}
 
 	        @Override
 	        public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-	            
+
 	            return capability == CAPABILITY_INCORPOREAL;
 	        }
 
 	        @Override
 	        public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-	            
+
 	            return hasCapability(capability, facing) ? CAPABILITY_INCORPOREAL.<T>cast(instance) : null;
 	        }
 
@@ -239,7 +241,7 @@ public class CapabilityIncorporealHandler {
 	            CAPABILITY_INCORPOREAL.getStorage().readNBT(CAPABILITY_INCORPOREAL, instance, EnumFacing.DOWN, nbt);
 	        }
 	    }
-	 
+
 	 /**
 	  * This is what stores to and reads from the disk
 	  * @author Pyrofab
@@ -249,8 +251,8 @@ public class CapabilityIncorporealHandler {
 
 		    @Override
 		    public NBTBase writeNBT (Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side) {
-		        final NBTTagCompound tag = new NBTTagCompound();           
-		        tag.setBoolean("incorporeal", instance.isIncorporeal());    
+		        final NBTTagCompound tag = new NBTTagCompound();
+		        tag.setBoolean("incorporeal", instance.isIncorporeal());
 		        if(instance instanceof DefaultIncorporealHandler) {
 		        	tag.setInteger("intangible", ((DefaultIncorporealHandler)instance).intangibleTimer);
 		        	tag.setInteger("prevGamemode", ((DefaultIncorporealHandler)instance).prevGamemode);

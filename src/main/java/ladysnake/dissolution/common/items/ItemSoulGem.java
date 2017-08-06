@@ -9,9 +9,6 @@ public class ItemSoulGem extends Item {
 
 	public ItemSoulGem() {
 		super();
-		this.setUnlocalizedName(Reference.Items.SOULGEM.getUnlocalizedName());
-        this.setRegistryName(Reference.Items.SOULGEM.getRegistryName());
-        this.setCreativeTab(Dissolution.CREATIVE_TAB);
 	}
 	
 	@Override

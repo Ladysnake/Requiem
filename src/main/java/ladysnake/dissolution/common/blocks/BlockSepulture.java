@@ -50,8 +50,6 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 	public BlockSepulture() {
 		super(Material.ROCK);
         this.setDefaultState(this.blockState.getBaseState().withProperty(PART, BlockSepulture.EnumPartType.FOOT));
-        this.setUnlocalizedName(Reference.Blocks.SEPULTURE.getUnlocalizedName());
-		this.setRegistryName(Reference.Blocks.SEPULTURE.getRegistryName());
 		this.setHardness(1f);
 		this.setHarvestLevel("pickaxe", 0);
 	}

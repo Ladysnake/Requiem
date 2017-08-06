@@ -13,8 +13,6 @@ public class BlockBaseMachine extends Block implements IMachine {
 	
 	public BlockBaseMachine() {
 		super(Material.CIRCUITS);
-		this.setUnlocalizedName(Reference.Blocks.BASE_MACHINE.getUnlocalizedName());
-		this.setRegistryName(Reference.Blocks.BASE_MACHINE.getRegistryName());
 		this.setDefaultState(this.blockState.getBaseState().withProperty(ENABLED, false));
 	}
 

@@ -1,20 +1,21 @@
 package ladysnake.dissolution.common.init;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.items.ItemBaseResource;
 import ladysnake.dissolution.common.items.ItemDebug;
 import ladysnake.dissolution.common.items.ItemEyeDead;
-import ladysnake.dissolution.common.items.ItemGrandFaux;
-import ladysnake.dissolution.common.items.ItemScarabOfEternity;
-import ladysnake.dissolution.common.items.ItemScytheIron;
+import ladysnake.dissolution.common.items.ItemScythe;
 import ladysnake.dissolution.common.items.ItemSepulture;
 import ladysnake.dissolution.common.items.ItemSoulGem;
 import ladysnake.dissolution.common.items.ItemSoulInABottle;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.item.Item.ToolMaterial;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
@@ -31,47 +32,38 @@ public final class ModItems {
 	
 	public static ItemDebug DEBUG_ITEM;
 	public static ItemEyeDead EYE_OF_THE_UNDEAD;
-	public static ItemGrandFaux GRAND_FAUX;
+	public static ItemScythe GRAND_FAUX;
 	public static ItemBaseResource BASE_RESOURCE;
-	public static ItemScarabOfEternity SCARAB_OF_ETERNITY;
-	public static ItemScytheIron SCYTHE_IRON;
+	public static Item SCARAB_OF_ETERNITY;
+	public static ItemScythe SCYTHE_IRON;
 	public static ItemSoulGem SOUL_GEM;
 	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
 	public static ItemSepulture SEPULTURE;
 	
-	static List<Item> blocks = new ArrayList<>();
-
-//	private IForgeRegistry<Item> reg;
-
-	void init() {
-		BASE_RESOURCE = new ItemBaseResource();
-		DEBUG_ITEM = new ItemDebug();
-		EYE_OF_THE_UNDEAD = new ItemEyeDead();
-		GRAND_FAUX = new ItemGrandFaux();
-		SCARAB_OF_ETERNITY = new ItemScarabOfEternity();
-		SCYTHE_IRON = new ItemScytheIron();
-		SOUL_GEM = new ItemSoulGem();
-		SOUL_IN_A_BOTTLE = new ItemSoulInABottle();
-		SEPULTURE = new ItemSepulture();
-	}
+	static Set<Item> allItems = new HashSet<>();
 	
-	private Item generateBase(Reference.Items names) {
-		return new Item().setUnlocalizedName(names.getUnlocalizedName()).setRegistryName(names.getRegistryName());
+	private <T extends Item> T giveNames(T item, Reference.Items names) {
+		return (T) item.setUnlocalizedName(names.getUnlocalizedName()).setRegistryName(names.getRegistryName());
 	}
 
 	@SubscribeEvent
 	public void onRegister(RegistryEvent.Register<Item> event) {
 		IForgeRegistry<Item> reg = event.getRegistry();
-		reg.register(BASE_RESOURCE);
-		reg.register(DEBUG_ITEM);
-		reg.register(EYE_OF_THE_UNDEAD);
-		reg.register(GRAND_FAUX);
-		reg.register(SCARAB_OF_ETERNITY);
-		reg.register(SCYTHE_IRON);
-		reg.register(SOUL_GEM);
-		reg.register(SOUL_IN_A_BOTTLE);
-		reg.register(SEPULTURE);
-		blocks.forEach(reg::register);
+		Collections.addAll(allItems, 
+				BASE_RESOURCE = giveNames(new ItemBaseResource(), Reference.Items.BASE_RESOURCE), 
+				DEBUG_ITEM = giveNames(new ItemDebug(), Reference.Items.DEBUG), 
+				EYE_OF_THE_UNDEAD = giveNames(new ItemEyeDead(), Reference.Items.EYE_DEAD), 
+				GRAND_FAUX = giveNames((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(1500), Reference.Items.GRAND_FAUX), 
+				SCARAB_OF_ETERNITY = giveNames(new Item().setMaxStackSize(1), Reference.Items.SCARAB_OF_ETERNITY), 
+				SCYTHE_IRON = giveNames((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), Reference.Items.SCYTHE_IRON),
+				SOUL_GEM = giveNames(new ItemSoulGem(), Reference.Items.SOULGEM), 
+				SOUL_IN_A_BOTTLE = giveNames(new ItemSoulInABottle(), Reference.Items.SOULINABOTTLE), 
+				SEPULTURE = giveNames(new ItemSepulture(), Reference.Items.SEPULTURE));
+		for(Item i : allItems) {
+			reg.register(i);
+			if(i != DEBUG_ITEM)
+				i.setCreativeTab(Dissolution.CREATIVE_TAB);
+		}
 	}
 	
 	void registerOres() {
@@ -83,18 +75,10 @@ public final class ModItems {
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void registerRenders(ModelRegistryEvent event) {
+		allItems.forEach(this::registerRender);
 		for (int i = 0; i < BASE_RESOURCE.variants.size(); ++i) {
 			registerRender(BASE_RESOURCE, i, BASE_RESOURCE.variants.get(i));
 		}
-		registerRender(DEBUG_ITEM);
-		registerRender(EYE_OF_THE_UNDEAD);
-		registerRender(GRAND_FAUX);
-		registerRender(SCARAB_OF_ETERNITY);
-		registerRender(SCYTHE_IRON);
-		registerRender(SOUL_GEM);
-		registerRender(SOUL_IN_A_BOTTLE);
-		registerRender(SEPULTURE);
-
 	}
 
 	@SideOnly(Side.CLIENT)

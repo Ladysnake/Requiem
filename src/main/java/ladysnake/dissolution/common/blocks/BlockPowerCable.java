@@ -21,8 +21,6 @@ public class BlockPowerCable extends Block implements IPowerConductor {
 
 	public BlockPowerCable() {
 		super(Material.CIRCUITS);
-		this.setUnlocalizedName(Reference.Blocks.POWER_CABLE.getUnlocalizedName());
-		this.setRegistryName(Reference.Blocks.POWER_CABLE.getRegistryName());
 	}
 	
 	@Override

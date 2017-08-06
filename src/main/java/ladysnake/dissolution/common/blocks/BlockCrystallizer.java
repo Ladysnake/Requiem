@@ -45,8 +45,6 @@ public class BlockCrystallizer extends BlockContainer {
 	public BlockCrystallizer() {
 		super(Material.ROCK);
 		setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
-		setUnlocalizedName(Reference.Blocks.CRYSTALLIZER.getUnlocalizedName());
-		setRegistryName(Reference.Blocks.CRYSTALLIZER.getRegistryName());
 		TileEntityCrystallizer.init();
 		this.setHardness(2.0f);
 		this.setHarvestLevel("pickaxe", 1);

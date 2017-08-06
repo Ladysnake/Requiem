@@ -45,8 +45,6 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
 	public BlockSoulExtractor() {
 		super(Material.ROCK);
 		setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
-        setUnlocalizedName(Reference.Blocks.SOUL_EXTRACTOR.getUnlocalizedName());
-        setRegistryName(Reference.Blocks.SOUL_EXTRACTOR.getRegistryName());
         this.setHardness(1.0f);
 		this.setHarvestLevel("pickaxe", 1);
 	}
