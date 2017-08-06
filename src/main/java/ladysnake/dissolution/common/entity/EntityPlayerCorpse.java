@@ -49,9 +49,11 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 		final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
 
 		if(handler.isIncorporeal() && (!this.isDecaying() || DissolutionConfig.respawn.wowLikeRespawn)) {
-			LivingDeathHandler.transferEquipment(this, player);
-			this.onDeath(DamageSource.GENERIC);
-			this.setDead();
+			if(!world.isRemote) {
+				LivingDeathHandler.transferEquipment(this, player);
+				this.onDeath(DamageSource.GENERIC);
+				this.setDead();
+			}
 			player.setPositionAndRotation(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
 			player.cameraPitch = 90;
 			player.prevCameraPitch = 90;

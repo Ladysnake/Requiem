@@ -53,6 +53,7 @@ public class DissolutionConfig {
 	public static class Entities {
 		
 		@Config.LangKey("config.dissolution:entities.minionsAttackCreepers")
+		@Config.RequiresMcRestart
 		public boolean minionsAttackCreepers = true;
 		
 	}
@@ -82,6 +83,7 @@ public class DissolutionConfig {
 	public static class Ghost {
 		
 		@Config.LangKey("config.dissolution:ghost.flightMode")
+		@Config.RangeInt(min= -1, max= 3)
 		public int flightMode = 0;
 		
 		@Config.LangKey("config.dissolution:ghost.invisibleGhosts")
