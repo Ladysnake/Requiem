@@ -8,7 +8,7 @@ import com.google.common.base.Optional;
 
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
-import net.minecraft.entity.EntityFlying;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,7 +17,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.world.World;
 
-public class AbstractSoul extends EntityFlying implements IEntityOwnable, ISoulInteractable {
+public class AbstractSoul extends Entity implements IEntityOwnable, ISoulInteractable {
 	
 	private static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.<Optional<UUID>>createKey(AbstractMinion.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 
@@ -27,19 +27,16 @@ public class AbstractSoul extends EntityFlying implements IEntityOwnable, ISoulI
 
 	@Override
 	protected void entityInit() {
-		super.entityInit();
         this.dataManager.register(OWNER_UNIQUE_ID, Optional.absent());
 	}
 
 	@Override
 	public void readEntityFromNBT(NBTTagCompound compound) {
-		super.readEntityFromNBT(compound);
 		this.setOwnerId(compound.getUniqueId("OwnerUUID"));
 	}
 
 	@Override
 	public void writeEntityToNBT(NBTTagCompound compound) {
-		super.writeEntityToNBT(compound);
 		if (this.getOwnerId() != null)
         {
             compound.setUniqueId("OwnerUUID", getOwnerId());

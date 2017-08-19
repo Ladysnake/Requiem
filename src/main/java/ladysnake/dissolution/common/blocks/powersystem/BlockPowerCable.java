@@ -1,68 +1,114 @@
-package ladysnake.dissolution.common.blocks;
+package ladysnake.dissolution.common.blocks.powersystem;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
-import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.init.ModBlocks;
-import ladysnake.dissolution.common.tileentities.TileEntityPowerCore;
+import ladysnake.dissolution.client.models.blocks.UnlistedPropertyBlockAvailable;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLever;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockPowerCable extends Block implements IPowerConductor {
-
+public class BlockPowerCable extends AbstractPowerConductor {
+	
+	public static final UnlistedPropertyBlockAvailable NORTH = new UnlistedPropertyBlockAvailable("north");
+    public static final UnlistedPropertyBlockAvailable SOUTH = new UnlistedPropertyBlockAvailable("south");
+    public static final UnlistedPropertyBlockAvailable WEST = new UnlistedPropertyBlockAvailable("west");
+    public static final UnlistedPropertyBlockAvailable EAST = new UnlistedPropertyBlockAvailable("east");
+    public static final UnlistedPropertyBlockAvailable UP = new UnlistedPropertyBlockAvailable("up");
+    public static final UnlistedPropertyBlockAvailable DOWN = new UnlistedPropertyBlockAvailable("down");
+	
 	public BlockPowerCable() {
-		super(Material.CIRCUITS);
+		super();
 	}
 	
 	@Override
-	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
-		super.onBlockHarvested(worldIn, pos, state, player);
-		if(!worldIn.isRemote)
-			findPowerCore(worldIn, pos).ifPresent(bp -> worldIn.scheduleUpdate(bp, worldIn.getBlockState(bp).getBlock(), 0));
+	protected BlockStateContainer createBlockState() {
+		IProperty[] listedProperties = new IProperty[] {POWERED};
+        IUnlistedProperty[] unlistedProperties = new IUnlistedProperty[] { NORTH, SOUTH, WEST, EAST, UP, DOWN };
+        return new ExtendedBlockState(this, listedProperties, unlistedProperties);
 	}
 	
 	@Override
-	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
-		super.onBlockAdded(worldIn, pos, state);
-		if(!worldIn.isRemote)
-			findPowerCore(worldIn, pos).ifPresent(bp -> worldIn.scheduleUpdate(bp, worldIn.getBlockState(bp).getBlock(), 0));
-	}
+    public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
+        IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
+
+        boolean north = shouldAttach(world, pos.north(), pos);
+        boolean south = shouldAttach(world, pos.south(), pos);
+        boolean west = shouldAttach(world, pos.west(), pos);
+        boolean east = shouldAttach(world, pos.east(), pos);
+        boolean up = shouldAttach(world, pos.up(), pos);
+        boolean down = shouldAttach(world, pos.down(), pos);
+
+        return extendedBlockState
+                .withProperty(NORTH, north)
+                .withProperty(SOUTH, south)
+                .withProperty(WEST, west)
+                .withProperty(EAST, east)
+                .withProperty(UP, up)
+                .withProperty(DOWN, down);
+    }
 	
-	public static Optional<BlockPos> findPowerCore(World world, BlockPos pos) {
-		Optional res = scan(world, pos, new LinkedList<>(), 0);
-		return res;
-	}
+	private boolean shouldAttach(IBlockAccess world, BlockPos pos, BlockPos pipePos) {
+        return world.getBlockState(pos).getBlock() instanceof IPowerConductor;
+    //    		|| (world.getBlockState(pos).getBlock() instanceof BlockLever && 
+    //    				pos.offset(world.getBlockState(pos).getValue(BlockLever.FACING).getFacing().getOpposite()).equals(pipePos));
+    }
 	
-	private static Optional<BlockPos> scan(World world, BlockPos pos, List<BlockPos> searchedBlocks, int i) {
-		if(++i > 100 || !(world.getBlockState(pos).getBlock() instanceof IPowerConductor) || searchedBlocks.contains(pos)) 
-			return Optional.empty();
-		
-		searchedBlocks.add(pos);
-		
-		if(world.getBlockState(pos).getBlock() instanceof BlockPowerCore)
-			return Optional.of(pos);
-		
-		for(EnumFacing face : EnumFacing.values()) {
-			Optional<BlockPos> result = scan(world, pos.offset(face), searchedBlocks, i);
-			if(result.isPresent())
-				return result;
-		}
-		
-		return Optional.empty();
+	@Override
+	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+		double x1 = 0.250;
+		double y1 = 0.250;
+		double z1 = 0.250;
+		double x2 = 0.750;
+		double y2 = 0.750;
+		double z2 = 0.750;
+		if(shouldAttach(source, pos.down(), pos))
+			y1 = 0;
+		if(shouldAttach(source, pos.up(), pos))
+			y2 = 1;
+		if(shouldAttach(source, pos.north(), pos))
+			z1 = 0;
+		if(shouldAttach(source, pos.south(), pos))
+			z2 = 1;
+		if(shouldAttach(source, pos.west(), pos))
+			x1 = 0;
+		if(shouldAttach(source, pos.east(), pos))
+			x2 = 1;
+		return new AxisAlignedBB(x1,y1,z1,x2,y2,z2);
 	}
 	
 	@Override
-	public boolean isActivated(World worldIn, BlockPos pos) {
-		return worldIn.getBlockState(pos).getBlock() instanceof BlockPowerCable || IPowerConductor.super.isActivated(worldIn, pos);
-	}
+    @SideOnly(Side.CLIENT)
+    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+        return false;
+    }
+
+	@Override
+    public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return false;
+    }
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
 
 }

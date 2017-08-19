@@ -3,11 +3,11 @@ package ladysnake.dissolution.common.handlers;
 import java.lang.reflect.Field;
 import java.util.Random;
 
+import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.DissolutionConfigManager;
+import ladysnake.dissolution.common.DissolutionConfigManager.FlightModes;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.config.DissolutionConfig;
-import ladysnake.dissolution.common.config.DissolutionConfigManager;
-import ladysnake.dissolution.common.config.DissolutionConfigManager.FlightModes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;

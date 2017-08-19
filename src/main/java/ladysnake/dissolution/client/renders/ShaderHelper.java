@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
-import ladysnake.dissolution.common.config.DissolutionConfig;
+import ladysnake.dissolution.common.DissolutionConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 

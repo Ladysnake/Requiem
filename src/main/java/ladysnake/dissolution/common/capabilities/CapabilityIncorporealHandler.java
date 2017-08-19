@@ -2,9 +2,9 @@ package ladysnake.dissolution.common.capabilities;
 
 import java.util.ArrayList;
 
-import ladysnake.dissolution.common.config.DissolutionConfig;
-import ladysnake.dissolution.common.config.DissolutionConfigManager;
-import ladysnake.dissolution.common.config.DissolutionConfigManager.FlightModes;
+import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.DissolutionConfigManager;
+import ladysnake.dissolution.common.DissolutionConfigManager.FlightModes;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.block.Block;

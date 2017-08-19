@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Random;
 
 import io.netty.buffer.ByteBuf;
+import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.entity.EntityWanderingSoul;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;
 import ladysnake.dissolution.common.init.ModItems;

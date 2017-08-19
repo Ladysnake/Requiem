@@ -2,8 +2,8 @@ package ladysnake.dissolution.client.renders.entities;
 
 import com.mojang.authlib.GameProfile;
 
-import ladysnake.dissolution.client.models.ModelMinionZombie;
-import ladysnake.dissolution.client.models.ModelPlayerCorpse;
+import ladysnake.dissolution.client.models.entities.ModelMinionZombie;
+import ladysnake.dissolution.client.models.entities.ModelPlayerCorpse;
 import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import net.minecraft.client.entity.EntityOtherPlayerMP;

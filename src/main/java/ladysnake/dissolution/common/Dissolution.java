@@ -1,7 +1,6 @@
 package ladysnake.dissolution.common;
 
 
-import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.inventory.DissolutionTab;
 import net.minecraft.creativetab.CreativeTabs;

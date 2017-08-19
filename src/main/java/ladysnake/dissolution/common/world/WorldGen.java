@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.world;
 
 import java.util.Random;
 
-import ladysnake.dissolution.common.config.DissolutionConfig;
+import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.init.ModFluids;
 import ladysnake.dissolution.common.world.gen.feature.WorldGenMercuryLakes;
 import net.minecraft.util.math.BlockPos;

@@ -13,22 +13,27 @@ public class Reference {
 	public static final String SERVER_PROXY_CLASS = "ladysnake.dissolution.server.proxy.ServerProxy";
 
 	public static enum Items {
-		BASE_RESOURCE("base_resource", "itemResource"),
-		DEBUG("debug_item", "itemDebug"),
-		ECTOPLASM("ectoplasm", "itemEctoplasm"),
-		ECTOPLASMA("ectoplasma", "itemEctoplasma"),
-		EYE_DEAD("eye_of_the_undead", "itemEyeOfUndead"),
-		GRAND_FAUX("grand_faux", "itemGrandFaux"),
-		SCARAB_OF_ETERNITY("scarab_of_eternity", "itemScarabOfEternity"),
-		SCYTHE_IRON("iron_scythe", "itemIronScythe"),
-		SOULGEM("soul_gem", "itemSoulGem"),
-		SOULINABOTTLE("soul_in_a_bottle", "itemSoulInABottle"),
-		SEPULTURE("sepulture", "itemSepulture");
-
-
+		BASE_RESOURCE,
+		DEBUG("debug_item"),
+		EYE_DEAD("eye_of_the_undead"),
+		GRAND_FAUX,
+		SCARAB_OF_ETERNITY,
+		SCYTHE_IRON("iron_scythe"),
+		SOULGEM("soul_gem"),
+		SOULINABOTTLE("soul_in_a_bottle"),
+		SEPULTURE;
 
 		private String unlocalizedName;
 		private String registryName;
+		
+		Items() {
+			this.unlocalizedName = name().toLowerCase();
+			this.registryName = unlocalizedName;
+		}
+		
+		Items(String unlocalizedName) {
+			this(unlocalizedName, unlocalizedName);
+		}
 
 		Items(String unlocalizedName, String registryName) {
 			this.unlocalizedName = unlocalizedName;
@@ -45,22 +50,32 @@ public class Reference {
 	}
 
 	public static enum Blocks {
-		BASE_MACHINE("base_machine", "baseMachine"),
-		CRYSTALLIZER("crystallizer", "blockCrystallizer"),
-		DRIED_LAVA("dried_lava", "blockDriedLava"),
-		ECTOPLASM("ectoplasm_block", "blockEctoplasm"),
-		ECTOPLASMA("ectoplasma_block", "blockEctoplasma"),
-		MERCURY_CANDLE("mercury_candle", "blockMercuryCandle"),
-		MERCURIUS_WAYSTONE("mercurius_waystone", "blockMercuriusWaystone"),
-		POWER_CORE("power_core", "powerCore"),
-		POWER_CABLE("power_cable", "powerCable"),
-		SEPULTURE("sepulture", "blockSepulture"),
-		SOUL_ANCHOR("soul_anchor", "blockSoulAnchor"),
-		SOUL_EXTRACTOR("soul_extractor", "blockSoulExtractor"),
-		SULFUR_CANDLE("sulfur_candle", "blockSulfurCandle");
+		BASE_MACHINE,
+		BARRAGE,
+		CRYSTALLIZER,
+		DRIED_LAVA,
+		ECTOPLASM,
+		ECTOPLASMA,
+		MERCURY_CANDLE,
+		MERCURIUS_WAYSTONE,
+		POWER_CORE,
+		POWER_CABLE,
+		SEPULTURE,
+		SOUL_ANCHOR,
+		SOUL_EXTRACTOR,
+		SULFUR_CANDLE;
 
 		private String unlocalizedName;
 		private String registryName;
+		
+		Blocks() {
+			this.unlocalizedName = this.name().toLowerCase();
+			this.registryName = unlocalizedName;
+		}
+		
+		Blocks(String unlocalizedName) {
+			this(unlocalizedName, unlocalizedName);
+		}
 
 		Blocks(String unlocalizedName, String registryName) {
 			this.unlocalizedName = unlocalizedName;

@@ -1,4 +1,4 @@
-package ladysnake.dissolution.client.models;
+package ladysnake.dissolution.client.models.entities;
 
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import net.minecraft.client.model.ModelZombie;

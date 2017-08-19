@@ -2,8 +2,8 @@ package ladysnake.dissolution.common.tileentities;
 
 import java.util.Random;
 
-import ladysnake.dissolution.common.blocks.BlockSoulExtractor;
-import ladysnake.dissolution.common.config.DissolutionConfig;
+import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.blocks.powersystem.BlockSoulExtractor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;

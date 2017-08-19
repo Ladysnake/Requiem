@@ -1,4 +1,4 @@
-package ladysnake.dissolution.client.models;
+package ladysnake.dissolution.client.models.entities;
 
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;

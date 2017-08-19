@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.blocks;
+package ladysnake.dissolution.common.blocks.powersystem;
 
 import java.util.Random;
 
@@ -7,6 +7,7 @@ import ladysnake.dissolution.common.tileentities.TileEntityPowerCore;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,9 +19,11 @@ import net.minecraft.world.World;
 
 public class BlockPowerCore extends Block implements ITileEntityProvider, IPowerConductor {
 	
+	public static final PropertyBool ENABLED = PropertyBool.create("enabled");
+	
 	public BlockPowerCore() {
 		super(Material.CIRCUITS);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(ENABLED, false));
+		this.setDefaultState(this.blockState.getBaseState().withProperty(ENABLED, true));
 	}
 	
 	@Override
@@ -33,16 +36,16 @@ public class BlockPowerCore extends Block implements ITileEntityProvider, IPower
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if(!worldIn.isRemote)
-			setActivated(worldIn, pos, !isActivated(worldIn, pos));
+			if(worldIn.getTileEntity(pos) instanceof TileEntityPowerCore) {
+				TileEntityPowerCore tepc = ((TileEntityPowerCore)worldIn.getTileEntity(pos));
+				tepc.setEnabled(!tepc.isEnabled());
+			}
 		return true;
 	}
 	
 	@Override
-	public void setActivated(World worldIn, BlockPos pos, boolean b) {
-		if(worldIn.getTileEntity(pos) instanceof TileEntityPowerCore) {
-			TileEntityPowerCore tepc = ((TileEntityPowerCore)worldIn.getTileEntity(pos));
-			tepc.setEnabled(!tepc.isEnabled());
-		}
+	public boolean isConductive(World worldIn, BlockPos pos) {
+		return worldIn.getBlockState(pos).getValue(ENABLED);
 	}
 	
 	@Override

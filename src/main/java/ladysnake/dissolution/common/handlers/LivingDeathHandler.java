@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.config.DissolutionConfig;
+import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.entity.item.EntityItemWaystone;

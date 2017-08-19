@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.init;
 
+import ladysnake.dissolution.client.renders.entities.LayerScythe;
 import ladysnake.dissolution.client.renders.entities.RenderBrimstoneFire;
 import ladysnake.dissolution.client.renders.entities.RenderMinionPigZombie;
 import ladysnake.dissolution.client.renders.entities.RenderMinionSkeleton;
@@ -20,6 +21,7 @@ import ladysnake.dissolution.common.entity.minion.EntityMinionStray;
 import ladysnake.dissolution.common.entity.minion.EntityMinionWitherSkeleton;
 import ladysnake.dissolution.common.entity.minion.EntityMinionZombie;
 import ladysnake.dissolution.common.entity.soul.EntitySoulCamera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.EnumCreatureType;
@@ -47,7 +49,7 @@ public class ModEntities {
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":player_corpse"), EntityPlayerCorpse.class, "player_corpse", id++, Dissolution.instance, 64, 1, true);
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":maw_of_the_void"), EntityMawOfTheVoid.class, "maw_of_the_void", id++, Dissolution.instance, 64, 1, true);
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID + ":brimstone_fire"), EntityBrimstoneFire.class, "brimstone_fire", id++, Dissolution.instance, 32, 1, false);
-    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, "soul_camera"), EntitySoulCamera.class, "soul_camera", id++, Dissolution.instance, 10, 1, true);
+    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, "soul_camera"), EntitySoulCamera.class, "soul_camera", id++, Dissolution.instance, 30, 2, true);
     }
     
     @SideOnly(Side.CLIENT)

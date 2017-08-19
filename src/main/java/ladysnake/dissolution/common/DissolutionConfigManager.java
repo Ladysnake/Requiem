@@ -1,11 +1,10 @@
-package ladysnake.dissolution.common.config;
+package ladysnake.dissolution.common;
 
 import java.io.File;
 import java.io.IOException;
 
 import com.google.common.io.Files;
 
-import ladysnake.dissolution.common.Reference;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.config.Configuration;

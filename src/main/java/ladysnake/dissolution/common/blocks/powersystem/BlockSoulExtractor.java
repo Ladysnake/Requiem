@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.blocks;
+package ladysnake.dissolution.common.blocks.powersystem;
 
 import java.util.List;
 

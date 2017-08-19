@@ -1,6 +1,5 @@
-package ladysnake.dissolution.common.config;
+package ladysnake.dissolution.common;
 
-import ladysnake.dissolution.common.Reference;
 import net.minecraftforge.common.config.Config;
 
 @Config(modid=Reference.MOD_ID, name=Reference.MOD_NAME)
