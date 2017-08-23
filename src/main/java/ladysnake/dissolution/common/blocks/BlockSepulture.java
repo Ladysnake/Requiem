@@ -42,7 +42,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockSepulture extends BlockHorizontal implements ISoulInteractable, ITileEntityProvider {
+public class BlockSepulture extends BlockHorizontal implements ISoulInteractable {
 
 	public static final PropertyEnum<BlockSepulture.EnumPartType> PART = PropertyEnum.<BlockSepulture.EnumPartType>create("part", BlockSepulture.EnumPartType.class);
     protected static final AxisAlignedBB SEPULTURE_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5625D, 1.0D);
@@ -228,17 +228,19 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
     {
         return new BlockStateContainer(this, new IProperty[] {FACING, PART});
     }
+	
+	@Override
+	public boolean hasTileEntity(IBlockState state) {
+		return state.getValue(PART) == EnumPartType.HEAD;
+	}
 
 	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		//System.out.println(this.getStateFromMeta(meta).getValue(PART));
-		//if (this.getStateFromMeta(meta).getValue(PART) == BlockSepulture.EnumPartType.HEAD)
+	public TileEntity createTileEntity(World worldIn, IBlockState state) {
 			return new TileEntitySepulture();
-		//return null;
 	}
 	
 	private TileEntitySepulture getTE(IBlockAccess world, BlockPos pos) {
-		if(world.getBlockState(pos).getValue(PART) == BlockSepulture.EnumPartType.HEAD)
+		if(world.getBlockState(pos).getValue(PART) == EnumPartType.HEAD)
 			return (TileEntitySepulture) world.getTileEntity(pos);
 		if (world.getTileEntity(pos.offset((EnumFacing)world.getBlockState(pos).getValue(FACING))) instanceof TileEntitySepulture)
 			return (TileEntitySepulture) world.getTileEntity(pos.offset((EnumFacing)world.getBlockState(pos).getValue(FACING)));

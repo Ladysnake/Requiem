@@ -27,7 +27,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-public class BlockSoulAnchor extends Block implements ITileEntityProvider, ISoulInteractable {
+public class BlockSoulAnchor extends Block implements ISoulInteractable {
 	
 	public static final PropertyEnum<BlockSoulAnchor.EnumPartType> PART = 
 			PropertyEnum.<BlockSoulAnchor.EnumPartType>create("part", BlockSoulAnchor.EnumPartType.class);
@@ -76,9 +76,14 @@ public class BlockSoulAnchor extends Block implements ITileEntityProvider, ISoul
 		}
 		return true;
 	}
+	
+	@Override
+	public boolean hasTileEntity(IBlockState state) {
+		return true;
+	}
 
 	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
+	public TileEntity createTileEntity(World worldIn, IBlockState state) {
 		TileEntitySoulAnchor ret;
 		try {
 			ret = new TileEntitySoulAnchor(scheduledBP.get(0), scheduledDim.get(0));

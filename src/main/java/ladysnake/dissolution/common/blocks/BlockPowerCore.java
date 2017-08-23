@@ -16,7 +16,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockPowerCore extends Block implements ITileEntityProvider, IPowerConductor {
+public class BlockPowerCore extends Block implements IPowerConductor {
 	
 	public BlockPowerCore() {
 		super(Material.CIRCUITS);
@@ -56,12 +56,17 @@ public class BlockPowerCore extends Block implements ITileEntityProvider, IPower
 	public int getMetaFromState(IBlockState state) {
 		return state.getValue(ENABLED) ? 1 : 0;
 	}
-
+	
 	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileEntityPowerCore(getStateFromMeta(meta).getValue(ENABLED));
+	public boolean hasTileEntity(IBlockState state) {
+		return true;
 	}
 	
+	@Override
+	public TileEntity createTileEntity(World world, IBlockState state) {
+		return new TileEntityPowerCore(state.getValue(ENABLED));
+	}
+
 	@Override
 	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
 		super.onBlockAdded(worldIn, pos, state);

@@ -21,7 +21,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockMercuryCandle extends Block implements ITileEntityProvider {
+public class BlockMercuryCandle extends AbstractCandle {
 	
 	public BlockMercuryCandle() {
 		super(Material.GLASS);
@@ -39,23 +39,8 @@ public class BlockMercuryCandle extends Block implements ITileEntityProvider {
 	}
 	
 	@Override
-	protected BlockStateContainer createBlockState() {
-		return super.createBlockState();
-	}
-
-	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
+	public TileEntity createTileEntity(World worldIn, IBlockState state) {
 		return new TileEntitySoulCandle();
-	}
-	
-	@Override
-	public BlockRenderLayer getBlockLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-	
-	@Override
-	public boolean isOpaqueCube(IBlockState state) {
-		return false;
 	}
 
 }

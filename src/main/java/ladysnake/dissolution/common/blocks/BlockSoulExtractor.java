@@ -36,7 +36,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockSoulExtractor extends Block implements ITileEntityProvider {
+public class BlockSoulExtractor extends Block {
 	
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 	public static final PropertyBool LIT = PropertyBool.create("lit");
@@ -81,9 +81,14 @@ public class BlockSoulExtractor extends Block implements ITileEntityProvider {
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, FACING, LIT);
     }
+    
+    @Override
+    public boolean hasTileEntity(IBlockState state) {
+    	return true;
+    }
 
 	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
+	public TileEntity createTileEntity(World worldIn, IBlockState state) {
 		return new TileEntitySoulExtractor();
 	}
 	

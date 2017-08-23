@@ -21,7 +21,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public abstract class AbstractCandle extends Block implements ITileEntityProvider {
+public abstract class AbstractCandle extends Block {
 
 	public static final PropertyDirection FACING = BlockDirectional.FACING;
 	public static final PropertyBool POWERED = PropertyBool.create("powered");
@@ -30,6 +30,14 @@ public abstract class AbstractCandle extends Block implements ITileEntityProvide
 		super(materialIn);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWERED, false));
 	}
+	
+	@Override
+	public boolean hasTileEntity(IBlockState state) {
+		return true;
+	}
+	
+	@Override
+	public abstract TileEntity createTileEntity(World world, IBlockState state);
 		
 	@Override
 	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
@@ -115,4 +123,14 @@ public abstract class AbstractCandle extends Block implements ITileEntityProvide
         
         return i;
     }
+	
+	@Override
+	public BlockRenderLayer getBlockLayer() {
+		return BlockRenderLayer.CUTOUT;
+	}
+	
+	@Override
+	public boolean isOpaqueCube(IBlockState state) {
+		return false;
+	}
 }
