@@ -87,7 +87,7 @@ public enum ModFluids {
 	private void registerFluidModel() {
 		final Item item = Item.getItemFromBlock((Block) fluidBlock);
 		if(item == Items.AIR) {
-			LogManager.getLogger().warn("(Dissolution) + " + fluidBlock.getRegistryName() + " : the passed in fluid block has no associated item");
+			LogManager.getLogger(Reference.MOD_ID).error(fluidBlock.getRegistryName() + " : the passed in fluid block has no associated item");
 			return;
 		}
 
@@ -97,7 +97,7 @@ public enum ModFluids {
 		
 		ModelLoader.setCustomMeshDefinition(item, stack -> modelResourceLocation);
 
-		ModelLoader.setCustomStateMapper((Block) fluidBlock, new StateMapperBase() {
+		ModelLoader.setCustomStateMapper(fluidBlock, new StateMapperBase() {
 			@Override
 			protected ModelResourceLocation getModelResourceLocation(final IBlockState state) {
 				return modelResourceLocation;
@@ -122,7 +122,7 @@ public enum ModFluids {
 		}
 
 		private void registerFluidContainers() {
-			//FluidRegistry.addBucketForFluid(MERCURY); //Actually we don't because you don't put a magic liquid in a bucket m8
+			//FluidRegistry.addBucketForFluid(MERCURY); //Actually we don't because mercury is too heavy, obviously
 		}
 		
 		private RegisterManager() {}

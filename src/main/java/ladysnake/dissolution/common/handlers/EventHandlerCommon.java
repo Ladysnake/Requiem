@@ -2,11 +2,11 @@ package ladysnake.dissolution.common.handlers;
 
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
+import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
@@ -15,6 +15,7 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
 
 /**
@@ -37,6 +38,11 @@ public class EventHandlerCommon {
 
 		event.addCapability(new ResourceLocation(Reference.MOD_ID, "incorporeal"), new CapabilityIncorporealHandler.Provider((EntityPlayer) event.getObject()));
 	}
+	
+	@SubscribeEvent
+	public void onPlayerLoggedIn(PlayerLoggedInEvent event) {
+		event.player.inventoryContainer.addListener(new PlayerInventoryListener((EntityPlayerMP) event.player));
+	}
 
 	@SubscribeEvent
 	public void clonePlayer(PlayerEvent.Clone event) {
@@ -48,7 +54,7 @@ public class EventHandlerCommon {
 			clone.setLastDeathMessage(corpse.getLastDeathMessage());
 			clone.setSynced(false);
 			
-			if(DissolutionConfig.respawnInNether && !DissolutionConfig.wowRespawn)
+			if(DissolutionConfig.respawn.respawnInNether && !DissolutionConfig.respawn.wowLikeRespawn)
 				event.getEntityPlayer().setPosition(event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ);
 		}
 	}

@@ -1,15 +1,12 @@
 package ladysnake.dissolution.common.tileentities;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import ladysnake.dissolution.common.blocks.IPowerConductor;
-import ladysnake.dissolution.common.blocks.IPowerConductor.IMachine;
-import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.blocks.powersystem.BlockPowerCore;
+import ladysnake.dissolution.common.blocks.powersystem.IPowerConductor;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,6 +24,7 @@ public class TileEntityPowerCore extends TileEntity {
 	public TileEntityPowerCore() {
 		super();
 		nodes = new HashSet<>();
+		enabled = false;
 		shouldRefresh = true;
 	}
 	
@@ -38,9 +36,9 @@ public class TileEntityPowerCore extends TileEntity {
 	public void setEnabled(boolean b) {
 		this.enabled = b;
 		this.shouldRefresh = false;
-		world.setBlockState(pos, world.getBlockState(pos).withProperty(IPowerConductor.ENABLED, this.isEnabled()));
+		world.setBlockState(pos, world.getBlockState(pos).withProperty(BlockPowerCore.ENABLED, this.isEnabled()));
 		this.shouldRefresh = true;
-		detectNetwork();
+		updateNetwork();
 	}
 	
 	public boolean isEnabled() {
@@ -48,12 +46,10 @@ public class TileEntityPowerCore extends TileEntity {
 	}
 	
 	public void updateNetwork() {
-		if(enabled) {
-			Set<BlockPos> old = new HashSet<>(nodes);
-			detectNetwork();
-			old.stream().filter(pos -> !nodes.contains(pos) && world.getBlockState(pos).getBlock() instanceof IPowerConductor).forEach(
-					pos -> ((IPowerConductor)world.getBlockState(pos).getBlock()).setActivated(world, pos, false));
-		}
+		Set<BlockPos> old = new HashSet<>(nodes);
+		detectNetwork();
+		old.stream().filter(pos -> !nodes.contains(pos) && world.getBlockState(pos).getBlock() instanceof IPowerConductor)
+		.forEach(pos -> ((IPowerConductor)world.getBlockState(pos).getBlock()).setPowered(world, pos, false));
 	}
 	
 	public void detectNetwork() {
@@ -62,17 +58,20 @@ public class TileEntityPowerCore extends TileEntity {
 	}
 	
 	private void detectNetwork(BlockPos pos, List<BlockPos> searchedBlocks, int i) {
-		if(++i > 100 || !(world.getBlockState(pos).getBlock() instanceof IPowerConductor) || searchedBlocks.contains(pos)) 
+		if(searchedBlocks.contains(pos))
 			return;
 		
 		searchedBlocks.add(pos);
-		
+		if(++i > 100 || !(world.getBlockState(pos).getBlock() instanceof IPowerConductor)) 
+			return;
 		
 		Block block = world.getBlockState(pos).getBlock();
-		if(block instanceof IMachine) {
-			nodes.add(pos);
-			((IMachine)block).setActivated(world, pos, isEnabled());
-		}
+		
+		if(!((IPowerConductor)block).isConductive(world, pos))
+			return;
+
+		((IPowerConductor)block).setPowered(world, pos, isEnabled());
+		nodes.add(pos);
 		
 		for(EnumFacing face : EnumFacing.values())
 			detectNetwork(pos.offset(face), searchedBlocks, i);

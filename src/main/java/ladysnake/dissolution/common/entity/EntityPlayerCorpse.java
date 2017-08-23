@@ -48,10 +48,12 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	protected boolean processInteract(EntityPlayer player, EnumHand hand) {
 		final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
 
-		if(handler.isIncorporeal() && (!this.isDecaying() || DissolutionConfig.wowRespawn)) {
-			LivingDeathHandler.transferEquipment(this, player);
-			this.onDeath(DamageSource.GENERIC);
-			this.setDead();
+		if(handler.isIncorporeal() && (!this.isDecaying() || DissolutionConfig.respawn.wowLikeRespawn)) {
+			if(!world.isRemote) {
+				LivingDeathHandler.transferEquipment(this, player);
+				this.onDeath(DamageSource.GENERIC);
+				this.setDead();
+			}
 			player.setPositionAndRotation(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
 			player.cameraPitch = 90;
 			player.prevCameraPitch = 90;
@@ -83,7 +85,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	}
 	
 	public boolean isDecaying() {
-		return this.getDataManager().get(DECAY) && DissolutionConfig.bodiesDespawn;
+		return this.getDataManager().get(DECAY) && DissolutionConfig.respawn.bodiesDespawn;
 	}
 	
 	public void setDecaying(boolean decaying) {
@@ -115,7 +117,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	
 	@Override
 	public int getMaxTimeRemaining() {
-		return this.isDecaying() ? (DissolutionConfig.wowRespawn ? 6000 : 50) : -1;
+		return this.isDecaying() ? (DissolutionConfig.respawn.wowLikeRespawn ? 6000 : 50) : -1;
 	}
 	
 	@Override
@@ -133,7 +135,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	protected void entityInit() {
 		super.entityInit();
 		this.getDataManager().register(PLAYER, Optional.absent());
-		this.getDataManager().register(DECAY, DissolutionConfig.bodiesDespawn);
+		this.getDataManager().register(DECAY, DissolutionConfig.respawn.bodiesDespawn);
 	}
 	
 	@Override

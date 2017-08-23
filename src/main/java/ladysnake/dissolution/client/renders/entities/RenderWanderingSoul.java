@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 
 import org.lwjgl.opengl.GL11;
 
-import ladysnake.dissolution.client.models.ModelWanderingSoul;
+import ladysnake.dissolution.client.models.entities.ModelWanderingSoul;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.EntityWanderingSoul;
 import net.minecraft.client.model.ModelBase;

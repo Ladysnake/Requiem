@@ -36,7 +36,7 @@ public final class ShaderHelper {
 	}
 	
 	public static boolean shouldUseShaders() {
-		return OpenGlHelper.shadersSupported && DissolutionConfig.useShaders;
+		return OpenGlHelper.shadersSupported && DissolutionConfig.client.useShaders;
 	}
 	
 	/**

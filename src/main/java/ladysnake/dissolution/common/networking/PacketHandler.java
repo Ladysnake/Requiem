@@ -15,6 +15,7 @@ public class PacketHandler
     registerMessage(IncorporealPacket.class, IncorporealMessage.class);
     registerMessage(PingPacket.class, PingMessage.class);
     registerMessage(SoulPacket.class, SoulMessage.class);
+    registerMessage(DisplayItemPacket.class, DisplayItemMessage.class);
   }
   
   private static int nextPacketId = 0;

@@ -22,9 +22,6 @@ public class ItemSoulInABottle extends Item {
 
 	public ItemSoulInABottle() {
 		super();
-		setUnlocalizedName(Reference.Items.SOULINABOTTLE.getUnlocalizedName());
-        setRegistryName(Reference.Items.SOULINABOTTLE.getRegistryName());
-        this.setCreativeTab(Dissolution.CREATIVE_TAB);
 	}
 	
 	@Override

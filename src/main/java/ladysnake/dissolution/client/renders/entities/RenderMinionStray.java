@@ -4,8 +4,8 @@ import javax.annotation.Nonnull;
 
 import org.lwjgl.opengl.GL11;
 
-import ladysnake.dissolution.client.models.ModelMinionSkeleton;
-import ladysnake.dissolution.client.models.ModelMinionStray;
+import ladysnake.dissolution.client.models.entities.ModelMinionSkeleton;
+import ladysnake.dissolution.client.models.entities.ModelMinionStray;
 import ladysnake.dissolution.common.entity.EntityWanderingSoul;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.entity.minion.EntityMinionSkeleton;

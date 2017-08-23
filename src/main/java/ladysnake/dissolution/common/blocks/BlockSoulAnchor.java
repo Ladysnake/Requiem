@@ -37,8 +37,6 @@ public class BlockSoulAnchor extends Block implements ISoulInteractable {
 	
 	public BlockSoulAnchor() {
 		super(Material.GLASS);
-		this.setUnlocalizedName(Reference.Blocks.SOUL_ANCHOR.getUnlocalizedName());
-		this.setRegistryName(Reference.Blocks.SOUL_ANCHOR.getRegistryName());
 		this.setDefaultState(this.blockState.getBaseState().withProperty(PART, EnumPartType.BASE));
 		this.setHardness(4.0f);
 		this.setLightLevel(1.0f);

@@ -63,7 +63,7 @@ public abstract class AbstractMinion extends EntityCreature implements IEntityAd
     
     static {
     	TARGET_BLACKLIST.add(EntityWanderingSoul.class);
-    	if(!DissolutionConfig.minionsAttackCreepers)
+    	if(!DissolutionConfig.entities.minionsAttackCreepers)
     		TARGET_BLACKLIST.add(EntityCreeper.class);
     }
 	

@@ -45,7 +45,7 @@ public class InteractEventsHandler {
 		if(isGhost(event)) {
 			event.setCanceled(true);
 			
-			if(!DissolutionConfig.enableSoulDash) return;
+			if(!DissolutionConfig.wip.enableSoulDash) return;
 			
 			final IIncorporealHandler ghostHandler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
 			ghostHandler.setIntangible(true);
@@ -126,7 +126,7 @@ public class InteractEventsHandler {
 		} else if(isGhost(event)) {
 			final EntityPlayer player = (EntityPlayer)event.getEntity();
 			((EntityPlayer)event.getEntity()).eyeHeight = ((EntityPlayer)event.getEntity()).getDefaultEyeHeight();
-			((EntityPlayer)event.getEntity()).setInvisible(DissolutionConfig.invisibleGhosts);
+			((EntityPlayer)event.getEntity()).setInvisible(DissolutionConfig.ghost.invisibleGhosts);
 			if(!player.world.isRemote) {
 				fakeSpectator((EntityPlayerMP)player, player);
 			}

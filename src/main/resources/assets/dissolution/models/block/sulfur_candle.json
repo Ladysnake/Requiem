@@ -1,8 +1,0 @@
-{
-    "parent": "block/orientable",
-    "textures": {
-          "top": "dissolution:blocks/vaporizer/vaporizer_side",
-          "front": "#front",
-          "side": "dissolution:blocks/vaporizer/vaporizer_side"
-      }
-}

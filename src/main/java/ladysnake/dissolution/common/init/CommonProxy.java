@@ -23,8 +23,6 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public abstract class CommonProxy {
 	
 	public void preInit() {
-		ModBlocks.INSTANCE.init();
-		ModItems.INSTANCE.init();
 		MinecraftForge.EVENT_BUS.register(ModBlocks.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(ModItems.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(ModFluids.REGISTRY_MANAGER);

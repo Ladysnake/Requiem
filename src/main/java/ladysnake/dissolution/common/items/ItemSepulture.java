@@ -23,9 +23,6 @@ public class ItemSepulture extends Item {
 
 	public ItemSepulture() {
 		super();
-		this.setUnlocalizedName(Reference.Items.SEPULTURE.getUnlocalizedName());
-        this.setRegistryName(Reference.Items.SEPULTURE.getRegistryName());
-        this.setCreativeTab(Dissolution.CREATIVE_TAB);
         this.setMaxStackSize(1);
 	}
 	

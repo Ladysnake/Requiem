@@ -26,9 +26,6 @@ public class ItemBaseResource extends Item {
 
 	public ItemBaseResource() {
 		super();
-		setUnlocalizedName(Reference.Items.BASE_RESOURCE.getUnlocalizedName());
-		setRegistryName(Reference.Items.BASE_RESOURCE.getRegistryName());
-		this.setCreativeTab(Dissolution.CREATIVE_TAB);
 		this.setHasSubtypes(true);
 	}
 

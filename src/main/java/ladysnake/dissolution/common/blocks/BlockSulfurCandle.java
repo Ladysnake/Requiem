@@ -25,8 +25,6 @@ public class BlockSulfurCandle extends AbstractCandle {
 	
 	public BlockSulfurCandle() {
 		super(Material.GLASS);
-		this.setUnlocalizedName(Reference.Blocks.SULFUR_CANDLE.getUnlocalizedName());
-		this.setRegistryName(Reference.Blocks.SULFUR_CANDLE.getRegistryName());
 		this.setHardness(1.0f);
 	}
 	

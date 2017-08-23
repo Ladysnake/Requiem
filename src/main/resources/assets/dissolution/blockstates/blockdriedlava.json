@@ -1,8 +1,0 @@
-{
-    "variants": {
-        "age=0": { "model": "dissolution:dried_lava/dried_lava_0" },
-        "age=1": { "model": "dissolution:dried_lava/dried_lava_1" },
-        "age=2": { "model": "dissolution:dried_lava/dried_lava_2" },
-        "age=3": { "model": "dissolution:dried_lava/dried_lava_3" }
-    }
-}
