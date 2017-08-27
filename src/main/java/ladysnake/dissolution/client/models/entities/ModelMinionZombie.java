@@ -21,7 +21,7 @@ public class ModelMinionZombie extends ModelZombie {
 	@Override
 	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
 		
-		if (!((AbstractMinion) entityIn).isCorpse()) {
+		if (!((AbstractMinion) entityIn).isInert()) {
 			super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
 	        boolean flag = entityIn instanceof EntityZombie && ((EntityZombie)entityIn).isArmsRaised();
 	        float f = MathHelper.sin(this.swingProgress * (float)Math.PI);

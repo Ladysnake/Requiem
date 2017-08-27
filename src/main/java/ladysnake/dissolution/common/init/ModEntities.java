@@ -1,10 +1,10 @@
 package ladysnake.dissolution.common.init;
 
-import ladysnake.dissolution.client.renders.entities.LayerScythe;
+import ladysnake.dissolution.client.models.entities.ModelMinionSkeleton;
+import ladysnake.dissolution.client.models.entities.ModelMinionZombie;
+import ladysnake.dissolution.client.renders.entities.LayerMinionStrayClothing;
 import ladysnake.dissolution.client.renders.entities.RenderBrimstoneFire;
-import ladysnake.dissolution.client.renders.entities.RenderMinionPigZombie;
-import ladysnake.dissolution.client.renders.entities.RenderMinionSkeleton;
-import ladysnake.dissolution.client.renders.entities.RenderMinionStray;
+import ladysnake.dissolution.client.renders.entities.RenderMinion;
 import ladysnake.dissolution.client.renders.entities.RenderMinionWitherSkeleton;
 import ladysnake.dissolution.client.renders.entities.RenderMinionZombie;
 import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
@@ -21,7 +21,6 @@ import ladysnake.dissolution.common.entity.minion.EntityMinionStray;
 import ladysnake.dissolution.common.entity.minion.EntityMinionWitherSkeleton;
 import ladysnake.dissolution.common.entity.minion.EntityMinionZombie;
 import ladysnake.dissolution.common.entity.soul.EntitySoulCamera;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.EnumCreatureType;
@@ -56,12 +55,12 @@ public class ModEntities {
     public static void registerRenders() {
     	RenderingRegistry.registerEntityRenderingHandler(EntityWanderingSoul.class, new RenderWanderingSoul.Factory());
     	RenderingRegistry.registerEntityRenderingHandler(EntityMinionZombie.class, RenderMinionZombie::new);
-    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionPigZombie.class, new RenderMinionPigZombie.Factory());
-    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionSkeleton.class, new RenderMinionSkeleton.Factory());
-    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionStray.class, new RenderMinionStray.Factory());
-    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionWitherSkeleton.class, new RenderMinionWitherSkeleton.Factory());
+    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionPigZombie.class, manager -> new RenderMinion<>(manager, ModelMinionZombie::new, RenderMinion.ZOMBIE_PIGMAN_MINION_TEXTURE, RenderMinion.ZOMBIE_PIGMAN_TEXTURE));
+    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionSkeleton.class, manager -> new RenderMinion<>(manager, ModelMinionSkeleton::new, RenderMinion.SKELETON_MINION_TEXTURES, RenderMinion.SKELETON_TEXTURE));
+    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionStray.class, manager -> new RenderMinion<>(manager, ModelMinionSkeleton::new, RenderMinion.STRAY_MINION_TEXTURE, RenderMinion.STRAY_TEXTURE, LayerMinionStrayClothing::new));
+    	RenderingRegistry.registerEntityRenderingHandler(EntityMinionWitherSkeleton.class, RenderMinionWitherSkeleton::new);
     	RenderingRegistry.registerEntityRenderingHandler(EntityPlayerCorpse.class, RenderPlayerCorpse::new);
-    	RenderingRegistry.registerEntityRenderingHandler(EntityMawOfTheVoid.class, renderManager -> new RenderBiped(renderManager, new ModelBiped(), 1.0f));
+    	RenderingRegistry.registerEntityRenderingHandler(EntityMawOfTheVoid.class, renderManager -> new RenderBiped<>(renderManager, new ModelBiped(), 1.0f));
     	RenderingRegistry.registerEntityRenderingHandler(EntityBrimstoneFire.class, RenderBrimstoneFire::new);
     }
 

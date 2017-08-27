@@ -12,7 +12,7 @@ import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.SoulTypes;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.inventory.InventorySearchHelper;
+import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -154,7 +154,7 @@ public class ItemScythe extends ItemSword {
 	}
 	
 	public void fillBottle(EntityPlayer p, int nb, SoulTypes soul) {
-		ItemStack bottle = InventorySearchHelper.findItem(p, Items.GLASS_BOTTLE);
+		ItemStack bottle = DissolutionInventoryHelper.findItem(p, Items.GLASS_BOTTLE);
 		if (!bottle.isEmpty()) {
 			bottle.shrink(nb);
 			p.inventory.addItemStackToInventory(ModItems.SOUL_IN_A_BOTTLE.newTypedSoul(soul));

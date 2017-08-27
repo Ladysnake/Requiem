@@ -45,7 +45,6 @@ public class PlayerInventoryListener implements IContainerListener {
 	
 	private ItemStack findItemToDisplay() {
 		for(ItemStack stack : player.inventory.mainInventory) {
-			System.out.println(stack);
 			if(stack.getItem() instanceof ItemScythe) {
 				return stack;
 			}

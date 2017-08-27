@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 
 public class AbstractSoul extends Entity implements IEntityOwnable, ISoulInteractable {
 	
-	private static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.<Optional<UUID>>createKey(AbstractMinion.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+	private static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.<Optional<UUID>>createKey(AbstractSoul.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 
 	public AbstractSoul(World worldIn) {
 		super(worldIn);

@@ -18,8 +18,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
-public class EntityMinionZombie extends AbstractMinion {
+public class EntityMinionZombie extends AbstractMinion implements IEntityAdditionalSpawnData {
 
 	private boolean isHusk;
 
@@ -59,22 +60,22 @@ public class EntityMinionZombie extends AbstractMinion {
 	@Override
 	protected SoundEvent getAmbientSound()
     {
-        return (isCorpse()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_AMBIENT;
+        return (isInert()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_AMBIENT;
     }
 
     protected SoundEvent getHurtSound()
     {
-    	return (isCorpse()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_HURT;
+    	return (isInert()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-    	return (isCorpse()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_DEATH;
+    	return (isInert()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_DEATH;
     }
 
     protected SoundEvent getStepSound()
     {
-    	return (isCorpse()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_STEP;
+    	return (isInert()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_STEP;
     }
 
     protected void playStepSound(BlockPos pos, Block blockIn)
@@ -97,17 +98,15 @@ public class EntityMinionZombie extends AbstractMinion {
 	
 	@Override
 	public void writeSpawnData(ByteBuf buffer) {
-		super.writeSpawnData(buffer);
 		buffer.writeBoolean(isHusk());
 	}
 	
 	@Override
 	public void readSpawnData(ByteBuf additionalData) {
-		super.readSpawnData(additionalData);
 		setHusk(additionalData.readBoolean());
 	}
 
 	@Override
-	public void setSwingingArms(boolean swingingArms) {	}
+	public void setSwingingArms(boolean swingingArms) {}
 
 }

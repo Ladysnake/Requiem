@@ -131,7 +131,7 @@ public class ModelPlayerCorpse extends ModelBiped{
     {
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
         
-        if (((EntityPlayerCorpse) entityIn).isCorpse()) {
+        if (((EntityPlayerCorpse) entityIn).isInert()) {
         
 	        ((EntityPlayerCorpse) entityIn).isAIDisabled();
 			// right arm

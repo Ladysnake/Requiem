@@ -1,9 +1,15 @@
 package ladysnake.dissolution.common;
 
+import java.io.File;
+
 import net.minecraftforge.common.config.Config;
 
 @Config(modid=Reference.MOD_ID, name=Reference.MOD_NAME)
 public class DissolutionConfig {
+	
+	static {
+		DissolutionConfigManager.fixConfigTypes(new File("config/Dissolution.cfg"));
+	}
 	
 	@Config.Name("block")
 	public static Blocks blocks = new Blocks();
@@ -28,71 +34,69 @@ public class DissolutionConfig {
 	
 	public static class Blocks {
 		
-		@Config.LangKey("config.dissolution:blocks.doSablePop")
+		@Config.LangKey("config.dissolution.blocks.doSablePop")
 		public boolean doSablePop = true;
 
-		@Config.LangKey("config.dissolution:blocks.oneUseWaystone")
+		@Config.LangKey("config.dissolution.blocks.oneUseWaystone")
 		public boolean oneUseWaystone = true;
 		
 	}
 	
 	public static class Client {
 		
-		@Config.LangKey("config.dissolution:client.useShaders")
+		@Config.LangKey("config.dissolution.client.useShaders")
 		public boolean useShaders = true;
 		
-		@Config.LangKey("config.dissolution:client.soulCompass")
+		@Config.LangKey("config.dissolution.client.soulCompass")
 		public boolean soulCompass = true;
 		
-		@Config.LangKey("config.dissolution:client.soulCompassAnchors")
+		@Config.LangKey("config.dissolution.client.soulCompassAnchors")
 		public boolean soulCompassAnchors = true;
 		
 	}
 	
 	public static class Entities {
 		
-		@Config.LangKey("config.dissolution:entities.minionsAttackCreepers")
-		@Config.RequiresMcRestart
+		@Config.LangKey("config.dissolution.entities.minionsAttackCreepers")
 		public boolean minionsAttackCreepers = true;
 		
 	}
 	
 	public static class Respawn {
 		
-		@Config.LangKey("config.dissolution:respawn.wowLikeRespawn")
+		@Config.LangKey("config.dissolution.respawn.wowLikeRespawn")
 		public boolean wowLikeRespawn = true;
 		
-		@Config.LangKey("config.dissolution:respawn.bodiesDespawn")
+		@Config.LangKey("config.dissolution.respawn.bodiesDespawn")
 		public boolean bodiesDespawn = true;
 		
-		@Config.LangKey("config.dissolution:respawn.bodiesHoldInventory")
+		@Config.LangKey("config.dissolution.respawn.bodiesHoldInventory")
 		public boolean bodiesHoldInventory = true;
 		
-		@Config.LangKey("config.dissolution:respawn.respawnInNether")
+		@Config.LangKey("config.dissolution.respawn.respawnInNether")
 		public boolean respawnInNether = false;
 		
-		@Config.LangKey("config.dissolution:respawn.respawnDimension")
+		@Config.LangKey("config.dissolution.respawn.respawnDimension")
 		public int respawnDimension = -1;
 		
-		@Config.LangKey("config.dissolution:respawn.skipDeathScreen")
+		@Config.LangKey("config.dissolution.respawn.skipDeathScreen")
 		public boolean skipDeathScreen = false;
 		
 	}
 	
 	public static class Ghost {
 		
-		@Config.LangKey("config.dissolution:ghost.flightMode")
-		@Config.RangeInt(min= -1, max= 3)
-		public int flightMode = 0;
+		@Config.LangKey("config.dissolution.ghost.flightMode")
+		public DissolutionConfigManager.FlightModes flightMode = DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT;
 		
-		@Config.LangKey("config.dissolution:ghost.invisibleGhosts")
+		@Config.LangKey("config.dissolution.ghost.invisibleGhosts")
 		public boolean invisibleGhosts = false;
 		
 	}
 	
 	public static class Worldgen {
 		
-		@Config.LangKey("config.dissolution:worldgen.spawnMercuryLakesFreq")
+		@Config.LangKey("config.dissolution.worldgen.spawnMercuryLakesFreq")
 		public int spawnMercuryLakesFreq = 100;
 		
 	}

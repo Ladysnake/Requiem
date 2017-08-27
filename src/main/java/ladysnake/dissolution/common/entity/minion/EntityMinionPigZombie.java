@@ -17,31 +17,30 @@ public class EntityMinionPigZombie extends EntityMinionZombie {
 
 	public EntityMinionPigZombie(World worldIn, boolean isChild) {
 		super(worldIn, false, isChild);
-		this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
 	}
 	
 	@Override
-	protected void handleSunExposition() {}
+	protected void handleSunExposure() {}
 	
 	@Override
 	protected SoundEvent getAmbientSound()
     {
-        return (isCorpse()) ? null : SoundEvents.ENTITY_ZOMBIE_PIG_AMBIENT;
+        return (isInert()) ? null : SoundEvents.ENTITY_ZOMBIE_PIG_AMBIENT;
     }
 
     protected SoundEvent getHurtSound()
     {
-    	return (isCorpse()) ? null : SoundEvents.ENTITY_ZOMBIE_PIG_HURT;
+    	return (isInert()) ? null : SoundEvents.ENTITY_ZOMBIE_PIG_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-    	return (isCorpse()) ? null : SoundEvents.ENTITY_ZOMBIE_PIG_DEATH;
+    	return (isInert()) ? null : SoundEvents.ENTITY_ZOMBIE_PIG_DEATH;
     }
 
     protected SoundEvent getStepSound()
     {
-    	return (isCorpse()) ? null : SoundEvents.ENTITY_ZOMBIE_STEP;
+    	return (isInert()) ? null : SoundEvents.ENTITY_ZOMBIE_STEP;
     }
 
 }

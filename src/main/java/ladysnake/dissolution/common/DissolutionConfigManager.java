@@ -1,10 +1,20 @@
 package ladysnake.dissolution.common;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Files;
 
+import ladysnake.dissolution.common.entity.EntityWanderingSoul;
+import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.config.Configuration;
@@ -16,28 +26,28 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public final class DissolutionConfigManager {
 	
+	private static ImmutableSet<Class<? extends EntityMob>> TARGET_BLACKLIST;
+	
 	public static Configuration config;
 	
 	public static enum FlightModes {
-		NO_FLIGHT(-1),
-		CUSTOM_FLIGHT(0),
-		CREATIVE_FLIGHT(1),
-		SPECTATOR_FLIGHT(2);
+		NO_FLIGHT,
+		CUSTOM_FLIGHT,
+		CREATIVE_FLIGHT,
+		SPECTATOR_FLIGHT;
 		
-		public final int id;
-		
-		FlightModes (int id) {
-			this.id = id;
-		}
 	}
 	
 	public static boolean isFlightEnabled(FlightModes flightMode) {
-		if(flightMode == FlightModes.NO_FLIGHT)
-			return DissolutionConfig.ghost.flightMode < 0 || DissolutionConfig.ghost.flightMode > 3;
-		return DissolutionConfig.ghost.flightMode == flightMode.id;
+		return DissolutionConfig.ghost.flightMode == flightMode;
+	}
+	
+	public static boolean isEntityBlacklistedFromMinionAttacks(EntityMob EntityIn) {
+		return TARGET_BLACKLIST.contains(EntityIn.getClass());
 	}
 	
 	public static void loadConfig(File configFile) {
+    	
 		config = new Configuration(configFile);
 		Property versionProp = config.get(
 	       		"Don't touch that", 
@@ -58,17 +68,53 @@ public final class DissolutionConfigManager {
 	    	versionProp.set(2.0);
 	    }
 	    
+        buildMinionAttackBlacklist();
+	    
 	    config.save();
+	    
 	}
 
 	@SubscribeEvent
     public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event)
     {
-		System.out.println("CONFIG CHANGED");
         if(event.getModID().equals(Reference.MOD_ID))
         {
             ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);
+            buildMinionAttackBlacklist();
         }
     }
+	
+	protected static void fixConfigTypes(File configFile) {
+    	File temp = new File(configFile.getParentFile(), "temp");
+    	boolean foundOffender = false;
+    	try (BufferedReader reader = Files.newReader(configFile, Charset.defaultCharset()); 
+    			BufferedWriter writer = Files.newWriter(temp, Charset.defaultCharset())) {
+    		String offendingLine = "I:flightMode=";
+    		String readLine;
+    		while((readLine = reader.readLine()) != null) {
+    			if(!readLine.contains(offendingLine))
+    				writer.write(readLine + System.getProperty("line.separator"));
+    			else
+    				foundOffender = true;
+    		}
+    	} catch (IOException e) {
+    		e.printStackTrace();
+    	}
+    	if(foundOffender) {
+    		configFile.delete();
+    		temp.renameTo(configFile);
+    	} else {
+    		temp.delete();
+    		temp = null;
+    	}
+	}
+	
+	private static void buildMinionAttackBlacklist() {
+		ImmutableSet.Builder<Class<? extends EntityMob>> builder = ImmutableSet.builder();
+		builder.add(EntityWanderingSoul.class);
+		if (!DissolutionConfig.entities.minionsAttackCreepers)
+			builder.add(EntityCreeper.class);
+		TARGET_BLACKLIST = builder.build();
+	}
 	
 }

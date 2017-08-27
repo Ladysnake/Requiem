@@ -55,7 +55,7 @@ public class ModelMinionSkeleton extends ModelBiped
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
         ItemStack itemstack = ((EntityLivingBase)entityIn).getHeldItemMainhand();
 
-        if (!((EntityMinionSkeleton) entityIn).isCorpse()) {
+        if (!((EntityMinionSkeleton) entityIn).isInert()) {
         	
             float f = MathHelper.sin(this.swingProgress * (float)Math.PI);
             float f1 = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float)Math.PI);

@@ -14,8 +14,12 @@ import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntityTippedArrow;
+import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -36,5 +40,29 @@ public class EntityMinionStray extends EntityMinionSkeleton {
 		this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
 		this.applyEntityAI();
 	}
+	
+	@Override
+	protected SoundEvent getAmbientSound() {
+        return (isInert()) ? null : SoundEvents.ENTITY_STRAY_AMBIENT;
+    }
+
+    protected SoundEvent getHurtSound() {
+    	return (isInert()) ? null : SoundEvents.ENTITY_STRAY_HURT;
+    }
+
+    protected SoundEvent getDeathSound() {
+    	return (isInert()) ? null : SoundEvents.ENTITY_STRAY_DEATH;
+    }
+
+    protected SoundEvent getStepSound() {
+    	return (isInert()) ? null : SoundEvents.ENTITY_STRAY_STEP;
+    }
+    
+    @Override
+    protected EntityArrow getArrow(float p_190726_1_) {
+    	EntityTippedArrow arrow = (EntityTippedArrow) super.getArrow(p_190726_1_);
+		arrow.addEffect(new PotionEffect(MobEffects.SLOWNESS, 600));
+    	return arrow;
+    }
 
 }

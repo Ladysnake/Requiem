@@ -32,14 +32,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class EntityMinionWitherSkeleton extends AbstractMinion {
+public class EntityMinionWitherSkeleton extends EntityMinionSkeleton {
 	
-	protected static final DataParameter<Boolean> SWINGING_ARMS = EntityDataManager.<Boolean>createKey(EntityMinionWitherSkeleton.class, DataSerializers.BOOLEAN);
-	protected boolean isStray;
-
 	public EntityMinionWitherSkeleton(World worldIn) {
 		super(worldIn);
-		this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
 	}
 	
 	@Override
@@ -51,58 +47,25 @@ public class EntityMinionWitherSkeleton extends AbstractMinion {
 		this.applyEntityAI();
 	}
 	
-	protected void entityInit()
-    {
+	protected void entityInit() {
         super.entityInit();
-        this.dataManager.register(SWINGING_ARMS, Boolean.valueOf(false));
     }
 	
 	@Override
-	protected SoundEvent getAmbientSound()
-    {
-        return (isCorpse()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_AMBIENT;
+	protected SoundEvent getAmbientSound() {
+        return (isInert()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound()
-    {
-    	return (isCorpse()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_HURT;
+    protected SoundEvent getHurtSound() {
+    	return (isInert()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_HURT;
     }
 
-    protected SoundEvent getDeathSound()
-    {
-    	return (isCorpse()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_DEATH;
+    protected SoundEvent getDeathSound() {
+    	return (isInert()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_DEATH;
     }
 
-    protected SoundEvent getStepSound()
-    {
-    	return (isCorpse()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_STEP;
-    }
-
-    protected void playStepSound(BlockPos pos, Block blockIn)
-    {
-        this.playSound(this.getStepSound(), 0.15F, 1.0F);
-    }
-    
-	/*
-	@Override
-	public boolean isHandActive() {
-		return true;
-	}
-	
-	@Override
-	public int getItemInUseMaxCount() {
-		return 30;
-	}
-	*/
-	@SideOnly(Side.CLIENT)
-    public boolean isSwingingArms()
-    {
-        return ((Boolean)this.dataManager.get(SWINGING_ARMS)).booleanValue();
-    }
-
-    public void setSwingingArms(boolean swingingArms)
-    {
-        this.dataManager.set(SWINGING_ARMS, Boolean.valueOf(swingingArms));
+    protected SoundEvent getStepSound() {
+    	return (isInert()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_STEP;
     }
     
     @Override
@@ -124,16 +87,6 @@ public class EntityMinionWitherSkeleton extends AbstractMinion {
     }
     
     @Override
-    protected void handleSunExposition() {}
-    
-    @Override
-    public void readFromNBT(NBTTagCompound compound) {
-    	super.readFromNBT(compound);
-    }
-    
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-    	return super.writeToNBT(compound);
-    }
+    protected void handleSunExposure() {}
 
 }

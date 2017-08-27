@@ -10,7 +10,7 @@ import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.inventory.InventorySearchHelper;
+import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
@@ -36,7 +36,7 @@ public class ItemEyeDead extends Item {
 		this.addPropertyOverride(
 				new ResourceLocation(Reference.MOD_ID + ":fueled"), 
 				(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) -> 
-				entityIn instanceof EntityPlayer && (!InventorySearchHelper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE).isEmpty()) 
+				entityIn instanceof EntityPlayer && (!DissolutionInventoryHelper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE).isEmpty()) 
 						? 1.0F
 						: 0.0F
 		);
@@ -56,7 +56,7 @@ public class ItemEyeDead extends Item {
 		
 		if (CapabilityIncorporealHandler.getHandler(player).isIncorporeal() && !player.isCreative()) return;
 		
-		ItemStack ammo = InventorySearchHelper.findItem(player, ModItems.SOUL_IN_A_BOTTLE);
+		ItemStack ammo = DissolutionInventoryHelper.findItem(player, ModItems.SOUL_IN_A_BOTTLE);
 		
 		List<AbstractMinion> minions = (worldIn.getEntitiesWithinAABB(AbstractMinion.class, new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), Math.floor(entityLiving.posX) + 1, Math.floor(entityLiving.posY) + 1, Math.floor(entityLiving.posZ) + 1).grow(20)));
 		
@@ -65,22 +65,27 @@ public class ItemEyeDead extends Item {
 		boolean used = false;
 		if(!(minions instanceof EntityPlayer)){
 			for (AbstractMinion m : minions) {
-				if (ammo.isEmpty() && m.isCorpse()) {
-					((EntityPlayer)entityLiving).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".nosoul", new Object[0]), true);
+				if (ammo.isEmpty() && m.isInert()) {
+					((EntityPlayer)entityLiving).sendStatusMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".nosoul"), true);
 					break;
 				}
-				for(int i = 0; i < (m.isCorpse() ? 50 : 5); i++){
-					Random rand = new Random();
-					double motionX = rand.nextGaussian() * 0.1D;
-					double motionY = rand.nextGaussian() * 0.1D;
-					double motionZ = rand.nextGaussian() * 0.1D;
-					worldIn.spawnParticle(m.isCorpse() ? EnumParticleTypes.DRAGON_BREATH : EnumParticleTypes.CLOUD, false, m.posX , m.posY + 1.0D, m.posZ, motionX, motionY, motionZ, new int[0]);
+				if(worldIn.isRemote) {
+					for(int i = 0; i < (m.isInert() ? 50 : 5); i++){
+						Random rand = new Random();
+						double motionX = rand.nextGaussian() * 0.1D;
+						double motionY = rand.nextGaussian() * 0.1D;
+						double motionZ = rand.nextGaussian() * 0.1D;
+						worldIn.spawnParticle(m.isInert() ? EnumParticleTypes.DRAGON_BREATH : EnumParticleTypes.CLOUD, false, m.posX , m.posY + 1.0D, m.posZ, motionX, motionY, motionZ);
+					}
 				}
-				if(m.isCorpse()) {
+				if(m.isInert()) {
 					ammo.shrink(1);
 					used = true;
 				}
-				m.setCorpse(false);
+				if(!worldIn.isRemote) {
+					m.setCorpse(false);
+					m.setOwnerId(player.getUniqueID());
+				}
 			}
 		
 		}

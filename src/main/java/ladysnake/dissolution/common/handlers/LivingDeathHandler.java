@@ -19,7 +19,7 @@ import ladysnake.dissolution.common.entity.minion.EntityMinionZombie;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
-import ladysnake.dissolution.common.inventory.InventorySearchHelper;
+import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.items.ItemScythe;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
@@ -31,7 +31,6 @@ import net.minecraft.entity.monster.EntityWitherSkeleton;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.scoreboard.IScoreCriteria;
@@ -84,13 +83,13 @@ public class LivingDeathHandler {
 			boolean flag = false;
 			if(event.getSource().getTrueSource() instanceof EntityPlayer) {
 				EntityPlayer killer = (EntityPlayer) event.getSource().getTrueSource();
-				if(!InventorySearchHelper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD).isEmpty())
+				if(!DissolutionInventoryHelper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD).isEmpty())
 					flag = true;
 			}
 			
-			ItemStack lifeProtectionRing = InventorySearchHelper.findItem(p, ModItems.SCARAB_OF_ETERNITY);
+			ItemStack lifeProtectionRing = DissolutionInventoryHelper.findItem(p, ModItems.SCARAB_OF_ETERNITY);
 			if(!lifeProtectionRing.isEmpty()) {
-				p.inventory.setInventorySlotContents(InventorySearchHelper.getSlotFor(p.inventory, lifeProtectionRing), ItemStack.EMPTY);
+				p.inventory.setInventorySlotContents(DissolutionInventoryHelper.getSlotFor(p.inventory, lifeProtectionRing), ItemStack.EMPTY);
 				flag = true;
 			}
 
@@ -99,7 +98,7 @@ public class LivingDeathHandler {
 			if(DissolutionConfig.respawn.bodiesHoldInventory) {
 				
 				if((flag || DissolutionConfig.respawn.bodiesHoldInventory) && !p.isSpectator() && !p.world.getGameRules().getBoolean("keepInventory")) {
-					transferEquipment(p, body);
+					DissolutionInventoryHelper.transferEquipment(p, body);
 					body.setInventory(new InventoryPlayerCorpse(p.inventory.mainInventory, body));
 					p.inventory.clear();
 				}
@@ -207,54 +206,13 @@ public class LivingDeathHandler {
 			((ItemScythe) killer.getHeldItemMainhand().getItem()).harvestSoul(killer, victim);
 		}
 
-		ItemStack eye = InventorySearchHelper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD);
+		ItemStack eye = DissolutionInventoryHelper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD);
 		if (killer.world.rand.nextInt(1) == 0 && !eye.isEmpty() && !killer.world.isRemote) {
-
-			AbstractMinion corpse = null;
-			
-			if(victim instanceof EntityPigZombie) {
-				corpse = new EntityMinionPigZombie(victim.world, ((EntityZombie)victim).isChild());
-			} else if (victim instanceof EntityZombie) {
-				corpse = new EntityMinionZombie(victim.world, victim instanceof EntityHusk, ((EntityZombie)victim).isChild());
-			} else if (victim instanceof EntitySkeleton) {
-				corpse = new EntityMinionSkeleton(victim.world);
-			} else if(victim instanceof EntityStray){
-				corpse = new EntityMinionStray(victim.world);
-			} else if(victim instanceof EntityWitherSkeleton){
-				corpse = new EntityMinionWitherSkeleton(victim.world);
-			}
-
-			if (corpse != null) {
-				corpse.setPosition(victim.posX, victim.posY, victim.posZ);
-				transferEquipment(victim, corpse);
-				corpse.onUpdate();
+			AbstractMinion corpse = AbstractMinion.createMinion(victim);
+			if(corpse != null) {
+				DissolutionInventoryHelper.transferEquipment(victim, corpse);
 				victim.world.spawnEntity(corpse);
 				victim.posY = -500;
-			}
-		}
-	}
-	
-	public static void transferEquipment(EntityLivingBase source, EntityLivingBase dest) {
-		for (ItemStack stuff : source.getEquipmentAndArmor()) {
-			EntityEquipmentSlot slot = null;
-			if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.HEAD, source))
-				slot = EntityEquipmentSlot.HEAD;
-			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.CHEST, source))
-				slot = EntityEquipmentSlot.CHEST;
-			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.LEGS, source))
-				slot = EntityEquipmentSlot.LEGS;
-			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.FEET, source))
-				slot = EntityEquipmentSlot.FEET;
-			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.MAINHAND, source) && !stuff.isEmpty())
-				slot = EntityEquipmentSlot.MAINHAND;
-			else if(stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.OFFHAND, source) && !stuff.isEmpty())
-				slot = EntityEquipmentSlot.OFFHAND;
-			if(slot != null) {
-				if(dest.getItemStackFromSlot(slot) != ItemStack.EMPTY)
-					dest.entityDropItem(stuff, 0.5f);
-				else
-					dest.setItemStackToSlot(slot, stuff);
-				source.setItemStackToSlot(slot, ItemStack.EMPTY);
 			}
 		}
 	}

@@ -48,11 +48,9 @@ public final class ModBlocks {
 	public static BlockPowerCable POWER_CABLE;
 	public static BlockPowerCore POWER_CORE;
     public static BlockMercuriusWaystone MERCURIUS_WAYSTONE;
-    public static BlockMercuryCandle MERCURY_CANDLE;
     public static BlockSepulture SEPULTURE;
     public static BlockSoulAnchor SOUL_ANCHOR;
     public static BlockSoulExtractor SOUL_EXTRACTOR;
-    public static BlockSulfurCandle SULFUR_CANDLE;
     
     @SideOnly(Side.CLIENT)
     Map<Block, ModelResourceLocation> specialRenderBlocks = new HashMap<>();
@@ -73,11 +71,9 @@ public final class ModBlocks {
     			CRYSTALLIZER = giveNames(new BlockCrystallizer(), Reference.Blocks.CRYSTALLIZER),
     			ECTOPLASMA = giveNames(new Block(Material.CLOTH).setHardness(0.5f), Reference.Blocks.ECTOPLASMA),
     			ECTOPLASM = giveNames(new BlockEctoplasm(), Reference.Blocks.ECTOPLASM),
-    			MERCURY_CANDLE = giveNames(new BlockMercuryCandle(), Reference.Blocks.MERCURY_CANDLE),
     			POWER_CABLE = giveNames(new BlockPowerCable(), Reference.Blocks.POWER_CABLE),
     			POWER_CORE = giveNames(new BlockPowerCore(), Reference.Blocks.POWER_CORE),
     			SOUL_ANCHOR = giveNames(new BlockSoulAnchor(), Reference.Blocks.SOUL_ANCHOR), 
-    			SULFUR_CANDLE = giveNames(new BlockSulfurCandle(), Reference.Blocks.SULFUR_CANDLE), 
     			SOUL_EXTRACTOR = giveNames(new BlockSoulExtractor(), Reference.Blocks.SOUL_EXTRACTOR));
     	registerBlock(MERCURIUS_WAYSTONE = giveNames(new BlockMercuriusWaystone(), Reference.Blocks.MERCURIUS_WAYSTONE)).setMaxStackSize(1);
     	blockRegistry.register(SEPULTURE = giveNames(new BlockSepulture(), Reference.Blocks.SEPULTURE));
@@ -108,11 +104,9 @@ public final class ModBlocks {
     	remaps.put("blockectoplasm", ECTOPLASM);
     	remaps.put("blockectoplasma", ECTOPLASMA);
     	remaps.put("blockmercuriuswaystone", MERCURIUS_WAYSTONE);
-    	remaps.put("blockmercurycandle", MERCURY_CANDLE);
     	remaps.put("blocksepulture", SEPULTURE);
     	remaps.put("blocksoulanchor", SOUL_ANCHOR);
     	remaps.put("blocksoulextractor", SOUL_EXTRACTOR);
-    	remaps.put("blocksulfurcandle", SULFUR_CANDLE);
     	for(Mapping<Block> map : missingBlocks) {
     		if(map.key.getResourceDomain().equals(Reference.MOD_ID)) {
     			if(remaps.get(map.key.getResourcePath()) != null)

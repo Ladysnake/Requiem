@@ -14,10 +14,10 @@ import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
-import ladysnake.dissolution.common.handlers.LivingDeathHandler;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
+import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
@@ -50,7 +50,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 
 		if(handler.isIncorporeal() && (!this.isDecaying() || DissolutionConfig.respawn.wowLikeRespawn)) {
 			if(!world.isRemote) {
-				LivingDeathHandler.transferEquipment(this, player);
+				DissolutionInventoryHelper.transferEquipment(this, player);
 				this.onDeath(DamageSource.GENERIC);
 				this.setDead();
 			}
@@ -71,8 +71,8 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	}
 	
 	@Override
-	public void setCorpse(boolean isCorpse) {
-		super.setCorpse(isCorpse);
+	protected void setInert(boolean isCorpse) {
+		super.setInert(isCorpse);
 		this.setDecaying(isCorpse);
 	}
 	
@@ -121,7 +121,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	}
 	
 	@Override
-	protected void handleSunExposition() {}
+	protected void handleSunExposure() {}
 	
 	public UUID getPlayer() {
 		return this.getDataManager().get(PLAYER).orNull();

@@ -37,7 +37,6 @@ public class EntityMinionSkeleton extends AbstractMinion {
 
 	public EntityMinionSkeleton(World worldIn) {
 		super(worldIn);
-		this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
 	}
 	
 	@Override
@@ -52,28 +51,28 @@ public class EntityMinionSkeleton extends AbstractMinion {
 	protected void entityInit()
     {
         super.entityInit();
-        this.dataManager.register(SWINGING_ARMS, Boolean.valueOf(false));
+        this.dataManager.register(SWINGING_ARMS, false);
     }
 	
 	@Override
 	protected SoundEvent getAmbientSound()
     {
-        return (isCorpse()) ? null : (this instanceof EntityMinionStray) ? SoundEvents.ENTITY_STRAY_AMBIENT : SoundEvents.ENTITY_SKELETON_AMBIENT;
+        return (isInert()) ? null : SoundEvents.ENTITY_SKELETON_AMBIENT;
     }
 
     protected SoundEvent getHurtSound()
     {
-    	return (isCorpse()) ? null : (this instanceof EntityMinionStray) ? SoundEvents.ENTITY_STRAY_HURT : SoundEvents.ENTITY_SKELETON_HURT;
+    	return (isInert()) ? null : SoundEvents.ENTITY_SKELETON_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-    	return (isCorpse()) ? null : (this instanceof EntityMinionStray) ? SoundEvents.ENTITY_STRAY_DEATH : SoundEvents.ENTITY_SKELETON_DEATH;
+    	return (isInert()) ? null : SoundEvents.ENTITY_SKELETON_DEATH;
     }
 
     protected SoundEvent getStepSound()
     {
-    	return (isCorpse()) ? null : (this instanceof EntityMinionStray) ? SoundEvents.ENTITY_STRAY_STEP : SoundEvents.ENTITY_SKELETON_STEP;
+    	return (isInert()) ? null : SoundEvents.ENTITY_SKELETON_STEP;
     }
 
     protected void playStepSound(BlockPos pos, Block blockIn)
@@ -81,36 +80,15 @@ public class EntityMinionSkeleton extends AbstractMinion {
         this.playSound(this.getStepSound(), 0.15F, 1.0F);
     }
     
-	/*
-	@Override
-	public boolean isHandActive() {
-		return true;
-	}
-	
-	@Override
-	public int getItemInUseMaxCount() {
-		return 30;
-	}
-	*/
 	@SideOnly(Side.CLIENT)
     public boolean isSwingingArms()
     {
-        return ((Boolean)this.dataManager.get(SWINGING_ARMS)).booleanValue();
+        return this.dataManager.get(SWINGING_ARMS);
     }
 
     public void setSwingingArms(boolean swingingArms)
     {
-        this.dataManager.set(SWINGING_ARMS, Boolean.valueOf(swingingArms));
-    }
-    
-    @Override
-    public void readFromNBT(NBTTagCompound compound) {
-    	super.readFromNBT(compound);
-    }
-    
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-    	return super.writeToNBT(compound);
+        this.dataManager.set(SWINGING_ARMS, swingingArms);
     }
 
 }
