@@ -2,8 +2,11 @@ package ladysnake.dissolution.client.handlers;
 
 import java.lang.reflect.Field;
 
+import ladysnake.dissolution.client.particles.AdditiveParticle;
+import ladysnake.dissolution.client.renders.DissolutionParticleManager;
 import ladysnake.dissolution.client.renders.blocks.RenderSoulAnchor;
 import ladysnake.dissolution.common.DissolutionConfigManager;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.DissolutionConfigManager.FlightModes;
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
@@ -24,6 +27,9 @@ import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
@@ -34,6 +40,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
+@Mod.EventBusSubscriber(value=Side.CLIENT, modid=Reference.MOD_ID)
 public class EventHandlerClient {
 
 	public static int cameraAnimation = 0;
@@ -43,9 +50,9 @@ public class EventHandlerClient {
 	private static Field highlightingItemStack;
 	private static int refreshTimer = 0;
 
-	private float prevHealth = 20;
-	private double prevMaxHealth = 20;
-	private boolean wasRidingLastTick = false;
+	private static float prevHealth = 20;
+	private static double prevMaxHealth = 20;
+	private static boolean wasRidingLastTick = false;
 
 	static {
 		try {
@@ -54,11 +61,19 @@ public class EventHandlerClient {
 			e.printStackTrace();
 		}
 	}
+	
+	@SubscribeEvent
+	public static void onTextureStitch(TextureStitchEvent.Pre event){
+		System.out.println("stiching textures");
+		event.getMap().registerSprite(AdditiveParticle.STAR_PARTICLE_TEXTURE);
+	}
 
 	@SubscribeEvent
-	public void onGameTick(TickEvent event) {
+	public static void onGameTick(TickEvent event) {
 		final EntityPlayer player = Minecraft.getMinecraft().player;
 		if (player == null || event.side.isServer()) return;
+		
+		DissolutionParticleManager.INSTANCE.updateParticles();
 
 		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
 
@@ -73,24 +88,24 @@ public class EventHandlerClient {
 
 		// Convoluted way of displaying the health of the possessed entity
 		if(player.isRiding() && player.getRidingEntity() instanceof EntityLiving) {
-			if(!this.wasRidingLastTick) {
-				this.prevHealth = player.getHealth();
+			if(!wasRidingLastTick) {
+				prevHealth = player.getHealth();
 				IAttributeInstance maxHealth = player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
-				this.prevMaxHealth = maxHealth.getAttributeValue();
+				prevMaxHealth = maxHealth.getAttributeValue();
 				maxHealth.setBaseValue(
 						((EntityLiving)player.getRidingEntity()).getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
-				this.wasRidingLastTick = true;
+				wasRidingLastTick = true;
 			}
 			player.setHealth(((EntityLiving)player.getRidingEntity()).getHealth());
-		} else if(this.wasRidingLastTick) {
+		} else if(wasRidingLastTick) {
 			player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(prevMaxHealth);
 			player.setHealth(prevHealth);
-			this.wasRidingLastTick = false;
+			wasRidingLastTick = false;
 		}
 	}
 
 	@SubscribeEvent
-	public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
+	public static void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		if(event.getType() == RenderGameOverlayEvent.ElementType.ALL && CapabilityIncorporealHandler.getHandler(player).isIncorporeal()) {
 
@@ -112,18 +127,9 @@ public class EventHandlerClient {
 			}
 		}
 	}
-/*
+	
 	@SubscribeEvent
-	public void onRenderGameOverlay(RenderGameOverlayEvent.Post event) {
-		if(CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal() &&
-				(event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD
-				|| event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR)) {
-			GlStateManager.color(1.0F,  1.0F, 1.0F, 1.0F);
-		}
-	}
-*/
-	@SubscribeEvent
-	public void onPlayerTick(PlayerTickEvent event) {
+	public static void onPlayerTick(PlayerTickEvent event) {
 		if(event.side.isServer())
 			return;
 
@@ -160,7 +166,7 @@ public class EventHandlerClient {
 	}
 
 	@SubscribeEvent
-	public void onEntityRender(RenderLivingEvent.Pre event) {
+	public static void onEntityRender(RenderLivingEvent.Pre event) {
 	    if(event.getEntity() instanceof EntityPlayer){
 	    	final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler((EntityPlayer)event.getEntity());
 	    	if(playerCorp.isIncorporeal()){
@@ -168,14 +174,19 @@ public class EventHandlerClient {
 	    	}
 	    }
 	}
+	
+	@SubscribeEvent
+	public static void onRenderWorldLast(RenderWorldLastEvent event) {
+		DissolutionParticleManager.INSTANCE.renderParticles(event.getPartialTicks());
+	}
 
 	@SubscribeEvent
-	public void onRenderSpecificHand(RenderSpecificHandEvent event) {
+	public static void onRenderSpecificHand(RenderSpecificHandEvent event) {
    		event.setCanceled(CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player).isIncorporeal());
 	}
 
 	@SubscribeEvent
-	public void onDrawBlockHighlight (DrawBlockHighlightEvent event) {
+	public static void onDrawBlockHighlight (DrawBlockHighlightEvent event) {
 		try {
 			event.setCanceled(CapabilityIncorporealHandler.getHandler(event.getPlayer()).isIncorporeal() &&
 					!(event.getPlayer().world.getBlockState(event.getTarget().getBlockPos()).getBlock() instanceof ISoulInteractable));

@@ -25,7 +25,6 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void init() {
 		super.init();
-		MinecraftForge.EVENT_BUS.register(new EventHandlerClient());
 		MinecraftForge.EVENT_BUS.register(new GuiIncorporealOverlay(Minecraft.getMinecraft()));
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySoulAnchor.class, new RenderSoulAnchor());
 		initAddedLayers();

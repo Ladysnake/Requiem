@@ -35,9 +35,11 @@ public class DissolutionConfig {
 	public static class Blocks {
 		
 		@Config.LangKey("config.dissolution.blocks.doSablePop")
+		@Config.Comment("Whether output stacks from the extractor should spawn items in world when there is no appropriate container")
 		public boolean doSablePop = true;
 
 		@Config.LangKey("config.dissolution.blocks.oneUseWaystone")
+		@Config.Comment("If set to false, waystones won't disappear after one use")
 		public boolean oneUseWaystone = true;
 		
 	}
@@ -45,12 +47,15 @@ public class DissolutionConfig {
 	public static class Client {
 		
 		@Config.LangKey("config.dissolution.client.useShaders")
+		@Config.Comment("Whether this mod should use shaders as an attempt to make things prettier")
 		public boolean useShaders = true;
 		
 		@Config.LangKey("config.dissolution.client.soulCompass")
+		@Config.Comment("Whether the HUD pointing to respawn locations should display")
 		public boolean soulCompass = true;
 		
 		@Config.LangKey("config.dissolution.client.soulCompassAnchors")
+		@Config.Comment("Whether soul anchors should have an indicator in the soul compass HUD")
 		public boolean soulCompassAnchors = true;
 		
 	}
@@ -58,6 +63,7 @@ public class DissolutionConfig {
 	public static class Entities {
 		
 		@Config.LangKey("config.dissolution.entities.minionsAttackCreepers")
+		@Config.Comment("If true, minions will attack creepers (and probably die in the process)")
 		public boolean minionsAttackCreepers = true;
 		
 	}
@@ -65,21 +71,27 @@ public class DissolutionConfig {
 	public static class Respawn {
 		
 		@Config.LangKey("config.dissolution.respawn.wowLikeRespawn")
+		@Config.Comment("If set to true, the player will respawn as a ghost at their spawnpoint. \nThey will then have the choice to go to 0,0 to respawn without stuff or to reach their corpse under 5 minutes.")
 		public boolean wowLikeRespawn = true;
 		
 		@Config.LangKey("config.dissolution.respawn.bodiesDespawn")
+		@Config.Comment("If set to false, player bodies will not require any special circumstances to prevent decay.")
 		public boolean bodiesDespawn = true;
 		
 		@Config.LangKey("config.dissolution.respawn.bodiesHoldInventory")
+		@Config.Comment("Whether long-lasting player corpses hold their inventory upon death.")
 		public boolean bodiesHoldInventory = true;
 		
 		@Config.LangKey("config.dissolution.respawn.respawnInNether")
+		@Config.Comment("Whether players should respawn in a specific dimension when they die")
 		public boolean respawnInNether = false;
 		
 		@Config.LangKey("config.dissolution.respawn.respawnDimension")
+		@Config.Comment("If dimension respawn is on, the player will always respawn in this dimension.")
 		public int respawnDimension = -1;
 		
 		@Config.LangKey("config.dissolution.respawn.skipDeathScreen")
+		@Config.Comment("Whether players should respawn instantly as souls without showing death screen (could mess with other mods)")
 		public boolean skipDeathScreen = false;
 		
 	}
@@ -87,9 +99,11 @@ public class DissolutionConfig {
 	public static class Ghost {
 		
 		@Config.LangKey("config.dissolution.ghost.flightMode")
+		@Config.Comment("Changes the way ghosts fly.")
 		public DissolutionConfigManager.FlightModes flightMode = DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT;
 		
 		@Config.LangKey("config.dissolution.ghost.invisibleGhosts")
+		@Config.Comment("If set to true, dead players will be fully invisible.")
 		public boolean invisibleGhosts = false;
 		
 	}
@@ -97,6 +111,7 @@ public class DissolutionConfig {
 	public static class Worldgen {
 		
 		@Config.LangKey("config.dissolution.worldgen.spawnMercuryLakesFreq")
+		@Config.Comment("A mercury lake has a 1 in N chances to spawn in a given chunk (the higher the number here, the less lakes). -1 to disable.")
 		public int spawnMercuryLakesFreq = 100;
 		
 	}
@@ -108,199 +123,3 @@ public class DissolutionConfig {
 	}
 	
 }
-
-	/*
-	public static final int NO_FLIGHT = -1;
-	public static final int CUSTOM_FLIGHT = 0;
-	public static final int CREATIVE_FLIGHT = 1;
-	public static final int SPECTATOR_FLIGHT = 2;
-
-	public static boolean anchorsXRay = false;
-	public static boolean bodiesDespawn = true;
-	public static boolean bodiesHoldInventory = true;
-	public static boolean doSableDrop = true;
-	public static boolean invisibleGhosts = false;
-	public static int flightMode = CUSTOM_FLIGHT;
-	public static boolean minionsAttackCreepers = true;
-	public static boolean oneUseWaystone = true;
-	public static boolean respawnInNether = true;
-	public static int respawnDimension = -1;
-	public static boolean skipDeathScreen = false;
-	public static boolean soulCompass = true;
-	public static boolean soulCompassAnchors = true;
-	public static int spawnMercuryLakesFreq = 100;
-	public static boolean useShaders = true;
-	public static boolean wowRespawn = true;
-	
-	public static boolean enableSoulDash = false;
-	
-	public static final String CATEGORY_RESPAWN = "Respawn";
-	public static final String CATEGORY_GHOST = "Ghost";
-	public static final String CATEGORY_WORLDGEN = "Worldgen";
-	public static final String CATEGORY_WIP = "WIP";
-	
-	public static void syncConfig() {
-		try {
-	        Dissolution.config.load();
-	        
-	        Property versionProp = Dissolution.config.get(
-	        		"Don't touch that", 
-	        		"version", 
-	        		1.1, 
-	        		"The version of this configuration file. Don't modify this number unless you want your changes randomly reset.");
-
-	        // RESPAWN SETTINGS
-	        
-	        Dissolution.config.addCustomCategoryComment(CATEGORY_RESPAWN, "Settings related to respawn mechanics. Please report any unwanted behaviour due to some combination of these.");
-	        
-	        Property wowRespawnProp = Dissolution.config.get(
-	        		CATEGORY_RESPAWN, 
-	        		"WoWlikeRespawn", 
-	        		true,
-	        		"If set to true, the player will respawn as a ghost at their spawnpoint. They will then have the choice to go to 0,0 to respawn without stuff or to reach their corpse under 5 minutes. (default : true)");
-	        
-	        Property shouldRespawnInNetherProp = Dissolution.config.get(
-	        		CATEGORY_RESPAWN,
-	                "shouldRespawnInNether",
-	                false,
-	                "Whether players should respawn in the nether when they die (default: false)");
-	        
-	        Property respawnDimensionProp = Dissolution.config.get(
-	        		CATEGORY_RESPAWN, 
-	        		"respawnDimension",
-	        		-1,
-	        		"If nether respawn is on, the player will respawn in this dimension instead. (default: -1)");
-	        
-	        Property shouldShowDeathScreenProp = Dissolution.config.get(
-	        		CATEGORY_RESPAWN,
-	                "skipDeathScreen",
-	                false,
-	                "Whether players should respawn instantly as souls without showing death screen (could mess with other mods) (default: false)");
-	        
-	        Property playerBodiesHoldInventoryProp = Dissolution.config.get(
-	        		CATEGORY_RESPAWN, 
-	        		"playerBodiesHoldInventoryProp", 
-	        		true,
-	        		"Whether long-lasting player corpses hold their inventory upon death. Recommended with WoWlikeRespawn. (default : true)");
-	        
-	        Property playerBodiesDecayProp = Dissolution.config.get(
-	        		CATEGORY_RESPAWN,
-	        		"playerBodiesDespawn",
-	        		true,
-	        		"If set to false, player bodies will not require any special circumstances to prevent decay. (default: true)");
-	        
-	        // GHOST SETTINGS
-	        
-	        Dissolution.config.addCustomCategoryComment(CATEGORY_GHOST, "Settings related to the spirit form.");
-	        
-	        Property invisibleGhostProp = Dissolution.config.get(
-	        		CATEGORY_GHOST,
-	        		"invisibleGhosts",
-	        		false,
-	        		"If set to true, dead players will be fully invisible (default: false)");
-	        
-	        Property flightModeProp = Dissolution.config.get(
-	        		CATEGORY_GHOST,
-	        		"flightMode",
-	        		0,
-	        		"-1= noflight, 0=custom flight, 1=creative, 2=spectator-lite (default: 0)");
-
-	        Property interactableBlocksProp = Dissolution.config.get(
-	        		CATEGORY_GHOST,
-	        		"soulInteractableBlocks",
-	        		"lever, glass_pane",
-	        		"The blocks that can be right clicked/broken by ghosts (this config option doesn't affect anything currently)");
-	        
-	        // WORLD GEN SETTINGS
-	        
-	        Dissolution.config.addCustomCategoryComment(CATEGORY_WORLDGEN, "Settings related to world generation and structures");
-	        
-	        Property spawnMercuryLakesProp = Dissolution.config.get(
-	        		CATEGORY_WORLDGEN,
-	        		"spawnMercuryLakes",
-	        		spawnMercuryLakesFreq,
-	        		"A mercury lake has a 1 in N chances to spawn in a given chunk (the higher the number here, the less lakes). -1 to disable.");
-	        
-	        // GENERAL SETTINGS
-	        
-	        Property minionsAttackCreepersProp = Dissolution.config.get(
-	        		Configuration.CATEGORY_GENERAL, 
-	        		"minionsAttackCreepers",
-	        		true,
-	        		"If set to true, minions will attack creepers (and probably die in the process) (default: They didn't deserve to live anyway)");
-	        
-	        Property doSablePopProp = Dissolution.config.get(
-	        		Configuration.CATEGORY_GENERAL,
-	        		"doSablePop",
-	        		true,
-	        		"Whether output stacks from the extractor should spawn items in world when there is no appropriate container (default: true)");
-
-	        // CLIENT SETTINGS
-	        
-	        Property shadersProp = Dissolution.config.get(
-	        		Configuration.CATEGORY_CLIENT, 
-	        		"useShaders", 
-	        		true, 
-	        		"Whether this mod should use shaders to try to make things prettier (default: true)");
-	        
-	        Property anchorsXRayProp = Dissolution.config.get(
-	        		Configuration.CATEGORY_CLIENT,
-	                "anchorsXRay", // Property name
-	                false, // Default value
-	                "Whether soul anchors should be visible through blocks to ghost players (graphical glitches might occur) (default: false)");
-	        
-	        Property showSoulCompassProp = Dissolution.config.get(
-	        		Configuration.CATEGORY_CLIENT,
-	                "showSoulCompass", // Property name
-	                true, // Default value
-	                "Whether the HUD pointing to respawn locations should appear (default: true)");
-	        
-	        Property showAnchorsInSoulCompassProp = Dissolution.config.get(
-	        		Configuration.CATEGORY_CLIENT,
-	                "showAnchorsInSoulCompass", // Property name
-	                true, // Default value
-	                "Whether soul anchors should have an indicator in the soul compass HUD (default: true)");
-	        
-	        // WIP SETTINGS
-	        
-	        Dissolution.config.addCustomCategoryComment(CATEGORY_WIP, "Allows you to enable WIP mechanics. Warning : very susceptible to change and potentially unstable.");
-	        
-	        Property enableSoulDashProp = Dissolution.config.get(
-	        		CATEGORY_WIP,
-	        		"enableSoulDash",
-	        		enableSoulDash,
-	        		"Allows players to left click blocks to be temporarily intangible");
-	        
-	        // Updating configuration file to v1.1
-	        if(versionProp.getDouble() < 1.1) {
-	        	shouldRespawnInNetherProp.set(false);
-	        	versionProp.set(1.1);
-	        }
-
-        	anchorsXRay = anchorsXRayProp.getBoolean();
-	        soulCompass = showSoulCompassProp.getBoolean();
-	        soulCompassAnchors = showAnchorsInSoulCompassProp.getBoolean();
-	        useShaders = shadersProp.getBoolean();
-        	
-        	bodiesHoldInventory = playerBodiesHoldInventoryProp.getBoolean();
-        	bodiesDespawn = playerBodiesDecayProp.getBoolean();
-	        respawnInNether = shouldRespawnInNetherProp.getBoolean();
-	        respawnDimension = respawnDimensionProp.getInt();
-	        skipDeathScreen = shouldShowDeathScreenProp.getBoolean();
-	        wowRespawn = wowRespawnProp.getBoolean();
-	        
-        	doSableDrop = doSablePopProp.getBoolean();
-        	minionsAttackCreepers = minionsAttackCreepersProp.getBoolean();
-
-	        invisibleGhosts = invisibleGhostProp.getBoolean();
-        	flightMode = flightModeProp.getInt();
-
-        	spawnMercuryLakesFreq = spawnMercuryLakesProp.getInt();
-	        
-	        enableSoulDash = enableSoulDashProp.getBoolean();
-	        
-	    } finally {
-	        if (Dissolution.config.hasChanged()) Dissolution.config.save();
-	    }
-	}
-}*/

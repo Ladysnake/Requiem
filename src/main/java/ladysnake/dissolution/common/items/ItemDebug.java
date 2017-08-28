@@ -2,15 +2,15 @@ package ladysnake.dissolution.common.items;
 
 import java.util.List;
 
+import ladysnake.dissolution.client.particles.AdditiveParticle;
+import ladysnake.dissolution.client.renders.DissolutionParticleManager;
 import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
-import ladysnake.dissolution.common.capabilities.Soul;
-import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.entity.soul.EntitySoulCamera;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -81,16 +81,11 @@ public class ItemDebug extends Item implements ISoulInteractable {
 			}
 			break;
 		case 6 :
-			List<EntityPlayerCorpse> playerCorpses = playerIn.world.getEntities(EntityPlayerCorpse.class, e -> e.getDistanceToEntity(playerIn) < 20);
-			playerCorpses.forEach(corpse -> {
-				playerIn.sendStatusMessage(new TextComponentString(playerIn.world.isRemote ? "clientSide" : "serverSide"), false);
-				corpse.getSoulHandlerCapability().forEach(soul -> playerIn.sendStatusMessage(new TextComponentString(soul.toString()), false));
-			});
-			playerIn.sendStatusMessage(new TextComponentString("player - " + (playerIn.world.isRemote ? "clientSide" : "serverSide")), false);
-			CapabilitySoulHandler.getHandler(playerIn).forEach(soul -> playerIn.sendStatusMessage(new TextComponentString(soul.toString()), false));
-		case 7 :
-			List<EntityPlayerCorpse> playerCorpses2 = playerIn.world.getEntities(EntityPlayerCorpse.class, e -> e.getDistanceToEntity(playerIn) < 20);
-			playerCorpses2.forEach(corpse -> corpse.getSoulHandlerCapability().addSoul(Soul.UNDEFINED));
+			if(playerIn.world.isRemote) {
+				DissolutionParticleManager.INSTANCE.addParticle(new AdditiveParticle(worldIn, playerIn.posX, playerIn.posY, playerIn.posZ, 0, 0, 0));
+				Minecraft.getMinecraft().effectRenderer.addEffect(new AdditiveParticle(worldIn, playerIn.posX, playerIn.posY, playerIn.posZ, 0, 0, 0));
+			}
+			break;
 		default : break;
 		}
 		return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
