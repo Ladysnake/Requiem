@@ -14,7 +14,7 @@ public class DissolutionTab extends CreativeTabs {
 	
 	@Override
 	public ItemStack getTabIconItem() {
-		return ItemBaseResource.resourceFromName("ectoplasm");
+		return new ItemStack(ModItems.ANCIENT_SCYTHE);
 	}
 
 }

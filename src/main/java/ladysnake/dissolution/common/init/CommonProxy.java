@@ -10,12 +10,9 @@ import ladysnake.dissolution.common.handlers.LivingDeathHandler;
 import ladysnake.dissolution.common.handlers.PlayerTickHandler;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.networking.PacketHandler;
-import ladysnake.dissolution.common.tileentities.TileEntityCrystallizer;
+import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import ladysnake.dissolution.common.tileentities.TileEntityPowerCore;
 import ladysnake.dissolution.common.tileentities.TileEntitySepulture;
-import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
-import ladysnake.dissolution.common.tileentities.TileEntitySoulCandle;
-import ladysnake.dissolution.common.tileentities.TileEntitySoulExtractor;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -41,12 +38,9 @@ public abstract class CommonProxy {
 		
 		ModItems.INSTANCE.registerOres();
 		
-		GameRegistry.registerTileEntity(TileEntityCrystallizer.class, Reference.MOD_ID + "tileentitycrystallizer");
 		GameRegistry.registerTileEntity(TileEntityPowerCore.class, Reference.MOD_ID + "tileentitypowercore");
-		GameRegistry.registerTileEntity(TileEntitySoulExtractor.class, Reference.MOD_ID + "tileentitysoulextractor");
 		GameRegistry.registerTileEntity(TileEntitySepulture.class, Reference.MOD_ID + "tileentitysepulture");
-		GameRegistry.registerTileEntity(TileEntitySoulAnchor.class, Reference.MOD_ID + "tileentitysoulanchor");
-		GameRegistry.registerTileEntity(TileEntitySoulCandle.class, Reference.MOD_ID + "tileentitysoulcandle");
+		GameRegistry.registerTileEntity(TileEntityModularMachine.class, Reference.MOD_ID + "tileentitymodularmachine");
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
 		PacketHandler.initPackets();

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
+import ladysnake.dissolution.client.renders.blocks.DissolutionModelLoader;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.powersystem.BlockPowerCable;
 import ladysnake.dissolution.common.blocks.powersystem.IPowerConductor;
@@ -151,7 +152,7 @@ public class CableBakedModel implements IBakedModel {
             quads.add(createQuad(new Vec3d(o, o, 1 - o), new Vec3d(1 - o, o, 1 - o), new Vec3d(1 - o, 1 - o, 1 - o), new Vec3d(o, 1 - o, 1 - o), sprite));
         }
 
-        return quads;
+        return DissolutionModelLoader.getModel(DissolutionModelLoader.CONTAINER).getQuads(state, side, rand);
     }
 
 	@Override

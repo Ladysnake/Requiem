@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
 	"textures": {
-		"0": "blocks/wooden_alchemical_machine_structure",
-		"particle": "blocks/wooden_alchemical_machine_structure"
+		"0": "dissolution:blocks/machine_parts/wooden_alchemical_machine_structure",
+		"particle": "dissolution:blocks/machine_parts/wooden_alchemical_machine_structure"
 	},
 	"elements": [
 		{

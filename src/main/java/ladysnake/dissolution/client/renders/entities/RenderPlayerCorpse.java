@@ -1,5 +1,9 @@
 package ladysnake.dissolution.client.renders.entities;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import com.mojang.authlib.GameProfile;
 
 import ladysnake.dissolution.client.models.entities.ModelMinionZombie;
@@ -17,7 +21,7 @@ import net.minecraft.world.EnumSkyBlock;
 
 public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
 	
-	private ResourceLocation texture;
+	private Map<UUID, ResourceLocation> texture = new HashMap<>();
 	private boolean shouldRenderName = false;
 		
 	public RenderPlayerCorpse(RenderManager rendermanagerIn) {
@@ -28,7 +32,6 @@ public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
             {
                 this.modelLeggings = new ModelMinionZombie(0.5F, true);
                 this.modelArmor = new ModelMinionZombie(1.0F, true);
-     
             }
         };
         this.addLayer(layerbipedarmor);
@@ -37,9 +40,8 @@ public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
 	@Override
 	protected ResourceLocation getEntityTexture(EntityPlayerCorpse entity) {
 		try {
-			if(texture == null)
-				texture = new EntityOtherPlayerMP(entity.world, new GameProfile(entity.getPlayer(), "")).getLocationSkin();
-			return texture;
+			return texture.computeIfAbsent(entity.getPlayer(), 
+					uuid -> new EntityOtherPlayerMP(entity.world, new GameProfile(uuid, "")).getLocationSkin());
 		} catch (IllegalArgumentException e) {
 			return DefaultPlayerSkin.getDefaultSkinLegacy();
 		}

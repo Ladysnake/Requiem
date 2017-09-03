@@ -7,20 +7,13 @@ import java.util.Map;
 import ladysnake.dissolution.client.models.blocks.CableBakedModel;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.BlockCrystallizer;
-import ladysnake.dissolution.common.blocks.BlockEctoplasm;
-import ladysnake.dissolution.common.blocks.BlockMercuriusWaystone;
-import ladysnake.dissolution.common.blocks.BlockMercuryCandle;
 import ladysnake.dissolution.common.blocks.BlockSepulture;
-import ladysnake.dissolution.common.blocks.BlockSoulAnchor;
-import ladysnake.dissolution.common.blocks.BlockSulfurCandle;
 import ladysnake.dissolution.common.blocks.powersystem.BlockBarrage;
 import ladysnake.dissolution.common.blocks.powersystem.BlockBaseMachine;
+import ladysnake.dissolution.common.blocks.powersystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.powersystem.BlockPowerCable;
 import ladysnake.dissolution.common.blocks.powersystem.BlockPowerCore;
-import ladysnake.dissolution.common.blocks.powersystem.BlockSoulExtractor;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
@@ -40,17 +33,11 @@ public final class ModBlocks {
 	/**Used to register stuff*/
 	static final ModBlocks INSTANCE = new ModBlocks();
 
-	public static Block ECTOPLASMA;
-	public static BlockBaseMachine BASE_MACHINE;
+	public static BlockCasing CASING;
 	public static BlockBarrage BARRAGE;
-    public static BlockCrystallizer CRYSTALLIZER;
-	public static BlockEctoplasm ECTOPLASM;
 	public static BlockPowerCable POWER_CABLE;
 	public static BlockPowerCore POWER_CORE;
-    public static BlockMercuriusWaystone MERCURIUS_WAYSTONE;
     public static BlockSepulture SEPULTURE;
-    public static BlockSoulAnchor SOUL_ANCHOR;
-    public static BlockSoulExtractor SOUL_EXTRACTOR;
     
     @SideOnly(Side.CLIENT)
     Map<Block, ModelResourceLocation> specialRenderBlocks = new HashMap<>();
@@ -58,25 +45,23 @@ public final class ModBlocks {
     
     private IForgeRegistry<Block> blockRegistry;
     
-    private static <T extends Block> T giveNames(T block, Reference.Blocks names) {
+    private static <T extends Block> T name(T block, Reference.Blocks names) {
 		return (T) block.setUnlocalizedName(names.getUnlocalizedName()).setRegistryName(names.getRegistryName());
 	}
+    
+    private static <T extends Block> T name(T block, String name) {
+    	return (T) block.setUnlocalizedName(name).setRegistryName(name);
+    }
 
     @SubscribeEvent
     public void onRegister(RegistryEvent.Register<Block> event) {
     	blockRegistry = event.getRegistry();
     	registerBlocks(
-    			BASE_MACHINE = giveNames(new BlockBaseMachine(), Reference.Blocks.BASE_MACHINE),
-    			BARRAGE = giveNames(new BlockBarrage(), Reference.Blocks.BARRAGE),
-    			CRYSTALLIZER = giveNames(new BlockCrystallizer(), Reference.Blocks.CRYSTALLIZER),
-    			ECTOPLASMA = giveNames(new Block(Material.CLOTH).setHardness(0.5f), Reference.Blocks.ECTOPLASMA),
-    			ECTOPLASM = giveNames(new BlockEctoplasm(), Reference.Blocks.ECTOPLASM),
-    			POWER_CABLE = giveNames(new BlockPowerCable(), Reference.Blocks.POWER_CABLE),
-    			POWER_CORE = giveNames(new BlockPowerCore(), Reference.Blocks.POWER_CORE),
-    			SOUL_ANCHOR = giveNames(new BlockSoulAnchor(), Reference.Blocks.SOUL_ANCHOR), 
-    			SOUL_EXTRACTOR = giveNames(new BlockSoulExtractor(), Reference.Blocks.SOUL_EXTRACTOR));
-    	registerBlock(MERCURIUS_WAYSTONE = giveNames(new BlockMercuriusWaystone(), Reference.Blocks.MERCURIUS_WAYSTONE)).setMaxStackSize(1);
-    	blockRegistry.register(SEPULTURE = giveNames(new BlockSepulture(), Reference.Blocks.SEPULTURE));
+    			BARRAGE = name(new BlockBarrage(), Reference.Blocks.BARRAGE),
+    			POWER_CABLE = name(new BlockPowerCable(), Reference.Blocks.POWER_CABLE),
+    			POWER_CORE = name(new BlockPowerCore(), Reference.Blocks.POWER_CORE));
+    	blockRegistry.register(CASING = name(new BlockCasing(), "wooden_casing"));
+    	blockRegistry.register(SEPULTURE = name(new BlockSepulture(), Reference.Blocks.SEPULTURE));
     }
     
     void registerBlocks(Block... blocks) {
@@ -100,13 +85,7 @@ public final class ModBlocks {
     @SubscribeEvent
     public void remapIds(RegistryEvent.MissingMappings<Block> event) {
     	List<Mapping<Block>> missingBlocks = event.getMappings();
-    	remaps.put("blockcrystallizer", CRYSTALLIZER);
-    	remaps.put("blockectoplasm", ECTOPLASM);
-    	remaps.put("blockectoplasma", ECTOPLASMA);
-    	remaps.put("blockmercuriuswaystone", MERCURIUS_WAYSTONE);
     	remaps.put("blocksepulture", SEPULTURE);
-    	remaps.put("blocksoulanchor", SOUL_ANCHOR);
-    	remaps.put("blocksoulextractor", SOUL_EXTRACTOR);
     	for(Mapping<Block> map : missingBlocks) {
     		if(map.key.getResourceDomain().equals(Reference.MOD_ID)) {
     			if(remaps.get(map.key.getResourcePath()) != null)

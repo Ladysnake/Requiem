@@ -3,11 +3,11 @@ package ladysnake.dissolution.client.handlers;
 import java.lang.reflect.Field;
 
 import ladysnake.dissolution.client.particles.AdditiveParticle;
-import ladysnake.dissolution.client.renders.DissolutionParticleManager;
+import ladysnake.dissolution.client.particles.DissolutionParticleManager;
 import ladysnake.dissolution.client.renders.blocks.RenderSoulAnchor;
 import ladysnake.dissolution.common.DissolutionConfigManager;
-import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.DissolutionConfigManager.FlightModes;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
@@ -17,6 +17,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -25,7 +26,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -64,8 +65,8 @@ public class EventHandlerClient {
 	
 	@SubscribeEvent
 	public static void onTextureStitch(TextureStitchEvent.Pre event){
-		System.out.println("stiching textures");
 		event.getMap().registerSprite(AdditiveParticle.STAR_PARTICLE_TEXTURE);
+		event.getMap().registerSprite(AdditiveParticle.PINK_STAR_PARTICLE_TEXTURE);
 	}
 
 	@SubscribeEvent
@@ -166,13 +167,13 @@ public class EventHandlerClient {
 	}
 
 	@SubscribeEvent
-	public static void onEntityRender(RenderLivingEvent.Pre event) {
-	    if(event.getEntity() instanceof EntityPlayer){
-	    	final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler((EntityPlayer)event.getEntity());
-	    	if(playerCorp.isIncorporeal()){
-	    		GlStateManager.color(0.9F, 0.9F, 1.0F, 0.5F); // Tints the player blue and halves the transparency
-	    	}
-	    }
+	public static void onPlayerRender(RenderPlayerEvent.Pre event) {
+    	final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
+    	if(playerCorp.isIncorporeal()){
+    		GlStateManager.color(0.9F, 0.9F, 1.0F, 0.5F); // Tints the player blue and halves the transparency
+    	} else {
+    		event.getEntityPlayer().setInvisible(playerCorp.getDisguise().isPresent());
+    	}
 	}
 	
 	@SubscribeEvent

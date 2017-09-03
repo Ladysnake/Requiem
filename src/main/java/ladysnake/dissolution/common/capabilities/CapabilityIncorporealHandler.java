@@ -1,10 +1,13 @@
 package ladysnake.dissolution.common.capabilities;
 
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.UUID;
 
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.DissolutionConfigManager;
 import ladysnake.dissolution.common.DissolutionConfigManager.FlightModes;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.block.Block;
@@ -22,7 +25,10 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToAccessFieldException;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
 
@@ -33,6 +39,7 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldExcep
  * @author Pyrofab
  *
  */
+@Mod.EventBusSubscriber(modid=Reference.MOD_ID)
 public class CapabilityIncorporealHandler {
 
 	/**this is a list of hardcoded vanilla blocks that players can interact with*/
@@ -63,6 +70,11 @@ public class CapabilityIncorporealHandler {
 
         return null;
     }
+    
+    @SubscribeEvent
+    public static void onPlayerTick(PlayerTickEvent event) {
+    	getHandler(event.player).tick();
+    }
 
     /**
      * This is the class that does most of the work, and the one other classes interact with
@@ -75,11 +87,10 @@ public class CapabilityIncorporealHandler {
 		/**How much time this entity will be intangible*/
 		private int intangibleTimer = -1;
 		private int lastFood = -1;
-		private int mercuryCandleNearby = -1;
-		private int sulfurCandleNearby = -1;
 		private String lastDeathMessage;
 		private boolean synced = false;
 		private int prevGamemode = 0;
+		private Optional<UUID> disguise = Optional.empty();
 
 		private EntityPlayer owner;
 
@@ -125,30 +136,8 @@ public class CapabilityIncorporealHandler {
 		}
 
 		@Override
-		public void setSoulCandleNearby(boolean soulCandle, int CandleType) {
-			if(CandleType == 1){
-				this.mercuryCandleNearby = soulCandle ? 100 : -1;
-			}
-			else if(CandleType == 2){
-				this.sulfurCandleNearby = soulCandle ? 100 : -1;
-			}
-
-		}
-
-		@Override
-		public boolean isSoulCandleNearby(int CandleType) {
-			if(CandleType == 1){
-				return this.mercuryCandleNearby > 0;
-			}
-			else if(CandleType == 2){
-				return this.sulfurCandleNearby > 0;
-			}
-			else return this.mercuryCandleNearby > 0;
-		}
-
-		@Override
 		public boolean isIncorporeal() {
-			return this.incorporeal && !this.isSoulCandleNearby(1) || this.incorporeal && !this.isSoulCandleNearby(2);
+			return this.incorporeal;
 		}
 
 		@Override
@@ -173,13 +162,13 @@ public class CapabilityIncorporealHandler {
 
 		@Override
 		public void tick() {
-			if(this.isSoulCandleNearby(1)) this.mercuryCandleNearby--;
-			if(this.isSoulCandleNearby(2)) this.sulfurCandleNearby--;
 			if(isIncorporeal())
 				if(this.lastFood < 0)
 					lastFood = owner.getFoodStats().getFoodLevel();
 				else
 					owner.getFoodStats().setFoodLevel(lastFood);
+			else
+				lastFood = -1;
 			if(intangibleTimer > -1000) {
 				final boolean prevIntangible = isIntangible();
 				intangibleTimer--;
@@ -209,6 +198,16 @@ public class CapabilityIncorporealHandler {
 		public boolean isIntangible() {
 			return this.intangibleTimer >= 0;
 		}
+
+		@Override
+		public void setDisguise(UUID usurpedId) {
+			disguise = Optional.ofNullable(usurpedId);
+		}
+
+		@Override
+		public Optional<UUID> getDisguise() {
+			return disguise;
+		}
 	}
 
 	 public static class Provider implements ICapabilitySerializable<NBTTagCompound> {
@@ -221,7 +220,6 @@ public class CapabilityIncorporealHandler {
 
 	        @Override
 	        public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-
 	            return capability == CAPABILITY_INCORPOREAL;
 	        }
 

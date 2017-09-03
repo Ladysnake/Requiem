@@ -1,6 +1,7 @@
 package ladysnake.dissolution.common.blocks.powersystem;
 
 import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -40,6 +41,12 @@ public interface IPowerConductor {
 	
 	public static interface IEssentiaConductor {}
 	
-	public static interface IMachine extends IPowerConductor, IEssentiaConductor {}
+	public static interface IMachine extends IPowerConductor, IEssentiaConductor {
+		
+		default boolean shouldConnect(IBlockState state) {
+			return true;
+		}
+		
+	}
 
 }

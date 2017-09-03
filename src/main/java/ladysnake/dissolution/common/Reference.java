@@ -13,14 +13,15 @@ public class Reference {
 	public static final String SERVER_PROXY_CLASS = "ladysnake.dissolution.server.proxy.ServerProxy";
 
 	public static enum Items {
-		BASE_RESOURCE,
+		CINNABAR,
 		DEBUG("debug_item"),
 		EYE_DEAD("eye_of_the_undead"),
-		GRAND_FAUX,
+		ANCIENT_SCYTHE,
 		SCARAB_OF_ETERNITY,
 		SCYTHE_IRON("iron_scythe"),
 		SOULGEM("soul_gem"),
 		SOULINABOTTLE("soul_in_a_bottle"),
+		SULFUR,
 		SEPULTURE;
 
 		private String unlocalizedName;

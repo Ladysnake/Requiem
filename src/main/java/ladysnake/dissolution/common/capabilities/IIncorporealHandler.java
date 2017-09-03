@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.capabilities;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * The interface providing methods related to the Incorporeal capability
@@ -26,19 +26,6 @@ public interface IIncorporealHandler {
 	void setIncorporeal(boolean ghostMode);
 	
 	/**
-	 * Temporary status overriding the normal incorporeal one. Does not get saved upon reload.
-	 * @param tangible
-	 */
-	void setSoulCandleNearby(boolean tangible, int CandleType);
-	
-	/**
-	 * Determines if there is a soul candle near this player.
-	 * @return true if a soul candle is in a valid radius
-	 */
-	boolean isSoulCandleNearby(int CandleType);
-	
-	
-	/**
 	 * Whether the player is in soul mode or not
 	 * @return true if the player is a ghost
 	 */
@@ -50,6 +37,10 @@ public interface IIncorporealHandler {
 	void setLastDeathMessage(String lastDeath);
 	
 	void tick();
+	
+	void setDisguise(UUID usurpedId);
+	
+	Optional<UUID> getDisguise();
 	
 	/**
 	 * Makes the player intangible (enables noclip)

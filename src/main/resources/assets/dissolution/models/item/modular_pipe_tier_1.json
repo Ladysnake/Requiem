@@ -1,0 +1,42 @@
+{
+	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
+	"textures": {"4": "machine_parts/filtering_pipe"},
+	"elements": [
+		{
+			"name": "Pipe",
+			"from": [6, 13, 6],
+			"to": [10, 20, 10],
+			"shade": true,
+			"faces": {
+				"north": {"uv": [2, 0, 6, 7], "texture": "#4"},
+				"east": {"uv": [2, 0, 6, 7], "texture": "#4"},
+				"south": {"uv": [3, 0, 7, 7], "texture": "#4"},
+				"west": {"uv": [2, 0, 6, 7], "texture": "#4"}
+			},
+			"rotation": {
+				"origin": [7, 14.5, 7],
+				"axis": "y",
+				"angle": 0
+			}
+		},
+		{
+			"name": "Filter",
+			"from": [3, 19, 3],
+			"to": [13, 20, 13],
+			"shade": true,
+			"faces": {
+				"north": {"uv": [0, 0, 10, 1], "texture": "#4"},
+				"east": {"uv": [0, 0, 10, 1], "texture": "#4"},
+				"south": {"uv": [0, 0, 10, 1], "texture": "#4"},
+				"west": {"uv": [0, 0, 10, 1], "texture": "#4"},
+				"up": {"uv": [0, 0, 10, 10], "texture": "#4"},
+				"down": {"uv": [0, 0, 10, 10], "texture": "#4"}
+			},
+			"rotation": {
+				"origin": [4, 20.5, 4],
+				"axis": "y",
+				"angle": 0
+			}
+		}
+	]
+}

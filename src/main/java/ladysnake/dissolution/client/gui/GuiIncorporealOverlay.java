@@ -55,24 +55,6 @@ public class GuiIncorporealOverlay extends Gui {
 	        //this.drawMagicBar(event.getResolution());
 	        
 		}
-        if(pl.isSoulCandleNearby(1)) {
-        	if(!usingShader) {
-        		Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("shaders/post/desaturate.json"));
-        		usingShader = true;
-        	}
-        }
-        else if(pl.isSoulCandleNearby(2)){
-        	if(!usingShader) {
-        		Minecraft.getMinecraft().entityRenderer.loadShader(new ResourceLocation("shaders/post/deconverge.json"));
-    			usingShader = true;
-        	}
-        }
-        else {
-        	if(usingShader) {
-        		Minecraft.getMinecraft().entityRenderer.stopUseShader();
-        		usingShader = false;
-        	}
-        }
 	}
 	
 	/**

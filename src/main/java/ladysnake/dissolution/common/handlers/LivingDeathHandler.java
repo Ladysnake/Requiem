@@ -69,12 +69,6 @@ public class LivingDeathHandler {
 		corp.setLastDeathMessage(
 				p.getDisplayNameString() + event.getSource().getDeathMessage(p).getUnformattedComponentText());
 
-		final ItemStack merc = new ItemStack(ModBlocks.MERCURIUS_WAYSTONE);
-		if (p.inventory.hasItemStack(merc)) {
-			p.inventory.removeStackFromSlot(p.inventory.getSlotFor(merc));
-			p.world.spawnEntity(new EntityItemWaystone(p.world, p.posX + 0.5, p.posY + 1.0, p.posZ + 0.5));
-		}
-		
 		if(!p.world.isRemote) {
 			final EntityPlayerCorpse body = new EntityPlayerCorpse(p.world);
 			body.setPosition(p.posX, p.posY, p.posZ);
@@ -87,12 +81,6 @@ public class LivingDeathHandler {
 					flag = true;
 			}
 			
-			ItemStack lifeProtectionRing = DissolutionInventoryHelper.findItem(p, ModItems.SCARAB_OF_ETERNITY);
-			if(!lifeProtectionRing.isEmpty()) {
-				p.inventory.setInventorySlotContents(DissolutionInventoryHelper.getSlotFor(p.inventory, lifeProtectionRing), ItemStack.EMPTY);
-				flag = true;
-			}
-
 			body.setDecaying(!flag);
 			
 			if(DissolutionConfig.respawn.bodiesHoldInventory) {

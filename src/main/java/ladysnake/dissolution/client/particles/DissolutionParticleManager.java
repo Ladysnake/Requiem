@@ -1,11 +1,10 @@
-package ladysnake.dissolution.client.renders;
+package ladysnake.dissolution.client.particles;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
 
-import ladysnake.dissolution.client.particles.IDissolutionParticle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.ActiveRenderInfo;
@@ -17,8 +16,8 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 
 /**
- * This class has been adapted from embers' source code under GNU Lesser General Public License
- * https://github.com/RootsTeam/Embers
+ * This class has been adapted from embers' source code under GNU Lesser General Public License 2.1
+ * https://github.com/RootsTeam/Embers/blob/master/src/main/java/teamroots/embers/particle/ParticleRenderer.java
  * @author Elucent
  *
  */
@@ -30,7 +29,7 @@ public class DissolutionParticleManager {
 	
 	public void updateParticles() {
 		particles.forEach(p -> p.onUpdate());
-		particles.removeIf(p -> !p.isAlive());
+		// particles.removeIf(p -> !p.isAlive());
 	}
 	
 	public void renderParticles(float partialTicks) {

@@ -9,7 +9,7 @@ import java.util.Set;
 
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.items.ItemBaseResource;
+import ladysnake.dissolution.common.items.ItemCasing;
 import ladysnake.dissolution.common.items.ItemDebug;
 import ladysnake.dissolution.common.items.ItemEyeDead;
 import ladysnake.dissolution.common.items.ItemScythe;
@@ -28,31 +28,34 @@ import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public final class ModItems {
 	
 	/**Used to register stuff*/
 	static final ModItems INSTANCE = new ModItems();
-	
+
+	public static ItemScythe ANCIENT_SCYTHE;
+	public static Item CINNABAR;
 	public static ItemDebug DEBUG_ITEM;
 	public static ItemEyeDead EYE_OF_THE_UNDEAD;
-	public static ItemScythe ANCIENT_SCYTHE;
-	public static ItemBaseResource BASE_RESOURCE;
-	public static Item SCARAB_OF_ETERNITY;
+	public static Item MODULAR_CONTAINER;
+	public static Item MODULAR_INTERFACE;
+	public static Item MODULAR_PIPE;
 	public static ItemScythe SCYTHE_IRON;
+	public static ItemSepulture SEPULTURE;
 	public static ItemSoulGem SOUL_GEM;
 	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
-	public static ItemSepulture SEPULTURE;
+	public static Item SULFUR;
+	public static ItemCasing WOODEN_CASING;
 	
 	static Set<Item> allItems = new HashSet<>();
 	
-	private static <T extends Item> T giveNames(T item, Reference.Items names) {
+	private static <T extends Item> T name(T item, Reference.Items names) {
 		return (T) item.setUnlocalizedName(names.getUnlocalizedName()).setRegistryName(names.getRegistryName());
 	}
 	
-	private static <T extends Item> T giveNames(T item, String name) {
+	private static <T extends Item> T name(T item, String name) {
 		return (T) item.setUnlocalizedName(name).setRegistryName(name);
 	}
 
@@ -60,15 +63,19 @@ public final class ModItems {
 	public void onRegister(RegistryEvent.Register<Item> event) {
 		IForgeRegistry<Item> reg = event.getRegistry();
 		Collections.addAll(allItems, 
-				BASE_RESOURCE = giveNames(new ItemBaseResource(), Reference.Items.BASE_RESOURCE), 
-				DEBUG_ITEM = giveNames(new ItemDebug(), Reference.Items.DEBUG), 
-				EYE_OF_THE_UNDEAD = giveNames(new ItemEyeDead(), Reference.Items.EYE_DEAD), 
-				ANCIENT_SCYTHE = giveNames((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(1500), Reference.Items.GRAND_FAUX), 
-				SCARAB_OF_ETERNITY = giveNames(new Item().setMaxStackSize(1), Reference.Items.SCARAB_OF_ETERNITY), 
-				SCYTHE_IRON = giveNames((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), Reference.Items.SCYTHE_IRON),
-				SOUL_GEM = giveNames(new ItemSoulGem(), Reference.Items.SOULGEM), 
-				SOUL_IN_A_BOTTLE = giveNames(new ItemSoulInABottle(), Reference.Items.SOULINABOTTLE), 
-				SEPULTURE = giveNames(new ItemSepulture(), Reference.Items.SEPULTURE));
+				DEBUG_ITEM = name(new ItemDebug(), Reference.Items.DEBUG), 
+				CINNABAR = name(new Item(), Reference.Items.CINNABAR),
+				WOODEN_CASING = name(new ItemCasing(), "wooden_casing"),
+				EYE_OF_THE_UNDEAD = name(new ItemEyeDead(), Reference.Items.EYE_DEAD), 
+				ANCIENT_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(1500), Reference.Items.ANCIENT_SCYTHE), 
+				SCYTHE_IRON = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), Reference.Items.SCYTHE_IRON),
+				MODULAR_CONTAINER = name(new Item(), "modular_container"),
+				MODULAR_INTERFACE = name(new Item(), "modular_interface"),
+				MODULAR_PIPE = name(new Item(), "modular_pipe"),
+				SOUL_GEM = name(new ItemSoulGem(), Reference.Items.SOULGEM), 
+				SOUL_IN_A_BOTTLE = name(new ItemSoulInABottle(), Reference.Items.SOULINABOTTLE), 
+				SULFUR = name(new Item(), Reference.Items.SULFUR),
+				SEPULTURE = name(new ItemSepulture(), Reference.Items.SEPULTURE));
 		for(Item i : allItems) {
 			reg.register(i);
 			if(i != DEBUG_ITEM)
@@ -76,21 +83,15 @@ public final class ModItems {
 		}
 	}
 	
-	void registerOres() {
-		OreDictionary.registerOre("dustSulfur", ItemBaseResource.resourceFromName("sulfur"));
-		OreDictionary.registerOre("itemCinnabar", ItemBaseResource.resourceFromName("cinnabar"));
-		OreDictionary.registerOre("itemMercury", ItemBaseResource.resourceFromName("mercury"));
-	}
+	void registerOres() {}
 	
 	@SubscribeEvent
     public void remapIds(RegistryEvent.MissingMappings<Item> event) {
     	List<Mapping<Item>> missingBlocks = event.getMappings();
     	Map<String, Item> remaps = new HashMap<>();
-    	remaps.put("itemresource", BASE_RESOURCE);
     	remaps.put("itemdebug", DEBUG_ITEM);
     	remaps.put("itemeyeofundead", EYE_OF_THE_UNDEAD);
-    	remaps.put("itemgrandfaux", ANCIENT_SCYTHE);
-    	remaps.put("itemscarabofeternity", SCARAB_OF_ETERNITY);
+    	remaps.put("itemgrandfaux", SCYTHE_IRON);
     	remaps.put("itemsepulture", SEPULTURE);
     	remaps.put("itemsoulgem", SOUL_GEM);
     	remaps.put("itemsoulinabottle", SOUL_IN_A_BOTTLE);
@@ -109,9 +110,6 @@ public final class ModItems {
 	@SubscribeEvent
 	public void registerRenders(ModelRegistryEvent event) {
 		allItems.stream().filter(itemIn -> !(Block.getBlockFromItem(itemIn) instanceof BlockFluidBase)).forEach(this::registerRender);
-		for (int i = 0; i < BASE_RESOURCE.variants.size(); ++i) {
-			registerRender(BASE_RESOURCE, i, BASE_RESOURCE.variants.get(i));
-		}
 	}
 
 	@SideOnly(Side.CLIENT)

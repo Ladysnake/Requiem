@@ -1,6 +1,7 @@
 package ladysnake.dissolution.client.renders.entities;
 
 import ladysnake.dissolution.client.models.entities.ModelMinionSkeleton;
+import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.entity.minion.EntityMinionStray;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
@@ -13,12 +14,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class LayerMinionStrayClothing implements LayerRenderer<EntityMinionStray>
 {
     private static final ResourceLocation STRAY_CLOTHES_TEXTURES = new ResourceLocation("textures/entity/skeleton/stray_overlay.png");
-    private final RenderLivingBase<?> renderer;
+    private final RenderLivingBase<AbstractMinion> renderer;
     private final ModelMinionSkeleton layerModel = new ModelMinionSkeleton(0.25F, true);
 
-    public LayerMinionStrayClothing(RenderLivingBase<?> p_i47183_1_)
+    public LayerMinionStrayClothing(RenderLivingBase<AbstractMinion> renderer)
     {
-        this.renderer = p_i47183_1_;
+        this.renderer = renderer;
     }
 
     public void doRenderLayer(EntityMinionStray entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)

@@ -1,5 +1,7 @@
 package ladysnake.dissolution.client.particles;
 
+import javax.annotation.Nullable;
+
 import org.lwjgl.opengl.GL11;
 
 import ladysnake.dissolution.common.Reference;
@@ -16,16 +18,32 @@ import net.minecraft.world.World;
 public class AdditiveParticle extends Particle implements IDissolutionParticle {
 	
 	public static final ResourceLocation STAR_PARTICLE_TEXTURE = new ResourceLocation(Reference.MOD_ID, "entity/particles/star");
+	public static final ResourceLocation PINK_STAR_PARTICLE_TEXTURE = new ResourceLocation(Reference.MOD_ID, "entity/particles/star_purple");
 	
-	private boolean additive;
+	protected boolean additive;
 	
-	public static void spawnParticle(ResourceLocation texture, Entity spawner) {
-		
+	public AdditiveParticle(Entity spawner) {
+		this(spawner, null, true);
 	}
 	
-	public AdditiveParticle(World worldIn, double posXIn, double posYIn, double posZIn, double movX, double movY, double movZ, boolean additive) {
+	public AdditiveParticle(Entity spawner, @Nullable ResourceLocation texture, boolean additive) {
+		this(spawner.world, spawner.posX, spawner.posY, spawner.posZ, texture, additive);
+	}
+	
+	public AdditiveParticle(World worldIn, double posX, double posY, double posZ, @Nullable ResourceLocation texture, boolean additive) {
+		super(worldIn, posX, posY, posZ);
+		applyProperties(texture, additive);
+	}
+	
+	public AdditiveParticle(World worldIn, double posXIn, double posYIn, double posZIn, double movX, double movY, double movZ, @Nullable ResourceLocation texture, boolean additive) {
 		super(worldIn, posXIn, posYIn, posZIn, movX, movY, movZ);
-	    TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(STAR_PARTICLE_TEXTURE.toString());
+		applyProperties(texture, additive);
+	}
+	
+	private void applyProperties(ResourceLocation texture, boolean additive) {
+		if(texture == null)
+			texture = STAR_PARTICLE_TEXTURE;
+	    TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(texture.toString());
 	    this.setParticleTexture(sprite);
 	}
 	
@@ -36,7 +54,7 @@ public class AdditiveParticle extends Particle implements IDissolutionParticle {
 
 	@Override
 	public boolean isAdditive() {
-		return true;
+		return additive;
 	}
 
 }

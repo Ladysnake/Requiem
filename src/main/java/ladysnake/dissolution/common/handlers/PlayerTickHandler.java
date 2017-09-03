@@ -45,9 +45,6 @@ public class PlayerTickHandler {
 	public void onPlayerTick(PlayerTickEvent event) {
 		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.player);
 		
-		
-		playerCorp.tick();
-				
 		if (playerCorp.isIncorporeal()) {
 			
 			if(!event.player.isCreative())

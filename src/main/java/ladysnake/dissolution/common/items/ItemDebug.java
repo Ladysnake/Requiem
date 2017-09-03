@@ -1,9 +1,10 @@
 package ladysnake.dissolution.common.items;
 
 import java.util.List;
+import java.util.UUID;
 
 import ladysnake.dissolution.client.particles.AdditiveParticle;
-import ladysnake.dissolution.client.renders.DissolutionParticleManager;
+import ladysnake.dissolution.client.particles.DissolutionParticleManager;
 import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
@@ -82,9 +83,15 @@ public class ItemDebug extends Item implements ISoulInteractable {
 			break;
 		case 6 :
 			if(playerIn.world.isRemote) {
-				DissolutionParticleManager.INSTANCE.addParticle(new AdditiveParticle(worldIn, playerIn.posX, playerIn.posY, playerIn.posZ, 0, 0, 0));
-				Minecraft.getMinecraft().effectRenderer.addEffect(new AdditiveParticle(worldIn, playerIn.posX, playerIn.posY, playerIn.posZ, 0, 0, 0));
+				DissolutionParticleManager.INSTANCE.addParticle(new AdditiveParticle(playerIn, AdditiveParticle.PINK_STAR_PARTICLE_TEXTURE, true));
+				// Minecraft.getMinecraft().effectRenderer.addEffect(new AdditiveParticle(playerIn.world, playerIn.posX, playerIn.posY + 2, playerIn.posZ+1, AdditiveParticle.PINK_STAR_PARTICLE_TEXTURE, true));
 			}
+			break;
+		case 7 :
+			if(!CapabilityIncorporealHandler.getHandler(playerIn).getDisguise().isPresent())
+				CapabilityIncorporealHandler.getHandler(playerIn).setDisguise(UUID.fromString("70a33f8a-5fb0-46fd-b6fd-295130dcb464"));
+			else
+				CapabilityIncorporealHandler.getHandler(playerIn).setDisguise(null);
 			break;
 		default : break;
 		}

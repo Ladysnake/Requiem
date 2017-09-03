@@ -1,14 +1,11 @@
 package ladysnake.dissolution.common.items;
 
-import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.blocks.BlockSepulture;
+import ladysnake.dissolution.common.blocks.powersystem.BlockCasing;
 import ladysnake.dissolution.common.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
@@ -19,9 +16,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class ItemSepulture extends Item {
+public class ItemCasing extends Item {
 
-	public ItemSepulture() {
+	public ItemCasing() {
 		super();
 		this.setMaxStackSize(1);
 	}
@@ -41,9 +38,9 @@ public class ItemSepulture extends Item {
 				pos = pos.up();
 			}
 
-			int i = MathHelper.floor((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+			int i = MathHelper.floor((player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
 			EnumFacing enumfacing = EnumFacing.getHorizontal(i);
-			BlockPos blockpos = pos.offset(enumfacing);
+			BlockPos blockpos = pos.up();
 			ItemStack itemstack = player.getHeldItem(hand);
 
 			if (player.canPlayerEdit(pos, facing, itemstack) && player.canPlayerEdit(blockpos, facing, itemstack)) {
@@ -52,14 +49,13 @@ public class ItemSepulture extends Item {
 				boolean flag2 = flag || worldIn.isAirBlock(pos);
 				boolean flag3 = flag1 || worldIn.isAirBlock(blockpos);
 
-				if (flag2 && flag3 && worldIn.getBlockState(pos.down()).isOpaqueCube()
-						&& worldIn.getBlockState(blockpos.down()).isOpaqueCube()) {
-					IBlockState iblockstate2 = ModBlocks.SEPULTURE.getDefaultState()
-							.withProperty(BlockSepulture.FACING, enumfacing)
-							.withProperty(BlockSepulture.PART, BlockSepulture.EnumPartType.FOOT);
+				if (flag2 && flag3 && worldIn.getBlockState(pos.down()).isOpaqueCube()) {
+					IBlockState iblockstate2 = ModBlocks.CASING.getDefaultState()
+							.withProperty(BlockCasing.FACING, enumfacing)
+							.withProperty(BlockCasing.PART, BlockCasing.EnumPartType.BOTTOM);
 					worldIn.setBlockState(pos, iblockstate2, 10);
 					worldIn.setBlockState(blockpos,
-							iblockstate2.withProperty(BlockSepulture.PART, BlockSepulture.EnumPartType.HEAD), 10);
+							iblockstate2.withProperty(BlockCasing.PART, BlockCasing.EnumPartType.TOP), 10);
 					worldIn.notifyNeighborsRespectDebug(pos, block, false);
 					worldIn.notifyNeighborsRespectDebug(blockpos, iblockstate1.getBlock(), false);
 					SoundType soundtype = iblockstate2.getBlock().getSoundType(iblockstate2, worldIn, pos, player);
@@ -75,4 +71,5 @@ public class ItemSepulture extends Item {
 			}
 		}
 	}
+
 }

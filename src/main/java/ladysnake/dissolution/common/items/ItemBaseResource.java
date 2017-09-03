@@ -44,14 +44,4 @@ public class ItemBaseResource extends Item {
 		return super.getUnlocalizedName(stack);
 	}
 
-	public static ItemStack resourceFromName(String name) {
-		return resourceFromName(name, 1);
-	}
-	
-	public static ItemStack resourceFromName(String name, int quantity) {
-		if (variants.contains(name))
-			return new ItemStack(ModItems.BASE_RESOURCE, quantity, variants.indexOf(name));
-		return null;
-	}
-
 }

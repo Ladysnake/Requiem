@@ -36,7 +36,7 @@ public class JEICompat implements IModPlugin {
 	
 	@Override
 	public void registerCategories(IRecipeCategoryRegistration registry) {
-		registry.addRecipeCategories(new CrystallizerRecipeCategory(registry.getJeiHelpers().getGuiHelper()));
+		// registry.addRecipeCategories(new CrystallizerRecipeCategory(registry.getJeiHelpers().getGuiHelper()));
 	}
 
 	@Override
@@ -44,14 +44,10 @@ public class JEICompat implements IModPlugin {
         this.registry = registry;
         blacklistStuff();
 		addInformationTabs();
-        CrystallizerRecipeCategory.register(registry);
 	}
 	
 	private void addInformationTabs() {
-		addInformationTab(ModBlocks.MERCURIUS_WAYSTONE);
-		addInformationTab(ModBlocks.SOUL_EXTRACTOR);
 		addInformationTab(ModItems.SEPULTURE);
-		addInformationTab(ModItems.SCARAB_OF_ETERNITY);
 	}
 	
 	private void addInformationTab(Block block) {
