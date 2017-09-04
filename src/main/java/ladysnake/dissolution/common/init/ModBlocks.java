@@ -5,14 +5,15 @@ import java.util.List;
 import java.util.Map;
 
 import ladysnake.dissolution.client.models.blocks.CableBakedModel;
+import ladysnake.dissolution.client.models.blocks.ModularMachineBakedModel;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.BlockSepulture;
-import ladysnake.dissolution.common.blocks.powersystem.BlockBarrage;
-import ladysnake.dissolution.common.blocks.powersystem.BlockBaseMachine;
-import ladysnake.dissolution.common.blocks.powersystem.BlockCasing;
-import ladysnake.dissolution.common.blocks.powersystem.BlockPowerCable;
-import ladysnake.dissolution.common.blocks.powersystem.BlockPowerCore;
+import ladysnake.dissolution.common.blocks.alchemysystem.BlockBarrage;
+import ladysnake.dissolution.common.blocks.alchemysystem.BlockBaseMachine;
+import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
+import ladysnake.dissolution.common.blocks.alchemysystem.BlockPowerCable;
+import ladysnake.dissolution.common.blocks.alchemysystem.BlockPowerCore;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -98,6 +99,7 @@ public final class ModBlocks {
     @SubscribeEvent
     public void registerRenders(ModelRegistryEvent event) {
     	registerSmartRender(POWER_CABLE, CableBakedModel.BAKED_MODEL);
+    	registerSmartRender(CASING, ModularMachineBakedModel.BAKED_MODEL);
     }
     
     @SideOnly(Side.CLIENT)

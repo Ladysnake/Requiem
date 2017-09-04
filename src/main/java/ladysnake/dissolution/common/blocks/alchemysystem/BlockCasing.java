@@ -1,14 +1,19 @@
-package ladysnake.dissolution.common.blocks.powersystem;
+package ladysnake.dissolution.common.blocks.alchemysystem;
 
 import java.util.Random;
 
-import ladysnake.dissolution.common.blocks.BlockSepulture;
+import com.google.common.collect.ImmutableSet;
+
+import ladysnake.dissolution.client.models.blocks.UnlistedPropertyModulePresent;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.EnumPushReaction;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
@@ -20,25 +25,47 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.Mirror;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockCasing extends BlockBaseMachine {
 	
+	public static final UnlistedPropertyModulePresent MODULES_PRESENT = new UnlistedPropertyModulePresent();
 	public static final PropertyEnum<EnumPartType> PART = PropertyEnum.create("part", EnumPartType.class);
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
+	public static final ResourceLocation CASING_BOTTOM = new ResourceLocation(Reference.MOD_ID, "block/wooden_alchemical_machine_structure_bottom");
+	public static final ResourceLocation CASING_TOP = new ResourceLocation(Reference.MOD_ID, "block/wooden_alchemical_machine_structure_top");
 	
 	public BlockCasing() {
 		super();
 		this.setDefaultState(this.blockState.getBaseState().withProperty(PART, EnumPartType.BOTTOM));
 		this.setHardness(1f);
         this.setSoundType(SoundType.WOOD);
+	}
+	
+	@Override
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
+			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		ItemStack stack = playerIn.getHeldItem(hand);
+		if(state.getValue(PART) == EnumPartType.TOP)
+			pos = pos.down();
+		if(stack.getItem() instanceof ItemAlchemyModule && worldIn.getTileEntity(pos) instanceof TileEntityModularMachine) {
+			if(((TileEntityModularMachine)worldIn.getTileEntity(pos)).addModule((ItemAlchemyModule)stack.getItem()) && !playerIn.isCreative()) {
+				stack.shrink(1);
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -52,7 +79,14 @@ public class BlockCasing extends BlockBaseMachine {
 	}
 	
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, FACING, PART, POWERED);
+		return new ExtendedBlockState(this, new IProperty[] {FACING, PART, POWERED}, new IUnlistedProperty[] {MODULES_PRESENT});
+	}
+	
+	@Override
+	public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
+		if(state.getValue(PART) == EnumPartType.BOTTOM && world.getTileEntity(pos) instanceof TileEntityModularMachine)
+			return ((IExtendedBlockState)state).withProperty(MODULES_PRESENT, ((TileEntityModularMachine)world.getTileEntity(pos)).getInstalledModules());
+		return state;
 	}
 
 	@Override

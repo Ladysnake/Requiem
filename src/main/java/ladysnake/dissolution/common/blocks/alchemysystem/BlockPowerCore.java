@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.blocks.powersystem;
+package ladysnake.dissolution.common.blocks.alchemysystem;
 
 import java.util.Random;
 

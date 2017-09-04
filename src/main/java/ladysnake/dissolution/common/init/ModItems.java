@@ -9,6 +9,8 @@ import java.util.Set;
 
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.blocks.alchemysystem.AlchemyModules;
+import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.items.ItemCasing;
 import ladysnake.dissolution.common.items.ItemDebug;
 import ladysnake.dissolution.common.items.ItemEyeDead;
@@ -40,9 +42,6 @@ public final class ModItems {
 	public static ItemDebug DEBUG_ITEM;
 	public static ItemEyeDead EYE_OF_THE_UNDEAD;
 	public static Item HALITE;
-	public static Item MODULAR_CONTAINER;
-	public static Item MODULAR_INTERFACE;
-	public static Item MODULAR_PIPE;
 	public static ItemScythe SCYTHE_IRON;
 	public static ItemSepulture SEPULTURE;
 	public static ItemSoulGem SOUL_GEM;
@@ -70,13 +69,15 @@ public final class ModItems {
 				EYE_OF_THE_UNDEAD = name(new ItemEyeDead(), Reference.Items.EYE_DEAD), 
 				ANCIENT_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(1500), Reference.Items.ANCIENT_SCYTHE), 
 				SCYTHE_IRON = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), Reference.Items.SCYTHE_IRON),
-				MODULAR_CONTAINER = name(new Item(), "modular_container"),
-				MODULAR_INTERFACE = name(new Item(), "modular_interface"),
-				MODULAR_PIPE = name(new Item(), "modular_pipe"),
 				SOUL_GEM = name(new ItemSoulGem(), Reference.Items.SOULGEM), 
 				SOUL_IN_A_BOTTLE = name(new ItemSoulInABottle(), Reference.Items.SOULINABOTTLE), 
 				SULFUR = name(new Item(), Reference.Items.SULFUR),
 				SEPULTURE = name(new ItemSepulture(), Reference.Items.SEPULTURE));
+
+		for (AlchemyModules module : AlchemyModules.values()) {
+			for (int tier = 1; tier <= module.maxTier; tier++)
+				allItems.add(new ItemAlchemyModule(module, tier));
+		}
 		for(Item i : allItems) {
 			reg.register(i);
 			if(i != DEBUG_ITEM)

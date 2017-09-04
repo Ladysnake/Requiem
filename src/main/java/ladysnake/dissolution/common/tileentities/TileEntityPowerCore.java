@@ -5,8 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import ladysnake.dissolution.common.blocks.powersystem.BlockPowerCore;
-import ladysnake.dissolution.common.blocks.powersystem.IPowerConductor;
+import ladysnake.dissolution.common.blocks.alchemysystem.BlockPowerCore;
+import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;

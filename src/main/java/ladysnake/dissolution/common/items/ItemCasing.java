@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.items;
 
-import ladysnake.dissolution.common.blocks.powersystem.BlockCasing;
+import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;

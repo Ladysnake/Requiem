@@ -1,7 +1,7 @@
-package ladysnake.dissolution.common.blocks.powersystem;
+package ladysnake.dissolution.common.blocks.alchemysystem;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.powersystem.IPowerConductor.IMachine;
+import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;

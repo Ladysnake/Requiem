@@ -141,13 +141,13 @@ public class BlockSoulExtractor extends Block {
 
         if (active)
         {
-            worldIn.setBlockState(pos, ModBlocks.SOUL_EXTRACTOR.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, true), 3);
-            worldIn.setBlockState(pos, ModBlocks.SOUL_EXTRACTOR.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, true), 3);
+            // worldIn.setBlockState(pos, ModBlocks.SOUL_EXTRACTOR.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, true), 3);
+            // worldIn.setBlockState(pos, ModBlocks.SOUL_EXTRACTOR.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, true), 3);
         }
         else
         {
-            worldIn.setBlockState(pos, ModBlocks.SOUL_EXTRACTOR.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, false), 3);
-            worldIn.setBlockState(pos, ModBlocks.SOUL_EXTRACTOR.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, false), 3);
+            // worldIn.setBlockState(pos, ModBlocks.SOUL_EXTRACTOR.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, false), 3);
+            // worldIn.setBlockState(pos, ModBlocks.SOUL_EXTRACTOR.getDefaultState().withProperty(FACING, iblockstate.getValue(FACING)).withProperty(LIT, false), 3);
         }
 
         te.keepInventory = false;

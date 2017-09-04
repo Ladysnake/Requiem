@@ -14,6 +14,8 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
+import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockPart;
@@ -55,10 +57,6 @@ public class DissolutionModelLoader {
 	private final Map<ResourceLocation, IBakedModel> models = new HashMap<>();
 	private final FaceBakery faceBakery = new FaceBakery();
 	
-	public static final ResourceLocation CONTAINER = new ResourceLocation(Reference.MOD_ID, "block/machine_parts/container");
-	public static final ResourceLocation INTERFACE = new ResourceLocation(Reference.MOD_ID, "block/machine_parts/interface");
-	public static final ResourceLocation PIPE = new ResourceLocation(Reference.MOD_ID, "block/machine_parts/pipe_tier_1");
-
 	public static void addModel(ResourceLocation modelLocation) {
 		INSTANCE.modelsLocation.add(modelLocation);
 	}
@@ -69,9 +67,9 @@ public class DissolutionModelLoader {
 
 	@SubscribeEvent
 	public static void loadSpecialModels(ModelRegistryEvent event) {
-		addModel(CONTAINER);
-		addModel(INTERFACE);
-		addModel(PIPE);
+		addModel(BlockCasing.CASING_BOTTOM);
+		addModel(BlockCasing.CASING_TOP);
+		ItemAlchemyModule.getModulesModels().values().forEach(DissolutionModelLoader::addModel);
 		INSTANCE.modelsLocation.forEach(rl -> INSTANCE.blockModelsLocation.put(rl, INSTANCE.loadModel(rl)));
 	}
 

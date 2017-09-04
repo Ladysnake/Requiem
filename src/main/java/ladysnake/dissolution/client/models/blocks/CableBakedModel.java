@@ -7,8 +7,8 @@ import java.util.function.Function;
 
 import ladysnake.dissolution.client.renders.blocks.DissolutionModelLoader;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.powersystem.BlockPowerCable;
-import ladysnake.dissolution.common.blocks.powersystem.IPowerConductor;
+import ladysnake.dissolution.common.blocks.alchemysystem.BlockPowerCable;
+import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -25,7 +25,7 @@ import net.minecraftforge.common.property.IExtendedBlockState;
 
 public class CableBakedModel implements IBakedModel {
 	
-	public static final String LOCATION_NAME = "bakedmodelblock";
+	public static final String LOCATION_NAME = "bakedpipe";
 	public static final ModelResourceLocation BAKED_MODEL = new ModelResourceLocation(Reference.MOD_ID + ":" + LOCATION_NAME);
 	
 	private TextureAtlasSprite spritePowered;
@@ -151,8 +151,8 @@ public class CableBakedModel implements IBakedModel {
         } else {
             quads.add(createQuad(new Vec3d(o, o, 1 - o), new Vec3d(1 - o, o, 1 - o), new Vec3d(1 - o, 1 - o, 1 - o), new Vec3d(o, 1 - o, 1 - o), sprite));
         }
-
-        return DissolutionModelLoader.getModel(DissolutionModelLoader.CONTAINER).getQuads(state, side, rand);
+        
+        return quads;
     }
 
 	@Override
