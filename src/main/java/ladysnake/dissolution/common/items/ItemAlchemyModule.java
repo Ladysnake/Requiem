@@ -19,6 +19,7 @@ public class ItemAlchemyModule extends Item {
 	public ItemAlchemyModule(AlchemyModules type, int tier) {
 		super();
 		this.type = type;
+		this.tier = tier;
 		String name = type.name() + "_tier_" + tier;
 		this.setUnlocalizedName(name);
 		this.setRegistryName(name);

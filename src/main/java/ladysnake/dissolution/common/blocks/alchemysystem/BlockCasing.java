@@ -67,7 +67,7 @@ public class BlockCasing extends BlockBaseMachine {
 		}
 		return true;
 	}
-
+	
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
@@ -123,6 +123,9 @@ public class BlockCasing extends BlockBaseMachine {
 				worldIn.setBlockToAir(blockpos);
 			}
 		}
+		TileEntity te = worldIn.getTileEntity(pos);
+		if(te instanceof TileEntityModularMachine)
+			((TileEntityModularMachine)te).dropContent();
 	}
 	
 	public IBlockState withRotation(IBlockState state, Rotation rot) {
