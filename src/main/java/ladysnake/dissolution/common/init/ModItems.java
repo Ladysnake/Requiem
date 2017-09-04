@@ -39,6 +39,7 @@ public final class ModItems {
 	public static Item CINNABAR;
 	public static ItemDebug DEBUG_ITEM;
 	public static ItemEyeDead EYE_OF_THE_UNDEAD;
+	public static Item HALITE;
 	public static Item MODULAR_CONTAINER;
 	public static Item MODULAR_INTERFACE;
 	public static Item MODULAR_PIPE;
