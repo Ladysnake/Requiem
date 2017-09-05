@@ -35,12 +35,8 @@ public class DissolutionConfig {
 	public static class Blocks {
 		
 		@Config.LangKey("config.dissolution.blocks.doSablePop")
-		@Config.Comment("Whether output stacks from the extractor should spawn items in world when there is no appropriate container")
+		@Config.Comment("Whether machines should output items in world when there is no appropriate container available")
 		public boolean doSablePop = true;
-
-		@Config.LangKey("config.dissolution.blocks.oneUseWaystone")
-		@Config.Comment("If set to false, waystones won't disappear after one use")
-		public boolean oneUseWaystone = true;
 		
 	}
 	
@@ -54,10 +50,6 @@ public class DissolutionConfig {
 		@Config.Comment("Whether the HUD pointing to respawn locations should display")
 		public boolean soulCompass = true;
 		
-		@Config.LangKey("config.dissolution.client.soulCompassAnchors")
-		@Config.Comment("Whether soul anchors should have an indicator in the soul compass HUD")
-		public boolean soulCompassAnchors = true;
-		
 	}
 	
 	public static class Entities {
@@ -65,6 +57,8 @@ public class DissolutionConfig {
 		@Config.LangKey("config.dissolution.entities.minionsAttackCreepers")
 		@Config.Comment("If true, minions will attack creepers (and probably die in the process)")
 		public boolean minionsAttackCreepers = true;
+		
+		public List<String> allowedTargets = new ArrayList<>();
 		
 	}
 	
@@ -117,7 +111,7 @@ public class DissolutionConfig {
 	}
 	
 	public static class Wip {
-		
+		@Config.Comment("Lets ghosts go through blocks for a few seconds upon left clicking.")
 		public boolean enableSoulDash = false;
 		
 	}
