@@ -51,11 +51,13 @@ public final class ModItems {
 	
 	static Set<Item> allItems = new HashSet<>();
 	
-	private static <T extends Item> T name(T item, Reference.Items names) {
+	@SuppressWarnings("unchecked")
+    private static <T extends Item> T name(T item, Reference.Items names) {
 		return (T) item.setUnlocalizedName(names.getUnlocalizedName()).setRegistryName(names.getRegistryName());
 	}
 	
-	private static <T extends Item> T name(T item, String name) {
+	@SuppressWarnings("unchecked")
+    private static <T extends Item> T name(T item, String name) {
 		return (T) item.setUnlocalizedName(name).setRegistryName(name);
 	}
 

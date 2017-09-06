@@ -103,24 +103,6 @@ public class BlockSoulAnchor extends Block implements ISoulInteractable {
 		worldIn.setBlockState(pos, getDefaultState().withProperty(PART, EnumPartType.CAP));
 	}
 	
-	@Override
-	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-		super.breakBlock(worldIn, pos, state);
-		if(state.getValue(PART) == EnumPartType.CAP) {
-			while((worldIn.getBlockState(pos) != ModBlocks.SOUL_ANCHOR.getDefaultState().withProperty(PART, EnumPartType.BASE)) && 
-					pos.getY() > 0)
-		    	pos = pos.down();
-			if(pos.getY() > 0)
-				worldIn.setBlockToAir(pos);
-		} else if (state.getValue(PART) == EnumPartType.BASE) {
-			while((worldIn.getBlockState(pos) != ModBlocks.SOUL_ANCHOR.getDefaultState().withProperty(PART, EnumPartType.CAP)) && 
-					pos.getY() < 255)
-		    	pos = pos.up();
-			if(pos.getY() < 255)
-				worldIn.setBlockToAir(pos);
-		}
-	}
-	
 	protected BlockStateContainer createBlockState()
     {
         return new BlockStateContainer(this, new IProperty[] {PART});
