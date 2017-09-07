@@ -1,6 +1,0 @@
-{
-    "parent": "dissolution:item/scythe",
-    "textures": {
-        "layer0": "dissolution:items/the_blaze"
-	}
-}
