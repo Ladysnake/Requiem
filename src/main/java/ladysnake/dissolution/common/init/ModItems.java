@@ -37,12 +37,12 @@ public final class ModItems {
 	/**Used to register stuff*/
 	static final ModItems INSTANCE = new ModItems();
 
-	public static ItemScythe ANCIENT_SCYTHE;
 	public static Item CINNABAR;
 	public static ItemDebug DEBUG_ITEM;
 	public static ItemEyeDead EYE_OF_THE_UNDEAD;
 	public static Item HALITE;
 	public static ItemScythe IRON_SCYTHE;
+	public static ItemScythe LURKING_SCYTHE;
 	public static ItemSepulture SEPULTURE;
 	public static ItemSoulGem SOUL_GEM;
 	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
@@ -65,7 +65,7 @@ public final class ModItems {
 	public void onRegister(RegistryEvent.Register<Item> event) {
 		IForgeRegistry<Item> reg = event.getRegistry();
 		Collections.addAll(allItems, 
-				ANCIENT_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(1500), Reference.Items.ANCIENT_SCYTHE), 
+				LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), Reference.Items.LURKING_SCYTHE), 
 				CINNABAR = name(new Item(), Reference.Items.CINNABAR),
 				DEBUG_ITEM = name(new ItemDebug(), Reference.Items.DEBUG), 
 				EYE_OF_THE_UNDEAD = name(new ItemEyeDead(), Reference.Items.EYE_DEAD), 

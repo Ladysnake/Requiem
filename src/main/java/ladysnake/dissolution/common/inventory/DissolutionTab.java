@@ -13,7 +13,7 @@ public class DissolutionTab extends CreativeTabs {
 	
 	@Override
 	public ItemStack getTabIconItem() {
-		return new ItemStack(ModItems.ANCIENT_SCYTHE);
+		return new ItemStack(ModItems.LURKING_SCYTHE);
 	}
 
 }

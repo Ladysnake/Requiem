@@ -19,9 +19,10 @@ public class LayerScythe implements LayerRenderer<EntityPlayer> {
 	public void doRenderLayer(EntityPlayer player, float limbSwing, float limbSwingAmount,
 			float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
 				GlStateManager.pushMatrix();
-				GlStateManager.translate(0, 0, 0.15);
+				GlStateManager.translate(0.5, 1, 0.2);
+				GlStateManager.scale(3, 3, 1);
 				if(player.isSneaking()) {
-					GlStateManager.translate(0F, 0.2F, 0F);
+					GlStateManager.translate(0F, 0.0F, 0.2F);
 					GlStateManager.rotate(90F / (float) Math.PI, 1.0F, 0.0F, 0.0F);
 				}
 				ItemStack displayItem = PlayerInventoryListener.getItemToDisplay(player.getUniqueID());
