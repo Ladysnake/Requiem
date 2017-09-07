@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Optional;
 
-import ladysnake.dissolution.common.blocks.ISoulInteractable;
+import ladysnake.dissolution.api.ISoulInteractable;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;

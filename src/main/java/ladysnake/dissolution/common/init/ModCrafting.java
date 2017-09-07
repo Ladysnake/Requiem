@@ -1,11 +1,5 @@
 package ladysnake.dissolution.common.init;
 
-import ladysnake.dissolution.common.items.ItemBaseResource;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-
-
 /**
  * Class previously used to register recipes
  * @author Fabien

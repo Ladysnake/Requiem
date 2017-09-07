@@ -50,12 +50,12 @@ public class BlockPowerCable extends AbstractPowerConductor {
     public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
         IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
 
-        boolean north = shouldAttach(world, pos.north(), pos);
-        boolean south = shouldAttach(world, pos.south(), pos);
-        boolean west = shouldAttach(world, pos.west(), pos);
-        boolean east = shouldAttach(world, pos.east(), pos);
-        boolean up = shouldAttach(world, pos.up(), pos);
-        boolean down = shouldAttach(world, pos.down(), pos);
+        boolean north = shouldAttach(world, EnumFacing.NORTH, pos);
+        boolean south = shouldAttach(world, EnumFacing.SOUTH, pos);
+        boolean west = shouldAttach(world, EnumFacing.WEST, pos);
+        boolean east = shouldAttach(world, EnumFacing.EAST, pos);
+        boolean up = shouldAttach(world, EnumFacing.UP, pos);
+        boolean down = shouldAttach(world, EnumFacing.DOWN, pos);
 
         return extendedBlockState
                 .withProperty(NORTH, north)
@@ -66,31 +66,31 @@ public class BlockPowerCable extends AbstractPowerConductor {
                 .withProperty(DOWN, down);
     }
 	
-	private boolean shouldAttach(IBlockAccess world, BlockPos pos, BlockPos pipePos) {
-        return world.getBlockState(pos).getBlock() instanceof IPowerConductor;
-    //    		|| (world.getBlockState(pos).getBlock() instanceof BlockLever && 
-    //    				pos.offset(world.getBlockState(pos).getValue(BlockLever.FACING).getFacing().getOpposite()).equals(pipePos));
+	private boolean shouldAttach(IBlockAccess world, EnumFacing facing, BlockPos pipePos) {
+		BlockPos pos = pipePos.offset(facing);
+		IBlockState state = world.getBlockState(pos);
+        return state.getBlock() instanceof IPowerConductor && (((IPowerConductor)state.getBlock()).shouldConnect(world, pos, facing));
     }
 	
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		double x1 = 0.250;
-		double y1 = 0.250;
-		double z1 = 0.250;
-		double x2 = 0.750;
-		double y2 = 0.750;
-		double z2 = 0.750;
-		if(shouldAttach(source, pos.down(), pos))
+		double x1 = 0.375;
+		double y1 = 0.375;
+		double z1 = 0.375;
+		double x2 = 0.625;
+		double y2 = 0.625;
+		double z2 = 0.625;
+		if(shouldAttach(source, EnumFacing.DOWN, pos))
 			y1 = 0;
-		if(shouldAttach(source, pos.up(), pos))
+		if(shouldAttach(source, EnumFacing.UP, pos))
 			y2 = 1;
-		if(shouldAttach(source, pos.north(), pos))
+		if(shouldAttach(source, EnumFacing.NORTH, pos))
 			z1 = 0;
-		if(shouldAttach(source, pos.south(), pos))
+		if(shouldAttach(source, EnumFacing.SOUTH, pos))
 			z2 = 1;
-		if(shouldAttach(source, pos.west(), pos))
+		if(shouldAttach(source, EnumFacing.WEST, pos))
 			x1 = 0;
-		if(shouldAttach(source, pos.east(), pos))
+		if(shouldAttach(source, EnumFacing.EAST, pos))
 			x2 = 1;
 		return new AxisAlignedBB(x1,y1,z1,x2,y2,z2);
 	}

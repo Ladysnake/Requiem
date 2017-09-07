@@ -8,7 +8,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.storage.loot.LootEntry;
+import net.minecraft.world.storage.loot.LootEntryTable;
+import net.minecraft.world.storage.loot.LootPool;
+import net.minecraft.world.storage.loot.LootTableList;
+import net.minecraft.world.storage.loot.RandomValueRange;
+import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
@@ -25,6 +32,11 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
  *
  */
 public class EventHandlerCommon {
+	
+	public EventHandlerCommon() {
+		ResourceLocation loc = new ResourceLocation(Reference.MOD_ID, "inject/nether_bridge");
+		LootTableList.register(loc);
+	}
 
 	/**
 	 * Attaches a {@link CapabilityIncorporealHandler} to players.
@@ -37,6 +49,17 @@ public class EventHandlerCommon {
 			return;
 
 		event.addCapability(new ResourceLocation(Reference.MOD_ID, "incorporeal"), new CapabilityIncorporealHandler.Provider((EntityPlayer) event.getObject()));
+	}
+	
+	@SubscribeEvent
+	public void onLootTableLoad(LootTableLoadEvent event) {
+		if (event.getName().toString().equals("minecraft:chests/nether_bridge")) {
+			ResourceLocation loc = new ResourceLocation(Reference.MOD_ID, "inject/nether_bridge");
+			System.out.println("Editing loot tables");
+			LootEntry entry = new LootEntryTable(loc, 1, 1, new LootCondition[0], "dissolution_scythe_entry");
+			LootPool pool = new LootPool(new LootEntry[] { entry }, new LootCondition[0], new RandomValueRange(1), new RandomValueRange(0, 1), "dissolution_scythe_pool");
+			event.getTable().addPool(pool);
+	    }
 	}
 	
 	@SubscribeEvent

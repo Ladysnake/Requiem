@@ -6,14 +6,15 @@ import java.util.Map;
 
 import ladysnake.dissolution.client.models.blocks.CableBakedModel;
 import ladysnake.dissolution.client.models.blocks.ModularMachineBakedModel;
+import ladysnake.dissolution.client.renders.blocks.DissolutionModelLoader;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.BlockSepulture;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockBarrage;
-import ladysnake.dissolution.common.blocks.alchemysystem.BlockBaseMachine;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockPowerCable;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockPowerCore;
+import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -40,8 +41,6 @@ public final class ModBlocks {
 	public static BlockPowerCore POWER_CORE;
     public static BlockSepulture SEPULTURE;
     
-    @SideOnly(Side.CLIENT)
-    Map<Block, ModelResourceLocation> specialRenderBlocks = new HashMap<>();
 	Map<String, Block> remaps = new HashMap<>();
     
     private IForgeRegistry<Block> blockRegistry;
@@ -98,6 +97,9 @@ public final class ModBlocks {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void registerRenders(ModelRegistryEvent event) {
+    	ItemAlchemyModule.registerModels();
+		DissolutionModelLoader.addModel(BlockCasing.CASING_BOTTOM);
+		DissolutionModelLoader.addModel(BlockCasing.CASING_TOP);
     	registerSmartRender(POWER_CABLE, CableBakedModel.BAKED_MODEL);
     	registerSmartRender(CASING, ModularMachineBakedModel.BAKED_MODEL);
     }

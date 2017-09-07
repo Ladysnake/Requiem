@@ -2,8 +2,8 @@ package ladysnake.dissolution.common.handlers;
 
 import java.util.List;
 
+import ladysnake.dissolution.api.ISoulInteractable;
 import ladysnake.dissolution.common.DissolutionConfig;
-import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.SoulTypes;

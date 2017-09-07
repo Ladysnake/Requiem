@@ -3,10 +3,10 @@ package ladysnake.dissolution.common.items;
 import java.util.List;
 import java.util.UUID;
 
+import ladysnake.dissolution.api.ISoulInteractable;
 import ladysnake.dissolution.client.particles.AdditiveParticle;
 import ladysnake.dissolution.client.particles.DissolutionParticleManager;
 import ladysnake.dissolution.client.renders.ShaderHelper;
-import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.soul.EntitySoulCamera;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
@@ -79,12 +79,6 @@ public class ItemDebug extends Item implements ISoulInteractable {
 			if(playerIn.world.isRemote) {
 				ShaderHelper.initShaders();
 				playerIn.sendStatusMessage(new TextComponentString("Reloaded shaders"), false);
-			}
-			break;
-		case 6 :
-			if(playerIn.world.isRemote) {
-				DissolutionParticleManager.INSTANCE.addParticle(new AdditiveParticle(playerIn, AdditiveParticle.PINK_STAR_PARTICLE_TEXTURE, true));
-				// Minecraft.getMinecraft().effectRenderer.addEffect(new AdditiveParticle(playerIn.world, playerIn.posX, playerIn.posY + 2, playerIn.posZ+1, AdditiveParticle.PINK_STAR_PARTICLE_TEXTURE, true));
 			}
 			break;
 		case 7 :

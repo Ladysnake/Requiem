@@ -4,18 +4,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
-import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockPart;
@@ -31,7 +27,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.common.model.ITransformation;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -46,7 +44,7 @@ public class DissolutionModelLoader {
 	private static final DissolutionModelLoader INSTANCE = new DissolutionModelLoader();
 
 	/**Stores locations of models to load*/
-	private final List<ResourceLocation> modelsLocation = new ArrayList<>();
+	private final Set<ResourceLocation> modelsLocation = new HashSet<>();
 	/**Stores locations of textures to load*/
 	private Set<ResourceLocation> spritesLocation;
 	/**Associates a texture location with a sprite*/
@@ -57,33 +55,42 @@ public class DissolutionModelLoader {
 	private final Map<ResourceLocation, IBakedModel> models = new HashMap<>();
 	private final FaceBakery faceBakery = new FaceBakery();
 	
+	/**
+	 * Adds a model to be loaded
+	 * Should be called on ModelRegistryEvent
+	 * @param modelLocation the location of the model
+	 */
 	public static void addModel(ResourceLocation modelLocation) {
 		INSTANCE.modelsLocation.add(modelLocation);
 	}
 	
+	/**
+	 * Gets a loaded model in baked form
+	 * @param model the resource location used to load the model
+	 * @return
+	 */
 	public static IBakedModel getModel(ResourceLocation model) {
 		return INSTANCE.models.get(model);
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.LOWEST)
 	public static void loadSpecialModels(ModelRegistryEvent event) {
-		addModel(BlockCasing.CASING_BOTTOM);
-		addModel(BlockCasing.CASING_TOP);
-		ItemAlchemyModule.getModulesModels().values().forEach(DissolutionModelLoader::addModel);
-		INSTANCE.modelsLocation.forEach(rl -> INSTANCE.blockModelsLocation.put(rl, INSTANCE.loadModel(rl)));
+		try {
+			INSTANCE.modelsLocation.forEach(rl -> INSTANCE.blockModelsLocation.put(rl, INSTANCE.loadModel(rl)));
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@SubscribeEvent
 	public static void loadSpecialSprites(TextureStitchEvent.Pre event) {
 		INSTANCE.spritesLocation = INSTANCE.getItemsTextureLocations();
-		System.out.println(INSTANCE.spritesLocation);
 		INSTANCE.spritesLocation.forEach(rl -> INSTANCE.sprites.put(rl, event.getMap().registerSprite(rl)));
 	}
 	
 	@SubscribeEvent
 	public static void bakeSpecialModels(TextureStitchEvent.Post event) {
 		INSTANCE.blockModelsLocation.forEach((rl, mb) -> INSTANCE.models.put(rl, INSTANCE.bakeModel(mb)));
-		System.out.println(INSTANCE.models);
 	}
 	
 	private Set<ResourceLocation> getItemsTextureLocations()
@@ -114,7 +121,7 @@ public class DissolutionModelLoader {
         return set;
     }
 
-	protected ModelBlock loadModel(ResourceLocation location) {
+	private ModelBlock loadModel(ResourceLocation location) {
 		try (IResource iresource = Minecraft.getMinecraft().getResourceManager()
 				.getResource(this.getModelLocation(location));
 				Reader reader = new InputStreamReader(iresource.getInputStream(), StandardCharsets.UTF_8)) {
@@ -126,11 +133,11 @@ public class DissolutionModelLoader {
 			return modelblock1;
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new IllegalArgumentException("The resource could not be retrieved", e);
+			throw new IllegalArgumentException(location + ": the resource could not be retrieved", e);
 		}
 	}
 
-	protected ResourceLocation getModelLocation(ResourceLocation location) {
+	private ResourceLocation getModelLocation(ResourceLocation location) {
 		return new ResourceLocation(location.getResourceDomain(), "models/" + location.getResourcePath() + ".json");
 	}
 	
@@ -168,16 +175,10 @@ public class DissolutionModelLoader {
 		}
 	}
 
-	private BakedQuad makeBakedQuad(BlockPart p_177589_1_, BlockPartFace p_177589_2_, TextureAtlasSprite p_177589_3_,
-			EnumFacing p_177589_4_, ModelRotation p_177589_5_, boolean p_177589_6_) {
-		return makeBakedQuad(p_177589_1_, p_177589_2_, p_177589_3_, p_177589_4_,
-				(net.minecraftforge.common.model.ITransformation) p_177589_5_, p_177589_6_);
-	}
-
-	protected BakedQuad makeBakedQuad(BlockPart p_177589_1_, BlockPartFace p_177589_2_, TextureAtlasSprite p_177589_3_,
-			EnumFacing p_177589_4_, net.minecraftforge.common.model.ITransformation p_177589_5_, boolean p_177589_6_) {
-		return this.faceBakery.makeBakedQuad(p_177589_1_.positionFrom, p_177589_1_.positionTo, p_177589_2_, p_177589_3_,
-				p_177589_4_, p_177589_5_, p_177589_1_.partRotation, p_177589_6_, p_177589_1_.shade);
+	private BakedQuad makeBakedQuad(BlockPart partIn, BlockPartFace faceIn, TextureAtlasSprite sprite,
+			EnumFacing facing, ITransformation rotation, boolean uvLocked) {
+		return this.faceBakery.makeBakedQuad(partIn.positionFrom, partIn.positionTo, faceIn, sprite,
+				facing, rotation, partIn.partRotation, uvLocked, partIn.shade);
 	}
 
 }

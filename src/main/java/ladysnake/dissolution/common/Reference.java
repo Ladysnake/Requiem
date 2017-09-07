@@ -21,7 +21,7 @@ public class Reference {
 		SCYTHE_IRON("iron_scythe"),
 		SOULGEM("soul_gem"),
 		SOULINABOTTLE("soul_in_a_bottle"),
-		SULFUR,
+		SULPHUR,
 		SEPULTURE;
 
 		private String unlocalizedName;

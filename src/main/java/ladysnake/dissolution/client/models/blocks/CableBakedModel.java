@@ -93,7 +93,7 @@ public class CableBakedModel implements IBakedModel {
         Boolean up = extendedBlockState.getValue(BlockPowerCable.UP);
         Boolean down = extendedBlockState.getValue(BlockPowerCable.DOWN);
         List<BakedQuad> quads = new ArrayList<>();
-        double o = .275;
+        double o = .375;
 
         // For each side we either cap it off if there is no similar block adjacent on that side
         // or else we e1tend so that we touch the adjacent block:

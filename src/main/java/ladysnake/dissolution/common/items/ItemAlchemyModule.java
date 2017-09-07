@@ -3,20 +3,24 @@ package ladysnake.dissolution.common.items;
 import java.util.HashMap;
 import java.util.Map;
 
+import ladysnake.dissolution.client.renders.blocks.DissolutionModelLoader;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.alchemysystem.AlchemyModules;
+import ladysnake.dissolution.common.blocks.alchemysystem.AlchemyModule;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemAlchemyModule extends Item {
 	
-	private static final Map<AlchemyModules, ItemAlchemyModule[]> allModules = new HashMap<>();
+	private static final Map<AlchemyModule, ItemAlchemyModule[]> allModules = new HashMap<>();
 	private static final Map<ItemAlchemyModule, ResourceLocation> modulesModels = new HashMap<>();
+	private static final Map<ItemAlchemyModule, ResourceLocation> activeModulesModels = new HashMap<>();
 
-	private AlchemyModules type;
+	private AlchemyModule type;
 	private int tier;
 
-	public ItemAlchemyModule(AlchemyModules type, int tier) {
+	public ItemAlchemyModule(AlchemyModule type, int tier) {
 		super();
 		this.type = type;
 		this.tier = tier;
@@ -24,10 +28,15 @@ public class ItemAlchemyModule extends Item {
 		this.setUnlocalizedName(name);
 		this.setRegistryName(name);
 		allModules.computeIfAbsent(type, t -> new ItemAlchemyModule[type.maxTier+1])[tier] = this;
-		modulesModels.put(this, new ResourceLocation(Reference.MOD_ID, "block/machine_parts/" + name));
+		modulesModels.put(this, new ResourceLocation(Reference.MOD_ID, "machine/" + name));
+	}
+	
+	public ItemAlchemyModule(AlchemyModule type, int tier, ResourceLocation activeState) {
+		this(type, tier);
+		activeModulesModels.put(this, activeState);
 	}
 
-	public AlchemyModules getType() {
+	public AlchemyModule getType() {
 		return type;
 	}
 	
@@ -35,11 +44,19 @@ public class ItemAlchemyModule extends Item {
 		return tier;
 	}
 	
-	public static Map<ItemAlchemyModule, ResourceLocation> getModulesModels() {
-		return modulesModels;
+	@SideOnly(Side.CLIENT)
+	public static void registerModels() {
+		for(Map.Entry<ItemAlchemyModule, ResourceLocation> entry : modulesModels.entrySet()) {
+			DissolutionModelLoader.addModel(entry.getValue());
+			DissolutionModelLoader.addModel(activeModulesModels.getOrDefault(entry.getKey(), entry.getValue()));
+		}
 	}
 	
-	public static ItemAlchemyModule getFromType(AlchemyModules type, int tier) {
+	public ResourceLocation getModel() {
+		return modulesModels.get(this);
+	}
+	
+	public static ItemAlchemyModule getFromType(AlchemyModule type, int tier) {
 		return allModules.get(type)[tier];
 	}
 	

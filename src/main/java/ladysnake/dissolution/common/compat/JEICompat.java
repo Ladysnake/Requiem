@@ -1,13 +1,6 @@
 package ladysnake.dissolution.common.compat;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.crafting.CrystallizerRecipe;
-import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
-import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
