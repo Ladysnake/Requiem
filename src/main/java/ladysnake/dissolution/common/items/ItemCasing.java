@@ -1,6 +1,7 @@
 package ladysnake.dissolution.common.items;
 
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
+import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -52,6 +53,7 @@ public class ItemCasing extends Item {
 				if (flag2 && flag3 && worldIn.getBlockState(pos.down()).isOpaqueCube()) {
 					IBlockState iblockstate2 = ModBlocks.CASING.getDefaultState()
 							.withProperty(BlockCasing.FACING, enumfacing)
+							.withProperty(IPowerConductor.POWERED, false)
 							.withProperty(BlockCasing.PART, BlockCasing.EnumPartType.BOTTOM);
 					worldIn.setBlockState(pos, iblockstate2, 10);
 					worldIn.setBlockState(blockpos,

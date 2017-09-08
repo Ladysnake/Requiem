@@ -38,6 +38,7 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	private Set<ItemAlchemyModule> installedModules;
 	private Optional<ModularMachineSetup> currentSetup = Optional.empty();
 	private PowerConsumption powerConsumption;
+	private boolean powered = false;
 	private boolean running = false;
 	private boolean keepInventory = false;
 	
@@ -67,6 +68,7 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 		if(iterator.hasNext()) {
 			ret = new ItemStack(iterator.next());
 			iterator.remove();
+			this.currentSetup.ifPresent(setup -> setup.onRemoval(this));
 			this.verifySetup();
 			this.world.markBlockRangeForRenderUpdate(this.pos, this.pos);
 			this.markDirty();
@@ -76,6 +78,10 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	
 	public void interact(EntityPlayer playerIn, EnumHand hand, BlockCasing.EnumPartType part, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		this.currentSetup.ifPresent(setup -> setup.onInteract(this, playerIn, hand, part, facing, hitX, hitY, hitZ));
+	}
+	
+	public void onScheduledUpdate() {
+		this.currentSetup.ifPresent(setup -> setup.onScheduledUpdate(this));
 	}
 	
 	public Set<ItemAlchemyModule> getInstalledModules() {
@@ -103,6 +109,15 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 
 	public void setPowerConsumption(PowerConsumption powerConsumption) {
 		this.powerConsumption = powerConsumption;
+	}
+	
+	public boolean isPowered() {
+		return powered;
+	}
+
+	public void setPowered(boolean powered) {
+		System.out.println(this.pos + " : powered: " + powered);
+		this.powered = powered;
 	}
 
 	public boolean isRunning() {
@@ -156,7 +171,8 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 					((NBTTagCompound)mod).getInteger("tier")));
 		}
 		verifySetup();
-		this.currentSetup.ifPresent(setup -> setup.readFromNBT((NBTTagCompound) compound.getTag("currentSetup")));
+		this.currentSetup.ifPresent(setup -> setup.readFromNBT(this, (NBTTagCompound) compound.getTag("currentSetup")));
+		this.setPowered(compound.getBoolean("powered"));
 	}
 	
 	@Override
@@ -172,7 +188,8 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 			}
 		}
 		compound.setTag("modules", modules);
-		this.currentSetup.ifPresent(setup -> compound.setTag("currentSetup", setup.writeToNBT(new NBTTagCompound())));
+		this.currentSetup.ifPresent(setup -> compound.setTag("currentSetup", setup.writeToNBT(this, new NBTTagCompound())));
+		compound.setBoolean("powered", isPowered());
 		return compound;
 	}
 	

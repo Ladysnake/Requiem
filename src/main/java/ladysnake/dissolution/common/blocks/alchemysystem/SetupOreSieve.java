@@ -28,7 +28,8 @@ public class SetupOreSieve extends ModularMachineSetup {
 
 	@Override
 	public void onTick(TileEntityModularMachine te) {
-		System.out.println("SIEVE");
+		if(te.isPowered() && !te.getWorld().isRemote)
+			System.out.println("SIEVE");
 	}
 
 }

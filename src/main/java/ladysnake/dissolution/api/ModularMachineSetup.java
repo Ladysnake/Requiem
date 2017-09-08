@@ -20,6 +20,8 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
  */
 public abstract class ModularMachineSetup extends IForgeRegistryEntry.Impl<ModularMachineSetup> {
 	
+	public abstract void init(TileEntityModularMachine te);
+	
 	/**
 	 * Called each tick when this setup is active in the modular machine
 	 * @param The tile entity being ticked
@@ -62,18 +64,22 @@ public abstract class ModularMachineSetup extends IForgeRegistryEntry.Impl<Modul
 	 */
 	public void onRemoval(TileEntityModularMachine te) {}
 	
+	public void onScheduledUpdate(TileEntityModularMachine te) {}
+	
 	/**
 	 * Loads the extra information of this setup from the save
+	 * @param te the tile entity being read
 	 * @param compound
 	 */
-	public void readFromNBT(NBTTagCompound compound) {}
+	public void readFromNBT(TileEntityModularMachine te, NBTTagCompound compound) {}
 	
 	/**
 	 * Stores this setup's extra information (inventory, power, state, etc.)
+	 * @param te the tile entity being saved
 	 * @param compound
 	 * @return the compound with stored information in it
 	 */
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+	public NBTTagCompound writeToNBT(TileEntityModularMachine te, NBTTagCompound compound) {
 		return compound;
 	}
 

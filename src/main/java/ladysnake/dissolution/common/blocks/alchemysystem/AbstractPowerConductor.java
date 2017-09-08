@@ -27,8 +27,10 @@ public class AbstractPowerConductor extends Block implements IPowerConductor {
 	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
 		super.onBlockHarvested(worldIn, pos, state, player);
-		if(!worldIn.isRemote && this.isPowered(worldIn, pos))
+		if(!worldIn.isRemote && this.isPowered(worldIn, pos)) {
 			updatePowerCore(worldIn, pos);
+			System.out.println("HEY");
+		}
 	}
 	
 	@Override

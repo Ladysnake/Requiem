@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import ladysnake.dissolution.common.entity.ai.boss.BossAiAttackBrimstoneFires;
-import ladysnake.dissolution.common.entity.item.EntityBrimstoneFire;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.math.BlockPos;

@@ -8,6 +8,7 @@ import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachin
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
+import ladysnake.dissolution.common.tileentities.TileEntityPowerCore;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
@@ -73,6 +74,14 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 			}
 		}
 		return true;
+	}
+	
+	@Override
+	public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+		if(state.getValue(PART) == EnumPartType.TOP)
+			pos = pos.down();
+		if(worldIn.getTileEntity(pos) instanceof TileEntityModularMachine)
+			((TileEntityModularMachine)worldIn.getTileEntity(pos)).onScheduledUpdate();
 	}
 	
 	@Override
@@ -150,6 +159,22 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 		TileEntity te = worldIn.getTileEntity(pos);
 		if(te instanceof TileEntityModularMachine)
 			((TileEntityModularMachine)te).dropContent();
+	}
+	
+	@Override
+	public void setPowered(IBlockAccess worldIn, BlockPos pos, boolean b) {
+		if(worldIn.getBlockState(pos).getValue(PART) == EnumPartType.TOP)
+			pos = pos.down();
+		if (worldIn.getTileEntity(pos) instanceof TileEntityModularMachine) 
+			((TileEntityModularMachine)worldIn.getTileEntity(pos)).setPowered(b);
+	}
+	
+	@Override
+	public boolean isPowered(IBlockAccess worldIn, BlockPos pos) {
+		if(worldIn.getBlockState(pos).getValue(PART) == EnumPartType.TOP)
+			pos = pos.down();
+		return (worldIn.getTileEntity(pos) instanceof TileEntityModularMachine) && ((TileEntityModularMachine)worldIn.getTileEntity(pos)).isPowered();
+		
 	}
 	
 	public IBlockState withRotation(IBlockState state, Rotation rot) {
