@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.blocks.alchemysystem;
 
 import java.util.Random;
 
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine;
 import ladysnake.dissolution.common.tileentities.TileEntityPowerCore;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -15,9 +15,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockPowerCore extends Block implements ITileEntityProvider, IPowerConductor {
+public class BlockPowerCore extends Block implements ITileEntityProvider, IMachine {
 	
 	public static final PropertyBool ENABLED = PropertyBool.create("enabled");
 	
@@ -44,7 +45,7 @@ public class BlockPowerCore extends Block implements ITileEntityProvider, IPower
 	}
 	
 	@Override
-	public boolean isConductive(World worldIn, BlockPos pos) {
+	public boolean isConductive(IBlockAccess worldIn, BlockPos pos) {
 		return worldIn.getBlockState(pos).getValue(ENABLED);
 	}
 	
@@ -72,6 +73,16 @@ public class BlockPowerCore extends Block implements ITileEntityProvider, IPower
 	@Override
 	protected BlockStateContainer createBlockState() {
 		return new BlockStateContainer(this, ENABLED);
+	}
+
+	@Override
+	public PowerConsumption getPowerConsumption(IBlockAccess worldIn, BlockPos pos) {
+		return PowerConsumption.GENERATOR;
+	}
+
+	@Override
+	public boolean shouldConnect(IBlockAccess worldIn, BlockPos pos, EnumFacing facing) {
+		return true;
 	}
 
 }

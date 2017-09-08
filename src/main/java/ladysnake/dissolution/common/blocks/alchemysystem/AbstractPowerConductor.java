@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine.PowerConsumption;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -13,6 +14,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class AbstractPowerConductor extends Block implements IPowerConductor {
@@ -25,8 +27,10 @@ public class AbstractPowerConductor extends Block implements IPowerConductor {
 	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
 		super.onBlockHarvested(worldIn, pos, state, player);
-		if(!worldIn.isRemote && this.isPowered(worldIn, pos))
+		if(!worldIn.isRemote && this.isPowered(worldIn, pos)) {
 			updatePowerCore(worldIn, pos);
+			System.out.println("HEY");
+		}
 	}
 	
 	@Override
@@ -41,27 +45,30 @@ public class AbstractPowerConductor extends Block implements IPowerConductor {
 	}
 	
 	private static Optional<BlockPos> scan(World world, BlockPos pos, List<BlockPos> searchedBlocks, int i) {
-		if(++i > 100 || !(world.getBlockState(pos).getBlock() instanceof IPowerConductor) || searchedBlocks.contains(pos)) 
+		IBlockState state = world.getBlockState(pos);
+		if(++i > 100 || !(state.getBlock() instanceof IPowerConductor) || searchedBlocks.contains(pos)) 
 			return Optional.empty();
 		
 		searchedBlocks.add(pos);
 		
-		if(world.getBlockState(pos).getBlock() instanceof BlockPowerCore)
+		if(state.getBlock() instanceof IMachine && ((IMachine)state.getBlock()).getPowerConsumption(world, pos) == PowerConsumption.GENERATOR)
 			return Optional.of(pos);
 		
 		for(EnumFacing face : EnumFacing.values()) {
-			Optional<BlockPos> result = scan(world, pos.offset(face), searchedBlocks, i);
-			if(result.isPresent())
-				return result;
+			if(((IPowerConductor)state.getBlock()).shouldConnect(world, pos, face)) {
+				Optional<BlockPos> result = scan(world, pos.offset(face), searchedBlocks, i);
+				if(result.isPresent())
+					return result;
+			}
 		}
 		
 		return Optional.empty();
 	}
 
 	@Override
-	public void setPowered(World worldIn, BlockPos pos, boolean b) {
-		if(b != worldIn.getBlockState(pos).getValue(POWERED))
-			worldIn.setBlockState(pos, worldIn.getBlockState(pos).withProperty(POWERED, b));
+	public void setPowered(IBlockAccess worldIn, BlockPos pos, boolean b) {
+		if(worldIn instanceof World && b != worldIn.getBlockState(pos).getValue(POWERED))
+			((World) worldIn).setBlockState(pos, worldIn.getBlockState(pos).withProperty(POWERED, b));
 	}
 	
 	@Override

@@ -34,7 +34,7 @@ public class ModularMachineBakedModel implements IBakedModel {
         try {
 	        for(Object module : ((IExtendedBlockState)state).getValue(BlockCasing.MODULES_PRESENT))
 	        	if(module instanceof ItemAlchemyModule)
-	        		quads.addAll(DissolutionModelLoader.getModel(ItemAlchemyModule.getModulesModels().get(module)).getQuads(state, side, rand));
+	        		quads.addAll(DissolutionModelLoader.getModel(((ItemAlchemyModule) module).getModel()).getQuads(state, side, rand));
         } catch (NullPointerException e) {
         	
         }

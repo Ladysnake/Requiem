@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import ladysnake.dissolution.common.entity.boss.EntityBrimstoneFire;
 import ladysnake.dissolution.common.entity.boss.EntityMawOfTheVoid;
-import ladysnake.dissolution.common.entity.item.EntityBrimstoneFire;
 import net.minecraft.entity.ai.EntityAIBase;
 
 public class BossAiAttackBrimstoneFires extends EntityAIBase {

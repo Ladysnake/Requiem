@@ -1,0 +1,6 @@
+{
+    "parent": "dissolution:item/scythe",
+    "textures": {
+        "layer0": "dissolution:items/scythes/iron_scythe"
+	}
+}

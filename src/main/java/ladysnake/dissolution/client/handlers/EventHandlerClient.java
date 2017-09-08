@@ -2,13 +2,12 @@ package ladysnake.dissolution.client.handlers;
 
 import java.lang.reflect.Field;
 
+import ladysnake.dissolution.api.ISoulInteractable;
 import ladysnake.dissolution.client.particles.AdditiveParticle;
 import ladysnake.dissolution.client.particles.DissolutionParticleManager;
-import ladysnake.dissolution.client.renders.blocks.RenderSoulAnchor;
 import ladysnake.dissolution.common.DissolutionConfigManager;
 import ladysnake.dissolution.common.DissolutionConfigManager.FlightModes;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.networking.PacketHandler;
@@ -17,7 +16,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -47,7 +45,6 @@ public class EventHandlerClient {
 	public static int cameraAnimation = 0;
 
 	private static final float SOUL_VERTICAL_SPEED = 0.1f;
-	private static RenderSoulAnchor renderAnch = new RenderSoulAnchor();
 	private static Field highlightingItemStack;
 	private static int refreshTimer = 0;
 

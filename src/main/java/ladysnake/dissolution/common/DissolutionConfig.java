@@ -1,6 +1,8 @@
 package ladysnake.dissolution.common;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraftforge.common.config.Config;
 
@@ -57,8 +59,6 @@ public class DissolutionConfig {
 		@Config.LangKey("config.dissolution.entities.minionsAttackCreepers")
 		@Config.Comment("If true, minions will attack creepers (and probably die in the process)")
 		public boolean minionsAttackCreepers = true;
-		
-		public List<String> allowedTargets = new ArrayList<>();
 		
 	}
 	

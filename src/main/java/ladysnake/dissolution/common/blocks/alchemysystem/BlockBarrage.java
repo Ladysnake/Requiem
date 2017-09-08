@@ -5,6 +5,7 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockBarrage extends AbstractPowerConductor {
@@ -39,7 +40,7 @@ public class BlockBarrage extends AbstractPowerConductor {
     }
 	
 	@Override
-	public boolean isConductive(World worldIn, BlockPos pos) {
+	public boolean isConductive(IBlockAccess worldIn, BlockPos pos) {
 		return worldIn.getBlockState(pos).getValue(ENABLED);
 	}
 	

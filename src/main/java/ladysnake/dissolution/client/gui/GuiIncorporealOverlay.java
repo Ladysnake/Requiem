@@ -2,22 +2,15 @@
 
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
-import ladysnake.dissolution.common.tileentities.TileEntitySoulAnchor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -93,19 +86,6 @@ public class GuiIncorporealOverlay extends Gui {
 			this.drawTexturedModalRect(i + 3 + (int)Math.round((angleToOrigin - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 200, 0, 7, 10);
 		}
 		
-		if(!DissolutionConfig.client.soulCompassAnchors) return;
-		
-		for(TileEntity te : mc.player.world.loadedTileEntityList) {
-			if(te instanceof TileEntitySoulAnchor) {
-				if(Math.sqrt(Math.pow(te.getPos().getX() - mc.player.posX, 2) + Math.pow(te.getPos().getZ() - mc.player.posZ, 2)) < 100) {
-					double angleToTE = (180 - (Math.atan2(player.posX - te.getPos().getX(), player.posZ - te.getPos().getZ())) * (180 / Math.PI)) % 360D;
-					if (angleToTE > angleLeftVision && angleToTE < angleRightVision) {
-						this.drawTexturedModalRect(i + 3 + (int)Math.round((angleToTE - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 207, 0, 7, 10);
-					}
-				}
-			}
-		}
-
 		for(Entity te : mc.player.world.loadedEntityList) {
 			if(te instanceof EntityPlayerCorpse) {
 				if(mc.player.getUniqueID().equals(((EntityPlayerCorpse) te).getPlayer())) {

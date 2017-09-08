@@ -2,13 +2,13 @@ package ladysnake.dissolution.common.blocks.alchemysystem;
 
 import java.util.Random;
 
-import com.google.common.collect.ImmutableSet;
-
 import ladysnake.dissolution.client.models.blocks.UnlistedPropertyModulePresent;
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
+import ladysnake.dissolution.common.tileentities.TileEntityPowerCore;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
@@ -39,13 +39,13 @@ import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockCasing extends BlockBaseMachine {
+public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	
 	public static final UnlistedPropertyModulePresent MODULES_PRESENT = new UnlistedPropertyModulePresent();
 	public static final PropertyEnum<EnumPartType> PART = PropertyEnum.create("part", EnumPartType.class);
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
-	public static final ResourceLocation CASING_BOTTOM = new ResourceLocation(Reference.MOD_ID, "block/wooden_alchemical_machine_structure_bottom");
-	public static final ResourceLocation CASING_TOP = new ResourceLocation(Reference.MOD_ID, "block/wooden_alchemical_machine_structure_top");
+	public static final ResourceLocation CASING_BOTTOM = new ResourceLocation(Reference.MOD_ID, "machine/wooden_machine_casing_bottom");
+	public static final ResourceLocation CASING_TOP = new ResourceLocation(Reference.MOD_ID, "machine/wooden_machine_casing_top");
 	
 	public BlockCasing() {
 		super();
@@ -58,14 +58,30 @@ public class BlockCasing extends BlockBaseMachine {
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		ItemStack stack = playerIn.getHeldItem(hand);
-		if(state.getValue(PART) == EnumPartType.TOP)
+		EnumPartType part = state.getValue(PART);
+		if(part == EnumPartType.TOP)
 			pos = pos.down();
-		if(stack.getItem() instanceof ItemAlchemyModule && worldIn.getTileEntity(pos) instanceof TileEntityModularMachine) {
-			if(((TileEntityModularMachine)worldIn.getTileEntity(pos)).addModule((ItemAlchemyModule)stack.getItem()) && !playerIn.isCreative()) {
-				stack.shrink(1);
+		TileEntity te = worldIn.getTileEntity(pos);
+		if(te instanceof TileEntityModularMachine) {
+			if(stack.getItem() instanceof ItemAlchemyModule) {
+				if(((TileEntityModularMachine)te).addModule((ItemAlchemyModule)stack.getItem()) && !playerIn.isCreative()) {
+					stack.shrink(1);
+				}
+			} else if(playerIn.getHeldItemMainhand().isEmpty() && playerIn.isSneaking()) {
+				playerIn.addItemStackToInventory(((TileEntityModularMachine)te).removeModule());
+			} else {
+				((TileEntityModularMachine)te).interact(playerIn, hand, part, facing, hitX, hitY, hitZ);
 			}
 		}
 		return true;
+	}
+	
+	@Override
+	public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+		if(state.getValue(PART) == EnumPartType.TOP)
+			pos = pos.down();
+		if(worldIn.getTileEntity(pos) instanceof TileEntityModularMachine)
+			((TileEntityModularMachine)worldIn.getTileEntity(pos)).onScheduledUpdate();
 	}
 	
 	@Override
@@ -100,6 +116,20 @@ public class BlockCasing extends BlockBaseMachine {
 	}
 
 	@Override
+	public PowerConsumption getPowerConsumption(IBlockAccess worldIn, BlockPos pos) {
+		if(worldIn.getBlockState(pos).getValue(PART) == EnumPartType.TOP)
+			pos = pos.down();
+		TileEntity te = worldIn.getTileEntity(pos);
+		if(te instanceof TileEntityModularMachine)
+			return ((TileEntityModularMachine)te).getPowerConsumption();
+		return PowerConsumption.NONE;
+	}
+	
+	@Override
+	public boolean shouldConnect(IBlockAccess worldIn, BlockPos pos, EnumFacing facing) {
+		return worldIn.getBlockState(pos).getValue(PART) == EnumPartType.TOP;
+	}
+
 	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
 		return state.getValue(PART) == EnumPartType.TOP ? Items.AIR : ModItems.WOODEN_CASING;
 	}
@@ -116,16 +146,35 @@ public class BlockCasing extends BlockBaseMachine {
 	
 	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
-		if (player.capabilities.isCreativeMode && state.getValue(PART) == EnumPartType.TOP) {
-			BlockPos blockpos = pos.down();
+		if(state.getValue(PART) == EnumPartType.TOP)
+			pos = pos.down();
 
-			if (worldIn.getBlockState(blockpos) == state.withProperty(PART, EnumPartType.BOTTOM)) {
-				worldIn.setBlockToAir(blockpos);
+		if (player.capabilities.isCreativeMode) {
+
+			if (worldIn.getBlockState(pos) == state.withProperty(PART, EnumPartType.BOTTOM)) {
+				worldIn.setBlockToAir(pos);
 			}
 		}
+		
 		TileEntity te = worldIn.getTileEntity(pos);
 		if(te instanceof TileEntityModularMachine)
 			((TileEntityModularMachine)te).dropContent();
+	}
+	
+	@Override
+	public void setPowered(IBlockAccess worldIn, BlockPos pos, boolean b) {
+		if(worldIn.getBlockState(pos).getValue(PART) == EnumPartType.TOP)
+			pos = pos.down();
+		if (worldIn.getTileEntity(pos) instanceof TileEntityModularMachine) 
+			((TileEntityModularMachine)worldIn.getTileEntity(pos)).setPowered(b);
+	}
+	
+	@Override
+	public boolean isPowered(IBlockAccess worldIn, BlockPos pos) {
+		if(worldIn.getBlockState(pos).getValue(PART) == EnumPartType.TOP)
+			pos = pos.down();
+		return (worldIn.getTileEntity(pos) instanceof TileEntityModularMachine) && ((TileEntityModularMachine)worldIn.getTileEntity(pos)).isPowered();
+		
 	}
 	
 	public IBlockState withRotation(IBlockState state, Rotation rot) {
@@ -159,10 +208,10 @@ public class BlockCasing extends BlockBaseMachine {
 	@Override
 	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		if (state.getValue(PART) == EnumPartType.TOP) {
-			if (worldIn.getBlockState(pos.down()) != state.withProperty(PART, EnumPartType.BOTTOM)) {
+			if (worldIn.getBlockState(pos.down()).getBlock() != this) {
 				worldIn.setBlockToAir(pos);
 			}
-		} else if (worldIn.getBlockState(pos.up()) != state.withProperty(PART, EnumPartType.TOP)) {
+		} else if (worldIn.getBlockState(pos.up()).getBlock() != this) {
 			worldIn.setBlockToAir(pos);
 
 			if (!worldIn.isRemote) {

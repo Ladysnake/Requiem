@@ -22,8 +22,8 @@ public abstract class CommonProxy {
 	public void preInit() {
 		MinecraftForge.EVENT_BUS.register(ModBlocks.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(ModItems.INSTANCE);
+		MinecraftForge.EVENT_BUS.register(ModModularSetups.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(ModFluids.REGISTRY_MANAGER);
-		MinecraftForge.EVENT_BUS.register(ModSounds.REGISTRY_MANAGER);
 		CapabilityIncorporealHandler.register();
 		CapabilitySoulHandler.register();
 		ModEntities.register();

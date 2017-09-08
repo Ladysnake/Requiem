@@ -16,12 +16,12 @@ public class Reference {
 		CINNABAR,
 		DEBUG("debug_item"),
 		EYE_DEAD("eye_of_the_undead"),
-		ANCIENT_SCYTHE,
+		LURKING_SCYTHE,
 		SCARAB_OF_ETERNITY,
 		SCYTHE_IRON("iron_scythe"),
 		SOULGEM("soul_gem"),
 		SOULINABOTTLE("soul_in_a_bottle"),
-		SULFUR,
+		SULPHUR,
 		SEPULTURE;
 
 		private String unlocalizedName;

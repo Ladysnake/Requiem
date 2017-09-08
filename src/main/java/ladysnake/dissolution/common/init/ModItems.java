@@ -9,7 +9,7 @@ import java.util.Set;
 
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.alchemysystem.AlchemyModules;
+import ladysnake.dissolution.common.blocks.alchemysystem.AlchemyModule;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.items.ItemCasing;
 import ladysnake.dissolution.common.items.ItemDebug;
@@ -37,12 +37,12 @@ public final class ModItems {
 	/**Used to register stuff*/
 	static final ModItems INSTANCE = new ModItems();
 
-	public static ItemScythe ANCIENT_SCYTHE;
 	public static Item CINNABAR;
 	public static ItemDebug DEBUG_ITEM;
 	public static ItemEyeDead EYE_OF_THE_UNDEAD;
 	public static Item HALITE;
-	public static ItemScythe SCYTHE_IRON;
+	public static ItemScythe IRON_SCYTHE;
+	public static ItemScythe LURKING_SCYTHE;
 	public static ItemSepulture SEPULTURE;
 	public static ItemSoulGem SOUL_GEM;
 	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
@@ -65,18 +65,19 @@ public final class ModItems {
 	public void onRegister(RegistryEvent.Register<Item> event) {
 		IForgeRegistry<Item> reg = event.getRegistry();
 		Collections.addAll(allItems, 
-				DEBUG_ITEM = name(new ItemDebug(), Reference.Items.DEBUG), 
+				LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), Reference.Items.LURKING_SCYTHE), 
 				CINNABAR = name(new Item(), Reference.Items.CINNABAR),
-				WOODEN_CASING = name(new ItemCasing(), "wooden_casing"),
+				DEBUG_ITEM = name(new ItemDebug(), Reference.Items.DEBUG), 
 				EYE_OF_THE_UNDEAD = name(new ItemEyeDead(), Reference.Items.EYE_DEAD), 
-				ANCIENT_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(1500), Reference.Items.ANCIENT_SCYTHE), 
-				SCYTHE_IRON = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), Reference.Items.SCYTHE_IRON),
+				HALITE = name(new Item(), "halite"),
+				IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), Reference.Items.SCYTHE_IRON),
+				SEPULTURE = name(new ItemSepulture(), Reference.Items.SEPULTURE),
 				SOUL_GEM = name(new ItemSoulGem(), Reference.Items.SOULGEM), 
 				SOUL_IN_A_BOTTLE = name(new ItemSoulInABottle(), Reference.Items.SOULINABOTTLE), 
-				SULFUR = name(new Item(), Reference.Items.SULFUR),
-				SEPULTURE = name(new ItemSepulture(), Reference.Items.SEPULTURE));
+				SULFUR = name(new Item(), Reference.Items.SULPHUR),
+				WOODEN_CASING = name(new ItemCasing(), "wooden_casing"));
 
-		for (AlchemyModules module : AlchemyModules.values()) {
+		for (AlchemyModule module : AlchemyModule.values()) {
 			for (int tier = 1; tier <= module.maxTier; tier++)
 				allItems.add(new ItemAlchemyModule(module, tier));
 		}
@@ -95,11 +96,11 @@ public final class ModItems {
     	Map<String, Item> remaps = new HashMap<>();
     	remaps.put("itemdebug", DEBUG_ITEM);
     	remaps.put("itemeyeofundead", EYE_OF_THE_UNDEAD);
-    	remaps.put("itemgrandfaux", SCYTHE_IRON);
+    	remaps.put("itemgrandfaux", IRON_SCYTHE);
     	remaps.put("itemsepulture", SEPULTURE);
     	remaps.put("itemsoulgem", SOUL_GEM);
     	remaps.put("itemsoulinabottle", SOUL_IN_A_BOTTLE);
-    	remaps.put("itemironscythe", SCYTHE_IRON);
+    	remaps.put("itemironscythe", IRON_SCYTHE);
     	for(Mapping<Item> map : missingBlocks) {
     		if(map.key.getResourceDomain().equals(Reference.MOD_ID)) {
     			if(ModBlocks.INSTANCE.remaps.get(map.key.getResourcePath()) != null)
