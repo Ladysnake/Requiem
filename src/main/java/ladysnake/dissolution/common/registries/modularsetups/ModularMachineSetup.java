@@ -1,4 +1,4 @@
-package ladysnake.dissolution.api;
+package ladysnake.dissolution.common.registries.modularsetups;
 
 import java.util.Set;
 

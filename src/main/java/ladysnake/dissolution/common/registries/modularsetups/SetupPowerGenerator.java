@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.blocks.alchemysystem;
+package ladysnake.dissolution.common.registries.modularsetups;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,8 +9,10 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
 
-import ladysnake.dissolution.api.ModularMachineSetup;
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.blocks.alchemysystem.AlchemyModule;
+import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
+import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing.EnumPartType;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine.PowerConsumption;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;

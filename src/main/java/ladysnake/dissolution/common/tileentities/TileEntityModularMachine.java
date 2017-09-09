@@ -7,13 +7,13 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
 
-import ladysnake.dissolution.api.ModularMachineSetup;
 import ladysnake.dissolution.common.blocks.alchemysystem.AlchemyModule;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine.PowerConsumption;
 import ladysnake.dissolution.common.init.ModModularSetups;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
+import ladysnake.dissolution.common.registries.modularsetups.ModularMachineSetup;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;

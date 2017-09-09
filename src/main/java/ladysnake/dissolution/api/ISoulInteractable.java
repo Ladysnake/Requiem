@@ -9,4 +9,12 @@ import net.minecraft.world.World;
 
 public interface ISoulInteractable {
 	
+	default boolean acceptLeftClick (EntityPlayer pl) {
+		return true;
+	}
+	
+	default boolean acceptRightClick (EntityPlayer pl) {
+		return true;
+	}
+	
 }
