@@ -8,8 +8,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import com.google.common.collect.Sets;
+import com.google.gson.JsonParseException;
 
 import ladysnake.dissolution.common.Reference;
 import net.minecraft.client.Minecraft;
@@ -75,10 +77,16 @@ public class DissolutionModelLoader {
 
 	@SubscribeEvent(priority=EventPriority.LOWEST)
 	public static void loadSpecialModels(ModelRegistryEvent event) {
-		try {
-			INSTANCE.modelsLocation.forEach(rl -> INSTANCE.blockModelsLocation.put(rl, INSTANCE.loadModel(rl)));
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+		for(ResourceLocation rl : INSTANCE.modelsLocation) {
+			try {
+				INSTANCE.blockModelsLocation.put(rl, INSTANCE.loadModel(rl));
+			} catch (IOException e) {
+				Logger.getGlobal().warning(rl + ": an issue prevented the file from being read");
+				e.printStackTrace();
+			} catch (JsonParseException e) {
+				Logger.getGlobal().warning(rl + ": this json file isn't valid");
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -121,7 +129,7 @@ public class DissolutionModelLoader {
         return set;
     }
 
-	private ModelBlock loadModel(ResourceLocation location) {
+	private ModelBlock loadModel(ResourceLocation location) throws IOException {
 		try (IResource iresource = Minecraft.getMinecraft().getResourceManager()
 				.getResource(this.getModelLocation(location));
 				Reader reader = new InputStreamReader(iresource.getInputStream(), StandardCharsets.UTF_8)) {
@@ -131,9 +139,6 @@ public class DissolutionModelLoader {
 			lvt_5_2_.name = location.toString();
 			ModelBlock modelblock1 = lvt_5_2_;
 			return modelblock1;
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new IllegalArgumentException(location + ": the resource could not be retrieved", e);
 		}
 	}
 

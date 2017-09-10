@@ -8,13 +8,13 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Multimap;
 
-import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.SoulTypes;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -25,6 +25,7 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -32,7 +33,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
-public class ItemScythe extends ItemSword {
+public class ItemScythe extends ItemSword implements ICustomLocation {
 
 	protected float attackSpeed, attackRadius;
 	protected boolean alreadyRunningAOE;
@@ -159,6 +160,11 @@ public class ItemScythe extends ItemSword {
 			bottle.shrink(nb);
 			p.inventory.addItemStackToInventory(ModItems.SOUL_IN_A_BOTTLE.newTypedSoul(soul));
 		}
+	}
+
+	@Override
+	public ModelResourceLocation getModelLocation(Item item) {
+		return new ModelResourceLocation(item.getRegistryName().getResourceDomain() + ":scythes/" + item.getRegistryName().getResourcePath());
 	}
 	
 }

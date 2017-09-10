@@ -16,6 +16,7 @@ public class AbstractSoul extends Entity {
 		super(worldIn);
 		this.setSize(0.5F, 0.5F);
 		this.setEntityInvulnerable(true);
+		this.setNoGravity(true);
 		this.rotationYaw = (float) (Math.random() * 360.0D);
 		this.motionX = (Math.random() * 0.2 - 0.1) * 2.0F;
 		this.motionY = (Math.random() * 0.2) * 2.0F;

@@ -49,5 +49,5 @@ public abstract class CommonProxy {
 	
 	public void postInit() {}
 	
-	public void spawnParticle(World world, float x, float y, float z, float vx, float vy, float vz, float r, float g, float b, float a, float scale, int lifetime) {}
+	public void spawnParticle(World world, float x, float y, float z, float vx, float vy, float vz, int r, int g, int b, int a, float scale, int lifetime) {}
 }

@@ -4,6 +4,7 @@ import ladysnake.dissolution.client.models.entities.ModelMinionSkeleton;
 import ladysnake.dissolution.client.models.entities.ModelMinionZombie;
 import ladysnake.dissolution.client.renders.entities.LayerMinionStrayClothing;
 import ladysnake.dissolution.client.renders.entities.RenderBrimstoneFire;
+import ladysnake.dissolution.client.renders.entities.RenderEmpty;
 import ladysnake.dissolution.client.renders.entities.RenderMinion;
 import ladysnake.dissolution.client.renders.entities.RenderMinionWitherSkeleton;
 import ladysnake.dissolution.client.renders.entities.RenderMinionZombie;
@@ -62,6 +63,7 @@ public class ModEntities {
     	RenderingRegistry.registerEntityRenderingHandler(EntityPlayerCorpse.class, RenderPlayerCorpse::new);
     	RenderingRegistry.registerEntityRenderingHandler(EntityMawOfTheVoid.class, renderManager -> new RenderBiped<>(renderManager, new ModelBiped(), 1.0f));
     	RenderingRegistry.registerEntityRenderingHandler(EntityBrimstoneFire.class, RenderBrimstoneFire::new);
+    	RenderingRegistry.registerEntityRenderingHandler(EntityFleetingSoul.class, RenderEmpty::new);
     }
 
 }

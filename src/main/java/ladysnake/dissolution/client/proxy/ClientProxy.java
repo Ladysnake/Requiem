@@ -1,5 +1,7 @@
 package ladysnake.dissolution.client.proxy;
 
+import java.awt.Color;
+
 import ladysnake.dissolution.client.gui.GuiIncorporealOverlay;
 import ladysnake.dissolution.client.models.blocks.BakedModelLoader;
 import ladysnake.dissolution.client.particles.AdditiveParticle;
@@ -40,12 +42,15 @@ public class ClientProxy extends CommonProxy {
     }
     
     @Override
-    public void spawnParticle(World world, float x, float y, float z, float vx, float vy, float vz, float r, float g,
-    		float b, float a, float scale, int lifetime) {
+    public void spawnParticle(World world, float x, float y, float z, float vx, float vy, float vz, int r, int g,
+    		int b, int a, float scale, int lifetime) {
     	particleCount += world.rand.nextInt(3);
 		if (particleCount % (Minecraft.getMinecraft().gameSettings.particleSetting == 0 ? 1 : 2*Minecraft.getMinecraft().gameSettings.particleSetting) == 0){
-			DissolutionParticleManager.INSTANCE.addParticle(new AdditiveParticle(world,x,y,z,vx,vy,vz,r,g,b,a, scale, lifetime));
-}
+			DissolutionParticleManager.INSTANCE.addParticle(
+					new AdditiveParticle(world,x,y,z, scale, lifetime, true)
+					.setColor(new Color(r, g, b, a))
+					.setMotion(vx, vy, vz));
+		}
     }
 
 }

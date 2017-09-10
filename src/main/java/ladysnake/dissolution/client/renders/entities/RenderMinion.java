@@ -19,14 +19,14 @@ import net.minecraft.util.ResourceLocation;
 
 public class RenderMinion<V extends AbstractMinion> extends RenderBiped<V> {
 	
-	public static final ResourceLocation SKELETON_MINION_TEXTURES = new ResourceLocation("dissolution:textures/entity/minions/minion_skeleton.png");
+	public static final ResourceLocation SKELETON_MINION_TEXTURES = new ResourceLocation(Reference.MOD_ID, "textures/entity/minions/minion_skeleton.png");
 	public static final ResourceLocation SKELETON_TEXTURE = new ResourceLocation("textures/entity/skeleton/skeleton.png");
 	
-	public static final ResourceLocation STRAY_MINION_TEXTURE = new ResourceLocation("dissolution:textures/entity/minions/minion_stray.png");
-	public static final ResourceLocation STRAY_TEXTURE = new ResourceLocation("textures/entity/stray.png");
+	public static final ResourceLocation STRAY_MINION_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/entity/minions/minion_stray.png");
+	public static final ResourceLocation STRAY_TEXTURE = new ResourceLocation("textures/entity/skeleton/stray.png");
 
 	public static final ResourceLocation ZOMBIE_PIGMAN_TEXTURE = new ResourceLocation("textures/entity/zombie_pigman.png");
-	public static final ResourceLocation ZOMBIE_PIGMAN_MINION_TEXTURE = new ResourceLocation(Reference.MOD_ID + ":textures/entity/minions/minion_zombie_pigman.png");
+	public static final ResourceLocation ZOMBIE_PIGMAN_MINION_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/entity/minions/minion_zombie_pigman.png");
 
 	private final ResourceLocation texture, textureInert;
 

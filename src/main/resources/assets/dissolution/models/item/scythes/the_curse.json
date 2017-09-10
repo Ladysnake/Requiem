@@ -1,6 +1,6 @@
 {
-    "parent": "dissolution:item/scythe",
+    "parent": "dissolution:item/scythes/scythe",
     "textures": {
-        "layer0": "dissolution:items/the_curse"
+        "layer0": "dissolution:items/scythes/the_curse"
 	}
 }
