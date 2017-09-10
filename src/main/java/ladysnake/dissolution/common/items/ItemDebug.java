@@ -59,7 +59,7 @@ public class ItemDebug extends Item implements ISoulInteractable {
 		case 3 :
 			if(!playerIn.world.isRemote) {
 				worldIn.loadedEntityList.stream().filter(e -> e instanceof EntityFleetingSoul).forEach(e -> e.onKillCommand());
-				EntityFleetingSoul cam = new EntityFleetingSoul(playerIn.world, playerIn.posX, playerIn.posY, playerIn.posZ);
+				EntityFleetingSoul cam = new EntityFleetingSoul(playerIn.world, playerIn.posX + 2, playerIn.posY, playerIn.posZ);
 				worldIn.spawnEntity(cam);
 			} 
 			break;
