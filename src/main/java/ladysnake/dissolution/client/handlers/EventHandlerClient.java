@@ -2,6 +2,7 @@ package ladysnake.dissolution.client.handlers;
 
 import java.lang.reflect.Field;
 
+import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.api.ISoulInteractable;
 import ladysnake.dissolution.client.particles.AdditiveParticle;
 import ladysnake.dissolution.client.particles.DissolutionParticleManager;
@@ -9,7 +10,6 @@ import ladysnake.dissolution.common.DissolutionConfigManager;
 import ladysnake.dissolution.common.DissolutionConfigManager.FlightModes;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PingMessage;
 import net.minecraft.client.Minecraft;

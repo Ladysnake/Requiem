@@ -8,8 +8,8 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Multimap;
 
+import ladysnake.dissolution.api.SoulTypes;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.capabilities.SoulTypes;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import net.minecraft.block.material.Material;

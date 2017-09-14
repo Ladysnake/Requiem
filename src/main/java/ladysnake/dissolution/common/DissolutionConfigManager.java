@@ -105,7 +105,6 @@ public final class DissolutionConfigManager {
     		temp.renameTo(configFile);
     	} else {
     		temp.delete();
-    		temp = null;
     	}
 	}
 	

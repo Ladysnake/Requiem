@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.capabilities;
+package ladysnake.dissolution.api;
 
 import java.util.Arrays;
 import java.util.List;

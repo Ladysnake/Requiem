@@ -43,8 +43,6 @@ public final class ModBlocks {
     
 	Map<String, Block> remaps = new HashMap<>();
     
-    private IForgeRegistry<Block> blockRegistry;
-    
     private static <T extends Block> T name(T block, Reference.Blocks names) {
 		return (T) block.setUnlocalizedName(names.getUnlocalizedName()).setRegistryName(names.getRegistryName());
 	}
@@ -55,8 +53,8 @@ public final class ModBlocks {
 
     @SubscribeEvent
     public void onRegister(RegistryEvent.Register<Block> event) {
-    	blockRegistry = event.getRegistry();
-    	registerBlocks(
+    	IForgeRegistry<Block> blockRegistry = event.getRegistry();
+    	registerBlocks(blockRegistry,
     			BARRAGE = name(new BlockBarrage(), Reference.Blocks.BARRAGE),
     			POWER_CABLE = name(new BlockPowerCable(), Reference.Blocks.POWER_CABLE),
     			POWER_CORE = name(new BlockPowerCore(), Reference.Blocks.POWER_CORE));
@@ -64,16 +62,16 @@ public final class ModBlocks {
     	blockRegistry.register(SEPULTURE = name(new BlockSepulture(), Reference.Blocks.SEPULTURE));
     }
     
-    void registerBlocks(Block... blocks) {
+    void registerBlocks(IForgeRegistry blockRegistry, Block... blocks) {
     	for(Block b : blocks)
-    		registerBlock(b);
+    		registerBlock(blockRegistry, b);
     }
     
-    Item registerBlock(Block block) {
-    	return registerBlock(block, true);
+    Item registerBlock(IForgeRegistry blockRegistry, Block block) {
+    	return registerBlock(blockRegistry, block, true);
     }
     
-    Item registerBlock(Block block, boolean addToTab) {
+    Item registerBlock(IForgeRegistry<Block> blockRegistry, Block block, boolean addToTab) {
     	blockRegistry.register(block);
     	Item item = new ItemBlock(block).setRegistryName(block.getRegistryName());
     	ModItems.allItems.add(item);

@@ -2,11 +2,11 @@ package ladysnake.dissolution.client.models.blocks;
 
 import net.minecraftforge.common.property.IUnlistedProperty;
 
-public class UnlistedPropertyBlockAvailable implements IUnlistedProperty<Boolean> {
+public class PropertyBoolean implements IUnlistedProperty<Boolean> {
 	
 	private final String name;
 	
-	public UnlistedPropertyBlockAvailable(String name) {
+	public PropertyBoolean(String name) {
 		this.name = name;
 	}
 

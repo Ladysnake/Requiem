@@ -2,13 +2,16 @@ package ladysnake.dissolution.common.blocks.alchemysystem;
 
 import java.util.Random;
 
+import ladysnake.dissolution.client.models.blocks.PropertyBoolean;
 import ladysnake.dissolution.client.models.blocks.UnlistedPropertyModulePresent;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
+import ladysnake.dissolution.common.registries.modularsetups.ISetupInstance;
+import ladysnake.dissolution.common.registries.modularsetups.SetupPowerGenerator;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
-import ladysnake.dissolution.common.tileentities.TileEntityPowerCore;
+import ladysnake.dissolution.common.tileentities.TileEntityProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
@@ -42,6 +45,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	
 	public static final UnlistedPropertyModulePresent MODULES_PRESENT = new UnlistedPropertyModulePresent();
+	public static final PropertyBoolean RUNNING = new PropertyBoolean("running");
 	public static final PropertyEnum<EnumPartType> PART = PropertyEnum.create("part", EnumPartType.class);
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 	public static final ResourceLocation CASING_BOTTOM = new ResourceLocation(Reference.MOD_ID, "machine/wooden_machine_casing_bottom");
@@ -80,8 +84,11 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
 		if(state.getValue(PART) == EnumPartType.TOP)
 			pos = pos.down();
-		if(worldIn.getTileEntity(pos) instanceof TileEntityModularMachine)
-			((TileEntityModularMachine)worldIn.getTileEntity(pos)).onScheduledUpdate();
+		if(worldIn.getTileEntity(pos) instanceof TileEntityModularMachine) {
+			ISetupInstance setup = ((TileEntityModularMachine)worldIn.getTileEntity(pos)).getCurrentSetup();
+			if(setup instanceof SetupPowerGenerator.Instance)
+				((SetupPowerGenerator.Instance)setup).scheduleUpdate();
+		}
 	}
 	
 	@Override
@@ -95,24 +102,27 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	}
 	
 	protected BlockStateContainer createBlockState() {
-		return new ExtendedBlockState(this, new IProperty[] {FACING, PART, POWERED}, new IUnlistedProperty[] {MODULES_PRESENT});
+		return new ExtendedBlockState(this, new IProperty[] {FACING, PART, POWERED}, new IUnlistedProperty[] {MODULES_PRESENT, RUNNING});
 	}
 	
 	@Override
 	public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
-		if(state.getValue(PART) == EnumPartType.BOTTOM && world.getTileEntity(pos) instanceof TileEntityModularMachine)
-			return ((IExtendedBlockState)state).withProperty(MODULES_PRESENT, ((TileEntityModularMachine)world.getTileEntity(pos)).getInstalledModules());
+		TileEntity te = world.getTileEntity(pos);
+		if(state.getValue(PART) == EnumPartType.BOTTOM && te instanceof TileEntityModularMachine)
+			return ((IExtendedBlockState)state)
+					.withProperty(MODULES_PRESENT, ((TileEntityModularMachine)te).getInstalledModules())
+					.withProperty(RUNNING, ((TileEntityModularMachine)te).isRunning());
 		return state;
 	}
 
 	@Override
 	public boolean hasTileEntity(IBlockState state) {
-		return state.getValue(PART) == EnumPartType.BOTTOM;
+		return true;
 	}
 
 	@Override
 	public TileEntity createTileEntity(World worldIn, IBlockState state) {
-		return new TileEntityModularMachine();
+		return state.getValue(PART) == EnumPartType.BOTTOM ? new TileEntityModularMachine() : new TileEntityProxy();
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import java.util.Map;
 
 import ladysnake.dissolution.client.renders.blocks.DissolutionModelLoader;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.alchemysystem.AlchemyModule;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -25,7 +24,7 @@ public class ItemAlchemyModule extends Item implements ICustomLocation {
 		super();
 		this.type = type;
 		this.tier = tier;
-		String name = type.name() + "_tier_" + tier;
+		String name = type.maxTier == 1 ? type.name : type.name() + "_tier_" + tier;
 		this.setUnlocalizedName(name);
 		this.setRegistryName(name);
 		allModules.computeIfAbsent(type, t -> new ItemAlchemyModule[type.maxTier+1])[tier] = this;
@@ -53,8 +52,8 @@ public class ItemAlchemyModule extends Item implements ICustomLocation {
 		}
 	}
 	
-	public ResourceLocation getModel() {
-		return modulesModels.get(this);
+	public ResourceLocation getModel(boolean running) {
+		return running ? activeModulesModels.getOrDefault(this, modulesModels.get(this)) : modulesModels.get(this);
 	}
 	
 	public static ItemAlchemyModule getFromType(AlchemyModule type, int tier) {

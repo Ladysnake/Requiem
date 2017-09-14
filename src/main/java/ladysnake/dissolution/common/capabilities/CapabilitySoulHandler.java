@@ -1,11 +1,18 @@
 package ladysnake.dissolution.common.capabilities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.ImmutableList;
+
+import ladysnake.dissolution.api.ISoulHandler;
+import ladysnake.dissolution.api.Soul;
+import ladysnake.dissolution.api.SoulTypes;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import net.minecraft.entity.Entity;
@@ -60,25 +67,21 @@ public class CapabilitySoulHandler {
 
 	public static class DefaultSoulInventoryHandler implements ISoulHandler {
 		
-		private final List<Soul> soulInventory = new ArrayList<>(MAX_SOULS);
-		public static final int MAX_SOULS = 9;
+		private final List<Soul> soulInventory = new ArrayList<>();
+		private int size = 9;
 	
 		@Override
 		public boolean addSoul(Soul soul) {
-			if(soulInventory.size() > MAX_SOULS)
+			if(soulInventory.size() >= size)
 				return false;
 			this.soulInventory.add(soul);
 			return true;
 		}
 
 		@Override
-		public int getSoulCount() {
-			return this.soulInventory.size();
-		}
-
-		@Override
-		public int getSoulCount(SoulTypes soultype) {
-			return (int)this.soulInventory.stream().filter(s -> s.getType() == soultype).count();
+		public long getSoulCount(SoulTypes... filter) {
+			List<SoulTypes> filterList = Arrays.asList(filter);
+			return this.soulInventory.stream().filter(s -> filterList.contains(s.getType())).count();
 		}
 	
 		@Override
@@ -87,26 +90,26 @@ public class CapabilitySoulHandler {
 		}
 
 		@Override
-		public List<Soul> removeAll(SoulTypes type) {
-			List<Soul> ret = soulInventory.stream().filter(s -> s.getType() == type).collect(Collectors.toList());
+		public List<Soul> removeAll(SoulTypes... filter) {
+			List<SoulTypes> filterList = Arrays.asList(filter);
+			List<Soul> ret = soulInventory.stream().filter(s -> filterList.contains(s.getType())).collect(Collectors.toList());
 			this.soulInventory.removeAll(ret);
 			return ret;
 		}
 		
 		@Override
-		public void forEach(Consumer<Soul> action) {
-			for(Soul s : this.soulInventory)
-				action.accept(s);
-		}
-
-		@Override
-		public Soul get(Predicate<Soul> condition) {
-			return this.soulInventory.stream().filter(condition).findFirst().orElse(Soul.UNDEFINED);
+		public List<Soul> setSize(int size) {
+			List<Soul> ret = new ArrayList<>();
+			if(size < this.soulInventory.size())
+				for(int i = size; i < this.soulInventory.size(); i++)
+					ret.add(this.soulInventory.remove(i));
+			this.size = size;
+			return ret;
 		}
 		
 		@Override
-		public List<Soul> getSoulList() {
-			return this.soulInventory;
+		public ImmutableList<Soul> getSoulList() {
+			return ImmutableList.copyOf(this.soulInventory);
 		}
 
 		@Override
@@ -149,7 +152,7 @@ public class CapabilitySoulHandler {
 				EnumFacing side) {
 			final NBTTagCompound tag = new NBTTagCompound();
 			NBTTagList list = new NBTTagList();
-			instance.forEach(s -> list.appendTag(s.writeToNBT()));
+			instance.getSoulList().forEach(s -> list.appendTag(s.writeToNBT()));
 			tag.setTag("soulInventory", list);
 			return tag;
 		}
@@ -159,7 +162,7 @@ public class CapabilitySoulHandler {
 				EnumFacing side, NBTBase nbt) {
 			final NBTTagCompound tag = (NBTTagCompound) nbt;
 			NBTTagList list = tag.getTagList("soulInventory", 10);
-			instance.getSoulList().clear();
+			instance.removeAll();
 			list.forEach(s -> instance.addSoul(Soul.readFromNBT((NBTTagCompound) s)));
 		}
 		

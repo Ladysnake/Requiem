@@ -9,12 +9,13 @@ import java.util.Set;
 
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.alchemysystem.AlchemyModule;
+import ladysnake.dissolution.common.items.AlchemyModule;
 import ladysnake.dissolution.common.items.ICustomLocation;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.items.ItemCasing;
 import ladysnake.dissolution.common.items.ItemDebug;
-import ladysnake.dissolution.common.items.ItemEyeDead;
+import ladysnake.dissolution.common.items.ItemEyeUndead;
+import ladysnake.dissolution.common.items.ItemOccularePart;
 import ladysnake.dissolution.common.items.ItemScythe;
 import ladysnake.dissolution.common.items.ItemSepulture;
 import ladysnake.dissolution.common.items.ItemSoulGem;
@@ -40,9 +41,11 @@ public final class ModItems {
 
 	public static Item CINNABAR;
 	public static ItemDebug DEBUG_ITEM;
-	public static ItemEyeDead EYE_OF_THE_UNDEAD;
+	public static ItemEyeUndead EYE_OF_THE_UNDEAD;
 	public static Item HALITE;
+	public static ItemOccularePart TIRED_ETCHING;
 	public static ItemScythe IRON_SCYTHE;
+	public static ItemOccularePart IRON_SHELL;
 	public static ItemScythe LURKING_SCYTHE;
 	public static ItemSepulture SEPULTURE;
 	public static ItemSoulGem SOUL_GEM;
@@ -69,13 +72,15 @@ public final class ModItems {
 				LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), Reference.Items.LURKING_SCYTHE), 
 				CINNABAR = name(new Item(), Reference.Items.CINNABAR),
 				DEBUG_ITEM = name(new ItemDebug(), Reference.Items.DEBUG), 
-				EYE_OF_THE_UNDEAD = name(new ItemEyeDead(), Reference.Items.EYE_DEAD), 
+				EYE_OF_THE_UNDEAD = name(new ItemEyeUndead(), Reference.Items.EYE_DEAD), 
 				HALITE = name(new Item(), "halite"),
 				IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), Reference.Items.SCYTHE_IRON),
+				IRON_SHELL = name(((ItemOccularePart) new ItemOccularePart(1, 500)), "iron_occulare_shell"),
 				SEPULTURE = name(new ItemSepulture(), Reference.Items.SEPULTURE),
 				SOUL_GEM = name(new ItemSoulGem(), Reference.Items.SOULGEM), 
 				SOUL_IN_A_BOTTLE = name(new ItemSoulInABottle(), Reference.Items.SOULINABOTTLE), 
 				SULFUR = name(new Item(), "sulfur"),
+				TIRED_ETCHING = name(new ItemOccularePart(1, 0), "tired_etching"),
 				WOODEN_CASING = name(new ItemCasing(), "wooden_machine_casing"));
 
 		for (AlchemyModule module : AlchemyModule.values()) {

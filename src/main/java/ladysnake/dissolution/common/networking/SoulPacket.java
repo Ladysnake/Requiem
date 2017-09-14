@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.networking;
 
-import ladysnake.dissolution.common.capabilities.ISoulHandler;
-import ladysnake.dissolution.common.capabilities.Soul;
+import ladysnake.dissolution.api.ISoulHandler;
+import ladysnake.dissolution.api.Soul;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -20,14 +20,15 @@ public class SoulPacket implements IMessageHandler<SoulMessage, IMessage> {
 					  final ISoulHandler soulInv = CapabilitySoulHandler.getHandler(Minecraft.getMinecraft().player);
 					  switch(message.type) {
 					  case SoulMessage.FULL_UPDATE:
-						  soulInv.getSoulList().clear();
-						  soulInv.getSoulList().addAll(message.soulList);
+						  soulInv.removeAll();
+						  soulInv.setSize(message.soulList.size());
+						  message.soulList.forEach(soulInv::addSoul);
 						  break;
 					  case SoulMessage.UPDATE_ADD:
-						  soulInv.getSoulList().addAll(message.soulList);
+						  message.soulList.forEach(soulInv::addSoul);
 						  break;
 					  case SoulMessage.UPDATE_REMOVE:
-						  soulInv.getSoulList().removeAll(message.soulList);
+						  message.soulList.forEach(soulInv::removeSoul);
 					  }
 				  }
 				});

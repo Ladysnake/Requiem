@@ -4,12 +4,12 @@ import java.util.UUID;
 
 import com.google.common.base.Optional;
 
+import ladysnake.dissolution.api.IIncorporealHandler;
+import ladysnake.dissolution.api.ISoulHandler;
 import ladysnake.dissolution.api.ISoulInteractable;
 import ladysnake.dissolution.client.handlers.EventHandlerClient;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.DissolutionConfig;
-import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.ISoulHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;

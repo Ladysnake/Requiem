@@ -2,8 +2,8 @@ package ladysnake.dissolution.common.networking;
 
 import java.util.UUID;
 
+import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.handlers.PlayerInventoryListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;

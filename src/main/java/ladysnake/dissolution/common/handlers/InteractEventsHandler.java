@@ -1,10 +1,10 @@
 package ladysnake.dissolution.common.handlers;
 
+import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.api.ISoulInteractable;
+import ladysnake.dissolution.api.SoulTypes;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.SoulTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;

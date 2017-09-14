@@ -1,8 +1,11 @@
-package ladysnake.dissolution.common.capabilities;
+package ladysnake.dissolution.api;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import com.google.common.collect.ImmutableList;
 
 public interface ISoulHandler {
 	
@@ -25,22 +28,24 @@ public interface ISoulHandler {
 	 * @param type
 	 * @return a list with all removed souls
 	 */
-	List<Soul> removeAll(SoulTypes type);
+	List<Soul> removeAll(SoulTypes... filter);
 	
 	/**
-	 * @return the number of souls this inventory contains
+	 * Sets the size of this soul inventory
+	 * @param size
+	 * @return if the size of the new inventory is too small, all the elements that were removed
 	 */
-	int getSoulCount();
+	List<Soul> setSize(int size);
 
 	/**
 	 * @param soulType
 	 * @return the number of soul of this specific type this inventory contains
 	 */
-	int getSoulCount(SoulTypes soulType);
-	
-	Soul get(Predicate<Soul> condition);
+	long getSoulCount(SoulTypes... filter);
 
-	void forEach(Consumer<Soul> action);
-	
-	List<Soul> getSoulList();
+	/**
+	 * 
+	 * @return an immutable version of this inventory's content
+	 */
+	ImmutableList<Soul> getSoulList();
 }

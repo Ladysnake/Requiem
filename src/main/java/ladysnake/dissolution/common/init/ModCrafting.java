@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.init;
 
 /**
  * Class previously used to register recipes
- * @author Fabien
+ * @author Pyrofab
  *
  */
 @Deprecated

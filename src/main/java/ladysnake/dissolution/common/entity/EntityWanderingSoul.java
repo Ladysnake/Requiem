@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModSounds;

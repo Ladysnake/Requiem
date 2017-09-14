@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.networking;
 
 import java.util.UUID;
 
-import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
+import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;

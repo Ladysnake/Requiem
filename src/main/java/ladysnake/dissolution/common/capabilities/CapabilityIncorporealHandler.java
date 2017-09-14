@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
+import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.DissolutionConfigManager;
 import ladysnake.dissolution.common.DissolutionConfigManager.FlightModes;
@@ -90,6 +91,7 @@ public class CapabilityIncorporealHandler {
 		private String lastDeathMessage;
 		private boolean synced = false;
 		private int prevGamemode = 0;
+		/**Not used currently, allows the player to wear a different skin*/
 		private Optional<UUID> disguise = Optional.empty();
 
 		private EntityPlayer owner;

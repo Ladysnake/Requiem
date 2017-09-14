@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.netty.buffer.ByteBuf;
-import ladysnake.dissolution.common.capabilities.Soul;
-import ladysnake.dissolution.common.capabilities.SoulTypes;
+import ladysnake.dissolution.api.Soul;
+import ladysnake.dissolution.api.SoulTypes;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import scala.actors.threadpool.Arrays;
 

@@ -2,11 +2,11 @@ package ladysnake.dissolution.common.items;
 
 import java.util.List;
 
+import ladysnake.dissolution.api.Soul;
+import ladysnake.dissolution.api.SoulTypes;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.capabilities.Soul;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
-import ladysnake.dissolution.common.capabilities.SoulTypes;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;

@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.entity.souls;
 
+import ladysnake.dissolution.api.ISoulHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
-import ladysnake.dissolution.common.capabilities.ISoulHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;

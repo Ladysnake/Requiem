@@ -1,9 +1,9 @@
 package ladysnake.dissolution.common.handlers;
 
+import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.IIncorporealHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;

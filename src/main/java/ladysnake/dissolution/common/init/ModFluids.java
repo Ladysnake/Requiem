@@ -21,10 +21,13 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.registries.IForgeRegistry;
 
+@Mod.EventBusSubscriber(modid=Reference.MOD_ID)
 public enum ModFluids {
 	
 	MERCURY("mercury", false,
@@ -36,9 +39,6 @@ public enum ModFluids {
 	private final Fluid fluid;
 	/**The fluid block*/
 	private final BlockFluidBase fluidBlock;
-	
-	/**The register manager*/
-	static final RegisterManager REGISTRY_MANAGER = new RegisterManager();
 	
 	/**The path to the fluid blockstate*/
 	private static final String FLUID_MODEL_PATH = Reference.MOD_ID + ":" + "fluid";
@@ -77,10 +77,10 @@ public enum ModFluids {
 		return fluidBlock;
 	}
 	
-	private void registerFluidBlock() {
+	private void registerFluidBlock(IForgeRegistry<Block> reg) {
 		fluidBlock.setRegistryName(Reference.MOD_ID, "fluid." + fluid.getName());
 		fluidBlock.setUnlocalizedName(Reference.MOD_ID + ":" + fluid.getUnlocalizedName());
-		ModBlocks.INSTANCE.registerBlock(fluidBlock, false);
+		ModBlocks.INSTANCE.registerBlock(reg, fluidBlock, false);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -105,27 +105,22 @@ public enum ModFluids {
 		});
 	}
 	
-	public static final class RegisterManager {
-		
-		@SubscribeEvent
-	    public void onRegister(RegistryEvent.Register<Block> event) {
-	    	for (final ModFluids modFluid : ModFluids.values())
-	    		modFluid.registerFluidBlock();
-	    	registerFluidContainers();
-		}
-		
-		@SubscribeEvent
-		@SideOnly(Side.CLIENT)
-		public void registerAllModels(final ModelRegistryEvent event) {
-			for(ModFluids mf : ModFluids.values())
-				mf.registerFluidModel();
-		}
+	@SubscribeEvent
+    public static void onRegister(RegistryEvent.Register<Block> event) {
+    	for (final ModFluids modFluid : ModFluids.values())
+    		modFluid.registerFluidBlock(event.getRegistry());
+    	registerFluidContainers();
+	}
+	
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public static void registerAllModels(final ModelRegistryEvent event) {
+		for(ModFluids mf : ModFluids.values())
+			mf.registerFluidModel();
+	}
 
-		private void registerFluidContainers() {
-			//FluidRegistry.addBucketForFluid(MERCURY); //Actually we don't because mercury is too heavy, obviously
-		}
-		
-		private RegisterManager() {}
+	private static void registerFluidContainers() {
+		//FluidRegistry.addBucketForFluid(MERCURY); //Actually we don't because mercury is too heavy, obviously
 	}
 
 }

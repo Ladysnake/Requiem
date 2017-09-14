@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine.PowerConsumption;
+import ladysnake.dissolution.common.registries.modularsetups.ISetupInstance;
+import ladysnake.dissolution.common.registries.modularsetups.SetupPowerGenerator;
+import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -41,7 +44,15 @@ public class AbstractPowerConductor extends Block implements IPowerConductor {
 	}
 	
 	protected static void updatePowerCore(World world, BlockPos pos) {
-		scan(world, pos, new LinkedList<>(), 0).ifPresent(bp -> world.scheduleUpdate(bp, world.getBlockState(bp).getBlock(), 0));
+		scan(world, pos, new LinkedList<>(), 0).ifPresent(bp -> {
+
+			if(world.getTileEntity(pos) instanceof TileEntityModularMachine) {
+				ISetupInstance setup = ((TileEntityModularMachine)world.getTileEntity(pos)).getCurrentSetup();
+				if(setup instanceof SetupPowerGenerator.Instance)
+					((SetupPowerGenerator.Instance)setup).scheduleUpdate();
+			} else
+				world.scheduleUpdate(bp, world.getBlockState(bp).getBlock(), 0);
+		});
 	}
 	
 	private static Optional<BlockPos> scan(World world, BlockPos pos, List<BlockPos> searchedBlocks, int i) {

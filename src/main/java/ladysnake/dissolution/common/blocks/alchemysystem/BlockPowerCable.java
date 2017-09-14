@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import ladysnake.dissolution.client.models.blocks.UnlistedPropertyBlockAvailable;
+import ladysnake.dissolution.client.models.blocks.PropertyBoolean;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLever;
 import net.minecraft.block.material.Material;
@@ -28,12 +28,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockPowerCable extends AbstractPowerConductor {
 	
-	public static final UnlistedPropertyBlockAvailable NORTH = new UnlistedPropertyBlockAvailable("north");
-    public static final UnlistedPropertyBlockAvailable SOUTH = new UnlistedPropertyBlockAvailable("south");
-    public static final UnlistedPropertyBlockAvailable WEST = new UnlistedPropertyBlockAvailable("west");
-    public static final UnlistedPropertyBlockAvailable EAST = new UnlistedPropertyBlockAvailable("east");
-    public static final UnlistedPropertyBlockAvailable UP = new UnlistedPropertyBlockAvailable("up");
-    public static final UnlistedPropertyBlockAvailable DOWN = new UnlistedPropertyBlockAvailable("down");
+	public static final PropertyBoolean NORTH = new PropertyBoolean("north");
+    public static final PropertyBoolean SOUTH = new PropertyBoolean("south");
+    public static final PropertyBoolean WEST = new PropertyBoolean("west");
+    public static final PropertyBoolean EAST = new PropertyBoolean("east");
+    public static final PropertyBoolean UP = new PropertyBoolean("up");
+    public static final PropertyBoolean DOWN = new PropertyBoolean("down");
 	
 	public BlockPowerCable() {
 		super();

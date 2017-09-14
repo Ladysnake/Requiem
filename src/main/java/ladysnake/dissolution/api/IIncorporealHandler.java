@@ -1,11 +1,11 @@
-package ladysnake.dissolution.common.capabilities;
+package ladysnake.dissolution.api;
 
 import java.util.Optional;
 import java.util.UUID;
 
 /**
  * The interface providing methods related to the Incorporeal capability
- * @author Fabien
+ * @author Pyrofab
  *
  */
 public interface IIncorporealHandler {
@@ -31,12 +31,11 @@ public interface IIncorporealHandler {
 	 */
 	boolean isIncorporeal();
 	
+	void tick();
 	
 	String getLastDeathMessage();
 	
 	void setLastDeathMessage(String lastDeath);
-	
-	void tick();
 	
 	void setDisguise(UUID usurpedId);
 	
