@@ -1,9 +1,9 @@
 package ladysnake.dissolution.common.init;
 
-import ladysnake.dissolution.api.ModularMachineSetup;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.alchemysystem.SetupOreSieve;
-import ladysnake.dissolution.common.blocks.alchemysystem.SetupPowerGenerator;
+import ladysnake.dissolution.common.registries.modularsetups.ModularMachineSetup;
+import ladysnake.dissolution.common.registries.modularsetups.SetupOreSieve;
+import ladysnake.dissolution.common.registries.modularsetups.SetupPowerGenerator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;

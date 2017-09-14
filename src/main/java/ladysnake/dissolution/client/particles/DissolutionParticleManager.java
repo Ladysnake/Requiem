@@ -29,7 +29,7 @@ public class DissolutionParticleManager {
 	
 	public void updateParticles() {
 		particles.forEach(p -> p.onUpdate());
-		// particles.removeIf(p -> !p.isAlive());
+		particles.removeIf(p -> !p.isAlive());
 	}
 	
 	public void renderParticles(float partialTicks) {

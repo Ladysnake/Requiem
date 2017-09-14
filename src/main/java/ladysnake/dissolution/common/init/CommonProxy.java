@@ -13,6 +13,7 @@ import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import ladysnake.dissolution.common.tileentities.TileEntityPowerCore;
 import ladysnake.dissolution.common.tileentities.TileEntitySepulture;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -46,7 +47,7 @@ public abstract class CommonProxy {
 		PacketHandler.initPackets();
 	}
 	
-	public void postInit() {
-		
-	}
+	public void postInit() {}
+	
+	public void spawnParticle(World world, float x, float y, float z, float vx, float vy, float vz, int r, int g, int b, int a, float scale, int lifetime) {}
 }

@@ -1,19 +1,23 @@
 package ladysnake.dissolution.client.proxy;
 
+import java.awt.Color;
+
 import ladysnake.dissolution.client.gui.GuiIncorporealOverlay;
 import ladysnake.dissolution.client.models.blocks.BakedModelLoader;
-import ladysnake.dissolution.client.renders.blocks.DissolutionModelLoader;
+import ladysnake.dissolution.client.particles.AdditiveParticle;
+import ladysnake.dissolution.client.particles.DissolutionParticleManager;
 import ladysnake.dissolution.client.renders.entities.LayerDisguise;
 import ladysnake.dissolution.client.renders.entities.LayerScythe;
-import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.init.ModEntities;
-import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 
 public class ClientProxy extends CommonProxy {
+	
+	private int particleCount = 0;
 	
 	@Override
 	public void preInit() {
@@ -35,6 +39,18 @@ public class ClientProxy extends CommonProxy {
     			render.addLayer(new LayerScythe());
     			render.addLayer(new LayerDisguise(render, s.equals("slim")));
     		});
+    }
+    
+    @Override
+    public void spawnParticle(World world, float x, float y, float z, float vx, float vy, float vz, int r, int g,
+    		int b, int a, float scale, int lifetime) {
+    	particleCount += world.rand.nextInt(3);
+		if (particleCount % (Minecraft.getMinecraft().gameSettings.particleSetting == 0 ? 1 : 2*Minecraft.getMinecraft().gameSettings.particleSetting) == 0){
+			DissolutionParticleManager.INSTANCE.addParticle(
+					new AdditiveParticle(world,x,y,z, scale, lifetime, true)
+					.setColor(new Color(r, g, b, a))
+					.setMotion(vx, vy, vz));
+		}
     }
 
 }

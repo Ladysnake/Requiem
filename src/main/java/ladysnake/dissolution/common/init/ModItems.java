@@ -10,6 +10,7 @@ import java.util.Set;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.alchemysystem.AlchemyModule;
+import ladysnake.dissolution.common.items.ICustomLocation;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.items.ItemCasing;
 import ladysnake.dissolution.common.items.ItemDebug;
@@ -74,8 +75,8 @@ public final class ModItems {
 				SEPULTURE = name(new ItemSepulture(), Reference.Items.SEPULTURE),
 				SOUL_GEM = name(new ItemSoulGem(), Reference.Items.SOULGEM), 
 				SOUL_IN_A_BOTTLE = name(new ItemSoulInABottle(), Reference.Items.SOULINABOTTLE), 
-				SULFUR = name(new Item(), Reference.Items.SULPHUR),
-				WOODEN_CASING = name(new ItemCasing(), "wooden_casing"));
+				SULFUR = name(new Item(), "sulfur"),
+				WOODEN_CASING = name(new ItemCasing(), "wooden_machine_casing"));
 
 		for (AlchemyModule module : AlchemyModule.values()) {
 			for (int tier = 1; tier <= module.maxTier; tier++)
@@ -114,18 +115,21 @@ public final class ModItems {
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void registerRenders(ModelRegistryEvent event) {
-		allItems.stream().filter(itemIn -> !(Block.getBlockFromItem(itemIn) instanceof BlockFluidBase)).forEach(this::registerRender);
+		allItems.stream()
+				.filter(itemIn -> !(Block.getBlockFromItem(itemIn) instanceof BlockFluidBase))
+				.forEach(this::registerRender);
 	}
 
 	@SideOnly(Side.CLIENT)
 	private void registerRender(Item item) {
-		registerRender(item, 0, item.getUnlocalizedName().substring(5));
+		registerRender(item, 0, item instanceof ICustomLocation
+				? ((ICustomLocation)item).getModelLocation(item)
+				: new ModelResourceLocation(item.getRegistryName().toString()));
 	}
-
+	
 	@SideOnly(Side.CLIENT)
-	private void registerRender(Item item, int metadata, String name) {
-		ModelLoader.setCustomModelResourceLocation(item, metadata,
-				new ModelResourceLocation(Reference.MOD_ID + ":" + name));
+	private void registerRender(Item item, int metadata, ModelResourceLocation loc) {
+		ModelLoader.setCustomModelResourceLocation(item, metadata, loc);
 	}
 	
 	private ModItems() {}

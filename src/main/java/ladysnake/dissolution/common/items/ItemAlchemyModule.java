@@ -6,12 +6,13 @@ import java.util.Map;
 import ladysnake.dissolution.client.renders.blocks.DissolutionModelLoader;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.alchemysystem.AlchemyModule;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemAlchemyModule extends Item {
+public class ItemAlchemyModule extends Item implements ICustomLocation {
 	
 	private static final Map<AlchemyModule, ItemAlchemyModule[]> allModules = new HashMap<>();
 	private static final Map<ItemAlchemyModule, ResourceLocation> modulesModels = new HashMap<>();
@@ -58,6 +59,11 @@ public class ItemAlchemyModule extends Item {
 	
 	public static ItemAlchemyModule getFromType(AlchemyModule type, int tier) {
 		return allModules.get(type)[tier];
+	}
+
+	@Override
+	public ModelResourceLocation getModelLocation(Item item) {
+		return new ModelResourceLocation(item.getRegistryName().getResourceDomain() + ":machines/" + item.getRegistryName().getResourcePath());
 	}
 	
 }

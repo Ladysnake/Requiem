@@ -4,14 +4,11 @@ import java.util.List;
 import java.util.UUID;
 
 import ladysnake.dissolution.api.ISoulInteractable;
-import ladysnake.dissolution.client.particles.AdditiveParticle;
-import ladysnake.dissolution.client.particles.DissolutionParticleManager;
 import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.entity.soul.EntitySoulCamera;
+import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -21,7 +18,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
@@ -62,9 +58,8 @@ public class ItemDebug extends Item implements ISoulInteractable {
 			break;
 		case 3 :
 			if(!playerIn.world.isRemote) {
-				worldIn.loadedEntityList.stream().filter(e -> e instanceof EntitySoulCamera).forEach(e -> e.onKillCommand());
-				EntitySoulCamera cam = new EntitySoulCamera(playerIn);
-				cam.setDest(new BlockPos(playerIn).add(5, 0, 0));
+				worldIn.loadedEntityList.stream().filter(e -> e instanceof EntityFleetingSoul).forEach(e -> e.onKillCommand());
+				EntityFleetingSoul cam = new EntityFleetingSoul(playerIn.world, playerIn.posX + 2, playerIn.posY, playerIn.posZ);
 				worldIn.spawnEntity(cam);
 			} 
 			break;
