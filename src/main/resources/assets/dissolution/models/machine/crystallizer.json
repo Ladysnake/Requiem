@@ -1,0 +1,34 @@
+{
+	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
+	"textures": {"5": "machines/crystallizer"},
+	"elements": [
+		{
+			"name": "Container",
+			"from": [2.5, 12, 2.5],
+			"to": [13.5, 20, 13.5],
+			"shade": true,
+			"faces": {
+				"north": {"uv": [0, 5.5, 5.5, 9.5], "texture": "#5"},
+				"east": {"uv": [0, 5.5, 5.5, 9.5], "texture": "#5"},
+				"south": {"uv": [5.5, 5.5, 11, 9.5], "texture": "#5"},
+				"west": {"uv": [0, 5.5, 5.5, 9.5], "texture": "#5"},
+				"up": {"uv": [0, 0, 5.5, 5.5], "texture": "#5"},
+				"down": {"uv": [0, 0, 5.5, 5], "texture": "#5"}
+			}
+		},
+		{
+			"name": "cube",
+			"from": [3.5, 14, 13.5],
+			"to": [12.5, 18, 14.5],
+			"shade": true,
+			"faces": {
+				"north": {"uv": [0, 0, 1, 1], "texture": "#5"},
+				"east": {"uv": [9.5, 0, 10, 2], "texture": "#5"},
+				"south": {"uv": [5.5, 0, 10, 2], "texture": "#5"},
+				"west": {"uv": [5.5, 0, 6, 2], "texture": "#5"},
+				"up": {"uv": [5.5, 0, 10, 0.5], "texture": "#5"},
+				"down": {"uv": [5.5, 1.5, 10, 2], "texture": "#5"}
+			}
+		}
+	]
+}

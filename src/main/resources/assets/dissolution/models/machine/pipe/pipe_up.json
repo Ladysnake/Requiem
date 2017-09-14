@@ -1,0 +1,21 @@
+{
+	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
+	"textures": {
+		"0": "machines/resonant_pipe",
+		"particle": "machines/resonant_pipe"
+	},
+	"elements": [
+		{
+			"name": "cube",
+			"from": [6, 11, 6],
+			"to": [10, 16, 10],
+			"shade": true,
+			"faces": {
+				"north": {"uv": [6, 16, 10, 11], "texture": "#0"},
+				"east": {"uv": [6, 16, 10, 11], "texture": "#0"},
+				"south": {"uv": [6, 16, 10, 11], "texture": "#0"},
+				"west": {"uv": [6, 16, 10, 11], "texture": "#0"}
+			}
+		}
+	]
+}

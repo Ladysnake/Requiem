@@ -1,22 +1,22 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
-	"textures": {"4": "machines/mineral_filter"},
+	"textures": {"4": "machines/soul_filter"},
 	"elements": [
 		{
 			"name": "Pipe",
-			"from": [7, 0, 7],
-			"to": [9, 7, 9],
+			"from": [5.5, 13, 5.5],
+			"to": [10.5, 20, 10.5],
 			"shade": true,
 			"faces": {
-				"north": {"uv": [0, 2, 2, 9], "texture": "#4"},
-				"east": {"uv": [0, 2, 2, 9], "texture": "#4"},
-				"south": {"uv": [0, 2, 2, 9], "texture": "#4"},
-				"west": {"uv": [0, 2, 2, 9], "texture": "#4"},
-				"up": {"uv": [0, 0, 2, 2], "texture": "#4"},
-				"down": {"uv": [0, 0, 2, 2], "texture": "#4"}
+				"north": {"uv": [1, 7, 6, 14], "texture": "#4"},
+				"east": {"uv": [1, 7, 6, 14], "texture": "#4"},
+				"south": {"uv": [1, 7, 6, 14], "texture": "#4"},
+				"west": {"uv": [1, 7, 6, 14], "texture": "#4"},
+				"up": {"uv": [1, 1, 6, 6], "texture": "#4"},
+				"down": {"uv": [1, 1, 6, 6], "texture": "#4"}
 			},
 			"rotation": {
-				"origin": [8, 1.5, 8],
+				"origin": [8, 16.5, 8],
 				"axis": "y",
 				"angle": 0
 			}
