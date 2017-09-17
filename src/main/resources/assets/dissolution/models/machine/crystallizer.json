@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
-	"textures": {"5": "machines/crystallizer"},
+	"textures": {"5": "dissolution:machines/crystallizer"},
 	"elements": [
 		{
 			"name": "Container",

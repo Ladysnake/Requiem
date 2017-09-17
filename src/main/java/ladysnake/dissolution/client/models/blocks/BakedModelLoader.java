@@ -18,8 +18,9 @@ public class BakedModelLoader implements ICustomModelLoader {
 	
 	public BakedModelLoader() {
 		models = new HashMap<>();
-		models.put(CableBakedModel.LOCATION_NAME, new PowerCableISBM());
-		models.put(ModularMachineBakedModel.LOCATION_NAME, new ModularMachineModel());
+		models.put(CableBakedModel.LOCATION_NAME, (state, format, mapper) -> new CableBakedModel(state, format, mapper));
+		models.put(EssentiaPipeBakedModel.LOCATION_NAME, (state, format, mapper) -> new EssentiaPipeBakedModel());
+		models.put(ModularMachineBakedModel.LOCATION_NAME, (state, format, mapper) -> new ModularMachineBakedModel());
 	}
 
 	@Override

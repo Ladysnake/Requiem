@@ -1,9 +1,9 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
 	"textures": {
-		"0": "machines/wooden_machine_casing",
-		"2": "machines/plug",
-		"3": "machines/alchemical_interface"
+		"0": "dissolution:machines/wooden_machine_casing",
+		"2": "dissolution:machines/plug",
+		"3": "dissolution:machines/alchemical_interface"
 	},
 	"elements": [
 		{

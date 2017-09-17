@@ -37,7 +37,7 @@ public interface IPowerConductor {
 	 * @param facing the face on which the connection is attempted
 	 * @return true if there should be a connection
 	 */
-	default boolean shouldConnect(IBlockAccess worldIn, BlockPos pos, EnumFacing facing) {
+	default boolean shouldPowerConnect(IBlockAccess worldIn, BlockPos pos, EnumFacing facing) {
 		return true;
 	}
 	
@@ -50,13 +50,11 @@ public interface IPowerConductor {
 			return true;
 	}
 	
-	public static interface IEssentiaConductor {}
-	
-	public static interface IMachine extends IPowerConductor, IEssentiaConductor {
+	public static interface IMachine extends IPowerConductor {
 		
 		PowerConsumption getPowerConsumption(IBlockAccess worldIn, BlockPos pos);
 		
-		boolean shouldConnect(IBlockAccess worldIn, BlockPos pos, EnumFacing facing);
+		boolean shouldPowerConnect(IBlockAccess worldIn, BlockPos pos, EnumFacing facing);
 
 		public static enum PowerConsumption {
 			CONSUMER,

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import ladysnake.dissolution.client.models.blocks.CableBakedModel;
+import ladysnake.dissolution.client.models.blocks.EssentiaPipeBakedModel;
 import ladysnake.dissolution.client.models.blocks.ModularMachineBakedModel;
 import ladysnake.dissolution.client.renders.blocks.DissolutionModelLoader;
 import ladysnake.dissolution.common.Dissolution;
@@ -12,10 +13,11 @@ import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.BlockSepulture;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockBarrage;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
+import ladysnake.dissolution.common.blocks.alchemysystem.BlockEssentiaPipe;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockPowerCable;
-import ladysnake.dissolution.common.blocks.alchemysystem.BlockPowerCore;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
@@ -35,10 +37,13 @@ public final class ModBlocks {
 	/**Used to register stuff*/
 	static final ModBlocks INSTANCE = new ModBlocks();
 
-	public static BlockCasing CASING;
 	public static BlockBarrage BARRAGE;
+	public static BlockCasing CASING;
+	public static BlockEssentiaPipe ESSENTIA_PIPE;
+	public static Block DEPLETED_CLAY;
+	public static Block DEPLETED_COAL;
+	public static Block DEPLETED_MAGMA;
 	public static BlockPowerCable POWER_CABLE;
-	public static BlockPowerCore POWER_CORE;
     public static BlockSepulture SEPULTURE;
     
 	Map<String, Block> remaps = new HashMap<>();
@@ -56,8 +61,11 @@ public final class ModBlocks {
     	IForgeRegistry<Block> blockRegistry = event.getRegistry();
     	registerBlocks(blockRegistry,
     			BARRAGE = name(new BlockBarrage(), Reference.Blocks.BARRAGE),
-    			POWER_CABLE = name(new BlockPowerCable(), Reference.Blocks.POWER_CABLE),
-    			POWER_CORE = name(new BlockPowerCore(), Reference.Blocks.POWER_CORE));
+    			DEPLETED_CLAY = name(new Block(Material.CLAY), "depleted_clay"),
+    			DEPLETED_COAL = name(new Block(Material.ROCK), "depleted_coal"),
+    			DEPLETED_MAGMA = name(new Block(Material.ROCK), "depleted_magma"),
+    			ESSENTIA_PIPE = name(new BlockEssentiaPipe(), "essentia_pipe"),
+    			POWER_CABLE = name(new BlockPowerCable(), Reference.Blocks.POWER_CABLE));
     	blockRegistry.register(CASING = name(new BlockCasing(), "wooden_casing"));
     	blockRegistry.register(SEPULTURE = name(new BlockSepulture(), Reference.Blocks.SEPULTURE));
     }
@@ -84,6 +92,7 @@ public final class ModBlocks {
     public void remapIds(RegistryEvent.MissingMappings<Block> event) {
     	List<Mapping<Block>> missingBlocks = event.getMappings();
     	remaps.put("blocksepulture", SEPULTURE);
+    	
     	for(Mapping<Block> map : missingBlocks) {
     		if(map.key.getResourceDomain().equals(Reference.MOD_ID)) {
     			if(remaps.get(map.key.getResourcePath()) != null)
@@ -96,9 +105,13 @@ public final class ModBlocks {
     @SubscribeEvent
     public void registerRenders(ModelRegistryEvent event) {
     	ItemAlchemyModule.registerModels();
-		DissolutionModelLoader.addModel(BlockCasing.CASING_BOTTOM);
-		DissolutionModelLoader.addModel(BlockCasing.CASING_TOP);
+    	DissolutionModelLoader.addModel(BlockCasing.CASING_BOTTOM);
+    	DissolutionModelLoader.addModel(BlockCasing.CASING_TOP);
+		DissolutionModelLoader.addAllModels(CableBakedModel.CENTER, 
+				CableBakedModel.DOWN, CableBakedModel.EAST, CableBakedModel.NORTH, CableBakedModel.SOUTH,
+				CableBakedModel.UP, CableBakedModel.WEST);
     	registerSmartRender(POWER_CABLE, CableBakedModel.BAKED_MODEL);
+    	registerSmartRender(ESSENTIA_PIPE, EssentiaPipeBakedModel.BAKED_MODEL);
     	registerSmartRender(CASING, ModularMachineBakedModel.BAKED_MODEL);
     }
     

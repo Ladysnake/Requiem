@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
-	"textures": {"4": "machines/soul_filter"},
+	"textures": {"4": "dissolution:machines/soul_filter"},
 	"elements": [
 		{
 			"name": "Pipe",

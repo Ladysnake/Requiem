@@ -10,15 +10,15 @@ import com.google.common.collect.ImmutableSet;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine.PowerConsumption;
+import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModModularSetups;
 import ladysnake.dissolution.common.items.AlchemyModule;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.registries.modularsetups.ISetupInstance;
-import ladysnake.dissolution.common.registries.modularsetups.ModularMachineSetup;
+import ladysnake.dissolution.common.registries.modularsetups.SetupPowerGenerator;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -33,6 +33,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 public class TileEntityModularMachine extends TileEntity implements ITickable {
 	
@@ -52,12 +53,72 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 		currentSetup.ifPresent(set -> set.onTick());
 	}
 	
+	/**
+	 * Adjusts the given facing to take the block's rotation into account
+	 * Should be used by setups trying to interact with the world
+	 * @param face a facing relative to the machine's rotation
+	 * @return the corresponding in-world face using the block's rotation
+	 */
+	public EnumFacing adjustFaceOut(EnumFacing face) {
+		if(face.getAxis() == EnumFacing.Axis.Y)
+			return face;
+		switch(world.getBlockState(pos).getValue(BlockCasing.FACING)) {
+		case WEST: face = face.rotateY();
+		case SOUTH: face = face.rotateY();
+		case EAST: face = face.rotateY();
+		default:
+		}
+		return face;
+	}
+	
+	/**
+	 * Does the opposite operation to {@link #adjustFaceOut}
+	 * @param face an absolute facing given by the world
+	 * @return the corresponding relative facing
+	 */
+	public EnumFacing adjustFaceIn(EnumFacing face) {
+		if(face.getAxis() == EnumFacing.Axis.Y)
+			return face;
+		switch(world.getBlockState(pos).getValue(BlockCasing.FACING)) {
+		case WEST: face = face.rotateYCCW();
+		case SOUTH: face = face.rotateYCCW();
+		case EAST: face = face.rotateYCCW();
+		default:
+		}
+		return face;
+	}
+
+	/**
+	 * Attempts to output an ItemStack into a container
+	 * @param world
+	 * @param stack
+	 * @param pos the position of the machine trying to output the stack
+	 * @param face the face interacting with the world, not taking into account the casing's rotation
+	 * @return
+	 */
+	public ItemStack tryOutput(ItemStack stack, EnumFacing face) {
+		face = this.adjustFaceOut(face);
+		TileEntity te = this.getWorld().getTileEntity(getPos().offset(face));
+		if (te != null) {
+			IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
+					face.getOpposite());
+			if (handler != null) {
+				for (int i = 0; i < handler.getSlots(); i++) {
+					if ((stack = handler.insertItem(i, stack, false)).isEmpty())
+						return ItemStack.EMPTY;
+				}
+			}
+		}
+		return stack;
+	}
+	
 	public boolean addModule(ItemAlchemyModule module) {
 		boolean added = installedModules.stream().allMatch(mod -> (mod.getType().isCompatible(module.getType())))
 				&& installedModules.add(module);
 		if(added) {
 			this.verifySetup();
 			this.world.markBlockRangeForRenderUpdate(this.pos, this.pos);
+			SetupPowerGenerator.THREADPOOL.submit(() -> ModBlocks.CASING.updatePowerCore(world, pos));
 			this.markDirty();
 		}
 		return added;
@@ -78,7 +139,7 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	}
 	
 	public void interact(EntityPlayer playerIn, EnumHand hand, BlockCasing.EnumPartType part, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		this.currentSetup.ifPresent(setup -> setup.onInteract(playerIn, hand, part, facing, hitX, hitY, hitZ));
+		this.currentSetup.ifPresent(setup -> setup.onInteract(playerIn, hand, part, adjustFaceIn(facing), hitX, hitY, hitZ));
 	}
 	
 	public Set<ItemAlchemyModule> getInstalledModules() {
@@ -117,7 +178,6 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	}
 
 	public void setPowered(boolean powered) {
-		System.out.println(this.pos + " : powered: " + powered);
 		this.powered = powered;
 	}
 
@@ -139,7 +199,7 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	}
 	
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing, BlockCasing.EnumPartType part) {
-		return this.currentSetup.map(setup -> setup.hasCapability(capability, facing, part)).orElse(false) || super.hasCapability(capability, facing);
+		return this.currentSetup.map(setup -> setup.hasCapability(capability, adjustFaceIn(facing), part)).orElse(false) || super.hasCapability(capability, facing);
 	}
 	
 	@Override
@@ -148,7 +208,7 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	}
 	
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing, BlockCasing.EnumPartType part) {
-		return this.currentSetup.map(setup -> setup.getCapability(capability, facing, BlockCasing.EnumPartType.BOTTOM)).orElse(super.getCapability(capability, facing));
+		return this.currentSetup.map(setup -> setup.getCapability(capability, adjustFaceIn(facing), part)).orElse(super.getCapability(capability, facing));
 	}
 
 	@Override

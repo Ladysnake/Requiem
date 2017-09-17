@@ -48,7 +48,6 @@ public final class ModItems {
 	public static ItemOccularePart IRON_SHELL;
 	public static ItemScythe LURKING_SCYTHE;
 	public static ItemSepulture SEPULTURE;
-	public static ItemSoulGem SOUL_GEM;
 	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
 	public static Item SULFUR;
 	public static ItemCasing WOODEN_CASING;
@@ -77,7 +76,6 @@ public final class ModItems {
 				IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), Reference.Items.SCYTHE_IRON),
 				IRON_SHELL = name(((ItemOccularePart) new ItemOccularePart(1, 500)), "iron_occulare_shell"),
 				SEPULTURE = name(new ItemSepulture(), Reference.Items.SEPULTURE),
-				SOUL_GEM = name(new ItemSoulGem(), Reference.Items.SOULGEM), 
 				SOUL_IN_A_BOTTLE = name(new ItemSoulInABottle(), Reference.Items.SOULINABOTTLE), 
 				SULFUR = name(new Item(), "sulfur"),
 				TIRED_ETCHING = name(new ItemOccularePart(1, 0), "tired_etching"),
@@ -104,7 +102,6 @@ public final class ModItems {
     	remaps.put("itemeyeofundead", EYE_OF_THE_UNDEAD);
     	remaps.put("itemgrandfaux", IRON_SCYTHE);
     	remaps.put("itemsepulture", SEPULTURE);
-    	remaps.put("itemsoulgem", SOUL_GEM);
     	remaps.put("itemsoulinabottle", SOUL_IN_A_BOTTLE);
     	remaps.put("itemironscythe", IRON_SCYTHE);
     	for(Mapping<Item> map : missingBlocks) {

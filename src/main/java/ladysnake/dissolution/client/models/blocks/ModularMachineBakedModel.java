@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -30,13 +31,28 @@ public class ModularMachineBakedModel implements IBakedModel {
 			return DissolutionModelLoader.getModel(BlockCasing.CASING_TOP).getQuads(state, side, rand);
 
 		List<BakedQuad> quads = new LinkedList<>();
+		ModelRotation rotation;
+		switch (state.getValue(BlockCasing.FACING)) {
+		case EAST: rotation = ModelRotation.X0_Y90;
+			break;
+		case SOUTH: rotation = ModelRotation.X0_Y180;
+			break;
+		case WEST: rotation = ModelRotation.X0_Y270;
+			break;
+		default: rotation = ModelRotation.X0_Y0;
+			break;
+		}
+		
         quads.addAll(DissolutionModelLoader.getModel(BlockCasing.CASING_BOTTOM).getQuads(state, side, rand));
         try {
-	        for(Object module : ((IExtendedBlockState)state).getValue(BlockCasing.MODULES_PRESENT))
-	        	if(module instanceof ItemAlchemyModule)
+	        for(Object module : ((IExtendedBlockState)state).getValue(BlockCasing.MODULES_PRESENT)) {
+	        	if(module instanceof ItemAlchemyModule) {
+	        		// System.out.println(rotation + ":" + ((ItemAlchemyModule) module).getModel(((IExtendedBlockState)state).getValue(BlockCasing.RUNNING)));
 	        		quads.addAll(DissolutionModelLoader.getModel(((ItemAlchemyModule) module)
-	        				.getModel(((IExtendedBlockState)state).getValue(BlockCasing.RUNNING)))
+	        				.getModel(((IExtendedBlockState)state).getValue(BlockCasing.RUNNING)), rotation)
 	        				.getQuads(state, side, rand));
+	        	}
+	        }
         } catch (NullPointerException e) {}
 		return quads;
 	}

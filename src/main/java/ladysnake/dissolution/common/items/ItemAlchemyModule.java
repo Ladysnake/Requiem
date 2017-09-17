@@ -6,6 +6,7 @@ import java.util.Map;
 import ladysnake.dissolution.client.renders.blocks.DissolutionModelLoader;
 import ladysnake.dissolution.common.Reference;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -47,8 +48,8 @@ public class ItemAlchemyModule extends Item implements ICustomLocation {
 	@SideOnly(Side.CLIENT)
 	public static void registerModels() {
 		for(Map.Entry<ItemAlchemyModule, ResourceLocation> entry : modulesModels.entrySet()) {
-			DissolutionModelLoader.addModel(entry.getValue());
-			DissolutionModelLoader.addModel(activeModulesModels.getOrDefault(entry.getKey(), entry.getValue()));
+			DissolutionModelLoader.addModel(entry.getValue(), ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
+			DissolutionModelLoader.addModel(activeModulesModels.getOrDefault(entry.getKey(), entry.getValue()), ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
 		}
 	}
 	

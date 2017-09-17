@@ -3,8 +3,10 @@ package ladysnake.dissolution.common.items;
 import java.util.List;
 import java.util.UUID;
 
+import ladysnake.dissolution.api.IEssentiaHandler;
 import ladysnake.dissolution.api.ISoulInteractable;
 import ladysnake.dissolution.client.renders.ShaderHelper;
+import ladysnake.dissolution.common.capabilities.CapabilityEssentiaHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
@@ -14,11 +16,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 public class ItemDebug extends Item implements ISoulInteractable {
@@ -74,6 +79,16 @@ public class ItemDebug extends Item implements ISoulInteractable {
 			if(playerIn.world.isRemote) {
 				ShaderHelper.initShaders();
 				playerIn.sendStatusMessage(new TextComponentString("Reloaded shaders"), false);
+			}
+			break;
+		case 6 :
+			if(!worldIn.isRemote) {
+				RayTraceResult result = playerIn.rayTrace(6, 0);
+				TileEntity te = worldIn.getTileEntity(result.getBlockPos());
+				if(te != null && te.hasCapability(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA, result.sideHit)) {
+					IEssentiaHandler essentiaInv = te.getCapability(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA, result.sideHit);
+					playerIn.sendStatusMessage(new TextComponentTranslation("suction: %s, type: %s", essentiaInv.getSuction(), essentiaInv.getSuctionType()), false);
+				}
 			}
 			break;
 		case 7 :
