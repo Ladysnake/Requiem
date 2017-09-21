@@ -1,9 +1,6 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
-	"textures": {
-		"1": "machines/container",
-		"2": "machines/plug"
-	},
+	"textures": {"1": "machines/container"},
 	"elements": [
 		{
 			"name": "Container",
@@ -31,19 +28,6 @@
 				"west": {"uv": [5.5, 0, 11.5, 6], "texture": "#1"},
 				"up": {"uv": [7, 0, 10, 6], "texture": "#1"},
 				"down": {"uv": [7, 0, 10, 6], "texture": "#1"}
-			}
-		},
-		{
-			"name": "Plug",
-			"from": [6, 6, 0],
-			"to": [10, 10, 3],
-			"shade": true,
-			"faces": {
-				"north": {"uv": [0, 0, 4, 4], "texture": "#2"},
-				"east": {"uv": [7, 0, 10, 4], "texture": "#2"},
-				"west": {"uv": [7, 0, 10, 4], "texture": "#2"},
-				"up": {"uv": [0, 7, 4, 10], "texture": "#2"},
-				"down": {"uv": [0, 7, 4, 10], "texture": "#2"}
 			}
 		},
 		{
@@ -82,20 +66,6 @@
 				"origin": [5.5, 18.5, 9.5],
 				"axis": "y",
 				"angle": 0
-			}
-		},
-		{
-			"name": "Plug",
-			"from": [0, 6, 6],
-			"to": [3, 10, 10],
-			"shade": true,
-			"faces": {
-				"north": {"uv": [4, 0, 7, 4], "texture": "#2"},
-				"east": {"uv": [0, 0, 4, 4], "texture": "#2"},
-				"south": {"uv": [4, 0, 7, 4], "texture": "#2"},
-				"west": {"uv": [0, 0, 4, 4], "texture": "#2"},
-				"up": {"uv": [4, 0, 7, 4], "texture": "#2"},
-				"down": {"uv": [4, 0, 7, 4], "texture": "#2"}
 			}
 		}
 	]

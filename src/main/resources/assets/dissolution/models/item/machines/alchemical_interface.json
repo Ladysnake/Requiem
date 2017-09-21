@@ -1,24 +1,7 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
-	"textures": {
-		"2": "machines/plug",
-		"3": "machines/alchemical_interface"
-	},
+	"textures": {"3": "machines/alchemical_interface"},
 	"elements": [
-		{
-			"name": "Plug",
-			"from": [13, 1, 6],
-			"to": [16, 5, 10],
-			"shade": true,
-			"faces": {
-				"north": {"uv": [7, 0, 10, 4], "texture": "#2"},
-				"east": {"uv": [0, 0, 4, 4], "texture": "#2"},
-				"south": {"uv": [7, 0, 10, 4], "texture": "#2"},
-				"west": {"uv": [0, 0, 4, 4], "texture": "#2"},
-				"up": {"uv": [7, 0, 10, 4], "texture": "#2"},
-				"down": {"uv": [7, 0, 10, 4], "texture": "#2"}
-			}
-		},
 		{
 			"name": "Interface",
 			"from": [2.5, 0, 2.5],
@@ -59,20 +42,6 @@
 				"west": {"uv": [2, 9, 6.5, 10], "texture": "#3"},
 				"up": {"uv": [0, 10, 2, 14.5], "texture": "#3"},
 				"down": {"uv": [0, 10, 2, 14.5], "texture": "#3"}
-			}
-		},
-		{
-			"name": "Plug",
-			"from": [6, 1, 0],
-			"to": [10, 5, 3],
-			"shade": true,
-			"faces": {
-				"north": {"uv": [0, 0, 4, 4], "texture": "#2"},
-				"east": {"uv": [10, 0, 13, 4], "texture": "#2"},
-				"south": {"uv": [10, 0, 13, 4], "texture": "#2"},
-				"west": {"uv": [10, 0, 13, 4], "texture": "#2"},
-				"up": {"uv": [0, 10, 4, 13], "texture": "#2"},
-				"down": {"uv": [0, 10, 4, 13], "texture": "#2"}
 			}
 		}
 	],

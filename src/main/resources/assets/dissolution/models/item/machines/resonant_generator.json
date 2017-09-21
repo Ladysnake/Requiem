@@ -1,23 +1,7 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
-	"textures": {
-		"2": "machines/plug",
-		"5": "machines/resonant_generator"
-	},
+	"textures": {"5": "machines/resonant_generator"},
 	"elements": [
-		{
-			"name": "Plug",
-			"from": [6, 4, 0],
-			"to": [10, 8, 3],
-			"shade": true,
-			"faces": {
-				"north": {"uv": [0, 0, 4, 4], "texture": "#2"},
-				"east": {"uv": [4, 0, 7, 4], "texture": "#2"},
-				"west": {"uv": [4, 0, 7, 4], "texture": "#2"},
-				"up": {"uv": [0, 4, 4, 7], "texture": "#2"},
-				"down": {"uv": [0, 4, 4, 7], "texture": "#2"}
-			}
-		},
 		{
 			"name": "Base",
 			"from": [2.5, 0, 2.5],
