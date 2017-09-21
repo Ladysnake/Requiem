@@ -1,13 +1,6 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
-<<<<<<< HEAD
 	"textures": {"1": "machines/container"},
-=======
-	"textures": {
-		"1": "dissolution:machines/container",
-		"2": "dissolution:machines/plug"
-	},
->>>>>>> 6f3206f7076dcb817f51149357342f413494db9b
 	"elements": [
 		{
 			"name": "Container",
