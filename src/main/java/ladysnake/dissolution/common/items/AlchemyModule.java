@@ -14,10 +14,13 @@ public class AlchemyModule {
 	public static final List<AlchemyModule> values = new ArrayList<>();
 	
 	public static final AlchemyModule CONTAINER = new AlchemyModule("container", 1, 0b001);
-	public static final AlchemyModule INTERFACE = new AlchemyModule("alchemical_interface", 1, 0b100);
+	public static final AlchemyModule CRYSTALLIZER = new AlchemyModule("crystallizer", 1, 0b010);
+	public static final AlchemyModule ESSENTIAL_INTERFACE = new AlchemyModule("essential_interface", 1, 0b100);
+	public static final AlchemyModule MATERIAL_INTERFACE = new AlchemyModule("material_interface", 1, 0b100);
 	public static final AlchemyModule GENERATOR = new AlchemyModule("resonant_generator", 1, 0b011);
-	public static final AlchemyModule FILTER = new AlchemyModule("mineral_filter", 3, 0b010);
-	public static final AlchemyModule TRIVALENT_FILTER = new AlchemyModule("trivalent_filter", 1, 0b010, FILTER);
+	public static final AlchemyModule MINERAL_FILTER = new AlchemyModule("mineral_filter", 3, 0b010);
+	public static final AlchemyModule SOUL_FILTER = new AlchemyModule("soul_filter", 3, 0b010);
+	//public static final AlchemyModule TRIVALENT_FILTER = new AlchemyModule("trivalent_filter", 1, 0b010, FILTER);
 	
 	public final int maxTier;
 	public final String name;

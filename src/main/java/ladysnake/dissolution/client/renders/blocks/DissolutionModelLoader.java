@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -42,42 +44,65 @@ import net.minecraftforge.fml.relauncher.Side;
  */
 @Mod.EventBusSubscriber(value = Side.CLIENT, modid = Reference.MOD_ID)
 public class DissolutionModelLoader {
-	
+
 	private static final DissolutionModelLoader INSTANCE = new DissolutionModelLoader();
 
-	/**Stores locations of models to load*/
-	private final Set<ResourceLocation> modelsLocation = new HashSet<>();
-	/**Stores locations of textures to load*/
+	/** Stores locations of models to load */
+	private final Map<ResourceLocation, Set<ModelRotation>> modelsLocation = new HashMap<>();
+	/** Stores locations of textures to load */
 	private Set<ResourceLocation> spritesLocation;
-	/**Associates a texture location with a sprite*/
+	/** Associates a texture location with a sprite */
 	private final Map<ResourceLocation, TextureAtlasSprite> sprites = new HashMap<>();
-	/**Associates a model location with an unbaked model*/
+	/** Associates a model location with an unbaked model */
 	private final Map<ResourceLocation, ModelBlock> blockModelsLocation = new HashMap<>();
-	/**Associates a model location with a baked model*/
-	private final Map<ResourceLocation, IBakedModel> models = new HashMap<>();
+	/** Associates a model location and a rotation with a baked model */
+	private final Map<ResourceLocation, Map<ModelRotation, IBakedModel>> models = new HashMap<>();
 	private final FaceBakery faceBakery = new FaceBakery();
-	
+
 	/**
-	 * Adds a model to be loaded
+	 * Adds a model to be loaded. The X0_Y0 rotation is always loaded by default.
 	 * Should be called on ModelRegistryEvent
-	 * @param modelLocation the location of the model
+	 * 
+	 * @param modelLocation
+	 *            the location of the model
 	 */
-	public static void addModel(ResourceLocation modelLocation) {
-		INSTANCE.modelsLocation.add(modelLocation);
-	}
-	
-	/**
-	 * Gets a loaded model in baked form
-	 * @param model the resource location used to load the model
-	 * @return
-	 */
-	public static IBakedModel getModel(ResourceLocation model) {
-		return INSTANCE.models.get(model);
+	public static void addModel(ResourceLocation modelLocation, ModelRotation... rotations) {
+		INSTANCE.modelsLocation.computeIfAbsent(modelLocation, rl -> new HashSet<>()).add(ModelRotation.X0_Y0);
+		for (ModelRotation rot : rotations)
+			INSTANCE.modelsLocation.get(modelLocation).add(rot);
 	}
 
-	@SubscribeEvent(priority=EventPriority.LOWEST)
+	public static void addAllModels(ResourceLocation... locations) {
+		for (ResourceLocation loc : locations)
+			addModel(loc);
+	}
+
+	/**
+	 * Gets a loaded model in baked form
+	 * 
+	 * @param model
+	 *            the resource location used to load the model
+	 * @return the baked model previously loaded from the file
+	 */
+	public static IBakedModel getModel(ResourceLocation model) {
+		return getModel(model, ModelRotation.X0_Y0);
+	}
+
+	/**
+	 * Gets a baked model with a rotation. All rotations variants need to be
+	 * registered during initialization.
+	 * 
+	 * @param modelLocation
+	 * @param rotation
+	 * @return the baked model previously loaded from the file
+	 */
+	public static IBakedModel getModel(ResourceLocation modelLocation, ModelRotation rotation) {
+		return INSTANCE.models.get(modelLocation).get(rotation);
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void loadSpecialModels(ModelRegistryEvent event) {
-		for(ResourceLocation rl : INSTANCE.modelsLocation) {
+		for (ResourceLocation rl : INSTANCE.modelsLocation.keySet()) {
 			try {
 				INSTANCE.blockModelsLocation.put(rl, INSTANCE.loadModel(rl));
 			} catch (IOException e) {
@@ -95,39 +120,40 @@ public class DissolutionModelLoader {
 		INSTANCE.spritesLocation = INSTANCE.getItemsTextureLocations();
 		INSTANCE.spritesLocation.forEach(rl -> INSTANCE.sprites.put(rl, event.getMap().registerSprite(rl)));
 	}
-	
+
 	@SubscribeEvent
 	public static void bakeSpecialModels(TextureStitchEvent.Post event) {
-		INSTANCE.blockModelsLocation.forEach((rl, mb) -> INSTANCE.models.put(rl, INSTANCE.bakeModel(mb)));
+		INSTANCE.modelsLocation.forEach(
+				(rl, rotations) -> rotations.forEach(rot -> INSTANCE.models.computeIfAbsent(rl, res -> new HashMap<>())
+						.put(rot, INSTANCE.bakeModel(INSTANCE.blockModelsLocation.get(rl), rot, false))));
+		// INSTANCE.blockModelsLocation.forEach((rl, mb) ->
+		// INSTANCE.models.computeIfAbsent(rl, res -> new
+		// HashMap<>()).put(ModelRotation.X0_Y0, INSTANCE.bakeModel(mb)));
 	}
-	
-	private Set<ResourceLocation> getItemsTextureLocations()
-    {
-        Set<ResourceLocation> set = Sets.<ResourceLocation>newHashSet();
 
-        for (ResourceLocation resourcelocation : this.modelsLocation)
-        {
-            ModelBlock modelblock = this.blockModelsLocation.get(resourcelocation);
+	private Set<ResourceLocation> getItemsTextureLocations() {
+		Set<ResourceLocation> set = Sets.<ResourceLocation>newHashSet();
 
-            if (modelblock != null)
-            {
-                set.add(new ResourceLocation(modelblock.resolveTextureName("particle")));
+		for (ResourceLocation resourcelocation : this.modelsLocation.keySet()) {
+			ModelBlock modelblock = this.blockModelsLocation.get(resourcelocation);
 
-                {
-                    for (BlockPart blockpart : modelblock.getElements())
-                    {
-                        for (BlockPartFace blockpartface : blockpart.mapFaces.values())
-                        {
-                            ResourceLocation resourcelocation1 = new ResourceLocation(modelblock.resolveTextureName(blockpartface.texture));
-                            set.add(resourcelocation1);
-                        }
-                    }
-                }
-            }
-        }
+			if (modelblock != null) {
+				set.add(new ResourceLocation(modelblock.resolveTextureName("particle")));
 
-        return set;
-    }
+				{
+					for (BlockPart blockpart : modelblock.getElements()) {
+						for (BlockPartFace blockpartface : blockpart.mapFaces.values()) {
+							ResourceLocation resourcelocation1 = new ResourceLocation(
+									modelblock.resolveTextureName(blockpartface.texture));
+							set.add(resourcelocation1);
+						}
+					}
+				}
+			}
+		}
+
+		return set;
+	}
 
 	private ModelBlock loadModel(ResourceLocation location) throws IOException {
 		try (IResource iresource = Minecraft.getMinecraft().getResourceManager()
@@ -145,13 +171,14 @@ public class DissolutionModelLoader {
 	private ResourceLocation getModelLocation(ResourceLocation location) {
 		return new ResourceLocation(location.getResourceDomain(), "models/" + location.getResourcePath() + ".json");
 	}
-	
+
 	private IBakedModel bakeModel(ModelBlock modelBlockIn) {
 		return bakeModel(modelBlockIn, ModelRotation.X0_Y0, false);
 	}
 
 	private IBakedModel bakeModel(ModelBlock modelBlockIn, ModelRotation modelRotationIn, boolean uvLocked) {
-		TextureAtlasSprite textureatlassprite = this.sprites.get(new ResourceLocation(modelBlockIn.resolveTextureName("particle")));
+		TextureAtlasSprite textureatlassprite = this.sprites
+				.get(new ResourceLocation(modelBlockIn.resolveTextureName("particle")));
 		SimpleBakedModel.Builder simplebakedmodel$builder = (new SimpleBakedModel.Builder(modelBlockIn,
 				modelBlockIn.createOverrides())).setTexture(textureatlassprite);
 
@@ -182,8 +209,8 @@ public class DissolutionModelLoader {
 
 	private BakedQuad makeBakedQuad(BlockPart partIn, BlockPartFace faceIn, TextureAtlasSprite sprite,
 			EnumFacing facing, ITransformation rotation, boolean uvLocked) {
-		return this.faceBakery.makeBakedQuad(partIn.positionFrom, partIn.positionTo, faceIn, sprite,
-				facing, rotation, partIn.partRotation, uvLocked, partIn.shade);
+		return this.faceBakery.makeBakedQuad(partIn.positionFrom, partIn.positionTo, faceIn, sprite, facing, rotation,
+				partIn.partRotation, uvLocked, partIn.shade);
 	}
 
 }

@@ -101,6 +101,16 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 		return BlockRenderLayer.CUTOUT;
 	}
 	
+	@Override
+	public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis) {
+		BlockPos pos2;
+		if(world.getBlockState(pos).getValue(PART) == EnumPartType.TOP)
+			pos2 = pos.down();
+		else
+			pos2 = pos.up();
+		return super.rotateBlock(world, pos, axis) && super.rotateBlock(world, pos2, axis);
+	}
+	
 	protected BlockStateContainer createBlockState() {
 		return new ExtendedBlockState(this, new IProperty[] {FACING, PART, POWERED}, new IUnlistedProperty[] {MODULES_PRESENT, RUNNING});
 	}
@@ -134,10 +144,16 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 			return ((TileEntityModularMachine)te).getPowerConsumption();
 		return PowerConsumption.NONE;
 	}
+
+
 	
 	@Override
-	public boolean shouldConnect(IBlockAccess worldIn, BlockPos pos, EnumFacing facing) {
+	public boolean shouldPowerConnect(IBlockAccess worldIn, BlockPos pos, EnumFacing facing) {
 		return worldIn.getBlockState(pos).getValue(PART) == EnumPartType.TOP;
+	}
+	
+	public boolean shouldEssentiaConnect(IBlockAccess worldIn, BlockPos pos, EnumFacing facing) {
+		return true;
 	}
 
 	public Item getItemDropped(IBlockState state, Random rand, int fortune) {

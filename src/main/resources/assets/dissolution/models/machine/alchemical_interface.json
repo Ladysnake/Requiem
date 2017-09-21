@@ -1,8 +1,14 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
 	"textures": {
+<<<<<<< HEAD:src/main/resources/assets/dissolution/models/machine/alchemical_interface.json
 		"0": "machines/wooden_machine_casing",
 		"3": "machines/alchemical_interface"
+=======
+		"0": "dissolution:machines/wooden_machine_casing",
+		"2": "dissolution:machines/plug",
+		"3": "dissolution:machines/alchemical_interface"
+>>>>>>> 6f3206f7076dcb817f51149357342f413494db9b:src/main/resources/assets/dissolution/models/machine/essential_interface.json
 	},
 	"elements": [
 		{

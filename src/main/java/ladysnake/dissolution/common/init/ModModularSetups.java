@@ -2,6 +2,7 @@ package ladysnake.dissolution.common.init;
 
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.registries.modularsetups.ModularMachineSetup;
+import ladysnake.dissolution.common.registries.modularsetups.SetupCrystallizer;
 import ladysnake.dissolution.common.registries.modularsetups.SetupOreSieve;
 import ladysnake.dissolution.common.registries.modularsetups.SetupPowerGenerator;
 import net.minecraft.util.ResourceLocation;
@@ -17,8 +18,7 @@ public final class ModModularSetups {
 	
 	@SubscribeEvent
 	public void onRegister(RegistryEvent.Register<ModularMachineSetup> event) {
-		System.out.println("registering custom setups");
-		event.getRegistry().registerAll(new SetupOreSieve(), new SetupPowerGenerator());
+		event.getRegistry().registerAll(new SetupOreSieve(), new SetupPowerGenerator(), new SetupCrystallizer());
 	}
 	
 	private ModModularSetups() {}

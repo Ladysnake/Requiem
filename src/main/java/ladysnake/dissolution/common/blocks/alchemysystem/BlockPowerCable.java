@@ -69,7 +69,7 @@ public class BlockPowerCable extends AbstractPowerConductor {
 	private boolean shouldAttach(IBlockAccess world, EnumFacing facing, BlockPos pipePos) {
 		BlockPos pos = pipePos.offset(facing);
 		IBlockState state = world.getBlockState(pos);
-        return state.getBlock() instanceof IPowerConductor && (((IPowerConductor)state.getBlock()).shouldConnect(world, pos, facing));
+        return state.getBlock() instanceof IPowerConductor && (((IPowerConductor)state.getBlock()).shouldPowerConnect(world, pos, facing));
     }
 	
 	@Override

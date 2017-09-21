@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.compat;
 
+import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
@@ -41,6 +42,7 @@ public class JEICompat implements IModPlugin {
 	
 	private void addInformationTabs() {
 		addInformationTab(ModItems.SEPULTURE);
+		addInformationTab(ModBlocks.POWER_CABLE);
 	}
 	
 	private void addInformationTab(Block block) {

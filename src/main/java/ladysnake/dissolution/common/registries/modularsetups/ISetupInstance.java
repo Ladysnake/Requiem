@@ -3,10 +3,16 @@ package ladysnake.dissolution.common.registries.modularsetups;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 public interface ISetupInstance {
 	
@@ -51,9 +57,19 @@ public interface ISetupInstance {
 	default NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		return compound;
 	}
-
+	
+	/**
+	 * see {@link #getCapability}
+	 */
 	boolean hasCapability(Capability<?> capability, EnumFacing facing, BlockCasing.EnumPartType part);
 
+	/**
+	 * Proxy method that allows this setup to give capabilities to the machine
+	 * @param capability
+	 * @param facing the face being checked, <em>compensated</em> with the machine's rotation
+	 * @param part
+	 * @return
+	 */
 	<T> T getCapability(Capability<T> capability, EnumFacing facing, BlockCasing.EnumPartType part);
 
 }

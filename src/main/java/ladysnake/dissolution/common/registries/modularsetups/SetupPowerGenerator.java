@@ -1,30 +1,26 @@
 package ladysnake.dissolution.common.registries.modularsetups;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableSet;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
-import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing.EnumPartType;
+import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine.PowerConsumption;
+import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.items.AlchemyModule;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
@@ -36,7 +32,7 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 	
 	public static final ImmutableSet<ItemAlchemyModule> setup = ImmutableSet.of(
 			ItemAlchemyModule.getFromType(AlchemyModule.GENERATOR, 1),
-			ItemAlchemyModule.getFromType(AlchemyModule.INTERFACE, 1));
+			ItemAlchemyModule.getFromType(AlchemyModule.MATERIAL_INTERFACE, 1));
 	
 	public static final ExecutorService THREADPOOL = Executors.newCachedThreadPool();
 	
@@ -56,16 +52,18 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 	
 	public static class Instance implements ISetupInstance {
 		
-		private static Set<BlockPos> nodes;
+		private Set<BlockPos> nodes;
 		private boolean updateScheduled;
 		private Future<Set<BlockPos>> scheduledTask;
 		private TileEntityModularMachine te;
+		private InputItemHandler itemInput;
 		
 		public Instance(TileEntityModularMachine te) {
 			nodes = new HashSet<>();
 			this.te = te;
 			te.setPowerConsumption(PowerConsumption.GENERATOR);
 			updateScheduled = true;
+			itemInput = new InputItemHandler(ModItems.SOUL_IN_A_BOTTLE);
 		}
 		
 		@Override
@@ -76,10 +74,15 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 			}
 			if(scheduledTask != null && scheduledTask.isDone()) {
 				try {
-					System.out.println("slt");
 					Set<BlockPos> newNodes = scheduledTask.get();
-					nodes.stream().filter(pos -> !newNodes.contains(pos)).forEach(pos -> ((IPowerConductor)te.getWorld().getBlockState(pos).getBlock()).setPowered(te.getWorld(), pos, false));
+					nodes.stream().filter(pos -> !newNodes.contains(pos)).forEach(pos -> {
+						try {
+							((IPowerConductor)te.getWorld().getBlockState(pos).getBlock()).setPowered(te.getWorld(), pos, false);
+						} catch (ClassCastException e) {}
+					});
 					nodes = newNodes;
+					for(BlockPos pos : nodes)
+						((IPowerConductor)te.getWorld().getBlockState(pos).getBlock()).setPowered(te.getWorld(), pos, isEnabled());
 					scheduledTask = null;
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
@@ -87,7 +90,8 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 			}
 		}
 		
-		public void scheduleUpdate() {
+		public synchronized void scheduleUpdate() {
+			System.out.println("update scheduled");
 			this.updateScheduled = true;
 		}
 		
@@ -101,7 +105,11 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 		@Override
 		public void onRemoval() {
 			te.setPowerConsumption(PowerConsumption.NONE);
-			nodes.forEach(pos -> ((IPowerConductor)te.getWorld().getBlockState(pos).getBlock()).setPowered(te.getWorld(), pos, false));
+			for(BlockPos pos : nodes) {
+				try {
+					((IPowerConductor)te.getWorld().getBlockState(pos).getBlock()).setPowered(te.getWorld(), pos, false);
+				} catch (ClassCastException e) {}
+			}
 		}
 		
 		public void setEnabled(boolean b) {
@@ -129,7 +137,6 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 			if(!((IPowerConductor)block).isConductive(world, pos))
 				return nodes;
 	
-			((IPowerConductor)block).setPowered(world, pos, isEnabled());
 			nodes.add(pos);
 			
 			for(EnumFacing face : EnumFacing.values())

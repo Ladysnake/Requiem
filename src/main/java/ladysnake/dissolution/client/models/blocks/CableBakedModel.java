@@ -28,6 +28,14 @@ public class CableBakedModel implements IBakedModel {
 	public static final String LOCATION_NAME = "bakedpipe";
 	public static final ModelResourceLocation BAKED_MODEL = new ModelResourceLocation(Reference.MOD_ID + ":" + LOCATION_NAME);
 	
+	public static final ResourceLocation CENTER = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_center");
+	public static final ResourceLocation DOWN = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_down");
+	public static final ResourceLocation EAST = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_east");
+	public static final ResourceLocation NORTH = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_north");
+	public static final ResourceLocation SOUTH = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_south");
+	public static final ResourceLocation UP = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_up");
+	public static final ResourceLocation WEST = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_west");
+	
 	private TextureAtlasSprite spritePowered;
 	private TextureAtlasSprite spriteUnpowered;
     private VertexFormat format;
@@ -75,7 +83,37 @@ public class CableBakedModel implements IBakedModel {
         putVertex(builder, normal, v4.x, v4.y, v4.z, 16, 0);
         return builder.build();
     }
+    
+    @Override
+    public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
+    	List<BakedQuad> quads = new ArrayList<>();
+    	
+    	quads.addAll(DissolutionModelLoader.getModel(CENTER).getQuads(state, side, rand));
 
+    	IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
+        Boolean north = extendedBlockState.getValue(BlockPowerCable.NORTH);
+        Boolean south = extendedBlockState.getValue(BlockPowerCable.SOUTH);
+        Boolean west = extendedBlockState.getValue(BlockPowerCable.WEST);
+        Boolean east = extendedBlockState.getValue(BlockPowerCable.EAST);
+        Boolean up = extendedBlockState.getValue(BlockPowerCable.UP);
+        Boolean down = extendedBlockState.getValue(BlockPowerCable.DOWN);
+        
+        if(up)
+        	quads.addAll(DissolutionModelLoader.getModel(UP).getQuads(state, side, rand));
+        if(down)
+        	quads.addAll(DissolutionModelLoader.getModel(DOWN).getQuads(state, side, rand));
+        if(north)
+        	quads.addAll(DissolutionModelLoader.getModel(NORTH).getQuads(state, side, rand));
+        if(south)
+        	quads.addAll(DissolutionModelLoader.getModel(SOUTH).getQuads(state, side, rand));
+        if(west)
+        	quads.addAll(DissolutionModelLoader.getModel(WEST).getQuads(state, side, rand));
+        if(east)
+        	quads.addAll(DissolutionModelLoader.getModel(EAST).getQuads(state, side, rand));
+    	return quads;
+    }
+
+    /*
     @Override
     public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
 
@@ -153,7 +191,7 @@ public class CableBakedModel implements IBakedModel {
         }
         
         return quads;
-    }
+    }*/
 
 	@Override
 	public boolean isAmbientOcclusion() {
@@ -172,7 +210,7 @@ public class CableBakedModel implements IBakedModel {
 
 	@Override
 	public TextureAtlasSprite getParticleTexture() {
-		return spritePowered;
+		return DissolutionModelLoader.getModel(CENTER).getParticleTexture();
 	}
 
 	@Override
