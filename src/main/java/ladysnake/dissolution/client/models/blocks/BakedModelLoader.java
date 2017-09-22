@@ -1,9 +1,6 @@
 package ladysnake.dissolution.client.models.blocks;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import ladysnake.dissolution.common.Reference;
@@ -18,7 +15,7 @@ public class BakedModelLoader implements ICustomModelLoader {
 	
 	public BakedModelLoader() {
 		models = new HashMap<>();
-		models.put(CableBakedModel.LOCATION_NAME, (state, format, mapper) -> new CableBakedModel(state, format, mapper));
+		models.put(CableBakedModel.LOCATION_NAME, (state, format, mapper) -> new CableBakedModel());
 		models.put(EssentiaPipeBakedModel.LOCATION_NAME, (state, format, mapper) -> new EssentiaPipeBakedModel());
 		models.put(ModularMachineBakedModel.LOCATION_NAME, (state, format, mapper) -> new ModularMachineBakedModel());
 	}

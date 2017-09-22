@@ -1,10 +1,8 @@
 package ladysnake.dissolution.common;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraftforge.common.config.Config;
+
+import java.io.File;
 
 @Config(modid=Reference.MOD_ID, name=Reference.MOD_NAME)
 public class DissolutionConfig {
@@ -43,6 +41,10 @@ public class DissolutionConfig {
 	}
 	
 	public static class Client {
+
+		@Config.LangKey("config.dissolution.client.plugsEverywhere")
+		@Config.Comment("If set to true, modular machines will display plugs on all faces to preserve performance")
+		public boolean plugsEverywhere = false;
 		
 		@Config.LangKey("config.dissolution.client.useShaders")
 		@Config.Comment("Whether this mod should use shaders as an attempt to make things prettier")
@@ -58,7 +60,7 @@ public class DissolutionConfig {
 		
 		@Config.LangKey("config.dissolution.entities.minionsAttackCreepers")
 		@Config.Comment("If true, minions will attack creepers (and probably die in the process)")
-		public boolean minionsAttackCreepers = true;
+		boolean minionsAttackCreepers = true;
 		
 	}
 	
@@ -94,7 +96,7 @@ public class DissolutionConfig {
 		
 		@Config.LangKey("config.dissolution.ghost.flightMode")
 		@Config.Comment("Changes the way ghosts fly.")
-		public DissolutionConfigManager.FlightModes flightMode = DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT;
+		DissolutionConfigManager.FlightModes flightMode = DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT;
 		
 		@Config.LangKey("config.dissolution.ghost.invisibleGhosts")
 		@Config.Comment("If set to true, dead players will be fully invisible.")

@@ -9,17 +9,7 @@ import java.util.Set;
 
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.items.AlchemyModule;
-import ladysnake.dissolution.common.items.ICustomLocation;
-import ladysnake.dissolution.common.items.ItemAlchemyModule;
-import ladysnake.dissolution.common.items.ItemCasing;
-import ladysnake.dissolution.common.items.ItemDebug;
-import ladysnake.dissolution.common.items.ItemEyeUndead;
-import ladysnake.dissolution.common.items.ItemOccularePart;
-import ladysnake.dissolution.common.items.ItemScythe;
-import ladysnake.dissolution.common.items.ItemSepulture;
-import ladysnake.dissolution.common.items.ItemSoulGem;
-import ladysnake.dissolution.common.items.ItemSoulInABottle;
+import ladysnake.dissolution.common.items.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -32,26 +22,34 @@ import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
 
+@SuppressWarnings("WeakerAccess")
 public final class ModItems {
 	
 	/**Used to register stuff*/
 	static final ModItems INSTANCE = new ModItems();
 
 	public static Item CINNABAR;
-	public static ItemDebug DEBUG_ITEM;
-	public static ItemEyeUndead EYE_OF_THE_UNDEAD;
 	public static Item HALITE;
+	public static Item SULFUR;
+	public static ItemCasing WOODEN_CASING;
+	public static ItemDebug DEBUG_ITEM;
+	public static ItemDepleted DEPLETED_CLAY;
+	public static ItemDepleted DEPLETED_COAL;
+	public static ItemEyeUndead EYE_OF_THE_UNDEAD;
+	public static ItemOccularePart BRAIN;
+	public static ItemOccularePart DIAMOND_SHELL;
+	public static ItemOccularePart EMERALD_SHELL;
+	public static ItemOccularePart IRON_SHELL;
+	public static ItemOccularePart GOLD_SHELL;
 	public static ItemOccularePart TIRED_ETCHING;
 	public static ItemScythe IRON_SCYTHE;
-	public static ItemOccularePart IRON_SHELL;
 	public static ItemScythe LURKING_SCYTHE;
 	public static ItemSepulture SEPULTURE;
 	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
-	public static Item SULFUR;
-	public static ItemCasing WOODEN_CASING;
-	
+
 	static Set<Item> allItems = new HashSet<>();
 	
 	@SuppressWarnings("unchecked")
@@ -70,15 +68,21 @@ public final class ModItems {
 		Collections.addAll(allItems, 
 				LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), Reference.Items.LURKING_SCYTHE), 
 				CINNABAR = name(new Item(), Reference.Items.CINNABAR),
-				DEBUG_ITEM = name(new ItemDebug(), Reference.Items.DEBUG), 
+				DEBUG_ITEM = name(new ItemDebug(), Reference.Items.DEBUG),
+				DEPLETED_CLAY = name(new ItemDepleted(), "depleted_clay_ball"),
+				DEPLETED_COAL = name(new ItemDepleted(), "depleted_coal"),
 				EYE_OF_THE_UNDEAD = name(new ItemEyeUndead(), Reference.Items.EYE_DEAD), 
 				HALITE = name(new Item(), "halite"),
 				IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), Reference.Items.SCYTHE_IRON),
-				IRON_SHELL = name(((ItemOccularePart) new ItemOccularePart(1, 500)), "iron_occulare_shell"),
+				BRAIN = name(new ItemOccularePart(), "occulare_brain"),
+				DIAMOND_SHELL = name(new ItemOccularePart(1500), "diamond_occulare_shell"),
+				EMERALD_SHELL = name(new ItemOccularePart(750), "emerald_occulare_shell"),
+				GOLD_SHELL = name(new ItemOccularePart(50), "gold_occulare_shell"),
+				IRON_SHELL = name(new ItemOccularePart(500), "iron_occulare_shell"),
+				TIRED_ETCHING = name(new ItemOccularePart(), "tired_etching"),
 				SEPULTURE = name(new ItemSepulture(), Reference.Items.SEPULTURE),
-				SOUL_IN_A_BOTTLE = name(new ItemSoulInABottle(), Reference.Items.SOULINABOTTLE), 
+				SOUL_IN_A_BOTTLE = name(new ItemSoulInABottle(), Reference.Items.SOUL_IN_A_BOTTLE),
 				SULFUR = name(new Item(), "sulfur"),
-				TIRED_ETCHING = name(new ItemOccularePart(1, 0), "tired_etching"),
 				WOODEN_CASING = name(new ItemCasing(), "wooden_machine_casing"));
 
 		for (AlchemyModule module : AlchemyModule.values()) {
@@ -92,7 +96,13 @@ public final class ModItems {
 		}
 	}
 	
-	void registerOres() {}
+	void registerOres() {
+		OreDictionary.registerOre("blockClay", ModBlocks.DEPLETED_CLAY);
+		OreDictionary.registerOre("clay", DEPLETED_CLAY);
+		OreDictionary.registerOre("blockCoal", ModBlocks.DEPLETED_COAL);
+		OreDictionary.registerOre("coal", DEPLETED_COAL);
+		OreDictionary.registerOre("blockMagma", ModBlocks.DEPLETED_MAGMA);
+	}
 	
 	@SubscribeEvent
     public void remapIds(RegistryEvent.MissingMappings<Item> event) {
@@ -124,14 +134,15 @@ public final class ModItems {
 
 	@SideOnly(Side.CLIENT)
 	private void registerRender(Item item) {
-		registerRender(item, 0, item instanceof ICustomLocation
+		assert item.getRegistryName() != null;
+		registerRender(item, item instanceof ICustomLocation
 				? ((ICustomLocation)item).getModelLocation(item)
 				: new ModelResourceLocation(item.getRegistryName().toString()));
 	}
 	
 	@SideOnly(Side.CLIENT)
-	private void registerRender(Item item, int metadata, ModelResourceLocation loc) {
-		ModelLoader.setCustomModelResourceLocation(item, metadata, loc);
+	private void registerRender(Item item, ModelResourceLocation loc) {
+		ModelLoader.setCustomModelResourceLocation(item, 0, loc);
 	}
 	
 	private ModItems() {}

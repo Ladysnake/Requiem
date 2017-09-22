@@ -14,9 +14,11 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+
 public class ItemOcculare extends Item {
 
-	public ItemOcculare() {
+	ItemOcculare() {
 		super();
 		this.setMaxStackSize(1);
 		this.addPropertyOverride(
@@ -28,7 +30,7 @@ public class ItemOcculare extends Item {
 		);
 		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID, "resurrecting"), 
 				(stack, worldIn, entityIn) ->
-				entityIn == null ? 0.0F
+				entityIn == null || entityIn.getActiveItemStack() != stack ? 0.0F
 						: (entityIn.getActiveItemStack().getItem() != ModItems.EYE_OF_THE_UNDEAD ? 0.0F
 								: (float) (stack.getMaxItemUseDuration() - entityIn.getItemInUseCount()) / 20.0F));
 		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID, "shell"), 
@@ -36,11 +38,11 @@ public class ItemOcculare extends Item {
 					ItemStack shell = getShell(stack);
 					return shell.isEmpty() ? 0f : ((ItemOccularePart)shell.getItem()).getId();
 				});
-		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID, "etching"), 
+/*		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID, "etching"),
 				(stack, worldIn, entityIn) -> {
 					ItemStack etching = getEtching(stack);
 					return etching.isEmpty() ? 0f : ((ItemOccularePart)etching.getItem()).getId();
-				});
+				});*/
 
 	}
 	
@@ -55,22 +57,24 @@ public class ItemOcculare extends Item {
 		return 72000;
 	}
 
+	@Nonnull
 	@Override
 	public EnumAction getItemUseAction(ItemStack stack) {
 		return EnumAction.BOW;
 	}
 
+	@Nonnull
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, @Nonnull EnumHand handIn) {
 		ItemStack itemstack = playerIn.getHeldItem(handIn);
 
 		{
 			playerIn.setActiveHand(handIn);
-			return new ActionResult(EnumActionResult.SUCCESS, itemstack);
+			return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
 		}
 	}
 	
-	public ItemStack getShell(ItemStack stack) {
+	private ItemStack getShell(ItemStack stack) {
 		NBTTagCompound compound = stack.getSubCompound("shell");
 		if(compound != null) {
 			ItemStack shell = new ItemStack(compound);
@@ -80,13 +84,19 @@ public class ItemOcculare extends Item {
 		return new ItemStack(ModItems.IRON_SHELL);
 	}
 	
-	public ItemStack setShell(ItemStack occulare, ItemStack shell) {
-		if(shell.getItem() instanceof ItemOccularePart)
-			occulare.getTagCompound().setTag("shell", shell.serializeNBT());
-		return occulare;
+	public void setShell(ItemStack occulare, ItemStack shell) {
+		if(shell.getItem() instanceof ItemOccularePart) {
+			NBTTagCompound compound = occulare.getTagCompound();
+			if(compound == null) {
+				compound = new NBTTagCompound();
+				compound.setTag("shell", shell.serializeNBT());
+				occulare.setTagCompound(compound);
+			} else
+				compound.setTag("shell", shell.serializeNBT());
+		}
 	}
 	
-	public ItemStack getEtching(ItemStack stack) {
+	private ItemStack getEtching(ItemStack stack) {
 		NBTTagCompound compound = stack.getSubCompound("etching");
 		if(compound != null) {
 			ItemStack etching = new ItemStack(compound);
@@ -97,8 +107,15 @@ public class ItemOcculare extends Item {
 	}
 	
 	public ItemStack setEtching(ItemStack occulare, ItemStack etching) {
-		if(etching.getItem() instanceof ItemOccularePart)
-			occulare.getTagCompound().setTag("etching", etching.serializeNBT());
+		if(etching.getItem() instanceof ItemOccularePart) {
+			NBTTagCompound compound = occulare.getTagCompound();
+			if(compound == null) {
+				compound = new NBTTagCompound();
+				compound.setTag("etching", etching.serializeNBT());
+				occulare.setTagCompound(compound);
+			} else
+				compound.setTag("etching", etching.serializeNBT());
+		}
 		return occulare;
 	}
 

@@ -1,16 +1,11 @@
 package ladysnake.dissolution.common.tileentities;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Optional;
-import java.util.Set;
-
 import com.google.common.collect.ImmutableSet;
-
+import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.blocks.alchemysystem.AbstractPowerConductor;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine.PowerConsumption;
-import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModModularSetups;
 import ladysnake.dissolution.common.items.AlchemyModule;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
@@ -35,22 +30,27 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
+import javax.annotation.Nonnull;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 public class TileEntityModularMachine extends TileEntity implements ITickable {
 	
 	private Set<ItemAlchemyModule> installedModules;
-	private Optional<ISetupInstance> currentSetup = Optional.empty();
+	private ISetupInstance currentSetup = null;
 	private PowerConsumption powerConsumption;
 	private boolean powered = false;
 	private boolean running = false;
-	private boolean keepInventory = false;
-	
+
 	public TileEntityModularMachine() {
 		this.installedModules = new HashSet<>();
 	}
 
 	@Override
 	public void update() {
-		currentSetup.ifPresent(set -> set.onTick());
+		if(currentSetup != null)
+			currentSetup.onTick();
 	}
 	
 	/**
@@ -90,11 +90,9 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 
 	/**
 	 * Attempts to output an ItemStack into a container
-	 * @param world
-	 * @param stack
-	 * @param pos the position of the machine trying to output the stack
+	 * @param stack the stack to output through this machine
 	 * @param face the face interacting with the world, not taking into account the casing's rotation
-	 * @return
+	 * @return what could not be inserted
 	 */
 	public ItemStack tryOutput(ItemStack stack, EnumFacing face) {
 		face = this.adjustFaceOut(face);
@@ -118,7 +116,7 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 		if(added) {
 			this.verifySetup();
 			this.world.markBlockRangeForRenderUpdate(this.pos, this.pos);
-			SetupPowerGenerator.THREADPOOL.submit(() -> ModBlocks.CASING.updatePowerCore(world, pos));
+			SetupPowerGenerator.THREADPOOL.submit(() -> AbstractPowerConductor.updatePowerCore(world, pos));
 			this.markDirty();
 		}
 		return added;
@@ -130,7 +128,8 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 		if(iterator.hasNext()) {
 			ret = new ItemStack(iterator.next());
 			iterator.remove();
-			this.currentSetup.ifPresent(setup -> setup.onRemoval());
+			if(this.currentSetup != null)
+				this.currentSetup.onRemoval();
 			this.verifySetup();
 			this.world.markBlockRangeForRenderUpdate(this.pos, this.pos);
 			this.markDirty();
@@ -139,7 +138,12 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	}
 	
 	public void interact(EntityPlayer playerIn, EnumHand hand, BlockCasing.EnumPartType part, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		this.currentSetup.ifPresent(setup -> setup.onInteract(playerIn, hand, part, adjustFaceIn(facing), hitX, hitY, hitZ));
+		if(this.currentSetup != null)
+			this.currentSetup.onInteract(playerIn, hand, part, adjustFaceIn(facing), hitX, hitY, hitZ);
+	}
+
+	public boolean isPlugAttached(EnumFacing facing, BlockCasing.EnumPartType part) {
+		return ((this.currentSetup != null) && this.currentSetup.isPlugAttached(facing, part));
 	}
 	
 	public Set<ItemAlchemyModule> getInstalledModules() {
@@ -147,11 +151,12 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	}
 	
 	public ISetupInstance getCurrentSetup() {
-		return this.currentSetup.orElse(null);
+		return this.currentSetup;
 	}
 	
 	public void dropContent() {
-		this.currentSetup.ifPresent(setup -> setup.onRemoval());
+		if(this.currentSetup != null)
+			this.currentSetup.onRemoval();
 		if(!this.world.isRemote)
 			for (ItemAlchemyModule module : installedModules) {
 				world.spawnEntity(new EntityItem(this.world, this.pos.getX(), this.pos.getY(), this.pos.getZ(), new ItemStack(module)));
@@ -159,10 +164,10 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 		this.installedModules.clear();
 	}
 	
-	protected void verifySetup() {
+	private void verifySetup() {
 		Set<ItemAlchemyModule> modules = getInstalledModules();
 		System.out.println(ModModularSetups.REGISTRY.getValues());
-		currentSetup = ModModularSetups.REGISTRY.getValues().stream().peek(System.out::println).filter(setup -> setup.isValidSetup(modules)).findAny().map(setup -> setup.getInstance(this));
+		currentSetup = ModModularSetups.REGISTRY.getValues().stream().peek(System.out::println).filter(setup -> setup.isValidSetup(modules)).map(setup -> setup.getInstance(this)).findAny().orElse(null);
 	}
 	
 	public PowerConsumption getPowerConsumption() {
@@ -194,27 +199,30 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	}
 	
 	@Override
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+	public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
 		return hasCapability(capability, facing, BlockCasing.EnumPartType.BOTTOM);
 	}
 	
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing, BlockCasing.EnumPartType part) {
-		return this.currentSetup.map(setup -> setup.hasCapability(capability, adjustFaceIn(facing), part)).orElse(false) || super.hasCapability(capability, facing);
+		return (this.currentSetup != null && this.currentSetup.hasCapability(capability, adjustFaceIn(facing), part)) || super.hasCapability(capability, facing);
 	}
 	
 	@Override
-	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+	public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
 		return getCapability(capability, facing, BlockCasing.EnumPartType.BOTTOM);
 	}
 	
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing, BlockCasing.EnumPartType part) {
-		return this.currentSetup.map(setup -> setup.getCapability(capability, adjustFaceIn(facing), part)).orElse(super.getCapability(capability, facing));
+		T setupCap = null;
+		if(this.currentSetup != null)
+			setupCap = this.currentSetup.getCapability(capability, adjustFaceIn(facing), part);
+		return setupCap == null ? (super.getCapability(capability, facing)) : setupCap;
 	}
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound nbt = new NBTTagCompound();
-		this.writeToNBT(nbt);
+		this.writeToNBTBasic(nbt);
 
 		return new SPacketUpdateTileEntity(getPos(), 0, nbt);
 
@@ -222,33 +230,42 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		this.readFromNBT(pkt.getNbtCompound());
+		this.readFromNBTBasic(pkt.getNbtCompound());
 	}
 
 	@Override
-	public NBTTagCompound getUpdateTag() {
+	public @Nonnull NBTTagCompound getUpdateTag() {
 		NBTTagCompound nbt =  super.getUpdateTag();
-		writeToNBT(nbt);
+		writeToNBTBasic(nbt);
 		return nbt;
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound compound) {
+	public void handleUpdateTag(@Nonnull NBTTagCompound tag) {
+		readFromNBTBasic(tag);
+	}
+
+	private void readFromNBTBasic(NBTTagCompound compound) {
 		super.readFromNBT(compound);
 		NBTTagList modules = compound.getTagList("modules", 10);
 		for (NBTBase mod : modules) {
 			System.out.println(AlchemyModule.valueOf(((NBTTagCompound)mod).getString("type")) + " " + ((NBTTagCompound)mod).getInteger("tier"));
 			this.installedModules.add(ItemAlchemyModule.getFromType(
-					AlchemyModule.valueOf(((NBTTagCompound)mod).getString("type")), 
+					AlchemyModule.valueOf(((NBTTagCompound)mod).getString("type")),
 					((NBTTagCompound)mod).getInteger("tier")));
 		}
 		verifySetup();
-		this.currentSetup.ifPresent(setup -> setup.readFromNBT((NBTTagCompound) compound.getTag("currentSetup")));
 		this.setPowered(compound.getBoolean("powered"));
 	}
-	
+
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+	public void readFromNBT(NBTTagCompound compound) {
+		readFromNBTBasic(compound);
+		if(this.currentSetup != null)
+			this.currentSetup.readFromNBT((NBTTagCompound) compound.getTag("currentSetup"));
+	}
+
+	private	void writeToNBTBasic(NBTTagCompound compound) {
 		super.writeToNBT(compound);
 		NBTTagList modules = new NBTTagList();
 		for (ItemAlchemyModule mod : installedModules) {
@@ -260,13 +277,19 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 			}
 		}
 		compound.setTag("modules", modules);
-		this.currentSetup.ifPresent(setup -> compound.setTag("currentSetup", setup.writeToNBT(new NBTTagCompound())));
 		compound.setBoolean("powered", isPowered());
+	}
+	
+	@Override
+	public @Nonnull NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		writeToNBTBasic(compound);
+		if(this.currentSetup != null)
+			compound.setTag("currentSetup", currentSetup.writeToNBT(new NBTTagCompound()));
 		return compound;
 	}
 	
 	@Override
-	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
+	public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState oldState, @Nonnull IBlockState newState) {
 		return oldState.getBlock() != newState.getBlock() || oldState.withProperty(IPowerConductor.POWERED, newState.getValue(IPowerConductor.POWERED)) != newState;
 	}
 	

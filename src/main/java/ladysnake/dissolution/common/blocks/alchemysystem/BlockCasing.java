@@ -4,6 +4,7 @@ import java.util.Random;
 
 import ladysnake.dissolution.client.models.blocks.PropertyBoolean;
 import ladysnake.dissolution.client.models.blocks.UnlistedPropertyModulePresent;
+import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine;
 import ladysnake.dissolution.common.init.ModItems;
@@ -42,14 +43,21 @@ import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+
 public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	
 	public static final UnlistedPropertyModulePresent MODULES_PRESENT = new UnlistedPropertyModulePresent();
+	public static final PropertyBoolean PLUG_NORTH = new PropertyBoolean("plug_north");
+	public static final PropertyBoolean PLUG_EAST = new PropertyBoolean("plug_east");
+	public static final PropertyBoolean PLUG_SOUTH = new PropertyBoolean("plug_south");
+	public static final PropertyBoolean PLUG_WEST = new PropertyBoolean("plug_west");
 	public static final PropertyBoolean RUNNING = new PropertyBoolean("running");
 	public static final PropertyEnum<EnumPartType> PART = PropertyEnum.create("part", EnumPartType.class);
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 	public static final ResourceLocation CASING_BOTTOM = new ResourceLocation(Reference.MOD_ID, "machine/wooden_machine_casing_bottom");
 	public static final ResourceLocation CASING_TOP = new ResourceLocation(Reference.MOD_ID, "machine/wooden_machine_casing_top");
+	public static final ResourceLocation PLUG = new ResourceLocation(Reference.MOD_ID, "machine/pipe/plug");
 	
 	public BlockCasing() {
 		super();
@@ -84,25 +92,28 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
 		if(state.getValue(PART) == EnumPartType.TOP)
 			pos = pos.down();
-		if(worldIn.getTileEntity(pos) instanceof TileEntityModularMachine) {
-			ISetupInstance setup = ((TileEntityModularMachine)worldIn.getTileEntity(pos)).getCurrentSetup();
+		TileEntity te = worldIn.getTileEntity(pos);
+		if(te instanceof TileEntityModularMachine) {
+			ISetupInstance setup = ((TileEntityModularMachine)te).getCurrentSetup();
 			if(setup instanceof SetupPowerGenerator.Instance)
 				((SetupPowerGenerator.Instance)setup).scheduleUpdate();
 		}
 	}
 	
 	@Override
+	@Deprecated
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
 
+	@Nonnull
 	@SideOnly(Side.CLIENT)
 	public BlockRenderLayer getBlockLayer() {
 		return BlockRenderLayer.CUTOUT;
 	}
 	
 	@Override
-	public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis) {
+	public boolean rotateBlock(World world, @Nonnull BlockPos pos, @Nonnull EnumFacing axis) {
 		BlockPos pos2;
 		if(world.getBlockState(pos).getValue(PART) == EnumPartType.TOP)
 			pos2 = pos.down();
@@ -110,18 +121,29 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 			pos2 = pos.up();
 		return super.rotateBlock(world, pos, axis) && super.rotateBlock(world, pos2, axis);
 	}
-	
+
+	@Nonnull
 	protected BlockStateContainer createBlockState() {
-		return new ExtendedBlockState(this, new IProperty[] {FACING, PART, POWERED}, new IUnlistedProperty[] {MODULES_PRESENT, RUNNING});
+		return new ExtendedBlockState(this, new IProperty[] {FACING, PART, POWERED}, new IUnlistedProperty[] {MODULES_PRESENT, RUNNING, PLUG_EAST, PLUG_NORTH, PLUG_SOUTH, PLUG_WEST});
 	}
 	
+	@Nonnull
 	@Override
-	public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
-		TileEntity te = world.getTileEntity(pos);
-		if(state.getValue(PART) == EnumPartType.BOTTOM && te instanceof TileEntityModularMachine)
-			return ((IExtendedBlockState)state)
-					.withProperty(MODULES_PRESENT, ((TileEntityModularMachine)te).getInstalledModules())
-					.withProperty(RUNNING, ((TileEntityModularMachine)te).isRunning());
+	public IBlockState getExtendedState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
+		TileEntity te = world.getTileEntity(state.getValue(PART) == EnumPartType.BOTTOM ? pos : pos.down());
+		if(te instanceof TileEntityModularMachine) {
+			EnumPartType part = state.getValue(PART);
+			if (part == EnumPartType.BOTTOM)
+				state = ((IExtendedBlockState) state)
+						.withProperty(MODULES_PRESENT, ((TileEntityModularMachine) te).getInstalledModules())
+						.withProperty(RUNNING, ((TileEntityModularMachine) te).isRunning());
+			boolean flag = DissolutionConfig.client.plugsEverywhere;
+			state = ((IExtendedBlockState) state)
+					.withProperty(PLUG_EAST, flag || ((TileEntityModularMachine) te).isPlugAttached(EnumFacing.EAST, part))
+					.withProperty(PLUG_NORTH, flag || ((TileEntityModularMachine) te).isPlugAttached(EnumFacing.NORTH, part))
+					.withProperty(PLUG_WEST, flag || ((TileEntityModularMachine) te).isPlugAttached(EnumFacing.WEST, part))
+					.withProperty(PLUG_SOUTH, flag || ((TileEntityModularMachine) te).isPlugAttached(EnumFacing.SOUTH, part));
+		}
 		return state;
 	}
 
@@ -131,7 +153,7 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	}
 
 	@Override
-	public TileEntity createTileEntity(World worldIn, IBlockState state) {
+	public TileEntity createTileEntity(@Nonnull World worldIn, @Nonnull IBlockState state) {
 		return state.getValue(PART) == EnumPartType.BOTTOM ? new TileEntityModularMachine() : new TileEntityProxy();
 	}
 
@@ -149,25 +171,21 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	
 	@Override
 	public boolean shouldPowerConnect(IBlockAccess worldIn, BlockPos pos, EnumFacing facing) {
-		return worldIn.getBlockState(pos).getValue(PART) == EnumPartType.TOP;
-	}
-	
-	public boolean shouldEssentiaConnect(IBlockAccess worldIn, BlockPos pos, EnumFacing facing) {
-		return true;
+		EnumPartType part = worldIn.getBlockState(pos).getValue(PART);
+		TileEntity te = worldIn.getTileEntity(part == EnumPartType.BOTTOM ? pos : pos.down());
+		return te instanceof TileEntityModularMachine && ((TileEntityModularMachine) te).isPlugAttached(facing, part);
 	}
 
+	@Nonnull
 	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
 		return state.getValue(PART) == EnumPartType.TOP ? Items.AIR : ModItems.WOODEN_CASING;
 	}
 
+	@Nonnull
 	@Override
-	public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
+	@Deprecated
+	public ItemStack getItem(World worldIn, BlockPos pos, @Nonnull IBlockState state) {
 		return new ItemStack(ModItems.WOODEN_CASING);
-	}
-	
-	@Override
-	public EnumPushReaction getMobilityFlag(IBlockState state) {
-		return EnumPushReaction.IGNORE;
 	}
 	
 	@Override
@@ -191,26 +209,33 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	public void setPowered(IBlockAccess worldIn, BlockPos pos, boolean b) {
 		if(worldIn.getBlockState(pos).getValue(PART) == EnumPartType.TOP)
 			pos = pos.down();
-		if (worldIn.getTileEntity(pos) instanceof TileEntityModularMachine) 
-			((TileEntityModularMachine)worldIn.getTileEntity(pos)).setPowered(b);
+		TileEntity te = worldIn.getTileEntity(pos);
+		if (te instanceof TileEntityModularMachine)
+			((TileEntityModularMachine)te).setPowered(b);
 	}
 	
 	@Override
 	public boolean isPowered(IBlockAccess worldIn, BlockPos pos) {
 		if(worldIn.getBlockState(pos).getValue(PART) == EnumPartType.TOP)
 			pos = pos.down();
-		return (worldIn.getTileEntity(pos) instanceof TileEntityModularMachine) && ((TileEntityModularMachine)worldIn.getTileEntity(pos)).isPowered();
+		TileEntity te = worldIn.getTileEntity(pos);
+		return (te instanceof TileEntityModularMachine) && ((TileEntityModularMachine)te).isPowered();
 		
 	}
-	
-	public IBlockState withRotation(IBlockState state, Rotation rot) {
-		return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
+
+	@Nonnull
+	@Deprecated
+	public IBlockState withRotation(@Nonnull IBlockState state, Rotation rot) {
+		return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
 	}
 
-	public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
-		return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(FACING)));
+	@Nonnull
+	@Deprecated
+	public IBlockState withMirror(@Nonnull IBlockState state, Mirror mirrorIn) {
+		return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
 	}
 
+	@Nonnull
 	public IBlockState getStateFromMeta(int meta) {
 		EnumFacing enumfacing = EnumFacing.getHorizontal(meta);
 		return (meta & 8) > 0
@@ -221,8 +246,7 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	}
 
 	public int getMetaFromState(IBlockState state) {
-		int i = 0;
-		i = state.getValue(FACING).getHorizontalIndex();
+		int i = state.getValue(FACING).getHorizontalIndex();
 
 		if (state.getValue(PART) == EnumPartType.TOP) {
 			i |= 8;
@@ -246,7 +270,7 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 		}
 	}
 	
-	public static enum EnumPartType implements IStringSerializable
+	public enum EnumPartType implements IStringSerializable
     {
         TOP,
         BOTTOM;

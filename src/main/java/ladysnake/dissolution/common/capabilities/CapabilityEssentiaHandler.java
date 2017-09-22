@@ -12,9 +12,13 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
+import javax.annotation.Nonnull;
+
 public class CapabilityEssentiaHandler {
 	
+	@SuppressWarnings("ConstantConditions")
 	@CapabilityInject(IEssentiaHandler.class)
+	@Nonnull
 	public static final Capability<IEssentiaHandler> CAPABILITY_ESSENTIA = null;
 	
 	public static void register() {
@@ -29,7 +33,7 @@ public class CapabilityEssentiaHandler {
         return null;
     }
     
-    public static interface IEssentiaHandlerModifiable {
+    public interface IEssentiaHandlerModifiable {
     	void setContent(EssentiaStack content);
     	void setMaxSize(int maxSize);
     }
@@ -113,17 +117,18 @@ public class CapabilityEssentiaHandler {
     	
     }
     
-    public static class Provider implements ICapabilitySerializable<NBTTagCompound> {
+    @SuppressWarnings("ConstantConditions")
+	public static class Provider implements ICapabilitySerializable<NBTTagCompound> {
 
 		IEssentiaHandler instance = CAPABILITY_ESSENTIA.getDefaultInstance();
 		
 		@Override
-		public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+		public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
 			return capability == CAPABILITY_ESSENTIA;
 		}
 
 		@Override
-		public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+		public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
 			return hasCapability(capability, facing) ? CAPABILITY_ESSENTIA.cast(instance) : null;
 		}
 
@@ -157,7 +162,8 @@ public class CapabilityEssentiaHandler {
 			NBTTagCompound compound = (NBTTagCompound) nbt;
 			instance.setSuction(compound.getFloat("suction"), EssentiaTypes.valueOf(compound.getString("suctionType")));
 			if(instance instanceof IEssentiaHandlerModifiable) {
-				((IEssentiaHandlerModifiable)instance).setContent(new EssentiaStack((NBTTagCompound)nbt));
+				((IEssentiaHandlerModifiable)instance).setContent(new EssentiaStack(compound));
+				((IEssentiaHandlerModifiable)instance).setMaxSize(compound.getInteger("maxSize"));
 			}
 		}
     	

@@ -1,94 +1,34 @@
 package ladysnake.dissolution.client.models.blocks;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Function;
-
-import ladysnake.dissolution.client.renders.blocks.DissolutionModelLoader;
+import ladysnake.dissolution.client.models.DissolutionModelLoader;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockPowerCable;
-import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ItemOverrideList;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
-import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.property.IExtendedBlockState;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CableBakedModel implements IBakedModel {
 	
-	public static final String LOCATION_NAME = "bakedpipe";
+	static final String LOCATION_NAME = "bakedpipe";
 	public static final ModelResourceLocation BAKED_MODEL = new ModelResourceLocation(Reference.MOD_ID + ":" + LOCATION_NAME);
 	
-	public static final ResourceLocation CENTER = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_center");
-	public static final ResourceLocation DOWN = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_down");
-	public static final ResourceLocation EAST = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_east");
-	public static final ResourceLocation NORTH = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_north");
-	public static final ResourceLocation SOUTH = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_south");
-	public static final ResourceLocation UP = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_up");
-	public static final ResourceLocation WEST = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_west");
-	
-	private TextureAtlasSprite spritePowered;
-	private TextureAtlasSprite spriteUnpowered;
-    private VertexFormat format;
+	public static final ResourceLocation INTERSECTION = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_intersection");
+	public static final ResourceLocation SECTION = new ResourceLocation(Reference.MOD_ID, "machine/pipe/resonant_pipe_section");
+	public static final ResourceLocation START = new ResourceLocation(Reference.MOD_ID, "machine/pipe/resonant_pipe_start");
     
-    public CableBakedModel(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
-        this.format = format;
-        spritePowered = bakedTextureGetter.apply(PowerCableISBM.PIPE_TEXTURE);
-        spriteUnpowered = bakedTextureGetter.apply(PowerCableISBM.PIPE_TEXTURE_UNPOWERED);
-    }
+    CableBakedModel() {}
     
-    private void putVertex(UnpackedBakedQuad.Builder builder, Vec3d normal, double x, double y, double z, float u, float v) {
-        for (int e = 0; e < format.getElementCount(); e++) {
-            switch (format.getElement(e).getUsage()) {
-                case POSITION:
-                    builder.put(e, (float)x, (float)y, (float)z, 1.0f);
-                    break;
-                case COLOR:
-                    builder.put(e, 1.0f, 1.0f, 1.0f, 1.0f);
-                    break;
-                case UV:
-                    if (format.getElement(e).getIndex() == 0) {
-                        u = spritePowered.getInterpolatedU(u);
-                        v = spritePowered.getInterpolatedV(v);
-                        builder.put(e, u, v, 0f, 1f);
-                        break;
-                    }
-                case NORMAL:
-                    builder.put(e, (float) normal.x, (float) normal.y, (float) normal.z, 0f);
-                    break;
-                default:
-                    builder.put(e);
-                    break;
-            }
-        }
-    }
-    
-    private BakedQuad createQuad(Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4, TextureAtlasSprite sprite) {
-        Vec3d normal = v3.subtract(v2).crossProduct(v1.subtract(v2)).normalize();
-
-        UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(format);
-        builder.setTexture(sprite);
-        putVertex(builder, normal, v1.x, v1.y, v1.z, 0, 0);
-        putVertex(builder, normal, v2.x, v2.y, v2.z, 0, 16);
-        putVertex(builder, normal, v3.x, v3.y, v3.z, 16, 16);
-        putVertex(builder, normal, v4.x, v4.y, v4.z, 16, 0);
-        return builder.build();
-    }
-    
+    @Nonnull
     @Override
     public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
     	List<BakedQuad> quads = new ArrayList<>();
-    	
-    	quads.addAll(DissolutionModelLoader.getModel(CENTER).getQuads(state, side, rand));
 
     	IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
         Boolean north = extendedBlockState.getValue(BlockPowerCable.NORTH);
@@ -97,19 +37,32 @@ public class CableBakedModel implements IBakedModel {
         Boolean east = extendedBlockState.getValue(BlockPowerCable.EAST);
         Boolean up = extendedBlockState.getValue(BlockPowerCable.UP);
         Boolean down = extendedBlockState.getValue(BlockPowerCable.DOWN);
+
+        if(north && south && !(west || east || up || down)) {
+        	quads.addAll(DissolutionModelLoader.getModel(SECTION, ModelRotation.X0_Y0).getQuads(state, side, rand));
+        	return quads;
+		} else if (west && east && !(north || south || up || down)) {
+			quads.addAll(DissolutionModelLoader.getModel(SECTION, ModelRotation.X0_Y90).getQuads(state, side, rand));
+			return quads;
+		} else if (up && down && !(north || south || west || east)) {
+			quads.addAll(DissolutionModelLoader.getModel(SECTION, ModelRotation.X0_Y90).getQuads(state, side, rand));
+			return quads;
+		}
+
+		quads.addAll(DissolutionModelLoader.getModel(INTERSECTION).getQuads(state, side, rand));
         
         if(up)
-        	quads.addAll(DissolutionModelLoader.getModel(UP).getQuads(state, side, rand));
+        	quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X270_Y0).getQuads(state, side, rand));
         if(down)
-        	quads.addAll(DissolutionModelLoader.getModel(DOWN).getQuads(state, side, rand));
+        	quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X90_Y0).getQuads(state, side, rand));
         if(north)
-        	quads.addAll(DissolutionModelLoader.getModel(NORTH).getQuads(state, side, rand));
+        	quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y0).getQuads(state, side, rand));
         if(south)
-        	quads.addAll(DissolutionModelLoader.getModel(SOUTH).getQuads(state, side, rand));
+        	quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y180).getQuads(state, side, rand));
         if(west)
-        	quads.addAll(DissolutionModelLoader.getModel(WEST).getQuads(state, side, rand));
+        	quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y270).getQuads(state, side, rand));
         if(east)
-        	quads.addAll(DissolutionModelLoader.getModel(EAST).getQuads(state, side, rand));
+        	quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y90).getQuads(state, side, rand));
     	return quads;
     }
 
@@ -208,14 +161,16 @@ public class CableBakedModel implements IBakedModel {
 		return false;
 	}
 
-	@Override
+	@Nonnull
+    @Override
 	public TextureAtlasSprite getParticleTexture() {
-		return DissolutionModelLoader.getModel(CENTER).getParticleTexture();
+		return DissolutionModelLoader.getModel(START).getParticleTexture();
 	}
 
-	@Override
+	@Nonnull
+    @Override
 	public ItemOverrideList getOverrides() {
-		return null;
+		return ItemOverrideList.NONE;
 	}
 
 }

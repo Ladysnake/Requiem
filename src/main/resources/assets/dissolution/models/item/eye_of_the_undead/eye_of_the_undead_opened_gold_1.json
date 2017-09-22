@@ -1,0 +1,6 @@
+{
+    "parent": "dissolution:item/eye_of_the_undead/eye_of_the_undead_opened_diamond_1",
+    "textures": {
+      "layer0": "dissolution:items/occularia/gold_occulare_shell"
+    }
+}

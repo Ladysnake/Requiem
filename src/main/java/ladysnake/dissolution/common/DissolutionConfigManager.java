@@ -1,18 +1,8 @@
 package ladysnake.dissolution.common;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Files;
-
 import ladysnake.dissolution.common.entity.EntityWanderingSoul;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraftforge.common.config.Config;
@@ -23,19 +13,23 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.logging.Logger;
+
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public final class DissolutionConfigManager {
 	
 	private static ImmutableSet<Class<? extends EntityMob>> TARGET_BLACKLIST;
-	
-	public static Configuration config;
-	
-	public static enum FlightModes {
+
+	public enum FlightModes {
 		NO_FLIGHT,
 		CUSTOM_FLIGHT,
 		CREATIVE_FLIGHT,
-		SPECTATOR_FLIGHT;
-		
+		SPECTATOR_FLIGHT
 	}
 	
 	public static boolean isFlightEnabled(FlightModes flightMode) {
@@ -46,9 +40,9 @@ public final class DissolutionConfigManager {
 		return TARGET_BLACKLIST.contains(EntityIn.getClass());
 	}
 	
-	public static void loadConfig(File configFile) {
-    	
-		config = new Configuration(configFile);
+	static void loadConfig(File configFile) {
+
+		Configuration config = new Configuration(configFile);
 		Property versionProp = config.get(
 	       		"Don't touch that", 
 	       		"version", 
@@ -63,9 +57,10 @@ public final class DissolutionConfigManager {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-	    	configFile.delete();
-	    	ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);
-	    	versionProp.set(2.0);
+	    	if(configFile.delete()) {
+				ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);
+				versionProp.set(2.0);
+			}
 	    }
 	    
         buildMinionAttackBlacklist();
@@ -84,7 +79,7 @@ public final class DissolutionConfigManager {
         }
     }
 	
-	protected static void fixConfigTypes(File configFile) {
+	static void fixConfigTypes(File configFile) {
     	File temp = new File(configFile.getParentFile(), "temp");
     	boolean foundOffender = false;
     	try (BufferedReader reader = Files.newReader(configFile, Charset.defaultCharset()); 
@@ -100,11 +95,12 @@ public final class DissolutionConfigManager {
     	} catch (IOException e) {
     		e.printStackTrace();
     	}
-    	if(foundOffender) {
-    		configFile.delete();
-    		temp.renameTo(configFile);
+    	if(foundOffender && configFile.delete()) {
+    		if(!temp.renameTo(configFile))
+				Logger.getGlobal().warning("Could not edit the config file");
     	} else {
-    		temp.delete();
+    		if(!temp.delete())
+    			temp.deleteOnExit();
     	}
 	}
 	
