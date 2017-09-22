@@ -1,22 +1,30 @@
 {
-	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
+	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
 	"textures": {"2": "machines/pipe"},
 	"elements": [
 		{
 			"name": "Plug",
-			"from": [13, 6, 6],
-			"to": [16, 10, 10],
-			"shade": true,
+			"from": [6, 6, 0],
+			"to": [10, 10, 3],
 			"faces": {
-				"north": {"uv": [10, 0, 13, 4], "texture": "#2"},
-				"east": {"uv": [6, 0, 10, 4], "texture": "#2"},
-				"south": {"uv": [10, 0, 13, 4], "texture": "#2"},
-				"west": {"uv": [6, 0, 10, 4], "texture": "#2"},
-				"up": {"uv": [10, 0, 13, 4], "texture": "#2"},
-				"down": {"uv": [10, 0, 13, 4], "texture": "#2"}
+				"north": {"uv": [6, 0, 10, 4], "texture": "#2"},
+				"east": {"uv": [10, 0, 13, 4], "texture": "#2"},
+				"south": {"uv": [6, 0, 10, 4], "texture": "#2"},
+				"west": {"uv": [10, 0, 13, 4], "texture": "#2"},
+				"up": {
+					"uv": [10, 0, 13, 4],
+					"texture": "#2",
+					"rotation": 270
+				},
+				"down": {
+					"uv": [10, 0, 13, 4],
+					"texture": "#2",
+					"rotation": 90
+				}
 			}
 		}
 	],
+	"groups": [0],
 	"display": {
 		"thirdperson_righthand": {
 			"rotation": [75, 45, 0],
@@ -38,7 +46,7 @@
 			"translation": [0, 3.5, 0],
 			"scale": [0.4, 0.4, 0.4]
 		},
-		"head": {},
+		"head": {"scale": [1, 1, 1]},
 		"ground": {
 			"rotation": [0, 0, 0],
 			"translation": [0, 3, 0],

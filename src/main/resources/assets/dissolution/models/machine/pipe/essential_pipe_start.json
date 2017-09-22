@@ -1,5 +1,5 @@
 {
-	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
+	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
 	"textures": {
 		"0": "machines/pipe",
 		"particle": "machines/pipe"
@@ -7,19 +7,27 @@
 	"elements": [
 		{
 			"name": "Gold",
-			"from": [11, 6, 6],
-			"to": [16, 10, 10],
-			"shade": true,
+			"from": [6, 6, 0],
+			"to": [10, 10, 5],
 			"faces": {
-				"north": {"uv": [11, 10, 16, 14], "texture": "#0"},
-				"east": {"uv": [11, 10, 15, 14], "texture": "#0"},
-				"south": {"uv": [16, 10, 11, 14], "texture": "#0"},
-				"west": {"uv": [11, 10, 15, 14], "texture": "#0"},
-				"up": {"uv": [16, 10, 11, 14], "texture": "#0"},
-				"down": {"uv": [16, 10, 11, 14], "texture": "#0"}
+				"north": {"uv": [11, 10, 15, 14], "texture": "#0"},
+				"east": {"uv": [16, 10, 11, 14], "texture": "#0"},
+				"south": {"uv": [11, 10, 15, 14], "texture": "#0"},
+				"west": {"uv": [11, 10, 16, 14], "texture": "#0"},
+				"up": {
+					"uv": [16, 10, 11, 14],
+					"texture": "#0",
+					"rotation": 270
+				},
+				"down": {
+					"uv": [16, 10, 11, 14],
+					"texture": "#0",
+					"rotation": 90
+				}
 			}
 		}
 	],
+	"groups": [0],
 	"display": {
 		"thirdperson_righthand": {
 			"rotation": [75, 45, 0],

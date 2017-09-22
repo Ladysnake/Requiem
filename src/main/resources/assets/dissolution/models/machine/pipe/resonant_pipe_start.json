@@ -1,5 +1,5 @@
 {
-	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
+	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
 	"textures": {
 		"0": "machines/pipe",
 		"particle": "machines/pipe"
@@ -7,57 +7,86 @@
 	"elements": [
 		{
 			"name": "Glass",
-			"from": [13, 6, 6],
-			"to": [16, 10, 10],
-			"shade": true,
+			"from": [6, 6, 0],
+			"to": [10, 10, 3],
 			"faces": {
-				"north": {"uv": [6, 6, 9, 10], "texture": "#0"},
-				"south": {"uv": [6, 6, 9, 10], "texture": "#0"},
-				"up": {"uv": [6, 6, 9, 10], "texture": "#0"},
-				"down": {"uv": [6, 6, 9, 10], "texture": "#0"}
+				"east": {"uv": [6, 6, 9, 10], "texture": "#0"},
+				"west": {"uv": [6, 6, 9, 10], "texture": "#0"},
+				"up": {
+					"uv": [6, 6, 9, 10],
+					"texture": "#0",
+					"rotation": 270
+				},
+				"down": {
+					"uv": [6, 6, 9, 10],
+					"texture": "#0",
+					"rotation": 90
+				}
 			}
 		},
 		{
 			"name": "Quartz",
-			"from": [13, 7, 7],
-			"to": [16, 9, 9],
-			"shade": true,
+			"from": [7, 7, 0],
+			"to": [9, 9, 3],
 			"faces": {
-				"north": {"uv": [0, 14, 3, 16], "texture": "#0"},
-				"east": {"uv": [0, 14, 2, 16], "texture": "#0"},
-				"south": {"uv": [0, 14, 3, 16], "texture": "#0"},
-				"west": {"uv": [0, 14, 2, 16], "texture": "#0"},
-				"up": {"uv": [0, 14, 3, 16], "texture": "#0"},
-				"down": {"uv": [0, 14, 3, 16], "texture": "#0"}
+				"north": {"uv": [0, 14, 2, 16], "texture": "#0"},
+				"east": {"uv": [0, 14, 3, 16], "texture": "#0"},
+				"south": {"uv": [0, 14, 2, 16], "texture": "#0"},
+				"west": {"uv": [0, 14, 3, 16], "texture": "#0"},
+				"up": {
+					"uv": [0, 14, 3, 16],
+					"texture": "#0",
+					"rotation": 270
+				},
+				"down": {
+					"uv": [0, 14, 3, 16],
+					"texture": "#0",
+					"rotation": 90
+				}
 			}
 		},
 		{
 			"name": "Glass",
-			"from": [16, 10, 10],
-			"to": [13, 6, 6],
-			"shade": true,
+			"from": [10, 10, 3],
+			"to": [6, 6, 0],
 			"faces": {
-				"north": {"uv": [6, 6, 9, 10], "texture": "#0"},
-				"south": {"uv": [6, 6, 9, 10], "texture": "#0"},
-				"up": {"uv": [6, 6, 9, 10], "texture": "#0"},
-				"down": {"uv": [6, 6, 9, 10], "texture": "#0"}
+				"east": {"uv": [6, 6, 9, 10], "texture": "#0"},
+				"west": {"uv": [6, 6, 9, 10], "texture": "#0"},
+				"up": {
+					"uv": [6, 6, 9, 10],
+					"texture": "#0",
+					"rotation": 270
+				},
+				"down": {
+					"uv": [6, 6, 9, 10],
+					"texture": "#0",
+					"rotation": 90
+				}
 			}
 		},
 		{
 			"name": "Iron",
-			"from": [11, 6, 6],
-			"to": [13, 10, 10],
-			"shade": true,
+			"from": [6, 6, 3],
+			"to": [10, 10, 5],
 			"faces": {
-				"north": {"uv": [6, 6, 4, 10], "texture": "#0"},
-				"east": {"uv": [0, 6, 4, 10], "texture": "#0"},
-				"south": {"uv": [4, 6, 6, 10], "texture": "#0"},
-				"west": {"uv": [0, 6, 4, 10], "texture": "#0"},
-				"up": {"uv": [4, 6, 6, 10], "texture": "#0"},
-				"down": {"uv": [4, 6, 6, 10], "texture": "#0"}
+				"north": {"uv": [0, 6, 4, 10], "texture": "#0"},
+				"east": {"uv": [4, 6, 6, 10], "texture": "#0"},
+				"south": {"uv": [0, 6, 4, 10], "texture": "#0"},
+				"west": {"uv": [6, 6, 4, 10], "texture": "#0"},
+				"up": {
+					"uv": [4, 6, 6, 10],
+					"texture": "#0",
+					"rotation": 270
+				},
+				"down": {
+					"uv": [4, 6, 6, 10],
+					"texture": "#0",
+					"rotation": 90
+				}
 			}
 		}
 	],
+	"groups": [0, 1, 2, 3],
 	"display": {
 		"thirdperson_righthand": {
 			"rotation": [75, 45, 0],
