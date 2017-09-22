@@ -1,8 +1,5 @@
 package ladysnake.dissolution.client.models.blocks;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ladysnake.dissolution.client.models.DissolutionModelLoader;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockEssentiaPipe;
@@ -14,6 +11,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.property.IExtendedBlockState;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EssentiaPipeBakedModel implements IBakedModel {
 	

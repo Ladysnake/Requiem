@@ -52,17 +52,17 @@ public class CableBakedModel implements IBakedModel {
 		quads.addAll(DissolutionModelLoader.getModel(INTERSECTION).getQuads(state, side, rand));
         
         if(up)
-        	quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X90_Y0).getQuads(state, side, rand));
-        if(down)
         	quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X270_Y0).getQuads(state, side, rand));
+        if(down)
+        	quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X90_Y0).getQuads(state, side, rand));
         if(north)
-        	quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y180).getQuads(state, side, rand));
-        if(south)
         	quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y0).getQuads(state, side, rand));
+        if(south)
+        	quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y180).getQuads(state, side, rand));
         if(west)
-        	quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y90).getQuads(state, side, rand));
-        if(east)
         	quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y270).getQuads(state, side, rand));
+        if(east)
+        	quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y90).getQuads(state, side, rand));
     	return quads;
     }
 

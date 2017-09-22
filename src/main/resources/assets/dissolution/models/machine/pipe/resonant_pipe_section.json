@@ -1,5 +1,5 @@
 {
-	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
+	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
 	"textures": {
 		"0": "machines/pipe",
 		"particle": "machines/pipe"
@@ -9,11 +9,8 @@
 			"name": "Glass",
 			"from": [6, 6, 0],
 			"to": [10, 10, 16],
-			"shade": true,
 			"faces": {
-				"north": {"uv": [0, 0, 1, 1], "texture": "#0"},
 				"east": {"uv": [6, 6, 9, 10], "texture": "#0"},
-				"south": {"uv": [0, 0, 1, 1], "texture": "#0"},
 				"west": {"uv": [6, 6, 9, 10], "texture": "#0"},
 				"up": {
 					"uv": [6, 6, 9, 10],
@@ -23,7 +20,7 @@
 				"down": {
 					"uv": [6, 6, 9, 10],
 					"texture": "#0",
-					"rotation": 90
+					"rotation": 270
 				}
 			}
 		},
@@ -31,34 +28,30 @@
 			"name": "Quartz",
 			"from": [7, 7, 0],
 			"to": [9, 9, 16],
-			"shade": true,
 			"faces": {
-				"north": {"uv": [0, 14, 2, 16], "texture": "#0"},
+				"north": {"uv": [14, 14, 16, 16], "texture": "#0"},
 				"east": {"uv": [0, 14, 16, 16], "texture": "#0"},
 				"south": {"uv": [0, 14, 2, 16], "texture": "#0"},
 				"west": {"uv": [0, 14, 16, 16], "texture": "#0"},
-				"up": {"uv": [0, 14, 16, 16], "texture": "#0"},
-				"down": {"uv": [0, 14, 16, 16], "texture": "#0"}
+				"up": {
+					"uv": [0, 14, 16, 16],
+					"texture": "#0",
+					"rotation": 90
+				},
+				"down": {
+					"uv": [0, 14, 16, 16],
+					"texture": "#0",
+					"rotation": 270
+				}
 			}
 		},
 		{
 			"name": "Glass",
 			"from": [10, 10, 16],
 			"to": [6, 6, 0],
-			"shade": true,
 			"faces": {
-				"north": {"uv": [6, 6, 6, 6], "texture": "#0"},
-				"east": {
-					"uv": [6, 6, 9, 10],
-					"texture": "#0",
-					"rotation": 90
-				},
-				"south": {"uv": [6, 6, 6, 6], "texture": "#0"},
-				"west": {
-					"uv": [6, 6, 9, 10],
-					"texture": "#0",
-					"rotation": 90
-				},
+				"east": {"uv": [6, 6, 9, 10], "texture": "#0"},
+				"west": {"uv": [6, 6, 9, 10], "texture": "#0"},
 				"up": {
 					"uv": [6, 6, 9, 10],
 					"texture": "#0",
@@ -67,11 +60,12 @@
 				"down": {
 					"uv": [6, 6, 9, 10],
 					"texture": "#0",
-					"rotation": 90
+					"rotation": 270
 				}
 			}
 		}
 	],
+	"groups": [0, 1, 2],
 	"display": {
 		"thirdperson_righthand": {
 			"rotation": [75, 45, 0],
