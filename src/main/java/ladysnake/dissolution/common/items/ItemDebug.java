@@ -10,6 +10,7 @@ import ladysnake.dissolution.common.capabilities.CapabilityEssentiaHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
+import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -92,10 +93,9 @@ public class ItemDebug extends Item implements ISoulInteractable {
 			}
 			break;
 		case 7 :
-			if(!CapabilityIncorporealHandler.getHandler(playerIn).getDisguise().isPresent())
-				CapabilityIncorporealHandler.getHandler(playerIn).setDisguise(UUID.fromString("70a33f8a-5fb0-46fd-b6fd-295130dcb464"));
-			else
-				CapabilityIncorporealHandler.getHandler(playerIn).setDisguise(null);
+			ItemStack eye = new ItemStack(ModItems.EYE_OF_THE_UNDEAD);
+			ModItems.EYE_OF_THE_UNDEAD.setShell(eye, new ItemStack(ModItems.GOLD_SHELL));
+			playerIn.addItemStackToInventory(eye);
 			break;
 		default : break;
 		}

@@ -2,7 +2,6 @@ package ladysnake.dissolution.common;
 
 
 import ladysnake.dissolution.common.init.CommonProxy;
-import ladysnake.dissolution.common.init.ModModularSetups;
 import ladysnake.dissolution.common.inventory.DissolutionTab;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.common.Mod;

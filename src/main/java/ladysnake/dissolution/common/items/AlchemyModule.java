@@ -15,8 +15,7 @@ public class AlchemyModule {
 	
 	public static final AlchemyModule CONTAINER = new AlchemyModule("container", 1, 0b001);
 	public static final AlchemyModule CRYSTALLIZER = new AlchemyModule("crystallizer", 1, 0b010);
-	public static final AlchemyModule ESSENTIAL_INTERFACE = new AlchemyModule("essential_interface", 1, 0b100);
-	public static final AlchemyModule MATERIAL_INTERFACE = new AlchemyModule("material_interface", 1, 0b100);
+	public static final AlchemyModule ALCHEMY_INTERFACE = new AlchemyModule("alchemical_interface", 1, 0b100);
 	public static final AlchemyModule GENERATOR = new AlchemyModule("resonant_generator", 1, 0b011);
 	public static final AlchemyModule MINERAL_FILTER = new AlchemyModule("mineral_filter", 3, 0b010);
 	public static final AlchemyModule SOUL_FILTER = new AlchemyModule("soul_filter", 3, 0b010);
@@ -28,7 +27,7 @@ public class AlchemyModule {
 	 * Indicates which machine slots are used by this module. <br/>
 	 * If another module has an incompatible flag, they will not be able to be installed together.
 	 */
-	public final int slotsTaken;
+	private final int slotsTaken;
 	private final List<AlchemyModule> aliases;
 
 	public AlchemyModule(String name, int maxTier, int slotsTaken, AlchemyModule... aliases) {

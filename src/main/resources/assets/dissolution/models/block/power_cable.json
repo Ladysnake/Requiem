@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
 	"textures": {
-		"0": "dissolution:machines/resonant_pipe",
-		"particle": "dissolution:machines/resonant_pipe"
+		"0": "dissolution:machines/pipe",
+		"particle": "dissolution:machines/pipe"
 	},
 	"elements": [
 		{

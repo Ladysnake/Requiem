@@ -1,19 +1,15 @@
 package ladysnake.dissolution.common.registries.modularsetups;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.common.collect.ImmutableSet;
-
 import ladysnake.dissolution.api.EssentiaStack;
 import ladysnake.dissolution.api.EssentiaTypes;
 import ladysnake.dissolution.api.IEssentiaHandler;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing.EnumPartType;
+import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.capabilities.CapabilityEssentiaHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
-import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.items.AlchemyModule;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
@@ -25,11 +21,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SetupOreSieve extends ModularMachineSetup {
 
@@ -37,7 +33,7 @@ public class SetupOreSieve extends ModularMachineSetup {
 	private final Map<Item, EssentiaStack> essentiaConversions;
 	private static final ImmutableSet<ItemAlchemyModule> setup = ImmutableSet.of(
 			ItemAlchemyModule.getFromType(AlchemyModule.CONTAINER, 1),
-			ItemAlchemyModule.getFromType(AlchemyModule.MATERIAL_INTERFACE, 1),
+			ItemAlchemyModule.getFromType(AlchemyModule.ALCHEMY_INTERFACE, 1),
 			ItemAlchemyModule.getFromType(AlchemyModule.MINERAL_FILTER, 1));
 
 	public SetupOreSieve() {
@@ -64,6 +60,7 @@ public class SetupOreSieve extends ModularMachineSetup {
 		return setup;
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	public class Instance implements ISetupInstance {
 
 		TileEntityModularMachine tile;
@@ -73,7 +70,7 @@ public class SetupOreSieve extends ModularMachineSetup {
 		private int progressTicks;
 		private int processingTime;
 
-		public Instance(TileEntityModularMachine te) {
+		Instance(TileEntityModularMachine te) {
 			super();
 			this.tile = te;
 			this.input = new InputItemHandler(Blocks.CLAY, Blocks.COAL_BLOCK, Blocks.MAGMA);
@@ -129,7 +126,16 @@ public class SetupOreSieve extends ModularMachineSetup {
 			}
 			return null;
 		}
-		
+
+		@Override
+		public boolean isPlugAttached(EnumFacing facing, EnumPartType part) {
+			TileEntity neighbour = tile.getWorld().getTileEntity((part == EnumPartType.BOTTOM ? tile.getPos() : tile.getPos().up()).offset(facing));
+			return (part == EnumPartType.TOP && (tile.getWorld().getBlockState(tile.getPos().up().offset(facing)).getBlock() instanceof IPowerConductor
+					|| (neighbour != null && neighbour.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite()))))
+				|| (part == EnumPartType.BOTTOM && (neighbour != null && (neighbour.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite())
+					|| neighbour.hasCapability(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA, facing.getOpposite()))));
+		}
+
 		@Override
 		public void readFromNBT(NBTTagCompound compound) {
 			CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().readNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, input, EnumFacing.EAST, compound.getTag("input"));

@@ -3,7 +3,7 @@ package ladysnake.dissolution.common.items;
 import java.util.HashMap;
 import java.util.Map;
 
-import ladysnake.dissolution.client.renders.blocks.DissolutionModelLoader;
+import ladysnake.dissolution.client.models.DissolutionModelLoader;
 import ladysnake.dissolution.common.Reference;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.model.ModelRotation;
@@ -62,7 +62,9 @@ public class ItemAlchemyModule extends Item implements ICustomLocation {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public ModelResourceLocation getModelLocation(Item item) {
+		assert item.getRegistryName() != null;
 		return new ModelResourceLocation(item.getRegistryName().getResourceDomain() + ":machines/" + item.getRegistryName().getResourcePath());
 	}
 	

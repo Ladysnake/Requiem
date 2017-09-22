@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
-	"textures": {"5": "machines/resonant_generator"},
+	"textures": {"5": "dissolution:machines/resonant_generator"},
 	"elements": [
 		{
 			"name": "Base",

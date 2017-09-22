@@ -21,7 +21,7 @@ public class PowerCableISBM implements IModel {
 	@Override
 	public IBakedModel bake(IModelState state, VertexFormat format,
 			Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
-		return new CableBakedModel(state, format, bakedTextureGetter);
+		return new CableBakedModel();
 	}
 	
     @Override

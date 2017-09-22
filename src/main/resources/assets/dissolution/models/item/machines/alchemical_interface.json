@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
-	"textures": {"3": "machines/alchemical_interface"},
+	"textures": {"3": "dissolution:machines/alchemical_interface"},
 	"elements": [
 		{
 			"name": "Interface",

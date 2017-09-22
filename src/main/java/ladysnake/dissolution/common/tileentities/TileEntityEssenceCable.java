@@ -1,15 +1,17 @@
 package ladysnake.dissolution.common.tileentities;
 
-import java.lang.ref.WeakReference;
-
 import ladysnake.dissolution.api.IEssentiaHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityEssentiaHandler;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraftforge.common.capabilities.Capability;
 
+import javax.annotation.Nonnull;
+
+@SuppressWarnings("ConstantConditions")
 public class TileEntityEssenceCable extends TileEntity implements ITickable {
 	
 	private IEssentiaHandler essentiaHandler;
@@ -48,21 +50,25 @@ public class TileEntityEssenceCable extends TileEntity implements ITickable {
 	}
 	
 	@Override
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-		return capability == CapabilityEssentiaHandler.CAPABILITY_ESSENTIA || super.hasCapability(capability, facing);
+	public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
+		//noinspection ConstantConditions
+		return (capability == CapabilityEssentiaHandler.CAPABILITY_ESSENTIA) || super.hasCapability(capability, facing);
 	}
 	
 	@Override
-	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+	public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
+		//noinspection ConstantConditions
 		if(capability == CapabilityEssentiaHandler.CAPABILITY_ESSENTIA)
 			return CapabilityEssentiaHandler.CAPABILITY_ESSENTIA.cast(essentiaHandler);
 		return super.getCapability(capability, facing);
 	}
 	
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+	public @Nonnull NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		compound = super.writeToNBT(compound);
-		compound.setTag("essentiaHandler", CapabilityEssentiaHandler.CAPABILITY_ESSENTIA.getStorage().writeNBT(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA, this.essentiaHandler, null));
+		NBTBase essentiaCompound = CapabilityEssentiaHandler.CAPABILITY_ESSENTIA.getStorage().writeNBT(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA, this.essentiaHandler, null);
+		if(essentiaCompound != null)
+			compound.setTag("essentiaHandler", essentiaCompound);
 		compound.setInteger("cooldown", transferCooldown);
 		return compound;
 	}
@@ -73,7 +79,7 @@ public class TileEntityEssenceCable extends TileEntity implements ITickable {
 		try {
 			CapabilityEssentiaHandler.CAPABILITY_ESSENTIA.getStorage().readNBT(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA, essentiaHandler, null, compound.getCompoundTag("essentiaHandler"));
 			this.transferCooldown = compound.getInteger("cooldown");
-		} catch (NullPointerException e) {}
+		} catch (NullPointerException | IllegalArgumentException ignored) {}
 	}
 
 }

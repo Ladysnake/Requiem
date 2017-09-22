@@ -1,0 +1,6 @@
+{
+    "parent": "dissolution:item/eye_of_the_undead/eye_of_the_undead_empty_diamond",
+    "textures": {
+      "layer2": "dissolution:items/occularia/occulare_eyelid_1"
+    }
+}
