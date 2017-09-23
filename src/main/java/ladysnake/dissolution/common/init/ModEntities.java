@@ -21,7 +21,7 @@ import ladysnake.dissolution.common.entity.minion.EntityMinionSkeleton;
 import ladysnake.dissolution.common.entity.minion.EntityMinionStray;
 import ladysnake.dissolution.common.entity.minion.EntityMinionWitherSkeleton;
 import ladysnake.dissolution.common.entity.minion.EntityMinionZombie;
-import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
+import ladysnake.dissolution.common.entity.souls.EntityOrbitingSoul;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.EnumCreatureType;
@@ -49,7 +49,7 @@ public class ModEntities {
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, "player_corpse"), EntityPlayerCorpse.class, "player_corpse", id++, Dissolution.instance, 64, 1, true);
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, "maw_of_the_void"), EntityMawOfTheVoid.class, "maw_of_the_void", id++, Dissolution.instance, 64, 1, true);
     	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, "brimstone_fire"), EntityBrimstoneFire.class, "brimstone_fire", id++, Dissolution.instance, 32, 1, false);
-    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, "fleeting_soul"), EntityFleetingSoul.class, "fleeting_soul", id++, Dissolution.instance, 64, 1, true);
+    	EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, "fleeting_soul"), EntityOrbitingSoul.class, "fleeting_soul", id++, Dissolution.instance, 64, 1, true);
     }
     
     @SideOnly(Side.CLIENT)
@@ -63,7 +63,7 @@ public class ModEntities {
     	RenderingRegistry.registerEntityRenderingHandler(EntityPlayerCorpse.class, RenderPlayerCorpse::new);
     	RenderingRegistry.registerEntityRenderingHandler(EntityMawOfTheVoid.class, renderManager -> new RenderBiped<>(renderManager, new ModelBiped(), 1.0f));
     	RenderingRegistry.registerEntityRenderingHandler(EntityBrimstoneFire.class, RenderBrimstoneFire::new);
-    	RenderingRegistry.registerEntityRenderingHandler(EntityFleetingSoul.class, RenderEmpty::new);
+    	RenderingRegistry.registerEntityRenderingHandler(EntityOrbitingSoul.class, RenderEmpty::new);
     }
 
 }

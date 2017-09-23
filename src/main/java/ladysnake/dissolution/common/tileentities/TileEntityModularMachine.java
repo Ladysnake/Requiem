@@ -1,7 +1,17 @@
 package ladysnake.dissolution.common.tileentities;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
+
+import javax.annotation.Nonnull;
+
 import com.google.common.collect.ImmutableSet;
-import ladysnake.dissolution.common.DissolutionConfig;
+
 import ladysnake.dissolution.common.blocks.alchemysystem.AbstractPowerConductor;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
@@ -29,11 +39,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-
-import javax.annotation.Nonnull;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 public class TileEntityModularMachine extends TileEntity implements ITickable {
 	
@@ -89,12 +94,26 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	}
 
 	/**
+	 * Attempts to output an ItemStack into one or more containers
+	 * @param stack the stack to output through this machine
+	 * @return what could not be inserted
+	 */
+	public ItemStack tryOutput(ItemStack stack, BlockCasing.EnumPartType part) {
+		for(EnumFacing facing : EnumFacing.Plane.HORIZONTAL) {
+			stack = tryOutput(stack, part, facing);
+			if(stack.isEmpty())
+				return ItemStack.EMPTY;
+		}
+		return stack;
+	}
+
+	/**
 	 * Attempts to output an ItemStack into a container
 	 * @param stack the stack to output through this machine
 	 * @param face the face interacting with the world, not taking into account the casing's rotation
 	 * @return what could not be inserted
 	 */
-	public ItemStack tryOutput(ItemStack stack, EnumFacing face) {
+	public ItemStack tryOutput(ItemStack stack, BlockCasing.EnumPartType part, EnumFacing face) {
 		face = this.adjustFaceOut(face);
 		TileEntity te = this.getWorld().getTileEntity(getPos().offset(face));
 		if (te != null) {
@@ -108,6 +127,21 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 			}
 		}
 		return stack;
+	}
+	
+	public Map<EnumFacing, TileEntity> getAdjacentTEs(BlockCasing.EnumPartType part) {
+		return getAdjacentTEs(part, (face, te) -> true);
+	}
+	
+	public Map<EnumFacing, TileEntity> getAdjacentTEs(BlockCasing.EnumPartType part, BiPredicate<EnumFacing, TileEntity> condition) {
+		Map<EnumFacing, TileEntity> ret = new HashMap<>();
+		BlockPos pos = part == BlockCasing.EnumPartType.BOTTOM ? this.pos : this.pos.up();
+		for(EnumFacing facing : EnumFacing.Plane.HORIZONTAL) {
+			TileEntity te = world.getTileEntity(pos.offset(facing));
+			if(te != null && condition.test(facing, te))
+				ret.put(facing, te);
+		}
+		return ret;
 	}
 	
 	public boolean addModule(ItemAlchemyModule module) {
@@ -166,8 +200,7 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	
 	private void verifySetup() {
 		Set<ItemAlchemyModule> modules = getInstalledModules();
-		System.out.println(ModModularSetups.REGISTRY.getValues());
-		currentSetup = ModModularSetups.REGISTRY.getValues().stream().peek(System.out::println).filter(setup -> setup.isValidSetup(modules)).map(setup -> setup.getInstance(this)).findAny().orElse(null);
+		currentSetup = ModModularSetups.REGISTRY.getValues().stream().filter(setup -> setup.isValidSetup(modules)).map(setup -> setup.getInstance(this)).findAny().orElse(null);
 	}
 	
 	public PowerConsumption getPowerConsumption() {

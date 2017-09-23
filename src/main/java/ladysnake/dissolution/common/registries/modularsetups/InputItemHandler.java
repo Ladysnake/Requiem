@@ -30,7 +30,7 @@ public class InputItemHandler extends ItemStackHandler {
 	@Override
 	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
 		if(whiteList.isEmpty() || whiteList.contains(stack.getItem()))
-			return super.insertItem(slot, stack, simulate);
+			stack = super.insertItem(slot, stack, simulate);
 		return stack;
 	}
 

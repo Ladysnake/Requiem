@@ -79,13 +79,13 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 				if(((TileEntityModularMachine)te).addModule((ItemAlchemyModule)stack.getItem()) && !playerIn.isCreative()) {
 					stack.shrink(1);
 				}
-			} else if(playerIn.getHeldItemMainhand().isEmpty() && playerIn.isSneaking()) {
+			} else if(playerIn.getHeldItem(hand).isEmpty() && playerIn.isSneaking()) {
 				playerIn.addItemStackToInventory(((TileEntityModularMachine)te).removeModule());
-			} else {
+			} else if (playerIn.getHeldItem(hand).getItem() != ModItems.DEBUG_ITEM) {
 				((TileEntityModularMachine)te).interact(playerIn, hand, part, facing, hitX, hitY, hitZ);
 			}
 		}
-		return true;
+		return (playerIn.getHeldItem(hand).getItem() != ModItems.DEBUG_ITEM);
 	}
 	
 	@Override

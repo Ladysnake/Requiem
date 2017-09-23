@@ -11,7 +11,7 @@ import ladysnake.dissolution.common.handlers.LivingDeathHandler;
 import ladysnake.dissolution.common.handlers.PlayerTickHandler;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.networking.PacketHandler;
-import ladysnake.dissolution.common.tileentities.TileEntityEssenceCable;
+import ladysnake.dissolution.common.tileentities.TileEntityEssentiaPipe;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import ladysnake.dissolution.common.tileentities.TileEntityProxy;
 import ladysnake.dissolution.common.tileentities.TileEntitySepulture;
@@ -41,7 +41,7 @@ public abstract class CommonProxy {
 		
 		ModItems.INSTANCE.registerOres();
 		
-		GameRegistry.registerTileEntity(TileEntityEssenceCable.class, Reference.MOD_ID + ":tileentityessencecable");
+		GameRegistry.registerTileEntity(TileEntityEssentiaPipe.class, Reference.MOD_ID + ":tileentityessencecable");
 		GameRegistry.registerTileEntity(TileEntitySepulture.class, Reference.MOD_ID + ":tileentitysepulture");
 		GameRegistry.registerTileEntity(TileEntityModularMachine.class, Reference.MOD_ID + ":tileentitymodularmachine");
 		GameRegistry.registerTileEntity(TileEntityProxy.class, Reference.MOD_ID + ":tileentityproxy");

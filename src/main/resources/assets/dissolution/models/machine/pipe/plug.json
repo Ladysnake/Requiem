@@ -1,12 +1,11 @@
 {
-	"credit": "Made with Blockbench, a free, modern block model editor made by JannisX11",
-	"textures": {"2": "dissolution:machines/pipe"},
+	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
+	"textures": {"2": "dissolution:machines/plug"},
 	"elements": [
 		{
 			"name": "Plug",
 			"from": [13, 6, 6],
 			"to": [16, 10, 10],
-			"shade": true,
 			"faces": {
 				"north": {"uv": [10, 0, 13, 4], "texture": "#2"},
 				"east": {"uv": [6, 0, 10, 4], "texture": "#2"},
@@ -17,6 +16,7 @@
 			}
 		}
 	],
+	"groups": [0],
 	"display": {
 		"thirdperson_righthand": {
 			"rotation": [75, 45, 0],

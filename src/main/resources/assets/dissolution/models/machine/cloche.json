@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
-	"textures": {"5": "machines/greenhouse"},
+	"textures": {"5": "dissolution:machines/greenhouse"},
 	"elements": [
 		{
 			"name": "Inner base",

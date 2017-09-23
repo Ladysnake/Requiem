@@ -22,6 +22,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -71,8 +72,8 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 		
 		@Override
 		public void onTick() {
-			if(updateScheduled) {
-				this.setEnabled(!this.itemInput.getStackInSlot(0).isEmpty());
+			if(updateScheduled || (this.isEnabled() ^ !this.itemInput.getStackInSlot(0).isEmpty())) {
+				this.setEnabled(!itemInput.getStackInSlot(0).isEmpty());
 				scheduledTask = THREADPOOL.submit((Callable<Set<BlockPos>>) this::detectNetwork);
 				updateScheduled = false;
 			}
@@ -85,8 +86,9 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 						} catch (ClassCastException ignored) {}
 					});
 					nodes = newNodes;
-					for(BlockPos pos : nodes)
+					for(BlockPos pos : nodes) {
 						((IPowerConductor)te.getWorld().getBlockState(pos).getBlock()).setPowered(te.getWorld(), pos, isEnabled());
+					}
 					scheduledTask = null;
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
@@ -104,11 +106,9 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 			if(!playerIn.world.isRemote) {
 				ItemStack stack = playerIn.getHeldItem(hand);
 				if (stack.getItem() == ModItems.SOUL_IN_A_BOTTLE) {
-					stack.setCount(this.itemInput.insertItem(0, stack, false).getCount());
-					this.scheduleUpdate();
+					stack.setCount(this.itemInput.insertItem(0, stack.copy(), false).getCount());
 				} else if (stack.isEmpty()) {
 					playerIn.addItemStackToInventory(this.itemInput.extractItem(0, 64, false));
-					this.scheduleUpdate();
 				}
 			}
 		}
@@ -166,14 +166,25 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 
 		@Override
 		public boolean hasCapability(Capability<?> capability, EnumFacing facing, EnumPartType part) {
-			// TODO Auto-generated method stub
-			return false;
+			return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && part == EnumPartType.TOP;
 		}
 
 		@Override
 		public <T> T getCapability(Capability<T> capability, EnumFacing facing, EnumPartType part) {
-			// TODO Auto-generated method stub
+			if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && part == EnumPartType.TOP)
+				return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemInput);
 			return null;
+		}
+		
+		@Override
+		public void readFromNBT(NBTTagCompound compound) {
+			this.itemInput.deserializeNBT(compound.getCompoundTag("itemInput"));
+		}
+		
+		@Override
+		public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+			compound.setTag("itemInput", this.itemInput.serializeNBT());
+			return compound;
 		}
 	}
 

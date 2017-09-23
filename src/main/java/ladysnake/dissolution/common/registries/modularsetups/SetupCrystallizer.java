@@ -68,7 +68,7 @@ public class SetupCrystallizer extends ModularMachineSetup {
 			this.tile = tile;
 			if(tile.hasWorld())
 				tile.getWorld().markBlockRangeForRenderUpdate(tile.getPos().add(1, 0, 1), tile.getPos().add(-1, 0, -1));
-			this.essentiaInput = new CapabilityEssentiaHandler.DefaultEssentiaHandler(99);
+			this.essentiaInput = new CapabilityEssentiaHandler.DefaultEssentiaHandler(99, 4);
 			this.essentiaInput.setSuction(10, EssentiaTypes.UNTYPED);
 			this.oreOutput = new OutputItemHandler();
 		}
@@ -77,13 +77,16 @@ public class SetupCrystallizer extends ModularMachineSetup {
 		public void onTick() {
 			if (!tile.getWorld().isRemote && this.progressTicks++ % 20 == 0) {
 				if (this.oreOutput.getStackInSlot(0).getCount() < this.oreOutput.getSlotLimit(0)) {
-					if(this.essentiaInput.readContent().getCount() >= 9) {
-						EssentiaStack in = this.essentiaInput.extract(9);
-						this.oreOutput.insertItemInternal(0, new ItemStack(conversions.get(in)), false);
+					for(EssentiaStack essentiaStack : essentiaInput) {
+						if(essentiaStack.getCount() >= 9) {
+							EssentiaStack in = this.essentiaInput.extract(9, essentiaStack.getType());
+							this.oreOutput.insertItemInternal(0, new ItemStack(conversions.get(in)), false);
+							break;
+						}
 					}
 				}
 				this.oreOutput.insertItemInternal(0,
-						tile.tryOutput(this.oreOutput.extractItem(0, 10, false), EnumFacing.WEST),
+						tile.tryOutput(this.oreOutput.extractItem(0, 10, false), BlockCasing.EnumPartType.BOTTOM),
 						false);
 			}
 		}
