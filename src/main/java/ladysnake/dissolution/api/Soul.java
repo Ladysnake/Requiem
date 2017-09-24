@@ -6,10 +6,9 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class Soul {
 	
-	private static final Random rand = new Random();
-	
 	public static final Soul UNDEFINED = new Soul(SoulTypes.UNTYPED, 0, 0);
 	
+	private static final Random rand = new Random();
 	private static int mean = 40, deviation = 10;
 	
 	private final SoulTypes type;
@@ -20,11 +19,15 @@ public class Soul {
 		this(type, (int)Math.round(Math.abs((rand.nextGaussian() * deviation) + mean))%100, (int)Math.round(Math.abs((rand.nextGaussian() * deviation) + mean))%100);
 	}
 	
-	public Soul(SoulTypes type, int purity, int familiarity) {
+	public Soul(SoulTypes type, int purity, int willingness) {
 		super();
 		this.type = type;
 		this.purity = purity;
-		this.willingness = familiarity;
+		this.willingness = willingness;
+	}
+	
+	public Soul(NBTTagCompound nbt) {
+		this(SoulTypes.valueOf(nbt.getString("soulType")), nbt.getInteger("purity"), nbt.getInteger("familiarity"));
 	}
 
 	public NBTTagCompound writeToNBT() {
@@ -33,10 +36,6 @@ public class Soul {
 		nbt.setInteger("purity", purity);
 		nbt.setInteger("familiarity", willingness);
 		return nbt;
-	}
-	
-	public static Soul readFromNBT(NBTTagCompound nbt) {
-		return new Soul(SoulTypes.valueOf(nbt.getString("soulType")), nbt.getInteger("purity"), nbt.getInteger("familiarity"));
 	}
 	
 	public SoulTypes getType() {

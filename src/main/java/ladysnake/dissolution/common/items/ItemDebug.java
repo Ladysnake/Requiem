@@ -1,16 +1,14 @@
 package ladysnake.dissolution.common.items;
 
 import java.util.List;
-import java.util.UUID;
 
-import ladysnake.dissolution.api.EssentiaStack;
 import ladysnake.dissolution.api.EssentiaTypes;
 import ladysnake.dissolution.api.IEssentiaHandler;
 import ladysnake.dissolution.api.ISoulInteractable;
 import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.common.capabilities.CapabilityEssentiaHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.entity.souls.EntityOrbitingSoul;
+import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
 import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.client.Minecraft;
@@ -66,8 +64,8 @@ public class ItemDebug extends Item implements ISoulInteractable {
 			break;
 		case 3 :
 			if(!playerIn.world.isRemote) {
-				worldIn.loadedEntityList.stream().filter(e -> e instanceof EntityOrbitingSoul).forEach(e -> e.onKillCommand());
-				EntityOrbitingSoul cam = new EntityOrbitingSoul(playerIn.world, playerIn.posX + 2, playerIn.posY, playerIn.posZ);
+				worldIn.loadedEntityList.stream().filter(e -> e instanceof EntityFleetingSoul).forEach(e -> e.onKillCommand());
+				EntityFleetingSoul cam = new EntityFleetingSoul(playerIn.world, playerIn.posX + 2, playerIn.posY, playerIn.posZ);
 				worldIn.spawnEntity(cam);
 			} 
 			break;

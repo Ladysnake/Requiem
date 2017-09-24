@@ -29,7 +29,7 @@ public class ModularMachineBakedModel implements IBakedModel {
 	
 	static final String LOCATION_NAME = "bakedmodularmachine";
 	public static final ModelResourceLocation BAKED_MODEL = new ModelResourceLocation(Reference.MOD_ID + ":" + LOCATION_NAME);
-	private static final ResourceLocation CASING_TEXTURE = new ResourceLocation(Reference.MOD_ID, "blocks/machine_parts/wooden_alchemical_machine_structure");
+	private static final ResourceLocation CASING_TEXTURE = new ResourceLocation(Reference.MOD_ID, "machines/wooden_machine_casing");
 
 	@Nonnull
 	@Override
@@ -45,7 +45,6 @@ public class ModularMachineBakedModel implements IBakedModel {
 			try {
 				for (Object module : ((IExtendedBlockState) state).getValue(BlockCasing.MODULES_PRESENT)) {
 					if (module instanceof ItemAlchemyModule) {
-						// System.out.println(rotation + ":" + ((ItemAlchemyModule) module).getModel(((IExtendedBlockState)state).getValue(BlockCasing.RUNNING)));
 						quads.addAll(DissolutionModelLoader.getModel(((ItemAlchemyModule) module)
 								.getModel(((IExtendedBlockState) state).getValue(BlockCasing.RUNNING)), rotation)
 								.getQuads(state, side, rand));

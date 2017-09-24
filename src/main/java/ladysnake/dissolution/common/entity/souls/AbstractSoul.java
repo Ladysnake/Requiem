@@ -1,18 +1,24 @@
 package ladysnake.dissolution.common.entity.souls;
 
-import ladysnake.dissolution.api.ISoulHandler;
-import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
+import ladysnake.dissolution.api.Soul;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class AbstractSoul extends Entity {
+public abstract class AbstractSoul extends Entity {
 	
-	private ISoulHandler soulInventory;
+	protected Soul soul;
+	protected int soulAge;
+	protected double xTarget, yTarget, zTarget;
 	
 	public AbstractSoul(World worldIn) {
+		this(worldIn, Soul.UNDEFINED);
+	}
+	
+	public AbstractSoul(World worldIn, Soul soulIn) {
 		super(worldIn);
 		this.setSize(0.5F, 0.5F);
 		this.setEntityInvulnerable(true);
@@ -21,12 +27,28 @@ public class AbstractSoul extends Entity {
 		this.motionX = (Math.random() * 0.2 - 0.1) * 2.0F;
 		this.motionY = (Math.random() * 0.2) * 2.0F;
 		this.motionZ = (Math.random() * 0.2 - 0.1) * 2.0F;
-		this.soulInventory = new CapabilitySoulHandler.DefaultSoulInventoryHandler();
+		this.soul = soulIn;
 	}
+	
+	public BlockPos getTargetPosition() {
+		return new BlockPos(this.xTarget, this.yTarget + 0.5, this.zTarget);
+	}
+	
+	@Override
+	public void onUpdate() {
+		super.onUpdate();
+		++this.soulAge;
+		
+		if(this.world.isRemote) {
+			spawnParticles();
+		}
+	}
+	
+	@SideOnly(Side.CLIENT)
+	protected abstract void spawnParticles();
 
 	@Override
-	protected void entityInit() {
-	}
+	protected void entityInit() {}
 
 	/**
 	 * returns if this entity triggers Block.onEntityWalking on the blocks they walk
@@ -35,29 +57,15 @@ public class AbstractSoul extends Entity {
 	protected boolean canTriggerWalking() {
 		return false;
 	}
-	
-	@Override
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-		return capability == CapabilitySoulHandler.CAPABILITY_SOUL_INVENTORY || super.hasCapability(capability, facing);
-	}
-	
-	@Override
-	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		if(capability == CapabilitySoulHandler.CAPABILITY_SOUL_INVENTORY)
-			return (T) this.soulInventory;
-		return super.getCapability(capability, facing);
-	}
 
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound compound) {
-		// TODO Auto-generated method stub
-
+		this.soul = new Soul(compound.getCompoundTag("soul"));
 	}
 
 	@Override
 	protected void writeEntityToNBT(NBTTagCompound compound) {
-		// TODO Auto-generated method stub
-
+		compound.setTag("soul", soul.writeToNBT());
 	}
 
 }

@@ -71,7 +71,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	}
 	
 	@Override
-	protected void setInert(boolean isCorpse) {
+	public void setInert(boolean isCorpse) {
 		super.setInert(isCorpse);
 		this.setDecaying(isCorpse);
 	}

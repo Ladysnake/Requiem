@@ -37,7 +37,7 @@ public class CapabilitySoulHandler {
 	public static final Capability<ISoulHandler> CAPABILITY_SOUL_INVENTORY = null;
 	
 	public static void register() {
-        CapabilityManager.INSTANCE.register(ISoulHandler.class, new Storage(), DefaultSoulInventoryHandler.class);
+        CapabilityManager.INSTANCE.register(ISoulHandler.class, new Storage(), () -> new DefaultSoulInventoryHandler(1));
         MinecraftForge.EVENT_BUS.register(new CapabilitySoulHandler());
     }
 	
@@ -68,8 +68,16 @@ public class CapabilitySoulHandler {
 	public static class DefaultSoulInventoryHandler implements ISoulHandler {
 		
 		private final List<Soul> soulInventory = new ArrayList<>();
-		private int size = 9;
-	
+		private int size;
+		
+		/**
+		 * @param size the max number of souls able to be stored in this inventory
+		 */
+		public DefaultSoulInventoryHandler(int size) {
+			super();
+			this.size = size;
+		}
+
 		@Override
 		public boolean addSoul(Soul soul) {
 			if(soulInventory.size() >= size)
@@ -81,7 +89,7 @@ public class CapabilitySoulHandler {
 		@Override
 		public long getSoulCount(SoulTypes... filter) {
 			List<SoulTypes> filterList = Arrays.asList(filter);
-			return this.soulInventory.stream().filter(s -> filterList.contains(s.getType())).count();
+			return this.soulInventory.stream().filter(s -> filterList.isEmpty() || filterList.contains(s.getType())).count();
 		}
 	
 		@Override
@@ -92,7 +100,7 @@ public class CapabilitySoulHandler {
 		@Override
 		public List<Soul> removeAll(SoulTypes... filter) {
 			List<SoulTypes> filterList = Arrays.asList(filter);
-			List<Soul> ret = soulInventory.stream().filter(s -> filterList.contains(s.getType())).collect(Collectors.toList());
+			List<Soul> ret = soulInventory.stream().filter(s -> filterList.isEmpty() || filterList.contains(s.getType())).collect(Collectors.toList());
 			this.soulInventory.removeAll(ret);
 			return ret;
 		}
@@ -121,7 +129,7 @@ public class CapabilitySoulHandler {
 	
 	public static class Provider implements ICapabilitySerializable<NBTTagCompound> {
 
-		ISoulHandler instance = CAPABILITY_SOUL_INVENTORY.getDefaultInstance();
+		ISoulHandler instance = new DefaultSoulInventoryHandler(9);
 		
 		@Override
 		public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
@@ -163,7 +171,7 @@ public class CapabilitySoulHandler {
 			final NBTTagCompound tag = (NBTTagCompound) nbt;
 			NBTTagList list = tag.getTagList("soulInventory", 10);
 			instance.removeAll();
-			list.forEach(s -> instance.addSoul(Soul.readFromNBT((NBTTagCompound) s)));
+			list.forEach(s -> instance.addSoul(new Soul((NBTTagCompound) s)));
 		}
 		
 	}

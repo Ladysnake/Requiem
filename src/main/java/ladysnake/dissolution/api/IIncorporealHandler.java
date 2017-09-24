@@ -26,6 +26,11 @@ public interface IIncorporealHandler {
 	void setIncorporeal(boolean ghostMode);
 	
 	/**
+	 * Spawns a body with the inventory of the player and makes the player incorporeal
+	 */
+	void split();
+	
+	/**
 	 * Whether the player is in soul mode or not
 	 * @return true if the player is a ghost
 	 */
