@@ -13,9 +13,8 @@ import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing.EnumPartType;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine.PowerConsumption;
-import ladysnake.dissolution.common.capabilities.CapabilityEssentiaHandler;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.items.AlchemyModule;
+import ladysnake.dissolution.common.items.AlchemyModuleTypes;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import net.minecraft.block.Block;
@@ -35,8 +34,8 @@ import net.minecraftforge.items.CapabilityItemHandler;
 public class SetupPowerGenerator extends ModularMachineSetup {
 	
 	private static final ImmutableSet<ItemAlchemyModule> setup = ImmutableSet.of(
-			ItemAlchemyModule.getFromType(AlchemyModule.GENERATOR, 1),
-			ItemAlchemyModule.getFromType(AlchemyModule.ALCHEMY_INTERFACE, 1));
+			ItemAlchemyModule.getFromType(AlchemyModuleTypes.GENERATOR, 1),
+			ItemAlchemyModule.getFromType(AlchemyModuleTypes.ALCHEMY_INTERFACE_BOTTOM, 1));
 	
 	public static final ExecutorService THREADPOOL = Executors.newCachedThreadPool();
 	

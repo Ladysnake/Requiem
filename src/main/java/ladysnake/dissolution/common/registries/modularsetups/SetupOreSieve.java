@@ -10,7 +10,7 @@ import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing.EnumPartTyp
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.capabilities.CapabilityEssentiaHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
-import ladysnake.dissolution.common.items.AlchemyModule;
+import ladysnake.dissolution.common.items.AlchemyModuleTypes;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import net.minecraft.block.Block;
@@ -23,7 +23,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,9 +32,9 @@ public class SetupOreSieve extends ModularMachineSetup {
 	private final Map<Item, Item> conversions;
 	private final Map<Item, EssentiaStack> essentiaConversions;
 	private static final ImmutableSet<ItemAlchemyModule> setup = ImmutableSet.of(
-			ItemAlchemyModule.getFromType(AlchemyModule.CONTAINER, 1),
-			ItemAlchemyModule.getFromType(AlchemyModule.ALCHEMY_INTERFACE, 1),
-			ItemAlchemyModule.getFromType(AlchemyModule.MINERAL_FILTER, 1));
+			ItemAlchemyModule.getFromType(AlchemyModuleTypes.CONTAINER, 1),
+			ItemAlchemyModule.getFromType(AlchemyModuleTypes.ALCHEMY_INTERFACE_BOTTOM, 1),
+			ItemAlchemyModule.getFromType(AlchemyModuleTypes.MINERAL_FILTER, 1));
 
 	public SetupOreSieve() {
 		this.setRegistryName(new ResourceLocation(Reference.MOD_ID, "ore_sieve"));
@@ -78,8 +77,8 @@ public class SetupOreSieve extends ModularMachineSetup {
 			this.input = new InputItemHandler(Blocks.CLAY, Blocks.COAL_BLOCK, Blocks.MAGMA);
 			this.essentiaOutput = new CapabilityEssentiaHandler.DefaultEssentiaHandler(100);
 			this.depletedOutput = new OutputItemHandler();
-			this.processingTime = AlchemyModule.MINERAL_FILTER.maxTier / this.tile.getInstalledModules().stream()
-					.filter(mod -> mod.getType() == AlchemyModule.MINERAL_FILTER).findAny().get().getTier();
+			this.processingTime = AlchemyModuleTypes.MINERAL_FILTER.maxTier / this.tile.getInstalledModules().stream()
+					.filter(mod -> mod.getType() == AlchemyModuleTypes.MINERAL_FILTER).findAny().get().getTier();
 		}
 
 		@Override

@@ -9,17 +9,7 @@ import java.util.Set;
 
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.items.AlchemyModule;
-import ladysnake.dissolution.common.items.ICustomLocation;
-import ladysnake.dissolution.common.items.ItemAlchemyModule;
-import ladysnake.dissolution.common.items.ItemCasing;
-import ladysnake.dissolution.common.items.ItemDebug;
-import ladysnake.dissolution.common.items.ItemDepleted;
-import ladysnake.dissolution.common.items.ItemEyeUndead;
-import ladysnake.dissolution.common.items.ItemOccularePart;
-import ladysnake.dissolution.common.items.ItemScythe;
-import ladysnake.dissolution.common.items.ItemSepulture;
-import ladysnake.dissolution.common.items.ItemSoulInABottle;
+import ladysnake.dissolution.common.items.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -61,6 +51,7 @@ public final class ModItems {
 	public static ItemOccularePart IRON_SHELL;
 	public static ItemOccularePart GOLD_SHELL;
 	public static ItemOccularePart TIRED_ETCHING;
+	public static ItemPlug PLUG;
 	public static ItemScythe IRON_SCYTHE;
 	public static ItemScythe LURKING_SCYTHE;
 	public static ItemSepulture SEPULTURE;
@@ -87,19 +78,21 @@ public final class ModItems {
 				DEBUG_ITEM = name(new ItemDebug(), "debug_item"),
 				DEPLETED_CLAY = name(new ItemDepleted(), "depleted_clay_ball"),
 				DEPLETED_COAL = name(new ItemDepleted(), "depleted_coal"),
-				EYE_OF_THE_UNDEAD = name(new ItemEyeUndead(), "eye_of_the_undead"), 
-				IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), "iron_scythe"),
-				LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"), 
+				EYE_OF_THE_UNDEAD = name(new ItemEyeUndead(), "eye_of_the_undead"),
+				new ItemInterfaceModule(),
 				BRAIN = name(new ItemOccularePart(), "occulare_brain"),
 				DIAMOND_SHELL = name(new ItemOccularePart(1500), "diamond_occulare_shell"),
 				EMERALD_SHELL = name(new ItemOccularePart(750), "emerald_occulare_shell"),
 				GOLD_SHELL = name(new ItemOccularePart(50), "gold_occulare_shell"),
 				IRON_SHELL = name(new ItemOccularePart(500), "iron_occulare_shell"),
 				TIRED_ETCHING = name(new ItemOccularePart(), "tired_etching"),
+				PLUG = name(new ItemPlug(), "plug"),
+				IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), "iron_scythe"),
+				LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"),
 				SEPULTURE = name(new ItemSepulture(), "sepulture"),
 				SOUL_IN_A_BOTTLE = name(new ItemSoulInABottle(), "soul_in_a_bottle"));
 
-		for (AlchemyModule module : AlchemyModule.values()) {
+		for (AlchemyModuleTypes module : AlchemyModuleTypes.automatedValues()) {
 			for (int tier = 1; tier <= module.maxTier; tier++)
 				allItems.add(new ItemAlchemyModule(module, tier));
 		}
@@ -150,7 +143,7 @@ public final class ModItems {
 	private void registerRender(Item item) {
 		assert item.getRegistryName() != null;
 		registerRender(item, item instanceof ICustomLocation
-				? ((ICustomLocation)item).getModelLocation(item)
+				? ((ICustomLocation)item).getModelLocation()
 				: new ModelResourceLocation(item.getRegistryName().toString()));
 	}
 	

@@ -1,37 +1,29 @@
 package ladysnake.dissolution.common.items;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Multimap;
-
 import ladysnake.dissolution.api.SoulTypes;
-import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EnumCreatureAttribute;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ItemScythe extends ItemSword implements ICustomLocation {
 
@@ -61,7 +53,7 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
 	}
 	
 	@Override
-	public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
+	public boolean hitEntity(ItemStack stack, EntityLivingBase target, @Nonnull EntityLivingBase attacker) {
 		stack.damageItem(1, attacker);
 		return !attacker.getHeldItemOffhand().isEmpty();
 	}
@@ -76,7 +68,7 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
     {
         if(!player.getHeldItemOffhand().isEmpty()) return true;
         if(alreadyRunningAOE) return false;
-        Integer initialCooldown = new Integer(100);
+        Integer initialCooldown = 100;
         player.spawnSweepParticles();
         int initialDamage = stack.getItemDamage();
         try {
@@ -90,7 +82,7 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
         if(!targets.isEmpty())
 	        for(EntityLiving entity : targets) {
 	        	try {
-	        		ObfuscationReflectionHelper.setPrivateValue(EntityLivingBase.class, player, initialCooldown, new String[]{"ticksSinceLastSwing", "field_184617_aD"});
+	        		ObfuscationReflectionHelper.setPrivateValue(EntityLivingBase.class, player, initialCooldown, "ticksSinceLastSwing", "field_184617_aD");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -119,7 +111,8 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
     }
 	
 	@Override
-	public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving)
+	public boolean onBlockDestroyed(@Nonnull ItemStack stack, @Nonnull World worldIn, IBlockState state,
+									@Nonnull BlockPos pos, @Nonnull EntityLivingBase entityLiving)
     {
         if ((double)state.getBlockHardness(worldIn, pos) != 0.0D)
         {
@@ -158,13 +151,14 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
 		ItemStack bottle = DissolutionInventoryHelper.findItem(p, Items.GLASS_BOTTLE);
 		if (!bottle.isEmpty()) {
 			bottle.shrink(nb);
-			p.inventory.addItemStackToInventory(ModItems.SOUL_IN_A_BOTTLE.newTypedSoulBottle(soul));
+			p.inventory.addItemStackToInventory(ItemSoulInABottle.newTypedSoulBottle(soul));
 		}
 	}
 
 	@Override
-	public ModelResourceLocation getModelLocation(Item item) {
-		return new ModelResourceLocation(item.getRegistryName().getResourceDomain() + ":scythes/" + item.getRegistryName().getResourcePath());
+	public ModelResourceLocation getModelLocation() {
+		//noinspection ConstantConditions
+		return new ModelResourceLocation(this.getRegistryName().getResourceDomain() + ":scythes/" + this.getRegistryName().getResourcePath());
 	}
 	
 }

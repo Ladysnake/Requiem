@@ -42,23 +42,22 @@ public class ModularMachineBakedModel implements IBakedModel {
 			quads.addAll(DissolutionModelLoader.getModel(BlockCasing.CASING_TOP).getQuads(state, side, rand));
 		else {
 			quads.addAll(DissolutionModelLoader.getModel(BlockCasing.CASING_BOTTOM).getQuads(state, side, rand));
-			try {
-				for (Object module : ((IExtendedBlockState) state).getValue(BlockCasing.MODULES_PRESENT)) {
-					if (module instanceof ItemAlchemyModule) {
-						quads.addAll(DissolutionModelLoader.getModel(((ItemAlchemyModule) module)
-								.getModel(((IExtendedBlockState) state).getValue(BlockCasing.RUNNING)), rotation)
-								.getQuads(state, side, rand));
-					}
+			for (Object module : ((IExtendedBlockState) state).getValue(BlockCasing.MODULES_PRESENT)) {
+				if (module instanceof ItemAlchemyModule.AlchemyModule) {
+					IBakedModel model = DissolutionModelLoader.getModel(((ItemAlchemyModule.AlchemyModule) module)
+							.getModel(((IExtendedBlockState) state).getValue(BlockCasing.RUNNING)), rotation);
+					if(model != null)
+						quads.addAll(model.getQuads(state, side, rand));
 				}
-			} catch (NullPointerException ignored) {}
+			}
 		}
-		if(((IExtendedBlockState) state).getValue(BlockCasing.PLUG_NORTH))
+		if (((IExtendedBlockState) state).getValue(BlockCasing.PLUG_NORTH))
 			quads.addAll(DissolutionModelLoader.getModel(BlockCasing.PLUG, ModelRotation.X0_Y270).getQuads(state, side, rand));
-		if(((IExtendedBlockState) state).getValue(BlockCasing.PLUG_SOUTH))
+		if (((IExtendedBlockState) state).getValue(BlockCasing.PLUG_SOUTH))
 			quads.addAll(DissolutionModelLoader.getModel(BlockCasing.PLUG, ModelRotation.X0_Y90).getQuads(state, side, rand));
-		if(((IExtendedBlockState) state).getValue(BlockCasing.PLUG_WEST))
+		if (((IExtendedBlockState) state).getValue(BlockCasing.PLUG_WEST))
 			quads.addAll(DissolutionModelLoader.getModel(BlockCasing.PLUG, ModelRotation.X0_Y180).getQuads(state, side, rand));
-		if(((IExtendedBlockState) state).getValue(BlockCasing.PLUG_EAST))
+		if (((IExtendedBlockState) state).getValue(BlockCasing.PLUG_EAST))
 			quads.addAll(DissolutionModelLoader.getModel(BlockCasing.PLUG, ModelRotation.X0_Y0).getQuads(state, side, rand));
 		return quads;
 	}

@@ -14,7 +14,7 @@ import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing.EnumPartTyp
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.capabilities.CapabilityEssentiaHandler;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.items.AlchemyModule;
+import ladysnake.dissolution.common.items.AlchemyModuleTypes;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import net.minecraft.item.Item;
@@ -29,9 +29,9 @@ import net.minecraftforge.items.CapabilityItemHandler;
 public class SetupCrystallizer extends ModularMachineSetup {
 
 	private static final ImmutableSet<ItemAlchemyModule> setup = ImmutableSet.of(
-			ItemAlchemyModule.getFromType(AlchemyModule.ALCHEMY_INTERFACE, 1),
-			ItemAlchemyModule.getFromType(AlchemyModule.CRYSTALLIZER, 1),
-			ItemAlchemyModule.getFromType(AlchemyModule.CONTAINER, 1));
+			ItemAlchemyModule.getFromType(AlchemyModuleTypes.ALCHEMY_INTERFACE_BOTTOM, 1),
+			ItemAlchemyModule.getFromType(AlchemyModuleTypes.CRYSTALLIZER, 1),
+			ItemAlchemyModule.getFromType(AlchemyModuleTypes.CONTAINER, 1));
 	private final Map<EssentiaStack, Item> conversions;
 
 	public SetupCrystallizer() {

@@ -1,14 +1,11 @@
 package ladysnake.dissolution.common.blocks.alchemysystem;
 
-import java.util.Random;
-
 import ladysnake.dissolution.client.models.blocks.PropertyBoolean;
 import ladysnake.dissolution.client.models.blocks.UnlistedPropertyModulePresent;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.registries.modularsetups.ISetupInstance;
 import ladysnake.dissolution.common.registries.modularsetups.SetupPowerGenerator;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
@@ -16,7 +13,6 @@ import ladysnake.dissolution.common.tileentities.TileEntityProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyEnum;
@@ -27,13 +23,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -44,6 +34,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import java.util.HashSet;
+import java.util.Random;
 
 public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	
@@ -69,19 +61,12 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		ItemStack stack = playerIn.getHeldItem(hand);
 		EnumPartType part = state.getValue(PART);
 		if(part == EnumPartType.TOP)
 			pos = pos.down();
 		TileEntity te = worldIn.getTileEntity(pos);
 		if(te instanceof TileEntityModularMachine) {
-			if(stack.getItem() instanceof ItemAlchemyModule) {
-				if(((TileEntityModularMachine)te).addModule((ItemAlchemyModule)stack.getItem()) && !playerIn.isCreative()) {
-					stack.shrink(1);
-				}
-			} else if(playerIn.getHeldItem(hand).isEmpty() && playerIn.isSneaking()) {
-				playerIn.addItemStackToInventory(((TileEntityModularMachine)te).removeModule());
-			} else if (playerIn.getHeldItem(hand).getItem() != ModItems.DEBUG_ITEM) {
+			if (playerIn.getHeldItem(hand).getItem() != ModItems.DEBUG_ITEM) {
 				((TileEntityModularMachine)te).interact(playerIn, hand, part, facing, hitX, hitY, hitZ);
 			}
 		}
@@ -131,18 +116,26 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	@Override
 	public IBlockState getExtendedState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
 		TileEntity te = world.getTileEntity(state.getValue(PART) == EnumPartType.BOTTOM ? pos : pos.down());
+		boolean flag = DissolutionConfig.client.plugsEverywhere;
 		if(te instanceof TileEntityModularMachine) {
 			EnumPartType part = state.getValue(PART);
 			if (part == EnumPartType.BOTTOM)
 				state = ((IExtendedBlockState) state)
 						.withProperty(MODULES_PRESENT, ((TileEntityModularMachine) te).getInstalledModules())
 						.withProperty(RUNNING, ((TileEntityModularMachine) te).isRunning());
-			boolean flag = DissolutionConfig.client.plugsEverywhere;
 			state = ((IExtendedBlockState) state)
 					.withProperty(PLUG_EAST, flag || ((TileEntityModularMachine) te).isPlugAttached(EnumFacing.EAST, part))
 					.withProperty(PLUG_NORTH, flag || ((TileEntityModularMachine) te).isPlugAttached(EnumFacing.NORTH, part))
 					.withProperty(PLUG_WEST, flag || ((TileEntityModularMachine) te).isPlugAttached(EnumFacing.WEST, part))
 					.withProperty(PLUG_SOUTH, flag || ((TileEntityModularMachine) te).isPlugAttached(EnumFacing.SOUTH, part));
+		} else {
+			state = ((IExtendedBlockState) state)
+					.withProperty(MODULES_PRESENT, new HashSet<>())
+					.withProperty(RUNNING, false)
+					.withProperty(PLUG_EAST, flag)
+					.withProperty(PLUG_NORTH, flag)
+					.withProperty(PLUG_WEST, flag)
+					.withProperty(PLUG_SOUTH, flag);
 		}
 		return state;
 	}

@@ -14,7 +14,7 @@ public class UnlistedPropertyModulePresent implements IUnlistedProperty<Set> {
 
 	@Override
 	public boolean isValid(Set value) {
-		return value.stream().allMatch(v -> v instanceof ItemAlchemyModule);
+		return value.stream().allMatch(v -> v instanceof ItemAlchemyModule.AlchemyModule);
 	}
 
 	@Override
