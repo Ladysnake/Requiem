@@ -11,6 +11,7 @@ import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
 import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -91,6 +92,8 @@ public class ItemDebug extends Item implements ISoulInteractable {
 					System.out.println(String.format("%s/%s (%s/%s)", essentiaInv.readContent(EssentiaTypes.UNTYPED), essentiaInv.getMaxSize(), essentiaInv.getChannels(), essentiaInv.getMaxChannels()));
 					playerIn.sendStatusMessage(new TextComponentTranslation("suction: %s, type: %s", essentiaInv.getSuction(), essentiaInv.getSuctionType()), false);
 				}
+				if(te instanceof TileEntityModularMachine)
+					playerIn.sendStatusMessage(new TextComponentTranslation("modules: %s", ((TileEntityModularMachine)te).getInstalledModules()), false);
 			}
 			break;
 		case 7 :

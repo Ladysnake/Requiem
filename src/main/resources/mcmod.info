@@ -8,7 +8,7 @@
   "url": "https://minecraft.curseforge.com/projects/dissolution",
   "updateUrl": "https://minecraft.curseforge.com/projects/tartaros",
   "authorList": ["Pyrofab", "CobraDarkPoney", "Noprotox"],
-  "credits": "MrCrayfish for his amazing model creator.",
+  "credits": "MrCrayfish for his amazing modelLocation creator.",
   "logoFile": "/assets/dissolution/textures/tartaros_ico.png",
   "screenshots": [],
   "dependencies": []

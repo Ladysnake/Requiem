@@ -17,7 +17,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
@@ -26,6 +25,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -35,6 +35,7 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 public class TileEntityModularMachine extends TileEntity implements ITickable {
 	
@@ -43,7 +44,6 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	private ISetupInstance currentSetup = null;
 	private PowerConsumption powerConsumption;
 	private boolean powered = false;
-	private boolean running = false;
 
 	public TileEntityModularMachine() {
 		this.installedModules = new HashSet<>();
@@ -67,7 +67,7 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	 * Adjusts the given facing to take the block's rotation into account
 	 * Should be used by setups trying to interact with the world
 	 * @param face a facing relative to the machine's rotation
-	 * @return the corresponding in-world face using the block's rotation
+	 * @return the corresponding in-world face using the casing's rotation
 	 */
 	public EnumFacing adjustFaceOut(EnumFacing face) {
 		if(face.getAxis() == EnumFacing.Axis.Y)
@@ -82,7 +82,7 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	}
 	
 	/**
-	 * Does the opposite operation to {@link #adjustFaceOut}
+	 * Performs the opposite operation of {@link #adjustFaceOut}
 	 * @param face an absolute facing given by the world
 	 * @return the corresponding relative facing
 	 */
@@ -105,7 +105,8 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	 */
 	public ItemStack tryOutput(ItemStack stack, BlockCasing.EnumPartType part) {
 		for(EnumFacing facing : EnumFacing.Plane.HORIZONTAL) {
-			stack = tryOutput(stack, part, facing);
+			if(isPlugAttached(facing, part))
+				stack = tryOutput(stack, part, facing);
 			if(stack.isEmpty())
 				return ItemStack.EMPTY;
 		}
@@ -146,7 +147,6 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	}
 	
 	private boolean addModule(ItemAlchemyModule.AlchemyModule module) {
-		System.out.println("module added : " + module);
 		boolean added = installedModules.stream().allMatch(mod -> (mod.getType().isCompatible(module.getType())))
 				&& installedModules.add(module);
 		if(added) {
@@ -174,9 +174,9 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	}
 	
 	public void interact(EntityPlayer playerIn, EnumHand hand, BlockCasing.EnumPartType part, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		ItemStack stack = playerIn.getHeldItem(hand);
+		ItemStack stack = playerIn.getHeldItemMainhand();
 		if(stack.getItem() instanceof ItemAlchemyModule) {
-			if(addModule(((ItemAlchemyModule) stack.getItem()).toModule(part)) && !playerIn.isCreative()) {
+			if(addModule(((ItemAlchemyModule) stack.getItem()).toModule(part, this)) && !playerIn.isCreative()) {
 				stack.shrink(1);
 			}
 		} else if(stack.isEmpty() && playerIn.isSneaking()) {
@@ -195,11 +195,18 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 
 	public boolean isPlugAttached(EnumFacing facing, BlockCasing.EnumPartType part) {
 		return this.plugs.get(part).get(facing);
-		// return ((this.currentSetup != null) && this.currentSetup.isPlugAttached(facing, part));
 	}
 	
 	public Set<ItemAlchemyModule.AlchemyModule> getInstalledModules() {
 		return ImmutableSet.copyOf(this.installedModules);
+	}
+
+	public Set<ResourceLocation> getModelsForRender() {
+		Set<ResourceLocation> ret = this.installedModules.stream().map(ItemAlchemyModule.AlchemyModule::getModel)
+				.collect(Collectors.toSet());
+		if(currentSetup != null)
+			currentSetup.addModelsForRender(ret);
+		return ret;
 	}
 	
 	public ISetupInstance getCurrentSetup() {
@@ -242,18 +249,6 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 		this.powered = powered;
 	}
 
-	public boolean isRunning() {
-		return running;
-	}
-
-	/**
-	 * 
-	 * @param running Whether the machine and its components should appear activated
-	 */
-	public void setRunning(boolean running) {
-		this.running = running;
-	}
-	
 	@Override
 	public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
 		return hasCapability(capability, facing, BlockCasing.EnumPartType.BOTTOM);
@@ -305,12 +300,9 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 		super.readFromNBT(compound);
 		NBTTagList modules = compound.getTagList("modules", 10);
 		for (NBTBase mod : modules) {
-			System.out.println(((NBTTagCompound)mod).getString("type"));
 			AlchemyModuleTypes type = AlchemyModuleTypes.valueOf(((NBTTagCompound)mod).getString("type"));
 			if(type != null)
-				this.installedModules.add(new ItemAlchemyModule.AlchemyModule(
-						type,
-						((NBTTagCompound)mod).getInteger("tier")));
+				this.installedModules.add(type.readNBT((NBTTagCompound) mod));
 		}
 		NBTTagCompound plugsNBT = compound.getCompoundTag("plugs");
 		this.plugs.forEach((key, value) -> value.replaceAll((f, b) -> plugsNBT.getCompoundTag(key.name()).getBoolean(f.name())));
@@ -322,7 +314,7 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	public void readFromNBT(NBTTagCompound compound) {
 		readFromNBTBasic(compound);
 		if(this.currentSetup != null)
-			this.currentSetup.readFromNBT((NBTTagCompound) compound.getTag("currentSetup"));
+			this.currentSetup.readFromNBT(compound.getCompoundTag("currentSetup"));
 	}
 
 	private	void writeToNBTBasic(NBTTagCompound compound) {
@@ -330,10 +322,7 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 		NBTTagList modules = new NBTTagList();
 		for (ItemAlchemyModule.AlchemyModule mod : installedModules) {
 			if(mod != null) {
-				NBTTagCompound comp = new NBTTagCompound();
-				comp.setString("type", mod.getType().name());
-				comp.setInteger("tier", mod.getTier());
-				modules.appendTag(comp);
+				modules.appendTag(mod.toNBT());
 			}
 		}
 		compound.setTag("modules", modules);

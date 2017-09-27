@@ -12,9 +12,11 @@ import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.items.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemSeeds;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -54,6 +56,7 @@ public final class ModItems {
 	public static ItemPlug PLUG;
 	public static ItemScythe IRON_SCYTHE;
 	public static ItemScythe LURKING_SCYTHE;
+	public static ItemSeeds BACA_SEEDS;
 	public static ItemSepulture SEPULTURE;
 	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
 
@@ -79,7 +82,6 @@ public final class ModItems {
 				DEPLETED_CLAY = name(new ItemDepleted(), "depleted_clay_ball"),
 				DEPLETED_COAL = name(new ItemDepleted(), "depleted_coal"),
 				EYE_OF_THE_UNDEAD = name(new ItemEyeUndead(), "eye_of_the_undead"),
-				new ItemInterfaceModule(),
 				BRAIN = name(new ItemOccularePart(), "occulare_brain"),
 				DIAMOND_SHELL = name(new ItemOccularePart(1500), "diamond_occulare_shell"),
 				EMERALD_SHELL = name(new ItemOccularePart(750), "emerald_occulare_shell"),
@@ -89,13 +91,12 @@ public final class ModItems {
 				PLUG = name(new ItemPlug(), "plug"),
 				IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), "iron_scythe"),
 				LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"),
+				BACA_SEEDS = name(new ItemSeeds(Blocks.LEAVES, Blocks.GRASS), "baca_seeds"),
 				SEPULTURE = name(new ItemSepulture(), "sepulture"),
 				SOUL_IN_A_BOTTLE = name(new ItemSoulInABottle(), "soul_in_a_bottle"));
 
-		for (AlchemyModuleTypes module : AlchemyModuleTypes.automatedValues()) {
-			for (int tier = 1; tier <= module.maxTier; tier++)
-				allItems.add(new ItemAlchemyModule(module, tier));
-		}
+		AlchemyModuleTypes.registerItems(allItems);
+
 		for(Item i : allItems) {
 			reg.register(i);
 			if(i != DEBUG_ITEM)

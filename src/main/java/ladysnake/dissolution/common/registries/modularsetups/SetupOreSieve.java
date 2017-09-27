@@ -7,9 +7,9 @@ import ladysnake.dissolution.api.IEssentiaHandler;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing.EnumPartType;
-import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.capabilities.CapabilityEssentiaHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.inventory.InputItemHandler;
 import ladysnake.dissolution.common.items.AlchemyModuleTypes;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
@@ -31,10 +31,10 @@ public class SetupOreSieve extends ModularMachineSetup {
 
 	private final Map<Item, Item> conversions;
 	private final Map<Item, EssentiaStack> essentiaConversions;
-	private static final ImmutableSet<ItemAlchemyModule> setup = ImmutableSet.of(
-			ItemAlchemyModule.getFromType(AlchemyModuleTypes.CONTAINER, 1),
-			ItemAlchemyModule.getFromType(AlchemyModuleTypes.ALCHEMY_INTERFACE_BOTTOM, 1),
-			ItemAlchemyModule.getFromType(AlchemyModuleTypes.MINERAL_FILTER, 1));
+	private static final ImmutableSet<ItemAlchemyModule.AlchemyModule> setup = ImmutableSet.of(
+			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_TOP, 1),
+			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.MINERAL_FILTER, 1),
+			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_BOTTOM, 1));
 
 	public SetupOreSieve() {
 		this.setRegistryName(new ResourceLocation(Reference.MOD_ID, "ore_sieve"));
@@ -56,7 +56,7 @@ public class SetupOreSieve extends ModularMachineSetup {
 	}
 
 	@Override
-	public ImmutableSet<ItemAlchemyModule> getSetup() {
+	public ImmutableSet<ItemAlchemyModule.AlchemyModule> getSetup() {
 		return setup;
 	}
 
@@ -134,16 +134,7 @@ public class SetupOreSieve extends ModularMachineSetup {
 			return null;
 		}
 
-		@Override
-		public boolean isPlugAttached(EnumFacing facing, EnumPartType part) {
-			TileEntity neighbour = tile.getWorld().getTileEntity((part == EnumPartType.BOTTOM ? tile.getPos() : tile.getPos().up()).offset(facing));
-			return (part == EnumPartType.TOP && (tile.getWorld().getBlockState(tile.getPos().up().offset(facing)).getBlock() instanceof IPowerConductor
-					|| (neighbour != null && neighbour.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite()))))
-				|| (part == EnumPartType.BOTTOM && (neighbour != null && (neighbour.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite())
-					|| neighbour.hasCapability(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA, facing.getOpposite()))));
-		}
-
-		@Override
+        @Override
 		public void readFromNBT(NBTTagCompound compound) {
 			CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().readNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, input, EnumFacing.EAST, compound.getTag("input"));
 			CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().readNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, depletedOutput, EnumFacing.EAST, compound.getTag("output"));

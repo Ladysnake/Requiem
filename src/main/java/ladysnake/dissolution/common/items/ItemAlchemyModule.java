@@ -3,9 +3,11 @@ package ladysnake.dissolution.common.items;
 import ladysnake.dissolution.client.models.DissolutionModelLoader;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
+import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -16,12 +18,11 @@ import java.util.Map;
 
 public class ItemAlchemyModule extends Item implements ICustomLocation {
 
-	/**a map containing every item mapped to a module type. For practical reasons, arrays start at one*/
+	/**a map containing every item mapped to a module type. For practical reasons, arrays in this map start at one*/
 	@SuppressWarnings("WeakerAccess")
 	protected static final Map<AlchemyModuleTypes, ItemAlchemyModule[]> allModules = new HashMap<>();
 	@SuppressWarnings("WeakerAccess")
 	protected static final Map<AlchemyModule, ResourceLocation> modulesModels = new HashMap<>();
-	private static final Map<AlchemyModule, ResourceLocation> activeModulesModels = new HashMap<>();
 
 	private AlchemyModuleTypes type;
 	private int tier;
@@ -30,16 +31,12 @@ public class ItemAlchemyModule extends Item implements ICustomLocation {
 		super();
 		this.type = type;
 		this.tier = tier;
-		String name = type.maxTier == 1 ? type.name : type.name() + "_tier_" + tier;
+		//noinspection ConstantConditions
+		String name = type.maxTier == 1 ? type.getRegistryName().getResourcePath() : type.getRegistryName().getResourcePath() + "_tier_" + tier;
 		this.setUnlocalizedName(name);
-		this.setRegistryName(name);
+		this.setRegistryName(type.getRegistryName().getResourceDomain(), name);
 		allModules.computeIfAbsent(type, t -> new ItemAlchemyModule[type.maxTier+1])[tier] = this;
-		modulesModels.put(this.toModule(BlockCasing.EnumPartType.BOTTOM), new ResourceLocation(Reference.MOD_ID, "machine/" + name));
-	}
-	
-	public ItemAlchemyModule(AlchemyModuleTypes type, int tier, ResourceLocation activeState) {
-		this(type, tier);
-		activeModulesModels.put(this.toModule(BlockCasing.EnumPartType.BOTTOM), activeState);
+		modulesModels.put(this.toModule(), new ResourceLocation(Reference.MOD_ID, "machine/" + name));
 	}
 
 	public AlchemyModuleTypes getType() {
@@ -50,20 +47,29 @@ public class ItemAlchemyModule extends Item implements ICustomLocation {
 		return tier;
 	}
 	
+	@SuppressWarnings("ConstantConditions")
 	@SideOnly(Side.CLIENT)
 	public static void registerModels() {
-		for(Map.Entry<AlchemyModule, ResourceLocation> entry : modulesModels.entrySet()) {
-			DissolutionModelLoader.addModel(entry.getValue(), ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
-			DissolutionModelLoader.addModel(activeModulesModels.getOrDefault(entry.getKey(), entry.getValue()), ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
+		for(ResourceLocation rl : modulesModels.values()) {
+			DissolutionModelLoader.addModel(rl, ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
+		}
+		for(int i = 1; i <= 2; i++) {
+			String extension = "_" + i;
+			DissolutionModelLoader.addModel(new ResourceLocation(Reference.MOD_ID, "machine/" +
+							AlchemyModuleTypes.MINERAL_FILTER.getRegistryName().getResourcePath() + extension
+					), ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
+			DissolutionModelLoader.addModel(new ResourceLocation(Reference.MOD_ID, "machine/" +
+					AlchemyModuleTypes.SOUL_FILTER.getRegistryName().getResourcePath() + extension
+			), ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
 		}
 	}
 
-	public AlchemyModule toModule(BlockCasing.EnumPartType part) {
+	public AlchemyModule toModule() {
 		return new AlchemyModule(this.getType(), this.getTier());
 	}
-	
-	public static ItemAlchemyModule getFromType(AlchemyModuleTypes type, int tier) {
-		return allModules.get(type)[tier];
+
+	public AlchemyModule toModule(BlockCasing.EnumPartType part, TileEntityModularMachine te) {
+		return new AlchemyModule(this.getType(), this.getTier());
 	}
 
 	@Override
@@ -83,6 +89,11 @@ public class ItemAlchemyModule extends Item implements ICustomLocation {
 			this.tier = tier;
 		}
 
+		public AlchemyModule(@Nonnull NBTTagCompound compound) {
+			type = AlchemyModuleTypes.valueOf(compound.getString("type"));
+			tier = compound.getInteger("tier");
+		}
+
 		@Nonnull
 		public AlchemyModuleTypes getType() {
 			return type;
@@ -92,12 +103,20 @@ public class ItemAlchemyModule extends Item implements ICustomLocation {
 			return tier;
 		}
 
-		public ResourceLocation getModel(boolean running) {
-			return running ? activeModulesModels.getOrDefault(this, modulesModels.get(this)) : modulesModels.get(this);
+		public ResourceLocation getModel() {
+			return modulesModels.get(this);
 		}
 
 		public ItemAlchemyModule toItem() {
 			return allModules.get(this.getType())[this.getTier()];
+		}
+
+		public NBTTagCompound toNBT() {
+			NBTTagCompound ret = new NBTTagCompound();
+			ret.setInteger("tier", getTier());
+			//noinspection ConstantConditions
+			ret.setString("type", getType().getRegistryName().toString());
+			return ret;
 		}
 
 		@Override
@@ -120,7 +139,7 @@ public class ItemAlchemyModule extends Item implements ICustomLocation {
 		@Override
 		public String toString() {
 			return "AlchemyModule{" +
-					"type=" + type.name() +
+					"type=" + type.getRegistryName() +
 					", tier=" + tier +
 					'}';
 		}

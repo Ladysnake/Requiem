@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.blocks.alchemysystem;
 
 import ladysnake.dissolution.client.models.blocks.PropertyBoolean;
-import ladysnake.dissolution.client.models.blocks.UnlistedPropertyModulePresent;
+import ladysnake.dissolution.client.models.blocks.UnlistedPropertyModels;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine;
@@ -39,12 +39,11 @@ import java.util.Random;
 
 public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	
-	public static final UnlistedPropertyModulePresent MODULES_PRESENT = new UnlistedPropertyModulePresent();
+	public static final UnlistedPropertyModels MODULES_PRESENT = new UnlistedPropertyModels();
 	public static final PropertyBoolean PLUG_NORTH = new PropertyBoolean("plug_north");
 	public static final PropertyBoolean PLUG_EAST = new PropertyBoolean("plug_east");
 	public static final PropertyBoolean PLUG_SOUTH = new PropertyBoolean("plug_south");
 	public static final PropertyBoolean PLUG_WEST = new PropertyBoolean("plug_west");
-	public static final PropertyBoolean RUNNING = new PropertyBoolean("running");
 	public static final PropertyEnum<EnumPartType> PART = PropertyEnum.create("part", EnumPartType.class);
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 	public static final ResourceLocation CASING_BOTTOM = new ResourceLocation(Reference.MOD_ID, "machine/wooden_machine_casing_bottom");
@@ -109,7 +108,7 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 
 	@Nonnull
 	protected BlockStateContainer createBlockState() {
-		return new ExtendedBlockState(this, new IProperty[] {FACING, PART, POWERED}, new IUnlistedProperty[] {MODULES_PRESENT, RUNNING, PLUG_EAST, PLUG_NORTH, PLUG_SOUTH, PLUG_WEST});
+		return new ExtendedBlockState(this, new IProperty[] {FACING, PART, POWERED}, new IUnlistedProperty[] {MODULES_PRESENT, PLUG_EAST, PLUG_NORTH, PLUG_SOUTH, PLUG_WEST});
 	}
 	
 	@Nonnull
@@ -121,8 +120,7 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 			EnumPartType part = state.getValue(PART);
 			if (part == EnumPartType.BOTTOM)
 				state = ((IExtendedBlockState) state)
-						.withProperty(MODULES_PRESENT, ((TileEntityModularMachine) te).getInstalledModules())
-						.withProperty(RUNNING, ((TileEntityModularMachine) te).isRunning());
+						.withProperty(MODULES_PRESENT, ((TileEntityModularMachine) te).getModelsForRender());
 			state = ((IExtendedBlockState) state)
 					.withProperty(PLUG_EAST, flag || ((TileEntityModularMachine) te).isPlugAttached(EnumFacing.EAST, part))
 					.withProperty(PLUG_NORTH, flag || ((TileEntityModularMachine) te).isPlugAttached(EnumFacing.NORTH, part))
@@ -131,7 +129,6 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 		} else {
 			state = ((IExtendedBlockState) state)
 					.withProperty(MODULES_PRESENT, new HashSet<>())
-					.withProperty(RUNNING, false)
 					.withProperty(PLUG_EAST, flag)
 					.withProperty(PLUG_NORTH, flag)
 					.withProperty(PLUG_WEST, flag)

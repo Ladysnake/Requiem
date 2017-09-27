@@ -9,11 +9,11 @@ import java.util.concurrent.*;
 import com.google.common.collect.ImmutableSet;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing.EnumPartType;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine.PowerConsumption;
 import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.inventory.InputItemHandler;
 import ladysnake.dissolution.common.items.AlchemyModuleTypes;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
@@ -22,7 +22,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
@@ -33,9 +32,9 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 public class SetupPowerGenerator extends ModularMachineSetup {
 	
-	private static final ImmutableSet<ItemAlchemyModule> setup = ImmutableSet.of(
-			ItemAlchemyModule.getFromType(AlchemyModuleTypes.GENERATOR, 1),
-			ItemAlchemyModule.getFromType(AlchemyModuleTypes.ALCHEMY_INTERFACE_BOTTOM, 1));
+	private static final ImmutableSet<ItemAlchemyModule.AlchemyModule> setup = ImmutableSet.of(
+			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.RESONANT_GENERATOR, 1),
+			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_TOP, 1));
 	
 	public static final ExecutorService THREADPOOL = Executors.newCachedThreadPool();
 	
@@ -49,7 +48,7 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 	}
 
 	@Override
-	public ImmutableSet<ItemAlchemyModule> getSetup() {
+	public ImmutableSet<ItemAlchemyModule.AlchemyModule> getSetup() {
 		return setup;
 	}	
 	
@@ -57,6 +56,7 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 		
 		private Set<BlockPos> nodes;
 		private boolean updateScheduled;
+		private boolean running;
 		private Future<Set<BlockPos>> scheduledTask;
 		private TileEntityModularMachine te;
 		private InputItemHandler itemInput;
@@ -71,8 +71,8 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 		
 		@Override
 		public void onTick() {
-			if(updateScheduled || (this.isEnabled() ^ !this.itemInput.getStackInSlot(0).isEmpty())) {
-				this.setEnabled(!itemInput.getStackInSlot(0).isEmpty());
+			if(updateScheduled || (this.isRunning() ^ !this.itemInput.getStackInSlot(0).isEmpty())) {
+				this.setRunning(!itemInput.getStackInSlot(0).isEmpty());
 				scheduledTask = THREADPOOL.submit((Callable<Set<BlockPos>>) this::detectNetwork);
 				updateScheduled = false;
 			}
@@ -86,7 +86,7 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 					});
 					nodes = newNodes;
 					for(BlockPos pos : nodes) {
-						((IPowerConductor)te.getWorld().getBlockState(pos).getBlock()).setPowered(te.getWorld(), pos, isEnabled());
+						((IPowerConductor)te.getWorld().getBlockState(pos).getBlock()).setPowered(te.getWorld(), pos, isRunning());
 					}
 					scheduledTask = null;
 				} catch (InterruptedException | ExecutionException e) {
@@ -123,12 +123,12 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 			}
 		}
 		
-		void setEnabled(boolean b) {
-			te.setRunning(b);
+		void setRunning(boolean b) {
+			running = b;
 		}
 		
-		boolean isEnabled() {
-			return te.isRunning();
+		boolean isRunning() {
+			return running;
 		}
 		
 		Set<BlockPos> detectNetwork() {
@@ -156,14 +156,7 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 			return nodes;
 		}
 
-		@Override
-		public boolean isPlugAttached(EnumFacing facing, BlockCasing.EnumPartType part) {
-			TileEntity neighbour = te.getWorld().getTileEntity((part == EnumPartType.BOTTOM ? te.getPos() : te.getPos().up()).offset(facing));
-			return part == EnumPartType.TOP && neighbour != null && neighbour.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite())
-					|| part == EnumPartType.BOTTOM && te.getWorld().getBlockState(te.getPos().offset(facing)).getBlock() instanceof IPowerConductor;
-		}
-
-		@Override
+        @Override
 		public boolean hasCapability(Capability<?> capability, EnumFacing facing, EnumPartType part) {
 			return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && part == EnumPartType.TOP;
 		}

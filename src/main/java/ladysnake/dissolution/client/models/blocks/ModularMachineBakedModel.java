@@ -6,7 +6,6 @@ import java.util.List;
 import ladysnake.dissolution.client.models.DissolutionModelLoader;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
-import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -21,10 +20,6 @@ import net.minecraftforge.common.property.IExtendedBlockState;
 
 import javax.annotation.Nonnull;
 
-import static net.minecraft.util.EnumFacing.EAST;
-import static net.minecraft.util.EnumFacing.SOUTH;
-import static net.minecraft.util.EnumFacing.WEST;
-
 public class ModularMachineBakedModel implements IBakedModel {
 	
 	static final String LOCATION_NAME = "bakedmodularmachine";
@@ -36,16 +31,15 @@ public class ModularMachineBakedModel implements IBakedModel {
 	public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
 
 		List<BakedQuad> quads = new LinkedList<>();
-		ModelRotation rotation = getRotationFromFacing(state, side);
+		ModelRotation rotation = getRotationFromFacing(state);
 
 		if(state.getValue(BlockCasing.PART) == BlockCasing.EnumPartType.TOP)
 			quads.addAll(DissolutionModelLoader.getModel(BlockCasing.CASING_TOP).getQuads(state, side, rand));
 		else {
 			quads.addAll(DissolutionModelLoader.getModel(BlockCasing.CASING_BOTTOM).getQuads(state, side, rand));
 			for (Object module : ((IExtendedBlockState) state).getValue(BlockCasing.MODULES_PRESENT)) {
-				if (module instanceof ItemAlchemyModule.AlchemyModule) {
-					IBakedModel model = DissolutionModelLoader.getModel(((ItemAlchemyModule.AlchemyModule) module)
-							.getModel(((IExtendedBlockState) state).getValue(BlockCasing.RUNNING)), rotation);
+				if (module instanceof ResourceLocation) {
+					IBakedModel model = DissolutionModelLoader.getModel((ResourceLocation) module, rotation);
 					if(model != null)
 						quads.addAll(model.getQuads(state, side, rand));
 				}
@@ -62,7 +56,7 @@ public class ModularMachineBakedModel implements IBakedModel {
 		return quads;
 	}
 
-	private ModelRotation getRotationFromFacing(IBlockState state, EnumFacing facing) {
+	private ModelRotation getRotationFromFacing(IBlockState state) {
 		ModelRotation rotation;
 		switch (state.getValue(BlockCasing.FACING)) {
 			case EAST: rotation = ModelRotation.X0_Y90;
