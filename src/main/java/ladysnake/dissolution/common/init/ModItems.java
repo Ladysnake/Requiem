@@ -12,8 +12,13 @@ import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.items.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
+import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemSeeds;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
@@ -34,6 +39,9 @@ public final class ModItems {
 	public static Item CINNABAR;
 	public static Item HALITE;
 	public static Item SULFUR;
+	public static ItemAcerbacaFruit ACERBACA;
+	public static ItemFood INSUBACA;
+	public static ItemFood LIMOBACA;
 	public static ItemCasing WOODEN_CASING;
 	public static ItemDebug DEBUG_ITEM;
 	public static ItemDepleted DEPLETED_CLAY;
@@ -45,17 +53,14 @@ public final class ModItems {
 	public static ItemOccularePart IRON_SHELL;
 	public static ItemOccularePart GOLD_SHELL;
 	public static ItemOccularePart TIRED_ETCHING;
+	public static ItemPlug PLUG;
 	public static ItemScythe IRON_SCYTHE;
 	public static ItemScythe LURKING_SCYTHE;
+	public static ItemSeeds BACA_SEEDS;
 	public static ItemSepulture SEPULTURE;
 	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
 
 	static Set<Item> allItems = new HashSet<>();
-	
-	@SuppressWarnings("unchecked")
-    private static <T extends Item> T name(T item, Reference.Items names) {
-		return (T) item.setUnlocalizedName(names.getUnlocalizedName()).setRegistryName(names.getRegistryName());
-	}
 	
 	@SuppressWarnings("unchecked")
     private static <T extends Item> T name(T item, String name) {
@@ -66,29 +71,32 @@ public final class ModItems {
 	public void onRegister(RegistryEvent.Register<Item> event) {
 		IForgeRegistry<Item> reg = event.getRegistry();
 		Collections.addAll(allItems, 
-				LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), Reference.Items.LURKING_SCYTHE), 
-				CINNABAR = name(new Item(), Reference.Items.CINNABAR),
-				DEBUG_ITEM = name(new ItemDebug(), Reference.Items.DEBUG),
+				CINNABAR = name(new Item(), "cinnabar"),
+				HALITE = name(new Item(), "halite"),
+				SULFUR = name(new Item(), "sulfur"),
+				ACERBACA = name(new ItemAcerbacaFruit(0, 3f), "acerbaca"),
+				INSUBACA = name(new ItemFood(-3, -0.3f, false).setPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:poison"), 20), 0.95f), "insubaca"),
+				LIMOBACA = name(new ItemFood(5, 1.2f, false), "limobaca"),
+				WOODEN_CASING = name(new ItemCasing(), "wooden_machine_casing"),
+				DEBUG_ITEM = name(new ItemDebug(), "debug_item"),
 				DEPLETED_CLAY = name(new ItemDepleted(), "depleted_clay_ball"),
 				DEPLETED_COAL = name(new ItemDepleted(), "depleted_coal"),
-				EYE_OF_THE_UNDEAD = name(new ItemEyeUndead(), Reference.Items.EYE_DEAD), 
-				HALITE = name(new Item(), "halite"),
-				IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), Reference.Items.SCYTHE_IRON),
+				EYE_OF_THE_UNDEAD = name(new ItemEyeUndead(), "eye_of_the_undead"),
 				BRAIN = name(new ItemOccularePart(), "occulare_brain"),
 				DIAMOND_SHELL = name(new ItemOccularePart(1500), "diamond_occulare_shell"),
 				EMERALD_SHELL = name(new ItemOccularePart(750), "emerald_occulare_shell"),
 				GOLD_SHELL = name(new ItemOccularePart(50), "gold_occulare_shell"),
 				IRON_SHELL = name(new ItemOccularePart(500), "iron_occulare_shell"),
 				TIRED_ETCHING = name(new ItemOccularePart(), "tired_etching"),
-				SEPULTURE = name(new ItemSepulture(), Reference.Items.SEPULTURE),
-				SOUL_IN_A_BOTTLE = name(new ItemSoulInABottle(), Reference.Items.SOUL_IN_A_BOTTLE),
-				SULFUR = name(new Item(), "sulfur"),
-				WOODEN_CASING = name(new ItemCasing(), "wooden_machine_casing"));
+				PLUG = name(new ItemPlug(), "plug"),
+				IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), "iron_scythe"),
+				LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"),
+				BACA_SEEDS = name(new ItemSeeds(Blocks.LEAVES, Blocks.GRASS), "baca_seeds"),
+				SEPULTURE = name(new ItemSepulture(), "sepulture"),
+				SOUL_IN_A_BOTTLE = name(new ItemSoulInABottle(), "soul_in_a_bottle"));
 
-		for (AlchemyModule module : AlchemyModule.values()) {
-			for (int tier = 1; tier <= module.maxTier; tier++)
-				allItems.add(new ItemAlchemyModule(module, tier));
-		}
+		AlchemyModuleTypes.registerItems(allItems);
+
 		for(Item i : allItems) {
 			reg.register(i);
 			if(i != DEBUG_ITEM)
@@ -136,7 +144,7 @@ public final class ModItems {
 	private void registerRender(Item item) {
 		assert item.getRegistryName() != null;
 		registerRender(item, item instanceof ICustomLocation
-				? ((ICustomLocation)item).getModelLocation(item)
+				? ((ICustomLocation)item).getModelLocation()
 				: new ModelResourceLocation(item.getRegistryName().toString()));
 	}
 	

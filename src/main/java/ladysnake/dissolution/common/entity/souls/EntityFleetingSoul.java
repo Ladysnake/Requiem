@@ -1,108 +1,86 @@
 package ladysnake.dissolution.common.entity.souls;
 
+import ladysnake.dissolution.api.Soul;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
+import ladysnake.dissolution.common.items.ItemSoulInABottle;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityFleetingSoul extends AbstractSoul {
-
-	private int soulAge;
-	private int delayBeforeCanPickup;
-	/**Spherical coordinates of this entity*/
-	protected double theta, phi, r;
-	/**Cartesian coordinates of this entity's target*/
-	protected double xTarget, yTarget, zTarget;
-	/**Cartesian coordinates of the spherical origin for the current path*/
-	protected double xCenter, yCenter, zCenter;
-	/**Motion in spherical coordinates*/
-	protected double motionTheta, motionPhi, motionR;
-	private EntityPlayer closestPlayer;
 	
+	private int delayBeforeCanPickup = 10;
+	private int targetChangeCooldown = 0;
+	private EntityPlayer closestPlayer;
+
 	public EntityFleetingSoul(World worldIn) {
 		super(worldIn);
-		this.noClip = true;
 	}
-
+	
 	public EntityFleetingSoul(World worldIn, double x, double y, double z) {
 		this(worldIn);
 		this.setPosition(x, y, z);
 	}
-
+	
+	public EntityFleetingSoul(World worldIn, double x, double y, double z, Soul soulIn) {
+		super(worldIn, soulIn);
+		this.setPosition(x, y, z);
+	}
+	
+	@Override
 	public void onUpdate() {
-
 		super.onUpdate();
 
 		if (this.delayBeforeCanPickup > 0) {
 			--this.delayBeforeCanPickup;
 		}
 
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
-
-		if (!this.hasNoGravity()) {
-			this.motionY -= 0.029999999329447746D;
-		}
-
-//		this.pushOutOfBlocks(this.posX, (this.getEntityBoundingBox().minY + this.getEntityBoundingBox().maxY) / 2.0D, this.posZ);
-		double d0 = 8.0D;
-
-		if (this.soulAge % 100 == 0) {
-			if (this.closestPlayer == null || this.getDistanceSqToEntity(closestPlayer) > 1024.0) {
-				if((this.closestPlayer = this.world.getClosestPlayerToEntity(this, 1024.0)) != null) {
-					this.xCenter = this.closestPlayer.posX;// + ((closestPlayer.posX - this.posX)/2.0);
-					this.yCenter = this.closestPlayer.posY;// + ((closestPlayer.posY - this.posY)/2.0);
-					this.zCenter = this.closestPlayer.posZ;// + ((closestPlayer.posZ - this.posZ)/2.0);
-					this.r = Math.sqrt(Math.pow(this.posX - this.xCenter, 2) + Math.pow(this.posY - this.yCenter, 2) + Math.pow(this.posZ - this.zCenter, 2));
-					this.theta = Math.acos((zCenter - this.posZ) / r);
-					this.phi = Math.atan((yCenter - this.posY) / (xCenter - this.posX));
-				}
-			}
-		}
-
-		if (this.closestPlayer != null && this.closestPlayer.isSpectator()) {
-			this.closestPlayer = null;
-		}
-
-		if (this.closestPlayer != null && !DissolutionInventoryHelper.findItem(closestPlayer, ModItems.HALITE).isEmpty()) {
-			this.motionR = 0;
-			this.motionPhi = (Math.PI / 180.0) * 2.0;
-			this.motionTheta = (Math.PI / 180.0) * 2.0;
-		} else if(!world.isRemote){
-			this.motionR = 0;
-			this.motionPhi += (Math.PI / 180.0) * rand.nextGaussian() * 5;
-			this.motionTheta += (Math.PI / 180.0) * rand.nextGaussian() * 5;
-		}
-		
-		this.r += motionR;
-		this.phi += motionPhi;
-		this.theta += motionTheta;
-		double newPosX = this.r * Math.sin(this.theta) * Math.cos(this.phi);
-		double newPosY = this.r * Math.sin(this.theta) * Math.sin(this.phi);
-		double newPosZ = this.r * Math.cos(this.theta);
-		this.motionX = (newPosX + this.xCenter) - this.posX;
-		this.motionY = (newPosY + this.yCenter) - this.posY;
-		this.motionZ = (newPosZ + this.zCenter) - this.posZ;
-
-		this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
-
-		if (this.onGround) {
-			this.motionY *= -0.8999999761581421D;
-		}
-
-		++this.soulAge;
-
 		if (this.soulAge >= 6000) {
-			this.setDead();
+			world.removeEntity(this);
 		}
 		
-		if(this.world.isRemote) {
-			spawnParticles();
+		if (!this.world.isRemote && !this.isDead) {
+			
+			this.targetChangeCooldown -= (this.getPositionVector().squareDistanceTo(lastTickPosX, lastTickPosY, lastTickPosZ) < 0.0125) ? 10 : 1;
+			
+			if((xTarget == 0 && yTarget == 0 && zTarget == 0) || this.getPosition().distanceSq(xTarget, yTarget, zTarget) < 9 || targetChangeCooldown <= 0) {
+				this.xTarget = this.posX + rand.nextGaussian() * 10;
+				this.yTarget = Math.max(this.posY + rand.nextGaussian() * 10, (this.soulAge / 20.0));
+				this.zTarget = this.posZ + rand.nextGaussian() * 10;
+				targetChangeCooldown = rand.nextInt() % 200;
+			}
+
+			if (this.soulAge % 100 == 0)
+				if (this.closestPlayer == null || this.getDistanceSqToEntity(closestPlayer) > 1024.0)
+					this.closestPlayer = this.world.getClosestPlayer(this.posX, this.posY, this.posZ, 32.0, 
+							player -> !((EntityPlayer)player).isSpectator() && !DissolutionInventoryHelper.findItem((EntityPlayer) player, ModItems.HALITE).isEmpty());
+
+			if (this.closestPlayer != null && this.closestPlayer.isSpectator()) {
+				this.closestPlayer = null;
+			}
+			
+			double targetX = this.closestPlayer != null ? closestPlayer.posX : this.xTarget;
+			double targetY = this.closestPlayer != null ? closestPlayer.posY : this.yTarget;
+			double targetZ = this.closestPlayer != null ? closestPlayer.posZ : this.zTarget;
+			Vec3d targetVector = new Vec3d(targetX-posX,targetY-posY,targetZ-posZ);
+			double length = targetVector.lengthVector();
+			targetVector = targetVector.scale(0.3/length);
+			double weight  = 0;
+			if (length <= 3){
+				weight = 0.9*((3.0-length)/3.0);
+			}
+			motionX = (0.9-weight)*motionX+(0.1+weight)*targetVector.x;
+			motionY = (0.9-weight)*motionY+(0.1+weight)*targetVector.y;
+			motionZ = (0.9-weight)*motionZ+(0.1+weight)*targetVector.z;
+			this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
 		}
 	}
 	
@@ -115,6 +93,16 @@ public class EntityFleetingSoul extends AbstractSoul {
 					0.0125f*(rand.nextFloat()-0.5f), 0.0125f*(rand.nextFloat()-0.5f), 0.0125f*(rand.nextFloat()-0.5f), 	//motion
 					255, 64, 16, 255, 	//color
 					2.0f, 24);
+		}
+	}
+	
+	@Override
+	public void onCollideWithPlayer(EntityPlayer entityIn) {
+		ItemStack bottle = DissolutionInventoryHelper.findItem(entityIn, Items.GLASS_BOTTLE);
+		if(!world.isRemote && !bottle.isEmpty() && this.delayBeforeCanPickup <= 0) {
+			bottle.shrink(1);
+			entityIn.addItemStackToInventory(ItemSoulInABottle.newTypedSoulBottle(this.soul.getType()));
+			this.setDead();
 		}
 	}
 

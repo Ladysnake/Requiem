@@ -25,8 +25,8 @@ public class ItemOccularePart extends Item implements ICustomLocation {
 	}
 
 	@Override
-	public ModelResourceLocation getModelLocation(Item item) {
-		assert item.getRegistryName() != null;
-		return new ModelResourceLocation(item.getRegistryName().getResourceDomain() + ":occularia_parts/" + item.getRegistryName().getResourcePath());
+	public ModelResourceLocation getModelLocation() {
+		assert this.getRegistryName() != null;
+		return new ModelResourceLocation(this.getRegistryName().getResourceDomain() + ":occularia_parts/" + this.getRegistryName().getResourcePath());
 	}
 }

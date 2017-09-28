@@ -10,43 +10,6 @@ public class Reference {
 	static final String CLIENT_PROXY_CLASS = "ladysnake.dissolution.client.proxy.ClientProxy";
 	static final String SERVER_PROXY_CLASS = "ladysnake.dissolution.server.proxy.ServerProxy";
 
-	public enum Items {
-		CINNABAR,
-		DEBUG("debug_item"),
-		EYE_DEAD("eye_of_the_undead"),
-		LURKING_SCYTHE,
-		SCARAB_OF_ETERNITY,
-		SCYTHE_IRON("iron_scythe"),
-		SOUL_GEM("soul_gem"),
-		SOUL_IN_A_BOTTLE("soul_in_a_bottle"),
-		SEPULTURE;
-
-		private String unlocalizedName;
-		private String registryName;
-		
-		Items() {
-			this.unlocalizedName = name().toLowerCase();
-			this.registryName = unlocalizedName;
-		}
-		
-		Items(String unlocalizedName) {
-			this(unlocalizedName, unlocalizedName);
-		}
-
-		Items(String unlocalizedName, String registryName) {
-			this.unlocalizedName = unlocalizedName;
-			this.registryName = registryName;
-		}
-
-		public String getRegistryName() {
-			return registryName;
-		}
-
-		public String getUnlocalizedName() {
-			return unlocalizedName;
-		}
-	}
-
 	public enum Blocks {
 		BASE_MACHINE,
 		BARRAGE,

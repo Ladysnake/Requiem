@@ -11,16 +11,14 @@ import ladysnake.dissolution.api.IEssentiaHandler;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing.EnumPartType;
-import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.capabilities.CapabilityEssentiaHandler;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.items.AlchemyModule;
+import ladysnake.dissolution.common.items.AlchemyModuleTypes;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
@@ -28,10 +26,10 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 public class SetupCrystallizer extends ModularMachineSetup {
 
-	private static final ImmutableSet<ItemAlchemyModule> setup = ImmutableSet.of(
-			ItemAlchemyModule.getFromType(AlchemyModule.ALCHEMY_INTERFACE, 1),
-			ItemAlchemyModule.getFromType(AlchemyModule.CRYSTALLIZER, 1),
-			ItemAlchemyModule.getFromType(AlchemyModule.CONTAINER, 1));
+	private static final ImmutableSet<ItemAlchemyModule.AlchemyModule> setup = ImmutableSet.of(
+			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_TOP, 1),
+			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.CRYSTALLIZER, 1),
+			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_BOTTOM, 1));
 	private final Map<EssentiaStack, Item> conversions;
 
 	public SetupCrystallizer() {
@@ -47,7 +45,7 @@ public class SetupCrystallizer extends ModularMachineSetup {
 	}
 
 	@Override
-	public ImmutableSet<ItemAlchemyModule> getSetup() {
+	public ImmutableSet<ItemAlchemyModule.AlchemyModule> getSetup() {
 		return setup;
 	}
 
@@ -63,12 +61,12 @@ public class SetupCrystallizer extends ModularMachineSetup {
 		private OutputItemHandler oreOutput;
 		private int progressTicks;
 
-		public Instance(TileEntityModularMachine tile) {
+		Instance(TileEntityModularMachine tile) {
 			super();
 			this.tile = tile;
 			if(tile.hasWorld())
 				tile.getWorld().markBlockRangeForRenderUpdate(tile.getPos().add(1, 0, 1), tile.getPos().add(-1, 0, -1));
-			this.essentiaInput = new CapabilityEssentiaHandler.DefaultEssentiaHandler(99);
+			this.essentiaInput = new CapabilityEssentiaHandler.DefaultEssentiaHandler(99, 4);
 			this.essentiaInput.setSuction(10, EssentiaTypes.UNTYPED);
 			this.oreOutput = new OutputItemHandler();
 		}
@@ -77,13 +75,16 @@ public class SetupCrystallizer extends ModularMachineSetup {
 		public void onTick() {
 			if (!tile.getWorld().isRemote && this.progressTicks++ % 20 == 0) {
 				if (this.oreOutput.getStackInSlot(0).getCount() < this.oreOutput.getSlotLimit(0)) {
-					if(this.essentiaInput.readContent().getCount() >= 9) {
-						EssentiaStack in = this.essentiaInput.extract(9);
-						this.oreOutput.insertItemInternal(0, new ItemStack(conversions.get(in)), false);
+					for(EssentiaStack essentiaStack : essentiaInput) {
+						if(essentiaStack.getCount() >= 9) {
+							EssentiaStack in = this.essentiaInput.extract(9, essentiaStack.getType());
+							this.oreOutput.insertItemInternal(0, new ItemStack(conversions.get(in)), false);
+							break;
+						}
 					}
 				}
 				this.oreOutput.insertItemInternal(0,
-						tile.tryOutput(this.oreOutput.extractItem(0, 10, false), EnumFacing.WEST),
+						tile.tryOutput(this.oreOutput.extractItem(0, 10, false), BlockCasing.EnumPartType.BOTTOM),
 						false);
 			}
 		}
@@ -104,6 +105,7 @@ public class SetupCrystallizer extends ModularMachineSetup {
 			}
 			if (capability == CapabilityEssentiaHandler.CAPABILITY_ESSENTIA) {
 				if (part == BlockCasing.EnumPartType.TOP)
+					//noinspection ConstantConditions
 					return CapabilityEssentiaHandler.CAPABILITY_ESSENTIA.cast(this.essentiaInput);
 			}
 			return null;
@@ -112,6 +114,7 @@ public class SetupCrystallizer extends ModularMachineSetup {
 		@Override
 		public void readFromNBT(NBTTagCompound compound) {
 			CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().readNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, this.oreOutput, EnumFacing.WEST, compound.getTag("output"));
+			//noinspection ConstantConditions
 			CapabilityEssentiaHandler.CAPABILITY_ESSENTIA.getStorage().readNBT(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA, this.essentiaInput, EnumFacing.NORTH, compound.getTag("essentiaInput"));
 		}
 		
@@ -123,14 +126,6 @@ public class SetupCrystallizer extends ModularMachineSetup {
 			return compound;
 		}
 
-		@Override
-		public boolean isPlugAttached(EnumFacing facing, BlockCasing.EnumPartType part) {
-			TileEntity neighbour = tile.getWorld().getTileEntity((part == EnumPartType.BOTTOM ? tile.getPos() : tile.getPos().up()).offset(facing));
-			return part == EnumPartType.TOP &&
-					(neighbour != null && neighbour.hasCapability(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA, facing.getOpposite())
-					|| tile.getWorld().getBlockState(tile.getPos().up().offset(facing)).getBlock() instanceof IPowerConductor)
-					|| part == EnumPartType.BOTTOM && tile.adjustFaceIn(facing) != EnumFacing.EAST && neighbour != null && neighbour.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite());
-		}
 	}
 
 }

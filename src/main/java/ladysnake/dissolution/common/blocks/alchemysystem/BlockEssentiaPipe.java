@@ -3,7 +3,7 @@ package ladysnake.dissolution.common.blocks.alchemysystem;
 import ladysnake.dissolution.api.IEssentiaHandler;
 import ladysnake.dissolution.client.models.blocks.PropertyBoolean;
 import ladysnake.dissolution.common.capabilities.CapabilityEssentiaHandler;
-import ladysnake.dissolution.common.tileentities.TileEntityEssenceCable;
+import ladysnake.dissolution.common.tileentities.TileEntityEssentiaPipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -118,7 +118,7 @@ public class BlockEssentiaPipe extends Block {
 	
 	@Override
 	public TileEntity createTileEntity(World world, IBlockState state) {
-		return new TileEntityEssenceCable();
+		return new TileEntityEssentiaPipe();
 	}
 
 }

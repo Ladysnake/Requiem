@@ -7,6 +7,7 @@ import ladysnake.dissolution.api.SoulTypes;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
+import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -44,18 +45,18 @@ public class ItemSoulInABottle extends Item {
 		Soul soul = getSoul(stack);
 		CapabilitySoulHandler.getHandler(playerIn).addSoul(soul);
 		stack.shrink(1);
-		return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
+		return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
 	}
 	
 	public Soul getSoul(ItemStack stack) {
 		NBTTagCompound soulNBT = stack.getSubCompound("soul");
 		if(soulNBT != null)
-			return Soul.readFromNBT(soulNBT);
+			return new Soul(soulNBT);
 		return Soul.UNDEFINED;
 	}
 	
-	public ItemStack newTypedSoul(SoulTypes soulType) {
-		ItemStack stack = new ItemStack(this);
+	public static ItemStack newTypedSoulBottle(SoulTypes soulType) {
+		ItemStack stack = new ItemStack(ModItems.SOUL_IN_A_BOTTLE);
 		NBTTagCompound nbt = new NBTTagCompound();
 		Soul soul = new Soul(soulType);
 		nbt.setTag("soul", soul.writeToNBT());

@@ -1,14 +1,15 @@
 package ladysnake.dissolution.common.tileentities;
 
 import com.google.common.collect.ImmutableSet;
-import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.blocks.alchemysystem.AbstractPowerConductor;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine.PowerConsumption;
+import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.init.ModModularSetups;
-import ladysnake.dissolution.common.items.AlchemyModule;
+import ladysnake.dissolution.common.items.AlchemyModuleTypes;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
+import ladysnake.dissolution.common.items.ItemPlug;
 import ladysnake.dissolution.common.registries.modularsetups.ISetupInstance;
 import ladysnake.dissolution.common.registries.modularsetups.SetupPowerGenerator;
 import net.minecraft.block.state.IBlockState;
@@ -24,6 +25,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -31,20 +33,28 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
+import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 public class TileEntityModularMachine extends TileEntity implements ITickable {
 	
-	private Set<ItemAlchemyModule> installedModules;
+	private Set<ItemAlchemyModule.AlchemyModule> installedModules;
+	private Map<BlockCasing.EnumPartType, Map<EnumFacing, Boolean>> plugs;
 	private ISetupInstance currentSetup = null;
 	private PowerConsumption powerConsumption;
 	private boolean powered = false;
-	private boolean running = false;
 
 	public TileEntityModularMachine() {
 		this.installedModules = new HashSet<>();
+		this.plugs = new HashMap<>();
+		for(BlockCasing.EnumPartType part : BlockCasing.EnumPartType.values()) {
+			Map<EnumFacing, Boolean> facings = new HashMap<>();
+			for(EnumFacing facing : EnumFacing.values()) {
+				facings.put(facing, false);
+			}
+			this.plugs.put(part, facings);
+		}
 	}
 
 	@Override
@@ -57,7 +67,7 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	 * Adjusts the given facing to take the block's rotation into account
 	 * Should be used by setups trying to interact with the world
 	 * @param face a facing relative to the machine's rotation
-	 * @return the corresponding in-world face using the block's rotation
+	 * @return the corresponding in-world face using the casing's rotation
 	 */
 	public EnumFacing adjustFaceOut(EnumFacing face) {
 		if(face.getAxis() == EnumFacing.Axis.Y)
@@ -72,7 +82,7 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	}
 	
 	/**
-	 * Does the opposite operation to {@link #adjustFaceOut}
+	 * Performs the opposite operation of {@link #adjustFaceOut}
 	 * @param face an absolute facing given by the world
 	 * @return the corresponding relative facing
 	 */
@@ -89,12 +99,27 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	}
 
 	/**
+	 * Attempts to output an ItemStack into one or more containers
+	 * @param stack the stack to output through this machine
+	 * @return what could not be inserted
+	 */
+	public ItemStack tryOutput(ItemStack stack, BlockCasing.EnumPartType part) {
+		for(EnumFacing facing : EnumFacing.Plane.HORIZONTAL) {
+			if(isPlugAttached(facing, part))
+				stack = tryOutput(stack, part, facing);
+			if(stack.isEmpty())
+				return ItemStack.EMPTY;
+		}
+		return stack;
+	}
+
+	/**
 	 * Attempts to output an ItemStack into a container
 	 * @param stack the stack to output through this machine
 	 * @param face the face interacting with the world, not taking into account the casing's rotation
 	 * @return what could not be inserted
 	 */
-	public ItemStack tryOutput(ItemStack stack, EnumFacing face) {
+	public ItemStack tryOutput(ItemStack stack, BlockCasing.EnumPartType part, EnumFacing face) {
 		face = this.adjustFaceOut(face);
 		TileEntity te = this.getWorld().getTileEntity(getPos().offset(face));
 		if (te != null) {
@@ -109,24 +134,35 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 		}
 		return stack;
 	}
+
+	public Map<EnumFacing, TileEntity> getAdjacentTEs(BlockCasing.EnumPartType part, BiPredicate<EnumFacing, TileEntity> condition) {
+		Map<EnumFacing, TileEntity> ret = new HashMap<>();
+		BlockPos pos = part == BlockCasing.EnumPartType.BOTTOM ? this.pos : this.pos.up();
+		for(EnumFacing facing : EnumFacing.Plane.HORIZONTAL) {
+			TileEntity te = world.getTileEntity(pos.offset(facing));
+			if(te != null && condition.test(facing, te))
+				ret.put(facing, te);
+		}
+		return ret;
+	}
 	
-	public boolean addModule(ItemAlchemyModule module) {
+	private boolean addModule(ItemAlchemyModule.AlchemyModule module) {
 		boolean added = installedModules.stream().allMatch(mod -> (mod.getType().isCompatible(module.getType())))
 				&& installedModules.add(module);
 		if(added) {
 			this.verifySetup();
-			this.world.markBlockRangeForRenderUpdate(this.pos, this.pos);
 			SetupPowerGenerator.THREADPOOL.submit(() -> AbstractPowerConductor.updatePowerCore(world, pos));
+			this.world.markBlockRangeForRenderUpdate(this.pos, this.pos);
 			this.markDirty();
 		}
 		return added;
 	}
 	
-	public ItemStack removeModule() {
-		Iterator<ItemAlchemyModule> iterator = installedModules.iterator();
+	private ItemStack removeModule() {
+		Iterator<ItemAlchemyModule.AlchemyModule> iterator = installedModules.iterator();
 		ItemStack ret = ItemStack.EMPTY;
 		if(iterator.hasNext()) {
-			ret = new ItemStack(iterator.next());
+			ret = new ItemStack(iterator.next().toItem());
 			iterator.remove();
 			if(this.currentSetup != null)
 				this.currentSetup.onRemoval();
@@ -138,16 +174,39 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	}
 	
 	public void interact(EntityPlayer playerIn, EnumHand hand, BlockCasing.EnumPartType part, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if(this.currentSetup != null)
+		ItemStack stack = playerIn.getHeldItemMainhand();
+		if(stack.getItem() instanceof ItemAlchemyModule) {
+			if(addModule(((ItemAlchemyModule) stack.getItem()).toModule(part, this)) && !playerIn.isCreative()) {
+				stack.shrink(1);
+			}
+		} else if(stack.isEmpty() && playerIn.isSneaking()) {
+			playerIn.addItemStackToInventory(removeModule());
+		} else if(stack.getItem() instanceof ItemPlug) {
+			Boolean b = this.plugs.get(part).put(facing, true);
+			if(b == null || !b) {
+				this.world.markBlockRangeForRenderUpdate(this.pos, this.pos);
+				this.markDirty();
+				if(!playerIn.isCreative())
+					stack.shrink(1);
+			}
+		}else if(this.currentSetup != null)
 			this.currentSetup.onInteract(playerIn, hand, part, adjustFaceIn(facing), hitX, hitY, hitZ);
 	}
 
 	public boolean isPlugAttached(EnumFacing facing, BlockCasing.EnumPartType part) {
-		return ((this.currentSetup != null) && this.currentSetup.isPlugAttached(facing, part));
+		return this.plugs.get(part).get(facing);
 	}
 	
-	public Set<ItemAlchemyModule> getInstalledModules() {
+	public Set<ItemAlchemyModule.AlchemyModule> getInstalledModules() {
 		return ImmutableSet.copyOf(this.installedModules);
+	}
+
+	public Set<ResourceLocation> getModelsForRender() {
+		Set<ResourceLocation> ret = this.installedModules.stream().map(ItemAlchemyModule.AlchemyModule::getModel)
+				.collect(Collectors.toSet());
+		if(currentSetup != null)
+			currentSetup.addModelsForRender(ret);
+		return ret;
 	}
 	
 	public ISetupInstance getCurrentSetup() {
@@ -157,17 +216,21 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	public void dropContent() {
 		if(this.currentSetup != null)
 			this.currentSetup.onRemoval();
-		if(!this.world.isRemote)
-			for (ItemAlchemyModule module : installedModules) {
-				world.spawnEntity(new EntityItem(this.world, this.pos.getX(), this.pos.getY(), this.pos.getZ(), new ItemStack(module)));
+		if(!this.world.isRemote) {
+			for (ItemAlchemyModule.AlchemyModule module : installedModules) {
+				world.spawnEntity(new EntityItem(this.world, this.pos.getX(), this.pos.getY(), this.pos.getZ(),
+						new ItemStack(module.toItem())));
 			}
+			world.spawnEntity(new EntityItem(this.world, this.pos.getX(), this.pos.getY(), this.pos.getZ(),
+					new ItemStack(ModItems.PLUG, (int) this.plugs.values().stream().flatMap(e -> e.values().stream())
+							.filter(e -> e).count())));
+		}
 		this.installedModules.clear();
 	}
 	
 	private void verifySetup() {
-		Set<ItemAlchemyModule> modules = getInstalledModules();
-		System.out.println(ModModularSetups.REGISTRY.getValues());
-		currentSetup = ModModularSetups.REGISTRY.getValues().stream().peek(System.out::println).filter(setup -> setup.isValidSetup(modules)).map(setup -> setup.getInstance(this)).findAny().orElse(null);
+		Set<ItemAlchemyModule.AlchemyModule> modules = getInstalledModules();
+		currentSetup = ModModularSetups.REGISTRY.getValues().stream().filter(setup -> setup.isValidSetup(modules)).map(setup -> setup.getInstance(this)).findAny().orElse(null);
 	}
 	
 	public PowerConsumption getPowerConsumption() {
@@ -186,18 +249,6 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 		this.powered = powered;
 	}
 
-	public boolean isRunning() {
-		return running;
-	}
-
-	/**
-	 * 
-	 * @param running Whether the machine and its components should appear activated
-	 */
-	public void setRunning(boolean running) {
-		this.running = running;
-	}
-	
 	@Override
 	public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
 		return hasCapability(capability, facing, BlockCasing.EnumPartType.BOTTOM);
@@ -249,11 +300,12 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 		super.readFromNBT(compound);
 		NBTTagList modules = compound.getTagList("modules", 10);
 		for (NBTBase mod : modules) {
-			System.out.println(AlchemyModule.valueOf(((NBTTagCompound)mod).getString("type")) + " " + ((NBTTagCompound)mod).getInteger("tier"));
-			this.installedModules.add(ItemAlchemyModule.getFromType(
-					AlchemyModule.valueOf(((NBTTagCompound)mod).getString("type")),
-					((NBTTagCompound)mod).getInteger("tier")));
+			AlchemyModuleTypes type = AlchemyModuleTypes.valueOf(((NBTTagCompound)mod).getString("type"));
+			if(type != null)
+				this.installedModules.add(type.readNBT((NBTTagCompound) mod));
 		}
+		NBTTagCompound plugsNBT = compound.getCompoundTag("plugs");
+		this.plugs.forEach((key, value) -> value.replaceAll((f, b) -> plugsNBT.getCompoundTag(key.name()).getBoolean(f.name())));
 		verifySetup();
 		this.setPowered(compound.getBoolean("powered"));
 	}
@@ -262,21 +314,27 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	public void readFromNBT(NBTTagCompound compound) {
 		readFromNBTBasic(compound);
 		if(this.currentSetup != null)
-			this.currentSetup.readFromNBT((NBTTagCompound) compound.getTag("currentSetup"));
+			this.currentSetup.readFromNBT(compound.getCompoundTag("currentSetup"));
 	}
 
 	private	void writeToNBTBasic(NBTTagCompound compound) {
 		super.writeToNBT(compound);
 		NBTTagList modules = new NBTTagList();
-		for (ItemAlchemyModule mod : installedModules) {
+		for (ItemAlchemyModule.AlchemyModule mod : installedModules) {
 			if(mod != null) {
-				NBTTagCompound comp = new NBTTagCompound();
-				comp.setString("type", mod.getType().name());
-				comp.setInteger("tier", mod.getTier());
-				modules.appendTag(comp);
+				modules.appendTag(mod.toNBT());
 			}
 		}
 		compound.setTag("modules", modules);
+		NBTTagCompound plugs = new NBTTagCompound();
+		for(Map.Entry<BlockCasing.EnumPartType, Map<EnumFacing, Boolean>> part : this.plugs.entrySet()) {
+			NBTTagCompound facings = new NBTTagCompound();
+			for(Map.Entry<EnumFacing, Boolean> side : part.getValue().entrySet()) {
+				facings.setBoolean(side.getKey().name(), side.getValue());
+			}
+			plugs.setTag(part.getKey().name(), facings);
+		}
+		compound.setTag("plugs", plugs);
 		compound.setBoolean("powered", isPowered());
 	}
 	

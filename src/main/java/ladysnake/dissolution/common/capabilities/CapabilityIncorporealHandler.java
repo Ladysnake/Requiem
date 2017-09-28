@@ -8,6 +8,8 @@ import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.DissolutionConfigManager;
 import ladysnake.dissolution.common.DissolutionConfigManager.FlightModes;
+import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
+import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
@@ -85,6 +87,8 @@ public class CapabilityIncorporealHandler {
 	public static class DefaultIncorporealHandler implements IIncorporealHandler {
 
 		private boolean incorporeal = false;
+		/**true if the player is a ghost because of death*/
+		private boolean dead = false;
 		/**How much time this entity will be intangible*/
 		private int intangibleTimer = -1;
 		private int lastFood = -1;
@@ -106,6 +110,7 @@ public class CapabilityIncorporealHandler {
 		@Override
 		public void setIncorporeal(boolean enable) {
 			incorporeal = enable;
+			dead = enable;
 			owner.setEntityInvulnerable(enable);
 			if(DissolutionConfigManager.isFlightEnabled(FlightModes.CUSTOM_FLIGHT) && owner.world.isRemote)
 				owner.capabilities.setFlySpeed(enable ? 0.025f : 0.05f);
@@ -135,6 +140,17 @@ public class CapabilityIncorporealHandler {
 				GuiIngameForge.renderAir = true;
 			}
 			setSynced(true);
+		}
+		
+		public void split() {
+			EntityPlayerCorpse body = new EntityPlayerCorpse(owner.world);
+			body.setPlayer(owner.getUniqueID());
+			body.setInert(true);
+			body.setDecaying(false);
+			DissolutionInventoryHelper.transferEquipment(owner, body);
+			owner.world.spawnEntity(body);
+			setIncorporeal(true);
+			dead = false;
 		}
 
 		@Override
@@ -254,6 +270,7 @@ public class CapabilityIncorporealHandler {
 		        final NBTTagCompound tag = new NBTTagCompound();
 		        tag.setBoolean("incorporeal", instance.isIncorporeal());
 		        if(instance instanceof DefaultIncorporealHandler) {
+		        	tag.setBoolean("dead", ((DefaultIncorporealHandler)instance).dead);
 		        	tag.setInteger("intangible", ((DefaultIncorporealHandler)instance).intangibleTimer);
 		        	tag.setInteger("prevGamemode", ((DefaultIncorporealHandler)instance).prevGamemode);
 		        } else {
@@ -268,6 +285,7 @@ public class CapabilityIncorporealHandler {
 		        final NBTTagCompound tag = (NBTTagCompound) nbt;
 		        instance.setIncorporeal(tag.getBoolean("incorporeal"));
 		        if(instance instanceof DefaultIncorporealHandler) {
+		        	((DefaultIncorporealHandler)instance).dead = tag.getBoolean("dead");
 		        	((DefaultIncorporealHandler)instance).intangibleTimer = tag.getInteger("intangible");
 		        	((DefaultIncorporealHandler)instance).prevGamemode = tag.getInteger("prevGamemode");
 		        } else {

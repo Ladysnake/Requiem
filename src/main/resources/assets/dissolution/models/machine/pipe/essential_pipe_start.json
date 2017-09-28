@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
 	"textures": {
-		"0": "machines/essential_pipe",
-		"particle": "machines/essential_pipe"
+		"0": "dissolution:machines/essential_pipe",
+		"particle": "dissolution:machines/essential_pipe"
 	},
 	"elements": [
 		{

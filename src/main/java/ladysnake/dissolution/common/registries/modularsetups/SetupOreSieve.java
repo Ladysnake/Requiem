@@ -7,10 +7,10 @@ import ladysnake.dissolution.api.IEssentiaHandler;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing.EnumPartType;
-import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.capabilities.CapabilityEssentiaHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
-import ladysnake.dissolution.common.items.AlchemyModule;
+import ladysnake.dissolution.common.inventory.InputItemHandler;
+import ladysnake.dissolution.common.items.AlchemyModuleTypes;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import net.minecraft.block.Block;
@@ -31,18 +31,18 @@ public class SetupOreSieve extends ModularMachineSetup {
 
 	private final Map<Item, Item> conversions;
 	private final Map<Item, EssentiaStack> essentiaConversions;
-	private static final ImmutableSet<ItemAlchemyModule> setup = ImmutableSet.of(
-			ItemAlchemyModule.getFromType(AlchemyModule.CONTAINER, 1),
-			ItemAlchemyModule.getFromType(AlchemyModule.ALCHEMY_INTERFACE, 1),
-			ItemAlchemyModule.getFromType(AlchemyModule.MINERAL_FILTER, 1));
+	private static final ImmutableSet<ItemAlchemyModule.AlchemyModule> setup = ImmutableSet.of(
+			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_TOP, 1),
+			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.MINERAL_FILTER, 1),
+			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_BOTTOM, 1));
 
 	public SetupOreSieve() {
 		this.setRegistryName(new ResourceLocation(Reference.MOD_ID, "ore_sieve"));
 		this.conversions = new HashMap<>();
 		this.essentiaConversions = new HashMap<>();
 		addConversion(Blocks.CLAY, ModBlocks.DEPLETED_CLAY, new EssentiaStack(EssentiaTypes.SALIS, 1));
-		addConversion(Blocks.COAL_BLOCK, ModBlocks.DEPLETED_COAL, new EssentiaStack(EssentiaTypes.CINNABARIS, 1));
-		addConversion(Blocks.MAGMA, ModBlocks.DEPLETED_MAGMA, new EssentiaStack(EssentiaTypes.SULPURIS, 1));
+		addConversion(Blocks.COAL_BLOCK, ModBlocks.DEPLETED_COAL, new EssentiaStack(EssentiaTypes.SULPURIS, 1));
+		addConversion(Blocks.MAGMA, ModBlocks.DEPLETED_MAGMA, new EssentiaStack(EssentiaTypes.CINNABARIS, 1));
 	}
 
 	private void addConversion(Block input, Block output, EssentiaStack essentiaOutput) {
@@ -56,7 +56,7 @@ public class SetupOreSieve extends ModularMachineSetup {
 	}
 
 	@Override
-	public ImmutableSet<ItemAlchemyModule> getSetup() {
+	public ImmutableSet<ItemAlchemyModule.AlchemyModule> getSetup() {
 		return setup;
 	}
 
@@ -68,6 +68,7 @@ public class SetupOreSieve extends ModularMachineSetup {
 		private OutputItemHandler depletedOutput;
 		private IEssentiaHandler essentiaOutput;
 		private int progressTicks;
+		private int transferCooldown;
 		private int processingTime;
 
 		Instance(TileEntityModularMachine te) {
@@ -76,29 +77,36 @@ public class SetupOreSieve extends ModularMachineSetup {
 			this.input = new InputItemHandler(Blocks.CLAY, Blocks.COAL_BLOCK, Blocks.MAGMA);
 			this.essentiaOutput = new CapabilityEssentiaHandler.DefaultEssentiaHandler(100);
 			this.depletedOutput = new OutputItemHandler();
-			this.processingTime = AlchemyModule.MINERAL_FILTER.maxTier / this.tile.getInstalledModules().stream()
-					.filter(mod -> mod.getType() == AlchemyModule.MINERAL_FILTER).findAny().get().getTier();
-			this.input.insertItem(0, new ItemStack(Blocks.COAL_BLOCK, 64), false);
+			this.processingTime = AlchemyModuleTypes.MINERAL_FILTER.maxTier / this.tile.getInstalledModules().stream()
+					.filter(mod -> mod.getType() == AlchemyModuleTypes.MINERAL_FILTER).findAny().get().getTier();
 		}
 
 		@Override
 		public void onTick() {
-			if (tile.isPowered() && !tile.getWorld().isRemote && !input.getStackInSlot(0).isEmpty()) {
-				if (progressTicks++ % (processingTime * 20) == 0
-						&& depletedOutput.getStackInSlot(0).getCount() < depletedOutput.getSlotLimit(0)
+			if (tile.isPowered() && !tile.getWorld().isRemote) {
+				if (!input.getStackInSlot(0).isEmpty() && progressTicks++ % (processingTime * 20) == 0) {
+					
+					// processes a material
+					if(depletedOutput.getStackInSlot(0).getCount() < depletedOutput.getSlotLimit(0)
 						&& !essentiaOutput.isFull()) {
-					ItemStack inputStack = input.extractItem(0, 1, false);
-					depletedOutput.insertItemInternal(0, new ItemStack(conversions.get(inputStack.getItem())), false);
-					depletedOutput.insertItemInternal(0,
-							tile.tryOutput(depletedOutput.extractItem(0, 10, false), EnumFacing.WEST), false);
-
-					essentiaOutput.insert(essentiaConversions.get(inputStack.getItem()));
-					EnumFacing essentiaOutputFace = tile.adjustFaceOut(EnumFacing.NORTH);
-					TileEntity te = tile.getWorld().getTileEntity(tile.getPos().offset(essentiaOutputFace));
-					if (te != null && te.hasCapability(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA,
-							essentiaOutputFace.getOpposite()))
-						this.essentiaOutput.flow(te.getCapability(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA,
-								essentiaOutputFace.getOpposite()));
+						ItemStack inputStack = input.extractItem(0, 1, false);
+						
+						depletedOutput.insertItemInternal(0, new ItemStack(conversions.get(inputStack.getItem())), false);
+						depletedOutput.insertItemInternal(0,
+								tile.tryOutput(depletedOutput.extractItem(0, 10, false), EnumPartType.BOTTOM), false);
+						
+						EssentiaStack result = essentiaConversions.get(inputStack.getItem());
+						this.essentiaOutput.insert(result);
+					}
+				}
+				
+				if(transferCooldown++ % 10 == 0) {
+					// attempts to auto-output essentia
+					for(Map.Entry<EnumFacing, TileEntity> side : tile.getAdjacentTEs(EnumPartType.BOTTOM,
+							(face, te) -> te.hasCapability(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA, face.getOpposite())).entrySet()) {
+						this.essentiaOutput.flow(side.getValue().getCapability(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA,
+								side.getKey().getOpposite()));
+					}
 				}
 			}
 		}
@@ -106,37 +114,27 @@ public class SetupOreSieve extends ModularMachineSetup {
 		@Override
 		public boolean hasCapability(Capability<?> capability, EnumFacing facing, EnumPartType part) {
 			if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-				return (part == BlockCasing.EnumPartType.TOP && facing == EnumFacing.EAST)
-						|| (part == BlockCasing.EnumPartType.BOTTOM && facing == EnumFacing.WEST);
+				return true;
 			else if (capability == CapabilityEssentiaHandler.CAPABILITY_ESSENTIA)
-				return (part == BlockCasing.EnumPartType.BOTTOM && facing == EnumFacing.NORTH);
+				return (part == BlockCasing.EnumPartType.BOTTOM);
 			return false;
 		}
 
 		@Override
 		public <T> T getCapability(Capability<T> capability, EnumFacing facing, EnumPartType part) {
 			if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-				if (part == BlockCasing.EnumPartType.TOP && facing == EnumFacing.EAST)
+				if (part == BlockCasing.EnumPartType.TOP)
 					return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(input);
-				else if (part == BlockCasing.EnumPartType.BOTTOM && facing == EnumFacing.WEST)
+				else if (part == BlockCasing.EnumPartType.BOTTOM)
 					return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(depletedOutput);
 			} else if (capability == CapabilityEssentiaHandler.CAPABILITY_ESSENTIA) {
-				if (part == BlockCasing.EnumPartType.BOTTOM && facing == EnumFacing.NORTH)
+				if (part == BlockCasing.EnumPartType.BOTTOM)
 					return CapabilityEssentiaHandler.CAPABILITY_ESSENTIA.cast(essentiaOutput);
 			}
 			return null;
 		}
 
-		@Override
-		public boolean isPlugAttached(EnumFacing facing, EnumPartType part) {
-			TileEntity neighbour = tile.getWorld().getTileEntity((part == EnumPartType.BOTTOM ? tile.getPos() : tile.getPos().up()).offset(facing));
-			return (part == EnumPartType.TOP && (tile.getWorld().getBlockState(tile.getPos().up().offset(facing)).getBlock() instanceof IPowerConductor
-					|| (neighbour != null && neighbour.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite()))))
-				|| (part == EnumPartType.BOTTOM && (neighbour != null && (neighbour.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite())
-					|| neighbour.hasCapability(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA, facing.getOpposite()))));
-		}
-
-		@Override
+        @Override
 		public void readFromNBT(NBTTagCompound compound) {
 			CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().readNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, input, EnumFacing.EAST, compound.getTag("input"));
 			CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().readNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, depletedOutput, EnumFacing.EAST, compound.getTag("output"));

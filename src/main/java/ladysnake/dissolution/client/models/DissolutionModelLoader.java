@@ -87,7 +87,7 @@ public class DissolutionModelLoader {
 	 * @return the baked model previously loaded from the file
 	 */
 	public static IBakedModel getModel(ResourceLocation modelLocation, ModelRotation rotation) {
-		return INSTANCE.models.get(modelLocation).get(rotation);
+		return INSTANCE.models.containsKey(modelLocation) ? INSTANCE.models.get(modelLocation).get(rotation) : null;
 	}
 
 	@SubscribeEvent

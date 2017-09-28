@@ -9,20 +9,19 @@ import java.util.concurrent.*;
 import com.google.common.collect.ImmutableSet;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing.EnumPartType;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine.PowerConsumption;
-import ladysnake.dissolution.common.capabilities.CapabilityEssentiaHandler;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.items.AlchemyModule;
+import ladysnake.dissolution.common.inventory.InputItemHandler;
+import ladysnake.dissolution.common.items.AlchemyModuleTypes;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
@@ -33,9 +32,9 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 public class SetupPowerGenerator extends ModularMachineSetup {
 	
-	private static final ImmutableSet<ItemAlchemyModule> setup = ImmutableSet.of(
-			ItemAlchemyModule.getFromType(AlchemyModule.GENERATOR, 1),
-			ItemAlchemyModule.getFromType(AlchemyModule.ALCHEMY_INTERFACE, 1));
+	private static final ImmutableSet<ItemAlchemyModule.AlchemyModule> setup = ImmutableSet.of(
+			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.RESONANT_GENERATOR, 1),
+			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_TOP, 1));
 	
 	public static final ExecutorService THREADPOOL = Executors.newCachedThreadPool();
 	
@@ -49,7 +48,7 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 	}
 
 	@Override
-	public ImmutableSet<ItemAlchemyModule> getSetup() {
+	public ImmutableSet<ItemAlchemyModule.AlchemyModule> getSetup() {
 		return setup;
 	}	
 	
@@ -57,6 +56,7 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 		
 		private Set<BlockPos> nodes;
 		private boolean updateScheduled;
+		private boolean running;
 		private Future<Set<BlockPos>> scheduledTask;
 		private TileEntityModularMachine te;
 		private InputItemHandler itemInput;
@@ -71,8 +71,8 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 		
 		@Override
 		public void onTick() {
-			if(updateScheduled) {
-				this.setEnabled(!this.itemInput.getStackInSlot(0).isEmpty());
+			if(updateScheduled || (this.isRunning() ^ !this.itemInput.getStackInSlot(0).isEmpty())) {
+				this.setRunning(!itemInput.getStackInSlot(0).isEmpty());
 				scheduledTask = THREADPOOL.submit((Callable<Set<BlockPos>>) this::detectNetwork);
 				updateScheduled = false;
 			}
@@ -85,8 +85,9 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 						} catch (ClassCastException ignored) {}
 					});
 					nodes = newNodes;
-					for(BlockPos pos : nodes)
-						((IPowerConductor)te.getWorld().getBlockState(pos).getBlock()).setPowered(te.getWorld(), pos, isEnabled());
+					for(BlockPos pos : nodes) {
+						((IPowerConductor)te.getWorld().getBlockState(pos).getBlock()).setPowered(te.getWorld(), pos, isRunning());
+					}
 					scheduledTask = null;
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
@@ -104,11 +105,9 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 			if(!playerIn.world.isRemote) {
 				ItemStack stack = playerIn.getHeldItem(hand);
 				if (stack.getItem() == ModItems.SOUL_IN_A_BOTTLE) {
-					stack.setCount(this.itemInput.insertItem(0, stack, false).getCount());
-					this.scheduleUpdate();
+					stack.setCount(this.itemInput.insertItem(0, stack.copy(), false).getCount());
 				} else if (stack.isEmpty()) {
 					playerIn.addItemStackToInventory(this.itemInput.extractItem(0, 64, false));
-					this.scheduleUpdate();
 				}
 			}
 		}
@@ -124,12 +123,12 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 			}
 		}
 		
-		void setEnabled(boolean b) {
-			te.setRunning(b);
+		void setRunning(boolean b) {
+			running = b;
 		}
 		
-		boolean isEnabled() {
-			return te.isRunning();
+		boolean isRunning() {
+			return running;
 		}
 		
 		Set<BlockPos> detectNetwork() {
@@ -157,23 +156,27 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 			return nodes;
 		}
 
-		@Override
-		public boolean isPlugAttached(EnumFacing facing, BlockCasing.EnumPartType part) {
-			TileEntity neighbour = te.getWorld().getTileEntity((part == EnumPartType.BOTTOM ? te.getPos() : te.getPos().up()).offset(facing));
-			return part == EnumPartType.TOP && neighbour != null && neighbour.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite())
-					|| part == EnumPartType.BOTTOM && te.getWorld().getBlockState(te.getPos().offset(facing)).getBlock() instanceof IPowerConductor;
-		}
-
-		@Override
+        @Override
 		public boolean hasCapability(Capability<?> capability, EnumFacing facing, EnumPartType part) {
-			// TODO Auto-generated method stub
-			return false;
+			return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && part == EnumPartType.TOP;
 		}
 
 		@Override
 		public <T> T getCapability(Capability<T> capability, EnumFacing facing, EnumPartType part) {
-			// TODO Auto-generated method stub
+			if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && part == EnumPartType.TOP)
+				return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemInput);
 			return null;
+		}
+		
+		@Override
+		public void readFromNBT(NBTTagCompound compound) {
+			this.itemInput.deserializeNBT(compound.getCompoundTag("itemInput"));
+		}
+		
+		@Override
+		public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+			compound.setTag("itemInput", this.itemInput.serializeNBT());
+			return compound;
 		}
 	}
 
