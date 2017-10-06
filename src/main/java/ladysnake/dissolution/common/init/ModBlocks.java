@@ -5,16 +5,17 @@ import java.util.List;
 import java.util.Map;
 
 import ladysnake.dissolution.client.models.blocks.CableBakedModel;
-import ladysnake.dissolution.client.models.blocks.EssentiaPipeBakedModel;
+import ladysnake.dissolution.client.models.blocks.DistillatePipeBakedModel;
 import ladysnake.dissolution.client.models.blocks.ModularMachineBakedModel;
 import ladysnake.dissolution.client.models.DissolutionModelLoader;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.BlockDepletedClay;
+import ladysnake.dissolution.common.blocks.BlockDepletedMagma;
 import ladysnake.dissolution.common.blocks.BlockSepulture;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockBarrage;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
-import ladysnake.dissolution.common.blocks.alchemysystem.BlockEssentiaPipe;
+import ladysnake.dissolution.common.blocks.alchemysystem.BlockDistillatePipe;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockPowerCable;
 import ladysnake.dissolution.common.blocks.BlockDepleted;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
@@ -48,10 +49,10 @@ public final class ModBlocks {
 	public static Block SULPHUR;
 	public static BlockBarrage BARRAGE;
 	public static BlockCasing CASING;
-	public static BlockEssentiaPipe ESSENTIA_PIPE;
+	public static BlockDistillatePipe DISTILLATE_PIPE;
 	public static BlockDepleted DEPLETED_CLAY;
 	public static BlockDepleted DEPLETED_COAL;
-	public static BlockDepleted DEPLETED_MAGMA;
+	public static BlockDepletedMagma DEPLETED_MAGMA;
 	public static BlockPowerCable POWER_CABLE;
     public static BlockSepulture SEPULTURE;
     
@@ -77,8 +78,8 @@ public final class ModBlocks {
     			BARRAGE = name(new BlockBarrage(), Reference.Blocks.BARRAGE),
     			DEPLETED_CLAY = name(new BlockDepletedClay(), "depleted_clay_block"),
     			DEPLETED_COAL = name(new BlockDepleted(Material.ROCK), "depleted_coal_block"),
-    			DEPLETED_MAGMA = name(new BlockDepleted(Material.ROCK), "depleted_magma"),
-    			ESSENTIA_PIPE = name(new BlockEssentiaPipe(), "essentia_pipe"),
+    			DEPLETED_MAGMA = name(new BlockDepletedMagma(), "depleted_magma"),
+    			DISTILLATE_PIPE = name(new BlockDistillatePipe(), "essentia_pipe"),
     			POWER_CABLE = name(new BlockPowerCable(), Reference.Blocks.POWER_CABLE));
     	blockRegistry.register(CASING = name(new BlockCasing(), "wooden_casing"));
     	blockRegistry.register(SEPULTURE = name(new BlockSepulture(), Reference.Blocks.SEPULTURE));
@@ -123,15 +124,15 @@ public final class ModBlocks {
     	ItemAlchemyModule.registerModels();
     	DissolutionModelLoader.addModel(BlockCasing.PLUG, ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
     	DissolutionModelLoader.addAllModels(BlockCasing.CASING_BOTTOM, BlockCasing.CASING_TOP, CableBakedModel.INTERSECTION,
-				EssentiaPipeBakedModel.INTERSECTION);
+				DistillatePipeBakedModel.INTERSECTION);
 		DissolutionModelLoader.addModel(CableBakedModel.START, ModelRotation.X0_Y90,
 				ModelRotation.X0_Y180, ModelRotation.X0_Y270, ModelRotation.X90_Y0, ModelRotation.X270_Y0);
-		DissolutionModelLoader.addModel(EssentiaPipeBakedModel.START, ModelRotation.X0_Y90,
+		DissolutionModelLoader.addModel(DistillatePipeBakedModel.START, ModelRotation.X0_Y90,
 				ModelRotation.X0_Y180, ModelRotation.X0_Y270, ModelRotation.X90_Y0, ModelRotation.X270_Y0);
 		DissolutionModelLoader.addModel(CableBakedModel.SECTION, ModelRotation.X90_Y0, ModelRotation.X0_Y90);
-		DissolutionModelLoader.addModel(EssentiaPipeBakedModel.SECTION, ModelRotation.X90_Y0, ModelRotation.X0_Y90);
+		DissolutionModelLoader.addModel(DistillatePipeBakedModel.SECTION, ModelRotation.X90_Y0, ModelRotation.X0_Y90);
     	registerSmartRender(POWER_CABLE, CableBakedModel.BAKED_MODEL);
-    	registerSmartRender(ESSENTIA_PIPE, EssentiaPipeBakedModel.BAKED_MODEL);
+    	registerSmartRender(DISTILLATE_PIPE, DistillatePipeBakedModel.BAKED_MODEL);
     	registerSmartRender(CASING, ModularMachineBakedModel.BAKED_MODEL);
     }
     

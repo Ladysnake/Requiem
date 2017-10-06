@@ -1,11 +1,12 @@
 package ladysnake.dissolution.common.registries.modularsetups;
 
 import com.google.common.collect.ImmutableSet;
-import ladysnake.dissolution.api.EssentiaStack;
-import ladysnake.dissolution.api.EssentiaTypes;
-import ladysnake.dissolution.api.IEssentiaHandler;
+import ladysnake.dissolution.api.DistillateStack;
+import ladysnake.dissolution.api.DistillateTypes;
+import ladysnake.dissolution.api.IDistillateHandler;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
-import ladysnake.dissolution.common.capabilities.CapabilityEssentiaHandler;
+import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
+import ladysnake.dissolution.common.capabilities.CapabilityDistillateHandler;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.InputItemHandler;
 import ladysnake.dissolution.common.items.AlchemyModuleTypes;
@@ -16,25 +17,32 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SetupGreenhouse extends ModularMachineSetup {
     private static final ImmutableSet<ItemAlchemyModule.AlchemyModule> setup = ImmutableSet.of(
-            new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_TOP, 1),
+            new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_BOTTOM, 1),
             new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.CLOCHE, 1));
+    public final List<Instance> allInstances = new ArrayList<>();
 
-    private Map<Pair<Item, EssentiaStack>, ItemStack> recipes;
+    private Map<Pair<Item, DistillateStack>, ItemStack> recipes;
 
     public SetupGreenhouse() {
         this.setRegistryName("setup_greenhouse");
-        addRecipe(ModItems.BACA_SEEDS, new EssentiaStack(EssentiaTypes.CINNABARIS, 9), new ItemStack(ModItems.INSUBACA));
-        addRecipe(ModItems.BACA_SEEDS, new EssentiaStack(EssentiaTypes.SULPURIS, 9), new ItemStack(ModItems.ACERBACA));
+        this.recipes = new HashMap<>();
+        addRecipe(ModItems.BACA_SEEDS, new DistillateStack(DistillateTypes.CINNABARIS, 9), new ItemStack(ModItems.INSUBACA));
+        addRecipe(ModItems.BACA_SEEDS, new DistillateStack(DistillateTypes.SULPURIS, 9), new ItemStack(ModItems.ACERBACA));
     }
 
     @Override
@@ -47,15 +55,15 @@ public class SetupGreenhouse extends ModularMachineSetup {
         return new Instance(te);
     }
 
-    public void addRecipe(Item seed, EssentiaStack essentia, ItemStack fruit) {
+    private void addRecipe(Item seed, DistillateStack essentia, ItemStack fruit) {
         this.recipes.put(Pair.of(seed, essentia), fruit);
     }
 
-    class Instance implements ISetupInstance {
+    public class Instance implements ISetupInstance {
 
         private TileEntityModularMachine tile;
         private InputItemHandler fruitInv;
-        private IEssentiaHandler essentiaInv;
+        private IDistillateHandler essentiaInv;
         private int time;
 
         Instance(TileEntityModularMachine tile) {
@@ -64,7 +72,19 @@ public class SetupGreenhouse extends ModularMachineSetup {
                     .flatMap(entry -> Stream.of(entry.getKey().getLeft(), entry.getValue().getItem()))
                     .collect(Collectors.toList()).toArray(new Item[0]));
             this.fruitInv.setMaxSize(1);
-            this.essentiaInv = new CapabilityEssentiaHandler.DefaultEssentiaHandler(100);
+            this.essentiaInv = new CapabilityDistillateHandler.DefaultDistillateHandler(100);
+        }
+
+        @Override
+        public void init() {
+            tile.setPowerConsumption(IPowerConductor.IMachine.PowerConsumption.CONSUMER);
+            allInstances.add(this);
+        }
+
+        @Override
+        public void onRemoval() {
+            tile.setPowerConsumption(IPowerConductor.IMachine.PowerConsumption.NONE);
+            allInstances.remove(this);
         }
 
         @Override
@@ -81,28 +101,36 @@ public class SetupGreenhouse extends ModularMachineSetup {
                 ItemStack fruit = this.fruitInv.extractItem(0, 1, false);
                 if (tile.isPowered() && !fruit.isEmpty()) {
                     ItemStack result = recipes.get(
-                            Pair.of(fruit.getItem(), essentiaInv.readContent(EssentiaTypes.UNTYPED)));
+                            Pair.of(fruit.getItem(), essentiaInv.readContent(DistillateTypes.UNTYPED)));
                     if(result != null) {
                         fruit = result;
-                        essentiaInv.extract(Integer.MAX_VALUE, EssentiaTypes.UNTYPED);
+                        essentiaInv.extract(Integer.MAX_VALUE, DistillateTypes.UNTYPED);
                     }
                 }
                 this.fruitInv.insertItem(0, fruit, false);
             }
         }
 
+        public BlockPos getPosition() {
+            return this.tile.getPos();
+        }
+
+        @Override
+        public ResourceLocation getPlugModel(EnumFacing facing, BlockCasing.EnumPartType part, ResourceLocation defaultModel) {
+            return part == BlockCasing.EnumPartType.BOTTOM ? defaultModel : null;
+        }
+
         @Override
         public boolean hasCapability(Capability<?> capability, EnumFacing facing, BlockCasing.EnumPartType part) {
             return part == BlockCasing.EnumPartType.TOP &&
-                    (capability == CapabilityEssentiaHandler.CAPABILITY_ESSENTIA || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+                    (capability == CapabilityDistillateHandler.CAPABILITY_ESSENTIA || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
         }
 
-        @SuppressWarnings("ConstantConditions")
         @Override
         public <T> T getCapability(Capability<T> capability, EnumFacing facing, BlockCasing.EnumPartType part) {
-            if(part == BlockCasing.EnumPartType.TOP && tile.isPlugAttached(facing, part)) {
-                if(capability == CapabilityEssentiaHandler.CAPABILITY_ESSENTIA)
-                    return CapabilityEssentiaHandler.CAPABILITY_ESSENTIA.cast(this.essentiaInv);
+            if(part == BlockCasing.EnumPartType.TOP) {
+                if(capability == CapabilityDistillateHandler.CAPABILITY_ESSENTIA)
+                    return CapabilityDistillateHandler.CAPABILITY_ESSENTIA.cast(this.essentiaInv);
                 if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
                     return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(this.fruitInv);
             }

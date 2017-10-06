@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.items.*;
@@ -42,11 +43,13 @@ public final class ModItems {
 	public static ItemAcerbacaFruit ACERBACA;
 	public static ItemFood INSUBACA;
 	public static ItemFood LIMOBACA;
+	public static ItemAcerbacaFruit SALERBACA;
 	public static ItemCasing WOODEN_CASING;
 	public static ItemDebug DEBUG_ITEM;
 	public static ItemDepleted DEPLETED_CLAY;
-	public static ItemDepleted DEPLETED_COAL;
+	public static ItemDepletedCoal DEPLETED_COAL;
 	public static ItemEyeUndead EYE_OF_THE_UNDEAD;
+	public static ItemEyeOfDiscord EYE_OF_DISCORD;
 	public static ItemOccularePart BRAIN;
 	public static ItemOccularePart DIAMOND_SHELL;
 	public static ItemOccularePart EMERALD_SHELL;
@@ -58,7 +61,7 @@ public final class ModItems {
 	public static ItemScythe LURKING_SCYTHE;
 	public static ItemSeeds BACA_SEEDS;
 	public static ItemSepulture SEPULTURE;
-	public static ItemSoulInABottle SOUL_IN_A_BOTTLE;
+	public static ItemSoulInAFlask SOUL_IN_A_FLASK;
 
 	static Set<Item> allItems = new HashSet<>();
 	
@@ -70,18 +73,21 @@ public final class ModItems {
 	@SubscribeEvent
 	public void onRegister(RegistryEvent.Register<Item> event) {
 		IForgeRegistry<Item> reg = event.getRegistry();
-		Collections.addAll(allItems, 
+		//noinspection ConstantConditions
+		Collections.addAll(allItems,
 				CINNABAR = name(new Item(), "cinnabar"),
 				HALITE = name(new Item(), "halite"),
 				SULFUR = name(new Item(), "sulfur"),
-				ACERBACA = name(new ItemAcerbacaFruit(0, 3f), "acerbaca"),
+				ACERBACA = name(new ItemAcerbacaFruit(0, 3f, IIncorporealHandler.CorporealityStatus.SOUL), "acerbaca"),
 				INSUBACA = name(new ItemFood(-3, -0.3f, false).setPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:poison"), 20), 0.95f), "insubaca"),
 				LIMOBACA = name(new ItemFood(5, 1.2f, false), "limobaca"),
+				SALERBACA = name(new ItemAcerbacaFruit(1, 2.5f, IIncorporealHandler.CorporealityStatus.ECTOPLASM), "salerbaca"),
 				WOODEN_CASING = name(new ItemCasing(), "wooden_machine_casing"),
 				DEBUG_ITEM = name(new ItemDebug(), "debug_item"),
 				DEPLETED_CLAY = name(new ItemDepleted(), "depleted_clay_ball"),
-				DEPLETED_COAL = name(new ItemDepleted(), "depleted_coal"),
+				DEPLETED_COAL = name(new ItemDepletedCoal(), "depleted_coal"),
 				EYE_OF_THE_UNDEAD = name(new ItemEyeUndead(), "eye_of_the_undead"),
+				EYE_OF_DISCORD = name(new ItemEyeOfDiscord(), "eye_of_discord"),
 				BRAIN = name(new ItemOccularePart(), "occulare_brain"),
 				DIAMOND_SHELL = name(new ItemOccularePart(1500), "diamond_occulare_shell"),
 				EMERALD_SHELL = name(new ItemOccularePart(750), "emerald_occulare_shell"),
@@ -93,7 +99,7 @@ public final class ModItems {
 				LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"),
 				BACA_SEEDS = name(new ItemSeeds(Blocks.LEAVES, Blocks.GRASS), "baca_seeds"),
 				SEPULTURE = name(new ItemSepulture(), "sepulture"),
-				SOUL_IN_A_BOTTLE = name(new ItemSoulInABottle(), "soul_in_a_bottle"));
+				SOUL_IN_A_FLASK = name(new ItemSoulInAFlask(), "will_o_wisp_flask"));
 
 		AlchemyModuleTypes.registerItems(allItems);
 
@@ -120,7 +126,7 @@ public final class ModItems {
     	remaps.put("itemeyeofundead", EYE_OF_THE_UNDEAD);
     	remaps.put("itemgrandfaux", IRON_SCYTHE);
     	remaps.put("itemsepulture", SEPULTURE);
-    	remaps.put("itemsoulinabottle", SOUL_IN_A_BOTTLE);
+    	remaps.put("itemsoulinabottle", SOUL_IN_A_FLASK);
     	remaps.put("itemironscythe", IRON_SCYTHE);
     	for(Mapping<Item> map : missingBlocks) {
     		if(map.key.getResourceDomain().equals(Reference.MOD_ID)) {

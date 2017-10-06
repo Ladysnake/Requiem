@@ -11,7 +11,7 @@ public class ItemInterfaceModule extends ItemAlchemyModule {
         super(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_BOTTOM, 1);
         allModules.put(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_TOP, new ItemAlchemyModule[]{null, this});
         modulesModels.put(this.toModule(BlockCasing.EnumPartType.TOP, null), new ResourceLocation(Reference.MOD_ID,
-                "machine/alchemical_interface_top"));
+                "machine/interface_up"));
     }
 
     @Override

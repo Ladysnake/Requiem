@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 
 public interface IPowerConductor {
 
-	static final PropertyBool POWERED = PropertyBool.create("powered");
+	PropertyBool POWERED = PropertyBool.create("powered");
 	
 	/**
 	 * Changes the powered status of the target block
@@ -50,13 +50,13 @@ public interface IPowerConductor {
 			return true;
 	}
 	
-	public static interface IMachine extends IPowerConductor {
+	interface IMachine extends IPowerConductor {
 		
 		PowerConsumption getPowerConsumption(IBlockAccess worldIn, BlockPos pos);
 		
 		boolean shouldPowerConnect(IBlockAccess worldIn, BlockPos pos, EnumFacing facing);
 
-		public static enum PowerConsumption {
+		enum PowerConsumption {
 			CONSUMER,
 			GENERATOR,
 			NONE

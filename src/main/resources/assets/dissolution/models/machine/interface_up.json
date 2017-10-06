@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
-	"textures": {"5": "machines/interface"},
+	"textures": {"5": "dissolution:machines/interface"},
 	"elements": [
 		{
 			"name": "Container top angle",

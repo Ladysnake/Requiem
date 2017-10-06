@@ -60,7 +60,6 @@ public class AbstractPowerConductor extends Block implements IPowerConductor {
 				assert world.getMinecraftServer() != null;
 				world.getMinecraftServer().addScheduledTask(() -> world.scheduleBlockUpdate(pos2, world.getBlockState(pos2).getBlock(), 0, 1));
 			}
-			System.out.println(bp);
 		});
 	}
 	

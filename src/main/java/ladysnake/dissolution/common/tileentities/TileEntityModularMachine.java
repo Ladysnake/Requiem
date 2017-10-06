@@ -164,8 +164,6 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 		if(iterator.hasNext()) {
 			ret = new ItemStack(iterator.next().toItem());
 			iterator.remove();
-			if(this.currentSetup != null)
-				this.currentSetup.onRemoval();
 			this.verifySetup();
 			this.world.markBlockRangeForRenderUpdate(this.pos, this.pos);
 			this.markDirty();
@@ -181,9 +179,8 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 			}
 		} else if(stack.isEmpty() && playerIn.isSneaking()) {
 			playerIn.addItemStackToInventory(removeModule());
-		} else if(stack.getItem() instanceof ItemPlug) {
-			Boolean b = this.plugs.get(part).put(facing, true);
-			if(b == null || !b) {
+		} else if(stack.getItem() instanceof ItemPlug && this.currentSetup != null) {
+			if(!this.setPlug(facing, part, true)) {
 				this.world.markBlockRangeForRenderUpdate(this.pos, this.pos);
 				this.markDirty();
 				if(!playerIn.isCreative())
@@ -193,8 +190,19 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 			this.currentSetup.onInteract(playerIn, hand, part, adjustFaceIn(facing), hitX, hitY, hitZ);
 	}
 
+	public boolean setPlug(EnumFacing facing, BlockCasing.EnumPartType part, boolean b) {
+		return this.plugs.get(part).put(facing, b);
+	}
+
 	public boolean isPlugAttached(EnumFacing facing, BlockCasing.EnumPartType part) {
 		return this.plugs.get(part).get(facing);
+	}
+
+	public ResourceLocation getPlugModel(EnumFacing facing, BlockCasing.EnumPartType part) {
+		if(isPlugAttached(facing, part)) {
+			return this.currentSetup != null ? this.currentSetup.getPlugModel(adjustFaceIn(facing), part, BlockCasing.PLUG) : null;
+		}
+		return null;
 	}
 	
 	public Set<ItemAlchemyModule.AlchemyModule> getInstalledModules() {
@@ -223,14 +231,22 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 			}
 			world.spawnEntity(new EntityItem(this.world, this.pos.getX(), this.pos.getY(), this.pos.getZ(),
 					new ItemStack(ModItems.PLUG, (int) this.plugs.values().stream().flatMap(e -> e.values().stream())
-							.filter(e -> e).count())));
+							.filter(Boolean::booleanValue).count())));
 		}
 		this.installedModules.clear();
 	}
 	
 	private void verifySetup() {
 		Set<ItemAlchemyModule.AlchemyModule> modules = getInstalledModules();
-		currentSetup = ModModularSetups.REGISTRY.getValues().stream().filter(setup -> setup.isValidSetup(modules)).map(setup -> setup.getInstance(this)).findAny().orElse(null);
+		ISetupInstance newSetup = ModModularSetups.REGISTRY.getValues().stream()
+				.filter(setup -> setup.isValidSetup(modules)).map(setup -> setup.getInstance(this))
+				.findAny().orElse(null);
+		if ((newSetup != null && currentSetup != null && newSetup.getClass() != currentSetup.getClass())
+				|| (newSetup == null ^ currentSetup == null)) {
+			if (currentSetup != null) currentSetup.onRemoval();
+			if (newSetup != null) newSetup.init();
+			currentSetup = newSetup;
+		}
 	}
 	
 	public PowerConsumption getPowerConsumption() {
@@ -255,7 +271,10 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	}
 	
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing, BlockCasing.EnumPartType part) {
-		return (this.currentSetup != null && this.currentSetup.hasCapability(capability, adjustFaceIn(facing), part)) || super.hasCapability(capability, facing);
+		return (isPlugAttached(facing, part)
+				&& this.currentSetup != null
+				&& this.currentSetup.hasCapability(capability, adjustFaceIn(facing), part))
+				|| super.hasCapability(capability, facing);
 	}
 	
 	@Override
@@ -264,9 +283,9 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	}
 	
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing, BlockCasing.EnumPartType part) {
-		T setupCap = null;
-		if(this.currentSetup != null)
-			setupCap = this.currentSetup.getCapability(capability, adjustFaceIn(facing), part);
+		T setupCap = this.currentSetup != null && isPlugAttached(facing, part)
+				? this.currentSetup.getCapability(capability, adjustFaceIn(facing), part)
+				: null;
 		return setupCap == null ? (super.getCapability(capability, facing)) : setupCap;
 	}
 
@@ -279,9 +298,11 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 
 	}
 
+	@SuppressWarnings("MethodCallSideOnly")
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		this.readFromNBTBasic(pkt.getNbtCompound());
+		if(this.world.isRemote)
+			this.readFromNBTBasic(pkt.getNbtCompound());
 	}
 
 	@Override

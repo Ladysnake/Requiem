@@ -2,17 +2,17 @@ package ladysnake.dissolution.common.items;
 
 import java.util.List;
 
-import ladysnake.dissolution.api.EssentiaTypes;
-import ladysnake.dissolution.api.IEssentiaHandler;
+import ladysnake.dissolution.api.DistillateTypes;
+import ladysnake.dissolution.api.IDistillateHandler;
+import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.api.ISoulInteractable;
 import ladysnake.dissolution.client.renders.ShaderHelper;
-import ladysnake.dissolution.common.capabilities.CapabilityEssentiaHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityDistillateHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -22,7 +22,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -48,17 +47,11 @@ public class ItemDebug extends Item implements ISoulInteractable {
 		}
 		switch(debugWanted) {
 		case 0 : 
-			CapabilityIncorporealHandler.getHandler(playerIn).setIncorporeal(!CapabilityIncorporealHandler.getHandler(playerIn).isIncorporeal());
+			CapabilityIncorporealHandler.getHandler(playerIn).setCorporealityStatus(
+					IIncorporealHandler.CorporealityStatus.values()
+							[(CapabilityIncorporealHandler.getHandler(playerIn).getCorporealityStatus().ordinal()+1) % 3]);
 			break;
-		case 1 :	
-			if(worldIn.isRemote) {
-				ResourceLocation shader = new ResourceLocation("minecraft:shaders/post/intangible.json");
-				if(Minecraft.getMinecraft().entityRenderer.isShaderActive())
-					Minecraft.getMinecraft().entityRenderer.stopUseShader();
-				else
-					Minecraft.getMinecraft().entityRenderer.loadShader(shader);
-			}
-			break;
+		case 1 : break;
 		case 2 :
 			if(!playerIn.world.isRemote)
 				CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) playerIn, playerIn.dimension == -1 ? 0 : -1);
@@ -78,18 +71,14 @@ public class ItemDebug extends Item implements ISoulInteractable {
 			}
 			break;
 		case 5 :
-			if(playerIn.world.isRemote) {
-				ShaderHelper.initShaders();
-				playerIn.sendStatusMessage(new TextComponentString("Reloaded shaders"), false);
-			}
 			break;
 		case 6 :
 			if(!worldIn.isRemote) {
-				RayTraceResult result = playerIn.rayTrace(6, 0);
+				@SuppressWarnings("MethodCallSideOnly") RayTraceResult result = playerIn.rayTrace(6, 0);
 				TileEntity te = worldIn.getTileEntity(result.getBlockPos());
-				if(te != null && te.hasCapability(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA, result.sideHit)) {
-					IEssentiaHandler essentiaInv = te.getCapability(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA, result.sideHit);
-					System.out.println(String.format("%s/%s (%s/%s)", essentiaInv.readContent(EssentiaTypes.UNTYPED), essentiaInv.getMaxSize(), essentiaInv.getChannels(), essentiaInv.getMaxChannels()));
+				if(te != null && te.hasCapability(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, result.sideHit)) {
+					IDistillateHandler essentiaInv = te.getCapability(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, result.sideHit);
+					System.out.println(String.format("%s/%s (%s/%s)", essentiaInv.readContent(DistillateTypes.UNTYPED), essentiaInv.getMaxSize(), essentiaInv.getChannels(), essentiaInv.getMaxChannels()));
 					playerIn.sendStatusMessage(new TextComponentTranslation("suction: %s, type: %s", essentiaInv.getSuction(), essentiaInv.getSuctionType()), false);
 				}
 				if(te instanceof TileEntityModularMachine)

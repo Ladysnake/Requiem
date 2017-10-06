@@ -19,6 +19,8 @@ import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.EnumSkyBlock;
 
+import javax.annotation.Nonnull;
+
 public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
 	
 	private Map<UUID, ResourceLocation> texture = new HashMap<>();
@@ -38,7 +40,7 @@ public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
 	}
 	
 	@Override
-	protected ResourceLocation getEntityTexture(EntityPlayerCorpse entity) {
+	protected ResourceLocation getEntityTexture(@Nonnull EntityPlayerCorpse entity) {
 		try {
 			return texture.computeIfAbsent(entity.getPlayer(), 
 					uuid -> new EntityOtherPlayerMP(entity.world, new GameProfile(uuid, "")).getLocationSkin());
@@ -51,7 +53,7 @@ public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
 	protected void preRenderCallback(EntityPlayerCorpse entitylivingbaseIn, float partialTickTime) {}
 	
 	@Override
-	public void doRender(EntityPlayerCorpse entity, double x, double y, double z, float entityYaw, float partialTicks) {
+	public void doRender(@Nonnull EntityPlayerCorpse entity, double x, double y, double z, float entityYaw, float partialTicks) {
 		ShaderHelper.useShader(ShaderHelper.dissolution);
 		ShaderHelper.setUniform("texture", 0);
 		ShaderHelper.setUniform("lightmap", 1);

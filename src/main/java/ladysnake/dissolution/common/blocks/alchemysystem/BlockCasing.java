@@ -1,6 +1,7 @@
 package ladysnake.dissolution.common.blocks.alchemysystem;
 
 import ladysnake.dissolution.client.models.blocks.PropertyBoolean;
+import ladysnake.dissolution.client.models.blocks.PropertyResourceLocation;
 import ladysnake.dissolution.client.models.blocks.UnlistedPropertyModels;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
@@ -40,10 +41,10 @@ import java.util.Random;
 public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	
 	public static final UnlistedPropertyModels MODULES_PRESENT = new UnlistedPropertyModels();
-	public static final PropertyBoolean PLUG_NORTH = new PropertyBoolean("plug_north");
-	public static final PropertyBoolean PLUG_EAST = new PropertyBoolean("plug_east");
-	public static final PropertyBoolean PLUG_SOUTH = new PropertyBoolean("plug_south");
-	public static final PropertyBoolean PLUG_WEST = new PropertyBoolean("plug_west");
+	public static final PropertyResourceLocation PLUG_NORTH = new PropertyResourceLocation("plug_north");
+	public static final PropertyResourceLocation PLUG_EAST = new PropertyResourceLocation("plug_east");
+	public static final PropertyResourceLocation PLUG_SOUTH = new PropertyResourceLocation("plug_south");
+	public static final PropertyResourceLocation PLUG_WEST = new PropertyResourceLocation("plug_west");
 	public static final PropertyEnum<EnumPartType> PART = PropertyEnum.create("part", EnumPartType.class);
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 	public static final ResourceLocation CASING_BOTTOM = new ResourceLocation(Reference.MOD_ID, "machine/wooden_machine_casing_bottom");
@@ -115,24 +116,23 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	@Override
 	public IBlockState getExtendedState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
 		TileEntity te = world.getTileEntity(state.getValue(PART) == EnumPartType.BOTTOM ? pos : pos.down());
-		boolean flag = DissolutionConfig.client.plugsEverywhere;
 		if(te instanceof TileEntityModularMachine) {
 			EnumPartType part = state.getValue(PART);
 			if (part == EnumPartType.BOTTOM)
 				state = ((IExtendedBlockState) state)
 						.withProperty(MODULES_PRESENT, ((TileEntityModularMachine) te).getModelsForRender());
 			state = ((IExtendedBlockState) state)
-					.withProperty(PLUG_EAST, flag || ((TileEntityModularMachine) te).isPlugAttached(EnumFacing.EAST, part))
-					.withProperty(PLUG_NORTH, flag || ((TileEntityModularMachine) te).isPlugAttached(EnumFacing.NORTH, part))
-					.withProperty(PLUG_WEST, flag || ((TileEntityModularMachine) te).isPlugAttached(EnumFacing.WEST, part))
-					.withProperty(PLUG_SOUTH, flag || ((TileEntityModularMachine) te).isPlugAttached(EnumFacing.SOUTH, part));
+					.withProperty(PLUG_EAST, ((TileEntityModularMachine) te).getPlugModel(EnumFacing.EAST, part))
+					.withProperty(PLUG_NORTH, ((TileEntityModularMachine) te).getPlugModel(EnumFacing.NORTH, part))
+					.withProperty(PLUG_WEST, ((TileEntityModularMachine) te).getPlugModel(EnumFacing.WEST, part))
+					.withProperty(PLUG_SOUTH, ((TileEntityModularMachine) te).getPlugModel(EnumFacing.SOUTH, part));
 		} else {
 			state = ((IExtendedBlockState) state)
 					.withProperty(MODULES_PRESENT, new HashSet<>())
-					.withProperty(PLUG_EAST, flag)
-					.withProperty(PLUG_NORTH, flag)
-					.withProperty(PLUG_WEST, flag)
-					.withProperty(PLUG_SOUTH, flag);
+					.withProperty(PLUG_EAST, null)
+					.withProperty(PLUG_NORTH, null)
+					.withProperty(PLUG_WEST, null)
+					.withProperty(PLUG_SOUTH, null);
 		}
 		return state;
 	}
@@ -156,8 +156,6 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 			return ((TileEntityModularMachine)te).getPowerConsumption();
 		return PowerConsumption.NONE;
 	}
-
-
 	
 	@Override
 	public boolean shouldPowerConnect(IBlockAccess worldIn, BlockPos pos, EnumFacing facing) {
@@ -210,7 +208,6 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 			pos = pos.down();
 		TileEntity te = worldIn.getTileEntity(pos);
 		return (te instanceof TileEntityModularMachine) && ((TileEntityModularMachine)te).isPowered();
-		
 	}
 
 	@Nonnull

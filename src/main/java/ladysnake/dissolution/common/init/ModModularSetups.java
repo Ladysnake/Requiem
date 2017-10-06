@@ -19,6 +19,11 @@ public final class ModModularSetups {
 			.setName(new ResourceLocation(Reference.MOD_ID, "modularmachinesetups"))
 			.setType(ModularMachineSetup.class).create();
 	static final ModModularSetups INSTANCE = new ModModularSetups();
+
+	@SubscribeEvent
+	public void onRegistryRegister(RegistryEvent.NewRegistry event) {
+
+	}
 	
 	@SubscribeEvent
 	public void onRegisterSetups(RegistryEvent.Register<ModularMachineSetup> event) {

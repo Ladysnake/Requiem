@@ -53,7 +53,7 @@ public final class DissolutionInventoryHelper {
     {
         for (int i = 0; i < inv.mainInventory.size(); ++i)
         {
-            if (!((ItemStack)inv.mainInventory.get(i)).isEmpty() && ItemStack.areItemStacksEqual(stack, inv.mainInventory.get(i)))
+            if (!inv.mainInventory.get(i).isEmpty() && ItemStack.areItemStacksEqual(stack, inv.mainInventory.get(i)))
             {
                 return i;
             }

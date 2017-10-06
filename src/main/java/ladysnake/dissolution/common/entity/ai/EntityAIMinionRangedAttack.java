@@ -39,7 +39,7 @@ public class EntityAIMinionRangedAttack extends EntityAIBase {
      */
     public boolean shouldExecute()
     {
-        return this.entity.getAttackTarget() == null ? false : this.isBowInMainhand();
+        return this.entity.getAttackTarget() != null && this.isBowInMainhand();
     }
 
     protected boolean isBowInMainhand()
@@ -63,7 +63,7 @@ public class EntityAIMinionRangedAttack extends EntityAIBase {
     {
         super.startExecuting();
         if(this.entity instanceof EntityMinionSkeleton)
-        	((EntityMinionSkeleton)this.entity).setSwingingArms(true);
+        	this.entity.setSwingingArms(true);
     }
 
     /**
@@ -73,7 +73,7 @@ public class EntityAIMinionRangedAttack extends EntityAIBase {
     {
         super.resetTask();
         if(this.entity instanceof EntityMinionSkeleton)
-        	((EntityMinionSkeleton)this.entity).setSwingingArms(false);
+        	this.entity.setSwingingArms(false);
         this.seeTime = 0;
         this.attackTime = -1;
         this.entity.resetActiveHand();

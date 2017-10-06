@@ -61,7 +61,7 @@ public class ItemCasing extends Item {
 					worldIn.notifyNeighborsRespectDebug(pos, block, false);
 					worldIn.notifyNeighborsRespectDebug(blockpos, iblockstate1.getBlock(), false);
 					SoundType soundtype = iblockstate2.getBlock().getSoundType(iblockstate2, worldIn, pos, player);
-					worldIn.playSound((EntityPlayer) null, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS,
+					worldIn.playSound(null, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS,
 							(soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
 					itemstack.shrink(1);
 					return EnumActionResult.SUCCESS;

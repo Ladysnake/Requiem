@@ -1,28 +1,19 @@
 package ladysnake.dissolution.common.blocks;
 
-import java.util.List;
 import java.util.Random;
-
-import javax.annotation.Nullable;
 
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.api.ISoulInteractable;
-import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.networking.IncorporealMessage;
-import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.tileentities.TileEntitySepulture;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
-import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -39,7 +30,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -56,12 +46,12 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 		this.setHarvestLevel("pickaxe", 0);
 	}
 
-	public static enum EnumPartType implements IStringSerializable {
+	public enum EnumPartType implements IStringSerializable {
 		HEAD("head"), FOOT("foot");
 
 		private final String name;
 
-		private EnumPartType(String name) {
+		EnumPartType(String name) {
 			this.name = name;
 		}
 
@@ -78,9 +68,8 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(playerIn);
-		if (playerCorp.isIncorporeal()) {
+		if (playerCorp.getCorporealityStatus().isIncorporeal()) {
 			this.getTE(worldIn, pos).setDeathMessage(playerCorp.getLastDeathMessage());
-			playerCorp.setIncorporeal(false);
 		} else {
 			try {
 				// System.out.println(this.getTE(worldIn, pos));
@@ -102,7 +91,7 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 
 	@Override
 	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-		EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
+		EnumFacing enumfacing = state.getValue(FACING);
 
 		if (state.getValue(PART) == BlockSepulture.EnumPartType.HEAD) {
 			if (worldIn.getBlockState(pos.offset(enumfacing.getOpposite())).getBlock() != this) {
@@ -152,7 +141,7 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
 		if (player.capabilities.isCreativeMode && state.getValue(PART) == BlockSepulture.EnumPartType.HEAD) {
-			BlockPos blockpos = pos.offset(((EnumFacing) state.getValue(FACING)).getOpposite());
+			BlockPos blockpos = pos.offset(state.getValue(FACING).getOpposite());
 
 			if (worldIn.getBlockState(blockpos).getBlock() == this) {
 				worldIn.setBlockToAir(blockpos);
@@ -171,23 +160,23 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
 		if (state.getValue(PART) == BlockSepulture.EnumPartType.FOOT) {
-			IBlockState iblockstate = worldIn.getBlockState(pos.offset((EnumFacing) state.getValue(FACING)));
+			IBlockState iblockstate = worldIn.getBlockState(pos.offset(state.getValue(FACING)));
 		}
 
 		return state;
 	}
 
 	public IBlockState withRotation(IBlockState state, Rotation rot) {
-		return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
+		return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
 	}
 
 	public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
-		return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(FACING)));
+		return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
 	}
 
 	public int getMetaFromState(IBlockState state) {
 		int i = 0;
-		i = ((EnumFacing) state.getValue(FACING)).getHorizontalIndex();
+		i = state.getValue(FACING).getHorizontalIndex();
 
 		if (state.getValue(PART) == BlockSepulture.EnumPartType.HEAD) {
 			i |= 8;
@@ -214,9 +203,9 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 		if (world.getBlockState(pos).getValue(PART) == EnumPartType.HEAD)
 			return (TileEntitySepulture) world.getTileEntity(pos);
 		if (world.getTileEntity(
-				pos.offset((EnumFacing) world.getBlockState(pos).getValue(FACING))) instanceof TileEntitySepulture)
+				pos.offset(world.getBlockState(pos).getValue(FACING))) instanceof TileEntitySepulture)
 			return (TileEntitySepulture) world
-					.getTileEntity(pos.offset((EnumFacing) world.getBlockState(pos).getValue(FACING)));
+					.getTileEntity(pos.offset(world.getBlockState(pos).getValue(FACING)));
 		return null;
 	}
 

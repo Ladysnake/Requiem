@@ -20,9 +20,8 @@ import net.minecraft.world.World;
 
 public class AdditiveParticle extends Particle implements IDissolutionParticle {
 	
-	public static final ResourceLocation STAR_PARTICLE_TEXTURE = new ResourceLocation(Reference.MOD_ID, "entity/particles/star");
-	public static final ResourceLocation PINK_STAR_PARTICLE_TEXTURE = new ResourceLocation(Reference.MOD_ID, "entity/particles/star_purple");
-	
+	public static final ResourceLocation STAR_PARTICLE_TEXTURE = new ResourceLocation(Reference.MOD_ID, "entity/aura");
+
 	protected boolean additive;
 	protected Color color = Color.WHITE;
 	

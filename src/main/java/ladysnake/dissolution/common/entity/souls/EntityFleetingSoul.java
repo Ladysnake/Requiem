@@ -1,33 +1,40 @@
 package ladysnake.dissolution.common.entity.souls;
 
+import elucent.albedo.lighting.ILightProvider;
+import elucent.albedo.lighting.Light;
 import ladysnake.dissolution.api.Soul;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
-import ladysnake.dissolution.common.items.ItemSoulInABottle;
+import ladysnake.dissolution.common.items.ItemSoulInAFlask;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class EntityFleetingSoul extends AbstractSoul {
+import java.util.List;
+
+@Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo", striprefs = true)
+public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
 	
 	private int delayBeforeCanPickup = 10;
 	private int targetChangeCooldown = 0;
-	private EntityPlayer closestPlayer;
+	private Entity targetEntity;
 
 	public EntityFleetingSoul(World worldIn) {
 		super(worldIn);
 	}
 	
 	public EntityFleetingSoul(World worldIn, double x, double y, double z) {
-		this(worldIn);
-		this.setPosition(x, y, z);
+		this(worldIn, x, y, z, Soul.UNDEFINED);
 	}
 	
 	public EntityFleetingSoul(World worldIn, double x, double y, double z, Soul soulIn) {
@@ -59,27 +66,40 @@ public class EntityFleetingSoul extends AbstractSoul {
 			}
 
 			if (this.soulAge % 100 == 0)
-				if (this.closestPlayer == null || this.getDistanceSqToEntity(closestPlayer) > 1024.0)
-					this.closestPlayer = this.world.getClosestPlayer(this.posX, this.posY, this.posZ, 32.0, 
-							player -> !((EntityPlayer)player).isSpectator() && !DissolutionInventoryHelper.findItem((EntityPlayer) player, ModItems.HALITE).isEmpty());
+				if (!(this.targetEntity instanceof EntityPlayer) || this.getDistanceSqToEntity(targetEntity) > 1024.0
+						|| DissolutionInventoryHelper.findItem((EntityPlayer) targetEntity, ModItems.HALITE).isEmpty()) {
+					this.targetEntity = this.world.getClosestPlayer(this.posX, this.posY, this.posZ, 32.0,
+							player -> player != null && !((EntityPlayer) player).isSpectator()
+									&& !DissolutionInventoryHelper.findItem((EntityPlayer) player, ModItems.HALITE).isEmpty());
+					if(targetEntity == null) {
+						List<EntityItem> items = this.world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(getPosition()).grow(16),
+								item -> item != null && item.getItem().getItem() == ModItems.HALITE);
+						if (items.size() > 0)
+							this.targetEntity = items.get(0);
+						if(targetEntity == null && world.isAnyPlayerWithinRangeAt(this.posX, this.posY, this.posZ, 64))
+							this.soulAge += 600;
+					}
+				}
 
-			if (this.closestPlayer != null && this.closestPlayer.isSpectator()) {
-				this.closestPlayer = null;
+			if (this.targetEntity instanceof EntityPlayer && ((EntityPlayer)this.targetEntity).isSpectator()) {
+				this.targetEntity = null;
 			}
 			
-			double targetX = this.closestPlayer != null ? closestPlayer.posX : this.xTarget;
-			double targetY = this.closestPlayer != null ? closestPlayer.posY : this.yTarget;
-			double targetZ = this.closestPlayer != null ? closestPlayer.posZ : this.zTarget;
+			double targetX = this.targetEntity != null ? targetEntity.posX : this.xTarget;
+			double targetY = this.targetEntity != null ? targetEntity.posY : this.yTarget;
+			double targetZ = this.targetEntity != null ? targetEntity.posZ : this.zTarget;
 			Vec3d targetVector = new Vec3d(targetX-posX,targetY-posY,targetZ-posZ);
 			double length = targetVector.lengthVector();
-			targetVector = targetVector.scale(0.3/length);
-			double weight  = 0;
-			if (length <= 3){
-				weight = 0.9*((3.0-length)/3.0);
+			targetVector = targetVector.scale(0.1/length);
+			if(length > 3) {
+				motionX = (0.9) * motionX + (0.1) * targetVector.x;
+				motionY = (0.9) * motionY + (0.1) * targetVector.y;
+				motionZ = (0.9) * motionZ + (0.1) * targetVector.z;
+			} else {
+				motionX = 0.9 * targetVector.z + 0.1 * motionX;
+				motionY = 0.9 * motionY + 0.1 * targetVector.y;
+				motionZ = 0.9 * targetVector.x + 0.1 * motionZ;
 			}
-			motionX = (0.9-weight)*motionX+(0.1+weight)*targetVector.x;
-			motionY = (0.9-weight)*motionY+(0.1+weight)*targetVector.y;
-			motionZ = (0.9-weight)*motionZ+(0.1+weight)*targetVector.z;
 			this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
 		}
 	}
@@ -101,9 +121,13 @@ public class EntityFleetingSoul extends AbstractSoul {
 		ItemStack bottle = DissolutionInventoryHelper.findItem(entityIn, Items.GLASS_BOTTLE);
 		if(!world.isRemote && !bottle.isEmpty() && this.delayBeforeCanPickup <= 0) {
 			bottle.shrink(1);
-			entityIn.addItemStackToInventory(ItemSoulInABottle.newTypedSoulBottle(this.soul.getType()));
+			entityIn.addItemStackToInventory(ItemSoulInAFlask.newTypedSoulBottle(this.soul.getType()));
 			this.setDead();
 		}
 	}
 
+	@Override
+	public Light provideLight() {
+		return Light.builder().pos(this).radius(5).color(0.5f, 0.5f, 0.8f).build();
+	}
 }

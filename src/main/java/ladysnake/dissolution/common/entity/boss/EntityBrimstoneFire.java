@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 
 public class EntityBrimstoneFire extends Entity {
 	
-	private static DataParameter<Optional<BlockPos>> TARGET_FIRE = EntityDataManager.<Optional<BlockPos>>createKey(EntityBrimstoneFire.class, DataSerializers.OPTIONAL_BLOCK_POS);
+	private static DataParameter<Optional<BlockPos>> TARGET_FIRE = EntityDataManager.createKey(EntityBrimstoneFire.class, DataSerializers.OPTIONAL_BLOCK_POS);
 	private int ticksFired;
 	public static final int MAX_FIRE_TIME = 10;
 

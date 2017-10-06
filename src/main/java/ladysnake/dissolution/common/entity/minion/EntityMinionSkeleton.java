@@ -32,7 +32,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityMinionSkeleton extends AbstractMinion {
 	
-	protected static final DataParameter<Boolean> SWINGING_ARMS = EntityDataManager.<Boolean>createKey(EntityMinionSkeleton.class, DataSerializers.BOOLEAN);
+	protected static final DataParameter<Boolean> SWINGING_ARMS = EntityDataManager.createKey(EntityMinionSkeleton.class, DataSerializers.BOOLEAN);
 	protected boolean isStray;
 
 	public EntityMinionSkeleton(World worldIn) {

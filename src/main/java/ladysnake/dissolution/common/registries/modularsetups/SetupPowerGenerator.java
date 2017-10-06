@@ -16,12 +16,14 @@ import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.InputItemHandler;
 import ladysnake.dissolution.common.items.AlchemyModuleTypes;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
+import ladysnake.dissolution.common.items.ItemSoulInAFlask;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
@@ -29,12 +31,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 public class SetupPowerGenerator extends ModularMachineSetup {
 	
 	private static final ImmutableSet<ItemAlchemyModule.AlchemyModule> setup = ImmutableSet.of(
 			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.RESONANT_GENERATOR, 1),
-			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_TOP, 1));
+			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_BOTTOM, 1));
 	
 	public static final ExecutorService THREADPOOL = Executors.newCachedThreadPool();
 	
@@ -58,19 +61,34 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 		private boolean updateScheduled;
 		private boolean running;
 		private Future<Set<BlockPos>> scheduledTask;
-		private TileEntityModularMachine te;
+		private TileEntityModularMachine tile;
 		private InputItemHandler itemInput;
+		private int time;
 		
-		Instance(TileEntityModularMachine te) {
+		Instance(TileEntityModularMachine tile) {
 			nodes = new HashSet<>();
-			this.te = te;
-			te.setPowerConsumption(PowerConsumption.GENERATOR);
+			this.tile = tile;
 			updateScheduled = true;
-			itemInput = new InputItemHandler(ModItems.SOUL_IN_A_BOTTLE);
+			itemInput = new InputItemHandler(ModItems.SOUL_IN_A_FLASK);
 		}
-		
+
+		@Override
+		public void init() {
+			tile.setPowerConsumption(PowerConsumption.GENERATOR);
+		}
+
 		@Override
 		public void onTick() {
+			if(time++ % 20 == 0 && this.itemInput.getStackInSlot(0).isEmpty()) {
+				TileEntity te = tile.getWorld().getTileEntity(tile.getPos().up(2));
+				if(te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN)) {
+					IItemHandler inv = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN);
+					if(inv != null)
+						for(int i = 0; i < inv.getSlots(); i++)
+							if (inv.getStackInSlot(i).getItem() instanceof ItemSoulInAFlask)
+								this.itemInput.insertItem(0, inv.extractItem(i, 1, false), false);
+				}
+			}
 			if(updateScheduled || (this.isRunning() ^ !this.itemInput.getStackInSlot(0).isEmpty())) {
 				this.setRunning(!itemInput.getStackInSlot(0).isEmpty());
 				scheduledTask = THREADPOOL.submit((Callable<Set<BlockPos>>) this::detectNetwork);
@@ -81,12 +99,12 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 					Set<BlockPos> newNodes = scheduledTask.get();
 					nodes.stream().filter(pos -> !newNodes.contains(pos)).forEach(pos -> {
 						try {
-							((IPowerConductor)te.getWorld().getBlockState(pos).getBlock()).setPowered(te.getWorld(), pos, false);
+							((IPowerConductor) tile.getWorld().getBlockState(pos).getBlock()).setPowered(tile.getWorld(), pos, false);
 						} catch (ClassCastException ignored) {}
 					});
 					nodes = newNodes;
 					for(BlockPos pos : nodes) {
-						((IPowerConductor)te.getWorld().getBlockState(pos).getBlock()).setPowered(te.getWorld(), pos, isRunning());
+						((IPowerConductor) tile.getWorld().getBlockState(pos).getBlock()).setPowered(tile.getWorld(), pos, isRunning());
 					}
 					scheduledTask = null;
 				} catch (InterruptedException | ExecutionException e) {
@@ -104,7 +122,7 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 				EnumFacing facing, float hitX, float hitY, float hitZ) {
 			if(!playerIn.world.isRemote) {
 				ItemStack stack = playerIn.getHeldItem(hand);
-				if (stack.getItem() == ModItems.SOUL_IN_A_BOTTLE) {
+				if (stack.getItem() == ModItems.SOUL_IN_A_FLASK) {
 					stack.setCount(this.itemInput.insertItem(0, stack.copy(), false).getCount());
 				} else if (stack.isEmpty()) {
 					playerIn.addItemStackToInventory(this.itemInput.extractItem(0, 64, false));
@@ -114,11 +132,11 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 		
 		@Override
 		public void onRemoval() {
-			te.getWorld().spawnEntity(new EntityItem(te.getWorld(), te.getPos().getX(), te.getPos().getY(), te.getPos().getZ(), this.itemInput.extractItem(0, 64, false)));
-			te.setPowerConsumption(PowerConsumption.NONE);
+			tile.getWorld().spawnEntity(new EntityItem(tile.getWorld(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), this.itemInput.extractItem(0, 64, false)));
+			tile.setPowerConsumption(PowerConsumption.NONE);
 			for(BlockPos pos : nodes) {
 				try {
-					((IPowerConductor)te.getWorld().getBlockState(pos).getBlock()).setPowered(te.getWorld(), pos, false);
+					((IPowerConductor) tile.getWorld().getBlockState(pos).getBlock()).setPowered(tile.getWorld(), pos, false);
 				} catch (ClassCastException ignored) {}
 			}
 		}
@@ -132,7 +150,7 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 		}
 		
 		Set<BlockPos> detectNetwork() {
-			return detectNetwork(te.getWorld(), te.getPos(), new LinkedList<>(), 0, new HashSet<>());
+			return detectNetwork(tile.getWorld(), tile.getPos(), new LinkedList<>(), 0, new HashSet<>());
 		}
 		
 		private Set<BlockPos> detectNetwork(World world, BlockPos pos, List<BlockPos> searchedBlocks, int i, Set<BlockPos> nodes) {
@@ -158,12 +176,12 @@ public class SetupPowerGenerator extends ModularMachineSetup {
 
         @Override
 		public boolean hasCapability(Capability<?> capability, EnumFacing facing, EnumPartType part) {
-			return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && part == EnumPartType.TOP;
+			return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && part == EnumPartType.TOP && facing == EnumFacing.UP;
 		}
 
 		@Override
 		public <T> T getCapability(Capability<T> capability, EnumFacing facing, EnumPartType part) {
-			if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && part == EnumPartType.TOP)
+			if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && part == EnumPartType.TOP && facing == EnumFacing.UP)
 				return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemInput);
 			return null;
 		}

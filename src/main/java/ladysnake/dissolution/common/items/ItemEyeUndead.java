@@ -10,6 +10,7 @@ import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -24,9 +25,9 @@ public class ItemEyeUndead extends ItemOcculare {
 		if (!(entityLiving instanceof EntityPlayer) || this.getMaxItemUseDuration(stack) - timeLeft < 30) return;
 		EntityPlayer player = (EntityPlayer) entityLiving;
 		
-		if (CapabilityIncorporealHandler.getHandler(player).isIncorporeal() && !player.isCreative()) return;
+		if (CapabilityIncorporealHandler.getHandler(player).getCorporealityStatus().isIncorporeal() && !player.isCreative()) return;
 		
-		ItemStack ammo = DissolutionInventoryHelper.findItem(player, ModItems.SOUL_IN_A_BOTTLE);
+		ItemStack ammo = DissolutionInventoryHelper.findItem(player, ModItems.SOUL_IN_A_FLASK);
 		
 		List<AbstractMinion> minions = (worldIn.getEntitiesWithinAABB(AbstractMinion.class, 
 				new AxisAlignedBB(Math.floor(entityLiving.posX), Math.floor(entityLiving.posY), Math.floor(entityLiving.posZ), 
@@ -48,7 +49,7 @@ public class ItemEyeUndead extends ItemOcculare {
 						double motionX = rand.nextGaussian() * 0.1D;
 						double motionY = rand.nextGaussian() * 0.1D;
 						double motionZ = rand.nextGaussian() * 0.1D;
-						worldIn.spawnParticle(m.isInert() ? EnumParticleTypes.DRAGON_BREATH : EnumParticleTypes.CLOUD, false, m.posX , m.posY + 1.0D, m.posZ, motionX, motionY, motionZ);
+						worldIn.spawnParticle(m.isInert() ? EnumParticleTypes.DRAGON_BREATH : EnumParticleTypes.CLOUD, m.posX , m.posY + 1.0D, m.posZ, motionX, motionY, motionZ);
 					}
 				}
 				if(m.isInert()) {
@@ -64,7 +65,9 @@ public class ItemEyeUndead extends ItemOcculare {
 		}
 		if(used) {
 			stack.damageItem(1, player);
-			player.addStat(StatList.getObjectUseStats(this));
+			StatBase stat = StatList.getObjectUseStats(this);
+			if(stat != null)
+				player.addStat(stat);
 		}
 	}
 

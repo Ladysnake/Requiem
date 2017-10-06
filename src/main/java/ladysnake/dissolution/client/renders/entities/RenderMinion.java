@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 
 import ladysnake.dissolution.common.Reference;
@@ -30,8 +31,9 @@ public class RenderMinion<V extends AbstractMinion> extends RenderBiped<V> {
 
 	private final ResourceLocation texture, textureInert;
 
+	@SafeVarargs
 	public RenderMinion(RenderManager renderManagerIn, BiFunction<Float, Boolean, ModelBiped> modelBipedIn, ResourceLocation texture,
-			ResourceLocation textureInert, Function<RenderMinion, LayerRenderer<V>>... layers) {
+						ResourceLocation textureInert, Function<RenderMinion, LayerRenderer<V>>... layers) {
 		super(renderManagerIn, modelBipedIn.apply(0f, false), 0.5f);
 		this.texture = texture;
 		this.textureInert = textureInert;
@@ -61,15 +63,16 @@ public class RenderMinion<V extends AbstractMinion> extends RenderBiped<V> {
     }
    
     @Override
-    public void doRender(V minionIn, double x, double y, double z, float entityYaw, float partialTicks) {
+    public void doRender(@Nonnull V minionIn, double x, double y, double z, float entityYaw, float partialTicks) {
     	GL11.glPushMatrix();
-    	if(minionIn.isInert() && minionIn.getRemainingTicks() > 0 && minionIn.getRemainingTicks() < minionIn.MAX_DEAD_TICKS) {
-    		GL11.glColor4f(1.0f, 1.0f, 1.0f, ((float)minionIn.getRemainingTicks()) / ((float)minionIn.MAX_DEAD_TICKS));
-    		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    		GL11.glEnable(GL11.GL_BLEND);
-    	} else if (minionIn.getRemainingTicks() > 0 && minionIn.getRemainingTicks() < minionIn.MAX_RISEN_TICKS) {
-        	float colorRatio = ((float)minionIn.getRemainingTicks()) / ((float)minionIn.MAX_RISEN_TICKS);
-    		GL11.glColor4f(colorRatio, colorRatio, colorRatio, 1.0f);
+    	if(minionIn.isInert() && minionIn.getRemainingTicks() > 0 && minionIn.getRemainingTicks() < AbstractMinion.MAX_DEAD_TICKS) {
+			GlStateManager.color(1f, 1f, 1f,
+					((float)minionIn.getRemainingTicks()) / ((float) AbstractMinion.MAX_DEAD_TICKS));
+    		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+    		GlStateManager.enableBlend();
+    	} else {
+        	float colorRatio = (minionIn.getHealth()) / (minionIn.getMaxHealth());
+    		GlStateManager.color(colorRatio, colorRatio, colorRatio);
     	}
     	super.doRender(minionIn, x, y, z, entityYaw, partialTicks);
         GL11.glPopMatrix();

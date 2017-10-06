@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -19,15 +22,14 @@ import net.minecraft.client.renderer.OpenGlHelper;
  * @author Pyrofab
  *
  */
+@SideOnly(Side.CLIENT)
 public final class ShaderHelper {
 	
 	/**the shader used during the corpse dissolution animation*/
 	public static int dissolution = 0;
 	/**the shader used with the blue overlay*/
-	public static int intangible = 0;
-	public static int doppleganger = 0;
-	public static int incorp = 0;
-	
+	public static int bloom = 0;
+
 	private static int prevProgram = 0, currentProgram = 0;
 	private static final String LOCATION_PREFIX = "/assets/dissolution/shaders/";
 	
@@ -45,8 +47,8 @@ public final class ShaderHelper {
 	public static void initShaders() {
 		if(!shouldUseShaders())
 			return;
-		dissolution = initShader("corpsedissolution");
-		intangible = initShader("intangible");
+		dissolution = initShader("VertexBase.vsh", "corpsedissolution.fsh");
+		bloom = initShader("VertexBase.vsh", "bloom.fsh");
 	}
 	
 	/**
@@ -98,7 +100,7 @@ public final class ShaderHelper {
 		if(!shouldUseShaders())
 			return;
 
-		prevProgram = GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
+		prevProgram = GlStateManager.glGetInteger(GL20.GL_CURRENT_PROGRAM);
 		OpenGlHelper.glUseProgram(program);
 		
 		currentProgram = program;
@@ -108,7 +110,7 @@ public final class ShaderHelper {
 	
 	/**
 	 * Sets the value of a uniform from the current program
-	 * @param uniformName
+	 * @param uniformName the uniform's name
 	 * @param value an int value for this uniform
 	 */
 	public static void setUniform(String uniformName, int value) {

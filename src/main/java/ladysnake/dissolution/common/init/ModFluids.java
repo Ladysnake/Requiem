@@ -85,7 +85,7 @@ public enum ModFluids {
 
 	@SideOnly(Side.CLIENT)
 	private void registerFluidModel() {
-		final Item item = Item.getItemFromBlock((Block) fluidBlock);
+		final Item item = Item.getItemFromBlock(fluidBlock);
 		if(item == Items.AIR) {
 			LogManager.getLogger(Reference.MOD_ID).error(fluidBlock.getRegistryName() + " : the passed in fluid block has no associated item");
 			return;
