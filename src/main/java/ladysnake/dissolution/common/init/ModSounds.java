@@ -10,8 +10,6 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 @Mod.EventBusSubscriber(modid=Reference.MOD_ID)
 public enum ModSounds {
-	lost_soul_ambient,
-	lost_soul_pain,
 	lost_soul_death;
 
 	private final SoundEvent sound;

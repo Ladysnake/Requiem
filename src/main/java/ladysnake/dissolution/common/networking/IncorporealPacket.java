@@ -9,7 +9,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class IncorporealPacket implements IMessageHandler<IncorporealMessage, IMessage> {
 
 	@Override
@@ -21,8 +24,8 @@ public class IncorporealPacket implements IMessageHandler<IncorporealMessage, IM
 					final EntityPlayer player = Minecraft.getMinecraft().player.world
 							.getPlayerEntityByUUID(new UUID(message.playerUUIDMost, message.playerUUIDLeast));
 					final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
-					playerCorp.setIncorporeal(message.simpleBool);
-				} catch (NullPointerException e){}
+					playerCorp.setCorporealityStatus(message.corporalityStatus);
+				} catch (NullPointerException ignored){}
 			});
 		}
 		return null;

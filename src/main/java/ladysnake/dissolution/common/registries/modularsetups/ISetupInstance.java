@@ -29,6 +29,8 @@ public interface ISetupInstance {
 	 * @param hitZ the precise z coordinate of the interaction on the block's surface
 	 */
 	default void onInteract(EntityPlayer playerIn,  EnumHand hand, BlockCasing.EnumPartType part, EnumFacing facing, float hitX, float hitY, float hitZ) {}
+
+	default void init() {}
 	
 	/**
 	 * Called when the setup is invalidated
@@ -36,6 +38,11 @@ public interface ISetupInstance {
 	default  void onRemoval() {}
 
 	default void addModelsForRender(Set<ResourceLocation> models) {}
+
+	/**
+	 * @return a custom model location for the plug on this face or null if the default should be used
+	 */
+	default ResourceLocation getPlugModel(EnumFacing facing, BlockCasing.EnumPartType part, ResourceLocation defaultModel) {return defaultModel;}
 	
 	/**
 	 * Loads the extra information of this setup from the save

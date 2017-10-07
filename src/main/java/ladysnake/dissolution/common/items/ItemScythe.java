@@ -151,7 +151,7 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
 		ItemStack bottle = DissolutionInventoryHelper.findItem(p, Items.GLASS_BOTTLE);
 		if (!bottle.isEmpty()) {
 			bottle.shrink(nb);
-			p.inventory.addItemStackToInventory(ItemSoulInABottle.newTypedSoulBottle(soul));
+			p.inventory.addItemStackToInventory(ItemSoulInAFlask.newTypedSoulBottle(soul));
 		}
 	}
 

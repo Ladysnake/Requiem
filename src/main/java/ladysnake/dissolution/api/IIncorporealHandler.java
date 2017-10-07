@@ -1,41 +1,52 @@
 package ladysnake.dissolution.api;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.UUID;
 
 /**
  * The interface providing methods related to the Incorporeal capability
+ * This is basically used as a replacement to extended properties
  * @author Pyrofab
  *
  */
 public interface IIncorporealHandler {
-	
-	public void setSynced (boolean synced);
+
+	enum CorporealityStatus {
+		CORPOREAL,
+		ECTOPLASM,
+		SOUL;
+
+		public boolean isIncorporeal() {
+			return this != CORPOREAL;
+		}
+	}
+
+	/**
+	 * Sets the tangibility of the player specified, along with the corresponding attributes
+	 */
+	void setCorporealityStatus(CorporealityStatus newStatus);
+
+	/**
+	 * @return The current status of this player
+	 */
+	@Nonnull
+	CorporealityStatus getCorporealityStatus();
+
+	EctoplasmStats getEctoplasmStats();
+
+	/**
+	 * Sets the synchronization status of this handler (between server and client)
+	 * @param synced if true, this handler should be synchronized next tick
+	 */
+	void setSynced(boolean synced);
 	
 	/**
 	 * Whether this handler needs updating from the server
 	 * @return true if this handler has already been synchronized at least once
 	 */
 	boolean isSynced();
-	
-	/**
-	 * Sets the tangibility of the player specified, along with the corresponding attributes
-	 * @param ghostMode True if the player should be intangible
-	 * @param p The player upon which the change is applied
-	 */
-	void setIncorporeal(boolean ghostMode);
-	
-	/**
-	 * Spawns a body with the inventory of the player and makes the player incorporeal
-	 */
-	void split();
-	
-	/**
-	 * Whether the player is in soul mode or not
-	 * @return true if the player is a ghost
-	 */
-	boolean isIncorporeal();
-	
+
 	void tick();
 	
 	String getLastDeathMessage();
@@ -45,14 +56,5 @@ public interface IIncorporealHandler {
 	void setDisguise(UUID usurpedId);
 	
 	Optional<UUID> getDisguise();
-	
-	/**
-	 * Makes the player intangible (enables noclip)
-	 * @param intangible
-	 * @return true if the operation succeeded
-	 */
-	boolean setIntangible(boolean intangible);
-	
-	boolean isIntangible();
 
 }

@@ -85,10 +85,10 @@ public class LivingDeathHandler {
 		if(DissolutionConfig.respawn.skipDeathScreen) {
 			if(!p.world.isRemote)
 				fakePlayerDeath((EntityPlayerMP)p, event.getSource());
-			corp.setIncorporeal(true);
+			corp.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.SOUL);
 			p.setHealth(20f);
-			if(!DissolutionConfig.respawn.respawnInNether && DissolutionConfig.respawn.wowLikeRespawn) {
-				BlockPos respawnLoc = p.getBedLocation() != null ? p.getBedLocation() : p.world.getSpawnPoint();
+			if(p.getBedLocation() != null && !DissolutionConfig.respawn.respawnInNether && DissolutionConfig.respawn.wowLikeRespawn) {
+				BlockPos respawnLoc = p.getBedLocation();
 				p.setPosition(respawnLoc.getX(), respawnLoc.getY(), respawnLoc.getZ());
 			}
 			if(DissolutionConfig.respawn.respawnInNether && !p.world.isRemote)

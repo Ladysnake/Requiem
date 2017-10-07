@@ -32,6 +32,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+
 public class EntityMinionWitherSkeleton extends EntityMinionSkeleton {
 	
 	public EntityMinionWitherSkeleton(World worldIn) {
@@ -69,7 +71,7 @@ public class EntityMinionWitherSkeleton extends EntityMinionSkeleton {
     }
     
     @Override
-    public boolean attackEntityAsMob(Entity entityIn)
+    public boolean attackEntityAsMob(@Nonnull Entity entityIn)
     {
         if (!super.attackEntityAsMob(entityIn))
         {

@@ -39,7 +39,6 @@ public class ItemFilterModule extends ItemAlchemyModule {
         FilterModule(@Nonnull NBTTagCompound compound) {
             super(compound);
             this.slot = compound.getInteger("slot");
-            System.out.println(this);
         }
 
         @Override
@@ -53,7 +52,6 @@ public class ItemFilterModule extends ItemAlchemyModule {
         public ResourceLocation getModel() {
             ResourceLocation baseModel = getType().getRegistryName();
             String extension = slot == 0 ? "" : "_" + slot;
-            System.out.println(modulesModels.get(this));
             return baseModel == null ? null : modulesModels.computeIfAbsent(this, key ->
                     new ResourceLocation(baseModel.getResourceDomain(), "machine/" +
                             baseModel.getResourcePath() + extension));

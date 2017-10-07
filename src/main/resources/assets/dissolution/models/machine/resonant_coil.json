@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
-	"textures": {"1": "machines/resonant_coil"},
+	"textures": {"1": "dissolution:machines/resonant_coil"},
 	"elements": [
 		{
 			"name": "Base",

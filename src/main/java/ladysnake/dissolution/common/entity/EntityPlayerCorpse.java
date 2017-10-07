@@ -33,10 +33,12 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 
+import javax.annotation.Nonnull;
+
 public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteractable {
 	
-	private static DataParameter<Optional<UUID>> PLAYER = EntityDataManager.<Optional<UUID>>createKey(EntityPlayerCorpse.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-	private static DataParameter<Boolean> DECAY = EntityDataManager.<Boolean>createKey(EntityPlayerCorpse.class, DataSerializers.BOOLEAN);
+	private static DataParameter<Optional<UUID>> PLAYER = EntityDataManager.createKey(EntityPlayerCorpse.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+	private static DataParameter<Boolean> DECAY = EntityDataManager.createKey(EntityPlayerCorpse.class, DataSerializers.BOOLEAN);
 	protected InventoryPlayerCorpse inventory;
 	
 	public EntityPlayerCorpse(World worldIn) {
@@ -48,23 +50,20 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	protected boolean processInteract(EntityPlayer player, EnumHand hand) {
 		final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
 
-		if(handler.isIncorporeal() && (!this.isDecaying() || DissolutionConfig.respawn.wowLikeRespawn)) {
+		if(this.ticksExisted > 100 && handler.getCorporealityStatus().isIncorporeal() &&
+				(!this.isDecaying() || DissolutionConfig.respawn.wowLikeRespawn)) {
 			if(!world.isRemote) {
 				DissolutionInventoryHelper.transferEquipment(this, player);
 				this.onDeath(DamageSource.GENERIC);
 				this.setDead();
+				handler.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.CORPOREAL);
 			}
 			player.setPositionAndRotation(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
 			player.cameraPitch = 90;
 			player.prevCameraPitch = 90;
-			if(player.world.isRemote) {
-				player.eyeHeight = 0.5f;
-				EventHandlerClient.cameraAnimation = 20;
-			}
 			player.setHealth(4f);
-			handler.setIncorporeal(false);
-		} else if (!player.world.isRemote && player.getHeldItem(hand).getItem() != ModItems.EYE_OF_THE_UNDEAD) {
-			this.inventory.openInventory(player);
+		} else if (!world.isRemote && player.getHeldItem(hand).getItem() != ModItems.EYE_OF_THE_UNDEAD) {
+			player.openGui(Dissolution.instance, GuiProxy.PLAYER_CORPSE, this.world, (int)this.posX, (int)this.posY, (int)this.posZ);
 		}
 		
 		return true;
@@ -93,7 +92,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	}
 	
 	@Override
-	public void setCustomNameTag(String name) {
+	public void setCustomNameTag(@Nonnull String name) {
 		super.setCustomNameTag(name);
 	}
 	
@@ -128,7 +127,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	}
 	
 	public void setPlayer(UUID id) {
-		this.getDataManager().set(PLAYER, Optional.<UUID>of(id));
+		this.getDataManager().set(PLAYER, Optional.of(id));
 	}
 	
 	@Override

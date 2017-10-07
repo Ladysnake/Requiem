@@ -24,7 +24,7 @@ public class ItemOcculare extends Item {
 		this.addPropertyOverride(
 				new ResourceLocation(Reference.MOD_ID, "fueled"), 
 				(stack, worldIn, entityIn) -> 
-				entityIn instanceof EntityPlayer && (!DissolutionInventoryHelper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_BOTTLE).isEmpty()) 
+				entityIn instanceof EntityPlayer && (!DissolutionInventoryHelper.findItem((EntityPlayer) entityIn, ModItems.SOUL_IN_A_FLASK).isEmpty())
 						? 1.0F
 						: 0.0F
 		);
@@ -38,12 +38,6 @@ public class ItemOcculare extends Item {
 					ItemStack shell = getShell(stack);
 					return shell.isEmpty() ? 0f : ((ItemOccularePart)shell.getItem()).getId();
 				});
-/*		this.addPropertyOverride(new ResourceLocation(Reference.MOD_ID, "etching"),
-				(stack, worldIn, entityIn) -> {
-					ItemStack etching = getEtching(stack);
-					return etching.isEmpty() ? 0f : ((ItemOccularePart)etching.getItem()).getId();
-				});*/
-
 	}
 	
 	@Override
@@ -67,11 +61,8 @@ public class ItemOcculare extends Item {
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, @Nonnull EnumHand handIn) {
 		ItemStack itemstack = playerIn.getHeldItem(handIn);
-
-		{
-			playerIn.setActiveHand(handIn);
-			return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
-		}
+		playerIn.setActiveHand(handIn);
+		return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
 	}
 	
 	private ItemStack getShell(ItemStack stack) {
@@ -94,29 +85,6 @@ public class ItemOcculare extends Item {
 			} else
 				compound.setTag("shell", shell.serializeNBT());
 		}
-	}
-	
-	private ItemStack getEtching(ItemStack stack) {
-		NBTTagCompound compound = stack.getSubCompound("etching");
-		if(compound != null) {
-			ItemStack etching = new ItemStack(compound);
-			if(etching.getItem() instanceof ItemOccularePart)
-				return etching;
-		}
-		return ItemStack.EMPTY;
-	}
-	
-	public ItemStack setEtching(ItemStack occulare, ItemStack etching) {
-		if(etching.getItem() instanceof ItemOccularePart) {
-			NBTTagCompound compound = occulare.getTagCompound();
-			if(compound == null) {
-				compound = new NBTTagCompound();
-				compound.setTag("etching", etching.serializeNBT());
-				occulare.setTagCompound(compound);
-			} else
-				compound.setTag("etching", etching.serializeNBT());
-		}
-		return occulare;
 	}
 
 }

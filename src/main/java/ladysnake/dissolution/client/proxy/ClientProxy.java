@@ -1,20 +1,26 @@
 package ladysnake.dissolution.client.proxy;
 
-import java.awt.Color;
-
 import ladysnake.dissolution.client.gui.GuiIncorporealOverlay;
+import ladysnake.dissolution.client.handlers.AlbedoEventHandler;
 import ladysnake.dissolution.client.models.blocks.BakedModelLoader;
 import ladysnake.dissolution.client.particles.AdditiveParticle;
 import ladysnake.dissolution.client.particles.DissolutionParticleManager;
 import ladysnake.dissolution.client.renders.entities.LayerDisguise;
 import ladysnake.dissolution.client.renders.entities.LayerScythe;
+import ladysnake.dissolution.client.renders.entities.RenderWillOWisp;
 import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.init.ModEntities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.awt.*;
+
+@SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
 	
 	private int particleCount = 0;
@@ -30,11 +36,19 @@ public class ClientProxy extends CommonProxy {
 	public void init() {
 		super.init();
 		MinecraftForge.EVENT_BUS.register(new GuiIncorporealOverlay(Minecraft.getMinecraft()));
+		if(Loader.isModLoaded("albedo"))
+			MinecraftForge.EVENT_BUS.register(AlbedoEventHandler.class);
 		// ClientRegistry.bindTileEntitySpecialRenderer(TileEntityModularMachine.class, new RenderModularMachine());
 		initAddedLayers();
 	}
-	
-    private static void initAddedLayers() {
+
+	@Override
+	public void postInit() {
+		super.postInit();
+		RenderWillOWisp.init();
+	}
+
+	private static void initAddedLayers() {
     	Minecraft.getMinecraft().getRenderManager().getSkinMap().forEach((s, render) -> {
     			render.addLayer(new LayerScythe());
     			render.addLayer(new LayerDisguise(render, s.equals("slim")));

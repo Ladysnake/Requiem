@@ -101,6 +101,11 @@ public class DissolutionConfig {
 		@Config.LangKey("config.dissolution.ghost.invisibleGhosts")
 		@Config.Comment("If set to true, dead players will be fully invisible.")
 		public boolean invisibleGhosts = false;
+
+		@Config.LangKey("config.dissolution.ghost.authorizedBlocks")
+		@Config.Comment("A list of blocks that players in ectoplasm form can interact with")
+		public String authorizedBlocks = "minecraft:lever; minecraft:.*door;" +
+				"minecraft:wooden_button";
 		
 	}
 	

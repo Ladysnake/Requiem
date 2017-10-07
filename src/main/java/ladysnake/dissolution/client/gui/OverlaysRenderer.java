@@ -13,26 +13,26 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class OverlaysRenderer {
 	
 	public static final OverlaysRenderer INSTANCE = new OverlaysRenderer();
 	
 	private static final ResourceLocation INCORPOREAL_PATH = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_overlay.png");
 	private static final ResourceLocation RES_MERCURY_OVERLAY = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_overlay.png");
-	
-	private float inc = 0.001F;
-	private float b = 0.0F;
-	private boolean shade = false;
-	
-	public void renderOverlays(RenderGameOverlayEvent.Post event) {
+
+    private float b = 0.0F;
+
+    void renderOverlays(RenderGameOverlayEvent.Post event) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
-		if(playerCorp.isIncorporeal())
-			drawIncorporealOverlay(event.getResolution(), playerCorp.isIntangible());
+		if(playerCorp.getCorporealityStatus().isIncorporeal())
+			drawIncorporealOverlay(event.getResolution());
 		if(player.world.getBlockState(player.getPosition().up()).getBlock() == ModFluids.MERCURY.fluidBlock()) {
 			renderWaterOverlayTexture(event.getPartialTicks());
-//			System.out.println("in mercury");
 		}
 	}
 	
@@ -45,21 +45,23 @@ public class OverlaysRenderer {
         float f = mc.player.getBrightness();
         GlStateManager.color(f, f, f, 0.5F);
         GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.pushMatrix();
-        float f1 = 4.0F;
-        float f2 = -1.0F;
-        float f3 = 1.0F;
-        float f4 = -1.0F;
-        float f5 = 1.0F;
-        float f6 = -0.5F;
+        float texMin = 0f;
+        float texMax = 4.0F;
+        float xMin = -1.0F;
+        float xMax = 1.0F;
+        float yMin = -1.0F;
+        float yMax = 1.0F;
+        float z = -0.5F;
         float f7 = -mc.player.rotationYaw / 64.0F;
         float f8 = mc.player.rotationPitch / 64.0F;
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-        bufferbuilder.pos(-1.0D, -1.0D, -0.5D).tex((double)(4.0F + f7), (double)(4.0F + f8)).endVertex();
-        bufferbuilder.pos(1.0D, -1.0D, -0.5D).tex((double)(0.0F + f7), (double)(4.0F + f8)).endVertex();
-        bufferbuilder.pos(1.0D, 1.0D, -0.5D).tex((double)(0.0F + f7), (double)(0.0F + f8)).endVertex();
-        bufferbuilder.pos(-1.0D, 1.0D, -0.5D).tex((double)(4.0F + f7), (double)(0.0F + f8)).endVertex();
+        bufferbuilder.pos(xMin, yMin, z).tex((texMax + f7), (texMax + f8)).endVertex();
+        bufferbuilder.pos(xMax, yMin, z).tex((texMin + f7), (texMax + f8)).endVertex();
+        bufferbuilder.pos(xMax, yMax, z).tex((texMin + f7), (texMin + f8)).endVertex();
+        bufferbuilder.pos(xMin, yMax, z).tex((texMax + f7), (texMin + f8)).endVertex();
         tessellator.draw();
         GlStateManager.popMatrix();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -68,16 +70,15 @@ public class OverlaysRenderer {
 	
 	/**
 	 * Draws the blue overlay telling the player he's a ghost
-	 * @param scaledRes
 	 */
-	public void drawIncorporealOverlay(ScaledResolution scaledRes, boolean intangible)
+    private void drawIncorporealOverlay(ScaledResolution scaledRes)
     {
-		
-		b += inc;
+        final float inc = 0.001F;
+        b += inc;
 		//System.out.println(Math.cos(b));
 		
 		GlStateManager.pushAttrib();
-		GlStateManager.color((float) Math.cos(b), 1.0F, 1.0F, intangible ? 0.8F : 0.5F);
+		GlStateManager.color((float) Math.cos(b), 1.0F, 1.0F, 0.5F);
 		GlStateManager.disableLighting();
 		GlStateManager.enableAlpha();
 		GlStateManager.enableBlend();

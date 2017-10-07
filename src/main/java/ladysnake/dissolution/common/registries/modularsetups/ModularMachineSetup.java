@@ -26,7 +26,7 @@ public abstract class ModularMachineSetup extends IForgeRegistryEntry.Impl<Modul
 	 * @param installedModules Modules currently installed in the machine
 	 */
 	public boolean isValidSetup (Set<ItemAlchemyModule.AlchemyModule> installedModules) {
-		return installedModules.size() == getSetup().size() && getSetup().stream()
+		return installedModules.size() >= getSetup().size() && getSetup().stream()
 				.allMatch(module -> 
 						installedModules.stream().anyMatch(mod2 -> 
 								mod2.getType().isEquivalent(module.getType()) && 

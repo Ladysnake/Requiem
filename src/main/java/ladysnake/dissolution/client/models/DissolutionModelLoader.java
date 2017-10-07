@@ -16,6 +16,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,7 +27,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * This class is a stripped version of the game's model loading code, allowing
@@ -33,9 +34,11 @@ import java.util.logging.Logger;
  *
  */
 @Mod.EventBusSubscriber(value = Side.CLIENT, modid = Reference.MOD_ID)
+@SideOnly(Side.CLIENT)
 public class DissolutionModelLoader {
 
 	private static final DissolutionModelLoader INSTANCE = new DissolutionModelLoader();
+	private static org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger("Dissolution Model Loader");
 
 	/** Stores locations of models to load */
 	private final Map<ResourceLocation, Set<ModelRotation>> modelsLocation = new HashMap<>();
@@ -92,15 +95,15 @@ public class DissolutionModelLoader {
 
 	@SubscribeEvent
 	public static void loadSpecialModels(TextureStitchEvent.Pre event) {
-		System.out.println("loading special models");
+		LOGGER.info("Loading special models");
 		for (ResourceLocation rl : INSTANCE.modelsLocation.keySet()) {
 			try {
 				INSTANCE.blockModelsLocation.put(rl, INSTANCE.loadModel(rl));
 			} catch (IOException e) {
-				Logger.getGlobal().warning(rl + ": an issue prevented the file from being read");
+				LOGGER.warn(rl + ": an issue prevented the file from being read");
 				e.printStackTrace();
 			} catch (JsonParseException e) {
-				Logger.getGlobal().warning(rl + ": this json file isn't valid");
+				LOGGER.warn(rl + ": this json file isn't valid");
 				e.printStackTrace();
 			}
 		}

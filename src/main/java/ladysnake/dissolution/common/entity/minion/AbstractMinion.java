@@ -1,48 +1,20 @@
 package ladysnake.dissolution.common.entity.minion;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
-import javax.annotation.Nullable;
-
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
-
-import io.netty.buffer.ByteBuf;
-import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.DissolutionConfigManager;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.entity.EntityWanderingSoul;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;
-import ladysnake.dissolution.common.handlers.LivingDeathHandler;
 import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EnumCreatureAttribute;
-import net.minecraft.entity.IEntityOwnable;
-import net.minecraft.entity.IRangedAttackMob;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.monster.EntityHusk;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntityPigZombie;
-import net.minecraft.entity.monster.EntitySkeleton;
-import net.minecraft.entity.monster.EntityStray;
-import net.minecraft.entity.monster.EntityWitherSkeleton;
-import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.monster.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.init.Items;
-import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -50,35 +22,33 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.UUID;
 
 public abstract class AbstractMinion extends EntityCreature implements IRangedAttackMob, IEntityOwnable {
 	public static final int MAX_DEAD_TICKS = 1200;
-	public static final int MAX_RISEN_TICKS = 6000;
-	public static final int SUN_TICKS_PENALTY = 15;
-	public static final int DAMAGE_PENALTY = 5;
+	private static final int DAMAGE_PENALTY = 5;
 
-	protected static final float SIZE_X = 0.6F, SIZE_Y = 1.95F;
+	private static final float SIZE_X = 0.6F, SIZE_Y = 1.95F;
 	
 	private static final DataParameter<Boolean> IS_CHILD = EntityDataManager.
-			<Boolean>createKey(AbstractMinion.class, DataSerializers.BOOLEAN);
+            createKey(AbstractMinion.class, DataSerializers.BOOLEAN);
 	private static final DataParameter<Boolean> INERT = EntityDataManager.
-			<Boolean>createKey(AbstractMinion.class, DataSerializers.BOOLEAN);
+            createKey(AbstractMinion.class, DataSerializers.BOOLEAN);
 	private static final DataParameter<Integer> DECOMPOSITION_COUNTDOWN = EntityDataManager
-			.<Integer>createKey(AbstractMinion.class, DataSerializers.VARINT);
+			.createKey(AbstractMinion.class, DataSerializers.VARINT);
 	private static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager
-			.<Optional<UUID>>createKey(AbstractMinion.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+			.createKey(AbstractMinion.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 
 	private final EntityAIMinionRangedAttack aiArrowAttack = new EntityAIMinionRangedAttack(this, 1.0D, 20, 15.0F);
 	private final EntityAIAttackMelee aiAttackOnCollide = new EntityAIAttackMelee(this, 1.2D, false);
@@ -88,9 +58,9 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 		AbstractMinion corpse = null;
 		
 		if(deadGuy instanceof EntityPigZombie) {
-			corpse = new EntityMinionPigZombie(deadGuy.world, ((EntityZombie)deadGuy).isChild());
+			corpse = new EntityMinionPigZombie(deadGuy.world, deadGuy.isChild());
 		} else if (deadGuy instanceof EntityZombie) {
-			corpse = new EntityMinionZombie(deadGuy.world, deadGuy instanceof EntityHusk, ((EntityZombie)deadGuy).isChild());
+			corpse = new EntityMinionZombie(deadGuy.world, deadGuy instanceof EntityHusk, deadGuy.isChild());
 		} else if (deadGuy instanceof EntitySkeleton) {
 			corpse = new EntityMinionSkeleton(deadGuy.world);
 		} else if(deadGuy instanceof EntityStray){
@@ -127,8 +97,8 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 				return super.isSuitableTarget(target, includeInvincibles) && target != getOwner();
 			}
 		});
-		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityMob.class, 10, true, false,
-				e -> !DissolutionConfigManager.isEntityBlacklistedFromMinionAttacks((EntityMob)e)));
+		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityMob.class, 10, true, false,
+				e -> !DissolutionConfigManager.isEntityBlacklistedFromMinionAttacks(e)));
 	}
 
 	@Override
@@ -150,7 +120,7 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 	}
 
 	public int getMaxTimeRemaining() {
-		return this.isInert() ? MAX_DEAD_TICKS : MAX_RISEN_TICKS;
+		return MAX_DEAD_TICKS;
 	}
 	
 	/**
@@ -162,16 +132,15 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 
 	/**
 	 * Sets the time in ticks this entity has left
-	 * @param countdown
 	 */
-	protected void setDecompositionCountdown(int countdown) {
+	private void setDecompositionCountdown(int countdown) {
 		this.getDataManager().set(DECOMPOSITION_COUNTDOWN, countdown);
 	}
 	
 	/**
 	 * @param ticks the amount of ticks that will be deducted from the countdown
 	 */
-	protected void countdown(int ticks) {
+	private void countdown(int ticks) {
 		setDecompositionCountdown(getRemainingTicks() - ticks);
 	}
 
@@ -181,7 +150,7 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 	}
 
 	@Override
-	public boolean attackEntityAsMob(Entity entityIn) {
+	public boolean attackEntityAsMob(@Nonnull Entity entityIn) {
 		boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this),
 				(float) ((int) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue()));
 
@@ -214,7 +183,7 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 	}
 
 	@Override
-	public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+	public void attackEntityWithRangedAttack(@Nonnull EntityLivingBase target, float distanceFactor) {
 		EntityArrow entityarrow = this.getArrow(distanceFactor);
 		double d0 = target.posX - this.posX;
 		double d1 = target.getEntityBoundingBox().minY + (double) (target.height / 3.0F) - entityarrow.posY;
@@ -227,8 +196,7 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 	}
 
 	protected EntityArrow getArrow(float distanceFactor) {
-		EntityTippedArrow entitytippedarrow = new EntityTippedArrow(this.world, this);
-		return entitytippedarrow;
+		return new EntityTippedArrow(this.world, this);
 	}
 
 	@Override
@@ -238,14 +206,11 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 	}
 
 	protected void updateMinion() {
-		countdown(1);
+		if(this.isInert())
+			countdown(1);
 		if (!this.isInert())
 			this.handleSunExposure();
 		if (getRemainingTicks() <= 0 && !this.world.isRemote) {
-			if (!this.isInert()) {
-				((WorldServer) this.world).spawnParticle(EnumParticleTypes.SMOKE_NORMAL, false, posX, posY + 1.5D, posZ,
-						150, 0.3D, 0.3D, 0.3D, 0.0D);
-			}
 			this.setDead();
 		}
 	}
@@ -274,31 +239,28 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 				this.setFire(1);
 			}
 		}
-		if (this.isBurning()) {
-			countdown(SUN_TICKS_PENALTY);
-		}
 	}
 
 	@Override
-	protected void damageEntity(DamageSource damageSrc, float damageAmount) {
+	protected void damageEntity(@Nonnull DamageSource damageSrc, float damageAmount) {
 		super.damageEntity(damageSrc, damageAmount);
-		this.countdown(DAMAGE_PENALTY);
+		if(this.isInert())
+			this.countdown(DAMAGE_PENALTY);
 	}
 
 	@Override
-	public boolean isEntityInvulnerable(DamageSource source) {
-		if (this.isInert() && !(source.getTrueSource() instanceof EntityPlayer || source.canHarmInCreative()))
-				return true;
-
-		return super.isEntityInvulnerable(source);
+	public boolean isEntityInvulnerable(@Nonnull DamageSource source) {
+		return this.isInert() && !(source.getTrueSource() instanceof EntityPlayer
+				|| source.canHarmInCreative()) || super.isEntityInvulnerable(source);
 	}
 
 	/**
 	 * Applies the given player interaction to this Entity.
 	 */
+	@Nonnull
 	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand) {
 
-		if (CapabilityIncorporealHandler.getHandler(player).isIncorporeal() && !player.isCreative())
+		if (CapabilityIncorporealHandler.getHandler(player).getCorporealityStatus().isIncorporeal() && !player.isCreative())
 			return EnumActionResult.PASS;
 
 		ItemStack itemstack = player.getHeldItem(hand);
@@ -338,26 +300,26 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 	 * @return the targeted equipment slot
 	 */
 	protected EntityEquipmentSlot getClickedSlot(Vec3d raytrace) {
-		EntityEquipmentSlot entityequipmentslot = EntityEquipmentSlot.MAINHAND;
+		EntityEquipmentSlot entityEquipmentSlot = EntityEquipmentSlot.MAINHAND;
 		boolean flag = this.isChild();
 		double d0 = (this.isInert() ? raytrace.z + 1.2 : raytrace.y) * (flag ? 2.0D : 1.0D);
-		EntityEquipmentSlot entityequipmentslot1 = EntityEquipmentSlot.FEET;
+		EntityEquipmentSlot entityEquipmentSlot1 = EntityEquipmentSlot.FEET;
 
-		if (d0 >= 0.1D && d0 < 0.1D + (flag ? 0.8D : 0.45D) && this.hasItemInSlot(entityequipmentslot1)) {
-			entityequipmentslot = EntityEquipmentSlot.FEET;
+		if (d0 >= 0.1D && d0 < 0.1D + (flag ? 0.8D : 0.45D) && this.hasItemInSlot(entityEquipmentSlot1)) {
+			entityEquipmentSlot = EntityEquipmentSlot.FEET;
 		} else if (d0 >= 0.9D + (flag ? 0.3D : 0.0D) && d0 < 0.9D + (flag ? 1.0D : 0.7D)
 				&& this.hasItemInSlot(EntityEquipmentSlot.CHEST)) {
-			entityequipmentslot = EntityEquipmentSlot.CHEST;
+			entityEquipmentSlot = EntityEquipmentSlot.CHEST;
 		} else if (d0 >= 0.4D && d0 < 0.4D + (flag ? 1.0D : 0.8D) && this.hasItemInSlot(EntityEquipmentSlot.LEGS)) {
-			entityequipmentslot = EntityEquipmentSlot.LEGS;
+			entityEquipmentSlot = EntityEquipmentSlot.LEGS;
 		} else if (d0 >= 1.6D && this.hasItemInSlot(EntityEquipmentSlot.HEAD)) {
-			entityequipmentslot = EntityEquipmentSlot.HEAD;
+			entityEquipmentSlot = EntityEquipmentSlot.HEAD;
 		}
 
-		return entityequipmentslot;
+		return entityEquipmentSlot;
 	}
 
-	private void swapItem(EntityPlayer player, EntityEquipmentSlot targetedSlot, ItemStack playerItemStack,
+	protected void swapItem(EntityPlayer player, EntityEquipmentSlot targetedSlot, ItemStack playerItemStack,
 			EnumHand hand) {
 		ItemStack itemstack = this.getItemStackFromSlot(targetedSlot);
 		if (player.capabilities.isCreativeMode && itemstack.isEmpty() && !playerItemStack.isEmpty()) {
@@ -387,7 +349,7 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 		return this.getDataManager().get(IS_CHILD);
 	}
 
-	public void setChildSize(boolean isChild) {
+	private void setChildSize(boolean isChild) {
 		float ratio = (isChild ? 0.5F : 1.0F);
 		if (isInert())
 			super.setSize(SIZE_Y * ratio, SIZE_X * ratio);
@@ -395,7 +357,7 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 			super.setSize(SIZE_X * ratio, SIZE_Y * ratio);
 	}
 
-	public void notifyDataManagerChange(DataParameter<?> key) {
+	public void notifyDataManagerChange(@Nonnull DataParameter<?> key) {
 		if (IS_CHILD.equals(key) || INERT.equals(key)) {
 			this.setChildSize(this.isChild());
 		}
@@ -403,6 +365,7 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 		super.notifyDataManagerChange(key);
 	}
 
+	@Nonnull
 	@Override
 	public EnumCreatureAttribute getCreatureAttribute() {
 		return EnumCreatureAttribute.UNDEAD;
@@ -433,6 +396,7 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 		return this.getDataManager().get(INERT);
 	}
 
+	@Nonnull
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);

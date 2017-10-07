@@ -45,11 +45,12 @@ repositories {
 
 dependencies {
 
+    testCompile group: 'junit', name: 'junit', version: '4.12'
 	// compile against the JEI API
 	deobfCompile "mezz.jei:jei_${mc_version}:${jei_version}:api"
 	// at runtime, use the full JEI jar
 	runtime "mezz.jei:jei_${mc_version}:${jei_version}"
-
+    compile files("libs/albedo-0.1.2-deobf.jar")
 }
 
 processResources {
@@ -63,5 +64,13 @@ processResources {
 
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+    }
+
+    rename '(.+_at.cfg)', 'META-INF/$1'
+}
+
+jar {
+    manifest {
+        attributes 'FMLAT': 'dissolution_at.cfg'
     }
 }

@@ -1,10 +1,8 @@
 package ladysnake.dissolution.common.inventory;
 
-import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
@@ -12,13 +10,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+
+import javax.annotation.Nonnull;
 
 public class InventoryPlayerCorpse implements IInventory {
 	
 	/** An array of 36 item stacks indicating the main player inventory (including the visible bar). */
-    public NonNullList<ItemStack> mainInventory = NonNullList.<ItemStack>withSize(36, ItemStack.EMPTY);
+	private NonNullList<ItemStack> mainInventory = NonNullList.withSize(36, ItemStack.EMPTY);
     private EntityPlayerCorpse corpseEntity;
     private boolean dirty;
     
@@ -33,6 +32,7 @@ public class InventoryPlayerCorpse implements IInventory {
 		this.corpseEntity = corpse;
 	}
 
+	@Nonnull
 	@Override
 	public String getName() {
 		return this.corpseEntity.getName() + "'s stuff";
@@ -43,6 +43,7 @@ public class InventoryPlayerCorpse implements IInventory {
 		return false;
 	}
 
+	@Nonnull
 	@Override
 	public ITextComponent getDisplayName() {
 		return new TextComponentTranslation(this.getName());
@@ -55,19 +56,22 @@ public class InventoryPlayerCorpse implements IInventory {
 
 	@Override
 	public boolean isEmpty() {
-		return !this.mainInventory.stream().anyMatch(e -> !e.isEmpty());
+		return this.mainInventory.stream().allMatch(ItemStack::isEmpty);
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getStackInSlot(int index) {
 		return this.mainInventory.get(index);
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack decrStackSize(int index, int count) {
 		return !(this.mainInventory.get(index)).isEmpty() ? ItemStackHelper.getAndSplit(this.mainInventory, index, count) : ItemStack.EMPTY;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
 		try {
@@ -80,7 +84,7 @@ public class InventoryPlayerCorpse implements IInventory {
 	}
 
 	@Override
-	public void setInventorySlotContents(int index, ItemStack stack) {
+	public void setInventorySlotContents(int index, @Nonnull ItemStack stack) {
 		this.mainInventory.set(index, stack);
 	}
 
@@ -95,22 +99,18 @@ public class InventoryPlayerCorpse implements IInventory {
 	}
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
+	public boolean isUsableByPlayer(@Nonnull EntityPlayer player) {
 		return this.corpseEntity.getDistanceSqToEntity(player) < 50;
 	}
 
 	@Override
-	public void openInventory(EntityPlayer player) {
-		player.openGui(Dissolution.instance, GuiProxy.PLAYER_CORPSE, corpseEntity.world, corpseEntity.getPosition().getX(), corpseEntity.getPosition().getY(), corpseEntity.getPosition().getZ());
-	}
+	public void openInventory(@Nonnull EntityPlayer player) {}
 
 	@Override
-	public void closeInventory(EntityPlayer player) {
-		
-	}
+	public void closeInventory(@Nonnull EntityPlayer player) {}
 
 	@Override
-	public boolean isItemValidForSlot(int index, ItemStack stack) {
+	public boolean isItemValidForSlot(int index, @Nonnull ItemStack stack) {
 		return true;
 	}
 
@@ -139,11 +139,11 @@ public class InventoryPlayerCorpse implements IInventory {
 	public NBTTagList writeToNBT(NBTTagList nbtTagListIn) {
 		for (int i = 0; i < this.mainInventory.size(); ++i)
         {
-            if (!((ItemStack)this.mainInventory.get(i)).isEmpty())
+            if (!this.mainInventory.get(i).isEmpty())
             {
                 NBTTagCompound nbttagcompound = new NBTTagCompound();
                 nbttagcompound.setByte("Slot", (byte)i);
-                ((ItemStack)this.mainInventory.get(i)).writeToNBT(nbttagcompound);
+                this.mainInventory.get(i).writeToNBT(nbttagcompound);
                 nbtTagListIn.appendTag(nbttagcompound);
             }
         }
@@ -157,12 +157,12 @@ public class InventoryPlayerCorpse implements IInventory {
         for (int i = 0; i < nbtTagListIn.tagCount(); ++i)
         {
             NBTTagCompound nbttagcompound = nbtTagListIn.getCompoundTagAt(i);
-            int j = nbttagcompound.getByte("Slot") & 255;
+            int j = nbttagcompound.getByte("Slot") & 0xFF;
             ItemStack itemstack = new ItemStack(nbttagcompound);
 
             if (!itemstack.isEmpty())
             {
-                if (j >= 0 && j < this.mainInventory.size())
+                if (j < this.mainInventory.size())
                 {
                     this.mainInventory.set(j, itemstack);
                 }

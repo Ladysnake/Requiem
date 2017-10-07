@@ -6,9 +6,9 @@
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "https://minecraft.curseforge.com/projects/dissolution",
-  "updateUrl": "https://minecraft.curseforge.com/projects/tartaros",
+  "updateUrl": "https://minecraft.curseforge.com/projects/dissolution",
   "authorList": ["Pyrofab", "CobraDarkPoney", "Noprotox"],
-  "credits": "MrCrayfish for his amazing modelLocation creator.",
+  "credits": "JanisX11 for Blockbench, without which we wouldn't have those fancy models.",
   "logoFile": "/assets/dissolution/textures/tartaros_ico.png",
   "screenshots": [],
   "dependencies": []

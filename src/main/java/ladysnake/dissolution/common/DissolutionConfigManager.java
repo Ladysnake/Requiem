@@ -2,9 +2,12 @@ package ladysnake.dissolution.common;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Files;
-import ladysnake.dissolution.common.entity.EntityWanderingSoul;
+import ladysnake.dissolution.api.ISoulInteractable;
+import ladysnake.dissolution.common.init.ModItems;
+import net.minecraft.block.Block;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.item.Item;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.config.Configuration;
@@ -12,6 +15,8 @@ import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryManager;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,11 +24,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public final class DissolutionConfigManager {
 	
 	private static ImmutableSet<Class<? extends EntityMob>> TARGET_BLACKLIST;
+	private static ImmutableSet<Pattern> BLOCK_WHITELIST;
 
 	public enum FlightModes {
 		NO_FLIGHT,
@@ -38,6 +45,18 @@ public final class DissolutionConfigManager {
 	
 	public static boolean isEntityBlacklistedFromMinionAttacks(EntityMob EntityIn) {
 		return TARGET_BLACKLIST.contains(EntityIn.getClass());
+	}
+
+	@SuppressWarnings("ConstantConditions")
+	public static boolean canEctoplasmInteractWith(Block block) {
+		if(block instanceof ISoulInteractable)
+			return true;
+		String name = block.getRegistryName().toString();
+		return BLOCK_WHITELIST.stream().anyMatch(p -> p.matcher(name).matches());
+	}
+
+	public static boolean canEctoplasmInteractWith(Item item) {
+		return item == ModItems.DEBUG_ITEM;
 	}
 	
 	static void loadConfig(File configFile) {
@@ -64,6 +83,7 @@ public final class DissolutionConfigManager {
 	    }
 	    
         buildMinionAttackBlacklist();
+	    buildBlockWhitelist();
 	    
 	    config.save();
 	    
@@ -76,6 +96,7 @@ public final class DissolutionConfigManager {
         {
             ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);
             buildMinionAttackBlacklist();
+            buildBlockWhitelist();
         }
     }
 	
@@ -106,10 +127,20 @@ public final class DissolutionConfigManager {
 	
 	private static void buildMinionAttackBlacklist() {
 		ImmutableSet.Builder<Class<? extends EntityMob>> builder = ImmutableSet.builder();
-		builder.add(EntityWanderingSoul.class);
 		if (!DissolutionConfig.entities.minionsAttackCreepers)
 			builder.add(EntityCreeper.class);
 		TARGET_BLACKLIST = builder.build();
+	}
+
+	private static void buildBlockWhitelist() {
+		ImmutableSet.Builder<Pattern> builder = ImmutableSet.builder();
+		IForgeRegistry<Block> reg = RegistryManager.ACTIVE.getRegistry(Block.class);
+		if(reg != null) {
+			for (String blockName : DissolutionConfig.ghost.authorizedBlocks.split("[; ]+")) {
+				builder.add(Pattern.compile("^" + blockName + "$"));
+			}
+		}
+		BLOCK_WHITELIST = builder.build();
 	}
 	
 }

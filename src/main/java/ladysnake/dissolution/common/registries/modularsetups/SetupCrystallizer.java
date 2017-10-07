@@ -5,13 +5,14 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableSet;
 
-import ladysnake.dissolution.api.EssentiaStack;
-import ladysnake.dissolution.api.EssentiaTypes;
-import ladysnake.dissolution.api.IEssentiaHandler;
+import ladysnake.dissolution.api.DistillateTypes;
+import ladysnake.dissolution.api.DistillateStack;
+import ladysnake.dissolution.api.IDistillateHandler;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing.EnumPartType;
-import ladysnake.dissolution.common.capabilities.CapabilityEssentiaHandler;
+import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
+import ladysnake.dissolution.common.capabilities.CapabilityDistillateHandler;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.items.AlchemyModuleTypes;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
@@ -30,18 +31,18 @@ public class SetupCrystallizer extends ModularMachineSetup {
 			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_TOP, 1),
 			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.CRYSTALLIZER, 1),
 			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_BOTTOM, 1));
-	private final Map<EssentiaStack, Item> conversions;
+	private final Map<DistillateStack, Item> conversions;
 
 	public SetupCrystallizer() {
 		this.setRegistryName(new ResourceLocation(Reference.MOD_ID, "crystallizer"));
 		this.conversions = new HashMap<>();
-		addConversion(EssentiaTypes.CINNABARIS, ModItems.CINNABAR);
-		addConversion(EssentiaTypes.SULPURIS, ModItems.SULFUR);
-		addConversion(EssentiaTypes.SALIS, ModItems.HALITE);
+		addConversion(DistillateTypes.CINNABARIS, ModItems.CINNABAR);
+		addConversion(DistillateTypes.SULPURIS, ModItems.SULFUR);
+		addConversion(DistillateTypes.SALIS, ModItems.HALITE);
 	}
 	
-	private void addConversion(EssentiaTypes essentia, Item out) {
-		conversions.put(new EssentiaStack(essentia, 9), out);
+	private void addConversion(DistillateTypes essentia, Item out) {
+		conversions.put(new DistillateStack(essentia, 9), out);
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class SetupCrystallizer extends ModularMachineSetup {
 	public class Instance implements ISetupInstance {
 
 		private TileEntityModularMachine tile;
-		private IEssentiaHandler essentiaInput;
+		private IDistillateHandler distillateHandler;
 		private OutputItemHandler oreOutput;
 		private int progressTicks;
 
@@ -66,18 +67,28 @@ public class SetupCrystallizer extends ModularMachineSetup {
 			this.tile = tile;
 			if(tile.hasWorld())
 				tile.getWorld().markBlockRangeForRenderUpdate(tile.getPos().add(1, 0, 1), tile.getPos().add(-1, 0, -1));
-			this.essentiaInput = new CapabilityEssentiaHandler.DefaultEssentiaHandler(99, 4);
-			this.essentiaInput.setSuction(10, EssentiaTypes.UNTYPED);
+			this.distillateHandler = new CapabilityDistillateHandler.DefaultDistillateHandler(99, 4);
+			this.distillateHandler.setSuction(10, DistillateTypes.UNTYPED);
 			this.oreOutput = new OutputItemHandler();
+		}
+
+		@Override
+		public void init() {
+			tile.setPowerConsumption(IPowerConductor.IMachine.PowerConsumption.CONSUMER);
+		}
+
+		@Override
+		public void onRemoval() {
+			tile.setPowerConsumption(IPowerConductor.IMachine.PowerConsumption.NONE);
 		}
 
 		@Override
 		public void onTick() {
 			if (!tile.getWorld().isRemote && this.progressTicks++ % 20 == 0) {
 				if (this.oreOutput.getStackInSlot(0).getCount() < this.oreOutput.getSlotLimit(0)) {
-					for(EssentiaStack essentiaStack : essentiaInput) {
-						if(essentiaStack.getCount() >= 9) {
-							EssentiaStack in = this.essentiaInput.extract(9, essentiaStack.getType());
+					for(DistillateStack distillateStack : distillateHandler) {
+						if(distillateStack.getCount() >= 9) {
+							DistillateStack in = this.distillateHandler.extract(9, distillateStack.getType());
 							this.oreOutput.insertItemInternal(0, new ItemStack(conversions.get(in)), false);
 							break;
 						}
@@ -94,7 +105,7 @@ public class SetupCrystallizer extends ModularMachineSetup {
 			if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 				return part == BlockCasing.EnumPartType.BOTTOM && facing != EnumFacing.EAST;
 			}
-			return capability == CapabilityEssentiaHandler.CAPABILITY_ESSENTIA && part == EnumPartType.TOP;
+			return capability == CapabilityDistillateHandler.CAPABILITY_ESSENTIA && part == EnumPartType.TOP;
 		}
 
 		@Override
@@ -103,10 +114,9 @@ public class SetupCrystallizer extends ModularMachineSetup {
 				if (part == BlockCasing.EnumPartType.BOTTOM && facing != EnumFacing.EAST)
 					return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(this.oreOutput);
 			}
-			if (capability == CapabilityEssentiaHandler.CAPABILITY_ESSENTIA) {
+			if (capability == CapabilityDistillateHandler.CAPABILITY_ESSENTIA) {
 				if (part == BlockCasing.EnumPartType.TOP)
-					//noinspection ConstantConditions
-					return CapabilityEssentiaHandler.CAPABILITY_ESSENTIA.cast(this.essentiaInput);
+					return CapabilityDistillateHandler.CAPABILITY_ESSENTIA.cast(this.distillateHandler);
 			}
 			return null;
 		}
@@ -115,14 +125,14 @@ public class SetupCrystallizer extends ModularMachineSetup {
 		public void readFromNBT(NBTTagCompound compound) {
 			CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().readNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, this.oreOutput, EnumFacing.WEST, compound.getTag("output"));
 			//noinspection ConstantConditions
-			CapabilityEssentiaHandler.CAPABILITY_ESSENTIA.getStorage().readNBT(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA, this.essentiaInput, EnumFacing.NORTH, compound.getTag("essentiaInput"));
+			CapabilityDistillateHandler.CAPABILITY_ESSENTIA.getStorage().readNBT(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, this.distillateHandler, EnumFacing.NORTH, compound.getTag("distillateHandler"));
 		}
 		
 		@SuppressWarnings("ConstantConditions")
 		@Override
 		public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 			compound.setTag("output", CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().writeNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, this.oreOutput, EnumFacing.WEST));
-			compound.setTag("essentiaInput", CapabilityEssentiaHandler.CAPABILITY_ESSENTIA.getStorage().writeNBT(CapabilityEssentiaHandler.CAPABILITY_ESSENTIA, essentiaInput, EnumFacing.NORTH));
+			compound.setTag("distillateHandler", CapabilityDistillateHandler.CAPABILITY_ESSENTIA.getStorage().writeNBT(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, distillateHandler, EnumFacing.NORTH));
 			return compound;
 		}
 

@@ -3,6 +3,8 @@ package ladysnake.dissolution.client.particles;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
@@ -21,6 +23,7 @@ import net.minecraft.entity.player.EntityPlayer;
  * @author Elucent
  *
  */
+@SideOnly(Side.CLIENT)
 public class DissolutionParticleManager {
 	
 	public static final DissolutionParticleManager INSTANCE = new DissolutionParticleManager();
@@ -28,7 +31,7 @@ public class DissolutionParticleManager {
 	private Set<Particle> particles = new HashSet<>();
 	
 	public void updateParticles() {
-		particles.forEach(p -> p.onUpdate());
+		particles.forEach(Particle::onUpdate);
 		particles.removeIf(p -> !p.isAlive());
 	}
 	

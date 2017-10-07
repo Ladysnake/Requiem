@@ -31,10 +31,12 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import javax.annotation.Nonnull;
+
 public class CapabilitySoulHandler {
 	
 	@CapabilityInject(ISoulHandler.class)
-	public static final Capability<ISoulHandler> CAPABILITY_SOUL_INVENTORY = null;
+	public static Capability<ISoulHandler> CAPABILITY_SOUL_INVENTORY;
 	
 	public static void register() {
         CapabilityManager.INSTANCE.register(ISoulHandler.class, new Storage(), () -> new DefaultSoulInventoryHandler(1));
@@ -132,13 +134,13 @@ public class CapabilitySoulHandler {
 		ISoulHandler instance = new DefaultSoulInventoryHandler(9);
 		
 		@Override
-		public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+		public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
 			return capability == CAPABILITY_SOUL_INVENTORY;
 		}
 
 		@Override
-		public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-			return hasCapability(capability, facing) ? CAPABILITY_SOUL_INVENTORY.<T>cast(instance) : null;
+		public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
+			return hasCapability(capability, facing) ? CAPABILITY_SOUL_INVENTORY.cast(instance) : null;
 		}
 
 		@Override

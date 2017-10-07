@@ -5,6 +5,7 @@ public class Reference {
 	static final String MOD_NAME = "Dissolution";
 	static final String VERSION = "0.5";
 	static final String MCVERSION = "[1.12]";
+	static final String DEPENDENCIES = "after:albedo;after:baubles;";
 	static final double CONFIG_VERSION = 2.0;
 
 	static final String CLIENT_PROXY_CLASS = "ladysnake.dissolution.client.proxy.ClientProxy";

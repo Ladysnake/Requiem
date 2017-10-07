@@ -62,11 +62,11 @@ public class RecipeToJsonConverter {
 		// names the json the same name as the output's registry name
 		// repeatedly adds _alt if a file already exists
 		// janky I know but it works
-		String suffix = result.getItem().getHasSubtypes() ? "_" + result.getItemDamage() : "";
+		StringBuilder suffix = new StringBuilder(result.getItem().getHasSubtypes() ? "_" + result.getItemDamage() : "");
 		File f = new File(RECIPE_DIR, result.getItem().getRegistryName().getResourcePath() + suffix + ".json");
 		
 		while (f.exists()) {
-			suffix += "_alt";
+			suffix.append("_alt");
 			f = new File(RECIPE_DIR, result.getItem().getRegistryName().getResourcePath() + suffix + ".json");
 		}
 		
@@ -143,7 +143,7 @@ public class RecipeToJsonConverter {
 		}
 		if (thing instanceof String) {
 			Map<String, Object> ret = new HashMap<>();
-			ret.put("item", "#" + ((String) thing)); // NOTE you need to add this to your _constants.json!
+			ret.put("item", "#" + thing); // NOTE you need to add this to your _constants.json!
 		}
 
 		throw new IllegalArgumentException("Not a block, item, stack, or od name");

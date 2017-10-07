@@ -8,6 +8,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+
 public abstract class AbstractSoul extends Entity {
 	
 	protected Soul soul;
@@ -28,6 +30,7 @@ public abstract class AbstractSoul extends Entity {
 		this.motionY = (Math.random() * 0.2) * 2.0F;
 		this.motionZ = (Math.random() * 0.2 - 0.1) * 2.0F;
 		this.soul = soulIn;
+		this.isImmuneToFire = true;
 	}
 	
 	public BlockPos getTargetPosition() {
@@ -39,9 +42,9 @@ public abstract class AbstractSoul extends Entity {
 		super.onUpdate();
 		++this.soulAge;
 		
-		if(this.world.isRemote) {
-			spawnParticles();
-		}
+//		if(this.world.isRemote) {
+//			spawnParticles();
+//		}
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -59,8 +62,25 @@ public abstract class AbstractSoul extends Entity {
 	}
 
 	@Override
-	protected void readEntityFromNBT(NBTTagCompound compound) {
-		this.soul = new Soul(compound.getCompoundTag("soul"));
+	public boolean canRenderOnFire() {
+		return false;
+	}
+
+	@Override
+	public boolean isImmuneToExplosions() {
+		return true;
+	}
+
+	@Override
+	public void setFire(int seconds) { }
+
+	@Override
+	protected void readEntityFromNBT(@Nonnull NBTTagCompound compound) {
+		try {
+			this.soul = new Soul(compound.getCompoundTag("soul"));
+		} catch (IllegalArgumentException e) {
+			this.soul = Soul.UNDEFINED;
+		}
 	}
 
 	@Override

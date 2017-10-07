@@ -1,7 +1,10 @@
 package ladysnake.dissolution.client.models.blocks;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import ladysnake.dissolution.client.models.DissolutionModelLoader;
 import ladysnake.dissolution.common.Reference;
@@ -17,9 +20,12 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
+@SideOnly(Side.CLIENT)
 public class ModularMachineBakedModel implements IBakedModel {
 	
 	static final String LOCATION_NAME = "bakedmodularmachine";
@@ -30,30 +36,30 @@ public class ModularMachineBakedModel implements IBakedModel {
 	@Override
 	public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
 
-		List<BakedQuad> quads = new LinkedList<>();
+		List<IBakedModel> parts = new ArrayList<>();
 		ModelRotation rotation = getRotationFromFacing(state);
 
 		if(state.getValue(BlockCasing.PART) == BlockCasing.EnumPartType.TOP)
-			quads.addAll(DissolutionModelLoader.getModel(BlockCasing.CASING_TOP).getQuads(state, side, rand));
+			parts.add(DissolutionModelLoader.getModel(BlockCasing.CASING_TOP));
 		else {
-			quads.addAll(DissolutionModelLoader.getModel(BlockCasing.CASING_BOTTOM).getQuads(state, side, rand));
+			parts.add(DissolutionModelLoader.getModel(BlockCasing.CASING_BOTTOM));
 			for (Object module : ((IExtendedBlockState) state).getValue(BlockCasing.MODULES_PRESENT)) {
 				if (module instanceof ResourceLocation) {
-					IBakedModel model = DissolutionModelLoader.getModel((ResourceLocation) module, rotation);
-					if(model != null)
-						quads.addAll(model.getQuads(state, side, rand));
+					parts.add(DissolutionModelLoader.getModel((ResourceLocation) module, rotation));
 				}
 			}
 		}
-		if (((IExtendedBlockState) state).getValue(BlockCasing.PLUG_NORTH))
-			quads.addAll(DissolutionModelLoader.getModel(BlockCasing.PLUG, ModelRotation.X0_Y270).getQuads(state, side, rand));
-		if (((IExtendedBlockState) state).getValue(BlockCasing.PLUG_SOUTH))
-			quads.addAll(DissolutionModelLoader.getModel(BlockCasing.PLUG, ModelRotation.X0_Y90).getQuads(state, side, rand));
-		if (((IExtendedBlockState) state).getValue(BlockCasing.PLUG_WEST))
-			quads.addAll(DissolutionModelLoader.getModel(BlockCasing.PLUG, ModelRotation.X0_Y180).getQuads(state, side, rand));
-		if (((IExtendedBlockState) state).getValue(BlockCasing.PLUG_EAST))
-			quads.addAll(DissolutionModelLoader.getModel(BlockCasing.PLUG, ModelRotation.X0_Y0).getQuads(state, side, rand));
-		return quads;
+		ResourceLocation plugModel = null;
+		if ((plugModel = ((IExtendedBlockState) state).getValue(BlockCasing.PLUG_NORTH)) != null)
+			parts.add(DissolutionModelLoader.getModel(plugModel, ModelRotation.X0_Y270));
+		if ((plugModel = ((IExtendedBlockState) state).getValue(BlockCasing.PLUG_SOUTH)) != null)
+			parts.add(DissolutionModelLoader.getModel(plugModel, ModelRotation.X0_Y90));
+		if ((plugModel = ((IExtendedBlockState) state).getValue(BlockCasing.PLUG_WEST)) != null)
+			parts.add(DissolutionModelLoader.getModel(plugModel, ModelRotation.X0_Y180));
+		if ((plugModel = ((IExtendedBlockState) state).getValue(BlockCasing.PLUG_EAST)) != null)
+			parts.add(DissolutionModelLoader.getModel(plugModel, ModelRotation.X0_Y0));
+
+		return parts.stream().filter(Objects::nonNull).map(m -> m.getQuads(state, side, rand)).flatMap(List::stream).collect(Collectors.toList());
 	}
 
 	private ModelRotation getRotationFromFacing(IBlockState state) {

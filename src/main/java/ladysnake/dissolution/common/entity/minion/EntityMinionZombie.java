@@ -20,6 +20,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
+import javax.annotation.Nonnull;
+
 public class EntityMinionZombie extends AbstractMinion implements IEntityAdditionalSpawnData {
 
 	private boolean isHusk;
@@ -32,7 +34,7 @@ public class EntityMinionZombie extends AbstractMinion implements IEntityAdditio
 	 * Creates a zombie minion
 	 * 
 	 * @param worldIn
-	 * @param zombieType
+	 * @param isHusk
 	 *            false for the default zombie
 	 */
 	public EntityMinionZombie(World worldIn, boolean isHusk, boolean isChild) {
@@ -83,7 +85,8 @@ public class EntityMinionZombie extends AbstractMinion implements IEntityAdditio
         this.playSound(this.getStepSound(), 0.15F, 1.0F);
     }
 	
-	@Override
+	@Nonnull
+    @Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
 		compound.setBoolean("isHusk", this.isHusk());

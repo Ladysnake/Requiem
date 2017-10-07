@@ -28,17 +28,23 @@ public class AlchemyModuleTypes extends IForgeRegistryEntry.Impl<AlchemyModuleTy
 	private static IForgeRegistry<AlchemyModuleTypes> REGISTRY;
 	private static final List<AlchemyModuleTypes> toRegister = new ArrayList<>();
 
-	public static final AlchemyModuleTypes ALCHEMICAL_INTERFACE_TOP = new AlchemyModuleTypes(
-			1, 0b100, false).setRegistryName(Reference.MOD_ID, "alchemical_interface_top");
-	public static final AlchemyModuleTypes ALCHEMICAL_INTERFACE_BOTTOM = new AlchemyModuleTypes(
-			1, 0b001, false).setRegistryName(Reference.MOD_ID, "alchemical_interface_bottom");
-	public static final AlchemyModuleTypes CLOCHE = new AlchemyModuleTypes(1, 0b011).setRegistryName(Reference.MOD_ID, "cloche");
-	//public static final AlchemyModuleTypes CONTAINER = new AlchemyModuleTypes(1, 0b001).setRegistryName("container");
-	public static final AlchemyModuleTypes CRYSTALLIZER = new AlchemyModuleTypes(1, 0b010).setRegistryName(Reference.MOD_ID, "crystallizer");
-	public static final AlchemyModuleTypes RESONANT_GENERATOR = new AlchemyModuleTypes(1, 0b011).setRegistryName(Reference.MOD_ID, "resonant_generator");
+	public static AlchemyModuleTypes ALCHEMICAL_INTERFACE_TOP;
+	public static AlchemyModuleTypes ALCHEMICAL_INTERFACE_BOTTOM;
+	public static AlchemyModuleTypes CLOCHE;
+	public static AlchemyModuleTypes CRYSTALLIZER;
+	public static AlchemyModuleTypes RESONANT_GENERATOR;
 	public static AlchemyModuleTypes MINERAL_FILTER;
 	public static AlchemyModuleTypes SOUL_FILTER;
-	//public static final AlchemyModuleTypes TRIVALENT_FILTER = new AlchemyModuleTypes("trivalent_filter", 1, 0b010, FILTER);
+
+	private static void init() {
+		ALCHEMICAL_INTERFACE_TOP = new AlchemyModuleTypes(
+				1, 0b100, false).setRegistryName(Reference.MOD_ID, "interface_up");
+		ALCHEMICAL_INTERFACE_BOTTOM = new AlchemyModuleTypes(
+				1, 0b001, false).setRegistryName(Reference.MOD_ID, "interface_down");
+		CLOCHE = new AlchemyModuleTypes(1, 0b110).setRegistryName(Reference.MOD_ID, "cloche");
+		CRYSTALLIZER = new AlchemyModuleTypes(1, 0b010).setRegistryName(Reference.MOD_ID, "crystallizer");
+		RESONANT_GENERATOR = new AlchemyModuleTypes(1, 0b110).setRegistryName(Reference.MOD_ID, "resonant_coil");
+	}
 	
 	public final int maxTier;
 	/**
@@ -89,6 +95,7 @@ public class AlchemyModuleTypes extends IForgeRegistryEntry.Impl<AlchemyModuleTy
 	}
 
 	public static void registerItems(Set<Item> allItems) {
+		init();
 		for (AlchemyModuleTypes module : AlchemyModuleTypes.toRegister) {
 			for (int tier = 1; tier <= module.maxTier; tier++) {
 				allItems.add(new ItemAlchemyModule(module, tier));
@@ -97,7 +104,7 @@ public class AlchemyModuleTypes extends IForgeRegistryEntry.Impl<AlchemyModuleTy
 		allItems.add(new ItemFilterModule(MINERAL_FILTER =
 				new AlchemyModuleFilter(1, true).setRegistryName(Reference.MOD_ID, "mineral_filter"), 1));
 		allItems.add(new ItemFilterModule(SOUL_FILTER =
-				new AlchemyModuleFilter(1, true).setRegistryName(Reference.MOD_ID, "soul_filter"), 1));
+						new AlchemyModuleFilter(1, true).setRegistryName(Reference.MOD_ID, "ethereal_filter"), 1));
 		allItems.add(new ItemInterfaceModule());
 	}
 	
