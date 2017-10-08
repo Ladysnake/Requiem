@@ -4,12 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
+import ladysnake.dissolution.client.models.DissolutionModelLoader;
 import ladysnake.dissolution.client.models.blocks.CableBakedModel;
 import ladysnake.dissolution.client.models.blocks.DistillatePipeBakedModel;
 import ladysnake.dissolution.client.models.blocks.ModularMachineBakedModel;
-import ladysnake.dissolution.client.models.DissolutionModelLoader;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.blocks.BlockAncientTomb;
+import ladysnake.dissolution.common.blocks.BlockDepleted;
 import ladysnake.dissolution.common.blocks.BlockDepletedClay;
 import ladysnake.dissolution.common.blocks.BlockDepletedMagma;
 import ladysnake.dissolution.common.blocks.BlockSepulture;
@@ -17,7 +21,6 @@ import ladysnake.dissolution.common.blocks.alchemysystem.BlockBarrage;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockDistillatePipe;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockPowerCable;
-import ladysnake.dissolution.common.blocks.BlockDepleted;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -36,8 +39,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 
-import javax.annotation.Nonnull;
-
 @SuppressWarnings("WeakerAccess")
 public final class ModBlocks {
 	
@@ -47,6 +48,7 @@ public final class ModBlocks {
 	public static Block CINNABAR;
 	public static Block HALITE;
 	public static Block SULPHUR;
+	public static BlockAncientTomb ANCIENT_TOMB;
 	public static BlockBarrage BARRAGE;
 	public static BlockCasing CASING;
 	public static BlockDistillatePipe DISTILLATE_PIPE;
@@ -75,6 +77,7 @@ public final class ModBlocks {
     			CINNABAR = name(new Block(Material.ROCK), "cinnabar_block"),
 				HALITE = name(new Block(Material.ROCK), "halite_block"),
 				SULPHUR = name(new Block(Material.ROCK), "sulfur_block"),
+				ANCIENT_TOMB = name(new BlockAncientTomb(), "ancient_tomb"),
     			BARRAGE = name(new BlockBarrage(), Reference.Blocks.BARRAGE),
     			DEPLETED_CLAY = name(new BlockDepletedClay(), "depleted_clay_block"),
     			DEPLETED_COAL = name(new BlockDepleted(Material.ROCK), "depleted_coal_block"),
