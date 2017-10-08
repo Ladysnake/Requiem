@@ -7,12 +7,7 @@ public interface IDistillateHandler extends Iterable<DistillateStack> {
 	/**
 	 * @return the amount of suction this handler applies
 	 */
-	float getSuction();
-
-	/**
-	 * @return the type of essentia this handler's suction applies to
-	 */
-	DistillateTypes getSuctionType();
+	float getSuction(DistillateTypes type);
 
 	/**
 	 * Sets the suction of this handler
@@ -22,7 +17,7 @@ public interface IDistillateHandler extends Iterable<DistillateStack> {
 	 * @param type
 	 *            the type of essentia sucked in
 	 */
-	void setSuction(float suction, DistillateTypes type);
+	void setSuction(DistillateTypes type, float suction);
 
 	/**
 	 * @param type
@@ -78,21 +73,24 @@ public interface IDistillateHandler extends Iterable<DistillateStack> {
 	 * @return a stack containing the extracted essentia
 	 */
 	DistillateStack extract(int amount, DistillateTypes type);
+	
+	/**
+	 * Attempts to flush everything in the passed handler
+	 * @param dest the receiving handler
+	 */
+	default void flow(IDistillateHandler dest) {
+		StreamSupport.stream(this.spliterator(), false)
+			.map(DistillateStack::getType)
+			.filter(type -> dest.getSuction(type) > this.getSuction(type))
+			.forEach(type -> this.insert(dest.insert(this.extract(1, type))));
+	}
 
 	/**
 	 * Attempts to make essentia flow from this handler to the destination
 	 */
-	default void flow(IDistillateHandler dest) {
-		if (dest.getSuction() > this.getSuction()) {
-			StreamSupport.stream(this.spliterator(), false)
-					.filter(e -> dest.getSuctionType() == DistillateTypes.UNTYPED || dest.getSuctionType() == e.getType())
-					.forEach(e -> this.insert(dest.insert(this.extract(1, e.getType()))));
-			/*
-			 * DistillateStack in = this.extract(1, dest.getSuctionType());
-			 * DistillateStack out = dest.insert(in);
-			 * this.insert(out);
-			 */
-		}
+	default void flow(IDistillateHandler dest, DistillateTypes type) {
+		if(dest.getSuction(type) > this.getSuction(type))
+			this.insert(dest.insert(this.extract(1, type)));
 	}
 
 }

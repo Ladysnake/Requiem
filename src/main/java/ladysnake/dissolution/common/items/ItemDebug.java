@@ -78,8 +78,9 @@ public class ItemDebug extends Item implements ISoulInteractable {
 				TileEntity te = worldIn.getTileEntity(result.getBlockPos());
 				if(te != null && te.hasCapability(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, result.sideHit)) {
 					IDistillateHandler essentiaInv = te.getCapability(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, result.sideHit);
+					essentiaInv.forEach(System.out::println);
 					System.out.println(String.format("%s/%s (%s/%s)", essentiaInv.readContent(DistillateTypes.UNTYPED), essentiaInv.getMaxSize(), essentiaInv.getChannels(), essentiaInv.getMaxChannels()));
-					playerIn.sendStatusMessage(new TextComponentTranslation("suction: %s, type: %s", essentiaInv.getSuction(), essentiaInv.getSuctionType()), false);
+					playerIn.sendStatusMessage(new TextComponentTranslation("suction: %s, type: %s", essentiaInv.getSuction(DistillateTypes.UNTYPED)), false);
 				}
 				if(te instanceof TileEntityModularMachine)
 					playerIn.sendStatusMessage(new TextComponentTranslation("modules: %s", ((TileEntityModularMachine)te).getInstalledModules()), false);

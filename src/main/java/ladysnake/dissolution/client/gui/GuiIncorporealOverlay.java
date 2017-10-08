@@ -1,5 +1,7 @@
  package ladysnake.dissolution.client.gui;
 
+import java.util.Random;
+
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
@@ -15,15 +17,12 @@ import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.Random;
-
-import static net.minecraftforge.client.GuiIngameForge.left_height;
 
  @SideOnly(Side.CLIENT)
 public class GuiIncorporealOverlay extends Gui {
@@ -52,7 +51,7 @@ public class GuiIncorporealOverlay extends Gui {
 					this.drawOriginIndicator(event.getResolution());
 			}
 
-			if (pl.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.ECTOPLASM) {
+			if (this.mc.playerController.shouldDrawHUD() && this.mc.getRenderViewEntity() instanceof EntityPlayer && pl.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.ECTOPLASM) {
 				this.drawEctoplasmHealthBar(this.mc.player, event.getResolution());
 			}
 		}
@@ -61,8 +60,9 @@ public class GuiIncorporealOverlay extends Gui {
 	@SubscribeEvent
 	public void onRenderHealth(RenderGameOverlayEvent.Pre event) {
 		final IIncorporealHandler pl = CapabilityIncorporealHandler.getHandler(this.mc.player);
-		if(event.getType() == ElementType.HEALTH)
+		if(event.getType() == ElementType.HEALTH) {
 			event.setCanceled(pl.getCorporealityStatus().isIncorporeal());
+		}
 	}
 	
 	/**
@@ -129,9 +129,9 @@ public class GuiIncorporealOverlay extends Gui {
 		int healthRows = MathHelper.ceil((healthMax) / 2.0F / 10.0F);
 		int rowHeight = Math.max(10 - (healthRows - 2), 3);
 		int left = width / 2 - 91;
-		int top = height - left_height;
-		left_height += (healthRows * rowHeight);
-		if (rowHeight != 10) left_height += 10 - rowHeight;
+		int top = height - GuiIngameForge.left_height;
+		GuiIngameForge.left_height += (healthRows * rowHeight);
+		if (rowHeight != 10) GuiIngameForge.left_height += 10 - rowHeight;
 
 		final int TOP = 0;
 		final int MARGIN = 0;
@@ -144,9 +144,9 @@ public class GuiIncorporealOverlay extends Gui {
 			if (health <= 4) y += rand.nextInt(2);
 
 			if (i * 2 + 1 < health)
-				drawTexturedModalRect(x, y, MARGIN + 36, TOP, 9, 9); //4
+				drawTexturedModalRect(x, y, MARGIN + 36, TOP, 9, 9);
 			else if (i * 2 + 1 == health)
-				drawTexturedModalRect(x, y, MARGIN + 45, TOP, 9, 9); //5
+				drawTexturedModalRect(x, y, MARGIN + 45, TOP, 9, 9);
 
 		}
 		GlStateManager.popAttrib();

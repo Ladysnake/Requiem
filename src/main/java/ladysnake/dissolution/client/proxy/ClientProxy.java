@@ -45,7 +45,6 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void postInit() {
 		super.postInit();
-		RenderWillOWisp.init();
 	}
 
 	private static void initAddedLayers() {

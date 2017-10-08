@@ -1,6 +1,15 @@
 package ladysnake.dissolution.common.registries.modularsetups;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Spliterator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 import com.google.common.collect.ImmutableSet;
+
 import ladysnake.dissolution.api.DistillateStack;
 import ladysnake.dissolution.api.DistillateTypes;
 import ladysnake.dissolution.api.IDistillateHandler;
@@ -15,20 +24,14 @@ import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import scala.actors.threadpool.Arrays;
 
 public class SetupGreenhouse extends ModularMachineSetup {
     private static final ImmutableSet<ItemAlchemyModule.AlchemyModule> setup = ImmutableSet.of(
@@ -36,13 +39,16 @@ public class SetupGreenhouse extends ModularMachineSetup {
             new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.CLOCHE, 1));
     public final List<Instance> allInstances = new ArrayList<>();
 
-    private Map<Pair<Item, DistillateStack>, ItemStack> recipes;
+    private List<Recipe> recipes;
 
     public SetupGreenhouse() {
         this.setRegistryName("setup_greenhouse");
-        this.recipes = new HashMap<>();
-        addRecipe(ModItems.BACA_SEEDS, new DistillateStack(DistillateTypes.CINNABARIS, 9), new ItemStack(ModItems.INSUBACA));
-        addRecipe(ModItems.BACA_SEEDS, new DistillateStack(DistillateTypes.SULPURIS, 9), new ItemStack(ModItems.ACERBACA));
+        this.recipes = new LinkedList<>();
+        this.recipes.add(new Recipe(ModItems.BACA_SEEDS, new ItemStack(ModItems.SALERBACA), 
+        		new DistillateStack(DistillateTypes.SULPURIS, 9), new DistillateStack(DistillateTypes.SALIS, 9)));
+        addRecipe(ModItems.BACA_SEEDS, DistillateTypes.CINNABARIS, 9, new ItemStack(ModItems.INSUBACA));
+        addRecipe(ModItems.BACA_SEEDS, DistillateTypes.SULPURIS, 9, new ItemStack(ModItems.ACERBACA));
+        this.recipes.sort((r1, r2) -> Integer.compare(r2.distillates.size(), r1.distillates.size()));
     }
 
     @Override
@@ -55,8 +61,8 @@ public class SetupGreenhouse extends ModularMachineSetup {
         return new Instance(te);
     }
 
-    private void addRecipe(Item seed, DistillateStack essentia, ItemStack fruit) {
-        this.recipes.put(Pair.of(seed, essentia), fruit);
+    private void addRecipe(Item seed, DistillateTypes distillateType, int distillateCount, ItemStack fruit) {
+        this.recipes.add(new Recipe(seed, fruit, new DistillateStack(distillateType, distillateCount)));
     }
 
     public class Instance implements ISetupInstance {
@@ -68,16 +74,17 @@ public class SetupGreenhouse extends ModularMachineSetup {
 
         Instance(TileEntityModularMachine tile) {
             this.tile = tile;
-            this.fruitInv = new InputItemHandler(recipes.entrySet().stream()
-                    .flatMap(entry -> Stream.of(entry.getKey().getLeft(), entry.getValue().getItem()))
+            this.fruitInv = new InputItemHandler(recipes.stream()
+                    .flatMap(entry -> Stream.of(entry.seeds, entry.result.getItem()))
                     .collect(Collectors.toList()).toArray(new Item[0]));
             this.fruitInv.setMaxSize(1);
-            this.essentiaInv = new CapabilityDistillateHandler.DefaultDistillateHandler(100);
+            this.essentiaInv = new CapabilityDistillateHandler.DefaultDistillateHandler(100, 3);
         }
 
         @Override
         public void init() {
             tile.setPowerConsumption(IPowerConductor.IMachine.PowerConsumption.CONSUMER);
+            recipes.stream().flatMap(recipe -> recipe.distillates.stream()).map(DistillateStack::getType).distinct().forEach(distillate -> this.essentiaInv.setSuction(distillate, 6));
             allInstances.add(this);
         }
 
@@ -89,25 +96,28 @@ public class SetupGreenhouse extends ModularMachineSetup {
 
         @Override
         public void onInteract(EntityPlayer playerIn, EnumHand hand, BlockCasing.EnumPartType part, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        	if(playerIn.world.isRemote) return;
             ItemStack stack = playerIn.getHeldItem(hand);
-            if(recipes.keySet().stream().map(Pair::getLeft).anyMatch(stack.getItem()::equals) && this.fruitInv.getStackInSlot(0).isEmpty()) {
+            if(recipes.stream().map(r -> r.seeds).anyMatch(stack.getItem()::equals) && this.fruitInv.getStackInSlot(0).isEmpty()) {
                 this.fruitInv.insertItem(0, stack.splitStack(1), false);
+            } else if (stack.isEmpty()) {
+            	playerIn.addItemStackToInventory(this.fruitInv.extractItem(0, 1, false));
             }
         }
 
         @Override
         public void onTick() {
             if(time++ % 20 == 0) {
-                ItemStack fruit = this.fruitInv.extractItem(0, 1, false);
+                ItemStack fruit = this.fruitInv.extractItem(0, 1, true);
                 if (tile.isPowered() && !fruit.isEmpty()) {
-                    ItemStack result = recipes.get(
-                            Pair.of(fruit.getItem(), essentiaInv.readContent(DistillateTypes.UNTYPED)));
-                    if(result != null) {
-                        fruit = result;
-                        essentiaInv.extract(Integer.MAX_VALUE, DistillateTypes.UNTYPED);
-                    }
+                	recipes.stream()
+                	.filter(recipe -> recipe.accepts(fruit.getItem(), essentiaInv)).findFirst()
+                    .ifPresent(res -> {
+                    	this.fruitInv.extractItem(0, 1, false);
+                        res.distillates.forEach(dis -> essentiaInv.extract(dis.getCount(), dis.getType()));
+                    	this.fruitInv.insertItem(0, res.getResult(), false);
+                    });
                 }
-                this.fruitInv.insertItem(0, fruit, false);
             }
         }
 
@@ -122,13 +132,13 @@ public class SetupGreenhouse extends ModularMachineSetup {
 
         @Override
         public boolean hasCapability(Capability<?> capability, EnumFacing facing, BlockCasing.EnumPartType part) {
-            return part == BlockCasing.EnumPartType.TOP &&
+            return part == BlockCasing.EnumPartType.BOTTOM &&
                     (capability == CapabilityDistillateHandler.CAPABILITY_ESSENTIA || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
         }
 
         @Override
         public <T> T getCapability(Capability<T> capability, EnumFacing facing, BlockCasing.EnumPartType part) {
-            if(part == BlockCasing.EnumPartType.TOP) {
+            if(part == BlockCasing.EnumPartType.BOTTOM) {
                 if(capability == CapabilityDistillateHandler.CAPABILITY_ESSENTIA)
                     return CapabilityDistillateHandler.CAPABILITY_ESSENTIA.cast(this.essentiaInv);
                 if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
@@ -136,5 +146,40 @@ public class SetupGreenhouse extends ModularMachineSetup {
             }
             return null;
         }
+        
+        @Override
+        public void readFromNBT(NBTTagCompound compound) {
+        	// TODO Auto-generated method stub
+        	ISetupInstance.super.readFromNBT(compound);
+        }
+        
+        @Override
+        public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        	// TODO Auto-generated method stub
+        	return ISetupInstance.super.writeToNBT(compound);
+        }
+    }
+    
+    private static class Recipe {
+    	
+    	private Item seeds;
+    	private List<DistillateStack> distillates;
+    	private ItemStack result;
+
+    	Recipe(Item seeds, ItemStack result, DistillateStack... distillates) {
+			super();
+			this.seeds = seeds;
+			this.distillates = Arrays.asList(distillates);
+			this.result = result;
+		}
+    	
+    	boolean accepts (Item seeds, IDistillateHandler distillates) {
+    		return this.seeds == seeds && 
+    				this.distillates.stream().allMatch(dis -> StreamSupport.stream(distillates.spliterator(), false).anyMatch(dis2 -> dis.getType() == dis2.getType() && dis.getCount() <= dis2.getCount()));
+    	}
+    	
+    	ItemStack getResult() {
+    		return result.copy();
+    	}
     }
 }

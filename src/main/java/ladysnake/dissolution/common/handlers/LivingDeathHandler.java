@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import ladysnake.dissolution.api.IIncorporealHandler;
+import ladysnake.dissolution.api.IIncorporealHandler.CorporealityStatus;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
@@ -50,6 +51,15 @@ public class LivingDeathHandler {
 		
 		final EntityPlayer p = (EntityPlayer) event.getEntity();
 		final IIncorporealHandler corp = CapabilityIncorporealHandler.getHandler(p);
+		if(corp.getCorporealityStatus() == CorporealityStatus.SOUL)
+			return;
+		if(corp.getCorporealityStatus() == CorporealityStatus.ECTOPLASM) {
+			corp.setCorporealityStatus(CorporealityStatus.SOUL);
+			p.setHealth(20f);
+			event.setCanceled(true);
+			return;
+		}
+		
 		corp.setLastDeathMessage(
 				p.getDisplayNameString() + event.getSource().getDeathMessage(p).getUnformattedComponentText());
 

@@ -49,6 +49,14 @@ public abstract class AbstractSoul extends Entity {
 	
 	@SideOnly(Side.CLIENT)
 	protected abstract void spawnParticles();
+	
+	public int getSoulAge() {
+		return soulAge;
+	}
+	
+	public Soul getSoul() {
+		return soul;
+	}
 
 	@Override
 	protected void entityInit() {}

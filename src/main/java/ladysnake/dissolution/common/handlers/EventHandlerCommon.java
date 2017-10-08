@@ -19,6 +19,7 @@ import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -97,6 +98,12 @@ public class EventHandlerCommon {
 		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
 		if (playerCorp.getCorporealityStatus().isIncorporeal())
 			event.modifyVisibility(0D);
+	}
+	
+	@SubscribeEvent(priority=EventPriority.HIGHEST)
+	public void onLivingHurt(LivingHurtEvent event) {
+		if(event.getEntity() instanceof EntityPlayer && CapabilityIncorporealHandler.getHandler((EntityPlayer)event.getEntity()).getCorporealityStatus().isIncorporeal())
+			event.setCanceled(!event.getSource().canHarmInCreative());
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

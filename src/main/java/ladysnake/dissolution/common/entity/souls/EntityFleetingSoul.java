@@ -8,6 +8,7 @@ import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.items.ItemSoulInAFlask;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -91,15 +92,16 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
 			Vec3d targetVector = new Vec3d(targetX-posX,targetY-posY,targetZ-posZ);
 			double length = targetVector.lengthVector();
 			targetVector = targetVector.scale(0.1/length);
-			if(length > 3) {
-				motionX = (0.9) * motionX + (0.1) * targetVector.x;
-				motionY = (0.9) * motionY + (0.1) * targetVector.y;
-				motionZ = (0.9) * motionZ + (0.1) * targetVector.z;
-			} else {
-				motionX = 0.9 * targetVector.z + 0.1 * motionX;
-				motionY = 0.9 * motionY + 0.1 * targetVector.y;
-				motionZ = 0.9 * targetVector.x + 0.1 * motionZ;
-			}
+			double weight = 0;
+			final double maxRange = 6;
+			final double innerRange = 1;
+			if(length > innerRange && length < maxRange)
+				weight = 0.25 * ((maxRange-length)/(maxRange-innerRange));
+			else if (length <= innerRange)
+				weight = 1;
+			motionX = (1-weight) * ((0.9) * motionX + (0.1) * targetVector.x) + weight * targetVector.z;
+			motionY = (1-weight) * ((0.9) * motionY + (0.1) * targetVector.y) + weight * targetVector.y;
+			motionZ = (1-weight) * ((0.9) * motionZ + (0.1) * targetVector.z) - weight * targetVector.x;
 			this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
 		}
 	}
@@ -124,6 +126,16 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
 			entityIn.addItemStackToInventory(ItemSoulInAFlask.newTypedSoulBottle(this.soul.getType()));
 			this.setDead();
 		}
+	}
+	
+	@Override
+	public boolean shouldRenderInPass(int pass) {
+		return pass == 1;
+	}
+	
+	@Override
+	public boolean isCreatureType(EnumCreatureType type, boolean forSpawnCount) {
+		return type == EnumCreatureType.AMBIENT;
 	}
 
 	@Override
