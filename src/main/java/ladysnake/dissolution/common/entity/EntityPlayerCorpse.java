@@ -62,7 +62,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 			player.cameraPitch = 90;
 			player.prevCameraPitch = 90;
 			player.setHealth(4f);
-		} else if (!world.isRemote && player.getHeldItem(hand).getItem() != ModItems.EYE_OF_THE_UNDEAD) {
+		} else if (!world.isRemote && player.getHeldItem(hand).getItem() != ModItems.EYE_OF_THE_UNDEAD && !handler.getCorporealityStatus().isIncorporeal()) {
 			player.openGui(Dissolution.instance, GuiProxy.PLAYER_CORPSE, this.world, (int)this.posX, (int)this.posY, (int)this.posZ);
 		}
 		

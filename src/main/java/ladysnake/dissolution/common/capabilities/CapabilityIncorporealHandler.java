@@ -129,7 +129,7 @@ public class CapabilityIncorporealHandler {
 		public void setCorporealityStatus(CorporealityStatus newStatus) {
 			if(owner == null || MinecraftForge.EVENT_BUS.post(new PlayerIncorporealEvent(owner, newStatus))) return;
 			corporealityStatus = newStatus;
-			owner.setEntityInvulnerable(newStatus.isIncorporeal());
+			owner.setEntityInvulnerable(newStatus == CorporealityStatus.SOUL);
 
 			if(newStatus == CorporealityStatus.SOUL) {
 				owner.eyeHeight = 0.8f;
@@ -147,7 +147,7 @@ public class CapabilityIncorporealHandler {
 
 			if(!owner.isCreative()) {
 				boolean enableFlight = (!DissolutionConfigManager.isFlightEnabled(FlightModes.NO_FLIGHT)) && (!DissolutionConfigManager.isFlightEnabled(FlightModes.CUSTOM_FLIGHT));
-				owner.capabilities.disableDamage = newStatus.isIncorporeal();
+				owner.capabilities.disableDamage = newStatus == CorporealityStatus.SOUL;
 				owner.capabilities.allowFlying = (newStatus.isIncorporeal() && (owner.experienceLevel > 0) && enableFlight);
 				owner.capabilities.isFlying = (newStatus.isIncorporeal() && owner.capabilities.isFlying && owner.experienceLevel > 0 && enableFlight);
 			}

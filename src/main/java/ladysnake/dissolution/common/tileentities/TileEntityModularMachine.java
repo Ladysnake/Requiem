@@ -120,7 +120,6 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 	 * @return what could not be inserted
 	 */
 	public ItemStack tryOutput(ItemStack stack, BlockCasing.EnumPartType part, EnumFacing face) {
-		face = this.adjustFaceOut(face);
 		TileEntity te = this.getWorld().getTileEntity(getPos().offset(face));
 		if (te != null) {
 			IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,

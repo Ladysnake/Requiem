@@ -68,7 +68,7 @@ public class SetupCrystallizer extends ModularMachineSetup {
 			if(tile.hasWorld())
 				tile.getWorld().markBlockRangeForRenderUpdate(tile.getPos().add(1, 0, 1), tile.getPos().add(-1, 0, -1));
 			this.distillateHandler = new CapabilityDistillateHandler.DefaultDistillateHandler(99, 4);
-			this.distillateHandler.setSuction(10, DistillateTypes.UNTYPED);
+			this.distillateHandler.setSuction(DistillateTypes.UNTYPED, 10);
 			this.oreOutput = new OutputItemHandler();
 		}
 

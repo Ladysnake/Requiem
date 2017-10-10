@@ -79,7 +79,7 @@ public final class ModItems {
 				HALITE = name(new Item(), "halite"),
 				SULFUR = name(new Item(), "sulfur"),
 				ACERBACA = name(new ItemAcerbacaFruit(0, 3f, IIncorporealHandler.CorporealityStatus.SOUL), "acerbaca"),
-				INSUBACA = name(new ItemFood(-3, -0.3f, false).setPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:poison"), 20), 0.95f), "insubaca"),
+				INSUBACA = name(new ItemFood(-3, -0.3f, false).setPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:poison"), 200), 0.95f), "insubaca"),
 				LIMOBACA = name(new ItemFood(5, 1.2f, false), "limobaca"),
 				SALERBACA = name(new ItemAcerbacaFruit(1, 2.5f, IIncorporealHandler.CorporealityStatus.ECTOPLASM), "salerbaca"),
 				WOODEN_CASING = name(new ItemCasing(), "wooden_machine_casing"),
@@ -97,7 +97,7 @@ public final class ModItems {
 				PLUG = name(new ItemPlug(), "plug"),
 				IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), "iron_scythe"),
 				LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"),
-				BACA_SEEDS = name(new ItemSeeds(Blocks.LEAVES, Blocks.GRASS), "baca_seeds"),
+				BACA_SEEDS = name(new ItemSeeds(Blocks.LEAVES, Blocks.GRASS), "limobaca_seeds"),
 				SEPULTURE = name(new ItemSepulture(), "sepulture"),
 				SOUL_IN_A_FLASK = name(new ItemSoulInAFlask(), "will_o_wisp_flask"));
 

@@ -1,6 +1,8 @@
 package ladysnake.dissolution.common.capabilities;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 
@@ -53,8 +55,7 @@ public class CapabilityDistillateHandler {
 	 */
 	public static class DefaultDistillateHandler implements IDistillateHandler, IDistillateHandlerModifiable {
 
-		private float suction = 0;
-		private DistillateTypes suctionType = DistillateTypes.UNTYPED;
+		private Map<DistillateTypes, Float> suction = new HashMap<>();
 		private int maxSize;
 		private DistillateList content;
 
@@ -68,19 +69,13 @@ public class CapabilityDistillateHandler {
 		}
 
 		@Override
-		public void setSuction(float suction, DistillateTypes type) {
-			this.suction = suction;
-			this.suctionType = type;
+		public void setSuction(DistillateTypes type, float suction) {
+			this.suction.put(type, suction);
 		}
 
 		@Override
-		public float getSuction() {
-			return this.suction;
-		}
-
-		@Override
-		public DistillateTypes getSuctionType() {
-			return suctionType;
+		public float getSuction(DistillateTypes type) {
+			return this.suction.getOrDefault(type, this.suction.getOrDefault(DistillateTypes.UNTYPED, 0f));
 		}
 
 		@Override
@@ -177,8 +172,13 @@ public class CapabilityDistillateHandler {
 		@Override
 		public NBTBase writeNBT(Capability<IDistillateHandler> capability, IDistillateHandler instance, EnumFacing side) {
 			NBTTagCompound ret = new NBTTagCompound();
-			ret.setFloat("suction", instance.getSuction());
-			ret.setString("suctionType", instance.getSuctionType().name());
+			NBTTagList suctions = new NBTTagList();
+			for(DistillateTypes distillateType : DistillateTypes.values()) {
+				NBTTagCompound succ = new NBTTagCompound();
+				ret.setString("suctionType", distillateType.name());
+				succ.setFloat("suction", instance.getSuction(distillateType));
+			}
+			ret.setTag("suctions", suctions);
 			ret.setInteger("maxSize", instance.getMaxSize());
 			NBTTagList essentiaList = new NBTTagList();
 			for(DistillateStack stack : instance)
@@ -191,7 +191,9 @@ public class CapabilityDistillateHandler {
 		public void readNBT(Capability<IDistillateHandler> capability, IDistillateHandler instance, EnumFacing side,
 							NBTBase nbt) {
 			NBTTagCompound compound = (NBTTagCompound) nbt;
-			instance.setSuction(compound.getFloat("suction"), DistillateTypes.valueOf(compound.getString("suctionType")));
+			for(NBTBase suction : compound.getTagList("suctions", 10)) {
+				instance.setSuction(DistillateTypes.valueOf(((NBTTagCompound)suction).getString("suctionType")), ((NBTTagCompound)suction).getFloat("suction"));
+			}
 			if (instance instanceof IDistillateHandlerModifiable) {
 				NBTTagList essentiaList = compound.getTagList("essentiaList", 10);
 				for(int i = 0; i < essentiaList.tagCount(); i++)

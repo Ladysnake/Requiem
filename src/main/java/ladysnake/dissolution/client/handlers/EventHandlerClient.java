@@ -63,13 +63,12 @@ public class EventHandlerClient {
 	@SubscribeEvent
 	public static void onTextureStitch(TextureStitchEvent.Pre event){
 		event.getMap().registerSprite(AdditiveParticle.STAR_PARTICLE_TEXTURE);
-		event.getMap().registerSprite(RenderWillOWisp.WILL_O_WISP_TEXTURE);
 	}
 
 	@SubscribeEvent
 	public static void onGameTick(TickEvent event) {
 		final EntityPlayer player = Minecraft.getMinecraft().player;
-		if (player == null || event.side.isServer()) return;
+		if (player == null) return;
 		
 		DissolutionParticleManager.INSTANCE.updateParticles();
 
