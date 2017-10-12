@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
-	"textures": {"2_5": "dissolution:machines/cloche"},
+	"textures": {"2_5": "machines/cloche"},
 	"elements": [
 		{
 			"name": "Inner base",
