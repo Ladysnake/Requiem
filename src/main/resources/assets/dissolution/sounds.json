@@ -1,0 +1,6 @@
+{
+	"resonant_coil": {
+		"dissolution": "passive",
+		"sounds": [{"name": "dissolution:resonant_coil", "stream":false}]
+	}
+}

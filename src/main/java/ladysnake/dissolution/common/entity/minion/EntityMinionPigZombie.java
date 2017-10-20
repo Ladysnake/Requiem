@@ -5,6 +5,7 @@ import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -28,8 +29,7 @@ public class EntityMinionPigZombie extends EntityMinionZombie {
         return (isInert()) ? null : SoundEvents.ENTITY_ZOMBIE_PIG_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound()
-    {
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
     	return (isInert()) ? null : SoundEvents.ENTITY_ZOMBIE_PIG_HURT;
     }
 

@@ -62,6 +62,7 @@ public final class ModItems {
 	public static ItemSeeds BACA_SEEDS;
 	public static ItemSepulture SEPULTURE;
 	public static ItemSoulInAFlask SOUL_IN_A_FLASK;
+	public static ItemStoneHeart STONE_HEART;
 
 	static Set<Item> allItems = new HashSet<>();
 	
@@ -99,7 +100,8 @@ public final class ModItems {
 				LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"),
 				BACA_SEEDS = name(new ItemSeeds(Blocks.LEAVES, Blocks.GRASS), "limobaca_seeds"),
 				SEPULTURE = name(new ItemSepulture(), "sepulture"),
-				SOUL_IN_A_FLASK = name(new ItemSoulInAFlask(), "will_o_wisp_flask"));
+				SOUL_IN_A_FLASK = name(new ItemSoulInAFlask(), "will_o_wisp_flask"),
+				STONE_HEART = name(new ItemStoneHeart(), "stone_heart"));
 
 		AlchemyModuleTypes.registerItems(allItems);
 
@@ -149,9 +151,10 @@ public final class ModItems {
 	@SideOnly(Side.CLIENT)
 	private void registerRender(Item item) {
 		assert item.getRegistryName() != null;
-		registerRender(item, item instanceof ICustomLocation
-				? ((ICustomLocation)item).getModelLocation()
-				: new ModelResourceLocation(item.getRegistryName().toString()));
+		if(item instanceof ICustomLocation)
+			((ICustomLocation)item).registerRender();
+		else
+			registerRender(item, new ModelResourceLocation(item.getRegistryName().toString()));
 	}
 	
 	@SideOnly(Side.CLIENT)

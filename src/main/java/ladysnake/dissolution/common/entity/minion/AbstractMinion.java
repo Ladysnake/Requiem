@@ -1,17 +1,25 @@
 package ladysnake.dissolution.common.entity.minion;
 
 import com.google.common.base.Optional;
+import ladysnake.dissolution.api.IIncorporealHandler;
+import ladysnake.dissolution.api.IPossessable;
 import ladysnake.dissolution.common.DissolutionConfigManager;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;
 import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.networking.PacketHandler;
+import ladysnake.dissolution.common.networking.PossessionMessage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.monster.*;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.init.Items;
@@ -22,41 +30,66 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.network.play.server.SPacketCamera;
+import net.minecraft.util.*;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.LogManager;
+import org.lwjgl.util.vector.Vector2f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.UUID;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
+import java.util.*;
 
-public abstract class AbstractMinion extends EntityCreature implements IRangedAttackMob, IEntityOwnable {
-	public static final int MAX_DEAD_TICKS = 1200;
-	private static final int DAMAGE_PENALTY = 5;
+@SuppressWarnings({"Guava", "WeakerAccess"})
+public abstract class AbstractMinion extends EntityMob implements IRangedAttackMob, IEntityOwnable, IPossessable {
 
-	private static final float SIZE_X = 0.6F, SIZE_Y = 1.95F;
-	
-	private static final DataParameter<Boolean> IS_CHILD = EntityDataManager.
-            createKey(AbstractMinion.class, DataSerializers.BOOLEAN);
-	private static final DataParameter<Boolean> INERT = EntityDataManager.
-            createKey(AbstractMinion.class, DataSerializers.BOOLEAN);
-	private static final DataParameter<Integer> DECOMPOSITION_COUNTDOWN = EntityDataManager
-			.createKey(AbstractMinion.class, DataSerializers.VARINT);
+	protected static final float SIZE_X = 0.6F, SIZE_Y = 1.95F;
+
+	private static final DataParameter<Boolean> INERT = EntityDataManager
+			.createKey(AbstractMinion.class, DataSerializers.BOOLEAN);
+	private static final DataParameter<Byte> LIFE_STONE = EntityDataManager
+			.createKey(AbstractMinion.class, DataSerializers.BYTE);
+	private static final DataParameter<Boolean> IS_CHILD = EntityDataManager
+            .createKey(AbstractMinion.class, DataSerializers.BOOLEAN);
 	private static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager
 			.createKey(AbstractMinion.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+	private static final DataParameter<Optional<UUID>> POSSESSING_ENTITY_ID = EntityDataManager
+			.createKey(AbstractMinion.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+	private static MethodHandle entityAINearestAttackableTarget$targetClass;
 
 	private final EntityAIMinionRangedAttack aiArrowAttack = new EntityAIMinionRangedAttack(this, 1.0D, 20, 15.0F);
 	private final EntityAIAttackMelee aiAttackOnCollide = new EntityAIAttackMelee(this, 1.2D, false);
-	
-	public static AbstractMinion createMinion(EntityLivingBase deadGuy) {
+	private List<Entity> triggeredMobs = new LinkedList<>();
+
+	static {
+		try {
+			Field f = ReflectionHelper.findField(EntityAINearestAttackableTarget.class, "targetClass", "field_75307_b");
+			entityAINearestAttackableTarget$targetClass = MethodHandles.lookup().unreflectGetter(f);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Nullable
+	public static IPossessable createMinion(EntityLivingBase deadGuy) {
+		if(deadGuy instanceof IPossessable)
+			return (IPossessable) deadGuy;
+		if(!deadGuy.isEntityUndead())
+			return null;
 
 		AbstractMinion corpse = null;
-		
 		if(deadGuy instanceof EntityPigZombie) {
 			corpse = new EntityMinionPigZombie(deadGuy.world, deadGuy.isChild());
 		} else if (deadGuy instanceof EntityZombie) {
@@ -67,10 +100,11 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 			corpse = new EntityMinionStray(deadGuy.world);
 		} else if(deadGuy instanceof EntityWitherSkeleton){
 			corpse = new EntityMinionWitherSkeleton(deadGuy.world);
-		}
+		} else if(deadGuy.isNonBoss() && deadGuy instanceof EntityMob)
+			corpse = new EntityGenericMinion(deadGuy.world, (EntityMob) deadGuy);
 
 		if (corpse != null) {
-			corpse.setPosition(deadGuy.posX, deadGuy.posY, deadGuy.posZ);
+			corpse.setPositionAndRotation(deadGuy.posX, deadGuy.posY, deadGuy.posZ, deadGuy.rotationYaw, deadGuy.rotationPitch);
 			corpse.onUpdate();
 		}
 		
@@ -104,7 +138,6 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 	@Override
 	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
-		this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(2.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(35.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.23000000417232513D);
 		this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0D);
@@ -113,35 +146,11 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 
 	protected void entityInit() {
 		super.entityInit();
+		this.getDataManager().register(INERT, false);
+		this.getDataManager().register(LIFE_STONE, (byte)0b1);
 		this.getDataManager().register(IS_CHILD, false);
-		this.getDataManager().register(INERT, true);
-		this.getDataManager().register(DECOMPOSITION_COUNTDOWN, MAX_DEAD_TICKS);
 		this.getDataManager().register(OWNER_UNIQUE_ID, Optional.absent());
-	}
-
-	public int getMaxTimeRemaining() {
-		return MAX_DEAD_TICKS;
-	}
-	
-	/**
-	 * @return the time (in ticks) that this entity has before disappearing
-	 */
-	public int getRemainingTicks() {
-		return this.getDataManager().get(DECOMPOSITION_COUNTDOWN);
-	}
-
-	/**
-	 * Sets the time in ticks this entity has left
-	 */
-	private void setDecompositionCountdown(int countdown) {
-		this.getDataManager().set(DECOMPOSITION_COUNTDOWN, countdown);
-	}
-	
-	/**
-	 * @param ticks the amount of ticks that will be deducted from the countdown
-	 */
-	private void countdown(int ticks) {
-		setDecompositionCountdown(getRemainingTicks() - ticks);
+		this.getDataManager().register(POSSESSING_ENTITY_ID, Optional.absent());
 	}
 
 	@Override
@@ -150,18 +159,11 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 	}
 
 	@Override
-	public boolean attackEntityAsMob(@Nonnull Entity entityIn) {
-		boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this),
-				(float) ((int) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue()));
-
-		if (flag) {
-			this.applyEnchantments(this, entityIn);
-		}
-
-		return flag;
+	public boolean isPreventingPlayerRest(EntityPlayer playerIn) {
+		return false;
 	}
 
-	public void setCombatTask() {
+	protected void setCombatTask() {
 		if (this.world != null && !this.world.isRemote) {
 			this.tasks.removeTask(this.aiAttackOnCollide);
 			this.tasks.removeTask(this.aiArrowAttack);
@@ -202,17 +204,37 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 	@Override
 	public void onLivingUpdate() {
 		super.onLivingUpdate();
-		this.updateMinion();
+		if(this.rand.nextFloat() < 0.01f)
+			this.attractAttention();
+		this.handleSunExposure();
 	}
 
-	protected void updateMinion() {
-		if(this.isInert())
-			countdown(1);
-		if (!this.isInert())
-			this.handleSunExposure();
-		if (getRemainingTicks() <= 0 && !this.world.isRemote) {
-			this.setDead();
+	protected void attractAttention() {
+		List<EntityCreature> nearby = this.world.getEntitiesWithinAABB(EntityCreature.class, new AxisAlignedBB(new BlockPos(this)).grow(30), this::isMobEligibleForAttention);
+		for(int i = 0; i < Math.min(rand.nextInt() % 5, nearby.size()); i++) {
+			for(EntityAITasks.EntityAITaskEntry taskEntry : nearby.get(i).targetTasks.taskEntries) {
+				if(shouldBeTargetedBy(nearby.get(i), taskEntry)) {
+					nearby.get(i).targetTasks.addTask(taskEntry.priority-1, new EntityAINearestAttackableTarget<>(nearby.get(i), this.getClass(), true));
+					break;
+				}
+			}
 		}
+	}
+
+	protected boolean isMobEligibleForAttention(EntityCreature other) {
+		return !this.triggeredMobs.contains(other) && (!other.isEntityUndead() || !other.isNonBoss());
+	}
+
+	protected boolean shouldBeTargetedBy(EntityCreature other, EntityAITasks.EntityAITaskEntry taskEntry) {
+		if(taskEntry.action instanceof EntityAINearestAttackableTarget) {
+			try {
+				Class<?> clazz = (Class<?>) entityAINearestAttackableTarget$targetClass.invoke(taskEntry.action);
+				return clazz == EntityPlayer.class || clazz == EntityPlayerMP.class;
+			} catch (Throwable throwable) {
+				throwable.printStackTrace();
+			}
+		}
+		return false;
 	}
 
 	protected void handleSunExposure() {
@@ -244,8 +266,6 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 	@Override
 	protected void damageEntity(@Nonnull DamageSource damageSrc, float damageAmount) {
 		super.damageEntity(damageSrc, damageAmount);
-		if(this.isInert())
-			this.countdown(DAMAGE_PENALTY);
 	}
 
 	@Override
@@ -254,26 +274,160 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 				|| source.canHarmInCreative()) || super.isEntityInvulnerable(source);
 	}
 
+	protected boolean isSuitableForInteraction(EntityPlayer player) {
+		return !CapabilityIncorporealHandler.getHandler(player).getCorporealityStatus().isIncorporeal()
+				&& (this.isInert() || player == this.getOwner()) || player.isCreative();
+	}
+
+	@Override
+	public boolean onEntityPossessed(EntityPlayer player) {
+		if(this.getControllingPassenger() != null) {
+			LogManager.getLogger().warn("A player attempted to possess an entity that was already possessed");
+			return false;
+		}
+		this.setPossessingEntity(player.getUniqueID());
+		for(EntityEquipmentSlot slot : EntityEquipmentSlot.values())
+			if(player.getItemStackFromSlot(slot).isEmpty())
+				player.setItemStackToSlot(slot, this.getItemStackFromSlot(slot));
+			else player.addItemStackToInventory(this.getItemStackFromSlot(slot));
+		player.startRiding(this);
+		return true;
+	}
+
+	@Override
+	public boolean onPossessionStop(EntityPlayer player, boolean force) {
+		if(!player.getUniqueID().equals(this.getPossessingEntity()))
+			return true;
+		IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
+		if(!handler.getCorporealityStatus().isIncorporeal() || this.isDead || force) {
+			for(EntityEquipmentSlot slot : EntityEquipmentSlot.values())
+				player.setItemStackToSlot(slot, ItemStack.EMPTY);
+			if(!world.isRemote)
+				player.inventory.dropAllItems();
+			this.setPossessingEntity(null);
+			handler.setPossessed(null);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean proxyAttack(EntityLivingBase entity, DamageSource source, float amount) {
+		DamageSource newSource = null;
+		if(source instanceof EntityDamageSourceIndirect)
+			//noinspection ConstantConditions
+			newSource = new EntityDamageSourceIndirect(source.getDamageType(), source.getImmediateSource(), this);
+		else if(source instanceof EntityDamageSource)
+			newSource = new EntityDamageSource(source.getDamageType(), this);
+		if(newSource != null) {
+			entity.attackEntityFrom(newSource, amount);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void possessTickClient() {
+		EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
+		Vector2f move = new Vector2f(playerSP.movementInput.moveStrafe, playerSP.movementInput.moveForward);
+		move.scale(this.getAIMoveSpeed() * 2);
+		playerSP.moveStrafing = move.x;
+		playerSP.moveForward = move.y;
+		this.setJumping(playerSP.movementInput.jump);
+	}
+
+	@Override
+	protected void addPassenger(Entity passenger) {
+		super.addPassenger(passenger);
+		if(passenger instanceof EntityPlayer && passenger.getUniqueID().equals(this.getPossessingEntity())) {
+			CapabilityIncorporealHandler.getHandler((EntityPlayer) passenger).setPossessed(this);
+			if(!world.isRemote) {
+				((EntityPlayerMP) passenger).connection.sendPacket(new SPacketCamera(this));
+				PacketHandler.net.sendToAllAround(new PossessionMessage(passenger.getUniqueID(),
+						this.getEntityId()), new NetworkRegistry.TargetPoint(dimension, posX, posY, posZ, 100));
+			}
+		}
+	}
+
+	@Override
+	protected void removePassenger(Entity passenger) {
+		IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(passenger);
+		if(handler != null) {
+			if (!world.isRemote)
+				((EntityPlayerMP) passenger).connection.sendPacket(new SPacketCamera(passenger));
+		}
+		super.removePassenger(passenger);
+	}
+
+	@Override
+	public void travel(float strafe, float vertical, float forward) {
+		if (this.isBeingRidden() && this.canBeSteered()) {
+			EntityLivingBase entityLivingBase = (EntityLivingBase)this.getControllingPassenger();
+			assert entityLivingBase != null;
+			this.rotationYaw = entityLivingBase.rotationYaw;
+			this.prevRotationYaw = this.rotationYaw;
+			this.rotationPitch = entityLivingBase.rotationPitch;
+			this.setRotation(this.rotationYaw, this.rotationPitch);
+			this.renderYawOffset = this.rotationYaw;
+			this.rotationYawHead = this.renderYawOffset;
+			strafe = entityLivingBase.moveStrafing;
+			forward = entityLivingBase.moveForward;
+
+			if (this.canPassengerSteer())
+			{
+				this.setAIMoveSpeed((float)this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
+				super.travel(strafe, vertical, forward);
+			}
+		} else {
+			super.travel(strafe, vertical, forward);
+		}
+	}
+
+	@Nullable
+	public Entity getControllingPassenger() {
+		return this.getPassengers().stream().filter(e -> e.getUniqueID().equals(getPossessingEntity())).findAny().orElse(null);
+	}
+
+	@Override
+	public boolean canBeSteered() {
+		return this.getControllingPassenger() instanceof EntityLivingBase;
+	}
+
+	@Override
+	public void updatePassenger(@Nonnull Entity passenger) {
+		super.updatePassenger(passenger);
+		if(passenger.getUniqueID().equals(this.getPossessingEntity())) {
+			passenger.setPosition(this.posX, this.posY, this.posZ);
+			if(passenger instanceof EntityPlayer)
+				for (EntityEquipmentSlot slot : EntityEquipmentSlot.values())
+					this.setItemStackToSlot(slot, ((EntityPlayer) passenger).getItemStackFromSlot(slot));
+		}
+	}
+
+	@Override
+	public void onDeath(@Nonnull DamageSource cause) {
+		if(this.getControllingPassenger() instanceof EntityPlayer)
+			this.onPossessionStop((EntityPlayer) this.getControllingPassenger());
+		super.onDeath(cause);
+	}
+
 	/**
 	 * Applies the given player interaction to this Entity.
 	 */
 	@Nonnull
 	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand) {
-
-		if (CapabilityIncorporealHandler.getHandler(player).getCorporealityStatus().isIncorporeal() && !player.isCreative())
-			return EnumActionResult.PASS;
-
 		ItemStack itemstack = player.getHeldItem(hand);
 
-		if (itemstack.getItem() != Items.NAME_TAG && itemstack.getItem() != ModItems.EYE_OF_THE_UNDEAD) {
+		if (isSuitableForInteraction(player) && itemstack.getItem() != Items.NAME_TAG && itemstack.getItem() != ModItems.EYE_OF_THE_UNDEAD) {
 			if (!this.world.isRemote && !player.isSpectator()) {
 				EntityEquipmentSlot entityequipmentslot = EntityLiving.getSlotForItemStack(itemstack);
 
 				if (itemstack.isEmpty()) {
-					EntityEquipmentSlot entityequipmentslot2 = this.getClickedSlot(vec);
+					EntityEquipmentSlot entityEquipmentSlot2 = this.getClickedSlot(vec);
 
-					if (this.hasItemInSlot(entityequipmentslot2)) {
-						this.swapItem(player, entityequipmentslot2, itemstack, hand);
+					if (this.hasItemInSlot(entityEquipmentSlot2)) {
+						this.swapItem(player, entityEquipmentSlot2, itemstack, hand);
 					} else {
 						return EnumActionResult.PASS;
 					}
@@ -281,6 +435,8 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 
 					this.swapItem(player, entityequipmentslot, itemstack, hand);
 				}
+				if(entityequipmentslot == EntityEquipmentSlot.MAINHAND)
+					this.setCombatTask();
 
 				return EnumActionResult.SUCCESS;
 			} else {
@@ -349,7 +505,7 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 		return this.getDataManager().get(IS_CHILD);
 	}
 
-	private void setChildSize(boolean isChild) {
+	protected void setChildSize(boolean isChild) {
 		float ratio = (isChild ? 0.5F : 1.0F);
 		if (isInert())
 			super.setSize(SIZE_Y * ratio, SIZE_X * ratio);
@@ -361,7 +517,6 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 		if (IS_CHILD.equals(key) || INERT.equals(key)) {
 			this.setChildSize(this.isChild());
 		}
-
 		super.notifyDataManagerChange(key);
 	}
 
@@ -370,20 +525,29 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 	public EnumCreatureAttribute getCreatureAttribute() {
 		return EnumCreatureAttribute.UNDEAD;
 	}
-	
+
 	/**
-	 * Changes the state of this minion and updates accordingly
-	 * @param corpse whether this minion is being resurrected or put down
+	 *
+	 * @param gem 0 -> no gem
+	 *            Most significant bit indicates used gem
 	 */
-	public void setCorpse(boolean corpse) {
-		setInert(corpse);
-		setDecompositionCountdown(getMaxTimeRemaining());
+	public void setLifeStone(int gem) {
+		this.getDataManager().set(LIFE_STONE, (byte)gem);
 	}
-	
-	protected void setInert(boolean isCorpse) {
+
+	public byte getLifeStone() {
+		return this.getDataManager().get(LIFE_STONE);
+	}
+
+	public boolean hasLifeStone() {
+		return getLifeStone() != 0;
+	}
+
+	public void setInert(boolean isCorpse) {
 		this.getDataManager().set(INERT, isCorpse);
 
 		if (isCorpse)
+			//noinspection SuspiciousNameCombination
 			this.setSize(SIZE_Y, SIZE_X);
 		else
 			this.setSize(SIZE_X, SIZE_Y);
@@ -400,19 +564,22 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
-		compound.setBoolean("isInert", this.isInert());
-		compound.setInteger("remainingTicks", getRemainingTicks());
+		compound.setBoolean("inert", this.isInert());
 		if (this.isChild())
 			compound.setBoolean("isBaby", true);
+		compound.setByte("stoneHeart", this.getLifeStone());
+		if(this.getPossessingEntity() != null)
+			compound.setUniqueId("possessingEntity", this.getPossessingEntity());
 		return compound;
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		this.setInert(compound.getBoolean("isInert"));
-		this.setDecompositionCountdown(compound.getInteger("remainingTicks"));
+		this.setInert(compound.getBoolean("inert"));
 		this.setChild(compound.getBoolean("isBaby"));
+		this.setLifeStone(compound.getByte("stoneHeart"));
+		this.setPossessingEntity(compound.getUniqueId("possessingEntity"));
 	}
 
 	@Override
@@ -426,8 +593,16 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
 
 				this.entityDropItem(itemstack, 0.0F);
 			}
-
 		}
+	}
+
+	@Nullable
+	public UUID getPossessingEntity() {
+		return this.getDataManager().get(POSSESSING_ENTITY_ID).orNull();
+	}
+
+	public void setPossessingEntity(@Nullable UUID possessingEntity) {
+		this.getDataManager().set(POSSESSING_ENTITY_ID, Optional.fromNullable(possessingEntity));
 	}
 
 	@Nullable
@@ -449,5 +624,4 @@ public abstract class AbstractMinion extends EntityCreature implements IRangedAt
         UUID uuid = this.getOwnerId();
         return uuid == null ? null : this.world.getPlayerEntityByUUID(uuid);
     }
-
 }

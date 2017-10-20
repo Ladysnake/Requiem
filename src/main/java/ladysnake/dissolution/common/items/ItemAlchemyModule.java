@@ -32,11 +32,12 @@ public class ItemAlchemyModule extends Item implements ICustomLocation {
 		this.type = type;
 		this.tier = tier;
 		//noinspection ConstantConditions
-		String name = type.maxTier == 1 ? type.getRegistryName().getResourcePath() : type.getRegistryName().getResourcePath() + "_tier_" + tier;
+		String name =  type.maxTier == 1
+				? type.getRegistryName().getResourcePath()
+				: String.format("%s_tier_%s", type.getRegistryName().getResourcePath(), + tier);
 		this.setUnlocalizedName(name);
 		this.setRegistryName(type.getRegistryName().getResourceDomain(), name);
 		allModules.computeIfAbsent(type, t -> new ItemAlchemyModule[type.maxTier+1])[tier] = this;
-		modulesModels.put(this.toModule(), new ResourceLocation(Reference.MOD_ID, "machine/" + name));
 	}
 
 	public AlchemyModuleTypes getType() {
@@ -46,22 +47,15 @@ public class ItemAlchemyModule extends Item implements ICustomLocation {
 	public int getTier() {
 		return tier;
 	}
-	
-	@SuppressWarnings("ConstantConditions")
+
+	@Override
 	@SideOnly(Side.CLIENT)
-	public static void registerModels() {
-		for(ResourceLocation rl : modulesModels.values()) {
-			DissolutionModelLoader.addModel(rl, ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
-		}
-		for(int i = 1; i <= 2; i++) {
-			String extension = "_" + i;
-			DissolutionModelLoader.addModel(new ResourceLocation(Reference.MOD_ID, "machine/" +
-							AlchemyModuleTypes.MINERAL_FILTER.getRegistryName().getResourcePath() + extension
-					), ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
-			DissolutionModelLoader.addModel(new ResourceLocation(Reference.MOD_ID, "machine/" +
-					AlchemyModuleTypes.SOUL_FILTER.getRegistryName().getResourcePath() + extension
-			), ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
-		}
+	public void registerRender() {
+		ICustomLocation.super.registerRender();
+		ResourceLocation model = new ResourceLocation(Reference.MOD_ID, "machine/" + this.getRegistryName().getResourcePath());
+//		ResourceLocation model = new ResourceLocation(this.getModelLocation().toString());
+		modulesModels.put(this.toModule(), model);
+		DissolutionModelLoader.addModel(model, ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
 	}
 
 	public AlchemyModule toModule() {

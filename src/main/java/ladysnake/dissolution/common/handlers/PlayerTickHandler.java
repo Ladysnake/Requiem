@@ -10,8 +10,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.FoodStats;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
@@ -39,8 +41,8 @@ public class PlayerTickHandler {
 		try {
 			Field field = ReflectionHelper.findField(FoodStats.class, "foodTimer", "field_75123_d");
 			foodTimer = MethodHandles.lookup().unreflectSetter(field);
-			Field field1 = ReflectionHelper.findField(FoodStats.class, "foodExhaustionLevel", "field_75126_c");
-			foodExhaustionLevel = MethodHandles.lookup().unreflectSetter(field1);
+			field = ReflectionHelper.findField(FoodStats.class, "foodExhaustionLevel", "field_75126_c");
+			foodExhaustionLevel = MethodHandles.lookup().unreflectSetter(field);
 		} catch (UnableToFindFieldException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
@@ -109,7 +111,7 @@ public class PlayerTickHandler {
 				|| DissolutionConfigManager.isFlightEnabled(FlightModes.CREATIVE_FLIGHT))
 			player.capabilities.allowFlying = true;
 	}
-	
+
 	/**
 	 * Handles movement for the entity this player is possessing
 	 */
@@ -126,12 +128,12 @@ public class PlayerTickHandler {
 			if(possessed instanceof EntityLiving) {
 				((EntityLiving)possessed).cameraPitch = player.cameraPitch;
 				((EntityLiving) possessed).randomYawVelocity = 0;
-				possessed.moveRelative(player.moveStrafing, 0.5f, player.moveForward, 0.02f);
-				float f1 = MathHelper.sin(player.rotationYaw * 0.017453292F);
-	            float f2 = MathHelper.cos(player.rotationYaw * 0.017453292F);
-	            BlockPos target = rayTrace(player).getBlockPos();
-	            if(target != null)
-					((EntityLiving)possessed).getNavigator().tryMoveToXYZ(target.getX(), target.getY(), target.getZ(), 1);
+//				possessed.moveRelative(player.moveStrafing, 0.5f, player.moveForward, 0.02f);
+//				float f1 = MathHelper.sin(player.rotationYaw * 0.017453292F);
+//	            float f2 = MathHelper.cos(player.rotationYaw * 0.017453292F);
+//	            BlockPos target = rayTrace(player).getBlockPos();
+//	            if(target != null)
+//					((EntityLiving)possessed).getNavigator().tryMoveToXYZ(target.getX(), target.getY(), target.getZ(), 1);
 			}
 		}
 	}
@@ -151,7 +153,7 @@ public class PlayerTickHandler {
 		if(player.world.isRemote)
 			return;
 		
-		CapabilityIncorporealHandler.getHandler(player).setCorporealityStatus(IIncorporealHandler.CorporealityStatus.CORPOREAL);
+		CapabilityIncorporealHandler.getHandler(player).setCorporealityStatus(IIncorporealHandler.CorporealityStatus.NORMAL);
 
 		((WorldServer) player.world).spawnParticle(EnumParticleTypes.CLOUD, false,
 				player.posX + 0.5D, player.posY + 1.0D, player.posZ + 0.5D, 50, 0.3D, 0.3D,

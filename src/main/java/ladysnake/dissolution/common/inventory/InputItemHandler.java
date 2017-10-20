@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 
 public class InputItemHandler extends ItemStackHandler {
 	
-	private Set<Item> whiteList;
+	private final Set<Item> whiteList;
 	private int maxSize = 64;
 	
 	public InputItemHandler(Item... whitelist) {

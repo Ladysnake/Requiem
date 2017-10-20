@@ -11,10 +11,12 @@ import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+
 @SideOnly(Side.CLIENT)
 public class BakedModelLoader implements ICustomModelLoader {
 	
-	private Map<String, IModel> models;
+	private final Map<String, IModel> models;
 	
 	public BakedModelLoader() {
 		models = new HashMap<>();
@@ -24,16 +26,17 @@ public class BakedModelLoader implements ICustomModelLoader {
 	}
 
 	@Override
-	public boolean accepts(ResourceLocation modelLocation) {
+	public boolean accepts(@Nonnull ResourceLocation modelLocation) {
 		return modelLocation.getResourceDomain().equals(Reference.MOD_ID) && models.containsKey(modelLocation.getResourcePath());
 	}
 
+	@Nonnull
 	@Override
-	public IModel loadModel(ResourceLocation modelLocation) throws Exception {
+	public IModel loadModel(@Nonnull ResourceLocation modelLocation) throws Exception {
 		return models.get(modelLocation.getResourcePath());
 	}
 
 	@Override
-	public void onResourceManagerReload(IResourceManager resourceManager) {}
+	public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {}
 
 }

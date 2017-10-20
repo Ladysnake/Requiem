@@ -4,10 +4,7 @@ import io.netty.buffer.ByteBuf;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;
 import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.entity.IRangedAttackMob;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
@@ -24,6 +21,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -33,11 +31,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class EntityMinionWitherSkeleton extends EntityMinionSkeleton {
 	
 	public EntityMinionWitherSkeleton(World worldIn) {
 		super(worldIn);
+        this.isImmuneToFire = true;
+        this.setSize(0.7F, 2.4F);
 	}
 	
 	@Override
@@ -52,13 +53,21 @@ public class EntityMinionWitherSkeleton extends EntityMinionSkeleton {
 	protected void entityInit() {
         super.entityInit();
     }
+
+    @Nullable
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
+        IEntityLivingData ientitylivingdata = super.onInitialSpawn(difficulty, livingdata);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
+        this.setCombatTask();
+        return ientitylivingdata;
+    }
 	
 	@Override
 	protected SoundEvent getAmbientSound() {
         return (isInert()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound() {
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
     	return (isInert()) ? null : SoundEvents.ENTITY_WITHER_SKELETON_HURT;
     }
 
@@ -87,7 +96,19 @@ public class EntityMinionWitherSkeleton extends EntityMinionSkeleton {
             return true;
         }
     }
-    
+
+    @Override
+    protected EntityArrow getArrow(float distanceFactor) {
+        EntityArrow entityarrow = super.getArrow(distanceFactor);
+        entityarrow.setFire(100);
+        return entityarrow;
+    }
+
+    @Override
+    public float getEyeHeight() {
+        return 2.1F;
+    }
+
     @Override
     protected void handleSunExposure() {}
 

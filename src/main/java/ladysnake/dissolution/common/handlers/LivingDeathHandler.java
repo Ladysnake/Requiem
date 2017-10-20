@@ -30,6 +30,8 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
+import javax.annotation.Nonnull;
+
 public class LivingDeathHandler {
 	
 	private static Method destroyVanishingCursedItems;
@@ -44,7 +46,7 @@ public class LivingDeathHandler {
 			this.handlePlayerDeath(event);
 
 		if (event.getSource().getTrueSource() instanceof EntityPlayer)
-			this.handlePlayerKill(event);
+			this.handlePlayerKill((EntityPlayer)event.getSource().getTrueSource(), event.getEntityLiving());
 	}
 	
 	protected void handlePlayerDeath(LivingDeathEvent event) {
@@ -67,6 +69,7 @@ public class LivingDeathHandler {
 			final EntityPlayerCorpse body = new EntityPlayerCorpse(p.world);
 			body.setPosition(p.posX, p.posY, p.posZ);
 			body.setCustomNameTag(p.getName());
+			body.setDecompositionCountdown(EntityPlayerCorpse.MAX_DECAY_TIME);
 
 			boolean flag = false;
 			if(event.getSource().getTrueSource() instanceof EntityPlayer) {
@@ -75,7 +78,7 @@ public class LivingDeathHandler {
 					flag = true;
 			}
 			
-			body.setDecaying(!flag);
+			body.setDecompositionCountdown(EntityPlayerCorpse.MAX_DECAY_TIME);
 			
 			if(DissolutionConfig.respawn.bodiesHoldInventory) {
 				
@@ -180,22 +183,22 @@ public class LivingDeathHandler {
         player.getCombatTracker().reset();
 	}
 	
-	protected void handlePlayerKill(LivingDeathEvent event) {
-		EntityPlayer killer = (EntityPlayer) event.getSource().getTrueSource();
-		EntityLivingBase victim = event.getEntityLiving();
+	private void handlePlayerKill(@Nonnull EntityPlayer killer, EntityLivingBase victim) {
 		
 		if (killer.getHeldItemMainhand().getItem() instanceof ItemScythe) {
 			((ItemScythe) killer.getHeldItemMainhand().getItem()).harvestSoul(killer, victim);
 		}
 
+/*
 		ItemStack eye = DissolutionInventoryHelper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD);
 		if (killer.world.rand.nextInt(1) == 0 && !eye.isEmpty() && !killer.world.isRemote) {
 			AbstractMinion corpse = AbstractMinion.createMinion(victim);
 			if(corpse != null) {
 				DissolutionInventoryHelper.transferEquipment(victim, corpse);
 				victim.world.spawnEntity(corpse);
-				victim.posY = -500;
+				victim.world.removeEntity(victim);
 			}
 		}
+*/
 	}
 }

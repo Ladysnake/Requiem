@@ -12,16 +12,15 @@ import net.minecraft.world.World;
 public class EntityMawOfTheVoid extends EntityCreature {
 	
 	public int lastAttack;
-	private List<EntityBrimstoneFire> brimstoneFires;
 
-	public EntityMawOfTheVoid(World worldIn) {
+    public EntityMawOfTheVoid(World worldIn) {
 		super(worldIn);
 		lastAttack = -1;
 	}
 	
 	@Override
 	public void initEntityAI() {
-		brimstoneFires = new LinkedList<>();
+        List<EntityBrimstoneFire> brimstoneFires = new LinkedList<>();
 		tasks.taskEntries.clear();
     	targetTasks.taskEntries.clear();
     	tasks.addTask(0, new BossAiAttackBrimstoneFires(this, brimstoneFires));

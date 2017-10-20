@@ -2,6 +2,7 @@ package ladysnake.dissolution.common.capabilities;
 
 import ladysnake.dissolution.api.EctoplasmStats;
 import ladysnake.dissolution.api.IIncorporealHandler;
+import ladysnake.dissolution.api.IPossessable;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.DissolutionConfigManager;
 import ladysnake.dissolution.common.DissolutionConfigManager.FlightModes;
@@ -10,14 +11,18 @@ import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.SPacketCamera;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -30,9 +35,12 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldExcep
 import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -50,6 +58,7 @@ public class CapabilityIncorporealHandler {
 	static Capability<IIncorporealHandler> CAPABILITY_INCORPOREAL;
 
 	private static MethodHandle entity$setSize;
+	private static Map<EntityPlayer, IIncorporealHandler> handlerMap = new HashMap<>();
 
 	static {
 		try {
@@ -64,13 +73,26 @@ public class CapabilityIncorporealHandler {
         CapabilityManager.INSTANCE.register(IIncorporealHandler.class, new Storage(), DefaultIncorporealHandler::new);
     }
 
+	/**
+	 * Attaches a {@link CapabilityIncorporealHandler} to players.
+	 */
+	@SubscribeEvent
+	public static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
+
+		if ((event.getObject() instanceof EntityPlayer)) {
+			Provider provider = new Provider((EntityPlayer) event.getObject());
+			handlerMap.put((EntityPlayer) event.getObject(), provider.getCapability(CAPABILITY_INCORPOREAL, null));
+			event.addCapability(new ResourceLocation(Reference.MOD_ID, "incorporeal"), provider);
+		}
+	}
+
     /**
      * This is a utility method to get the handler attached to an entity
      * @param entity an entity that has the capability attached (in this case, a player)
      * @return the IncorporealHandler attached or null if there is none
      */
-    public static IIncorporealHandler getHandler(Entity entity) {
-
+    public static IIncorporealHandler getHandler(@Nullable Entity entity) {
+		if(entity == null) return null;
         if (entity.hasCapability(CAPABILITY_INCORPOREAL, EnumFacing.DOWN))
             return entity.getCapability(CAPABILITY_INCORPOREAL, EnumFacing.DOWN);
 
@@ -78,8 +100,8 @@ public class CapabilityIncorporealHandler {
     }
 
 	@Nonnull
-    public static IIncorporealHandler getHandler(EntityPlayer entityPlayer) {
-    	IIncorporealHandler handler = entityPlayer.getCapability(CAPABILITY_INCORPOREAL, EnumFacing.DOWN);
+    public static IIncorporealHandler getHandler(@Nonnull EntityPlayer entityPlayer) {
+	 	IIncorporealHandler handler = entityPlayer.getCapability(CAPABILITY_INCORPOREAL, EnumFacing.DOWN);
     	if(handler == null)
     		return new DefaultIncorporealHandler();
     	return handler;
@@ -90,9 +112,10 @@ public class CapabilityIncorporealHandler {
     	if(event.phase != TickEvent.Phase.END) return;
     	IIncorporealHandler handler = getHandler(event.player);
     	handler.tick();
-		if(handler.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL) {
+		if(handler.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL || handler.getPossessed() != null) {
+			float size = event.player.isRiding() ? 0f : 1f;
 			try {
-				entity$setSize.invoke(event.player, event.player.width, 1f);
+				entity$setSize.invoke(event.player, event.player.width, size);
 			} catch (Throwable throwable) {
 				throwable.printStackTrace();
 			}
@@ -107,7 +130,7 @@ public class CapabilityIncorporealHandler {
 	public static class DefaultIncorporealHandler implements IIncorporealHandler {
 
 		@Nonnull
-		private CorporealityStatus corporealityStatus = CorporealityStatus.CORPOREAL;
+		private CorporealityStatus corporealityStatus = CorporealityStatus.NORMAL;
 		private EctoplasmStats ectoplasmHealth = new EctoplasmStats();
 		private int lastFood = -1;
 		private String lastDeathMessage;
@@ -115,6 +138,7 @@ public class CapabilityIncorporealHandler {
 		private int prevGamemode = 0;
 		/**Not used currently, allows the player to wear a different skin*/
 		private UUID disguise = null;
+		private IPossessable host;
 
 		private EntityPlayer owner;
 
@@ -135,6 +159,12 @@ public class CapabilityIncorporealHandler {
 				owner.eyeHeight = 0.8f;
 			} else {
 				owner.eyeHeight = owner.getDefaultEyeHeight();
+			}
+
+			if(!newStatus.isIncorporeal() && this.getPossessed() != null) {
+				this.getPossessed().onPossessionStop(owner, true);
+				if(!owner.world.isRemote)
+					((EntityPlayerMP)owner).connection.sendPacket(new SPacketCamera(owner));
 			}
 
 			try {
@@ -162,6 +192,20 @@ public class CapabilityIncorporealHandler {
 		@Override
 		public CorporealityStatus getCorporealityStatus() {
 			return this.corporealityStatus;
+		}
+
+		@Override
+		public void setPossessed(IPossessable possessable) {
+			this.host = possessable;
+			if(possessable == null)
+				owner.setInvisible(DissolutionConfig.ghost.invisibleGhosts);
+			else
+				owner.setInvisible(true);
+		}
+
+		@Override
+		public IPossessable getPossessed() {
+			return this.host;
 		}
 
 		@Override

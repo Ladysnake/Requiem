@@ -11,14 +11,13 @@ import net.minecraft.util.EnumHand;
 public class EntityAIMinionAttack extends EntityAIAttackMelee {
 
 	protected AbstractMinion minion;
-    private final float maxAttackDistance;
     private int attackTime = -1;
     private int seeTime;
     private int attackCooldown;
 	
 	public EntityAIMinionAttack(AbstractMinion minion, double speedIn, boolean useLongMemory) {
 		super(minion, speedIn, useLongMemory);
-		this.maxAttackDistance = 16;
+        float maxAttackDistance = 16;
 		this.attackCooldown = 30;
 		this.minion = minion;
 	}

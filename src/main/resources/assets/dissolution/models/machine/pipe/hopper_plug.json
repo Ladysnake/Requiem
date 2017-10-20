@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
-	"textures": {"2": "machines/plug"},
+	"textures": {"2": "dissolution:machines/plug"},
 	"elements": [
 		{
 			"name": "Plug",

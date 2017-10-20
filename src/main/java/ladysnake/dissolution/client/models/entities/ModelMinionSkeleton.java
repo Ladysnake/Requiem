@@ -17,6 +17,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+
 @SideOnly(Side.CLIENT)
 public class ModelMinionSkeleton extends ModelBiped
 {
@@ -48,7 +50,30 @@ public class ModelMinionSkeleton extends ModelBiped
         }
     }
 
+    /**
+     * Used for easily adding entity-dependent animations. The second and third float params here are the same second
+     * and third as in the setRotationAngles method.
+     */
+    public void setLivingAnimations(EntityLivingBase entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTickTime)
+    {
+        this.rightArmPose = ModelBiped.ArmPose.EMPTY;
+        this.leftArmPose = ModelBiped.ArmPose.EMPTY;
+        ItemStack itemstack = entityLivingBaseIn.getHeldItem(EnumHand.MAIN_HAND);
 
+        if (itemstack.getItem() == Items.BOW && ((EntityMinionSkeleton)entityLivingBaseIn).isSwingingArms())
+        {
+            if (entityLivingBaseIn.getPrimaryHand() == EnumHandSide.RIGHT)
+            {
+                this.rightArmPose = ModelBiped.ArmPose.BOW_AND_ARROW;
+            }
+            else
+            {
+                this.leftArmPose = ModelBiped.ArmPose.BOW_AND_ARROW;
+            }
+        }
+
+        super.setLivingAnimations(entityLivingBaseIn, limbSwing, limbSwingAmount, partialTickTime);
+    }
 
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
     {
@@ -56,52 +81,54 @@ public class ModelMinionSkeleton extends ModelBiped
         ItemStack itemstack = ((EntityLivingBase)entityIn).getHeldItemMainhand();
 
         if (!((EntityMinionSkeleton) entityIn).isInert()) {
-        	
-            float f = MathHelper.sin(this.swingProgress * (float)Math.PI);
-            float f1 = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float)Math.PI);
-            this.bipedRightArm.rotateAngleZ = 0.0F;
-            this.bipedLeftArm.rotateAngleZ = 0.0F;
-            this.bipedRightArm.rotateAngleY = -(0.1F - f * 0.6F);
-            this.bipedLeftArm.rotateAngleY = 0.1F - f * 0.6F;
-            this.bipedRightArm.rotateAngleX = -((float)Math.PI / 2F);
-            this.bipedLeftArm.rotateAngleX = -((float)Math.PI / 2F);
-            this.bipedRightArm.rotateAngleX -= f * 1.2F - f1 * 0.4F;
-            this.bipedLeftArm.rotateAngleX -= f * 1.2F - f1 * 0.4F;
-            this.bipedRightArm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
-            this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
-            this.bipedRightArm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
-            this.bipedLeftArm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
-            
-            this.bipedRightArm.rotateAngleX = 6F + MathHelper.cos(ageInTicks * 0.2F) * 0.5F + 0.05F;
-            this.bipedLeftArm.rotateAngleX = 6F + MathHelper.sin(ageInTicks * 0.2F) * 0.5F + 0.05F;
-            this.bipedRightArm.rotationPointY = 2.25F;
-	        this.bipedLeftArm.rotationPointY = 2.25F;
-	        
-	        this.bipedBody.rotationPointX = -0.0F;
-			this.bipedBody.rotationPointY = 0.0F;
-			this.bipedBody.rotationPointZ = 0.0F;
-			
-			this.bipedLeftArm.rotationPointX = 5.0F;
-			this.bipedLeftArm.rotationPointY = 2.25F;
-			this.bipedLeftArm.rotationPointZ = 0.0F;
-			
-			this.bipedLeftLeg.rotationPointX = -2.0F;
-			this.bipedLeftLeg.rotationPointY = 12.0F;
-			this.bipedLeftLeg.rotationPointZ = 0.0F;
-			
-			this.bipedRightLeg.rotationPointX = 2.0F;
-			this.bipedRightLeg.rotationPointY = 12.0F;
-			this.bipedRightLeg.rotationPointZ = 0.0F;
-			
-			this.bipedHead.rotateAngleX = 0.0F;
-			this.bipedHead.rotateAngleY = 0.0F;
-			this.bipedHead.rotateAngleZ = 0.0F;
-			this.bipedHead.rotationPointX = 0.0F;
-			this.bipedHead.rotationPointY = 0.0F;
-			this.bipedHead.rotationPointZ = 0.0F;
+
+            if (((EntityMinionSkeleton) entityIn).isSwingingArms() && (itemstack.isEmpty() || itemstack.getItem() != Items.BOW))
+            {
+                float f = MathHelper.sin(this.swingProgress * (float)Math.PI);
+                float f1 = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float)Math.PI);
+                this.bipedRightArm.rotateAngleZ = 0.0F;
+                this.bipedLeftArm.rotateAngleZ = 0.0F;
+                this.bipedRightArm.rotateAngleY = -(0.1F - f * 0.6F);
+                this.bipedLeftArm.rotateAngleY = 0.1F - f * 0.6F;
+                this.bipedRightArm.rotateAngleX = -((float)Math.PI / 2F);
+                this.bipedLeftArm.rotateAngleX = -((float)Math.PI / 2F);
+                this.bipedRightArm.rotateAngleX -= f * 1.2F - f1 * 0.4F;
+                this.bipedLeftArm.rotateAngleX -= f * 1.2F - f1 * 0.4F;
+                this.bipedRightArm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
+                this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
+                this.bipedRightArm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
+                this.bipedLeftArm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
+            }
+
+//            this.bipedRightArm.rotateAngleX = 6F + MathHelper.cos(ageInTicks * 0.2F) * 0.5F + 0.05F;
+//            this.bipedLeftArm.rotateAngleX = 6F + MathHelper.sin(ageInTicks * 0.2F) * 0.5F + 0.05F;
+//            this.bipedRightArm.rotationPointY = 2.25F;
+//	        this.bipedLeftArm.rotationPointY = 2.25F;
+//
+//	        this.bipedBody.rotationPointX = -0.0F;
+//			this.bipedBody.rotationPointY = 0.0F;
+//			this.bipedBody.rotationPointZ = 0.0F;
+//
+//			this.bipedLeftArm.rotationPointX = 5.0F;
+//			this.bipedLeftArm.rotationPointY = 2.25F;
+//			this.bipedLeftArm.rotationPointZ = 0.0F;
+//
+//			this.bipedLeftLeg.rotationPointX = -2.0F;
+//			this.bipedLeftLeg.rotationPointY = 12.0F;
+//			this.bipedLeftLeg.rotationPointZ = 0.0F;
+//
+//			this.bipedRightLeg.rotationPointX = 2.0F;
+//			this.bipedRightLeg.rotationPointY = 12.0F;
+//			this.bipedRightLeg.rotationPointZ = 0.0F;
+//
+//			this.bipedHead.rotateAngleX = 0.0F;
+//			this.bipedHead.rotateAngleY = 0.0F;
+//			this.bipedHead.rotateAngleZ = 0.0F;
+//			this.bipedHead.rotationPointX = 0.0F;
+//			this.bipedHead.rotationPointY = 0.0F;
+//			this.bipedHead.rotationPointZ = 0.0F;
         }
         else {
-        	((EntityMinionSkeleton) entityIn).isAIDisabled();		
 			// right arm
 			this.bipedRightArm.rotateAngleX = 1.5F;
 			this.bipedRightArm.rotateAngleY = -0.1F;
@@ -147,7 +174,7 @@ public class ModelMinionSkeleton extends ModelBiped
         }
     }
 
-    public void postRenderArm(float scale, EnumHandSide side)
+    public void postRenderArm(float scale, @Nonnull EnumHandSide side)
     {
         float f = side == EnumHandSide.RIGHT ? 1.0F : -1.0F;
         ModelRenderer modelrenderer = this.getArmForSide(side);

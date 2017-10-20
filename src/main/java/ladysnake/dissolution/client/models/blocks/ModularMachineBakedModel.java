@@ -37,7 +37,7 @@ public class ModularMachineBakedModel implements IBakedModel {
 	public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
 
 		List<IBakedModel> parts = new ArrayList<>();
-		ModelRotation rotation = getRotationFromFacing(state);
+		ModelRotation rotation = getRotationFromFacing((IExtendedBlockState)state);
 
 		if(state.getValue(BlockCasing.PART) == BlockCasing.EnumPartType.TOP)
 			parts.add(DissolutionModelLoader.getModel(BlockCasing.CASING_TOP));
@@ -62,7 +62,7 @@ public class ModularMachineBakedModel implements IBakedModel {
 		return parts.stream().filter(Objects::nonNull).map(m -> m.getQuads(state, side, rand)).flatMap(List::stream).collect(Collectors.toList());
 	}
 
-	private ModelRotation getRotationFromFacing(IBlockState state) {
+	private ModelRotation getRotationFromFacing(IExtendedBlockState state) {
 		ModelRotation rotation;
 		switch (state.getValue(BlockCasing.FACING)) {
 			case EAST: rotation = ModelRotation.X0_Y90;

@@ -58,22 +58,15 @@ public class RenderMinion<V extends AbstractMinion> extends RenderBiped<V> {
 	}
    
     @Override
-    public void doRenderShadowAndFire(Entity entityIn, double x, double y, double z, float yaw, float partialTicks) {
+    public void doRenderShadowAndFire(@Nonnull Entity entityIn, double x, double y, double z, float yaw, float partialTicks) {
     	super.doRenderShadowAndFire(entityIn, x, y, z, yaw, partialTicks);
     }
    
     @Override
     public void doRender(@Nonnull V minionIn, double x, double y, double z, float entityYaw, float partialTicks) {
     	GL11.glPushMatrix();
-    	if(minionIn.isInert() && minionIn.getRemainingTicks() > 0 && minionIn.getRemainingTicks() < AbstractMinion.MAX_DEAD_TICKS) {
-			GlStateManager.color(1f, 1f, 1f,
-					((float)minionIn.getRemainingTicks()) / ((float) AbstractMinion.MAX_DEAD_TICKS));
-    		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    		GlStateManager.enableBlend();
-    	} else {
-        	float colorRatio = (minionIn.getHealth()) / (minionIn.getMaxHealth());
-    		GlStateManager.color(colorRatio, colorRatio, colorRatio);
-    	}
+		float colorRatio = (minionIn.getHealth()) / (minionIn.getMaxHealth());
+		GlStateManager.color(colorRatio, colorRatio, colorRatio);
     	super.doRender(minionIn, x, y, z, entityYaw, partialTicks);
         GL11.glPopMatrix();
     }

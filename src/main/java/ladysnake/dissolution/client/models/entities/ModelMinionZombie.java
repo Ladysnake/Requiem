@@ -3,10 +3,11 @@ package ladysnake.dissolution.client.models.entities;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import net.minecraft.client.model.ModelZombie;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nonnull;
 
 @SideOnly(Side.CLIENT)
 public class ModelMinionZombie extends ModelZombie {
@@ -19,18 +20,17 @@ public class ModelMinionZombie extends ModelZombie {
 	}
 
 	@Override
-	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, @Nonnull Entity entityIn) {
 		
 		if (!((AbstractMinion) entityIn).isInert()) {
 			super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
-	        boolean flag = entityIn instanceof EntityZombie && ((EntityZombie)entityIn).isArmsRaised();
-	        float f = MathHelper.sin(this.swingProgress * (float)Math.PI);
+			float f = MathHelper.sin(this.swingProgress * (float)Math.PI);
 	        float f1 = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float)Math.PI);
 	        this.bipedRightArm.rotateAngleZ = 0.0F;
 	        this.bipedLeftArm.rotateAngleZ = 0.0F;
 	        this.bipedRightArm.rotateAngleY = -(0.1F - f * 0.6F);
 	        this.bipedLeftArm.rotateAngleY = 0.1F - f * 0.6F;
-	        float f2 = -(float)Math.PI / (flag ? 1.5F : 2.25F);
+	        float f2 = -(float) Math.PI / 2.25F;
 	        this.bipedRightArm.rotateAngleX = f2;
 	        this.bipedLeftArm.rotateAngleX = f2;
 	        this.bipedRightArm.rotateAngleX += f * 1.2F - f1 * 0.4F;

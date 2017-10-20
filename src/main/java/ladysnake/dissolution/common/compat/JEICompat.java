@@ -15,11 +15,12 @@ import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @JEIPlugin
 public class JEICompat implements IModPlugin {
 
-    private IRecipeRegistry recipeRegistry;
     private IModRegistry registry;
 	
 	@Override
@@ -34,21 +35,25 @@ public class JEICompat implements IModPlugin {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void register(IModRegistry registry) {
         this.registry = registry;
         blacklistStuff();
 		addInformationTabs();
 	}
-	
+
+	@SideOnly(Side.CLIENT)
 	private void addInformationTabs() {
 		addInformationTab(ModItems.SEPULTURE);
 		addInformationTab(ModBlocks.POWER_CABLE);
 	}
-	
+
+	@SideOnly(Side.CLIENT)
 	private void addInformationTab(Block block) {
 		this.addInformationTab(Item.getItemFromBlock(block));
 	}
-	
+
+	@SideOnly(Side.CLIENT)
 	private void addInformationTab(Item item) {
 		registry.addIngredientInfo(new ItemStack(item), ItemStack.class, I18n.format("jei.description.dissolution.%s", item.getUnlocalizedName()));
 	}
@@ -60,7 +65,7 @@ public class JEICompat implements IModPlugin {
 	
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
-		recipeRegistry = jeiRuntime.getRecipeRegistry();
+        IRecipeRegistry recipeRegistry = jeiRuntime.getRecipeRegistry();
 	}
 
 }

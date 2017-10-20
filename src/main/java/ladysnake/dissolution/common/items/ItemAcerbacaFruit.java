@@ -45,7 +45,7 @@ public class ItemAcerbacaFruit extends ItemFood {
 		body.setPosition(owner.posX, owner.posY, owner.posZ);
 		body.setPlayer(owner.getUniqueID());
 		body.setInert(true);
-		body.setDecaying(false);
+		body.setDecompositionCountdown(-1);
 		DissolutionInventoryHelper.transferEquipment(owner, body);
 		body.setCustomNameTag(owner.getName());
 		body.setInventory(new InventoryPlayerCorpse(owner.inventory.mainInventory, body));

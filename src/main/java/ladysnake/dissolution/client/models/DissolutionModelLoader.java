@@ -38,7 +38,7 @@ import java.util.Set;
 public class DissolutionModelLoader {
 
 	private static final DissolutionModelLoader INSTANCE = new DissolutionModelLoader();
-	private static org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger("Dissolution Model Loader");
+	private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger("Dissolution Model Loader");
 
 	/** Stores locations of models to load */
 	private final Map<ResourceLocation, Set<ModelRotation>> modelsLocation = new HashMap<>();
@@ -87,10 +87,13 @@ public class DissolutionModelLoader {
 	 * 
 	 * @param modelLocation the resource location used to load the model
 	 * @param rotation a previously registered rotation for this model
-	 * @return the baked model previously loaded from the file
+	 * @return the baked model previously loaded from the file. If the model was not registered, attempts to search in Minecraft's main model registry
 	 */
 	public static IBakedModel getModel(ResourceLocation modelLocation, ModelRotation rotation) {
-		return INSTANCE.models.containsKey(modelLocation) ? INSTANCE.models.get(modelLocation).get(rotation) : null;
+		return INSTANCE.models.containsKey(modelLocation)
+				? INSTANCE.models.get(modelLocation).get(rotation)
+				: Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager()
+				.getModel(new ModelResourceLocation(modelLocation.toString()));
 	}
 
 	@SubscribeEvent
@@ -100,11 +103,9 @@ public class DissolutionModelLoader {
 			try {
 				INSTANCE.blockModelsLocation.put(rl, INSTANCE.loadModel(rl));
 			} catch (IOException e) {
-				LOGGER.warn(rl + ": an issue prevented the file from being read");
-				e.printStackTrace();
+				LOGGER.warn(rl + ": an issue prevented the file from being read", e);
 			} catch (JsonParseException e) {
-				LOGGER.warn(rl + ": this json file isn't valid");
-				e.printStackTrace();
+				LOGGER.warn(rl + ": this json file isn't valid", e);
 			}
 		}
 	}

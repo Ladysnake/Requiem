@@ -28,15 +28,15 @@ public class RenderMinionZombie extends RenderMinion<EntityMinionZombie> {
 	private static final ResourceLocation HUSK_MINION_TEXTURES = new ResourceLocation(Reference.MOD_ID + ":textures/entity/minions/minion_husk.png");
 
     public RenderMinionZombie(RenderManager rendermanagerIn) {
-    		super(rendermanagerIn, ModelMinionZombie::new, ZOMBIE_MINION_TEXTURES, ZOMBIE_TEXTURES);
+    		super(rendermanagerIn, ModelZombie::new, ZOMBIE_TEXTURES, ZOMBIE_TEXTURES);
     }
 
     @Override
     @Nonnull
     protected ResourceLocation getEntityTexture(@Nonnull EntityMinionZombie entity) {
-    	if(entity.isInert())
+//    	if(entity.isInert())
     		return entity.isHusk() ? HUSK_TEXTURES : ZOMBIE_TEXTURES;
-    	return entity.isHusk() ? HUSK_MINION_TEXTURES : ZOMBIE_MINION_TEXTURES;
+//    	return entity.isHusk() ? HUSK_MINION_TEXTURES : ZOMBIE_MINION_TEXTURES;
     }
     
     @Override

@@ -1,12 +1,11 @@
 package ladysnake.dissolution.common.init;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.items.AlchemyModuleTypes;
 import ladysnake.dissolution.common.registries.modularsetups.ModularMachineSetup;
 import ladysnake.dissolution.common.registries.modularsetups.SetupCrystallizer;
 import ladysnake.dissolution.common.registries.modularsetups.SetupGreenhouse;
 import ladysnake.dissolution.common.registries.modularsetups.SetupOreSieve;
-import ladysnake.dissolution.common.registries.modularsetups.SetupPowerGenerator;
+import ladysnake.dissolution.common.registries.modularsetups.SetupResonantCoil;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -27,7 +26,7 @@ public final class ModModularSetups {
 	
 	@SubscribeEvent
 	public void onRegisterSetups(RegistryEvent.Register<ModularMachineSetup> event) {
-		event.getRegistry().registerAll(new SetupOreSieve(), new SetupPowerGenerator(), new SetupCrystallizer(), new SetupGreenhouse());
+		event.getRegistry().registerAll(new SetupOreSieve(), new SetupResonantCoil(), new SetupCrystallizer(), new SetupGreenhouse());
 	}
 	
 	private ModModularSetups() {}

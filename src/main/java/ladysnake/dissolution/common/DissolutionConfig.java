@@ -8,7 +8,7 @@ import java.io.File;
 public class DissolutionConfig {
 	
 	static {
-		DissolutionConfigManager.fixConfigTypes(new File("config/Dissolution.cfg"));
+		DissolutionConfigManager.updateConfig(new File("config/Dissolution.cfg"));
 	}
 	
 	@Config.Name("block")
@@ -68,7 +68,7 @@ public class DissolutionConfig {
 		
 		@Config.LangKey("config.dissolution.respawn.wowLikeRespawn")
 		@Config.Comment("If set to true, the player will respawn as a ghost at their spawnpoint. \nThey will then have the choice to go to 0,0 to respawn without stuff or to reach their corpse under 5 minutes.")
-		public boolean wowLikeRespawn = true;
+		public boolean wowLikeRespawn = false;
 		
 		@Config.LangKey("config.dissolution.respawn.bodiesDespawn")
 		@Config.Comment("If set to false, player bodies will not require any special circumstances to prevent decay.")

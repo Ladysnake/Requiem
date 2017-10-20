@@ -15,7 +15,7 @@ import net.minecraftforge.common.capabilities.Capability;
 
 public class TileEntityDistillatePipe extends TileEntity implements ITickable {
 	
-	private IDistillateHandler essentiaHandler;
+	private final IDistillateHandler essentiaHandler;
 	private int transferCooldown;
 	
 	public TileEntityDistillatePipe() {

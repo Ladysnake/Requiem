@@ -3,6 +3,7 @@ package ladysnake.dissolution.common;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Files;
 import ladysnake.dissolution.api.ISoulInteractable;
+import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.entity.monster.EntityCreeper;
@@ -23,6 +24,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -58,8 +62,13 @@ public final class DissolutionConfigManager {
 	public static boolean canEctoplasmInteractWith(Item item) {
 		return item == ModItems.DEBUG_ITEM;
 	}
+
+	static void init() {
+		buildMinionAttackBlacklist();
+		buildBlockWhitelist();
+	}
 	
-	static void loadConfig(File configFile) {
+	static void updateConfig(File configFile) {
 
 		Configuration config = new Configuration(configFile);
 		Property versionProp = config.get(
@@ -67,7 +76,7 @@ public final class DissolutionConfigManager {
 	       		"version", 
 	       		Reference.CONFIG_VERSION, 
 	       		"The version of this configuration file. Don't modify this number unless you want your changes randomly reset.");
-		 
+		Set<String> toReplace = new HashSet<>();
 	    
 	    // Updating configuration file to v2.0 (dissolution v0.4.2.3)
 	    if(versionProp.getDouble() < 2.0) {
@@ -77,16 +86,45 @@ public final class DissolutionConfigManager {
 				e.printStackTrace();
 			}
 	    	if(configFile.delete()) {
-				ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);
 				versionProp.set(2.0);
 			}
 	    }
-	    
-        buildMinionAttackBlacklist();
-	    buildBlockWhitelist();
-	    
+
+	    // Updating configuration file to v2.1 (dissolution v0.5)
+	    if(versionProp.getDouble() < 2.1) {
+	    	toReplace.add("I:flightMode=");
+			toReplace.add("wowLikeRespawn");
+	    	versionProp.set(2.1);
+		}
+
+		updateConfigProp(configFile, toReplace);
+		ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);
+
 	    config.save();
-	    
+	}
+
+	private static void updateConfigProp(File configFile, Collection<String> offendingLine) {
+		File temp = new File(configFile.getParentFile(), "temp");
+		boolean foundOffender = false;
+		try (BufferedReader reader = Files.newReader(configFile, Charset.defaultCharset());
+			 BufferedWriter writer = Files.newWriter(temp, Charset.defaultCharset())) {
+			String readLine;
+			while((readLine = reader.readLine()) != null) {
+				if(offendingLine.stream().noneMatch(readLine::contains))
+					writer.write(readLine + System.getProperty("line.separator"));
+				else
+					foundOffender = true;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if(foundOffender && configFile.delete()) {
+			if(!temp.renameTo(configFile))
+				Logger.getGlobal().warning("Could not edit the config file");
+		} else {
+			if(!temp.delete())
+				temp.deleteOnExit();
+		}
 	}
 
 	@SubscribeEvent
@@ -99,34 +137,10 @@ public final class DissolutionConfigManager {
             buildBlockWhitelist();
         }
     }
-	
-	static void fixConfigTypes(File configFile) {
-    	File temp = new File(configFile.getParentFile(), "temp");
-    	boolean foundOffender = false;
-    	try (BufferedReader reader = Files.newReader(configFile, Charset.defaultCharset()); 
-    			BufferedWriter writer = Files.newWriter(temp, Charset.defaultCharset())) {
-    		String offendingLine = "I:flightMode=";
-    		String readLine;
-    		while((readLine = reader.readLine()) != null) {
-    			if(!readLine.contains(offendingLine))
-    				writer.write(readLine + System.getProperty("line.separator"));
-    			else
-    				foundOffender = true;
-    		}
-    	} catch (IOException e) {
-    		e.printStackTrace();
-    	}
-    	if(foundOffender && configFile.delete()) {
-    		if(!temp.renameTo(configFile))
-				Logger.getGlobal().warning("Could not edit the config file");
-    	} else {
-    		if(!temp.delete())
-    			temp.deleteOnExit();
-    	}
-	}
-	
+
 	private static void buildMinionAttackBlacklist() {
 		ImmutableSet.Builder<Class<? extends EntityMob>> builder = ImmutableSet.builder();
+		builder.add(AbstractMinion.class);
 		if (!DissolutionConfig.entities.minionsAttackCreepers)
 			builder.add(EntityCreeper.class);
 		TARGET_BLACKLIST = builder.build();

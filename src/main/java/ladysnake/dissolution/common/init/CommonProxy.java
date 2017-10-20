@@ -11,7 +11,7 @@ import ladysnake.dissolution.common.handlers.LivingDeathHandler;
 import ladysnake.dissolution.common.handlers.PlayerTickHandler;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.networking.PacketHandler;
-import ladysnake.dissolution.common.tileentities.TileEntityAncientTomb;
+import ladysnake.dissolution.common.tileentities.TileEntityLamentStone;
 import ladysnake.dissolution.common.tileentities.TileEntityDistillatePipe;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import ladysnake.dissolution.common.tileentities.TileEntityProxy;
@@ -30,7 +30,6 @@ public abstract class CommonProxy {
 		CapabilityIncorporealHandler.register();
 		CapabilitySoulHandler.register();
 		CapabilityDistillateHandler.register();
-		ModEntities.register();
 		ModStructure.init();
 	}
 	
@@ -46,7 +45,7 @@ public abstract class CommonProxy {
 		GameRegistry.registerTileEntity(TileEntitySepulture.class, Reference.MOD_ID + ":tileentitysepulture");
 		GameRegistry.registerTileEntity(TileEntityModularMachine.class, Reference.MOD_ID + ":tileentitymodularmachine");
 		GameRegistry.registerTileEntity(TileEntityProxy.class, Reference.MOD_ID + ":tileentityproxy");
-		GameRegistry.registerTileEntity(TileEntityAncientTomb.class, Reference.MOD_ID + ":tileentityancienttomb");
+		GameRegistry.registerTileEntity(TileEntityLamentStone.class, Reference.MOD_ID + ":tileentityancienttomb");
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
 		PacketHandler.initPackets();
