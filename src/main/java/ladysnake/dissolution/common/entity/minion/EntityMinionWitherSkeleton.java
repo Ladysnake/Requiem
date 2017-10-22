@@ -98,8 +98,8 @@ public class EntityMinionWitherSkeleton extends EntityMinionSkeleton {
     }
 
     @Override
-    protected EntityArrow getArrow(float distanceFactor) {
-        EntityArrow entityarrow = super.getArrow(distanceFactor);
+    protected EntityArrow getArrow(EntityTippedArrow baseArrow, float distanceFactor) {
+        EntityArrow entityarrow = super.getArrow(baseArrow, distanceFactor);
         entityarrow.setFire(100);
         return entityarrow;
     }

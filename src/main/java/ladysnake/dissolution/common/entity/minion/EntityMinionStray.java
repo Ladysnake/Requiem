@@ -60,8 +60,8 @@ public class EntityMinionStray extends EntityMinionSkeleton {
     }
     
     @Override
-    protected EntityArrow getArrow(float p_190726_1_) {
-    	EntityTippedArrow arrow = (EntityTippedArrow) super.getArrow(p_190726_1_);
+    protected EntityArrow getArrow(EntityTippedArrow baseArrow, float distanceFactor) {
+    	EntityTippedArrow arrow = (EntityTippedArrow) super.getArrow(baseArrow, distanceFactor);
 		arrow.addEffect(new PotionEffect(MobEffects.SLOWNESS, 600));
     	return arrow;
     }

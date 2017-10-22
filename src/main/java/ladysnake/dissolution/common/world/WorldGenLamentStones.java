@@ -20,7 +20,7 @@ public class WorldGenLamentStones extends WorldGenerator {
             position = position.down();
         }
 
-        if (worldIn.isAirBlock(position.up()))
+        if (worldIn.isAirBlock(position.up()) && worldIn.isBlockNormalCube(position.down(), false))
             worldIn.setBlockState(position.up(), ModBlocks.LAMENT_STONE.getDefaultState(), 2);
         return true;
     }

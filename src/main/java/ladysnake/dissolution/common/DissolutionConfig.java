@@ -111,9 +111,9 @@ public class DissolutionConfig {
 	
 	public static class Worldgen {
 		
-		@Config.LangKey("config.dissolution.worldgen.spawnMercuryLakesFreq")
-		@Config.Comment("A mercury lake has a 1 in N chances to spawn in a given chunk (the higher the number here, the less lakes). -1 to disable.")
-		public int spawnMercuryLakesFreq = 100;
+		@Config.LangKey("config.dissolution.worldgen.spawnLamentStones")
+		@Config.Comment("A Lament Stone has a 1 in N chances to spawn in a given chunk (the higher the number here, the less stones). -1 to disable.")
+		public int spawnLamentStonesFreq = 50;
 		
 	}
 	

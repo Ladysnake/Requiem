@@ -95,6 +95,10 @@ public class LivingDeathHandler {
 			body.setPlayer(p.getUniqueID());
 		}
 		
+		if(!DissolutionConfig.respawn.wowLikeRespawn) {
+			p.setSpawnPoint(new BlockPos(p), true);
+		}
+		
 		if(DissolutionConfig.respawn.skipDeathScreen) {
 			if(!p.world.isRemote)
 				fakePlayerDeath((EntityPlayerMP)p, event.getSource());

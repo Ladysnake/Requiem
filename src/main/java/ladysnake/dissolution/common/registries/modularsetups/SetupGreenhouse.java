@@ -1,9 +1,9 @@
 package ladysnake.dissolution.common.registries.modularsetups;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Spliterator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -31,7 +31,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
-import scala.actors.threadpool.Arrays;
 
 public class SetupGreenhouse extends ModularMachineSetup {
     private static final ImmutableSet<ItemAlchemyModule.AlchemyModule> setup = ImmutableSet.of(

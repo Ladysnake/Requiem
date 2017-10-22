@@ -51,7 +51,8 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	@Override
 	protected boolean processInteract(EntityPlayer player, EnumHand hand) {
 		final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
-		if (!world.isRemote && player.getHeldItem(hand).getItem() != ModItems.EYE_OF_THE_UNDEAD && !handler.getCorporealityStatus().isIncorporeal()) {
+		if (!world.isRemote && player.getHeldItem(hand).getItem() != ModItems.EYE_OF_THE_UNDEAD 
+				&& (!handler.getCorporealityStatus().isIncorporeal() || handler.getPossessed() != null)) {
 			player.openGui(Dissolution.instance, GuiProxy.PLAYER_CORPSE, this.world, (int)this.posX, (int)this.posY, (int)this.posZ);
 		}
 		return true;
@@ -89,7 +90,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	}
 	
 	public boolean isDecaying() {
-		return !this.hasLifeStone() && DissolutionConfig.respawn.bodiesDespawn;
+		return getRemainingTicks() >= 0 && !this.hasLifeStone() && DissolutionConfig.respawn.bodiesDespawn;
 	}
 	
 	@Override

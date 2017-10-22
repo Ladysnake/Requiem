@@ -10,13 +10,15 @@ import ladysnake.dissolution.common.entity.souls.AbstractSoul;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PossessionMessage;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketCamera;
 import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.EntityMountEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.GetCollisionBoxesEvent;
@@ -70,7 +72,7 @@ public class InteractEventsHandler {
 			if (host != null && host.onEntityPossessed(event.getEntityPlayer())) {
 				EntityLivingBase eHost = (EntityLivingBase)host;
 				if(host != event.getTarget()) {
-					DissolutionInventoryHelper.transferEquipment((EntityLivingBase) event.getTarget(), eHost);
+					DissolutionInventoryHelper.transferEquipment((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
 					event.getTarget().setPosition(0,-100,0);
 					event.getTarget().world.spawnEntity(eHost);
 					event.getTarget().world.removeEntity(event.getTarget());
@@ -97,6 +99,34 @@ public class InteractEventsHandler {
 			event.setCanceled(true);
 		}
 	}
+	
+	@SubscribeEvent
+	public void onItemUseStart(LivingEntityUseItemEvent.Start event) {
+		final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
+		if(handler != null && handler.getPossessed() instanceof EntityLivingBase) {		// synchronizes item use between player and possessed entity
+			((EntityLivingBase)handler.getPossessed()).setActiveHand(event.getEntityLiving().getHeldItemMainhand().equals(event.getItem()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
+		}
+	}
+	
+	@SubscribeEvent
+	public void onItemUseTick(LivingEntityUseItemEvent.Tick event) {
+		if(event.getDuration() <= 1) {			// prevent the player from finishing the item use if possessing an entity
+			final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
+			if(handler != null && handler.getPossessed() instanceof EntityLivingBase) {
+				event.getEntityLiving().resetActiveHand();
+				event.setCanceled(true);
+			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void onItemUseStop(LivingEntityUseItemEvent.Stop event) {
+		final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
+		if(handler != null && handler.getPossessed() instanceof EntityLivingBase) {
+			((EntityLivingBase)handler.getPossessed()).stopActiveHand();
+			event.setCanceled(true);			// prevent the player from duplicating the action
+		}
+	}	
 	
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityMount(EntityMountEvent event) {
