@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.blocks.alchemysystem;
 
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine.PowerConsumption;
 import ladysnake.dissolution.common.registries.modularsetups.ISetupInstance;
-import ladysnake.dissolution.common.registries.modularsetups.SetupPowerGenerator;
+import ladysnake.dissolution.common.registries.modularsetups.SetupResonantCoil;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import ladysnake.dissolution.common.tileentities.TileEntityProxy;
 import net.minecraft.block.Block;
@@ -42,7 +42,7 @@ public class AbstractPowerConductor extends Block implements IPowerConductor {
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer,
 			ItemStack stack) {
 		if(!worldIn.isRemote)
-			SetupPowerGenerator.THREADPOOL.submit(() -> updatePowerCore(worldIn, pos));
+			SetupResonantCoil.THREADPOOL.submit(() -> updatePowerCore(worldIn, pos));
 		worldIn.markBlockRangeForRenderUpdate(pos.add(-1, -1, -1), pos.add(1, 1, 1));
 	}
 	
@@ -53,8 +53,8 @@ public class AbstractPowerConductor extends Block implements IPowerConductor {
 				bp = bp.down();
 			if(te instanceof TileEntityModularMachine) {
 				ISetupInstance setup = ((TileEntityModularMachine)te).getCurrentSetup();
-				if(setup instanceof SetupPowerGenerator.Instance)
-					((SetupPowerGenerator.Instance)setup).scheduleUpdate();
+				if(setup instanceof SetupResonantCoil.Instance)
+					((SetupResonantCoil.Instance)setup).scheduleUpdate();
 			} else {
 				final BlockPos pos2 = bp.up(0);
 				assert world.getMinecraftServer() != null;

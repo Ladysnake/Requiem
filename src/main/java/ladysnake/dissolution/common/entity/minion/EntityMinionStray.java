@@ -20,6 +20,7 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -46,7 +47,7 @@ public class EntityMinionStray extends EntityMinionSkeleton {
         return (isInert()) ? null : SoundEvents.ENTITY_STRAY_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound() {
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
     	return (isInert()) ? null : SoundEvents.ENTITY_STRAY_HURT;
     }
 
@@ -59,8 +60,8 @@ public class EntityMinionStray extends EntityMinionSkeleton {
     }
     
     @Override
-    protected EntityArrow getArrow(float p_190726_1_) {
-    	EntityTippedArrow arrow = (EntityTippedArrow) super.getArrow(p_190726_1_);
+    protected EntityArrow getArrow(EntityTippedArrow baseArrow, float distanceFactor) {
+    	EntityTippedArrow arrow = (EntityTippedArrow) super.getArrow(baseArrow, distanceFactor);
 		arrow.addEffect(new PotionEffect(MobEffects.SLOWNESS, 600));
     	return arrow;
     }

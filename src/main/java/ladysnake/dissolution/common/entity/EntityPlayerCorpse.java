@@ -1,13 +1,9 @@
 package ladysnake.dissolution.common.entity;
 
-import java.util.UUID;
-
 import com.google.common.base.Optional;
-
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.api.ISoulHandler;
 import ladysnake.dissolution.api.ISoulInteractable;
-import ladysnake.dissolution.client.handlers.EventHandlerClient;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
@@ -15,9 +11,9 @@ import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
-import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
@@ -34,47 +30,57 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 
 import javax.annotation.Nonnull;
+import java.util.UUID;
 
+@SuppressWarnings("Guava")
 public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteractable {
 	
 	private static DataParameter<Optional<UUID>> PLAYER = EntityDataManager.createKey(EntityPlayerCorpse.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-	private static DataParameter<Boolean> DECAY = EntityDataManager.createKey(EntityPlayerCorpse.class, DataSerializers.BOOLEAN);
+	private static final DataParameter<Integer> DECOMPOSITION_COUNTDOWN = EntityDataManager
+			.createKey(EntityPlayerCorpse.class, DataSerializers.VARINT);
 	protected InventoryPlayerCorpse inventory;
+
+	public static final int MAX_DECAY_TIME = 6000;
 	
 	public EntityPlayerCorpse(World worldIn) {
 		super(worldIn);
 		inventory = new InventoryPlayerCorpse(this);
+		this.setInert(true);
 	}
 	
 	@Override
 	protected boolean processInteract(EntityPlayer player, EnumHand hand) {
 		final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
+		if (!world.isRemote && player.getHeldItem(hand).getItem() != ModItems.EYE_OF_THE_UNDEAD 
+				&& (!handler.getCorporealityStatus().isIncorporeal() || handler.getPossessed() != null)) {
+			player.openGui(Dissolution.instance, GuiProxy.PLAYER_CORPSE, this.world, (int)this.posX, (int)this.posY, (int)this.posZ);
+		}
+		return true;
+	}
 
-		if(this.ticksExisted > 100 && handler.getCorporealityStatus().isIncorporeal() &&
-				(!this.isDecaying() || DissolutionConfig.respawn.wowLikeRespawn)) {
+	@Override
+	public boolean onEntityPossessed(EntityPlayer player) {
+		final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
+		if(this.ticksExisted > 100 && (!this.isDecaying() || DissolutionConfig.respawn.wowLikeRespawn)) {
 			if(!world.isRemote) {
 				DissolutionInventoryHelper.transferEquipment(this, player);
 				this.onDeath(DamageSource.GENERIC);
 				this.setDead();
-				handler.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.CORPOREAL);
+				handler.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.NORMAL);
 			}
 			player.setPositionAndRotation(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
 			player.cameraPitch = 90;
 			player.prevCameraPitch = 90;
 			player.setHealth(4f);
-		} else if (!world.isRemote && player.getHeldItem(hand).getItem() != ModItems.EYE_OF_THE_UNDEAD && !handler.getCorporealityStatus().isIncorporeal()) {
-			player.openGui(Dissolution.instance, GuiProxy.PLAYER_CORPSE, this.world, (int)this.posX, (int)this.posY, (int)this.posZ);
 		}
-		
-		return true;
+		return false;
 	}
-	
+
 	@Override
-	public void setInert(boolean isCorpse) {
-		super.setInert(isCorpse);
-		this.setDecaying(isCorpse);
+	public void setLifeStone(int gem) {
+		super.setLifeStone(gem);
 	}
-	
+
 	public InventoryPlayerCorpse getInventory() {
 		return inventory;
 	}
@@ -84,11 +90,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	}
 	
 	public boolean isDecaying() {
-		return this.getDataManager().get(DECAY) && DissolutionConfig.respawn.bodiesDespawn;
-	}
-	
-	public void setDecaying(boolean decaying) {
-		this.getDataManager().set(DECAY, decaying);
+		return getRemainingTicks() >= 0 && !this.hasLifeStone() && DissolutionConfig.respawn.bodiesDespawn;
 	}
 	
 	@Override
@@ -107,16 +109,39 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 		this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
 		this.applyEntityAI();
 	}
-	
+
+
 	@Override
-	protected void updateMinion() {
-		if(this.isDecaying())
-			super.updateMinion();
+	public void onLivingUpdate() {
+		super.onLivingUpdate();
+		if(this.isDecaying()) {
+			countdown();
+			if (getRemainingTicks() == 0 && !this.world.isRemote) {
+				this.setDead();
+			}
+		}
 	}
-	
-	@Override
+
+	/**
+	 * @return the time (in ticks) that this entity has before disappearing
+	 */
+	public int getRemainingTicks() {
+		return this.getDataManager().get(DECOMPOSITION_COUNTDOWN);
+	}
+
+	/**
+	 * Sets the time in ticks this entity has left
+	 */
+	public void setDecompositionCountdown(int countdown) {
+		this.getDataManager().set(DECOMPOSITION_COUNTDOWN, countdown);
+	}
+
+	private void countdown() {
+		setDecompositionCountdown(getRemainingTicks() - 1);
+	}
+
 	public int getMaxTimeRemaining() {
-		return this.isDecaying() ? (DissolutionConfig.respawn.wowLikeRespawn ? 6000 : 50) : -1;
+		return MAX_DECAY_TIME;
 	}
 	
 	@Override
@@ -129,16 +154,16 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	public void setPlayer(UUID id) {
 		this.getDataManager().set(PLAYER, Optional.of(id));
 	}
-	
+
 	@Override
 	protected void entityInit() {
 		super.entityInit();
 		this.getDataManager().register(PLAYER, Optional.absent());
-		this.getDataManager().register(DECAY, DissolutionConfig.respawn.bodiesDespawn);
+		this.getDataManager().register(DECOMPOSITION_COUNTDOWN, MAX_DECAY_TIME);
 	}
 	
 	@Override
-	protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource cause) {
+	protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, @Nonnull DamageSource cause) {
 		super.dropLoot(wasRecentlyHit, lootingModifier, cause);
 		if(this.inventory != null)
 			this.inventory.dropAllItems(this);
@@ -148,14 +173,15 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier) {
 		this.getEquipmentAndArmor().forEach(stack -> this.entityDropItem(stack, 0.5f));
     }
-	
+
+
 	@Override
 	public void readEntityFromNBT(NBTTagCompound compound) {
 		super.readEntityFromNBT(compound);
         this.inventory.readFromNBT(compound.getTagList("Inventory", 10));
         this.soulInventoryProvider.deserializeNBT((NBTTagCompound) compound.getTag("SoulInventory"));
-        setPlayer(compound.getUniqueId("player"));
-        setDecaying(compound.getBoolean("decaying"));
+        this.setPlayer(compound.getUniqueId("player"));
+		this.setDecompositionCountdown(compound.getInteger("remainingTicks"));
 	}
 	
 	@Override
@@ -163,10 +189,11 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 		super.writeEntityToNBT(compound);
 		compound.setTag("SoulInventory", this.soulInventoryProvider.serializeNBT());
         compound.setTag("Inventory", this.inventory.writeToNBT(new NBTTagList()));
-        compound.setUniqueId("player", getPlayer());
-        compound.setBoolean("decaying", isDecaying());
+        compound.setUniqueId("player", this.getPlayer());
+		compound.setInteger("remainingTicks", getRemainingTicks());
 	}
 
+	@Nonnull
 	@Override
 	public String toString() {
 		return "EntityPlayerCorpse [inventory=" + inventory + ",\n player=" + this.getPlayer() + ",\n soulInventory=" + this.getSoulHandlerCapability() + "]";
@@ -174,19 +201,19 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	
 	private CapabilitySoulHandler.Provider soulInventoryProvider = new CapabilitySoulHandler.Provider();
 	
-	public ISoulHandler getSoulHandlerCapability() {
+	private ISoulHandler getSoulHandlerCapability() {
 		return getCapability(CapabilitySoulHandler.CAPABILITY_SOUL_INVENTORY, EnumFacing.DOWN);
 	}
 	
 	@Override
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+	public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
 		if(capability == CapabilitySoulHandler.CAPABILITY_SOUL_INVENTORY)
 			return soulInventoryProvider.hasCapability(capability, facing);
 		return super.hasCapability(capability, facing);
 	}
 	
 	@Override
-	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+	public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
 		if(capability == CapabilitySoulHandler.CAPABILITY_SOUL_INVENTORY)
 			return soulInventoryProvider.getCapability(capability, facing);
 		return super.getCapability(capability, facing);

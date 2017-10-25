@@ -7,14 +7,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public interface ISoulInteractable {
-	
-	default boolean acceptLeftClick (EntityPlayer pl) {
-		return true;
-	}
-	
-	default boolean acceptRightClick (EntityPlayer pl) {
-		return true;
-	}
-	
-}
+/**
+ * Indicates that ectoplasms are able to interact with this block or entity
+ */
+public interface ISoulInteractable {}

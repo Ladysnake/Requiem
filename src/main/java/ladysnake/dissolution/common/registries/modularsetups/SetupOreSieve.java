@@ -10,6 +10,7 @@ import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing.EnumPartTyp
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.capabilities.CapabilityDistillateHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.InputItemHandler;
 import ladysnake.dissolution.common.items.AlchemyModuleTypes;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
@@ -24,14 +25,14 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
+import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SetupOreSieve extends ModularMachineSetup {
 
-	private final Map<Item, Item> conversions;
-	private final Map<Item, DistillateStack> essentiaConversions;
+	private final Map<Item, ExtractorResult> conversions;
 	private static final ImmutableSet<ItemAlchemyModule.AlchemyModule> setup = ImmutableSet.of(
 			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_TOP, 1),
 			new ItemAlchemyModule.AlchemyModule(AlchemyModuleTypes.MINERAL_FILTER, 1),
@@ -40,15 +41,17 @@ public class SetupOreSieve extends ModularMachineSetup {
 	public SetupOreSieve() {
 		this.setRegistryName(new ResourceLocation(Reference.MOD_ID, "ore_sieve"));
 		this.conversions = new HashMap<>();
-		this.essentiaConversions = new HashMap<>();
 		addConversion(Blocks.CLAY, ModBlocks.DEPLETED_CLAY, new DistillateStack(DistillateTypes.SALIS, 1));
 		addConversion(Blocks.COAL_BLOCK, ModBlocks.DEPLETED_COAL, new DistillateStack(DistillateTypes.SULPURIS, 1));
 		addConversion(Blocks.MAGMA, ModBlocks.DEPLETED_MAGMA, new DistillateStack(DistillateTypes.CINNABARIS, 1));
+		this.conversions.put(Item.getItemFromBlock(Blocks.SOUL_SAND), new ExtractorResult(
+				Collections.singletonList(Pair.of(0.1f, new ItemStack(ModItems.STONE_HEART))), Collections.emptyList()));
 	}
 
 	private void addConversion(Block input, Block output, DistillateStack essentiaOutput) {
-		this.conversions.put(Item.getItemFromBlock(input), Item.getItemFromBlock(output));
-		this.essentiaConversions.put(Item.getItemFromBlock(input), essentiaOutput);
+		this.conversions.put(Item.getItemFromBlock(input), new ExtractorResult(
+				Collections.singletonList(Pair.of(1f, new ItemStack(output))),
+				Collections.singletonList(Pair.of(1f, essentiaOutput))));
 	}
 
 	@Override
@@ -101,13 +104,14 @@ public class SetupOreSieve extends ModularMachineSetup {
 					if(depletedOutput.getStackInSlot(0).getCount() < depletedOutput.getSlotLimit(0)
 						&& !essentiaOutput.isFull()) {
 						ItemStack inputStack = input.extractItem(0, 1, false);
-						
-						depletedOutput.insertItemInternal(0, new ItemStack(conversions.get(inputStack.getItem())), false);
+
+						for(ItemStack stack : conversions.get(inputStack.getItem()).getItemResult(tile.getWorld().rand))
+							depletedOutput.insertItemInternal(0, stack, false);
 						depletedOutput.insertItemInternal(0,
-								tile.tryOutput(depletedOutput.extractItem(0, 10, false), EnumPartType.BOTTOM), false);
+								tile.tryOutput(depletedOutput.extractItem(0, 5, false), EnumPartType.BOTTOM), false);
 						
-						DistillateStack result = essentiaConversions.get(inputStack.getItem());
-						this.essentiaOutput.insert(result);
+						for(DistillateStack result : conversions.get(inputStack.getItem()).getDistillateResult(tile.getWorld().rand))
+							this.essentiaOutput.insert(result);
 					}
 				}
 				
@@ -152,6 +156,7 @@ public class SetupOreSieve extends ModularMachineSetup {
 			CapabilityDistillateHandler.CAPABILITY_ESSENTIA.getStorage().readNBT(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, essentiaOutput, EnumFacing.NORTH, compound.getTag("essentiaOutput"));
 		}
 		
+		@SuppressWarnings("ConstantConditions")
 		@Override
 		public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 			compound.setTag("input", CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().writeNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, this.input, EnumFacing.EAST));
@@ -161,4 +166,21 @@ public class SetupOreSieve extends ModularMachineSetup {
 		}
 	}
 
+	private static class ExtractorResult {
+		private List<Pair<Float, ItemStack>> itemResult;
+		private List<Pair<Float, DistillateStack>> distillateResult;
+
+		private ExtractorResult(List<Pair<Float, ItemStack>> itemResult, List<Pair<Float, DistillateStack>> distillateResult) {
+			this.itemResult = itemResult;
+			this.distillateResult = distillateResult;
+		}
+
+		private List<ItemStack> getItemResult(Random rand) {
+			return this.itemResult.stream().filter(pair -> pair.getLeft() > rand.nextFloat()).map(Pair::getRight).collect(Collectors.toList());
+		}
+
+		private List<DistillateStack> getDistillateResult(Random rand) {
+			return this.distillateResult.stream().filter(pair -> pair.getLeft() < rand.nextFloat()).map(Pair::getRight).collect(Collectors.toList());
+		}
+	}
 }

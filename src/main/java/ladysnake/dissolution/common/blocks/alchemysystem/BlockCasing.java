@@ -1,14 +1,12 @@
 package ladysnake.dissolution.common.blocks.alchemysystem;
 
-import ladysnake.dissolution.client.models.blocks.PropertyBoolean;
 import ladysnake.dissolution.client.models.blocks.PropertyResourceLocation;
 import ladysnake.dissolution.client.models.blocks.UnlistedPropertyModels;
-import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.registries.modularsetups.ISetupInstance;
-import ladysnake.dissolution.common.registries.modularsetups.SetupPowerGenerator;
+import ladysnake.dissolution.common.registries.modularsetups.SetupResonantCoil;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import ladysnake.dissolution.common.tileentities.TileEntityProxy;
 import net.minecraft.block.Block;
@@ -50,6 +48,8 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	public static final ResourceLocation CASING_BOTTOM = new ResourceLocation(Reference.MOD_ID, "machine/wooden_machine_casing_bottom");
 	public static final ResourceLocation CASING_TOP = new ResourceLocation(Reference.MOD_ID, "machine/wooden_machine_casing_top");
 	public static final ResourceLocation PLUG = new ResourceLocation(Reference.MOD_ID, "machine/pipe/plug");
+	public static final ResourceLocation PLUG_CHEST = new ResourceLocation(Reference.MOD_ID, "machine/pipe/chest_plug");
+	public static final ResourceLocation PLUG_HOPPER = new ResourceLocation(Reference.MOD_ID, "machine/pipe/hopper_plug");
 	
 	public BlockCasing() {
 		super();
@@ -80,8 +80,8 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 		TileEntity te = worldIn.getTileEntity(pos);
 		if(te instanceof TileEntityModularMachine) {
 			ISetupInstance setup = ((TileEntityModularMachine)te).getCurrentSetup();
-			if(setup instanceof SetupPowerGenerator.Instance)
-				((SetupPowerGenerator.Instance)setup).scheduleUpdate();
+			if(setup instanceof SetupResonantCoil.Instance)
+				((SetupResonantCoil.Instance)setup).scheduleUpdate();
 		}
 	}
 	
@@ -114,6 +114,7 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 	
 	@Nonnull
 	@Override
+	@SideOnly(Side.CLIENT)
 	public IBlockState getExtendedState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
 		TileEntity te = world.getTileEntity(state.getValue(PART) == EnumPartType.BOTTOM ? pos : pos.down());
 		if(te instanceof TileEntityModularMachine) {

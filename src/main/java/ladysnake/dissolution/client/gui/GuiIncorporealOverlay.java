@@ -11,10 +11,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.GuiIngameForge;
@@ -26,13 +30,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
  @SideOnly(Side.CLIENT)
 public class GuiIncorporealOverlay extends Gui {
-	
-	private static final ResourceLocation ORIGIN_PATH = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_compass.png");
-	private static final ResourceLocation MAGIC_BAR_PATH = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_magic_bar.png");
-	private static final ResourceLocation ECTOPLASM_ICONS = new ResourceLocation(Reference.MOD_ID, "textures/gui/ectoplasm_icons.png");
-	private Random rand = new Random();
 
-	private Minecraft mc;
+ 	private static final ResourceLocation WIDGETS_TEX_PATH = new ResourceLocation("textures/gui/widgets.png");
+	private static final ResourceLocation ORIGIN_PATH = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_compass.png");
+	private static final ResourceLocation ECTOPLASM_ICONS = new ResourceLocation(Reference.MOD_ID, "textures/gui/icons.png");
+	private final Random rand = new Random();
+
+	private final Minecraft mc;
 	
 	public GuiIncorporealOverlay(Minecraft mc) {
 		super();
@@ -46,13 +50,16 @@ public class GuiIncorporealOverlay extends Gui {
 			OverlaysRenderer.INSTANCE.renderOverlays(event);
 
 			/* Draw Incorporeal Ingame Gui */
-			if (pl.getCorporealityStatus().isIncorporeal()) {
+			if (pl.getCorporealityStatus().isIncorporeal() && pl.getPossessed() == null) {
 				if (DissolutionConfig.client.soulCompass)
 					this.drawOriginIndicator(event.getResolution());
 			}
 
 			if (this.mc.playerController.shouldDrawHUD() && this.mc.getRenderViewEntity() instanceof EntityPlayer && pl.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.ECTOPLASM) {
-				this.drawEctoplasmHealthBar(this.mc.player, event.getResolution());
+				this.drawEctoplasmHealthBar(this.mc.player, event.getResolution(), 0);
+			} else if (this.mc.playerController.shouldDrawHUD() && pl.getPossessed() instanceof EntityLivingBase && ((EntityLivingBase) pl.getPossessed()).getHealth() > 0) {
+				this.drawEctoplasmHealthBar(this.mc.player, event.getResolution(), 1);
+				this.renderHotbar(event.getResolution(), event.getPartialTicks());
 			}
 		}
 	}
@@ -111,17 +118,19 @@ public class GuiIncorporealOverlay extends Gui {
         GlStateManager.popAttrib();
 	}
 
-	private void drawEctoplasmHealthBar(EntityPlayer player, ScaledResolution scaledResolution) {
+	private void drawEctoplasmHealthBar(EntityPlayer player, ScaledResolution scaledResolution, int textureRow) {
 		this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
 		int width = scaledResolution.getScaledWidth();
 		int height = scaledResolution.getScaledHeight();
 
 		GlStateManager.pushAttrib();
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-				GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-				GlStateManager.DestFactor.ZERO);
+//		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.75F);
+//		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
+//				GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
+//				GlStateManager.DestFactor.ZERO);
+		GlStateManager.enableAlpha();
 		GlStateManager.enableBlend();
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
 		int health = (int) Math.ceil(player.getHealth());
 		IAttributeInstance attrMaxHealth = player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
@@ -133,7 +142,7 @@ public class GuiIncorporealOverlay extends Gui {
 		GuiIngameForge.left_height += (healthRows * rowHeight);
 		if (rowHeight != 10) GuiIngameForge.left_height += 10 - rowHeight;
 
-		final int TOP = 0;
+		final int TOP = textureRow * 9;
 		final int MARGIN = 0;
 
 		for (int i = MathHelper.ceil((healthMax) / 2.0F) - 1; i >= 0; --i) {
@@ -151,18 +160,112 @@ public class GuiIncorporealOverlay extends Gui {
 		}
 		GlStateManager.popAttrib();
 	}
-	
-	public void drawMagicBar(ScaledResolution scaledRes) {
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(MAGIC_BAR_PATH);
-		int i = scaledRes.getScaledWidth() / 2;
-        float f = this.zLevel;
-        int j = 182;
-        int k = 91;
-        this.zLevel = -90.0F;
-        this.drawTexturedModalRect(i - 91, scaledRes.getScaledHeight() - 22, 0, 0, 182, 22);
-        int currentItem = 4;
-        this.drawTexturedModalRect(i - 91 - 1 + currentItem * 20, scaledRes.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
-        
-	}
-}
+
+	 private void renderHotbar(ScaledResolution sr, float partialTicks)
+	 {
+		 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		 this.mc.getTextureManager().bindTexture(WIDGETS_TEX_PATH);
+		 EntityPlayer entityplayer = this.mc.player;
+		 ItemStack itemstack = entityplayer.getHeldItemOffhand();
+		 EnumHandSide enumhandside = entityplayer.getPrimaryHand().opposite();
+		 int i = sr.getScaledWidth() / 2;
+		 float f = this.zLevel;
+		 int j = 182;
+		 int k = 91;
+		 this.zLevel = -90.0F;
+		 this.drawTexturedModalRect(i - k, sr.getScaledHeight() - 22, 0, 0, j, 22);
+		 this.drawTexturedModalRect(i - k - 1 + entityplayer.inventory.currentItem * 20, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
+
+		 if (!itemstack.isEmpty())
+         {
+             if (enumhandside == EnumHandSide.LEFT)
+             {
+                 this.drawTexturedModalRect(i - 91 - 29, sr.getScaledHeight() - 23, 24, 22, 29, 24);
+             }
+             else
+             {
+                 this.drawTexturedModalRect(i + 91, sr.getScaledHeight() - 23, 53, 22, 29, 24);
+             }
+         }
+
+		 this.zLevel = f;
+		 GlStateManager.enableRescaleNormal();
+		 GlStateManager.enableBlend();
+		 GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		 RenderHelper.enableGUIStandardItemLighting();
+
+		 for (int l = 0; l < 9; ++l)
+         {
+             int i1 = i - 90 + l * 20 + 2;
+             int j1 = sr.getScaledHeight() - 16 - 3;
+             this.renderHotbarItem(i1, j1, partialTicks, entityplayer, entityplayer.inventory.mainInventory.get(l));
+         }
+
+		 if (!itemstack.isEmpty())
+         {
+             int l1 = sr.getScaledHeight() - 16 - 3;
+
+             if (enumhandside == EnumHandSide.LEFT)
+             {
+                 this.renderHotbarItem(i - 91 - 26, l1, partialTicks, entityplayer, itemstack);
+             }
+             else
+             {
+                 this.renderHotbarItem(i + 91 + 10, l1, partialTicks, entityplayer, itemstack);
+             }
+         }
+
+		 if (this.mc.gameSettings.attackIndicator == 2)
+         {
+             float f1 = this.mc.player.getCooledAttackStrength(0.0F);
+
+             if (f1 < 1.0F)
+             {
+                 int i2 = sr.getScaledHeight() - 20;
+                 int j2 = i + 91 + 6;
+
+                 if (enumhandside == EnumHandSide.RIGHT)
+                 {
+                     j2 = i - 91 - 22;
+                 }
+
+                 this.mc.getTextureManager().bindTexture(Gui.ICONS);
+                 int k1 = (int)(f1 * 19.0F);
+                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                 this.drawTexturedModalRect(j2, i2, 0, 94, 18, 18);
+                 this.drawTexturedModalRect(j2, i2 + 18 - k1, 18, 112 - k1, 18, k1);
+             }
+         }
+
+		 RenderHelper.disableStandardItemLighting();
+		 GlStateManager.disableRescaleNormal();
+		 GlStateManager.disableBlend();
+	 }
+
+	 private void renderHotbarItem(int p_184044_1_, int p_184044_2_, float p_184044_3_, EntityPlayer player, ItemStack stack)
+	 {
+		 if (!stack.isEmpty())
+		 {
+			 float f = (float)stack.getAnimationsToGo() - p_184044_3_;
+
+			 if (f > 0.0F)
+			 {
+				 GlStateManager.pushMatrix();
+				 float f1 = 1.0F + f / 5.0F;
+				 GlStateManager.translate((float)(p_184044_1_ + 8), (float)(p_184044_2_ + 12), 0.0F);
+				 GlStateManager.scale(1.0F / f1, (f1 + 1.0F) / 2.0F, 1.0F);
+				 GlStateManager.translate((float)(-(p_184044_1_ + 8)), (float)(-(p_184044_2_ + 12)), 0.0F);
+			 }
+
+			 this.mc.getRenderItem().renderItemAndEffectIntoGUI(player, stack, p_184044_1_, p_184044_2_);
+
+			 if (f > 0.0F)
+			 {
+				 GlStateManager.popMatrix();
+			 }
+
+			 this.mc.getRenderItem().renderItemOverlays(this.mc.fontRenderer, stack, p_184044_1_, p_184044_2_);
+		 }
+	 }
+
+ }

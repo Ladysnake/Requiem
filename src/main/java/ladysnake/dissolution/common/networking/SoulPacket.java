@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class SoulPacket implements IMessageHandler<SoulMessage, IMessage> {
 
+	@SuppressWarnings("MethodCallSideOnly")
 	@Override
 	public IMessage onMessage(SoulMessage message, MessageContext ctx) {
 		if (ctx.side.isClient())

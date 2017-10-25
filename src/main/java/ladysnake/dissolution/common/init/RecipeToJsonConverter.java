@@ -101,11 +101,11 @@ public class RecipeToJsonConverter {
 		// names the json the same name as the output's registry name
 		// repeatedly adds _alt if a file already exists
 		// janky I know but it works
-		String suffix = result.getItem().getHasSubtypes() ? "_" + result.getItemDamage() : "";
+		StringBuilder suffix = new StringBuilder(result.getItem().getHasSubtypes() ? "_" + result.getItemDamage() : "");
 		File f = new File(RECIPE_DIR, result.getItem().getRegistryName().getResourcePath() + suffix + ".json");
 		
 		while (f.exists()) {
-			suffix += "_alt";
+			suffix.append("_alt");
 			f = new File(RECIPE_DIR, result.getItem().getRegistryName().getResourcePath() + suffix + ".json");
 		}
 		

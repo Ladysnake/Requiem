@@ -11,7 +11,9 @@ import ladysnake.dissolution.common.items.AlchemyModuleTypes;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
 import ladysnake.dissolution.common.items.ItemPlug;
 import ladysnake.dissolution.common.registries.modularsetups.ISetupInstance;
-import ladysnake.dissolution.common.registries.modularsetups.SetupPowerGenerator;
+import ladysnake.dissolution.common.registries.modularsetups.ModularMachineSetup;
+import ladysnake.dissolution.common.registries.modularsetups.SetupResonantCoil;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,6 +24,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ITickable;
@@ -29,6 +33,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -150,7 +156,7 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 				&& installedModules.add(module);
 		if(added) {
 			this.verifySetup();
-			SetupPowerGenerator.THREADPOOL.submit(() -> AbstractPowerConductor.updatePowerCore(world, pos));
+			SetupResonantCoil.THREADPOOL.submit(() -> AbstractPowerConductor.updatePowerCore(world, pos));
 			this.world.markBlockRangeForRenderUpdate(this.pos, this.pos);
 			this.markDirty();
 		}
@@ -199,7 +205,16 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 
 	public ResourceLocation getPlugModel(EnumFacing facing, BlockCasing.EnumPartType part) {
 		if(isPlugAttached(facing, part)) {
-			return this.currentSetup != null ? this.currentSetup.getPlugModel(adjustFaceIn(facing), part, BlockCasing.PLUG) : null;
+			ResourceLocation plug;
+			TileEntity neighbour = this.world.getTileEntity((part == BlockCasing.EnumPartType.TOP
+					? this.getPos().up() : this.getPos()).offset(facing));
+			if(neighbour instanceof TileEntityChest)
+				plug = BlockCasing.PLUG_CHEST;
+			else if(neighbour instanceof TileEntityHopper)
+				plug = BlockCasing.PLUG_HOPPER;
+			else
+				plug = BlockCasing.PLUG;
+			return this.currentSetup != null ? this.currentSetup.getPlugModel(adjustFaceIn(facing), part, plug) : null;
 		}
 		return null;
 	}
@@ -208,6 +223,7 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 		return ImmutableSet.copyOf(this.installedModules);
 	}
 
+	@SideOnly(Side.CLIENT)
 	public Set<ResourceLocation> getModelsForRender() {
 		Set<ResourceLocation> ret = this.installedModules.stream().map(ItemAlchemyModule.AlchemyModule::getModel)
 				.collect(Collectors.toSet());

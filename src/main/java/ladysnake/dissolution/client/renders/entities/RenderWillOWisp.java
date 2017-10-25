@@ -27,7 +27,7 @@ import java.io.IOException;
 
 public class RenderWillOWisp<T extends Entity> extends Render<T> {
 
-	public static ResourceLocation WILL_O_WISP_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/entity/will_o_wisp.png");
+	public static final ResourceLocation WILL_O_WISP_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/entity/will_o_wisp.png");
 
 	public RenderWillOWisp(RenderManager renderManager) {
 		super(renderManager);
@@ -61,8 +61,8 @@ public class RenderWillOWisp<T extends Entity> extends Render<T> {
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferbuilder = tessellator.getBuffer();
 			int i = entity.ticksExisted % 34 / 2;
-			float minU = (i / 5 * 16 + 0)  / 80f;
-			float minV = (i % 4 * 16 + 0)  / 80f;
+			float minU = (i / 5 * 16)  / 80f;
+			float minV = (i % 4 * 16)  / 80f;
 			float maxU = (i / 5 * 16 + 16) / 80f;
 			float maxV = (i % 4 * 16 + 16) / 80f;
 			bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);

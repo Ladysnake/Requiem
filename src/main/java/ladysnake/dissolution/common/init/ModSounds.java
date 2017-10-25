@@ -10,7 +10,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 @Mod.EventBusSubscriber(modid=Reference.MOD_ID)
 public enum ModSounds {
-	lost_soul_death;
+	resonant_coil;
 
 	private final SoundEvent sound;
 
@@ -25,7 +25,7 @@ public enum ModSounds {
 	}
 
 	@SubscribeEvent
-    public void onRegister(RegistryEvent.Register<SoundEvent> event) {
+    public static void onRegister(RegistryEvent.Register<SoundEvent> event) {
 		IForgeRegistry<SoundEvent> reg = event.getRegistry();
 		for(ModSounds s : ModSounds.values())
 			reg.register(s.sound);

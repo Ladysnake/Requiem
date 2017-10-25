@@ -16,6 +16,7 @@ public class PacketHandler
     registerMessage(PingPacket.class, PingMessage.class);
     registerMessage(SoulPacket.class, SoulMessage.class);
     registerMessage(DisplayItemPacket.class, DisplayItemMessage.class);
+    registerMessage(PossessionPacket.class, PossessionMessage.class);
   }
   
   private static int nextPacketId = 0;

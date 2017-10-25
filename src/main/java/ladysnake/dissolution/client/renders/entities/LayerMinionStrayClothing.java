@@ -3,12 +3,15 @@ package ladysnake.dissolution.client.renders.entities;
 import ladysnake.dissolution.client.models.entities.ModelMinionSkeleton;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.entity.minion.EntityMinionStray;
+import net.minecraft.client.model.ModelSkeleton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nonnull;
 
 @SideOnly(Side.CLIENT)
 public class LayerMinionStrayClothing implements LayerRenderer<EntityMinionStray>
@@ -22,13 +25,13 @@ public class LayerMinionStrayClothing implements LayerRenderer<EntityMinionStray
         this.renderer = renderer;
     }
 
-    public void doRenderLayer(EntityMinionStray entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
+    public void doRenderLayer(@Nonnull EntityMinionStray entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
     {
         this.layerModel.setModelAttributes(this.renderer.getMainModel());
-        this.layerModel.setLivingAnimations(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks);
+        this.layerModel.setLivingAnimations(entityLivingBaseIn, limbSwing, limbSwingAmount, partialTicks);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         this.renderer.bindTexture(STRAY_CLOTHES_TEXTURES);
-        this.layerModel.render(entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+        this.layerModel.render(entityLivingBaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
     }
 
     public boolean shouldCombineTextures()

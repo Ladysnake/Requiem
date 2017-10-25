@@ -14,7 +14,8 @@ import net.minecraftforge.fml.common.IWorldGenerator;
 
 public class WorldGen implements IWorldGenerator {
 	
-	private WorldGenLakes mercuryLakesGenerator = new WorldGenLakes(ModFluids.MERCURY.fluidBlock());
+	//private WorldGenLakes mercuryLakesGenerator = new WorldGenLakes(ModFluids.MERCURY.fluidBlock());
+	private WorldGenLamentStones lamentStonesGenerator = new WorldGenLamentStones();
 
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
@@ -37,27 +38,19 @@ public class WorldGen implements IWorldGenerator {
 
 
 
-	private void generateNether(World world, int i, int j, Random random) {
-
-	}
+	private void generateNether(World world, int i, int j, Random random) {}
 
 	private void generateOverWorld(World world, int i, int j, Random random) {
 		
 		int Xpos = i + random.nextInt(8);
-		int Ypos = random.nextInt(128);
+		int Ypos = 256;
 		int Zpos = j + random.nextInt(8);
-		
-		/*CANDLE*/
-		//new StructureCandle().generate(world, new BlockPos(Xpos, Ypos, Zpos), random);
-		
-		/*MERCURY_LAKES*/
-		if(DissolutionConfig.worldgen.spawnMercuryLakesFreq > 0 && random.nextInt(DissolutionConfig.worldgen.spawnMercuryLakesFreq) == 0)
-			mercuryLakesGenerator.generate(world, random, new BlockPos(Xpos, Ypos, Zpos));
-		
-	}
-		
-	private void generateEnd(World world, int i, int j, Random random) {
+
+		if(random.nextInt() % DissolutionConfig.worldgen.spawnLamentStonesFreq == 0)
+			lamentStonesGenerator.generate(world, random, new BlockPos(Xpos, Ypos, Zpos));
 
 	}
+		
+	private void generateEnd(World world, int i, int j, Random random) {}
 
 }

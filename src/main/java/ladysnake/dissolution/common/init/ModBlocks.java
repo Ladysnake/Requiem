@@ -12,7 +12,7 @@ import ladysnake.dissolution.client.models.blocks.DistillatePipeBakedModel;
 import ladysnake.dissolution.client.models.blocks.ModularMachineBakedModel;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.BlockAncientTomb;
+import ladysnake.dissolution.common.blocks.BlockLamentStone;
 import ladysnake.dissolution.common.blocks.BlockDepleted;
 import ladysnake.dissolution.common.blocks.BlockDepletedClay;
 import ladysnake.dissolution.common.blocks.BlockDepletedMagma;
@@ -48,7 +48,7 @@ public final class ModBlocks {
 	public static Block CINNABAR;
 	public static Block HALITE;
 	public static Block SULPHUR;
-	public static BlockAncientTomb ANCIENT_TOMB;
+	public static BlockLamentStone LAMENT_STONE;
 	public static BlockBarrage BARRAGE;
 	public static BlockCasing CASING;
 	public static BlockDistillatePipe DISTILLATE_PIPE;
@@ -77,7 +77,7 @@ public final class ModBlocks {
     			CINNABAR = name(new Block(Material.ROCK), "cinnabar_block"),
 				HALITE = name(new Block(Material.ROCK), "halite_block"),
 				SULPHUR = name(new Block(Material.ROCK), "sulfur_block"),
-				ANCIENT_TOMB = name(new BlockAncientTomb(), "ancient_tomb"),
+				LAMENT_STONE = name(new BlockLamentStone(), "lament_stone"),
     			BARRAGE = name(new BlockBarrage(), Reference.Blocks.BARRAGE),
     			DEPLETED_CLAY = name(new BlockDepletedClay(), "depleted_clay_block"),
     			DEPLETED_COAL = name(new BlockDepleted(Material.ROCK), "depleted_coal_block"),
@@ -124,8 +124,9 @@ public final class ModBlocks {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void registerRenders(ModelRegistryEvent event) {
-    	ItemAlchemyModule.registerModels();
     	DissolutionModelLoader.addModel(BlockCasing.PLUG, ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
+		DissolutionModelLoader.addModel(BlockCasing.PLUG_CHEST, ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
+		DissolutionModelLoader.addModel(BlockCasing.PLUG_HOPPER, ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
     	DissolutionModelLoader.addAllModels(BlockCasing.CASING_BOTTOM, BlockCasing.CASING_TOP, CableBakedModel.INTERSECTION,
 				DistillatePipeBakedModel.INTERSECTION);
 		DissolutionModelLoader.addModel(CableBakedModel.START, ModelRotation.X0_Y90,

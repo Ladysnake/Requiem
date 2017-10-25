@@ -26,8 +26,8 @@ public class Dissolution {
 	 
 	 @EventHandler
 	 public void preInit(FMLPreInitializationEvent event) {
-		 DissolutionConfigManager.loadConfig(event.getSuggestedConfigurationFile());
 		 proxy.preInit();
+		 DissolutionConfigManager.init();
 	 }
 	 
 	 @EventHandler

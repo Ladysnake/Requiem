@@ -14,12 +14,13 @@ import ladysnake.dissolution.common.capabilities.PlayerIncorporealEvent;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PingMessage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,16 +37,19 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldExcep
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.imageio.IIOImage;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 
 @SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber(value=Side.CLIENT, modid=Reference.MOD_ID)
 public class EventHandlerClient {
 
-	public static int cameraAnimation = 0;
+	private static int cameraAnimation = 0;
 
 	private static final float SOUL_VERTICAL_SPEED = 0.1f;
-	private static Field highlightingItemStack;
+	private static final MethodHandle highlightingItemStack;
 	private static int refreshTimer = 0;
 
 	private static float prevHealth = 20;
@@ -53,11 +57,14 @@ public class EventHandlerClient {
 	private static boolean wasRidingLastTick = false;
 
 	static {
+		MethodHandle methodHandle = null;
 		try {
-			highlightingItemStack = ReflectionHelper.findField(GuiIngame.class, "highlightingItemStack", "field_92016_l");
-		} catch (UnableToFindFieldException e) {
+			Field f = ReflectionHelper.findField(GuiIngame.class, "highlightingItemStack", "field_92016_l");
+			methodHandle = MethodHandles.lookup().unreflectSetter(f);
+		} catch (UnableToFindFieldException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
+		highlightingItemStack = methodHandle;
 	}
 	
 	@SubscribeEvent
@@ -84,7 +91,7 @@ public class EventHandlerClient {
 			refreshTimer = 0;
 
 		// Convoluted way of displaying the health of the possessed entity
-		if(player.isRiding() && player.getRidingEntity() instanceof EntityLiving) {
+		if(player.isRiding() && player.getRidingEntity() instanceof EntityLiving && ((EntityLiving)player.getRidingEntity()).getHealth() > 0) {
 			if(!wasRidingLastTick) {
 				prevHealth = player.getHealth();
 				IAttributeInstance maxHealth = player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
@@ -93,7 +100,8 @@ public class EventHandlerClient {
 						((EntityLiving)player.getRidingEntity()).getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
 				wasRidingLastTick = true;
 			}
-			player.setHealth(((EntityLiving)player.getRidingEntity()).getHealth());
+			if(player.getHealth() != ((EntityLiving)player.getRidingEntity()).getHealth())
+				player.setHealth(((EntityLiving)player.getRidingEntity()).getHealth());
 		} else if(wasRidingLastTick) {
 			player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(prevMaxHealth);
 			player.setHealth(prevHealth);
@@ -120,22 +128,22 @@ public class EventHandlerClient {
 	@SubscribeEvent
 	public static void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
-		if(event.getType() == RenderGameOverlayEvent.ElementType.ALL &&
-				CapabilityIncorporealHandler.getHandler(player).getCorporealityStatus().isIncorporeal()) {
+		IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
+		if(event.getType() == RenderGameOverlayEvent.ElementType.ALL && handler.getCorporealityStatus().isIncorporeal()) {
 
 			// Disables most gui renders
 			GuiIngameForge.renderFood = false;
-			GuiIngameForge.renderHotbar = player.isCreative();
+			GuiIngameForge.renderHotbar = player.isCreative() || handler.getPossessed() != null;
 			GuiIngameForge.renderHealthMount = false;
-			GuiIngameForge.renderArmor = false;
+			GuiIngameForge.renderArmor = handler.getPossessed() != null;
 			GuiIngameForge.renderAir = false;
 
 			// Prevents the display of the name of the selected ItemStack
-			if(!player.isCreative()) {
+			if(!player.isCreative() && handler.getPossessed() == null) {
 				try {
-					highlightingItemStack.set(Minecraft.getMinecraft().ingameGUI, ItemStack.EMPTY);
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					e.printStackTrace();
+					highlightingItemStack.invoke(Minecraft.getMinecraft().ingameGUI, ItemStack.EMPTY);
+				} catch (Throwable throwable) {
+					throwable.printStackTrace();
 				}
 			}
 		}
@@ -148,6 +156,8 @@ public class EventHandlerClient {
 
 		final EntityPlayer player = event.player;
 		final EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
+		if(player != playerSP) return;
+
 		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
 
 		if(cameraAnimation-- > 0 && event.player.eyeHeight < 1.8f)
@@ -175,6 +185,9 @@ public class EventHandlerClient {
 				}
 			}
 		}
+		if(playerCorp.getPossessed() != null) {
+			playerCorp.getPossessed().possessTickClient();
+		}
 	}
 
 	private static RenderWillOWisp<EntityPlayer> renderSoul;
@@ -185,10 +198,12 @@ public class EventHandlerClient {
     	if(playerCorp.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.ECTOPLASM){
     		GlStateManager.color(0.9F, 0.9F, 1.0F, 0.5F); // Tints the player blue and halves the transparency
 		} else if(playerCorp.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL) {
-			if(renderSoul == null)
-				renderSoul = new RenderWillOWisp<>(Minecraft.getMinecraft().getRenderManager());
-			renderSoul.doRender(event.getEntityPlayer(), event.getX(), event.getY(), event.getZ(),
-					event.getEntityPlayer().getRotationYawHead(), event.getPartialRenderTick());
+    		if(playerCorp.getPossessed() == null) {
+				if (renderSoul == null)
+					renderSoul = new RenderWillOWisp<>(Minecraft.getMinecraft().getRenderManager());
+				renderSoul.doRender(event.getEntityPlayer(), event.getX(), event.getY(), event.getZ(),
+						event.getEntityPlayer().getRotationYawHead(), event.getPartialRenderTick());
+			}
     		event.setCanceled(true);
 		}
 		event.getRenderer().shadowOpaque = playerCorp.getCorporealityStatus().isIncorporeal() ? 0F : 1F;
@@ -207,7 +222,38 @@ public class EventHandlerClient {
 
 	@SubscribeEvent
 	public static void onRenderSpecificHand(RenderSpecificHandEvent event) {
-   		event.setCanceled(CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player).getCorporealityStatus().isIncorporeal());
+		IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player);
+   		if(handler.getCorporealityStatus().isIncorporeal()) {
+			if (handler.getPossessed() == null || event.getItemStack().isEmpty())
+				event.setCanceled(true);
+			else if(handler.getPossessed() instanceof EntityLivingBase) {
+				EntityLivingBase possessed = (EntityLivingBase) CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player).getPossessed();
+				EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
+				float f1 = playerSP.prevRotationPitch + (playerSP.rotationPitch - playerSP.prevRotationPitch) * event.getPartialTicks();
+				float f2 = playerSP.prevRotationYaw + (playerSP.rotationYaw - playerSP.prevRotationYaw) * event.getPartialTicks();
+				float f3 = possessed.prevRotationPitch + (possessed.rotationPitch - possessed.prevRotationPitch) * event.getPartialTicks();
+				float f4 = possessed.prevRotationYaw + (possessed.rotationYaw - possessed.prevRotationYaw) * event.getPartialTicks();
+				rotateArmReverse(playerSP, possessed, f3, f4, event.getPartialTicks());
+				rotateAroundXAndYReverse(f1, f2, f3, f4);
+			}
+		}
+	}
+
+	private static void rotateArmReverse(EntityPlayerSP entityplayersp, EntityLivingBase possessed, float f2, float f3, float partialTicks)
+	{
+		float f = entityplayersp.prevRenderArmPitch + (entityplayersp.renderArmPitch - entityplayersp.prevRenderArmPitch) * partialTicks;
+		float f1 = entityplayersp.prevRenderArmYaw + (entityplayersp.renderArmYaw - entityplayersp.prevRenderArmYaw) * partialTicks;
+		GlStateManager.rotate(((possessed.rotationPitch - f2) - (entityplayersp.rotationPitch - f)) * 0.1F, 1.0F, 0.0F, 0.0F);
+		GlStateManager.rotate(((possessed.rotationYaw - f3) -(entityplayersp.rotationYaw - f1)) * 0.1F, 0.0F, 1.0F, 0.0F);
+	}
+
+	private static void rotateAroundXAndYReverse(float angle, float angleY, float angle1, float angleY1)
+	{
+		GlStateManager.pushMatrix();
+		GlStateManager.rotate(angle1 - angle, 1.0F, 0.0F, 0.0F);
+		GlStateManager.rotate(angleY1 - angleY, 0.0F, 1.0F, 0.0F);
+		RenderHelper.enableStandardItemLighting();
+		GlStateManager.popMatrix();
 	}
 
 	@SubscribeEvent

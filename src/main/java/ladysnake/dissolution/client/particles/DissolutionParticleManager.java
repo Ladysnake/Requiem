@@ -28,7 +28,7 @@ public class DissolutionParticleManager {
 	
 	public static final DissolutionParticleManager INSTANCE = new DissolutionParticleManager();
 	
-	private Set<Particle> particles = new HashSet<>();
+	private final Set<Particle> particles = new HashSet<>();
 	
 	public void updateParticles() {
 		particles.forEach(Particle::onUpdate);

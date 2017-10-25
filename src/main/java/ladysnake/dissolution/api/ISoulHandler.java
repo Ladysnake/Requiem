@@ -25,20 +25,20 @@ public interface ISoulHandler {
 	
 	/**
 	 * Removes all souls of a specific type
-	 * @param type
+	 * @param filter a list of soul types to remove, will remove all if left empty
 	 * @return a list with all removed souls
 	 */
 	List<Soul> removeAll(SoulTypes... filter);
 	
 	/**
 	 * Sets the size of this soul inventory
-	 * @param size
+	 * @param size the new size of this inventory
 	 * @return if the size of the new inventory is too small, all the elements that were removed
 	 */
 	List<Soul> setSize(int size);
 
 	/**
-	 * @param soulType
+	 * @param filter a list of soul types to count, will return the total if left empty
 	 * @return the number of soul of this specific type this inventory contains
 	 */
 	long getSoulCount(SoulTypes... filter);

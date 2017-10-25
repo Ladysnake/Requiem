@@ -8,6 +8,8 @@ import ladysnake.dissolution.api.DistillateTypes;
 import ladysnake.dissolution.api.DistillateStack;
 import net.minecraft.util.NonNullList;
 
+import javax.annotation.Nonnull;
+
 public class DistillateList extends NonNullList<DistillateStack> {
 	
 	public static DistillateList withSize(int size) {
@@ -65,6 +67,7 @@ public class DistillateList extends NonNullList<DistillateStack> {
 	}
 	
 	@Override
+	@Nonnull
 	public DistillateStack remove(int index) {
 		return this.set(index, DistillateStack.EMPTY);
 	}

@@ -55,9 +55,9 @@ public class CapabilityDistillateHandler {
 	 */
 	public static class DefaultDistillateHandler implements IDistillateHandler, IDistillateHandlerModifiable {
 
-		private Map<DistillateTypes, Float> suction = new HashMap<>();
+		private final Map<DistillateTypes, Float> suction = new HashMap<>();
 		private int maxSize;
-		private DistillateList content;
+		private final DistillateList content;
 
 		public DefaultDistillateHandler(int size) {
 			this(size, 1);
@@ -143,7 +143,7 @@ public class CapabilityDistillateHandler {
 
 	public static class Provider implements ICapabilitySerializable<NBTTagCompound> {
 
-		IDistillateHandler instance = CAPABILITY_ESSENTIA.getDefaultInstance();
+		final IDistillateHandler instance = CAPABILITY_ESSENTIA.getDefaultInstance();
 
 		@Override
 		public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {

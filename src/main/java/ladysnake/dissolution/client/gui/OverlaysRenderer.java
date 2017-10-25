@@ -29,7 +29,7 @@ public class OverlaysRenderer {
     void renderOverlays(RenderGameOverlayEvent.Post event) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
-		if(playerCorp.getCorporealityStatus().isIncorporeal())
+		if(playerCorp.getCorporealityStatus().isIncorporeal() && playerCorp.getPossessed() == null)
 			drawIncorporealOverlay(event.getResolution());
 		if(player.world.getBlockState(player.getPosition().up()).getBlock() == ModFluids.MERCURY.fluidBlock()) {
 			renderWaterOverlayTexture(event.getPartialTicks());

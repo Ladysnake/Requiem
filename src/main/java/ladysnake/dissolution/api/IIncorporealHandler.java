@@ -13,12 +13,18 @@ import java.util.UUID;
 public interface IIncorporealHandler {
 
 	enum CorporealityStatus {
-		CORPOREAL,
-		ECTOPLASM,
-		SOUL;
+		NORMAL(true),
+		ECTOPLASM(false),
+		SOUL(false);
+
+		private final boolean corporeal;
+
+		CorporealityStatus(boolean corporeal) {
+			this.corporeal = corporeal;
+		}
 
 		public boolean isIncorporeal() {
-			return this != CORPOREAL;
+			return !this.corporeal;
 		}
 	}
 
@@ -32,6 +38,10 @@ public interface IIncorporealHandler {
 	 */
 	@Nonnull
 	CorporealityStatus getCorporealityStatus();
+
+	void setPossessed(IPossessable possessable);
+
+	IPossessable getPossessed();
 
 	EctoplasmStats getEctoplasmStats();
 

@@ -57,7 +57,6 @@ public class ItemEyeUndead extends ItemOcculare {
 					used = true;
 				}
 				if(!worldIn.isRemote) {
-					m.setCorpse(false);
 					m.setOwnerId(player.getUniqueID());
 				}
 			}

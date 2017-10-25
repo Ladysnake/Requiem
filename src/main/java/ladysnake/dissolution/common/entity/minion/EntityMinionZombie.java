@@ -3,18 +3,16 @@ package ladysnake.dissolution.common.entity.minion;
 import io.netty.buffer.ByteBuf;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
 import net.minecraft.block.Block;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAILookIdle;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
-import net.minecraft.entity.ai.EntityAIWatchClosest;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntityPigZombie;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -26,6 +24,9 @@ public class EntityMinionZombie extends AbstractMinion implements IEntityAdditio
 
 	private boolean isHusk;
 
+	/**
+	 * Used by minecraft to spawn the entity internally
+	 */
 	public EntityMinionZombie(World worldIn) {
 		this(worldIn, false, false);
 	}
@@ -33,7 +34,6 @@ public class EntityMinionZombie extends AbstractMinion implements IEntityAdditio
 	/**
 	 * Creates a zombie minion
 	 * 
-	 * @param worldIn
 	 * @param isHusk
 	 *            false for the default zombie
 	 */
@@ -58,25 +58,45 @@ public class EntityMinionZombie extends AbstractMinion implements IEntityAdditio
 	public boolean isHusk() {
 		return isHusk;
 	}
-	
+
+	public boolean attackEntityAsMob(Entity entityIn) {
+		boolean flag = super.attackEntityAsMob(entityIn);
+		if (flag) {
+			float f = this.world.getDifficultyForLocation(new BlockPos(this)).getAdditionalDifficulty();
+
+			if (this.getHeldItemMainhand().isEmpty()) {
+				if(this.isBurning() && this.rand.nextFloat() < f * 0.3F) {
+					entityIn.setFire(2 * (int) f);
+				}
+				if (isHusk() && entityIn instanceof EntityLivingBase) {
+					((EntityLivingBase)entityIn).addPotionEffect(new PotionEffect(MobEffects.HUNGER, 140 * (int)f));
+				}
+			}
+		}
+		return flag;
+	}
+
+
 	@Override
-	protected SoundEvent getAmbientSound()
-    {
+	protected void handleSunExposure() {
+		if(!this.isHusk)
+			super.handleSunExposure();
+	}
+
+	@Override
+	protected SoundEvent getAmbientSound() {
         return (isInert()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound()
-    {
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
     	return (isInert()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_HURT;
     }
 
-    protected SoundEvent getDeathSound()
-    {
+    protected SoundEvent getDeathSound() {
     	return (isInert()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_DEATH;
     }
 
-    protected SoundEvent getStepSound()
-    {
+    protected SoundEvent getStepSound() {
     	return (isInert()) ? null : (this.isHusk()) ? SoundEvents.ENTITY_HUSK_AMBIENT : SoundEvents.ENTITY_ZOMBIE_STEP;
     }
 

@@ -6,10 +6,10 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.IRangedAttackMob;
-import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
-import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
+import net.minecraft.entity.ai.*;
 import net.minecraft.entity.monster.AbstractSkeleton;
+import net.minecraft.entity.passive.EntityWolf;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.init.Items;
@@ -22,6 +22,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -30,21 +31,26 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
+
 public class EntityMinionSkeleton extends AbstractMinion {
 	
 	protected static final DataParameter<Boolean> SWINGING_ARMS = EntityDataManager.createKey(EntityMinionSkeleton.class, DataSerializers.BOOLEAN);
-	protected boolean isStray;
 
-	public EntityMinionSkeleton(World worldIn) {
+    public EntityMinionSkeleton(World worldIn) {
 		super(worldIn);
 	}
 	
 	@Override
 	protected void initEntityAI() {
-		this.tasks.addTask(0, new EntityAISwimming(this));
+        this.tasks.addTask(1, new EntityAISwimming(this));
+        this.tasks.addTask(2, new EntityAIRestrictSun(this));
+        this.tasks.addTask(3, new EntityAIFleeSun(this, 1.0D));
+        this.tasks.addTask(3, new EntityAIAvoidEntity<>(this, EntityWolf.class, 6.0F, 1.0D, 1.2D));
+        this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 1.0D));
+        this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+        this.tasks.addTask(6, new EntityAILookIdle(this));
 		this.tasks.addTask(2, new EntityAIMinionRangedAttack(this, 1.0D, 20, 15.0F));
-		this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
-		this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
 		this.applyEntityAI();
 	}
 	
@@ -53,15 +59,22 @@ public class EntityMinionSkeleton extends AbstractMinion {
         super.entityInit();
         this.dataManager.register(SWINGING_ARMS, false);
     }
-	
-	@Override
+
+    @Nullable
+    @Override
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
+        IEntityLivingData ret = super.onInitialSpawn(difficulty, livingdata);
+        this.setCombatTask();
+        return ret;
+    }
+
+    @Override
 	protected SoundEvent getAmbientSound()
     {
         return (isInert()) ? null : SoundEvents.ENTITY_SKELETON_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound()
-    {
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
     	return (isInert()) ? null : SoundEvents.ENTITY_SKELETON_HURT;
     }
 

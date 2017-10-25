@@ -9,6 +9,7 @@ import ladysnake.dissolution.api.ISoulInteractable;
 import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.common.capabilities.CapabilityDistillateHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
 import ladysnake.dissolution.common.init.ModItems;
@@ -22,10 +23,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+
+import javax.annotation.Nonnull;
 
 public class ItemDebug extends Item implements ISoulInteractable {
 	
@@ -36,8 +40,9 @@ public class ItemDebug extends Item implements ISoulInteractable {
         this.setMaxStackSize(1);
 	}
 	
+	@Nonnull
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, @Nonnull EnumHand handIn) {
 		if(playerIn.isSneaking()) {
 			if(!worldIn.isRemote) {
 				debugWanted = (debugWanted + 1) % 8;
@@ -58,7 +63,7 @@ public class ItemDebug extends Item implements ISoulInteractable {
 			break;
 		case 3 :
 			if(!playerIn.world.isRemote) {
-				worldIn.loadedEntityList.stream().filter(e -> e instanceof EntityFleetingSoul).forEach(e -> e.onKillCommand());
+				worldIn.loadedEntityList.stream().filter(e -> e instanceof EntityFleetingSoul).forEach(Entity::onKillCommand);
 				EntityFleetingSoul cam = new EntityFleetingSoul(playerIn.world, playerIn.posX + 2, playerIn.posY, playerIn.posZ);
 				worldIn.spawnEntity(cam);
 			} 
@@ -66,13 +71,17 @@ public class ItemDebug extends Item implements ISoulInteractable {
 		case 4 :
 			if(!playerIn.world.isRemote) {
 				playerIn.sendStatusMessage(new TextComponentString("Printing fire information"), true);
-				List<Entity> fires = playerIn.world.getEntities(Entity.class, e -> e.getDistanceToEntity(playerIn) < 20);
+				List<Entity> fires = playerIn.world.getEntities(Entity.class, e -> e!= null && e.getDistanceToEntity(playerIn) < 20);
 				fires.forEach(System.out::println);
 			}
 			break;
-		case 5 :
+		case 5 : {
+			AbstractMinion minion =
+					playerIn.world.findNearestEntityWithinAABB(AbstractMinion.class, new AxisAlignedBB(playerIn.getPosition()), null);
+			if (minion != null) minion.onEntityPossessed(playerIn);
 			break;
-		case 6 :
+		}
+		case 6 : {
 			if(!worldIn.isRemote) {
 				@SuppressWarnings("MethodCallSideOnly") RayTraceResult result = playerIn.rayTrace(6, 0);
 				TileEntity te = worldIn.getTileEntity(result.getBlockPos());
@@ -86,6 +95,7 @@ public class ItemDebug extends Item implements ISoulInteractable {
 					playerIn.sendStatusMessage(new TextComponentTranslation("modules: %s", ((TileEntityModularMachine)te).getInstalledModules()), false);
 			}
 			break;
+		}
 		case 7 :
 			ItemStack eye = new ItemStack(ModItems.EYE_OF_THE_UNDEAD);
 			ModItems.EYE_OF_THE_UNDEAD.setShell(eye, new ItemStack(ModItems.GOLD_SHELL));
@@ -93,6 +103,6 @@ public class ItemDebug extends Item implements ISoulInteractable {
 			break;
 		default : break;
 		}
-		return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
+		return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
 	}
 }

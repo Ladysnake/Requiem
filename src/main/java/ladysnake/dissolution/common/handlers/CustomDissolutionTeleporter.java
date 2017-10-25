@@ -14,7 +14,6 @@ public class CustomDissolutionTeleporter {
 
 	public static void transferPlayerToDimension(EntityPlayerMP player, int dimensionIn)
     {
-		System.out.println("transfering player" + player.getDisplayNameString() + " to dimension " + dimensionIn);
         int i = player.dimension;
         WorldServer worldserver = player.mcServer.getWorld(player.dimension);
         player.dimension = dimensionIn;
