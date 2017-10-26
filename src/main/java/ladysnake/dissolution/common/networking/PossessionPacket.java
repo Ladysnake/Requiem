@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.networking;
 
+import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.api.IPossessable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.client.Minecraft;
@@ -18,8 +19,9 @@ public class PossessionPacket implements IMessageHandler<PossessionMessage, IMes
         if(ctx.side.isClient())
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 Entity possessed = Minecraft.getMinecraft().world.getEntityByID(message.possessedUuid);
-                if(possessed instanceof IPossessable)
-                    ((IPossessable)possessed).onEntityPossessed(Minecraft.getMinecraft().world.getPlayerEntityByUUID(message.playerUuid));
+                EntityPlayer player = Minecraft.getMinecraft().world.getPlayerEntityByUUID(message.playerUuid);
+                if(player != null)
+                    CapabilityIncorporealHandler.getHandler(player).setPossessed((IPossessable) possessed);
             });
         else {
             final World world = ctx.getServerHandler().player.world;

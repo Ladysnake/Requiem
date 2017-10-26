@@ -47,14 +47,13 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
 	public void onUpdate() {
 		super.onUpdate();
 
+		if(this.posY > 300)
+			this.outOfWorld();
+
 		if (this.delayBeforeCanPickup > 0) {
 			--this.delayBeforeCanPickup;
 		}
 
-		if (this.soulAge >= 6000) {
-			world.removeEntity(this);
-		}
-		
 		if (!this.world.isRemote && !this.isDead) {
 			
 			this.targetChangeCooldown -= (this.getPositionVector().squareDistanceTo(lastTickPosX, lastTickPosY, lastTickPosZ) < 0.0125) ? 10 : 1;

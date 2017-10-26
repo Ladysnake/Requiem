@@ -37,9 +37,7 @@ public final class ModItems {
 	/**Used to register stuff*/
 	static final ModItems INSTANCE = new ModItems();
 
-	public static Item CINNABAR;
-	public static Item HALITE;
-	public static Item SULFUR;
+	public static Item PESTLE;
 	public static ItemAcerbacaFruit ACERBACA;
 	public static ItemFood INSUBACA;
 	public static ItemFood LIMOBACA;
@@ -50,7 +48,15 @@ public final class ModItems {
 	public static ItemDepletedCoal DEPLETED_COAL;
 	public static ItemEyeUndead EYE_OF_THE_UNDEAD;
 	public static ItemEyeOfDiscord EYE_OF_DISCORD;
-	public static ItemOccularePart BRAIN;
+	public static ItemGlassware GLASS_FLASK;
+	public static ItemGlassware GLASS_JAR;
+	public static ItemGlassware MERCURY_JAR;
+	public static ItemGlassware WATER_JAR;
+	public static ItemMineral CINNABAR;
+	public static ItemMineral HALITE;
+	public static ItemMineral IGNEOUS_ROCK;
+	public static ItemMineral MAGMA_STONE;
+	public static ItemMineral SULFUR;
 	public static ItemOccularePart DIAMOND_SHELL;
 	public static ItemOccularePart EMERALD_SHELL;
 	public static ItemOccularePart IRON_SHELL;
@@ -76,20 +82,26 @@ public final class ModItems {
 		IForgeRegistry<Item> reg = event.getRegistry();
 		//noinspection ConstantConditions
 		Collections.addAll(allItems,
-				CINNABAR = name(new Item(), "cinnabar"),
-				HALITE = name(new Item(), "halite"),
-				SULFUR = name(new Item(), "sulfur"),
-				ACERBACA = name(new ItemAcerbacaFruit(0, 3f, IIncorporealHandler.CorporealityStatus.SOUL), "acerbaca"),
-				INSUBACA = name(new ItemFood(-3, -0.3f, false).setPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:poison"), 200), 0.95f), "insubaca"),
-				LIMOBACA = name(new ItemFood(5, 1.2f, false), "limobaca"),
-				SALERBACA = name(new ItemAcerbacaFruit(1, 2.5f, IIncorporealHandler.CorporealityStatus.ECTOPLASM), "salerbaca"),
-				WOODEN_CASING = name(new ItemCasing(), "wooden_machine_casing"),
+				PESTLE = name(new Item(), "pestle"),
+//				ACERBACA = name(new ItemAcerbacaFruit(0, 3f, IIncorporealHandler.CorporealityStatus.SOUL), "acerbaca"),
+//				INSUBACA = name(new ItemFood(-3, -0.3f, false).setPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:poison"), 200), 0.95f), "insubaca"),
+//				LIMOBACA = name(new ItemFood(5, 1.2f, false), "limobaca"),
+//				SALERBACA = name(new ItemAcerbacaFruit(1, 2.5f, IIncorporealHandler.CorporealityStatus.ECTOPLASM), "salerbaca"),
+//				WOODEN_CASING = name(new ItemCasing(), "wooden_machine_casing"),
 				DEBUG_ITEM = name(new ItemDebug(), "debug_item"),
 				DEPLETED_CLAY = name(new ItemDepleted(), "depleted_clay_ball"),
 				DEPLETED_COAL = name(new ItemDepletedCoal(), "depleted_coal"),
 				EYE_OF_THE_UNDEAD = name(new ItemEyeUndead(), "eye_of_the_undead"),
 				EYE_OF_DISCORD = name(new ItemEyeOfDiscord(), "eye_of_discord"),
-				BRAIN = name(new ItemOccularePart(), "occulare_brain"),
+				GLASS_FLASK = name(new ItemGlassware(), "glass_flask"),
+				GLASS_JAR = name(new ItemGlassware(), "glass_jar"),
+				MERCURY_JAR = name(new ItemGlassware(), "mercury_jar"),
+				WATER_JAR = name(new ItemGlassware(), "water_jar"),
+				CINNABAR = name(new ItemMineral(), "cinnabar"),
+				HALITE = name(new ItemMineral(), "halite"),
+				IGNEOUS_ROCK = name(new ItemMineral(), "igneous_rock"),
+				MAGMA_STONE = name(new ItemMineral(), "magma_stone"),
+				SULFUR = name(new ItemMineral(), "sulfur"),
 				DIAMOND_SHELL = name(new ItemOccularePart(1500), "diamond_occulare_shell"),
 				EMERALD_SHELL = name(new ItemOccularePart(750), "emerald_occulare_shell"),
 				GOLD_SHELL = name(new ItemOccularePart(50), "gold_occulare_shell"),
@@ -98,12 +110,12 @@ public final class ModItems {
 				PLUG = name(new ItemPlug(), "plug"),
 				IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), "iron_scythe"),
 				LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"),
-				BACA_SEEDS = name(new ItemSeeds(Blocks.LEAVES, Blocks.GRASS), "limobaca_seeds"),
+//				BACA_SEEDS = name(new ItemSeeds(Blocks.LEAVES, Blocks.GRASS), "limobaca_seeds"),
 				SEPULTURE = name(new ItemSepulture(), "sepulture"),
 				SOUL_IN_A_FLASK = name(new ItemSoulInAFlask(), "will_o_wisp_flask"),
 				STONE_HEART = name(new ItemStoneHeart(), "stone_heart"));
 
-		AlchemyModuleTypes.registerItems(allItems);
+//		AlchemyModuleTypes.registerItems(allItems);
 
 		for(Item i : allItems) {
 			reg.register(i);
@@ -111,15 +123,7 @@ public final class ModItems {
 				i.setCreativeTab(Dissolution.CREATIVE_TAB);
 		}
 	}
-	
-	void registerOres() {
-		OreDictionary.registerOre("blockClay", ModBlocks.DEPLETED_CLAY);
-		OreDictionary.registerOre("clay", DEPLETED_CLAY);
-		OreDictionary.registerOre("blockCoal", ModBlocks.DEPLETED_COAL);
-		OreDictionary.registerOre("coal", DEPLETED_COAL);
-		OreDictionary.registerOre("blockMagma", ModBlocks.DEPLETED_MAGMA);
-	}
-	
+
 	@SubscribeEvent
     public void remapIds(RegistryEvent.MissingMappings<Item> event) {
     	List<Mapping<Item>> missingBlocks = event.getMappings();

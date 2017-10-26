@@ -11,6 +11,9 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.potion.PotionEffect;
 import org.apache.logging.log4j.LogManager;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -97,6 +100,8 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 	private static final DataParameter<Optional<UUID>> POSSESSING_ENTITY_ID = EntityDataManager
 			.createKey(AbstractMinion.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 	private static MethodHandle entityAINearestAttackableTarget$targetClass;
+	private static final UUID BABY_SPEED_BOOST_ID = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
+	private static final AttributeModifier BABY_SPEED_BOOST = new AttributeModifier(BABY_SPEED_BOOST_ID, "Baby speed boost", 0.5D, 1);
 
 	private final EntityAIMinionRangedAttack aiArrowAttack = new EntityAIMinionRangedAttack(this, 1.0D, 20, 15.0F);
 	private final EntityAIAttackMelee aiAttackOnCollide = new EntityAIAttackMelee(this, 1.2D, false);
@@ -351,7 +356,7 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
                     worldIn.spawnEntity(entityarrow);
                 }
 
-                worldIn.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_ARROW_SHOOT, this.getSoundCategory(), 1.0F, 1.0F / (rand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
+                worldIn.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_SKELETON_SHOOT, this.getSoundCategory(), 1.0F, 1.0F / (rand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
 
                 if (!flag1 && !entityPlayer.capabilities.isCreativeMode) {
                     ammoStack.shrink(1);
@@ -383,7 +388,14 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 	}
 
 	@Override
+	public boolean canBePossessedBy(EntityPlayer player) {
+		return this.getControllingPassenger() == player || this.getControllingPassenger() == null;
+	}
+
+	@Override
 	public boolean onEntityPossessed(EntityPlayer player) {
+		if(this.getControllingPassenger() == player)
+			return true;
 		if(this.getControllingPassenger() != null) {
 			LogManager.getLogger().warn("A player attempted to possess an entity that was already possessed");
 			return false;
@@ -403,12 +415,7 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 			return true;
 		IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
 		if(!handler.getCorporealityStatus().isIncorporeal() || this.isDead || force) {
-			for(EntityEquipmentSlot slot : EntityEquipmentSlot.values())
-				player.setItemStackToSlot(slot, ItemStack.EMPTY);
-			if(!world.isRemote)
-				player.inventory.dropAllItems();
 			this.setPossessingEntity(null);
-			handler.setPossessed(null);
 			return true;
 		}
 		return false;
@@ -431,7 +438,6 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 	
 	@Override
 	public boolean proxyRangedAttack(int charge) {
-		
 		return true;
 	}
 
@@ -440,7 +446,7 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 	public void possessTickClient() {
 		EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
 		Vector2f move = new Vector2f(playerSP.movementInput.moveStrafe, playerSP.movementInput.moveForward);
-		move.scale(this.getAIMoveSpeed() * 2);
+		move.scale((float)this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
 		playerSP.moveStrafing = move.x;
 		playerSP.moveForward = move.y;
 		this.setJumping(playerSP.movementInput.jump);
@@ -449,14 +455,6 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 	@Override
 	protected void addPassenger(Entity passenger) {
 		super.addPassenger(passenger);
-		if(passenger instanceof EntityPlayer && passenger.getUniqueID().equals(this.getPossessingEntity())) {
-			CapabilityIncorporealHandler.getHandler((EntityPlayer) passenger).setPossessed(this);
-			if(!world.isRemote) {
-				((EntityPlayerMP) passenger).connection.sendPacket(new SPacketCamera(this));
-				PacketHandler.net.sendToAllAround(new PossessionMessage(passenger.getUniqueID(),
-						this.getEntityId()), new NetworkRegistry.TargetPoint(dimension, posX, posY, posZ, 100));
-			}
-		}
 	}
 
 	@Override
@@ -471,7 +469,7 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 	
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount) {
-        Entity entity = source.getTrueSource();
+//        Entity entity = source.getTrueSource();
         return /*this.isBeingRidden() && entity != null && this.isRidingOrBeingRiddenBy(entity) ? false : */super.attackEntityFrom(source, amount);	
     }
 
@@ -514,16 +512,27 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 		super.updatePassenger(passenger);
 		if(passenger.getUniqueID().equals(this.getPossessingEntity())) {
 			passenger.setPosition(this.posX, this.posY, this.posZ);
-			if(passenger instanceof EntityPlayer)
+			if(passenger instanceof EntityPlayer) {
+				((EntityPlayer) passenger).clearActivePotions();
+				for(PotionEffect potionEffect : this.getActivePotionMap().values())
+					((EntityPlayer)passenger).addPotionEffect(potionEffect);
+				this.getActivePotionMap().putAll(((EntityPlayer) passenger).getActivePotionMap());
 				for (EntityEquipmentSlot slot : EntityEquipmentSlot.values())
 					this.setItemStackToSlot(slot, ((EntityPlayer) passenger).getItemStackFromSlot(slot));
+			}
 		}
 	}
 
 	@Override
 	public void onDeath(@Nonnull DamageSource cause) {
-		if(this.getControllingPassenger() instanceof EntityPlayer)
-			this.onPossessionStop((EntityPlayer) this.getControllingPassenger());
+		if(this.getControllingPassenger() instanceof EntityPlayer) {
+			EntityPlayer player = (EntityPlayer) this.getControllingPassenger();
+			for(EntityEquipmentSlot slot : EntityEquipmentSlot.values())
+				player.setItemStackToSlot(slot, ItemStack.EMPTY);
+			if(!world.isRemote)
+				player.inventory.dropAllItems();
+			CapabilityIncorporealHandler.getHandler(player).setPossessed(null);
+		}
 		super.onDeath(cause);
 	}
 	
@@ -619,6 +628,14 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 
 	public void setChild(boolean childMinion) {
 		this.getDataManager().set(IS_CHILD, childMinion);
+		if (this.world != null && !this.world.isRemote) {
+			IAttributeInstance iattributeinstance = this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+			iattributeinstance.removeModifier(BABY_SPEED_BOOST);
+
+			if (childMinion) {
+				iattributeinstance.applyModifier(BABY_SPEED_BOOST);
+			}
+		}
 		this.setChildSize(childMinion);
 	}
 

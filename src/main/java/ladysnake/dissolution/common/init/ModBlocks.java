@@ -12,11 +12,7 @@ import ladysnake.dissolution.client.models.blocks.DistillatePipeBakedModel;
 import ladysnake.dissolution.client.models.blocks.ModularMachineBakedModel;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.BlockLamentStone;
-import ladysnake.dissolution.common.blocks.BlockDepleted;
-import ladysnake.dissolution.common.blocks.BlockDepletedClay;
-import ladysnake.dissolution.common.blocks.BlockDepletedMagma;
-import ladysnake.dissolution.common.blocks.BlockSepulture;
+import ladysnake.dissolution.common.blocks.*;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockBarrage;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockDistillatePipe;
@@ -55,6 +51,7 @@ public final class ModBlocks {
 	public static BlockDepleted DEPLETED_CLAY;
 	public static BlockDepleted DEPLETED_COAL;
 	public static BlockDepletedMagma DEPLETED_MAGMA;
+	public static BlockMortar MORTAR;
 	public static BlockPowerCable POWER_CABLE;
     public static BlockSepulture SEPULTURE;
     
@@ -78,13 +75,14 @@ public final class ModBlocks {
 				HALITE = name(new Block(Material.ROCK), "halite_block"),
 				SULPHUR = name(new Block(Material.ROCK), "sulfur_block"),
 				LAMENT_STONE = name(new BlockLamentStone(), "lament_stone"),
-    			BARRAGE = name(new BlockBarrage(), Reference.Blocks.BARRAGE),
+//    			BARRAGE = name(new BlockBarrage(), Reference.Blocks.BARRAGE),
     			DEPLETED_CLAY = name(new BlockDepletedClay(), "depleted_clay_block"),
     			DEPLETED_COAL = name(new BlockDepleted(Material.ROCK), "depleted_coal_block"),
     			DEPLETED_MAGMA = name(new BlockDepletedMagma(), "depleted_magma"),
-    			DISTILLATE_PIPE = name(new BlockDistillatePipe(), "essentia_pipe"),
-    			POWER_CABLE = name(new BlockPowerCable(), Reference.Blocks.POWER_CABLE));
-    	blockRegistry.register(CASING = name(new BlockCasing(), "wooden_casing"));
+//    			DISTILLATE_PIPE = name(new BlockDistillatePipe(), "distillate_pipe"),
+    			MORTAR = name(new BlockMortar(), "mortar")
+/*    			,POWER_CABLE = name(new BlockPowerCable(), Reference.Blocks.POWER_CABLE)*/);
+//    	blockRegistry.register(CASING = name(new BlockCasing(), "wooden_casing"));
     	blockRegistry.register(SEPULTURE = name(new BlockSepulture(), Reference.Blocks.SEPULTURE));
     }
     
@@ -124,6 +122,7 @@ public final class ModBlocks {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void registerRenders(ModelRegistryEvent event) {
+/*
     	DissolutionModelLoader.addModel(BlockCasing.PLUG, ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
 		DissolutionModelLoader.addModel(BlockCasing.PLUG_CHEST, ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
 		DissolutionModelLoader.addModel(BlockCasing.PLUG_HOPPER, ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
@@ -138,6 +137,7 @@ public final class ModBlocks {
     	registerSmartRender(POWER_CABLE, CableBakedModel.BAKED_MODEL);
     	registerSmartRender(DISTILLATE_PIPE, DistillatePipeBakedModel.BAKED_MODEL);
     	registerSmartRender(CASING, ModularMachineBakedModel.BAKED_MODEL);
+*/
     }
     
     @SideOnly(Side.CLIENT)

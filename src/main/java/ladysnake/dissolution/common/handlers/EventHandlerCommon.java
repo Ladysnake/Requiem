@@ -39,8 +39,6 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
  */
 public class EventHandlerCommon {
 
-	private ScheduledThreadPoolExecutor threadPoolExecutor = new ScheduledThreadPoolExecutor(5);
-	
 	public EventHandlerCommon() {
 		LootTableList.register(new ResourceLocation(Reference.MOD_ID, "inject/nether_bridge"));
 		LootTableList.register(new ResourceLocation(Reference.MOD_ID, "lament_stone"));
@@ -65,9 +63,6 @@ public class EventHandlerCommon {
 	@SubscribeEvent
 	public void onPlayerLoggedIn(PlayerLoggedInEvent event) {
 		event.player.inventoryContainer.addListener(new PlayerInventoryListener((EntityPlayerMP) event.player));
-//		IPossessable possessed = CapabilityIncorporealHandler.getHandler(event.player).getPossessed();
-//		if(possessed instanceof Entity)		//TODO check if this is useful in any way or shape
-//			threadPoolExecutor.schedule(() -> ((EntityPlayerMP) event.player).connection.sendPacket(new SPacketCamera((Entity) possessed)), 3, TimeUnit.SECONDS);
 	}
 
 	@SubscribeEvent

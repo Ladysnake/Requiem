@@ -51,16 +51,6 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 	@Override
 	protected boolean processInteract(EntityPlayer player, EnumHand hand) {
 		final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
-		if (!world.isRemote && player.getHeldItem(hand).getItem() != ModItems.EYE_OF_THE_UNDEAD 
-				&& (!handler.getCorporealityStatus().isIncorporeal() || handler.getPossessed() != null)) {
-			player.openGui(Dissolution.instance, GuiProxy.PLAYER_CORPSE, this.world, (int)this.posX, (int)this.posY, (int)this.posZ);
-		}
-		return true;
-	}
-
-	@Override
-	public boolean onEntityPossessed(EntityPlayer player) {
-		final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
 		if(this.ticksExisted > 100 && (!this.isDecaying() || DissolutionConfig.respawn.wowLikeRespawn)) {
 			if(!world.isRemote) {
 				DissolutionInventoryHelper.transferEquipment(this, player);
@@ -72,8 +62,21 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 			player.cameraPitch = 90;
 			player.prevCameraPitch = 90;
 			player.setHealth(4f);
+		} else if (!world.isRemote && player.getHeldItem(hand).getItem() != ModItems.EYE_OF_THE_UNDEAD
+				&& (!handler.getCorporealityStatus().isIncorporeal() || handler.getPossessed() != null)) {
+			player.openGui(Dissolution.instance, GuiProxy.PLAYER_CORPSE, this.world, (int)this.posX, (int)this.posY, (int)this.posZ);
 		}
-		return false;
+		return true;
+	}
+
+	@Override
+	public boolean canBePossessedBy(EntityPlayer player) {
+		return this.hasLifeStone() && super.canBePossessedBy(player);
+	}
+
+	@Override
+	public boolean onEntityPossessed(EntityPlayer player) {
+		return this.hasLifeStone() && super.onEntityPossessed(player);
 	}
 
 	@Override

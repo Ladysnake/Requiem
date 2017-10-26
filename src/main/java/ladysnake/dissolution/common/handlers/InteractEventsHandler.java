@@ -10,6 +10,7 @@ import ladysnake.dissolution.common.entity.souls.AbstractSoul;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PossessionMessage;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -63,27 +64,28 @@ public class InteractEventsHandler {
 				&& !DissolutionConfigManager.canEctoplasmInteractWith(event.getItemStack().getItem()))
 			event.setCanceled(true);
 	}
-	
+
+	/**
+	 * Allows possession start
+	 */
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerEntityInteractSpecific(PlayerInteractEvent.EntityInteractSpecific event) {
 		event.setCanceled(isGhost(event));
 		if (isGhost(event) && event.getSide().isServer() && event.getTarget() instanceof EntityLivingBase) {
+			IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
 			IPossessable host = AbstractMinion.createMinion((EntityLivingBase) event.getTarget());
-			if (host != null && host.onEntityPossessed(event.getEntityPlayer())) {
+			if (host instanceof EntityLivingBase && host.canBePossessedBy(event.getEntityPlayer())) {
 				EntityLivingBase eHost = (EntityLivingBase)host;
+				DissolutionInventoryHelper.transferEquipment((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
 				if(host != event.getTarget()) {
-					DissolutionInventoryHelper.transferEquipment((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
 					event.getTarget().setPosition(0,-100,0);
 					event.getTarget().world.spawnEntity(eHost);
 					event.getTarget().world.removeEntity(event.getTarget());
 				}
-				((EntityPlayerMP)event.getEntityPlayer()).connection.sendPacket(new SPacketCamera(eHost));
-				IMessage message = new PossessionMessage(event.getEntityPlayer().getUniqueID(), (eHost).getEntityId());
-				PacketHandler.net.sendToAllAround(message, new NetworkRegistry.TargetPoint(event.getEntityPlayer().dimension,
-						event.getTarget().posX, event.getTarget().posY, event.getTarget().posZ, 100));
+				handler.setPossessed(host);
+				event.setCancellationResult(EnumActionResult.SUCCESS);
 			}
 		}
-		event.setCancellationResult(EnumActionResult.SUCCESS);
 	}
 
 	@SubscribeEvent
@@ -126,24 +128,22 @@ public class InteractEventsHandler {
 			((EntityLivingBase)handler.getPossessed()).stopActiveHand();
 			event.setCanceled(true);			// prevent the player from duplicating the action
 		}
-	}	
-	
+	}
+
+	/**
+	 * Prevents a player from ending possession prematurely
+	 */
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityMount(EntityMountEvent event) {
 		IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
 		if (!event.isMounting() && handler != null && handler.getCorporealityStatus().isIncorporeal()
 				&& !(event.getEntity() instanceof EntityPlayer && ((EntityPlayer)event.getEntity()).isCreative())) {
-			final EntityPlayer player = (EntityPlayer)event.getEntity();
-			if(event.getEntityBeingMounted() == CapabilityIncorporealHandler.getHandler(player).getPossessed()
-					&& !((IPossessable)event.getEntityBeingMounted()).onPossessionStop(player)) {
-				event.setCanceled(true);
+			if(!event.isMounting()) {
+				if (event.getEntityBeingMounted() == handler.getPossessed() && !(handler.setPossessed(null))) {
+					event.setCanceled(true);
+				}
 			}
-		} /*else if(event.isMounting() && handler != null && !event.getEntityBeingMounted().world.isRemote
-				&& event.getEntityBeingMounted() instanceof IPossessable
-				&& ((IPossessable)event.getEntityBeingMounted()).getPossessingEntity().equals(event.getEntityMounting().getUniqueID())) {
-			((EntityPlayerMP) event.getEntityMounting()).connection.sendPacket(new SPacketCamera(event.getEntityBeingMounted()));
-			handler.setPossessed((IPossessable) event.getEntityBeingMounted());
-		}*/
+		}
 	}
 
 	/**

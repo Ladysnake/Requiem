@@ -26,7 +26,7 @@ public final class ModModularSetups {
 	
 	@SubscribeEvent
 	public void onRegisterSetups(RegistryEvent.Register<ModularMachineSetup> event) {
-		event.getRegistry().registerAll(new SetupOreSieve(), new SetupResonantCoil(), new SetupCrystallizer(), new SetupGreenhouse());
+//		event.getRegistry().registerAll(new SetupOreSieve(), new SetupResonantCoil(), new SetupCrystallizer(), new SetupGreenhouse());
 	}
 	
 	private ModModularSetups() {}
