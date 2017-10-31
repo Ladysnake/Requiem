@@ -38,7 +38,7 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
         this.alreadyRunningAOE = false;
 	}
 
-	protected static Map<Material, Float> effectiveBlocks = new HashMap<Material, Float>();
+	protected static Map<Material, Float> effectiveBlocks = new HashMap<>();
 	
 	static {
 		effectiveBlocks.put(Material.PLANTS, 2.0f);
@@ -56,11 +56,6 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
 	public boolean hitEntity(ItemStack stack, EntityLivingBase target, @Nonnull EntityLivingBase attacker) {
 		stack.damageItem(1, attacker);
 		return !attacker.getHeldItemOffhand().isEmpty();
-	}
-	
-	@Override
-	public float getDamageVsEntity() {
-		return super.getDamageVsEntity();
 	}
 	
 	@Override
@@ -97,13 +92,13 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
 	public void addInformation(ItemStack stack, @Nullable World playerIn, List<String> tooltip, ITooltipFlag advanced) {
 		tooltip.add("Two-handed");
 	}
-	
+
 	@Override
-	public float getStrVsBlock(ItemStack stack, IBlockState state) {
+	public float getDestroySpeed(ItemStack stack, IBlockState state) {
 		Material material = state.getMaterial();
-        return effectiveBlocks.get(material) == null ? 0.8F : effectiveBlocks.get(material);
+		return effectiveBlocks.get(material) == null ? 0.8F : effectiveBlocks.get(material);
 	}
-	
+
 	@Override
 	public int getItemEnchantability()
     {
@@ -128,8 +123,7 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
 	public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot equipmentSlot) {
 		Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(equipmentSlot);
 
-        if (equipmentSlot == EntityEquipmentSlot.MAINHAND)
-        {
+        if (equipmentSlot == EntityEquipmentSlot.MAINHAND) {
         	multimap.removeAll(SharedMonsterAttributes.ATTACK_SPEED.getName());
             multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", (double)this.attackSpeed, 0));
         }

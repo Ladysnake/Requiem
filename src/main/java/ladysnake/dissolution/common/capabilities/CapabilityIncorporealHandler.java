@@ -81,7 +81,6 @@ public class CapabilityIncorporealHandler {
 	 */
 	@SubscribeEvent
 	public static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
-
 		if ((event.getObject() instanceof EntityPlayer)) {
 			Provider provider = new Provider((EntityPlayer) event.getObject());
 			handlerMap.put((EntityPlayer) event.getObject(), provider.getCapability(CAPABILITY_INCORPOREAL, null));

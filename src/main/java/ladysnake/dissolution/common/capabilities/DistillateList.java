@@ -1,35 +1,32 @@
 package ladysnake.dissolution.common.capabilities;
 
-import java.util.Arrays;
-import java.util.List;
-
-import ladysnake.dissolution.api.DistillateTypes;
-
-import ladysnake.dissolution.api.DistillateStack;
+import ladysnake.dissolution.api.*;
 import net.minecraft.util.NonNullList;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
-public class DistillateList extends NonNullList<DistillateStack> {
+public class DistillateList extends GenericStackList<DistillateTypes> {
 	
 	public static DistillateList withSize(int size) {
-        DistillateStack[] aobject = new DistillateStack[size];
-        Arrays.fill(aobject, DistillateStack.EMPTY);
-        return new DistillateList(Arrays.asList(aobject));
+        DistillateStack[] genericStacks = new DistillateStack[size];
+        Arrays.fill(genericStacks, GenericStack.empty());
+        return new DistillateList(Arrays.asList(genericStacks));
 	}
 	
-	protected DistillateList(List<DistillateStack> delegateIn) {
-		super(delegateIn, DistillateStack.EMPTY);
+	protected DistillateList(List<GenericStack<DistillateTypes>> delegateIn) {
+		super(delegateIn);
 	}
-	
-	public DistillateStack get(DistillateTypes type) {
-		return this.stream().filter(stack -> !stack.isEmpty() && (type == DistillateTypes.UNTYPED || stack.getType() == type)).findAny().orElse(DistillateStack.EMPTY);
+
+	public GenericStack<DistillateTypes> get(DistillateTypes type) {
+		return this.stream().filter(stack -> !stack.isEmpty() && (type == DistillateTypes.UNTYPED || stack.getType() == type)).findAny().orElse(GenericStack.empty());
 	}
 	
 	/**
 	 * 
-	 * @param type
-	 * @return the index of an essentia stack of the requested type
+	 * @return the index of a stack of the requested type
 	 */
 	public int indexOf(DistillateTypes type) {
 		int index = -1;
@@ -39,11 +36,11 @@ public class DistillateList extends NonNullList<DistillateStack> {
 		return index;
 	}
 	
-	public boolean contains(DistillateTypes type) {
-		return this.stream().anyMatch(e -> e.getType() == type);
+	public boolean containsType(DistillateTypes type) {
+		return this.stream().anyMatch(e -> Objects.equals(e.getType(), type));
 	}
 	
-	public boolean add(DistillateStack stack) {
+	public boolean add(GenericStack<DistillateTypes> stack) {
 		for(int i = 0; i < this.size(); i++)
 			if(this.get(i).isEmpty()) {
 				this.set(i, stack);
@@ -54,7 +51,7 @@ public class DistillateList extends NonNullList<DistillateStack> {
 	
 	@Override
 	public boolean isEmpty() {
-		return this.stream().allMatch(e -> e.isEmpty());
+		return this.stream().allMatch(GenericStack::isEmpty);
 	}
 	
 	@Override
@@ -62,13 +59,13 @@ public class DistillateList extends NonNullList<DistillateStack> {
 		int index = indexOf(arg0);
 		if(index == -1)
 			return false;
-		this.set(index, DistillateStack.EMPTY);
+		this.set(index, GenericStack.empty());
 		return true;
 	}
 	
 	@Override
 	@Nonnull
-	public DistillateStack remove(int index) {
+	public GenericStack<DistillateTypes> remove(int index) {
 		return this.set(index, DistillateStack.EMPTY);
 	}
 

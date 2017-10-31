@@ -34,7 +34,7 @@ public class EntityOrbitingSoul extends AbstractSoul {
 		}
 
 		if ((xTarget == 0 && yTarget == 0 && zTarget == 0) || this.soulAge % 100 == 0) {
-			if (this.orbited == null || this.getDistanceSqToEntity(orbited) > 1024.0) {
+			if (this.orbited == null || this.getDistanceSq(orbited) > 1024.0) {
 				if((this.orbited = this.world.getClosestPlayerToEntity(this, 1024.0)) != null) {
 					this.xTarget = this.orbited.posX;
 					this.yTarget = this.orbited.posY;

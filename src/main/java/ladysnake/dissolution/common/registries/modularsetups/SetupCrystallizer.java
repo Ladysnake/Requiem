@@ -105,7 +105,7 @@ public class SetupCrystallizer extends ModularMachineSetup {
 			if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 				return part == BlockCasing.EnumPartType.BOTTOM && facing != EnumFacing.EAST;
 			}
-			return capability == CapabilityDistillateHandler.CAPABILITY_ESSENTIA && part == EnumPartType.TOP;
+			return capability == CapabilityDistillateHandler.CAPABILITY_DISTILLATE && part == EnumPartType.TOP;
 		}
 
 		@Override
@@ -114,9 +114,9 @@ public class SetupCrystallizer extends ModularMachineSetup {
 				if (part == BlockCasing.EnumPartType.BOTTOM && facing != EnumFacing.EAST)
 					return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(this.oreOutput);
 			}
-			if (capability == CapabilityDistillateHandler.CAPABILITY_ESSENTIA) {
+			if (capability == CapabilityDistillateHandler.CAPABILITY_DISTILLATE) {
 				if (part == BlockCasing.EnumPartType.TOP)
-					return CapabilityDistillateHandler.CAPABILITY_ESSENTIA.cast(this.distillateHandler);
+					return CapabilityDistillateHandler.CAPABILITY_DISTILLATE.cast(this.distillateHandler);
 			}
 			return null;
 		}
@@ -125,14 +125,14 @@ public class SetupCrystallizer extends ModularMachineSetup {
 		public void readFromNBT(NBTTagCompound compound) {
 			CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().readNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, this.oreOutput, EnumFacing.WEST, compound.getTag("output"));
 			//noinspection ConstantConditions
-			CapabilityDistillateHandler.CAPABILITY_ESSENTIA.getStorage().readNBT(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, this.distillateHandler, EnumFacing.NORTH, compound.getTag("distillateHandler"));
+			CapabilityDistillateHandler.CAPABILITY_DISTILLATE.getStorage().readNBT(CapabilityDistillateHandler.CAPABILITY_DISTILLATE, this.distillateHandler, EnumFacing.NORTH, compound.getTag("distillateHandler"));
 		}
 		
 		@SuppressWarnings("ConstantConditions")
 		@Override
 		public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 			compound.setTag("output", CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().writeNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, this.oreOutput, EnumFacing.WEST));
-			compound.setTag("distillateHandler", CapabilityDistillateHandler.CAPABILITY_ESSENTIA.getStorage().writeNBT(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, distillateHandler, EnumFacing.NORTH));
+			compound.setTag("distillateHandler", CapabilityDistillateHandler.CAPABILITY_DISTILLATE.getStorage().writeNBT(CapabilityDistillateHandler.CAPABILITY_DISTILLATE, distillateHandler, EnumFacing.NORTH));
 			return compound;
 		}
 

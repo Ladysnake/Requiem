@@ -67,7 +67,7 @@ public class BlockDistillatePipe extends Block {
 	private boolean shouldAttach(IBlockAccess world, EnumFacing facing, BlockPos pipePos) {
 		BlockPos pos = pipePos.offset(facing);
 		TileEntity te = world.getTileEntity(pos);
-        return te != null && te.hasCapability(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, facing.getOpposite());
+        return te != null && te.hasCapability(CapabilityDistillateHandler.CAPABILITY_DISTILLATE, facing.getOpposite());
     }
 	
 	@Nonnull

@@ -30,7 +30,7 @@ public class PossessionPacket implements IMessageHandler<PossessionMessage, IMes
                 Entity possessed = world.getEntityByID(message.possessedUuid);
                 EntityPlayer player = world.getPlayerEntityByUUID(message.playerUuid);
                 if(possessed instanceof IPossessable) {
-                    if(player == null || possessed.getDistanceSqToEntity(player) < 1024)
+                    if(player == null || possessed.getDistanceSq(player) < 1024)
                         ((IPossessable) possessed).onEntityPossessed(player != null && CapabilityIncorporealHandler
                                 .getHandler(player).getCorporealityStatus().isIncorporeal()
                                 ? player

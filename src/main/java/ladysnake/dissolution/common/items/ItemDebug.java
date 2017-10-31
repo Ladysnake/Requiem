@@ -48,7 +48,7 @@ public class ItemDebug extends Item implements ISoulInteractable {
 				debugWanted = (debugWanted + 1) % 8;
 				playerIn.sendStatusMessage(new TextComponentString("debug: " + debugWanted), true);
 			}
-			return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
+			return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
 		}
 		switch(debugWanted) {
 		case 0 : 
@@ -71,7 +71,7 @@ public class ItemDebug extends Item implements ISoulInteractable {
 		case 4 :
 			if(!playerIn.world.isRemote) {
 				playerIn.sendStatusMessage(new TextComponentString("Printing fire information"), true);
-				List<Entity> fires = playerIn.world.getEntities(Entity.class, e -> e!= null && e.getDistanceToEntity(playerIn) < 20);
+				List<Entity> fires = playerIn.world.getEntities(Entity.class, e -> e!= null && e.getDistance(playerIn) < 20);
 				fires.forEach(System.out::println);
 			}
 			break;
@@ -85,8 +85,8 @@ public class ItemDebug extends Item implements ISoulInteractable {
 			if(!worldIn.isRemote) {
 				@SuppressWarnings("MethodCallSideOnly") RayTraceResult result = playerIn.rayTrace(6, 0);
 				TileEntity te = worldIn.getTileEntity(result.getBlockPos());
-				if(te != null && te.hasCapability(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, result.sideHit)) {
-					IDistillateHandler essentiaInv = te.getCapability(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, result.sideHit);
+				if(te != null && te.hasCapability(CapabilityDistillateHandler.CAPABILITY_DISTILLATE, result.sideHit)) {
+					IDistillateHandler essentiaInv = te.getCapability(CapabilityDistillateHandler.CAPABILITY_DISTILLATE, result.sideHit);
 					essentiaInv.forEach(System.out::println);
 					System.out.println(String.format("%s/%s (%s/%s)", essentiaInv.readContent(DistillateTypes.UNTYPED), essentiaInv.getMaxSize(), essentiaInv.getChannels(), essentiaInv.getMaxChannels()));
 					playerIn.sendStatusMessage(new TextComponentTranslation("suction: %s, type: %s", essentiaInv.getSuction(DistillateTypes.UNTYPED)), false);

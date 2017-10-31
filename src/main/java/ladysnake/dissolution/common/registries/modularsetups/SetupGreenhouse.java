@@ -132,14 +132,14 @@ public class SetupGreenhouse extends ModularMachineSetup {
         @Override
         public boolean hasCapability(Capability<?> capability, EnumFacing facing, BlockCasing.EnumPartType part) {
             return part == BlockCasing.EnumPartType.BOTTOM &&
-                    (capability == CapabilityDistillateHandler.CAPABILITY_ESSENTIA || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+                    (capability == CapabilityDistillateHandler.CAPABILITY_DISTILLATE || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
         }
 
         @Override
         public <T> T getCapability(Capability<T> capability, EnumFacing facing, BlockCasing.EnumPartType part) {
             if(part == BlockCasing.EnumPartType.BOTTOM) {
-                if(capability == CapabilityDistillateHandler.CAPABILITY_ESSENTIA)
-                    return CapabilityDistillateHandler.CAPABILITY_ESSENTIA.cast(this.essentiaInv);
+                if(capability == CapabilityDistillateHandler.CAPABILITY_DISTILLATE)
+                    return CapabilityDistillateHandler.CAPABILITY_DISTILLATE.cast(this.essentiaInv);
                 if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
                     return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(this.fruitInv);
             }

@@ -6,10 +6,6 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import ladysnake.dissolution.client.models.DissolutionModelLoader;
-import ladysnake.dissolution.client.models.blocks.CableBakedModel;
-import ladysnake.dissolution.client.models.blocks.DistillatePipeBakedModel;
-import ladysnake.dissolution.client.models.blocks.ModularMachineBakedModel;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.*;
@@ -17,12 +13,11 @@ import ladysnake.dissolution.common.blocks.alchemysystem.BlockBarrage;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockDistillatePipe;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockPowerCable;
-import ladysnake.dissolution.common.items.ItemAlchemyModule;
+import ladysnake.dissolution.common.blocks.BlockCrucible;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -44,6 +39,7 @@ public final class ModBlocks {
 	public static Block CINNABAR;
 	public static Block HALITE;
 	public static Block SULPHUR;
+	public static BlockCrucible CRUCIBLE;
 	public static BlockLamentStone LAMENT_STONE;
 	public static BlockBarrage BARRAGE;
 	public static BlockCasing CASING;
@@ -74,6 +70,7 @@ public final class ModBlocks {
     			CINNABAR = name(new Block(Material.ROCK), "cinnabar_block"),
 				HALITE = name(new Block(Material.ROCK), "halite_block"),
 				SULPHUR = name(new Block(Material.ROCK), "sulfur_block"),
+				CRUCIBLE = name(new BlockCrucible(), "crucible"),
 				LAMENT_STONE = name(new BlockLamentStone(), "lament_stone"),
 //    			BARRAGE = name(new BlockBarrage(), Reference.Blocks.BARRAGE),
     			DEPLETED_CLAY = name(new BlockDepletedClay(), "depleted_clay_block"),
