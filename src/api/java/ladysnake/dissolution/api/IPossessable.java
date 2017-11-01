@@ -14,6 +14,12 @@ import java.util.UUID;
 public interface IPossessable extends ISoulInteractable {
 
     /**
+     * Checks if this entity is ready to be possessed by the given player
+     * @return true if the possession should succeed
+     */
+    boolean canBePossessedBy(EntityPlayer player);
+
+    /**
      * Called when an incorporeal player attempts to interact with this entity
      * @param player the player attempting to possess this entity
      * @return true if no further processing of the action should be attempted
@@ -39,7 +45,7 @@ public interface IPossessable extends ISoulInteractable {
      * @return true to cancel the original damage
      */
     boolean proxyAttack(EntityLivingBase victim, DamageSource source, float amount);
-    
+
     /**
      * Called when the player possessing this entity fires an arrow
      * @param charge the time the bow was used (in ticks)

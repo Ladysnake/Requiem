@@ -100,7 +100,7 @@ public class InventoryPlayerCorpse implements IInventory {
 
 	@Override
 	public boolean isUsableByPlayer(@Nonnull EntityPlayer player) {
-		return this.corpseEntity.getDistanceSqToEntity(player) < 50;
+		return this.corpseEntity.getDistanceSq(player) < 50;
 	}
 
 	@Override

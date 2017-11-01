@@ -117,8 +117,8 @@ public class AlchemyModuleTypes extends IForgeRegistryEntry.Impl<AlchemyModuleTy
 
 	@SubscribeEvent
 	public static void onRegister(RegistryEvent.Register<AlchemyModuleTypes> event) {
-		toRegister.forEach(REGISTRY::register);
-		REGISTRY.registerAll(ALCHEMICAL_INTERFACE_BOTTOM, ALCHEMICAL_INTERFACE_TOP);
+//		toRegister.forEach(REGISTRY::register);
+//		REGISTRY.registerAll(ALCHEMICAL_INTERFACE_BOTTOM, ALCHEMICAL_INTERFACE_TOP);
 	}
 	
 }

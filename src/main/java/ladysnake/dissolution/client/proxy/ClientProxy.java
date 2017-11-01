@@ -8,12 +8,15 @@ import ladysnake.dissolution.client.particles.DissolutionParticleManager;
 import ladysnake.dissolution.client.renders.entities.LayerDisguise;
 import ladysnake.dissolution.client.renders.entities.LayerScythe;
 import ladysnake.dissolution.client.renders.entities.RenderWillOWisp;
+import ladysnake.dissolution.client.renders.tileentities.TileEntityCrucibleRenderer;
 import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.init.ModEntities;
+import ladysnake.dissolution.common.tileentities.TileEntityCrucible;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -39,6 +42,7 @@ public class ClientProxy extends CommonProxy {
 		if(Loader.isModLoaded("albedo"))
 			MinecraftForge.EVENT_BUS.register(AlbedoEventHandler.class);
 		// ClientRegistry.bindTileEntitySpecialRenderer(TileEntityModularMachine.class, new RenderModularMachine());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrucible.class, new TileEntityCrucibleRenderer());
 		initAddedLayers();
 	}
 
@@ -50,7 +54,7 @@ public class ClientProxy extends CommonProxy {
 	private static void initAddedLayers() {
     	Minecraft.getMinecraft().getRenderManager().getSkinMap().forEach((s, render) -> {
     			render.addLayer(new LayerScythe());
-    			render.addLayer(new LayerDisguise(render, s.equals("slim")));
+//    			render.addLayer(new LayerDisguise(render, s.equals("slim")));
     		});
     }
     

@@ -7,8 +7,10 @@ import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.DissolutionConfigManager;
 import ladysnake.dissolution.common.DissolutionConfigManager.FlightModes;
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.handlers.EventHandlerCommon;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
+import ladysnake.dissolution.common.networking.PossessionMessage;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -17,6 +19,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketCamera;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -29,6 +33,7 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToAccessFieldException;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
@@ -39,10 +44,8 @@ import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This set of classes handles the Incorporeal capability.
@@ -78,7 +81,6 @@ public class CapabilityIncorporealHandler {
 	 */
 	@SubscribeEvent
 	public static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
-
 		if ((event.getObject() instanceof EntityPlayer)) {
 			Provider provider = new Provider((EntityPlayer) event.getObject());
 			handlerMap.put((EntityPlayer) event.getObject(), provider.getCapability(CAPABILITY_INCORPOREAL, null));
@@ -135,10 +137,10 @@ public class CapabilityIncorporealHandler {
 		private int lastFood = -1;
 		private String lastDeathMessage;
 		private boolean synced = false;
-		private int prevGamemode = 0;
 		/**Not used currently, allows the player to wear a different skin*/
 		private UUID disguise = null;
-		private IPossessable host;
+		private UUID hostUUID;
+		private int hostID;
 
 		private EntityPlayer owner;
 
@@ -195,17 +197,46 @@ public class CapabilityIncorporealHandler {
 		}
 
 		@Override
-		public void setPossessed(IPossessable possessable) {
-			this.host = possessable;
-			if(possessable == null)
+		public boolean setPossessed(IPossessable possessable) {
+			if(possessable != null && !(possessable instanceof Entity))
+				throw new IllegalArgumentException("A player can only possess an entity.");
+			if(possessable == null) {
+				IPossessable host = getPossessed();
+				if (host != null && !host.onPossessionStop(owner)) return false;
+				hostID = 0;
+				hostUUID = null;
 				owner.setInvisible(DissolutionConfig.ghost.invisibleGhosts);
-			else
+			} else {
+				if(!possessable.onEntityPossessed(owner)) return false;
+				hostID = ((Entity)possessable).getEntityId();
+				hostUUID = ((Entity)possessable).getUniqueID();
 				owner.setInvisible(true);
+			}
+			if(!owner.world.isRemote) {
+				((EntityPlayerMP) owner).connection.sendPacket(new SPacketCamera(possessable == null ? owner : (Entity) possessable));
+				PacketHandler.net.sendToAllAround(new PossessionMessage(owner.getUniqueID(), hostID),
+						new NetworkRegistry.TargetPoint(owner.dimension, owner.posX, owner.posY, owner.posZ, 100));
+			}
+			return true;
 		}
 
 		@Override
 		public IPossessable getPossessed() {
-			return this.host;
+			if(hostUUID == null)
+				return null;
+			Entity host = this.owner.world.getEntityByID(hostID);
+			if(host == null) {
+				List<Entity> list = owner.getEntityWorld().getEntitiesWithinAABB(Entity.class,
+						new AxisAlignedBB(new BlockPos(owner)),
+						e -> e != null && e.getUniqueID().equals(hostUUID));
+				if(!list.isEmpty()) {
+					host = list.get(0);
+					this.setPossessed((IPossessable) host);
+				} else {
+					LogManager.getLogger().debug(String.format("%s: this player's possessed entity is nowhere to be found", owner));
+				}
+			}
+			return (IPossessable) host;
 		}
 
 		@Override
@@ -300,20 +331,19 @@ public class CapabilityIncorporealHandler {
 		    public NBTBase writeNBT (Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side) {
 		        final NBTTagCompound tag = new NBTTagCompound();
 		        tag.setString("corporealityStatus", instance.getCorporealityStatus().name());
-		        if(instance instanceof DefaultIncorporealHandler) {
-		        	tag.setInteger("prevGamemode", ((DefaultIncorporealHandler)instance).prevGamemode);
-		        }
 		        tag.setString("lastDeath", instance.getLastDeathMessage() == null || instance.getLastDeathMessage().isEmpty() ? "This player has no recorded death" : instance.getLastDeathMessage());
+		        if(instance.getPossessed() instanceof Entity)
+		        	tag.setUniqueId("possessedEntity", ((Entity) instance.getPossessed()).getUniqueID());
 		        return tag;
 		    }
 
 		    @Override
 		    public void readNBT (Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side, NBTBase nbt) {
 		        final NBTTagCompound tag = (NBTTagCompound) nbt;
-		        instance.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.valueOf(
-		        		tag.getString("corporealityStatus")));
+		        instance.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.valueOf(tag.getString("corporealityStatus")));
 		        if(instance instanceof DefaultIncorporealHandler) {
-		        	((DefaultIncorporealHandler)instance).prevGamemode = tag.getInteger("prevGamemode");
+		        	UUID hostUUID = tag.getUniqueId("possessedEntity");
+					((DefaultIncorporealHandler) instance).hostUUID = hostUUID == new UUID(0,0) ? null : hostUUID;
 		        }
 		        instance.setLastDeathMessage(tag.getString("lastDeath"));
 		    }

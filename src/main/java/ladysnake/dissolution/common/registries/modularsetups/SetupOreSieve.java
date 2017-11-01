@@ -118,8 +118,8 @@ public class SetupOreSieve extends ModularMachineSetup {
 				if(transferCooldown++ % 10 == 0) {
 					// attempts to auto-output essentia
 					for(Map.Entry<EnumFacing, TileEntity> side : tile.getAdjacentTEs(EnumPartType.BOTTOM,
-							(face, te) -> te.hasCapability(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, face.getOpposite())).entrySet()) {
-						this.essentiaOutput.flow(side.getValue().getCapability(CapabilityDistillateHandler.CAPABILITY_ESSENTIA,
+							(face, te) -> te.hasCapability(CapabilityDistillateHandler.CAPABILITY_DISTILLATE, face.getOpposite())).entrySet()) {
+						this.essentiaOutput.flow(side.getValue().getCapability(CapabilityDistillateHandler.CAPABILITY_DISTILLATE,
 								side.getKey().getOpposite()));
 					}
 				}
@@ -130,7 +130,7 @@ public class SetupOreSieve extends ModularMachineSetup {
 		public boolean hasCapability(Capability<?> capability, EnumFacing facing, EnumPartType part) {
 			if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
 				return true;
-			else if (capability == CapabilityDistillateHandler.CAPABILITY_ESSENTIA)
+			else if (capability == CapabilityDistillateHandler.CAPABILITY_DISTILLATE)
 				return (part == BlockCasing.EnumPartType.BOTTOM);
 			return false;
 		}
@@ -142,9 +142,9 @@ public class SetupOreSieve extends ModularMachineSetup {
 					return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(input);
 				else if (part == BlockCasing.EnumPartType.BOTTOM)
 					return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(depletedOutput);
-			} else if (capability == CapabilityDistillateHandler.CAPABILITY_ESSENTIA) {
+			} else if (capability == CapabilityDistillateHandler.CAPABILITY_DISTILLATE) {
 				if (part == BlockCasing.EnumPartType.BOTTOM)
-					return CapabilityDistillateHandler.CAPABILITY_ESSENTIA.cast(essentiaOutput);
+					return CapabilityDistillateHandler.CAPABILITY_DISTILLATE.cast(essentiaOutput);
 			}
 			return null;
 		}
@@ -153,7 +153,7 @@ public class SetupOreSieve extends ModularMachineSetup {
 		public void readFromNBT(NBTTagCompound compound) {
 			CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().readNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, input, EnumFacing.EAST, compound.getTag("input"));
 			CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().readNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, depletedOutput, EnumFacing.EAST, compound.getTag("output"));
-			CapabilityDistillateHandler.CAPABILITY_ESSENTIA.getStorage().readNBT(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, essentiaOutput, EnumFacing.NORTH, compound.getTag("essentiaOutput"));
+			CapabilityDistillateHandler.CAPABILITY_DISTILLATE.getStorage().readNBT(CapabilityDistillateHandler.CAPABILITY_DISTILLATE, essentiaOutput, EnumFacing.NORTH, compound.getTag("essentiaOutput"));
 		}
 		
 		@SuppressWarnings("ConstantConditions")
@@ -161,7 +161,7 @@ public class SetupOreSieve extends ModularMachineSetup {
 		public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 			compound.setTag("input", CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().writeNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, this.input, EnumFacing.EAST));
 			compound.setTag("output", CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().writeNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, this.depletedOutput, EnumFacing.WEST));
-			compound.setTag("essentiaOutput", CapabilityDistillateHandler.CAPABILITY_ESSENTIA.getStorage().writeNBT(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, essentiaOutput, EnumFacing.NORTH));
+			compound.setTag("essentiaOutput", CapabilityDistillateHandler.CAPABILITY_DISTILLATE.getStorage().writeNBT(CapabilityDistillateHandler.CAPABILITY_DISTILLATE, essentiaOutput, EnumFacing.NORTH));
 			return compound;
 		}
 	}

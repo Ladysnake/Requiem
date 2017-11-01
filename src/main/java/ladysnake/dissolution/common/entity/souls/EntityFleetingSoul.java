@@ -47,14 +47,13 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
 	public void onUpdate() {
 		super.onUpdate();
 
+		if(this.posY > 300)
+			this.outOfWorld();
+
 		if (this.delayBeforeCanPickup > 0) {
 			--this.delayBeforeCanPickup;
 		}
 
-		if (this.soulAge >= 6000) {
-			world.removeEntity(this);
-		}
-		
 		if (!this.world.isRemote && !this.isDead) {
 			
 			this.targetChangeCooldown -= (this.getPositionVector().squareDistanceTo(lastTickPosX, lastTickPosY, lastTickPosZ) < 0.0125) ? 10 : 1;
@@ -67,7 +66,7 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
 			}
 
 			if (this.soulAge % 100 == 0)
-				if (!(this.targetEntity instanceof EntityPlayer) || this.getDistanceSqToEntity(targetEntity) > 1024.0
+				if (!(this.targetEntity instanceof EntityPlayer) || this.getDistanceSq(targetEntity) > 1024.0
 						|| DissolutionInventoryHelper.findItem((EntityPlayer) targetEntity, ModItems.HALITE).isEmpty()) {
 					this.targetEntity = this.world.getClosestPlayer(this.posX, this.posY, this.posZ, 32.0,
 							player -> player != null && !((EntityPlayer) player).isSpectator()

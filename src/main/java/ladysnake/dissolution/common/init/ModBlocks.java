@@ -3,30 +3,23 @@ package ladysnake.dissolution.common.init;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
-import ladysnake.dissolution.client.models.DissolutionModelLoader;
-import ladysnake.dissolution.client.models.blocks.CableBakedModel;
-import ladysnake.dissolution.client.models.blocks.DistillatePipeBakedModel;
-import ladysnake.dissolution.client.models.blocks.ModularMachineBakedModel;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.BlockLamentStone;
-import ladysnake.dissolution.common.blocks.BlockDepleted;
-import ladysnake.dissolution.common.blocks.BlockDepletedClay;
-import ladysnake.dissolution.common.blocks.BlockDepletedMagma;
-import ladysnake.dissolution.common.blocks.BlockSepulture;
+import ladysnake.dissolution.common.blocks.*;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockBarrage;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockDistillatePipe;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockPowerCable;
-import ladysnake.dissolution.common.items.ItemAlchemyModule;
+import ladysnake.dissolution.common.blocks.BlockCrucible;
+import ladysnake.dissolution.common.items.InventoryItemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -48,6 +41,7 @@ public final class ModBlocks {
 	public static Block CINNABAR;
 	public static Block HALITE;
 	public static Block SULPHUR;
+	public static BlockCrucible CRUCIBLE;
 	public static BlockLamentStone LAMENT_STONE;
 	public static BlockBarrage BARRAGE;
 	public static BlockCasing CASING;
@@ -55,18 +49,22 @@ public final class ModBlocks {
 	public static BlockDepleted DEPLETED_CLAY;
 	public static BlockDepleted DEPLETED_COAL;
 	public static BlockDepletedMagma DEPLETED_MAGMA;
+	public static Block MAGNET;
+	public static BlockMortar MORTAR;
 	public static BlockPowerCable POWER_CABLE;
     public static BlockSepulture SEPULTURE;
     
 	Map<String, Block> remaps = new HashMap<>();
-    
+
+	@Nonnull
     @SuppressWarnings("unchecked")
-	private static <T extends Block> T name(T block, Reference.Blocks names) {
+	static <T extends Block> T name(T block, Reference.Blocks names) {
 		return (T) block.setUnlocalizedName(names.getUnlocalizedName()).setRegistryName(names.getRegistryName());
 	}
-    
+
+	@Nonnull
     @SuppressWarnings("unchecked")
-	private static <T extends Block> T name(T block, String name) {
+	static <T extends Block> T name(T block, String name) {
     	return (T) block.setUnlocalizedName(name).setRegistryName(name);
     }
 
@@ -78,13 +76,16 @@ public final class ModBlocks {
 				HALITE = name(new Block(Material.ROCK), "halite_block"),
 				SULPHUR = name(new Block(Material.ROCK), "sulfur_block"),
 				LAMENT_STONE = name(new BlockLamentStone(), "lament_stone"),
-    			BARRAGE = name(new BlockBarrage(), Reference.Blocks.BARRAGE),
+//    			BARRAGE = name(new BlockBarrage(), Reference.Blocks.BARRAGE),
     			DEPLETED_CLAY = name(new BlockDepletedClay(), "depleted_clay_block"),
     			DEPLETED_COAL = name(new BlockDepleted(Material.ROCK), "depleted_coal_block"),
     			DEPLETED_MAGMA = name(new BlockDepletedMagma(), "depleted_magma"),
-    			DISTILLATE_PIPE = name(new BlockDistillatePipe(), "essentia_pipe"),
-    			POWER_CABLE = name(new BlockPowerCable(), Reference.Blocks.POWER_CABLE));
-    	blockRegistry.register(CASING = name(new BlockCasing(), "wooden_casing"));
+				MAGNET = name(new Block(Material.IRON), "magnet")
+//    			DISTILLATE_PIPE = name(new BlockDistillatePipe(), "distillate_pipe"),
+/*    			,POWER_CABLE = name(new BlockPowerCable(), Reference.Blocks.POWER_CABLE)*/);
+//    	blockRegistry.register(CASING = name(new BlockCasing(), "wooden_casing"));
+		registerBlock(blockRegistry, MORTAR = name(new BlockMortar(), "mortar"), true, InventoryItemBlock::new);
+		registerBlock(blockRegistry, CRUCIBLE = name(new BlockCrucible(), "crucible"), true, InventoryItemBlock::new);
     	blockRegistry.register(SEPULTURE = name(new BlockSepulture(), Reference.Blocks.SEPULTURE));
     }
     
@@ -94,14 +95,14 @@ public final class ModBlocks {
     }
     
     private void registerBlock(IForgeRegistry<Block> blockRegistry, Block block) {
-    	registerBlock(blockRegistry, block, true);
+    	registerBlock(blockRegistry, block, true, ItemBlock::new);
     }
     
     @SuppressWarnings("UnusedReturnValue")
-	Item registerBlock(IForgeRegistry<Block> blockRegistry, Block block, boolean addToTab) {
+	Item registerBlock(IForgeRegistry<Block> blockRegistry, Block block, boolean addToTab, Function<Block, Item> blockItemFunction) {
     	blockRegistry.register(block);
     	assert block.getRegistryName() != null;
-    	Item item = new ItemBlock(block).setRegistryName(block.getRegistryName());
+    	Item item = blockItemFunction.apply(block).setRegistryName(block.getRegistryName());
     	ModItems.allItems.add(item);
     	if(addToTab)
     		block.setCreativeTab(Dissolution.CREATIVE_TAB);
@@ -124,6 +125,7 @@ public final class ModBlocks {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void registerRenders(ModelRegistryEvent event) {
+/*
     	DissolutionModelLoader.addModel(BlockCasing.PLUG, ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
 		DissolutionModelLoader.addModel(BlockCasing.PLUG_CHEST, ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
 		DissolutionModelLoader.addModel(BlockCasing.PLUG_HOPPER, ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
@@ -138,6 +140,7 @@ public final class ModBlocks {
     	registerSmartRender(POWER_CABLE, CableBakedModel.BAKED_MODEL);
     	registerSmartRender(DISTILLATE_PIPE, DistillatePipeBakedModel.BAKED_MODEL);
     	registerSmartRender(CASING, ModularMachineBakedModel.BAKED_MODEL);
+*/
     }
     
     @SideOnly(Side.CLIENT)

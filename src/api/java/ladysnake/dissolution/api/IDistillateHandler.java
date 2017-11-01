@@ -15,19 +15,19 @@ public interface IDistillateHandler extends Iterable<DistillateStack> {
 	 * @param suction
 	 *            the amount of suction
 	 * @param type
-	 *            the type of essentia sucked in
+	 *            the type of distillate sucked in
 	 */
 	void setSuction(DistillateTypes type, float suction);
 
 	/**
 	 * @param type
-	 *            the type of essentia requested
+	 *            the type of distillate requested
 	 * @return a stack equal to the content of this handler
 	 */
 	DistillateStack readContent(DistillateTypes type);
 
 	/**
-	 * @return the maximum amount of essentia this handler can contain per channel
+	 * @return the maximum amount of distillate this handler can contain per channel
 	 */
 	int getMaxSize();
 
@@ -43,15 +43,15 @@ public interface IDistillateHandler extends Iterable<DistillateStack> {
 
 	/**
 	 * @param type
-	 *            the type of essentia for the check
-	 * @return true if there's no space left for this essentia type
+	 *            the type of distillate for the check
+	 * @return true if there's no space left for this distillate type
 	 */
 	default boolean isFull(DistillateTypes type) {
 		return type == DistillateTypes.UNTYPED ? isFull() : this.readContent(type).getCount() > this.getMaxSize();
 	}
 
 	/**
-	 * @return true if there's no space left for any essentia
+	 * @return true if there's no space left for any distillate
 	 */
 	default boolean isFull() {
 		for (DistillateStack stack : this) {
@@ -64,13 +64,13 @@ public interface IDistillateHandler extends Iterable<DistillateStack> {
 	/**
 	 * 
 	 * @param stack
-	 * @return a stack containing the essentia that could not fit in
+	 * @return a stack containing the distillate that could not fit in
 	 */
-	DistillateStack insert(DistillateStack stack);
+	DistillateStack insert(GenericStack<DistillateTypes> stack);
 
 	/**
 	 * @param amount
-	 * @return a stack containing the extracted essentia
+	 * @return a stack containing the extracted distillate
 	 */
 	DistillateStack extract(int amount, DistillateTypes type);
 	
@@ -86,7 +86,7 @@ public interface IDistillateHandler extends Iterable<DistillateStack> {
 	}
 
 	/**
-	 * Attempts to make essentia flow from this handler to the destination
+	 * Attempts to make distillate flow from this handler to the destination
 	 */
 	default void flow(IDistillateHandler dest, DistillateTypes type) {
 		if(dest.getSuction(type) > this.getSuction(type))

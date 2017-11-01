@@ -41,8 +41,8 @@ public class TileEntityDistillatePipe extends TileEntity implements ITickable {
 		IDistillateHandler strongestSuction = null;
 		for (EnumFacing facing : EnumFacing.values()) {
 			TileEntity te = world.getTileEntity(pos.offset(facing));
-			if(te != null && te.hasCapability(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, facing.getOpposite())) {
-				IDistillateHandler handler = te.getCapability(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, facing.getOpposite());
+			if(te != null && te.hasCapability(CapabilityDistillateHandler.CAPABILITY_DISTILLATE, facing.getOpposite())) {
+				IDistillateHandler handler = te.getCapability(CapabilityDistillateHandler.CAPABILITY_DISTILLATE, facing.getOpposite());
 				if(handler != null && (strongestSuction == null || strongestSuction.getSuction(type) < handler.getSuction(type))) {
 					strongestSuction = handler;
 				}
@@ -55,21 +55,21 @@ public class TileEntityDistillatePipe extends TileEntity implements ITickable {
 	@Override
 	public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
 		//noinspection ConstantConditions
-		return (capability == CapabilityDistillateHandler.CAPABILITY_ESSENTIA) || super.hasCapability(capability, facing);
+		return (capability == CapabilityDistillateHandler.CAPABILITY_DISTILLATE) || super.hasCapability(capability, facing);
 	}
 	
 	@Override
 	public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
 		//noinspection ConstantConditions
-		if(capability == CapabilityDistillateHandler.CAPABILITY_ESSENTIA)
-			return CapabilityDistillateHandler.CAPABILITY_ESSENTIA.cast(essentiaHandler);
+		if(capability == CapabilityDistillateHandler.CAPABILITY_DISTILLATE)
+			return CapabilityDistillateHandler.CAPABILITY_DISTILLATE.cast(essentiaHandler);
 		return super.getCapability(capability, facing);
 	}
 	
 	@Override
 	public @Nonnull NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		compound = super.writeToNBT(compound);
-		NBTBase essentiaCompound = CapabilityDistillateHandler.CAPABILITY_ESSENTIA.getStorage().writeNBT(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, this.essentiaHandler, null);
+		NBTBase essentiaCompound = CapabilityDistillateHandler.CAPABILITY_DISTILLATE.getStorage().writeNBT(CapabilityDistillateHandler.CAPABILITY_DISTILLATE, this.essentiaHandler, null);
 		if(essentiaCompound != null)
 			compound.setTag("essentiaHandler", essentiaCompound);
 		compound.setInteger("cooldown", transferCooldown);
@@ -80,7 +80,7 @@ public class TileEntityDistillatePipe extends TileEntity implements ITickable {
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
 		try {
-			CapabilityDistillateHandler.CAPABILITY_ESSENTIA.getStorage().readNBT(CapabilityDistillateHandler.CAPABILITY_ESSENTIA, essentiaHandler, null, compound.getCompoundTag("essentiaHandler"));
+			CapabilityDistillateHandler.CAPABILITY_DISTILLATE.getStorage().readNBT(CapabilityDistillateHandler.CAPABILITY_DISTILLATE, essentiaHandler, null, compound.getCompoundTag("essentiaHandler"));
 			this.transferCooldown = compound.getInteger("cooldown");
 		} catch (NullPointerException | IllegalArgumentException ignored) {}
 	}

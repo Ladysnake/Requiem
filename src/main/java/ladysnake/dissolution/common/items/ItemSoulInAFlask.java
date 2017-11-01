@@ -20,7 +20,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
-public class ItemSoulInAFlask extends Item {
+public class ItemSoulInAFlask extends ItemGlassware {
 
 	public ItemSoulInAFlask() {
 		super();
@@ -48,7 +48,7 @@ public class ItemSoulInAFlask extends Item {
 		Soul soul = getSoul(stack);
 		CapabilitySoulHandler.getHandler(playerIn).addSoul(soul);
 		stack.shrink(1);
-		return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+		return new ActionResult<>(EnumActionResult.SUCCESS, stack);
 	}
 	
 	public Soul getSoul(ItemStack stack) {

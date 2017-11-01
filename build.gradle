@@ -78,6 +78,8 @@ jar {
     manifest {
         attributes 'FMLAT': 'dissolution_at.cfg'
     }
+    from sourceSets.api.output
+    from sourceSets.main.output
 //    from configurations.shade.collect { it.isDirectory() ? it : zipTree(it) }
     /*configurations.shade.each { dep ->
         from(project.zipTree(dep)){
@@ -85,4 +87,15 @@ jar {
             rename '(.*)', 'erudit/$1'
         }
     }*/
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.api.allSource
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+task apiJar(type: Jar) {
+    from sourceSets.api.output
+    classifier = 'api'
 }

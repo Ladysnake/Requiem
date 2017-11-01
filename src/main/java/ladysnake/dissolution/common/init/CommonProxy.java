@@ -1,8 +1,10 @@
 package ladysnake.dissolution.common.init;
 
 import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.OreDictHelper;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityDistillateHandler;
+import ladysnake.dissolution.common.capabilities.CapabilityGenericInventoryProvider;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.handlers.EventHandlerCommon;
@@ -11,11 +13,7 @@ import ladysnake.dissolution.common.handlers.LivingDeathHandler;
 import ladysnake.dissolution.common.handlers.PlayerTickHandler;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.networking.PacketHandler;
-import ladysnake.dissolution.common.tileentities.TileEntityLamentStone;
-import ladysnake.dissolution.common.tileentities.TileEntityDistillatePipe;
-import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
-import ladysnake.dissolution.common.tileentities.TileEntityProxy;
-import ladysnake.dissolution.common.tileentities.TileEntitySepulture;
+import ladysnake.dissolution.common.tileentities.*;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -30,6 +28,7 @@ public abstract class CommonProxy {
 		CapabilityIncorporealHandler.register();
 		CapabilitySoulHandler.register();
 		CapabilityDistillateHandler.register();
+		CapabilityGenericInventoryProvider.register();
 		ModStructure.init();
 	}
 	
@@ -39,13 +38,15 @@ public abstract class CommonProxy {
 		MinecraftForge.EVENT_BUS.register(new PlayerTickHandler());
 		MinecraftForge.EVENT_BUS.register(new InteractEventsHandler());
 		
-		ModItems.INSTANCE.registerOres();
+		OreDictHelper.registerOres();
 		
 		GameRegistry.registerTileEntity(TileEntityDistillatePipe.class, Reference.MOD_ID + ":tileentityessencecable");
 		GameRegistry.registerTileEntity(TileEntitySepulture.class, Reference.MOD_ID + ":tileentitysepulture");
 		GameRegistry.registerTileEntity(TileEntityModularMachine.class, Reference.MOD_ID + ":tileentitymodularmachine");
 		GameRegistry.registerTileEntity(TileEntityProxy.class, Reference.MOD_ID + ":tileentityproxy");
 		GameRegistry.registerTileEntity(TileEntityLamentStone.class, Reference.MOD_ID + ":tileentityancienttomb");
+		GameRegistry.registerTileEntity(TileEntityMortar.class, Reference.MOD_ID + ":tileentitymortar");
+		GameRegistry.registerTileEntity(TileEntityCrucible.class, Reference.MOD_ID + ":tileentitycrucible");
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
 		PacketHandler.initPackets();

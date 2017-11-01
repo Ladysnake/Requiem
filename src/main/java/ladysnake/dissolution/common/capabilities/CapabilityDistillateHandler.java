@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import ladysnake.dissolution.api.GenericStack;
 import ladysnake.dissolution.api.DistillateStack;
 import ladysnake.dissolution.api.DistillateTypes;
 import ladysnake.dissolution.api.IDistillateHandler;
@@ -23,7 +24,7 @@ public class CapabilityDistillateHandler {
 
 	@CapabilityInject(IDistillateHandler.class)
 	@Nonnull
-	public static Capability<IDistillateHandler> CAPABILITY_ESSENTIA;
+	public static Capability<IDistillateHandler> CAPABILITY_DISTILLATE;
 
 	public static void register() {
 		CapabilityManager.INSTANCE.register(IDistillateHandler.class, new Storage(), () -> new DefaultDistillateHandler(1));
@@ -31,14 +32,14 @@ public class CapabilityDistillateHandler {
 
 	public static IDistillateHandler getHandler(TileEntity te) {
 
-		if (te.hasCapability(CAPABILITY_ESSENTIA, EnumFacing.DOWN))
-			return te.getCapability(CAPABILITY_ESSENTIA, EnumFacing.DOWN);
+		if (te.hasCapability(CAPABILITY_DISTILLATE, EnumFacing.DOWN))
+			return te.getCapability(CAPABILITY_DISTILLATE, EnumFacing.DOWN);
 
 		return null;
 	}
 
 	/**
-	 * Don't use this except for loading content from disk
+	 * Don't use these methods except for loading content from disk
 	 */
 	public interface IDistillateHandlerModifiable {
 		void setContent(int channel, DistillateStack content);
@@ -79,34 +80,34 @@ public class CapabilityDistillateHandler {
 		}
 
 		@Override
-		public DistillateStack insert(DistillateStack stack) {
+		public DistillateStack insert(GenericStack<DistillateTypes> stack) {
 			int i = this.content.indexOf(stack.getType());
 			if(i == -1)
 				i = this.content.indexOf(DistillateTypes.UNTYPED);
 			if(i > -1) {
-				DistillateStack stack2 = this.content.get(i);
+				GenericStack<DistillateTypes> stack2 = this.content.get(i);
 				int currentAmount = stack2.getCount();
 				int amount = Math.min(stack.getCount() + currentAmount, maxSize);
-				this.content.set(i, stack.withSize(amount));
+				this.content.set(i, (DistillateStack) stack.withSize(amount));
 				stack = stack.smaller(amount - currentAmount);
 			}
-			return stack;
+			return (DistillateStack) stack;
 		}
 
 		@Override
 		public DistillateStack extract(int amount, DistillateTypes type) {
-			DistillateStack contentStack = this.content.get(type);
+			DistillateStack contentStack = (DistillateStack) this.content.get(type);
 			if(contentStack.isEmpty())
-				return DistillateStack.EMPTY;
+				return (DistillateStack) DistillateStack.EMPTY;
 			amount = Math.min(amount, contentStack.getCount());
-			DistillateStack ret = contentStack.withSize(amount);
+			DistillateStack ret = (DistillateStack) contentStack.withSize(amount);
 			contentStack.shrink(amount);
 			return ret;
 		}
 
 		@Override
 		public DistillateStack readContent(DistillateTypes type) {
-			return new DistillateStack(this.content.get(type));
+			return new DistillateStack((DistillateStack)this.content.get(type));
 		}
 
 		@Override
@@ -125,8 +126,20 @@ public class CapabilityDistillateHandler {
 		}
 
 		@Override
+		@Nonnull
 		public Iterator<DistillateStack> iterator() {
-			return this.content.iterator();
+			return new Iterator<DistillateStack>() {
+				Iterator delegate = DefaultDistillateHandler.this.content.iterator();
+				@Override
+				public boolean hasNext() {
+					return delegate.hasNext();
+				}
+
+				@Override
+				public DistillateStack next() {
+					return (DistillateStack) delegate.next();
+				}
+			};
 		}
 
 		@Override
@@ -143,26 +156,26 @@ public class CapabilityDistillateHandler {
 
 	public static class Provider implements ICapabilitySerializable<NBTTagCompound> {
 
-		final IDistillateHandler instance = CAPABILITY_ESSENTIA.getDefaultInstance();
+		final IDistillateHandler instance = CAPABILITY_DISTILLATE.getDefaultInstance();
 
 		@Override
 		public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
-			return capability == CAPABILITY_ESSENTIA;
+			return capability == CAPABILITY_DISTILLATE;
 		}
 
 		@Override
 		public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
-			return hasCapability(capability, facing) ? CAPABILITY_ESSENTIA.cast(instance) : null;
+			return hasCapability(capability, facing) ? CAPABILITY_DISTILLATE.cast(instance) : null;
 		}
 
 		@Override
 		public NBTTagCompound serializeNBT() {
-			return (NBTTagCompound) CAPABILITY_ESSENTIA.getStorage().writeNBT(CAPABILITY_ESSENTIA, instance, null);
+			return (NBTTagCompound) CAPABILITY_DISTILLATE.getStorage().writeNBT(CAPABILITY_DISTILLATE, instance, null);
 		}
 
 		@Override
 		public void deserializeNBT(NBTTagCompound nbt) {
-			CAPABILITY_ESSENTIA.getStorage().readNBT(CAPABILITY_ESSENTIA, instance, null, nbt);
+			CAPABILITY_DISTILLATE.getStorage().readNBT(CAPABILITY_DISTILLATE, instance, null, nbt);
 		}
 
 	}

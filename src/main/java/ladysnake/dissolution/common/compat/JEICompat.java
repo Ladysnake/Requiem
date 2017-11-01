@@ -45,7 +45,6 @@ public class JEICompat implements IModPlugin {
 	@SideOnly(Side.CLIENT)
 	private void addInformationTabs() {
 		addInformationTab(ModItems.SEPULTURE);
-		addInformationTab(ModBlocks.POWER_CABLE);
 	}
 
 	@SideOnly(Side.CLIENT)

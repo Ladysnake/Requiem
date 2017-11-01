@@ -205,7 +205,7 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
     }
     
     @Override
-    public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+    public void attackEntityWithRangedAttack(@Nonnull EntityLivingBase target, float distanceFactor) {
     	if(delegate instanceof IRangedAttackMob)
     		((IRangedAttackMob)delegate).attackEntityWithRangedAttack(target, distanceFactor);
     	else
@@ -293,11 +293,13 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
     	return this.delegate == null ? super.isHandActive() : delegate.isHandActive();
     }
     
+    @Nonnull
     @Override
     public EnumHand getActiveHand() {
     	return this.delegate == null ? super.getActiveHand() : delegate.getActiveHand();
     }
     
+    @Nonnull
     @Override
     public ItemStack getActiveItemStack() {
     	return this.delegate == null ? super.getActiveItemStack() : delegate.getActiveItemStack();

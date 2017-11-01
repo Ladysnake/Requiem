@@ -3,6 +3,7 @@ package ladysnake.dissolution.common.init;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import net.minecraft.item.ItemBlock;
 import org.apache.logging.log4j.LogManager;
 
 import ladysnake.dissolution.common.Reference;
@@ -80,7 +81,7 @@ public enum ModFluids {
 	private void registerFluidBlock(IForgeRegistry<Block> reg) {
 		fluidBlock.setRegistryName(Reference.MOD_ID, "fluid." + fluid.getName());
 		fluidBlock.setUnlocalizedName(Reference.MOD_ID + ":" + fluid.getUnlocalizedName());
-		ModBlocks.INSTANCE.registerBlock(reg, fluidBlock, false);
+		ModBlocks.INSTANCE.registerBlock(reg, fluidBlock, false, ItemBlock::new);
 	}
 
 	@SideOnly(Side.CLIENT)
