@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
 	"textures": {
-		"0": "blocks/angel",
-		"particle": "blocks/angel"
+		"0": "blocks/passeress_shrine",
+		"particle": "blocks/passeress_shrine"
 	},
 	"elements": [
 		{
@@ -928,8 +928,7 @@
 				"origin": [8.5, 6.125, 2.4999999999999982],
 				"axis": "x",
 				"angle": 45
-			},
-			"_loading": false
+			}
 		}
 	],
 	"groups": [
