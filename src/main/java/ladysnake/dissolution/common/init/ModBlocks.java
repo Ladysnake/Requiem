@@ -3,6 +3,7 @@ package ladysnake.dissolution.common.init;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
@@ -14,6 +15,7 @@ import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockDistillatePipe;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockPowerCable;
 import ladysnake.dissolution.common.blocks.BlockCrucible;
+import ladysnake.dissolution.common.items.InventoryItemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -47,19 +49,22 @@ public final class ModBlocks {
 	public static BlockDepleted DEPLETED_CLAY;
 	public static BlockDepleted DEPLETED_COAL;
 	public static BlockDepletedMagma DEPLETED_MAGMA;
+	public static Block MAGNET;
 	public static BlockMortar MORTAR;
 	public static BlockPowerCable POWER_CABLE;
     public static BlockSepulture SEPULTURE;
     
 	Map<String, Block> remaps = new HashMap<>();
-    
+
+	@Nonnull
     @SuppressWarnings("unchecked")
-	private static <T extends Block> T name(T block, Reference.Blocks names) {
+	static <T extends Block> T name(T block, Reference.Blocks names) {
 		return (T) block.setUnlocalizedName(names.getUnlocalizedName()).setRegistryName(names.getRegistryName());
 	}
-    
+
+	@Nonnull
     @SuppressWarnings("unchecked")
-	private static <T extends Block> T name(T block, String name) {
+	static <T extends Block> T name(T block, String name) {
     	return (T) block.setUnlocalizedName(name).setRegistryName(name);
     }
 
@@ -70,16 +75,17 @@ public final class ModBlocks {
     			CINNABAR = name(new Block(Material.ROCK), "cinnabar_block"),
 				HALITE = name(new Block(Material.ROCK), "halite_block"),
 				SULPHUR = name(new Block(Material.ROCK), "sulfur_block"),
-				CRUCIBLE = name(new BlockCrucible(), "crucible"),
 				LAMENT_STONE = name(new BlockLamentStone(), "lament_stone"),
 //    			BARRAGE = name(new BlockBarrage(), Reference.Blocks.BARRAGE),
     			DEPLETED_CLAY = name(new BlockDepletedClay(), "depleted_clay_block"),
     			DEPLETED_COAL = name(new BlockDepleted(Material.ROCK), "depleted_coal_block"),
     			DEPLETED_MAGMA = name(new BlockDepletedMagma(), "depleted_magma"),
+				MAGNET = name(new Block(Material.IRON), "magnet")
 //    			DISTILLATE_PIPE = name(new BlockDistillatePipe(), "distillate_pipe"),
-    			MORTAR = name(new BlockMortar(), "mortar")
 /*    			,POWER_CABLE = name(new BlockPowerCable(), Reference.Blocks.POWER_CABLE)*/);
 //    	blockRegistry.register(CASING = name(new BlockCasing(), "wooden_casing"));
+		registerBlock(blockRegistry, MORTAR = name(new BlockMortar(), "mortar"), true, InventoryItemBlock::new);
+		registerBlock(blockRegistry, CRUCIBLE = name(new BlockCrucible(), "crucible"), true, InventoryItemBlock::new);
     	blockRegistry.register(SEPULTURE = name(new BlockSepulture(), Reference.Blocks.SEPULTURE));
     }
     
@@ -89,14 +95,14 @@ public final class ModBlocks {
     }
     
     private void registerBlock(IForgeRegistry<Block> blockRegistry, Block block) {
-    	registerBlock(blockRegistry, block, true);
+    	registerBlock(blockRegistry, block, true, ItemBlock::new);
     }
     
     @SuppressWarnings("UnusedReturnValue")
-	Item registerBlock(IForgeRegistry<Block> blockRegistry, Block block, boolean addToTab) {
+	Item registerBlock(IForgeRegistry<Block> blockRegistry, Block block, boolean addToTab, Function<Block, Item> blockItemFunction) {
     	blockRegistry.register(block);
     	assert block.getRegistryName() != null;
-    	Item item = new ItemBlock(block).setRegistryName(block.getRegistryName());
+    	Item item = blockItemFunction.apply(block).setRegistryName(block.getRegistryName());
     	ModItems.allItems.add(item);
     	if(addToTab)
     		block.setCreativeTab(Dissolution.CREATIVE_TAB);

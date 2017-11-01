@@ -29,6 +29,10 @@ public class InputItemHandler extends ItemStackHandler {
 	public void addWhitelistedItem(Item item) {
 		this.whiteList.add(item);
 	}
+
+	public ItemStack insertItemInternal(int slot, @Nonnull ItemStack stack, boolean simulate) {
+		return super.insertItem(slot, stack, simulate);
+	}
 	
 	@Nonnull
 	@Override

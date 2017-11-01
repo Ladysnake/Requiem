@@ -7,7 +7,8 @@ import net.minecraft.item.Item;
 
 public enum EnumPowderOres {
     SULFUR(ModItems.SULFUR),
-    CINNABAR(ModItems.CINNABAR);
+    CINNABAR(ModItems.CINNABAR),
+    HALITE(ModItems.HALITE);
 
     private final Item component;
 

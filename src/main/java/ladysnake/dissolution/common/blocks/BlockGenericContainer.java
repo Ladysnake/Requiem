@@ -24,8 +24,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
-public abstract class BlockPrimitiveContainer extends Block {
-    public BlockPrimitiveContainer(Material materialIn) {
+public abstract class BlockGenericContainer extends Block {
+    public BlockGenericContainer(Material materialIn) {
         super(materialIn);
     }
 
@@ -99,6 +99,7 @@ public abstract class BlockPrimitiveContainer extends Block {
     @Override
     public abstract boolean hasTileEntity(IBlockState state);
 
+    @Override
     public abstract TileEntity createTileEntity(@Nonnull World world, @Nonnull IBlockState state);
 
 }

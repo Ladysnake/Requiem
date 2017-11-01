@@ -2,9 +2,6 @@ package ladysnake.dissolution.common.capabilities;
 
 import ladysnake.dissolution.api.*;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.BlockPrimitiveContainer;
-import ladysnake.dissolution.common.registries.EnumPowderOres;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -37,7 +34,7 @@ public class CapabilityGenericInventoryProvider {
 
     @SubscribeEvent
     public static void attachCapability(AttachCapabilitiesEvent<ItemStack> event) {
-        if(event.getObject().getItem() instanceof ItemBlock && ((ItemBlock) event.getObject().getItem()).getBlock() instanceof BlockPrimitiveContainer)
+        if(event.getObject().getItem() instanceof IGenericInventoryItem)
             event.addCapability(new ResourceLocation(Reference.MOD_ID, "powderContent"), new Provider());
     }
 

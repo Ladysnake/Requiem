@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
 	"textures": {
-		"0": "dissolution:machines/new/crucible",
-		"particle": "dissolution:machines/new/crucible"
+		"0": "dissolution:machines/crucible",
+		"particle": "dissolution:machines/crucible"
 	},
 	"elements": [
 		{

@@ -33,7 +33,7 @@ public class BlockFluidMercury extends BlockFluidClassic {
 	public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entityIn) {
 		
 		Random ran = new Random();
-		
+
 		if (entityIn.motionY < -0.05) {
 			entityIn.motionY *= 0.05;
 		}
@@ -42,8 +42,8 @@ public class BlockFluidMercury extends BlockFluidClassic {
 		}
 		if (entityIn.motionX < -0.05 || entityIn.motionX > 0.05) {
 			entityIn.motionX *= 0.05;
-}
-	
+		}
+
 		if (entityIn instanceof EntityPlayer) {
 			
 			EntityPlayer player = (EntityPlayer)entityIn;

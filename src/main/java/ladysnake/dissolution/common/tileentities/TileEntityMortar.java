@@ -2,13 +2,18 @@ package ladysnake.dissolution.common.tileentities;
 
 import ladysnake.dissolution.api.GenericStack;
 import ladysnake.dissolution.api.GenericStackInventory;
+import ladysnake.dissolution.api.IGenericInventoryProvider;
+import ladysnake.dissolution.common.capabilities.CapabilityGenericInventoryProvider;
 import ladysnake.dissolution.common.registries.EnumPowderOres;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.common.capabilities.Capability;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +24,12 @@ public class TileEntityMortar extends TileEntity implements IPowderContainer {
 
     private int crushTime;
     private ItemStack contentStack = ItemStack.EMPTY;
+    private IGenericInventoryProvider inventoryProvider = new CapabilityGenericInventoryProvider.DefaultGenericInventoryProvider();
     private GenericStackInventory<EnumPowderOres> crushedStack = new GenericStackInventory<>(8, 1, EnumPowderOres.class, EnumPowderOres.SERIALIZER);
+
+    public TileEntityMortar() {
+        inventoryProvider.setInventory(EnumPowderOres.class, crushedStack);
+    }
 
     public void putItem(ItemStack item) {
         if(this.contentStack.isEmpty()) {
@@ -40,6 +50,19 @@ public class TileEntityMortar extends TileEntity implements IPowderContainer {
     @Override
     public GenericStackInventory<EnumPowderOres> getPowderInventory() {
         return crushedStack;
+    }
+
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+        return capability == CapabilityGenericInventoryProvider.CAPABILITY_GENERIC || super.hasCapability(capability, facing);
+    }
+
+    @Nullable
+    @Override
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+        if(capability == CapabilityGenericInventoryProvider.CAPABILITY_GENERIC)
+            return CapabilityGenericInventoryProvider.CAPABILITY_GENERIC.cast(inventoryProvider);
+        return super.getCapability(capability, facing);
     }
 
     private void loadFromNbt(NBTTagCompound compound) {
