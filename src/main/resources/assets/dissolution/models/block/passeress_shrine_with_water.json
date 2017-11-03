@@ -2,6 +2,7 @@
 	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
 	"textures": {
 		"0": "blocks/passeress_shrine",
+		"1": "blocks/passeress_shrine_water",
 		"particle": "blocks/passeress_shrine"
 	},
 	"elements": [
@@ -761,6 +762,25 @@
 		},
 		{
 			"name": "cube",
+			"from": [4, 10, 4],
+			"to": [12, 10, 12],
+			"faces": {
+				"north": {
+					"uv": [0, 0, 1, 1],
+					"texture": "#missing"
+				},
+				"east": {"uv": [0, 0, 1, 1], "texture": "#missing"},
+				"south": {
+					"uv": [0, 0, 1, 1],
+					"texture": "#missing"
+				},
+				"west": {"uv": [0, 0, 1, 1], "texture": "#missing"},
+				"up": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"down": {"uv": [0, 0, 1, 1], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "cube",
 			"from": [9.000000000000002, 1.25, 5],
 			"to": [15.000000000000002, 7.25, 11],
 			"faces": {
@@ -988,13 +1008,13 @@
 		{
 			"name": "Bassin",
 			"origin": [8, 8, 8],
-			"isOpen": true,
+			"isOpen": false,
 			"display": {
 				"visibility": true,
 				"export": true,
 				"autouv": false
 			},
-			"children": [37, 40, 38, 39, 36]
+			"children": [37, 40, 38, 39, 36, 41]
 		},
 		{
 			"name": "Claws",
@@ -1026,7 +1046,7 @@
 						"export": true,
 						"autouv": false
 					},
-					"children": [41, 42, 43, 44]
+					"children": [42, 43, 44, 45]
 				},
 				{
 					"name": "Claw",
@@ -1037,7 +1057,7 @@
 						"export": true,
 						"autouv": false
 					},
-					"children": [45, 46]
+					"children": [46, 47]
 				},
 				{
 					"name": "Claw",
@@ -1048,7 +1068,7 @@
 						"export": true,
 						"autouv": false
 					},
-					"children": [48, 49, 47]
+					"children": [49, 50, 48]
 				}
 			]
 		},
