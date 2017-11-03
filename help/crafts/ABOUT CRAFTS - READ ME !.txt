@@ -1,0 +1,10 @@
+For all the crafts presented here, the glass texture is meaning glass block and NOT GLASS PANE !
+
+For other crafts, they necessit other crafting mechanics. These crafts are:
+
+	- Cinnabar / sulfur / halite :
+To craft these, you will need to place respectively igneous stone / coal / clay into a mortar. Reduce to powder the corresponding item in the mortar.
+Then, place the content of the mortar inside a crucible by right clicking on it with the mortar in hand. Put your crucible on top of a separator, powered.
+After 1 or 2 minutes, reclaim your crucible and empty the depleted materials (into a tank to keep it or onto the ground to destroy it). 
+After that, deposits should still be in your crucible. Place your crucible onto a heating chamber, fill the crucible with a water bucket and power the chamber with some combustibles.
+After another minute or two, water should be evaporated and crystals should have popped out of the crucible as items. After all these steps, your crucible should be empty.
