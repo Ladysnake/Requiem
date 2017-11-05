@@ -327,13 +327,12 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
         i = net.minecraftforge.event.ForgeEventFactory.onArrowLoose(bow, worldIn, entityPlayer, i, !ammoStack.isEmpty() || infiniteAmmo);
         if (i < 0) return;
 
-        if (!ammoStack.isEmpty() || infiniteAmmo)
-        {
+        if (!ammoStack.isEmpty() || infiniteAmmo) {
             if (ammoStack.isEmpty()) {
                 ammoStack = new ItemStack(Items.ARROW);
             }
 
-            float f = Items.BOW.getArrowVelocity(i);
+            float f = ItemBow.getArrowVelocity(i);
 
             if ((double)f >= 0.1D) {
                 boolean flag1 = entityPlayer.capabilities.isCreativeMode || (ammoStack.getItem() instanceof ItemArrow && ((ItemArrow) ammoStack.getItem()).isInfinite(ammoStack, bow, entityPlayer));
@@ -341,7 +340,7 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
                 if (!worldIn.isRemote) {
                     ItemArrow itemarrow = (ItemArrow)(ammoStack.getItem() instanceof ItemArrow ? ammoStack.getItem() : Items.ARROW);
                     EntityArrow entityarrow = this.getArrow((EntityTippedArrow) itemarrow.createArrow(worldIn, ammoStack, this), 0);
-                    entityarrow.shoot(this, this.rotationPitch, this.rotationYaw, 0.0F, f * 3.0F, 1.0F);
+                    entityarrow.shoot(entityPlayer, entityPlayer.rotationPitch, entityPlayer.rotationYaw, 0.0F, f * 3.0F, 1.0F);
 
                     if (f == 1.0F) {
                         entityarrow.setIsCritical(true);
@@ -405,6 +404,8 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 			if(player.getItemStackFromSlot(slot).isEmpty())
 				player.setItemStackToSlot(slot, this.getItemStackFromSlot(slot));
 			else player.addItemStackToInventory(this.getItemStackFromSlot(slot));
+		if(this.getHeldItemMainhand().getItem() instanceof ItemBow)
+			player.addItemStackToInventory(new ItemStack(Items.ARROW, rand.nextInt(10)+2));
 		player.startRiding(this);
 		return true;
 	}

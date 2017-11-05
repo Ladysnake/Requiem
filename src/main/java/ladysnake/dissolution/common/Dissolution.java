@@ -1,6 +1,7 @@
 package ladysnake.dissolution.common;
 
 
+import ladysnake.dissolution.common.commands.CommandDissolutionTree;
 import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.inventory.DissolutionTab;
 import net.minecraft.creativetab.CreativeTabs;
@@ -11,6 +12,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION,
 		acceptedMinecraftVersions = Reference.MCVERSION, dependencies = Reference.DEPENDENCIES)
@@ -36,7 +38,12 @@ public class Dissolution {
 	 }
 	 
 	 @EventHandler
-	 public void postInit(FMLPostInitializationEvent e) {
+	 public void postInit(FMLPostInitializationEvent event) {
 		 proxy.postInit();
+	 }
+
+	 @EventHandler
+	public void serverLoad(FMLServerStartingEvent event) {
+	 	event.registerServerCommand(new CommandDissolutionTree());
 	 }
 }

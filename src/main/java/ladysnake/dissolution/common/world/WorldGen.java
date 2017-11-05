@@ -3,13 +3,10 @@ package ladysnake.dissolution.common.world;
 import java.util.Random;
 
 import ladysnake.dissolution.common.DissolutionConfig;
-import ladysnake.dissolution.common.init.ModFluids;
-import ladysnake.dissolution.common.world.gen.feature.WorldGenMercuryLakes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
-import net.minecraft.world.gen.feature.WorldGenLakes;
 import net.minecraftforge.fml.common.IWorldGenerator;
 
 public class WorldGen implements IWorldGenerator {
@@ -46,7 +43,7 @@ public class WorldGen implements IWorldGenerator {
 		int Ypos = 256;
 		int Zpos = j + random.nextInt(8);
 
-		if(random.nextInt() % DissolutionConfig.worldgen.spawnLamentStonesFreq == 0)
+		if(random.nextInt() % DissolutionConfig.worldGen.spawnLamentStonesFreq == 0)
 			lamentStonesGenerator.generate(world, random, new BlockPos(Xpos, Ypos, Zpos));
 
 	}

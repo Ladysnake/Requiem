@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "# #",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:clay_ball",
+      "data": 0
+    }
+  },
+  "result": {
+    "item": "dissolution:mortar",
+    "data": 0,
+    "count": 1
+
+  }
+}

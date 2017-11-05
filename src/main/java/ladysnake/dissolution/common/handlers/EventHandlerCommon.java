@@ -1,7 +1,5 @@
 package ladysnake.dissolution.common.handlers;
 
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
@@ -21,7 +19,6 @@ import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.player.ArrowLooseEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -33,7 +30,6 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
 /**
  * This class handles basic events-related logic
- * It is mostly used to cancel player interactions when the latter is a ghost
  * @author Pyrofab
  *
  */
@@ -71,6 +67,7 @@ public class EventHandlerCommon {
 			event.getEntityPlayer().experienceLevel = event.getOriginal().experienceLevel;
 			final IIncorporealHandler corpse = CapabilityIncorporealHandler.getHandler(event.getOriginal());
 			final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
+			clone.setStrongSoul(corpse.isStrongSoul());
 			clone.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.SOUL);
 			clone.setLastDeathMessage(corpse.getLastDeathMessage());
 			clone.setSynced(false);
@@ -160,7 +157,7 @@ public class EventHandlerCommon {
 		if (event.getEntity() instanceof EntityPlayer) {
 			final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler((EntityPlayer)event.getEntity());
 			if (playerCorp.getCorporealityStatus().isIncorporeal()) {
-				playerCorp.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.NORMAL);
+				playerCorp.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.BODY);
 			}
 		}
 	}

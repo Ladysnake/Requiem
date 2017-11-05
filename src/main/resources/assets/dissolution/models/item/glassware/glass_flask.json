@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "dissolution:items/glassware/glass_flask"
+        "layer0": "dissolution:items/flasks/glass_flask"
     }
 }

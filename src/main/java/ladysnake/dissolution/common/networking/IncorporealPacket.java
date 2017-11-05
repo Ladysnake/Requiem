@@ -24,7 +24,8 @@ public class IncorporealPacket implements IMessageHandler<IncorporealMessage, IM
 					final EntityPlayer player = Minecraft.getMinecraft().player.world
 							.getPlayerEntityByUUID(new UUID(message.playerUUIDMost, message.playerUUIDLeast));
 					final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
-					playerCorp.setCorporealityStatus(message.corporalityStatus);
+					playerCorp.setStrongSoul(message.strongSoul);
+					playerCorp.setCorporealityStatus(message.corporealityStatus);
 				} catch (NullPointerException ignored){}
 			});
 		}

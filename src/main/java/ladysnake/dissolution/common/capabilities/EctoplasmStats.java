@@ -1,9 +1,11 @@
-package ladysnake.dissolution.api;
+package ladysnake.dissolution.common.capabilities;
+
+import ladysnake.dissolution.api.IEctoplasmStats;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class EctoplasmStats {
+public class EctoplasmStats implements IEctoplasmStats {
 
     private int health;
     private List<SoulSpells> unlockedSpells;
@@ -17,6 +19,7 @@ public class EctoplasmStats {
         this.health = health;
     }
 
+    @Override
     public List<SoulSpells> getActiveSpells() {
         return activeSpells;
     }
@@ -25,7 +28,4 @@ public class EctoplasmStats {
         this.activeSpells = activeSpells;
     }
 
-    public enum SoulSpells {
-        FLIGHT
-    }
 }

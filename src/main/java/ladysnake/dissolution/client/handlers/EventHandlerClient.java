@@ -1,9 +1,8 @@
 package ladysnake.dissolution.client.handlers;
 
-import ladysnake.dissolution.api.EctoplasmStats;
+import ladysnake.dissolution.common.capabilities.EctoplasmStats;
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.api.ISoulInteractable;
-import ladysnake.dissolution.client.particles.AdditiveParticle;
 import ladysnake.dissolution.client.particles.DissolutionParticleManager;
 import ladysnake.dissolution.client.renders.entities.RenderWillOWisp;
 import ladysnake.dissolution.common.DissolutionConfigManager;
@@ -18,7 +17,6 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -37,7 +35,6 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldExcep
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.imageio.IIOImage;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
@@ -69,7 +66,7 @@ public class EventHandlerClient {
 	
 	@SubscribeEvent
 	public static void onTextureStitch(TextureStitchEvent.Pre event){
-		event.getMap().registerSprite(AdditiveParticle.STAR_PARTICLE_TEXTURE);
+//		event.getMap().registerSprite(AdditiveParticle.STAR_PARTICLE_TEXTURE);
 	}
 
 	@SubscribeEvent

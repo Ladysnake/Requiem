@@ -56,7 +56,8 @@ public class ItemDebug extends Item implements ISoulInteractable {
 					IIncorporealHandler.CorporealityStatus.values()
 							[(CapabilityIncorporealHandler.getHandler(playerIn).getCorporealityStatus().ordinal()+1) % 3]);
 			break;
-		case 1 : break;
+		case 1 : if(!worldIn.isRemote) worldIn.getWorldInfo().setAllowCommands(true);
+			break;
 		case 2 :
 			if(!playerIn.world.isRemote)
 				CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) playerIn, playerIn.dimension == -1 ? 0 : -1);

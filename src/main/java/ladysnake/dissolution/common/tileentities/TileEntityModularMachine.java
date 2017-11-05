@@ -313,7 +313,6 @@ public class TileEntityModularMachine extends TileEntity implements ITickable {
 
 	}
 
-	@SuppressWarnings("MethodCallSideOnly")
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		if(this.world.isRemote)

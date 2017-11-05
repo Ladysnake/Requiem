@@ -1,13 +1,13 @@
 package ladysnake.dissolution.common.capabilities;
 
-import ladysnake.dissolution.api.EctoplasmStats;
+import ladysnake.dissolution.api.IDialogueStats;
+import ladysnake.dissolution.api.IEctoplasmStats;
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.api.IPossessable;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.DissolutionConfigManager;
 import ladysnake.dissolution.common.DissolutionConfigManager.FlightModes;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.handlers.EventHandlerCommon;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PossessionMessage;
@@ -45,7 +45,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This set of classes handles the Incorporeal capability.
@@ -131,9 +130,11 @@ public class CapabilityIncorporealHandler {
      */
 	public static class DefaultIncorporealHandler implements IIncorporealHandler {
 
+		private boolean strongSoul;
 		@Nonnull
-		private CorporealityStatus corporealityStatus = CorporealityStatus.NORMAL;
-		private EctoplasmStats ectoplasmHealth = new EctoplasmStats();
+		private CorporealityStatus corporealityStatus = CorporealityStatus.BODY;
+		private EctoplasmStats ectoplasmStats = new EctoplasmStats();
+		private DialogueStats dialogueStats = new DialogueStats(this);
 		private int lastFood = -1;
 		private String lastDeathMessage;
 		private boolean synced = false;
@@ -152,7 +153,22 @@ public class CapabilityIncorporealHandler {
 		}
 
 		@Override
+		public boolean isStrongSoul() {
+			return strongSoul;
+		}
+
+		@Override
+		public void setStrongSoul(boolean strongSoul) {
+			this.corporealityStatus = CorporealityStatus.BODY;
+			this.strongSoul = strongSoul;
+			if(!owner.world.isRemote)
+				PacketHandler.net.sendToAll(new IncorporealMessage(owner.getUniqueID().getMostSignificantBits(),
+						owner.getUniqueID().getLeastSignificantBits(), strongSoul, corporealityStatus));
+		}
+
+		@Override
 		public void setCorporealityStatus(CorporealityStatus newStatus) {
+			if(!this.strongSoul) return;
 			if(owner == null || MinecraftForge.EVENT_BUS.post(new PlayerIncorporealEvent(owner, newStatus))) return;
 			corporealityStatus = newStatus;
 			owner.setEntityInvulnerable(newStatus == CorporealityStatus.SOUL);
@@ -163,11 +179,7 @@ public class CapabilityIncorporealHandler {
 				owner.eyeHeight = owner.getDefaultEyeHeight();
 			}
 
-			if(!newStatus.isIncorporeal() && this.getPossessed() != null) {
-				this.getPossessed().onPossessionStop(owner, true);
-				if(!owner.world.isRemote)
-					((EntityPlayerMP)owner).connection.sendPacket(new SPacketCamera(owner));
-			}
+			if(!newStatus.isIncorporeal() && this.getPossessed() != null) this.setPossessed(null);
 
 			try {
 				ObfuscationReflectionHelper.setPrivateValue(Entity.class, owner, newStatus.isIncorporeal(), "isImmuneToFire", "field_70178_ae");
@@ -185,7 +197,7 @@ public class CapabilityIncorporealHandler {
 			}
 			if(!owner.world.isRemote) {
 				PacketHandler.net.sendToAll(new IncorporealMessage(owner.getUniqueID().getMostSignificantBits(),
-					owner.getUniqueID().getLeastSignificantBits(), newStatus));
+					owner.getUniqueID().getLeastSignificantBits(), strongSoul, newStatus));
 			}
 			setSynced(true);
 		}
@@ -193,16 +205,17 @@ public class CapabilityIncorporealHandler {
 		@Nonnull
 		@Override
 		public CorporealityStatus getCorporealityStatus() {
-			return this.corporealityStatus;
+			return this.isStrongSoul() ? this.corporealityStatus : CorporealityStatus.BODY;
 		}
 
 		@Override
 		public boolean setPossessed(IPossessable possessable) {
+			if(!this.isStrongSoul()) return false;
 			if(possessable != null && !(possessable instanceof Entity))
 				throw new IllegalArgumentException("A player can only possess an entity.");
 			if(possessable == null) {
-				IPossessable host = getPossessed();
-				if (host != null && !host.onPossessionStop(owner)) return false;
+				IPossessable currentHost = getPossessed();
+				if (currentHost != null && !currentHost.onPossessionStop(owner)) return false;
 				hostID = 0;
 				hostUUID = null;
 				owner.setInvisible(DissolutionConfig.ghost.invisibleGhosts);
@@ -222,7 +235,7 @@ public class CapabilityIncorporealHandler {
 
 		@Override
 		public IPossessable getPossessed() {
-			if(hostUUID == null)
+			if(hostUUID == null || !this.isStrongSoul())
 				return null;
 			Entity host = this.owner.world.getEntityByID(hostID);
 			if(host == null) {
@@ -239,9 +252,16 @@ public class CapabilityIncorporealHandler {
 			return (IPossessable) host;
 		}
 
+		@Nonnull
 		@Override
-		public EctoplasmStats getEctoplasmStats() {
-			return this.ectoplasmHealth;
+		public IEctoplasmStats getEctoplasmStats() {
+			return this.ectoplasmStats;
+		}
+
+		@Nonnull
+		@Override
+		public IDialogueStats getDialogueStats() {
+			return this.dialogueStats;
 		}
 
 		@Override
@@ -284,13 +304,17 @@ public class CapabilityIncorporealHandler {
 		public Optional<UUID> getDisguise() {
 			return Optional.ofNullable(disguise);
 		}
+
+		public EntityPlayer getOwner() {
+			return owner;
+		}
 	}
 
 	 public static class Provider implements ICapabilitySerializable<NBTTagCompound> {
 
 	        IIncorporealHandler instance;
 
-	        public Provider(EntityPlayer owner) {
+	        Provider(EntityPlayer owner) {
 	        	this.instance = new DefaultIncorporealHandler(owner);
 			}
 
@@ -330,22 +354,26 @@ public class CapabilityIncorporealHandler {
 		    @Override
 		    public NBTBase writeNBT (Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side) {
 		        final NBTTagCompound tag = new NBTTagCompound();
+				tag.setBoolean("strongSoul", instance.isStrongSoul());
 		        tag.setString("corporealityStatus", instance.getCorporealityStatus().name());
 		        tag.setString("lastDeath", instance.getLastDeathMessage() == null || instance.getLastDeathMessage().isEmpty() ? "This player has no recorded death" : instance.getLastDeathMessage());
 		        if(instance.getPossessed() instanceof Entity)
 		        	tag.setUniqueId("possessedEntity", ((Entity) instance.getPossessed()).getUniqueID());
+		        tag.setTag("dialogueStats", instance.getDialogueStats().serializeNBT());
 		        return tag;
 		    }
 
 		    @Override
 		    public void readNBT (Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side, NBTBase nbt) {
 		        final NBTTagCompound tag = (NBTTagCompound) nbt;
+		        instance.setStrongSoul(((NBTTagCompound) nbt).getBoolean("strongSoul"));
 		        instance.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.valueOf(tag.getString("corporealityStatus")));
 		        if(instance instanceof DefaultIncorporealHandler) {
 		        	UUID hostUUID = tag.getUniqueId("possessedEntity");
 					((DefaultIncorporealHandler) instance).hostUUID = hostUUID == new UUID(0,0) ? null : hostUUID;
 		        }
 		        instance.setLastDeathMessage(tag.getString("lastDeath"));
+		        instance.getDialogueStats().deserializeNBT(tag.getCompoundTag("dialogueStats"));
 		    }
 		}
 

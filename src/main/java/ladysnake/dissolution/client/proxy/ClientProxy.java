@@ -9,9 +9,11 @@ import ladysnake.dissolution.client.renders.entities.LayerDisguise;
 import ladysnake.dissolution.client.renders.entities.LayerScythe;
 import ladysnake.dissolution.client.renders.entities.RenderWillOWisp;
 import ladysnake.dissolution.client.renders.tileentities.TileEntityCrucibleRenderer;
+import ladysnake.dissolution.client.renders.tileentities.TileEntityMortarRenderer;
 import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.init.ModEntities;
 import ladysnake.dissolution.common.tileentities.TileEntityCrucible;
+import ladysnake.dissolution.common.tileentities.TileEntityMortar;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
@@ -43,6 +45,8 @@ public class ClientProxy extends CommonProxy {
 			MinecraftForge.EVENT_BUS.register(AlbedoEventHandler.class);
 		// ClientRegistry.bindTileEntitySpecialRenderer(TileEntityModularMachine.class, new RenderModularMachine());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrucible.class, new TileEntityCrucibleRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMortar.class, new TileEntityMortarRenderer());
+
 		initAddedLayers();
 	}
 

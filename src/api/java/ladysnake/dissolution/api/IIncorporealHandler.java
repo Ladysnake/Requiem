@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface IIncorporealHandler {
 
 	enum CorporealityStatus {
-		NORMAL(true),
+		BODY(true),
 		ECTOPLASM(false),
 		SOUL(false);
 
@@ -26,7 +26,25 @@ public interface IIncorporealHandler {
 		public boolean isIncorporeal() {
 			return !this.corporeal;
 		}
+
+		public String getUnlocalizedName() {
+			return "dissolution.corporealitystatus." + this.toString();
+		}
+
+
+		@Override
+		public String toString() {
+			return super.toString().toLowerCase();
+		}
 	}
+
+	/**
+	 * If the player isn't <b>strong</b>, no mod mechanic should apply
+	 * @return true if the player has taken the challenge of the passeresses
+	 */
+	boolean isStrongSoul();
+
+	void setStrongSoul(boolean strongSoul);
 
 	/**
 	 * Sets the tangibility of the player specified, along with the corresponding attributes
@@ -49,7 +67,11 @@ public interface IIncorporealHandler {
 
 	IPossessable getPossessed();
 
-	EctoplasmStats getEctoplasmStats();
+	@Nonnull
+	IEctoplasmStats getEctoplasmStats();
+
+	@Nonnull
+	IDialogueStats getDialogueStats();
 
 	/**
 	 * Sets the synchronization status of this handler (between server and client)

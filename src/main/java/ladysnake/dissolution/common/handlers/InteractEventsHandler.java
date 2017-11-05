@@ -71,7 +71,7 @@ public class InteractEventsHandler {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerEntityInteractSpecific(PlayerInteractEvent.EntityInteractSpecific event) {
 		event.setCanceled(isGhost(event));
-		if (isGhost(event) && event.getSide().isServer() && event.getTarget() instanceof EntityLivingBase) {
+		if (isGhost(event) && event.getSide().isServer() && event.getTarget() instanceof EntityLivingBase && !event.getTarget().getIsInvulnerable()) {
 			IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
 			IPossessable host = AbstractMinion.createMinion((EntityLivingBase) event.getTarget());
 			if (host instanceof EntityLivingBase && host.canBePossessedBy(event.getEntityPlayer())) {
@@ -140,6 +140,8 @@ public class InteractEventsHandler {
 				&& !(event.getEntity() instanceof EntityPlayer && ((EntityPlayer)event.getEntity()).isCreative())) {
 			if(!event.isMounting()) {
 				if (event.getEntityBeingMounted() == handler.getPossessed() && !(handler.setPossessed(null))) {
+					if(event.getEntity().isSneaking() && event.getEntity() instanceof EntityPlayer)
+						PlayerTickHandler.sneakingPossessingPlayers.add((EntityPlayer) event.getEntity());
 					event.setCanceled(true);
 				}
 			}

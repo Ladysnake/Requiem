@@ -1,0 +1,14 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "dissolution:mortar"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "powered": {
+      "true": {},
+      "false": {}
+    }
+  }
+}

@@ -8,7 +8,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -27,10 +29,14 @@ public class BlockMortar extends BlockGenericContainer {
         if(tile instanceof TileEntityMortar) {
             if(OreDictHelper.doesItemMatch(playerIn.getHeldItem(hand), OreDictHelper.PESTLE, OreDictHelper.PESTLE_AND_MORTAR))
                 ((TileEntityMortar) tile).crush();
-            else
-                ((TileEntityMortar) tile).putItem(playerIn.getHeldItem(hand));
         }
         return true;
+    }
+
+    @Nonnull
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+        return new AxisAlignedBB(0.2,0,0.2,0.8,0.3,0.8);
     }
 
     @Override

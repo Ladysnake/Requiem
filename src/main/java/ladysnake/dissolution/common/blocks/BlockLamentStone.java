@@ -20,6 +20,7 @@ public class BlockLamentStone extends Block {
 
 	public BlockLamentStone() {
 		super(Material.ROCK);
+		this.setHardness(1.5F).setResistance(10.0F);
 	}
 	
 	@Override

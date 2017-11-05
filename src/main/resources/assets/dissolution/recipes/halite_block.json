@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "dissolution:halite",
+      "data": 0
+    }
+  },
+  "result": {
+    "item": "dissolution:halite_block"
+  }
+}

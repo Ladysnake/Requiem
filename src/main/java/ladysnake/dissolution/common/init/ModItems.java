@@ -7,19 +7,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.items.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemSeeds;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
@@ -28,7 +25,6 @@ import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
 
 @SuppressWarnings("WeakerAccess")
@@ -48,10 +44,8 @@ public final class ModItems {
 	public static ItemDepletedCoal DEPLETED_COAL;
 	public static ItemEyeUndead EYE_OF_THE_UNDEAD;
 	public static ItemEyeOfDiscord EYE_OF_DISCORD;
-	public static ItemGlassware GLASS_FLASK;
-	public static ItemGlassware GLASS_JAR;
-	public static ItemGlassware MERCURY_JAR;
-	public static ItemGlassware WATER_JAR;
+	public static ItemFlask GLASS_FLASK;
+	public static ItemJar GLASS_JAR;
 	public static ItemMineral CINNABAR;
 	public static ItemMineral HALITE;
 	public static ItemMineral IGNEOUS_ROCK;
@@ -67,14 +61,14 @@ public final class ModItems {
 	public static ItemScythe LURKING_SCYTHE;
 	public static ItemSeeds BACA_SEEDS;
 	public static ItemSepulture SEPULTURE;
-	public static ItemSoulInAFlask SOUL_IN_A_FLASK;
+	public static ItemSoulInAJar SOUL_IN_A_FLASK;
 	public static ItemStoneHeart STONE_HEART;
 
 	static Set<Item> allItems = new HashSet<>();
 	
 	@SuppressWarnings("unchecked")
     private static <T extends Item> T name(T item, String name) {
-		return (T) item.setUnlocalizedName(name).setRegistryName(name);
+		return (T) item.setUnlocalizedName(name).setRegistryName(new ResourceLocation(Reference.MOD_ID, name));
 	}
 
 	@SubscribeEvent
@@ -93,26 +87,24 @@ public final class ModItems {
 				DEPLETED_COAL = name(new ItemDepletedCoal(), "depleted_coal"),
 				EYE_OF_THE_UNDEAD = name(new ItemEyeUndead(), "eye_of_the_undead"),
 				EYE_OF_DISCORD = name(new ItemEyeOfDiscord(), "eye_of_discord"),
-				GLASS_FLASK = name(new ItemGlassware(), "glass_flask"),
-				GLASS_JAR = name(new ItemGlassware(), "glass_jar"),
-				MERCURY_JAR = name(new ItemGlassware(), "mercury_jar"),
-				WATER_JAR = name(new ItemGlassware(), "water_jar"),
+				GLASS_FLASK = name(new ItemFlask(), "glass_flask"),
+				GLASS_JAR = name(new ItemJar(), "glass_jar"),
 				CINNABAR = name(new ItemMineral(), "cinnabar"),
 				HALITE = name(new ItemMineral(), "halite"),
 				IGNEOUS_ROCK = name(new ItemMineral(), "igneous_rock"),
-				MAGMA_STONE = name(new ItemMineral(), "magma_stone"),
+				MAGMA_STONE = name(new ItemMineral(), "molten_rock"),
 				SULFUR = name(new ItemMineral(), "sulfur"),
 				DIAMOND_SHELL = name(new ItemOccularePart(1500), "diamond_occulare_shell"),
 				EMERALD_SHELL = name(new ItemOccularePart(750), "emerald_occulare_shell"),
 				GOLD_SHELL = name(new ItemOccularePart(50), "gold_occulare_shell"),
 				IRON_SHELL = name(new ItemOccularePart(500), "iron_occulare_shell"),
-				TIRED_ETCHING = name(new ItemOccularePart(), "tired_etching"),
-				PLUG = name(new ItemPlug(), "plug"),
+//				TIRED_ETCHING = name(new ItemOccularePart(), "tired_etching"),
+//				PLUG = name(new ItemPlug(), "plug"),
 				IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), "iron_scythe"),
 				LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"),
 //				BACA_SEEDS = name(new ItemSeeds(Blocks.LEAVES, Blocks.GRASS), "limobaca_seeds"),
-				SEPULTURE = name(new ItemSepulture(), "sepulture"),
-				SOUL_IN_A_FLASK = name(new ItemSoulInAFlask(), "will_o_wisp_flask"),
+//				SEPULTURE = name(new ItemSepulture(), "sepulture"),
+				SOUL_IN_A_FLASK = name(new ItemSoulInAJar(), "will_o_wisp_flask"),
 				STONE_HEART = name(new ItemStoneHeart(), "stone_heart"));
 
 //		AlchemyModuleTypes.registerItems(allItems);

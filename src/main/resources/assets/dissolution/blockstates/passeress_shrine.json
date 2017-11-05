@@ -1,0 +1,16 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "dissolution:passeress_shrine"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "water": {
+      "false": {},
+      "true": {
+        "model": "dissolution:passeress_shrine_with_water"
+      }
+    }
+  }
+}

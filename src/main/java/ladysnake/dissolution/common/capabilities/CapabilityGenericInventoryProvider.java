@@ -1,20 +1,17 @@
 package ladysnake.dissolution.common.capabilities;
 
-import ladysnake.dissolution.api.*;
+import ladysnake.dissolution.api.GenericStackInventory;
+import ladysnake.dissolution.api.IGenericInventoryProvider;
 import ladysnake.dissolution.common.Reference;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,12 +27,6 @@ public class CapabilityGenericInventoryProvider {
 
     public static void register() {
         CapabilityManager.INSTANCE.register(IGenericInventoryProvider.class, new Storage(), DefaultGenericInventoryProvider::new);
-    }
-
-    @SubscribeEvent
-    public static void attachCapability(AttachCapabilitiesEvent<ItemStack> event) {
-        if(event.getObject().getItem() instanceof IGenericInventoryItem)
-            event.addCapability(new ResourceLocation(Reference.MOD_ID, "powderContent"), new Provider());
     }
 
     @SuppressWarnings("unchecked")
@@ -114,6 +105,7 @@ public class CapabilityGenericInventoryProvider {
             for(Map.Entry<Class, GenericStackInventory> entry : instance) {
                 NBTTagCompound nbt = new NBTTagCompound();
                 nbt.setString("type", EnumSerializableTypes.forClass(entry.getKey()).name());
+                nbt.setInteger("slotCount", entry.getValue().getSlotCount());
                 nbt.setTag("inventory", entry.getValue().serializeNBT());
                 inventories.appendTag(nbt);
             }
@@ -129,8 +121,9 @@ public class CapabilityGenericInventoryProvider {
                 for(NBTBase inventoryNBT : inventories) {
                     try {
                         EnumSerializableTypes type = EnumSerializableTypes.valueOf(((NBTTagCompound) inventoryNBT).getString("type"));
-                        GenericStackInventory inventory = new GenericStackInventory<>(0, 0, type.clazz, type.serializer);
-                        inventory.deserializeNBT((NBTTagCompound) inventoryNBT);
+                        int slotCount = ((NBTTagCompound) inventoryNBT).getInteger("slotCount");
+                        GenericStackInventory inventory = new GenericStackInventory<>(0, slotCount, type.clazz, type.serializer);
+                        inventory.deserializeNBT(((NBTTagCompound) inventoryNBT).getCompoundTag("inventory"));
                         instance.setInventory(type.clazz, inventory);
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();

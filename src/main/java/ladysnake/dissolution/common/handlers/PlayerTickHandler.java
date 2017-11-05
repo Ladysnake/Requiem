@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.handlers;
 
-import ladysnake.dissolution.api.EctoplasmStats;
+import ladysnake.dissolution.common.capabilities.EctoplasmStats;
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.DissolutionConfigManager;
@@ -10,16 +10,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.potion.Potion;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.FoodStats;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
@@ -27,9 +25,13 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldExcep
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 public class PlayerTickHandler {
+
+	static Set<EntityPlayer> sneakingPossessingPlayers = new HashSet<>();
 
 	protected static final Random rand = new Random();
 	private static final int SPAWN_RADIUS_FROM_ORIGIN = 10;
@@ -50,8 +52,10 @@ public class PlayerTickHandler {
 
 	@SubscribeEvent
 	public void onPlayerTick(PlayerTickEvent event) {
+		if(sneakingPossessingPlayers.remove(event.player))
+			event.player.setSneaking(true);
+		if(event.phase != TickEvent.Phase.END) return;
 		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.player);
-		
 		if (playerCorp.getCorporealityStatus().isIncorporeal()) {
 			
 			if(!event.player.isCreative() &&
@@ -153,7 +157,7 @@ public class PlayerTickHandler {
 		if(player.world.isRemote)
 			return;
 		
-		CapabilityIncorporealHandler.getHandler(player).setCorporealityStatus(IIncorporealHandler.CorporealityStatus.NORMAL);
+		CapabilityIncorporealHandler.getHandler(player).setCorporealityStatus(IIncorporealHandler.CorporealityStatus.BODY);
 
 		((WorldServer) player.world).spawnParticle(EnumParticleTypes.CLOUD, false,
 				player.posX + 0.5D, player.posY + 1.0D, player.posZ + 0.5D, 50, 0.3D, 0.3D,

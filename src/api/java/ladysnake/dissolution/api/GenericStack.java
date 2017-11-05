@@ -82,7 +82,7 @@ public class GenericStack<T> {
 	 * Sets the number of units contained in this stack
 	 */
 	public int setCount(int count) {
-		int remainder = Math.min(0, count - maxStackSize);
+		int remainder = Math.max(0, count - maxStackSize);
 		this.stackSize = count - remainder;
 		return remainder;
 	}

@@ -23,11 +23,18 @@ public class GenericStackInventory<T> implements INBTSerializable<NBTTagCompound
         this.serializer = serializer;
     }
 
+    public GenericStackInventory(GenericStackInventory<T> toClone) {
+        this(toClone.maxSize, toClone.stacks.size(), toClone.typeClass, toClone.serializer);
+        for(GenericStack<T> stack : toClone.stacks) {
+            this.stacks.add(new GenericStack<>(stack));
+        }
+    }
+
     public Class<? extends T> getType() {
         return typeClass;
     }
 
-    public int getSlots() {
+    public int getSlotCount() {
         return this.stacks.size();
     }
 
@@ -41,7 +48,7 @@ public class GenericStackInventory<T> implements INBTSerializable<NBTTagCompound
     }
 
     public GenericStack<T> readContent(T type) {
-        return this.stacks.stream().filter(stack -> Objects.equals(type, stack.type)).findAny().orElse(GenericStack.empty());
+        return this.stacks.stream().filter(stack -> type == null || type.equals(stack.type)).findAny().orElse(GenericStack.empty());
     }
 
     public static <T> void mergeInventories(GenericStackInventory<T> fromInventory, GenericStackInventory<T> toInventory) {
@@ -136,7 +143,7 @@ public class GenericStackInventory<T> implements INBTSerializable<NBTTagCompound
         this.maxSize = nbt.getInteger("maxSize");
         stacks.clear();
         for(NBTBase compound : nbtContent)
-            this.stacks.add(new GenericStack<>(serializer.deserialize((NBTTagCompound) compound), nbt.getInteger("count")));
+            this.stacks.add(new GenericStack<>((NBTTagCompound)compound, serializer));
     }
 
     protected void validateSlotIndex(int slot) {
@@ -154,5 +161,14 @@ public class GenericStackInventory<T> implements INBTSerializable<NBTTagCompound
 
     public boolean canExtract() {
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "GenericStackInventory{" +
+                "maxSize=" + maxSize +
+                ", typeClass=" + typeClass +
+                ", stacks=" + stacks +
+                '}';
     }
 }

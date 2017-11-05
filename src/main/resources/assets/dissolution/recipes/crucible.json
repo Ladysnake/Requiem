@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# #",
+    "# #",
+    "I#I"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:iron_ingot",
+      "data": 0
+    },
+	"I": {
+      "item": "minecraft:iron_nugget",
+      "data": 0
+    }
+  },
+  "result": {
+    "item": "dissolution:crucible",
+    "data": 0,
+    "count": 1
+
+  }
+}

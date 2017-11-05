@@ -50,4 +50,8 @@ public class InputItemHandler extends ItemStackHandler {
 	public int getSlotLimit(int slot) {
 		return maxSize;
 	}
+
+	public boolean isWhitelisted(ItemStack item) {
+		return this.whiteList.isEmpty() || this.whiteList.contains(item.getItem());
+	}
 }

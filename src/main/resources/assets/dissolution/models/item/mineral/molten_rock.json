@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "dissolution:items/mineral/magma_stone"
+        "layer0": "dissolution:items/mineral/molten_rock"
     }
 }

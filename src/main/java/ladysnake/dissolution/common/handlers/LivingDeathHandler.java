@@ -53,7 +53,7 @@ public class LivingDeathHandler {
 		
 		final EntityPlayer p = (EntityPlayer) event.getEntity();
 		final IIncorporealHandler corp = CapabilityIncorporealHandler.getHandler(p);
-		if(corp.getCorporealityStatus() == CorporealityStatus.SOUL)
+		if(!corp.isStrongSoul() || corp.getCorporealityStatus() == CorporealityStatus.SOUL)
 			return;
 		if(corp.getCorporealityStatus() == CorporealityStatus.ECTOPLASM) {
 			corp.setCorporealityStatus(CorporealityStatus.SOUL);
@@ -77,8 +77,6 @@ public class LivingDeathHandler {
 				if(!DissolutionInventoryHelper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD).isEmpty())
 					flag = true;
 			}
-			
-			body.setDecompositionCountdown(EntityPlayerCorpse.MAX_DECAY_TIME);
 			
 			if(DissolutionConfig.respawn.bodiesHoldInventory) {
 				

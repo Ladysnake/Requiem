@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " # ",
+    " # ",
+    "# #"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:glass",
+      "data": 0
+    }
+  },
+  "result": {
+    "item": "dissolution:glass_flask",
+    "data": 0,
+    "count": 1
+
+  }
+}

@@ -16,6 +16,9 @@ public class DissolutionConfig {
 	
 	@Config.Name("client")
 	public static Client client = new Client();
+
+	@Config.Name("dialogues")
+	public static Dialogues dialogues = new Dialogues();
 	
 	@Config.Name("entities")
 	public static Entities entities = new Entities();
@@ -26,8 +29,8 @@ public class DissolutionConfig {
 	@Config.Name("ghost")
 	public static Ghost ghost = new Ghost();
 	
-	@Config.Name("worldgen")
-	public static Worldgen worldgen = new Worldgen();
+	@Config.Name("worldGen")
+	public static WorldGen worldGen = new WorldGen();
 	
 	@Config.Name("wip")
 	public static Wip wip = new Wip();
@@ -42,10 +45,12 @@ public class DissolutionConfig {
 	
 	public static class Client {
 
+/*
 		@Config.LangKey("config.dissolution.client.plugsEverywhere")
 		@Config.Comment("If set to true, modular machines will display plugs on all faces to preserve performance")
 		public boolean plugsEverywhere = false;
-		
+*/
+
 		@Config.LangKey("config.dissolution.client.useShaders")
 		@Config.Comment("Whether this mod should use shaders as an attempt to make things prettier")
 		public boolean useShaders = true;
@@ -55,6 +60,16 @@ public class DissolutionConfig {
 		public boolean soulCompass = true;
 		
 	}
+
+	public static class Dialogues {
+		@Config.LangKey("config.dissolution.dialogues.broadcastPlayerDialogue")
+		@Config.Comment("If set to true, every dialogue choice made by the player will be broadcasted to all other players")
+		public boolean broadcastPlayerDialogue = true;
+
+		@Config.LangKey("config.dissolution.dialogues.broadcastMajorNPCDialogue")
+		@Config.Comment("If set to true, dialogues emitted by global entities (gods) will be broadcasted to all players")
+		public boolean broadcastMajorNPCDialogue = true;
+	}
 	
 	public static class Entities {
 		
@@ -63,35 +78,7 @@ public class DissolutionConfig {
 		boolean minionsAttackCreepers = true;
 		
 	}
-	
-	public static class Respawn {
-		
-		@Config.LangKey("config.dissolution.respawn.wowLikeRespawn")
-		@Config.Comment("If set to true, the player will respawn as a ghost at their spawnpoint. \nThey will then have the choice to go to 0,0 to respawn without stuff or to reach their corpse under 5 minutes.")
-		public boolean wowLikeRespawn = false;
-		
-		@Config.LangKey("config.dissolution.respawn.bodiesDespawn")
-		@Config.Comment("If set to false, player bodies will not require any special circumstances to prevent decay.")
-		public boolean bodiesDespawn = true;
-		
-		@Config.LangKey("config.dissolution.respawn.bodiesHoldInventory")
-		@Config.Comment("Whether long-lasting player corpses hold their inventory upon death.")
-		public boolean bodiesHoldInventory = true;
-		
-		@Config.LangKey("config.dissolution.respawn.respawnInNether")
-		@Config.Comment("Whether players should respawn in a specific dimension when they die")
-		public boolean respawnInNether = false;
-		
-		@Config.LangKey("config.dissolution.respawn.respawnDimension")
-		@Config.Comment("If dimension respawn is on, the player will always respawn in this dimension.")
-		public int respawnDimension = -1;
-		
-		@Config.LangKey("config.dissolution.respawn.skipDeathScreen")
-		@Config.Comment("Whether players should respawn instantly as souls without showing death screen (could mess with other mods)")
-		public boolean skipDeathScreen = false;
-		
-	}
-	
+
 	public static class Ghost {
 		
 		@Config.LangKey("config.dissolution.ghost.flightMode")
@@ -108,19 +95,45 @@ public class DissolutionConfig {
 				"minecraft:wooden_button";
 		
 	}
-	
-	public static class Worldgen {
-		
-		@Config.LangKey("config.dissolution.worldgen.spawnLamentStones")
+
+	public static class Respawn {
+
+		@Config.LangKey("config.dissolution.respawn.wowLikeRespawn")
+		@Config.Comment("If set to true, the player will respawn as a ghost at their spawnpoint. \nThey will then have the choice to go to 0,0 to respawn without stuff or to reach their corpse under 5 minutes.")
+		public boolean wowLikeRespawn = false;
+
+		@Config.LangKey("config.dissolution.respawn.bodiesDespawn")
+		@Config.Comment("If set to false, player bodies will not require any special circumstances to prevent decay.")
+		public boolean bodiesDespawn = true;
+
+		@Config.LangKey("config.dissolution.respawn.bodiesHoldInventory")
+		@Config.Comment("Whether long-lasting player corpses hold their inventory upon death.")
+		public boolean bodiesHoldInventory = true;
+
+		@Config.LangKey("config.dissolution.respawn.respawnInNether")
+		@Config.Comment("Whether players should respawn in a specific dimension when they die")
+		public boolean respawnInNether = false;
+
+		@Config.LangKey("config.dissolution.respawn.respawnDimension")
+		@Config.Comment("If dimension respawn is on, the player will always respawn in this dimension.")
+		public int respawnDimension = -1;
+
+		@Config.LangKey("config.dissolution.respawn.skipDeathScreen")
+		@Config.Comment("Whether players should respawn instantly as souls without showing death screen (could mess with other mods)")
+		public boolean skipDeathScreen = false;
+
+	}
+
+	public static class WorldGen {
+
+		@Config.LangKey("config.dissolution.worldGen.spawnLamentStones")
 		@Config.Comment("A Lament Stone has a 1 in N chances to spawn in a given chunk (the higher the number here, the less stones). -1 to disable.")
 		public int spawnLamentStonesFreq = 50;
-		
+
 	}
-	
+
 	public static class Wip {
-		@Config.Comment("Lets ghosts go through blocks for a few seconds upon left clicking.")
-		public boolean enableSoulDash = false;
-		
+
 	}
 	
 }

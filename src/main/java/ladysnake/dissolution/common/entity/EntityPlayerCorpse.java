@@ -56,7 +56,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 				DissolutionInventoryHelper.transferEquipment(this, player);
 				this.onDeath(DamageSource.GENERIC);
 				this.setDead();
-				handler.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.NORMAL);
+				handler.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.BODY);
 			}
 			player.setPositionAndRotation(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
 			player.cameraPitch = 90;

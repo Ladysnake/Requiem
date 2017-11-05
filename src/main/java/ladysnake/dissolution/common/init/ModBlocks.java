@@ -1,12 +1,5 @@
 package ladysnake.dissolution.common.init;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-
-import javax.annotation.Nonnull;
-
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.*;
@@ -14,7 +7,6 @@ import ladysnake.dissolution.common.blocks.alchemysystem.BlockBarrage;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockDistillatePipe;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockPowerCable;
-import ladysnake.dissolution.common.blocks.BlockCrucible;
 import ladysnake.dissolution.common.items.InventoryItemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -23,6 +15,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
@@ -32,6 +25,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import javax.annotation.Nonnull;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
 @SuppressWarnings("WeakerAccess")
 public final class ModBlocks {
 	
@@ -39,8 +38,10 @@ public final class ModBlocks {
 	static final ModBlocks INSTANCE = new ModBlocks();
 
 	public static Block CINNABAR;
+	public static Block IGNEOUS_ROCK;
 	public static Block HALITE;
 	public static Block SULPHUR;
+	public static Block MAGNET;
 	public static BlockCrucible CRUCIBLE;
 	public static BlockLamentStone LAMENT_STONE;
 	public static BlockBarrage BARRAGE;
@@ -49,44 +50,42 @@ public final class ModBlocks {
 	public static BlockDepleted DEPLETED_CLAY;
 	public static BlockDepleted DEPLETED_COAL;
 	public static BlockDepletedMagma DEPLETED_MAGMA;
-	public static Block MAGNET;
 	public static BlockMortar MORTAR;
 	public static BlockPowerCable POWER_CABLE;
     public static BlockSepulture SEPULTURE;
-    
+	public static BlockShrine SHRINE;
+
 	Map<String, Block> remaps = new HashMap<>();
 
 	@Nonnull
     @SuppressWarnings("unchecked")
-	static <T extends Block> T name(T block, Reference.Blocks names) {
-		return (T) block.setUnlocalizedName(names.getUnlocalizedName()).setRegistryName(names.getRegistryName());
-	}
-
-	@Nonnull
-    @SuppressWarnings("unchecked")
 	static <T extends Block> T name(T block, String name) {
-    	return (T) block.setUnlocalizedName(name).setRegistryName(name);
+    	return (T) block.setUnlocalizedName(name).setRegistryName(new ResourceLocation(Reference.MOD_ID, name));
     }
 
     @SubscribeEvent
     public void onRegister(RegistryEvent.Register<Block> event) {
     	IForgeRegistry<Block> blockRegistry = event.getRegistry();
     	registerBlocks(blockRegistry,
-    			CINNABAR = name(new Block(Material.ROCK), "cinnabar_block"),
-				HALITE = name(new Block(Material.ROCK), "halite_block"),
-				SULPHUR = name(new Block(Material.ROCK), "sulfur_block"),
+    			CINNABAR = name(new Block(Material.ROCK).setHardness(1.5F).setResistance(10.0F), "cinnabar_block"),
+				IGNEOUS_ROCK = name(new Block(Material.ROCK).setHardness(1.5F).setResistance(10.0F), "igneous_rock_block"),
+				HALITE = name(new Block(Material.ROCK).setHardness(1.5F).setResistance(10.0F), "halite_block"),
+				MAGNET = name(new Block(Material.IRON).setHardness(5.0F).setResistance(10.0F), "magnet"),
+				SULPHUR = name(new Block(Material.ROCK).setHardness(1.5F).setResistance(10.0F), "sulfur_block"),
 				LAMENT_STONE = name(new BlockLamentStone(), "lament_stone"),
 //    			BARRAGE = name(new BlockBarrage(), Reference.Blocks.BARRAGE),
     			DEPLETED_CLAY = name(new BlockDepletedClay(), "depleted_clay_block"),
     			DEPLETED_COAL = name(new BlockDepleted(Material.ROCK), "depleted_coal_block"),
     			DEPLETED_MAGMA = name(new BlockDepletedMagma(), "depleted_magma"),
-				MAGNET = name(new Block(Material.IRON), "magnet")
+				SHRINE = name(new BlockShrine(), "passeress_shrine")
 //    			DISTILLATE_PIPE = name(new BlockDistillatePipe(), "distillate_pipe"),
 /*    			,POWER_CABLE = name(new BlockPowerCable(), Reference.Blocks.POWER_CABLE)*/);
 //    	blockRegistry.register(CASING = name(new BlockCasing(), "wooden_casing"));
-		registerBlock(blockRegistry, MORTAR = name(new BlockMortar(), "mortar"), true, InventoryItemBlock::new);
-		registerBlock(blockRegistry, CRUCIBLE = name(new BlockCrucible(), "crucible"), true, InventoryItemBlock::new);
-    	blockRegistry.register(SEPULTURE = name(new BlockSepulture(), Reference.Blocks.SEPULTURE));
+		registerBlock(blockRegistry, MORTAR = name(new BlockMortar(), "mortar"), true,
+				block -> new InventoryItemBlock(block, true, false, false));
+		registerBlock(blockRegistry, CRUCIBLE = name(new BlockCrucible(), "crucible"), true,
+				block -> new InventoryItemBlock(block, true, true, true));
+//    	blockRegistry.register(SEPULTURE = name(new BlockSepulture(), Reference.Blocks.SEPULTURE));
     }
     
     private void registerBlocks(IForgeRegistry<Block> blockRegistry, Block... blocks) {

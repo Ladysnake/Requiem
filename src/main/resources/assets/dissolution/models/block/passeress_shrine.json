@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
 	"textures": {
-		"0": "blocks/passeress_shrine",
-		"particle": "blocks/passeress_shrine"
+		"0": "dissolution:blocks/passeress_shrine",
+		"particle": "dissolution:blocks/passeress_shrine"
 	},
 	"elements": [
 		{

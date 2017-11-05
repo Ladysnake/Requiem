@@ -9,7 +9,6 @@ import java.util.concurrent.*;
 import com.google.common.collect.ImmutableSet;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
 import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing.EnumPartType;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor;
 import ladysnake.dissolution.common.blocks.alchemysystem.IPowerConductor.IMachine.PowerConsumption;
@@ -18,12 +17,11 @@ import ladysnake.dissolution.common.init.ModSounds;
 import ladysnake.dissolution.common.inventory.InputItemHandler;
 import ladysnake.dissolution.common.items.AlchemyModuleTypes;
 import ladysnake.dissolution.common.items.ItemAlchemyModule;
-import ladysnake.dissolution.common.items.ItemSoulInAFlask;
+import ladysnake.dissolution.common.items.ItemSoulInAJar;
 import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -89,7 +87,7 @@ public class SetupResonantCoil extends ModularMachineSetup {
 					IItemHandler inv = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN);
 					if(inv != null)
 						for(int i = 0; i < inv.getSlots(); i++)
-							if (inv.getStackInSlot(i).getItem() instanceof ItemSoulInAFlask)
+							if (inv.getStackInSlot(i).getItem() instanceof ItemSoulInAJar)
 								this.itemInput.insertItem(0, inv.extractItem(i, 1, false), false);
 				}
 			}

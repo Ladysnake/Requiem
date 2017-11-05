@@ -46,7 +46,7 @@ public enum ModFluids {
 	
 	/**
 	 * Creates a fluid
-	 * @param name
+	 * @param name the fluid's name
 	 * @param hasFlowIcon if set to false, the fluid will use the same texture for flowing and still
 	 * @param fluidPropertyApplier a Consumer that applies various properties to the forge fluid
 	 * @param blockFactory the constructor of the fluid block
@@ -121,7 +121,7 @@ public enum ModFluids {
 	}
 
 	private static void registerFluidContainers() {
-		//FluidRegistry.addBucketForFluid(MERCURY); //Actually we don't because mercury is too heavy, obviously
+		FluidRegistry.addBucketForFluid(MERCURY.fluid); //Actually we don't because mercury is too heavy, obviously
 	}
 
 }

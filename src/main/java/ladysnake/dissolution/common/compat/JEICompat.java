@@ -44,7 +44,9 @@ public class JEICompat implements IModPlugin {
 
 	@SideOnly(Side.CLIENT)
 	private void addInformationTabs() {
-		addInformationTab(ModItems.SEPULTURE);
+		addInformationTab(ModBlocks.LAMENT_STONE);
+		addInformationTab(ModBlocks.CRUCIBLE);
+		addInformationTab(ModBlocks.MORTAR);
 	}
 
 	@SideOnly(Side.CLIENT)

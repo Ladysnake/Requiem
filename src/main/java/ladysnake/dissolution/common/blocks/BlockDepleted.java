@@ -16,6 +16,7 @@ public class BlockDepleted extends Block{
 
     public BlockDepleted(Material materialIn) {
         super(materialIn);
+        this.setHardness(1.5F).setResistance(10.0F);
     }
 
     @Override
