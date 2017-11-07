@@ -4,8 +4,12 @@ import javax.annotation.Nonnull;
 
 import ladysnake.dissolution.common.tileentities.TileEntityLamentStone;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -17,6 +21,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockLamentStone extends Block {
+
+	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
 	public BlockLamentStone() {
 		super(Material.ROCK);
@@ -44,6 +50,11 @@ public class BlockLamentStone extends Block {
 		return new TileEntityLamentStone();
 	}
 
+	@Nonnull
+	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+		return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
+	}
+
 	@Override
 	@Deprecated
 	public boolean isOpaqueCube(IBlockState state) {
@@ -56,4 +67,20 @@ public class BlockLamentStone extends Block {
 		return BlockRenderLayer.CUTOUT;
 	}
 
+	@Nonnull
+	@Override
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, FACING);
+	}
+
+	@Nonnull
+	@Override
+	public IBlockState getStateFromMeta(int meta) {
+		return super.getStateFromMeta(meta).withProperty(FACING, EnumFacing.getHorizontal(meta));
+	}
+
+	@Override
+	public int getMetaFromState(IBlockState state) {
+		return state.getValue(FACING).getHorizontalIndex();
+	}
 }

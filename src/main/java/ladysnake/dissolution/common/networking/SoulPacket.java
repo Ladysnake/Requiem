@@ -1,7 +1,6 @@
 package ladysnake.dissolution.common.networking;
 
 import ladysnake.dissolution.api.ISoulHandler;
-import ladysnake.dissolution.api.Soul;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -10,11 +9,9 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class SoulPacket implements IMessageHandler<SoulMessage, IMessage> {
 
-	@SuppressWarnings("MethodCallSideOnly")
 	@Override
 	public IMessage onMessage(SoulMessage message, MessageContext ctx) {
-		if (ctx.side.isClient())
-		  {
+		if (ctx.side.isClient()) {
 			  Minecraft.getMinecraft().addScheduledTask(() -> {
                   final ISoulHandler soulInv = CapabilitySoulHandler.getHandler(Minecraft.getMinecraft().player);
                   switch(message.type) {

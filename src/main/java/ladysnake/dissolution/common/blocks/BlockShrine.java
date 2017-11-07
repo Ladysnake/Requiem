@@ -4,10 +4,13 @@ import ladysnake.dissolution.api.IDialogueStats;
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.EnumFacing;
@@ -25,6 +28,7 @@ import javax.annotation.Nonnull;
 public class BlockShrine extends Block {
 
     public static final PropertyBool WATER = PropertyBool.create("water");
+    public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
     public BlockShrine() {
         super(Material.ROCK);
@@ -51,19 +55,26 @@ public class BlockShrine extends Block {
     }
 
     @Nonnull
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
+    }
+
+    @Nonnull
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, WATER);
+        return new BlockStateContainer(this, WATER, FACING);
     }
 
     @Nonnull
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        return super.getStateFromMeta(meta).withProperty(WATER, meta > 0);
+        return super.getStateFromMeta(meta)
+                .withProperty(WATER, (meta & 0b1000) > 0)
+                .withProperty(FACING, EnumFacing.getHorizontal(meta & 0b0111));
     }
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        return state.getValue(WATER) ? 1 : 0;
+        return state.getValue(FACING).getHorizontalIndex() | (state.getValue(WATER) ? 0b1000 : 0);
     }
 }

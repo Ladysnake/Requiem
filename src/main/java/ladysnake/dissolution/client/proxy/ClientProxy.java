@@ -12,6 +12,7 @@ import ladysnake.dissolution.client.renders.tileentities.TileEntityCrucibleRende
 import ladysnake.dissolution.client.renders.tileentities.TileEntityMortarRenderer;
 import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.init.ModEntities;
+import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.tileentities.TileEntityCrucible;
 import ladysnake.dissolution.common.tileentities.TileEntityMortar;
 import net.minecraft.client.Minecraft;
@@ -40,6 +41,7 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void init() {
 		super.init();
+//		PacketHandler.initClientPackets();
 		MinecraftForge.EVENT_BUS.register(new GuiIncorporealOverlay(Minecraft.getMinecraft()));
 		if(Loader.isModLoaded("albedo"))
 			MinecraftForge.EVENT_BUS.register(AlbedoEventHandler.class);

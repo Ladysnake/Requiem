@@ -17,7 +17,7 @@ public class PingMessage implements IMessage
     
     @Override
     public void fromBytes(ByteBuf buf)
-    { 
+    {
     	this.uuidMost = buf.readLong();
     	this.uuidLeast = buf.readLong();
     }

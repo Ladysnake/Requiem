@@ -18,12 +18,17 @@ public class CommandDialogueSay extends CommandBase {
     @Nonnull
     @Override
     public String getUsage(@Nonnull ICommandSender sender) {
-        return "commands.dissolution.dialogues.say.usage";
+        return "commands.dissolution.dialogue.say.usage";
     }
 
     @Override
     public int getRequiredPermissionLevel() {
         return 0;
+    }
+
+    @Override
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        return sender instanceof EntityPlayer;
     }
 
     @Override
@@ -34,7 +39,7 @@ public class CommandDialogueSay extends CommandBase {
         try {
             dialogueStats.updateDialogue(Integer.parseInt(args[0]));
         } catch (NumberFormatException e) {
-            throw new WrongUsageException("commands.dissolution.dialogues.say.not_a_number", args[0]);
+            throw new WrongUsageException("commands.dissolution.dialogue.say.not_a_number", args[0]);
         }
     }
 }

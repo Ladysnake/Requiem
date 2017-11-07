@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.handlers;
 
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.EctoplasmStats;
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.DissolutionConfig;
@@ -35,7 +36,7 @@ public class PlayerTickHandler {
 
 	protected static final Random rand = new Random();
 	private static final int SPAWN_RADIUS_FROM_ORIGIN = 10;
-	private static MethodHandle foodTimer, foodExhaustionLevel;
+	private static MethodHandle foodTimer, foodExhaustionLevel, flyToggleTimer;
 
 	private int ticksSpentNearSpawn = 0;
 	
@@ -45,6 +46,8 @@ public class PlayerTickHandler {
 			foodTimer = MethodHandles.lookup().unreflectSetter(field);
 			field = ReflectionHelper.findField(FoodStats.class, "foodExhaustionLevel", "field_75126_c");
 			foodExhaustionLevel = MethodHandles.lookup().unreflectSetter(field);
+			field = ReflectionHelper.findField(EntityPlayer.class, "flyToggleTimer", "field_71101_bC");
+			flyToggleTimer = MethodHandles.lookup().unreflectSetter(field);
 		} catch (UnableToFindFieldException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
@@ -105,15 +108,23 @@ public class PlayerTickHandler {
 	private void handleSoulFlight(EntityPlayer player) {
 		if(player.getRidingEntity() != null) return;
 
-		if (DissolutionConfigManager.isFlightEnabled(FlightModes.SPECTATOR_FLIGHT)
-				|| DissolutionConfigManager.isFlightEnabled(FlightModes.CUSTOM_FLIGHT))
+		if (DissolutionConfigManager.isFlightSetTo(FlightModes.SPECTATOR_FLIGHT)
+				|| DissolutionConfigManager.isFlightSetTo(FlightModes.CUSTOM_FLIGHT))
 			player.capabilities.isFlying = true;
-		if(DissolutionConfigManager.isFlightEnabled(FlightModes.CUSTOM_FLIGHT)) {
+		if(DissolutionConfigManager.isFlightSetTo(FlightModes.CUSTOM_FLIGHT)) {
 			player.onGround = false;
 		}
-		if (DissolutionConfigManager.isFlightEnabled(FlightModes.SPECTATOR_FLIGHT)
-				|| DissolutionConfigManager.isFlightEnabled(FlightModes.CREATIVE_FLIGHT))
+//		if (DissolutionConfigManager.isFlightEnabled(FlightModes.SPECTATOR_FLIGHT)
+//				|| DissolutionConfigManager.isFlightEnabled(FlightModes.CREATIVE_FLIGHT))
+		if(!DissolutionConfigManager.isFlightSetTo(FlightModes.NO_FLIGHT))
 			player.capabilities.allowFlying = true;
+		if(DissolutionConfigManager.isFlightSetTo(FlightModes.CUSTOM_FLIGHT)) {
+			try {
+				flyToggleTimer.invokeExact(player, 0);
+			} catch (Throwable throwable) {
+				Dissolution.LOGGER.error("an error occurred while handling soul flight", throwable);
+			}
+		}
 	}
 
 	/**

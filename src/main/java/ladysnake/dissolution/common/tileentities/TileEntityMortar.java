@@ -32,7 +32,7 @@ public class TileEntityMortar extends PowderContainer {
 
     public TileEntityMortar() {
         super();
-        this.itemInventory = new PowderContainer.ItemHandler(Items.CLAY_BALL, Items.COAL, ModItems.MAGMA_STONE);
+        this.itemInventory = new PowderContainer.ItemHandler(Arrays.stream(EnumPowderOres.values()).map(EnumPowderOres::getComponent).toArray(Item[]::new));
     }
 
     public void crush() {
@@ -40,12 +40,11 @@ public class TileEntityMortar extends PowderContainer {
             for(int i = 0; i < 10; i++) {
                 Vec3d vec3d = new Vec3d((world.rand.nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
                 double d0 = (-world.rand.nextFloat()) * 0.6D - 0.3D;
-                Vec3d vec3d1 = new Vec3d((world.rand.nextFloat() - 0.5D) * 0.3D, d0, 0.6D);
-                vec3d1 = vec3d1.addVector(getPos().getX(), getPos().getY(), getPos().getZ());
+                Vec3d vec3d1 = new Vec3d(getPos().getX(), getPos().getY() + d0, getPos().getZ());
                 this.world.spawnParticle(EnumParticleTypes.ITEM_CRACK, vec3d1.x, vec3d1.y, vec3d1.z, vec3d.x, vec3d.y + 0.05D, vec3d.z,
                         Item.getIdFromItem(itemInventory.getStackInSlot(0).getItem()));
             }
-        if(!world.isRemote && ++crushTime % 50 == 0) {
+        if(!world.isRemote && ++crushTime % 30 == 0) {
             ItemStack item = itemInventory.extractItem(0,1,false);
             GenericStack<EnumPowderOres> powderStack = Arrays.stream(EnumPowderOres.values())
                     .filter(enumPowders -> enumPowders.getComponent().equals(item.getItem()))

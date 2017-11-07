@@ -70,7 +70,7 @@ public final class ModBlocks {
     			CINNABAR = name(new Block(Material.ROCK).setHardness(1.5F).setResistance(10.0F), "cinnabar_block"),
 				IGNEOUS_ROCK = name(new Block(Material.ROCK).setHardness(1.5F).setResistance(10.0F), "igneous_rock_block"),
 				HALITE = name(new Block(Material.ROCK).setHardness(1.5F).setResistance(10.0F), "halite_block"),
-				MAGNET = name(new Block(Material.IRON).setHardness(5.0F).setResistance(10.0F), "magnet"),
+				MAGNET = name(new Block(Material.IRON).setHardness(5.0F).setResistance(10.0F), "separator"),
 				SULPHUR = name(new Block(Material.ROCK).setHardness(1.5F).setResistance(10.0F), "sulfur_block"),
 				LAMENT_STONE = name(new BlockLamentStone(), "lament_stone"),
 //    			BARRAGE = name(new BlockBarrage(), Reference.Blocks.BARRAGE),

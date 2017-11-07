@@ -47,7 +47,8 @@ public abstract class BlockGenericContainer extends Block {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack heldItem = playerIn.getHeldItem(hand);
         TileEntity tile = worldIn.getTileEntity(pos);
-        if (heldItem.isEmpty() && playerIn.isSneaking() && tile instanceof PowderContainer) {
+        if(!(tile instanceof PowderContainer)) return false;
+        if (heldItem.isEmpty() && playerIn.isSneaking()) {
             if(!worldIn.isRemote) {
                 playerIn.addItemStackToInventory(getDroppedItem(worldIn, pos));
                 ((PowderContainer) tile).dropContent();
@@ -55,10 +56,10 @@ public abstract class BlockGenericContainer extends Block {
                 worldIn.setBlockToAir(pos);
             }
             return true;
-        } else if(tile instanceof PowderContainer && heldItem.hasCapability(CapabilityGenericInventoryProvider.CAPABILITY_GENERIC, null)) {
+        } else if(heldItem.hasCapability(CapabilityGenericInventoryProvider.CAPABILITY_GENERIC, null)) {
             GenericStackInventory<EnumPowderOres> powderInv = CapabilityGenericInventoryProvider.getInventory(heldItem, EnumPowderOres.class);
             if(powderInv != null) {
-                ((PowderContainer) tile).pourPowder(powderInv);
+                return ((PowderContainer) tile).pourPowder(powderInv);
             }
         } else {
             InputItemHandler tileItemInventory = (InputItemHandler) tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
@@ -129,34 +130,33 @@ public abstract class BlockGenericContainer extends Block {
     @Override
     public void addInformation(ItemStack stack, @Nullable World player, List<String> tooltip, ITooltipFlag advanced) {
         super.addInformation(stack, player, tooltip, advanced);
-        if(advanced.isAdvanced()) {
-            GenericStackInventory<EnumPowderOres> inventory = CapabilityGenericInventoryProvider.getInventory(stack, EnumPowderOres.class);
-            IFluidHandlerItem fluidHandler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
-            IItemHandler itemHandler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-            if(inventory != null) {
-                if (inventory.isEmpty()) {
-                    tooltip.add("No deposit left");
-                } else {
-                    for (int i = 0; i < inventory.getSlotCount(); i++) {
-                        if (inventory.getStackInSlot(i).isEmpty()) break;
-                        tooltip.add(inventory.getStackInSlot(i).getType() + ":" + inventory.getStackInSlot(i).getCount());
-                    }
+        GenericStackInventory<EnumPowderOres> inventory = CapabilityGenericInventoryProvider.getInventory(stack, EnumPowderOres.class);
+        IFluidHandlerItem fluidHandler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+        IItemHandler itemHandler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        if(inventory != null) {
+            if (inventory.isEmpty()) {
+                if(advanced.isAdvanced())
+                   tooltip.add("No deposit left");
+            } else {
+                for (int i = 0; i < inventory.getSlotCount(); i++) {
+                    if (inventory.getStackInSlot(i).isEmpty()) break;
+                    tooltip.add(inventory.getStackInSlot(i).getType() + ":" + inventory.getStackInSlot(i).getCount());
                 }
             }
-            if(fluidHandler != null) {
-                FluidStack fluidStack = fluidHandler.getTankProperties()[0].getContents();
-                if(fluidStack != null)
-                    tooltip.add(I18n.format(fluidStack.getUnlocalizedName()) + ":" + fluidStack.amount);
-                else
-                    tooltip.add("No liquid left");
-            }
-            if(itemHandler != null) {
-                ItemStack itemStack = itemHandler.getStackInSlot(0);
-                if(!itemStack.isEmpty())
-                    tooltip.add(I18n.format(itemStack.getUnlocalizedName()) + ":" + itemStack.getCount());
-                else
-                    tooltip.add("No residue left");
-            }
+        }
+        if(fluidHandler != null) {
+            FluidStack fluidStack = fluidHandler.getTankProperties()[0].getContents();
+            if(fluidStack != null)
+                tooltip.add(I18n.format(fluidStack.getFluid().getUnlocalizedName()) + " : " + fluidStack.amount);
+            else if(advanced.isAdvanced())
+                tooltip.add("No liquid left");
+        }
+        if(itemHandler != null) {
+            ItemStack itemStack = itemHandler.getStackInSlot(0);
+            if(!itemStack.isEmpty())
+                tooltip.add(I18n.format(itemStack.getItem().getUnlocalizedName()) + " : " + itemStack.getCount());
+            else if(advanced.isAdvanced())
+                tooltip.add("No residue left");
         }
     }
 
@@ -180,16 +180,19 @@ public abstract class BlockGenericContainer extends Block {
     }
 
     @Override
+    @Deprecated
     public boolean isFullBlock(IBlockState state) {
         return false;
     }
 
     @Override
+    @Deprecated
     public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
 
     @Override
+    @Deprecated
     public boolean isFullCube(IBlockState state) {
         return false;
     }

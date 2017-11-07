@@ -15,6 +15,9 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemBow;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.SPacketCamera;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -76,6 +79,8 @@ public class InteractEventsHandler {
 			IPossessable host = AbstractMinion.createMinion((EntityLivingBase) event.getTarget());
 			if (host instanceof EntityLivingBase && host.canBePossessedBy(event.getEntityPlayer())) {
 				EntityLivingBase eHost = (EntityLivingBase)host;
+				if(((EntityLivingBase)event.getTarget()).getHeldItemMainhand().getItem() instanceof ItemBow)
+					event.getEntityPlayer().addItemStackToInventory(new ItemStack(Items.ARROW, eHost.world.rand.nextInt(10)+2));
 				DissolutionInventoryHelper.transferEquipment((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
 				if(host != event.getTarget()) {
 					event.getTarget().setPosition(0,-100,0);

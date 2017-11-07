@@ -6,6 +6,7 @@ import ladysnake.dissolution.api.ISoulInteractable;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.item.Item;
@@ -16,6 +17,8 @@ import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 
@@ -34,6 +37,7 @@ import java.util.regex.Pattern;
 public final class DissolutionConfigManager {
 	
 	private static ImmutableSet<Class<? extends EntityMob>> TARGET_BLACKLIST;
+	private static ImmutableSet<Pattern> GHOST_HUNTER_WHITELIST;
 	private static ImmutableSet<Pattern> BLOCK_WHITELIST;
 
 	public enum FlightModes {
@@ -42,8 +46,19 @@ public final class DissolutionConfigManager {
 		CREATIVE_FLIGHT,
 		SPECTATOR_FLIGHT
 	}
+
+	public enum EnforcedSoulStrength {
+		NONE, STRONG, WEAK;
+		EnforcedSoulStrength() {
+
+		}
+
+		public boolean getValue(boolean defaultStrength) {
+			return (defaultStrength && (this == NONE)) || (this == STRONG);
+		}
+	}
 	
-	public static boolean isFlightEnabled(FlightModes flightMode) {
+	public static boolean isFlightSetTo(FlightModes flightMode) {
 		return DissolutionConfig.ghost.flightMode == flightMode;
 	}
 	
@@ -56,7 +71,17 @@ public final class DissolutionConfigManager {
 		if(block instanceof ISoulInteractable)
 			return true;
 		String name = block.getRegistryName().toString();
-		return BLOCK_WHITELIST.stream().anyMatch(p -> p.matcher(name).matches());
+		return !BLOCK_WHITELIST.isEmpty() && BLOCK_WHITELIST.stream().anyMatch(p -> p.matcher(name).matches());
+	}
+
+	public static boolean canEctoplasmBeAttackedBy(Entity entity) {
+		if(entity instanceof ISoulInteractable)
+			return true;
+		if(GHOST_HUNTER_WHITELIST.isEmpty()) return false;
+		Class<? extends Entity> entityClass = entity.getClass();
+		EntityEntry entityEntry = EntityRegistry.getEntry(entityClass);
+		return entityEntry != null && entityEntry.getRegistryName() != null &&
+				GHOST_HUNTER_WHITELIST.stream().anyMatch(p -> p.matcher(entityEntry.getRegistryName().toString()).matches());
 	}
 
 	public static boolean canEctoplasmInteractWith(Item item) {
@@ -64,6 +89,7 @@ public final class DissolutionConfigManager {
 	}
 
 	static void init() {
+		buildEctoplasmAttackWhitelist();
 		buildMinionAttackBlacklist();
 		buildBlockWhitelist();
 	}
@@ -128,12 +154,11 @@ public final class DissolutionConfigManager {
 	}
 
 	@SubscribeEvent
-    public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event)
-    {
-        if(event.getModID().equals(Reference.MOD_ID))
-        {
+    public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
+        if(event.getModID().equals(Reference.MOD_ID)) {
             ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);
             buildMinionAttackBlacklist();
+			buildEctoplasmAttackWhitelist();
             buildBlockWhitelist();
         }
     }
@@ -144,6 +169,14 @@ public final class DissolutionConfigManager {
 		if (!DissolutionConfig.entities.minionsAttackCreepers)
 			builder.add(EntityCreeper.class);
 		TARGET_BLACKLIST = builder.build();
+	}
+
+	private static void buildEctoplasmAttackWhitelist() {
+		ImmutableSet.Builder<Pattern> builder = ImmutableSet.builder();
+		for(String entityName : DissolutionConfig.ghost.authorizedEntities.split("[; ]+")) {
+			builder.add(Pattern.compile("^" + entityName + "$"));
+		}
+		GHOST_HUNTER_WHITELIST = builder.build();
 	}
 
 	private static void buildBlockWhitelist() {

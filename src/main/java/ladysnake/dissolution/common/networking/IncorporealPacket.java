@@ -1,7 +1,5 @@
 package ladysnake.dissolution.common.networking;
 
-import java.util.UUID;
-
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.client.Minecraft;
@@ -9,10 +7,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
+import java.util.UUID;
+
 public class IncorporealPacket implements IMessageHandler<IncorporealMessage, IMessage> {
 
 	@Override

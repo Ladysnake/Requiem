@@ -3,6 +3,8 @@ package ladysnake.dissolution.common.items;
 import com.google.common.collect.Multimap;
 import ladysnake.dissolution.api.SoulTypes;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockCrops;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -14,9 +16,11 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import javax.annotation.Nonnull;
@@ -107,17 +111,35 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
 	
 	@Override
 	public boolean onBlockDestroyed(@Nonnull ItemStack stack, @Nonnull World worldIn, IBlockState state,
-									@Nonnull BlockPos pos, @Nonnull EntityLivingBase entityLiving)
-    {
-        if ((double)state.getBlockHardness(worldIn, pos) != 0.0D)
-        {
-            stack.damageItem(2, entityLiving);
+									@Nonnull BlockPos pos, @Nonnull EntityLivingBase entityLiving) {
+		boolean flag = isSuitedFor(worldIn, pos, state);
+		if(flag && entityLiving instanceof EntityPlayer && !entityLiving.isSneaking()) {
+			for (int i = -1; i <= 1; i++) {
+				for (int j = -1; j <= 1; j++) {
+					BlockPos pos1 = pos.add(i, 0, j);
+					if(pos.equals(pos1)) continue;
+					IBlockState crops = worldIn.getBlockState(pos1);
+					if(!isSuitedFor(worldIn, pos1, crops)) continue;
+					TileEntity te = worldIn.getTileEntity(pos1);
+					if(crops.getBlock().removedByPlayer(crops, worldIn, pos1, (EntityPlayer) entityLiving, false)) {
+						crops.getBlock().onBlockDestroyedByPlayer(worldIn, pos1, crops);
+						stack.damageItem((worldIn.rand.nextInt(5) == 0) ? 1 : 0, entityLiving);
+						crops.getBlock().harvestBlock(worldIn, (EntityPlayer) entityLiving, pos1, crops, te, stack);
+					}
+				}
+			}
+		}
+        if (flag) {
+			stack.damageItem((worldIn.rand.nextInt(5) == 0) ? 1 : 0, entityLiving);
         } else {
-        	stack.damageItem((worldIn.rand.nextInt(5) == 0) ? 1 : 0, entityLiving);
+			stack.damageItem(2, entityLiving);
         }
-
         return true;
     }
+
+    protected boolean isSuitedFor(World world, BlockPos pos, IBlockState state) {
+		return state.getBlock() instanceof IPlantable && state.getBlockHardness(world, pos) == 0;
+	}
 	
 	@Override
 	public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot equipmentSlot) {

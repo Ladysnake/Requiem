@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": {
+      "item": "dissolution:depleted_clay_ball",
+      "data": 0
+    }
+  },
+  "result": {
+    "item": "dissolution:depleted_clay_block"
+  }
+}

@@ -33,13 +33,13 @@ public class PlayerInventoryListener implements IContainerListener {
 	public PlayerInventoryListener(EntityPlayerMP player) {
 		super();
 		this.player = player;
-		PacketHandler.net.sendToAllAround(new DisplayItemMessage(findItemToDisplay(), 
+		PacketHandler.NET.sendToAllAround(new DisplayItemMessage(findItemToDisplay(),
 				player.getUniqueID()), new TargetPoint(player.dimension, player.posX, player.posY, player.posZ, 128));
 	}
 
 	@Override
 	public void sendSlotContents(Container containerToSend, int slotInd, ItemStack stack) {
-		PacketHandler.net.sendToAllAround(new DisplayItemMessage(findItemToDisplay(), 
+		PacketHandler.NET.sendToAllAround(new DisplayItemMessage(findItemToDisplay(),
 				player.getUniqueID()), new TargetPoint(player.dimension, player.posX, player.posY, player.posZ, 128));
 	}
 	

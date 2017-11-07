@@ -80,7 +80,9 @@ public class TileEntityCrucibleRenderer extends TileEntitySpecialRenderer<TileEn
         if(!te.getContent().isEmpty()) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(x, y, z);
-            GlStateManager.translate(0.5, 0, 0.5);
+            GlStateManager.translate(0.5, 0.15, 0.4);
+            GlStateManager.scale(0.8,0.8,0.8);
+            GlStateManager.rotate(90, 1, 0, 0);
             Minecraft.getMinecraft().getRenderItem().renderItem(te.getContent(), ItemCameraTransforms.TransformType.GROUND);
             GlStateManager.popMatrix();
         }

@@ -37,9 +37,9 @@ public class DissolutionConfig {
 	
 	public static class Blocks {
 		
-		@Config.LangKey("config.dissolution.blocks.doSablePop")
-		@Config.Comment("Whether machines should output items in world when there is no appropriate container available")
-		public boolean doSablePop = true;
+//		@Config.LangKey("config.dissolution.blocks.doSablePop")
+//		@Config.Comment("Whether machines should output items in world when there is no appropriate container available")
+//		public boolean doSablePop = true;
 		
 	}
 	
@@ -58,17 +58,25 @@ public class DissolutionConfig {
 		@Config.LangKey("config.dissolution.client.soulCompass")
 		@Config.Comment("Whether the HUD pointing to respawn locations should display")
 		public boolean soulCompass = true;
+
+		@Config.LangKey("config.dissolution.client.soulCompassLamentStones")
+		@Config.Comment("Whether the soul compass HUD should also display lament stones")
+		public boolean showLamentStones = true;
 		
 	}
 
 	public static class Dialogues {
-		@Config.LangKey("config.dissolution.dialogues.broadcastPlayerDialogue")
-		@Config.Comment("If set to true, every dialogue choice made by the player will be broadcasted to all other players")
-		public boolean broadcastPlayerDialogue = true;
-
-		@Config.LangKey("config.dissolution.dialogues.broadcastMajorNPCDialogue")
-		@Config.Comment("If set to true, dialogues emitted by global entities (gods) will be broadcasted to all players")
-		public boolean broadcastMajorNPCDialogue = true;
+		@Config.LangKey("config.dissolution.dialogues.enforcedSoulStrength")
+		@Config.Comment("If set to anything other than \"none\", will force a soul strength upon players and prevent the dialogue from appearing")
+		@Config.RequiresWorldRestart
+		public DissolutionConfigManager.EnforcedSoulStrength enforcedSoulStrength = DissolutionConfigManager.EnforcedSoulStrength.NONE;
+//		@Config.LangKey("config.dissolution.dialogues.broadcastPlayerDialogue")
+//		@Config.Comment("If set to true, every dialogue choice made by the player will be broadcasted to all other players")
+//		public boolean broadcastPlayerDialogue = false;
+//
+//		@Config.LangKey("config.dissolution.dialogues.broadcastMajorNPCDialogue")
+//		@Config.Comment("If set to true, dialogues emitted by global entities (gods) will be broadcasted to all players")
+//		public boolean broadcastMajorNPCDialogue = false;
 	}
 	
 	public static class Entities {
@@ -93,6 +101,10 @@ public class DissolutionConfig {
 		@Config.Comment("A list of blocks that players in ectoplasm form can interact with")
 		public String authorizedBlocks = "minecraft:lever; minecraft:.*door;" +
 				"minecraft:wooden_button";
+
+		@Config.LangKey("config.dissolution.ghost.authorizedEntity")
+		@Config.Comment("A list of entities that can attack a player in ectoplasm form")
+		public String authorizedEntities = "";
 		
 	}
 

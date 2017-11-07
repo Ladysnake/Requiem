@@ -12,7 +12,7 @@ public enum EnumPowderOres {
     SULFUR(ModItems.SULFUR),
     CLAY(Items.CLAY_BALL, HALITE, ModItems.DEPLETED_CLAY),
     COAL(Items.COAL, SULFUR, ModItems.DEPLETED_COAL),
-    MAGMA(ModItems.MAGMA_STONE, CINNABAR, ModItems.IGNEOUS_ROCK);
+    MAGMA(ModItems.IGNEOUS_ROCK, CINNABAR, ModItems.IGNEOUS_ROCK);
 
     private final Item component;
     private final EnumPowderOres refinedPowder;

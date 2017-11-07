@@ -2,23 +2,22 @@ package ladysnake.dissolution.common.handlers;
 
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.DissolutionConfigManager;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.LootEntry;
-import net.minecraft.world.storage.loot.LootEntryTable;
-import net.minecraft.world.storage.loot.LootPool;
-import net.minecraft.world.storage.loot.LootTableList;
-import net.minecraft.world.storage.loot.RandomValueRange;
+import net.minecraft.world.storage.loot.*;
 import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -27,6 +26,10 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 
 /**
  * This class handles basic events-related logic
@@ -34,6 +37,8 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
  *
  */
 public class EventHandlerCommon {
+
+	private Map<UUID, double[]> deathPos = new HashMap<>();
 
 	public EventHandlerCommon() {
 		LootTableList.register(new ResourceLocation(Reference.MOD_ID, "inject/nether_bridge"));
@@ -70,10 +75,19 @@ public class EventHandlerCommon {
 			clone.setStrongSoul(corpse.isStrongSoul());
 			clone.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.SOUL);
 			clone.setLastDeathMessage(corpse.getLastDeathMessage());
+			clone.getDialogueStats().deserializeNBT(corpse.getDialogueStats().serializeNBT());
 			clone.setSynced(false);
 			
-			if(DissolutionConfig.respawn.respawnInNether && !DissolutionConfig.respawn.wowLikeRespawn)
-				event.getEntityPlayer().setPosition(event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ);
+			if(clone.isStrongSoul() && !DissolutionConfig.respawn.wowLikeRespawn)
+				deathPos.put(event.getEntityPlayer().getUniqueID(), new double[] {event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ});
+		}
+	}
+
+	@SubscribeEvent
+	public void onPlayerRespawn(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent event) {
+		if(deathPos.containsKey(event.player.getUniqueID())) {
+			double[] pos = deathPos.remove(event.player.getUniqueID());
+			event.player.setPosition(pos[0], pos[1], pos[2]);
 		}
 	}
 
@@ -91,8 +105,10 @@ public class EventHandlerCommon {
 	public void onLivingAttack(LivingAttackEvent event) {
 		if(event.getEntity() instanceof EntityPlayer) {
 			IIncorporealHandler.CorporealityStatus status = CapabilityIncorporealHandler.getHandler((EntityPlayer)event.getEntity()).getCorporealityStatus();
-			if(status.isIncorporeal())
-				event.setCanceled(!event.getSource().canHarmInCreative());
+			if(status.isIncorporeal()) {
+				if(event.getSource().getTrueSource() == null || !DissolutionConfigManager.canEctoplasmBeAttackedBy(event.getSource().getTrueSource()))
+					event.setCanceled(!event.getSource().canHarmInCreative());
+			}
 		} else {
 			IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getSource().getTrueSource());
 			if(handler != null && handler.getPossessed() != null)
@@ -105,9 +121,12 @@ public class EventHandlerCommon {
 	public void onPlayerAttackEntity(AttackEntityEvent event) {
 		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
 		if (playerCorp.getCorporealityStatus().isIncorporeal() && !event.getEntityPlayer().isCreative()) {
-			if(playerCorp.getPossessed() instanceof EntityLiving)
+			if(playerCorp.getPossessed() instanceof EntityLiving && !((EntityLiving) playerCorp.getPossessed()).isDead) {
+				if(event.getTarget() instanceof EntityLivingBase)
+					event.getEntityPlayer().getHeldItemMainhand().hitEntity((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
 				((EntityLiving) playerCorp.getPossessed()).attackEntityAsMob(event.getTarget());
-			event.setCanceled(true);
+			} else if (!DissolutionConfigManager.canEctoplasmBeAttackedBy(event.getTarget()))
+				event.setCanceled(true);
 			return;
 		}
 		if (event.getTarget() instanceof EntityPlayer) {
@@ -115,6 +134,13 @@ public class EventHandlerCommon {
 			if (targetCorp.getCorporealityStatus().isIncorporeal() && !event.getEntityPlayer().isCreative())
 				event.setCanceled(true);
 		}
+	}
+
+	@SubscribeEvent
+	public void onLivingSetAttackTarget(LivingSetAttackTargetEvent event) {
+		IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getTarget());
+		if(handler != null && event.getEntity() instanceof EntityLiving && handler.getCorporealityStatus().isIncorporeal() && !DissolutionConfigManager.canEctoplasmBeAttackedBy(event.getEntity()))
+			((EntityLiving)event.getEntity()).setAttackTarget(null);
 	}
 
 /*

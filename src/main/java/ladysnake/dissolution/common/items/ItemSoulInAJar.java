@@ -2,15 +2,21 @@ package ladysnake.dissolution.common.items;
 
 import ladysnake.dissolution.api.Soul;
 import ladysnake.dissolution.api.SoulTypes;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
+import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.relauncher.Side;
@@ -46,9 +52,20 @@ public class ItemSoulInAJar extends ItemJar {
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, @Nonnull EnumHand handIn) {
 		ItemStack stack = playerIn.getHeldItem(handIn);
-//		Soul soul = getSoul(stack);
-//		CapabilitySoulHandler.getHandler(playerIn).addSoul(soul);
-//		stack.shrink(1);
+		Soul soul = getSoul(stack);
+		RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, true);
+		if (raytraceresult.typeOfHit == RayTraceResult.Type.MISS) {
+			return new ActionResult<>(EnumActionResult.PASS, stack);
+		}
+		BlockPos pos = raytraceresult.getBlockPos().offset(raytraceresult.sideHit);
+		if(!worldIn.isRemote)
+			worldIn.spawnEntity(new EntityFleetingSoul(worldIn, pos.getX(), pos.getY(), pos.getZ(), soul));
+		stack.shrink(1);
+		ItemStack emptyJar = new ItemStack(ModItems.GLASS_JAR);
+		if(stack.isEmpty())
+			stack = emptyJar;
+		else
+			playerIn.addItemStackToInventory(emptyJar);
 		return new ActionResult<>(EnumActionResult.SUCCESS, stack);
 	}
 	
@@ -66,6 +83,12 @@ public class ItemSoulInAJar extends ItemJar {
 		nbt.setTag("soul", soul.writeToNBT());
 		stack.setTagCompound(nbt);
 		return stack;
+	}
+
+	@Override
+	public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
+		if(tab == Dissolution.CREATIVE_TAB)
+			items.add(new ItemStack(this));
 	}
 
 	@Nullable

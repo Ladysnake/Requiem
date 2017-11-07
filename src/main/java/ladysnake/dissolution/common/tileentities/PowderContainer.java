@@ -41,9 +41,13 @@ public abstract class PowderContainer extends TileEntity {
         inventoryProvider.setInventory(EnumPowderOres.class, powderInventory);
     }
 
-    public void pourPowder(GenericStackInventory<EnumPowderOres> powderStack) {
+    public boolean pourPowder(GenericStackInventory<EnumPowderOres> powderStack) {
         GenericStack<EnumPowderOres> stack = powderStack.extract(getMaxVolume(), null);
-        powderStack.insert(getPowderInventory().insert(stack));
+        if(stack.isEmpty())
+            return false;
+        GenericStack<EnumPowderOres> tilePowder = getPowderInventory().insert(stack);
+        powderStack.insert(tilePowder);
+        return tilePowder.getCount() != stack.getCount();
     }
 
     public boolean shouldDrop() {

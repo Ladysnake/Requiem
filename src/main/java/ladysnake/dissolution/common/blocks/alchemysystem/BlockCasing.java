@@ -225,7 +225,7 @@ public class BlockCasing extends AbstractPowerConductor implements IMachine {
 
 	@Nonnull
 	public IBlockState getStateFromMeta(int meta) {
-		EnumFacing enumfacing = EnumFacing.getHorizontal(meta);
+		EnumFacing enumfacing = EnumFacing.getHorizontal(meta & 0b0111);
 		return (meta & 8) > 0
 				? this.getDefaultState().withProperty(PART, EnumPartType.TOP).withProperty(FACING,
 						enumfacing)

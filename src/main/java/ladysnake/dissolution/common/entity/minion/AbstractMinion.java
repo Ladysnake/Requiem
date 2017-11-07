@@ -1,56 +1,26 @@
 package ladysnake.dissolution.common.entity.minion;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.potion.PotionEffect;
-import org.apache.logging.log4j.LogManager;
-import org.lwjgl.util.vector.Vector2f;
-
 import com.google.common.base.Optional;
-
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.api.IPossessable;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.DissolutionConfigManager;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIInert;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
-import ladysnake.dissolution.common.networking.PacketHandler;
-import ladysnake.dissolution.common.networking.PossessionMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EnumCreatureAttribute;
-import net.minecraft.entity.IEntityOwnable;
-import net.minecraft.entity.IRangedAttackMob;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAITasks;
-import net.minecraft.entity.monster.EntityHusk;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntityPigZombie;
-import net.minecraft.entity.monster.EntitySkeleton;
-import net.minecraft.entity.monster.EntityStray;
-import net.minecraft.entity.monster.EntityWitherSkeleton;
-import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.monster.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -67,22 +37,30 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SPacketCamera;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.stats.StatList;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSource;
-import net.minecraft.util.EntityDamageSourceIndirect;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.LogManager;
+import org.lwjgl.util.vector.Vector2f;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 @SuppressWarnings({"Guava", "WeakerAccess"})
 public abstract class AbstractMinion extends EntityMob implements IRangedAttackMob, IEntityOwnable, IPossessable {
@@ -140,6 +118,20 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 			corpse = new EntityGenericMinion(deadGuy.world, (EntityMob) deadGuy);
 
 		if (corpse != null) {
+			for(IAttributeInstance attribute : deadGuy.getAttributeMap().getAllAttributes()) {
+				IAttributeInstance corpseAttribute = corpse.getAttributeMap().getAttributeInstance(attribute.getAttribute());
+				//noinspection ConstantConditions
+				if(corpseAttribute == null) {
+					corpseAttribute = corpse.getAttributeMap().registerAttribute(attribute.getAttribute());
+				}
+				corpseAttribute.setBaseValue(attribute.getBaseValue());
+				for(AttributeModifier modifier : attribute.getModifiers()) {
+					corpseAttribute.removeModifier(modifier.getID());
+					corpseAttribute.applyModifier(modifier);
+				}
+			}
+			for(PotionEffect potionEffect : deadGuy.getActivePotionEffects())
+				corpse.addPotionEffect(new PotionEffect(potionEffect));
 			corpse.setPositionAndRotation(deadGuy.posX, deadGuy.posY, deadGuy.posZ, deadGuy.rotationYaw, deadGuy.rotationPitch);
 			corpse.onUpdate();
 		}
@@ -396,7 +388,7 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 		if(this.getControllingPassenger() == player)
 			return true;
 		if(this.getControllingPassenger() != null) {
-			LogManager.getLogger().warn("A player attempted to possess an entity that was already possessed");
+			Dissolution.LOGGER.warn("A player attempted to possess an entity that was already possessed");
 			return false;
 		}
 		this.setPossessingEntity(player.getUniqueID());
@@ -404,8 +396,6 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 			if(player.getItemStackFromSlot(slot).isEmpty())
 				player.setItemStackToSlot(slot, this.getItemStackFromSlot(slot));
 			else player.addItemStackToInventory(this.getItemStackFromSlot(slot));
-		if(this.getHeldItemMainhand().getItem() instanceof ItemBow)
-			player.addItemStackToInventory(new ItemStack(Items.ARROW, rand.nextInt(10)+2));
 		player.startRiding(this);
 		return true;
 	}
@@ -514,10 +504,11 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 		if(passenger.getUniqueID().equals(this.getPossessingEntity())) {
 			passenger.setPosition(this.posX, this.posY, this.posZ);
 			if(passenger instanceof EntityPlayer) {
+				for(PotionEffect potionEffect : ((EntityPlayer) passenger).getActivePotionMap().values())
+					this.addPotionEffect(new PotionEffect(potionEffect));
 				((EntityPlayer) passenger).clearActivePotions();
 				for(PotionEffect potionEffect : this.getActivePotionMap().values())
-					((EntityPlayer)passenger).addPotionEffect(potionEffect);
-				this.getActivePotionMap().putAll(((EntityPlayer) passenger).getActivePotionMap());
+					((EntityPlayer)passenger).addPotionEffect(new PotionEffect(potionEffect));
 				for (EntityEquipmentSlot slot : EntityEquipmentSlot.values())
 					this.setItemStackToSlot(slot, ((EntityPlayer) passenger).getItemStackFromSlot(slot));
 			}
@@ -730,8 +721,7 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 				if (itemstack.isItemStackDamageable()) {
 					itemstack.setItemDamage(this.rand.nextInt(Math.min(itemstack.getMaxDamage() / 10, 50)));
 				}
-
-				this.entityDropItem(itemstack, 0.0F);
+				this.entityDropItem(itemstack, this.getEyeHeight());
 			}
 		}
 	}

@@ -3,7 +3,6 @@ package ladysnake.dissolution.common.networking;
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.api.IPossessable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketCamera;
@@ -21,11 +20,13 @@ public class PingPacket implements IMessageHandler<PingMessage, IMessage> {
 		  FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> {
 			  EntityPlayerMP thePlayer = ctx.getServerHandler().player;
 			  final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(thePlayer);
-			  PacketHandler.net.sendToAll(new IncorporealMessage(message.uuidMost, message.uuidLeast, clone.isStrongSoul(), clone.getCorporealityStatus()));
-			  PacketHandler.net.sendTo(new SoulMessage(SoulMessage.FULL_UPDATE, CapabilitySoulHandler.getHandler(thePlayer).getSoulList()), thePlayer);
+			  PacketHandler.NET.sendToAll(new IncorporealMessage(message.uuidMost, message.uuidLeast, clone.isStrongSoul(), clone.getCorporealityStatus()));
+//			  PacketHandler.NET.sendTo(new SoulMessage(SoulMessage.FULL_UPDATE, CapabilitySoulHandler.getHandler(thePlayer).getSoulList()), thePlayer);
 			  IPossessable possessed = clone.getPossessed();
-			  if(possessed instanceof Entity)
+			  if(possessed instanceof Entity) {
+			  	PacketHandler.NET.sendTo(new PossessionMessage(thePlayer.getUniqueID(), ((Entity) possessed).getEntityId()), thePlayer);
 				  thePlayer.connection.sendPacket(new SPacketCamera((Entity) possessed));
+			  }
 			  clone.getDialogueStats().checkFirstConnection();
 		  });
 	  }

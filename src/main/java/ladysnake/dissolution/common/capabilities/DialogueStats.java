@@ -1,7 +1,8 @@
 package ladysnake.dissolution.common.capabilities;
 
 import ladysnake.dissolution.api.IDialogueStats;
-import net.minecraft.entity.player.EntityPlayer;
+import ladysnake.dissolution.api.IIncorporealHandler;
+import ladysnake.dissolution.common.DissolutionConfig;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -9,10 +10,14 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import static ladysnake.dissolution.common.DissolutionConfigManager.EnforcedSoulStrength.NONE;
 
 public class DialogueStats implements IDialogueStats {
     private boolean hasBeenContacted;
@@ -26,8 +31,8 @@ public class DialogueStats implements IDialogueStats {
 
     @Override
     public void checkFirstConnection() {
-        if(!hasBeenContacted && !capability.getOwner().world.isRemote) {
-            sendNextDialogue("dissolution.dialogues.first_contact", 2);
+        if(DissolutionConfig.dialogues.enforcedSoulStrength == NONE && !hasBeenContacted && !capability.getOwner().world.isRemote) {
+            sendNextDialogue("dissolution.dialogues.first_contact.header", "dissolution.dialogues.first_contact", 2);
             hasBeenContacted = true;
         }
     }
@@ -35,19 +40,30 @@ public class DialogueStats implements IDialogueStats {
     @Override
     public void updateDialogue(int choice) {
         if(hasBeenContacted && history.isEmpty()) {
-            capability.setStrongSoul(choice == 0);
-            history.add(choice == 0 ? "weak soul" : "strong soul");
-            capability.getOwner().sendMessage(new TextComponentTranslation("dissolution.dialogues.choose_soul_strength"));
+            boolean strongSoul = choice == 0;
+            if(!strongSoul && capability.getCorporealityStatus().isIncorporeal())
+                capability.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.BODY);
+            capability.setStrongSoul(strongSoul);
+            history.add(strongSoul ? "strong soul" : "weak soul");
+            capability.getOwner().sendMessage(new TextComponentTranslation("dissolution.dialogues.choose_soul_strength").setStyle(new Style().setColor(TextFormatting.RED)));
             capability.getOwner().sendMessage(new TextComponentTranslation("dissolution.soul_strength.changed",
                     new TextComponentTranslation("dissolution.soul_strength." + (capability.isStrongSoul() ? "strong" : "weak"))));
         }
     }
 
-    protected void sendNextDialogue(String npcLine, int choiceCount) {
+    protected void sendNextDialogue(String announcement, String npcLine, int choiceCount) {
         String[] choices = new String[choiceCount];
         for(int i = 0; i < choiceCount; i++)
             choices[i] = npcLine + ".choice_" + i;
-        for(ITextComponent chatMessage : generateDialogue(new TextComponentTranslation(npcLine), choices))
+        if(announcement != null) {
+            ITextComponent headerComponent = new TextComponentTranslation(announcement);
+            headerComponent.getStyle().setColor(TextFormatting.WHITE);
+            headerComponent.getStyle().setItalic(true);
+            capability.getOwner().sendMessage(headerComponent);
+        }
+        ITextComponent npcComponent = new TextComponentTranslation(npcLine);
+        npcComponent.getStyle().setColor(TextFormatting.RED);
+        for(ITextComponent chatMessage : generateDialogue(npcComponent, choices))
             capability.getOwner().sendMessage(chatMessage);
     }
 
@@ -59,15 +75,22 @@ public class DialogueStats implements IDialogueStats {
             TextComponentTranslation choiceDialogue = new TextComponentTranslation("dissolution.dialogues.choice", i, choice);
             Style style = new Style();
             style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dissolution dialogue say " + i));
+            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentTranslation("dissolution.dialogues.choice.hover")));
+            style.setColor(TextFormatting.GRAY);
             choiceDialogue.setStyle(style);
             components.add(choiceDialogue);
         }
+        ITextComponent hint = new TextComponentTranslation("dissolution.dialogues.choice.hint");
+        hint.getStyle().setItalic(true);
+        hint.getStyle().setColor(TextFormatting.DARK_GRAY);
+        components.add(hint);
         return components;
     }
 
     @Override
     public void resetProgress() {
         hasBeenContacted = false;
+        history.clear();
         checkFirstConnection();
     }
 

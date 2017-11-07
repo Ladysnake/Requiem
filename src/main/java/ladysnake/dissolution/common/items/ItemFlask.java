@@ -1,15 +1,20 @@
 package ladysnake.dissolution.common.items;
 
+import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.init.ModItems;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.stats.StatList;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
@@ -26,8 +31,34 @@ public class ItemFlask extends Item implements ICustomLocation{
     @Nonnull
     @Override
     public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        //TODO implement dem potion effects
+
         return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+    }
+
+    @Nonnull
+    @Override
+    public ItemStack onItemUseFinish(@Nonnull ItemStack stack, World worldIn, EntityLivingBase entityLiving) {
+        if (entityLiving instanceof EntityPlayer && stack.getMetadata() != variants.indexOf("glass_flask")) {
+            EntityPlayer entityplayer = (EntityPlayer)entityLiving;
+            //noinspection ConstantConditions
+            entityplayer.addStat(StatList.getObjectUseStats(this));
+
+            if(stack.getMetadata() == variants.indexOf("transcendence_potion")) {
+                ItemAcerbacaFruit.split(entityplayer, IIncorporealHandler.CorporealityStatus.SOUL);
+            }
+            if (entityplayer instanceof EntityPlayerMP) {
+                CriteriaTriggers.CONSUME_ITEM.trigger((EntityPlayerMP)entityplayer, stack);
+            }
+            if (!entityplayer.capabilities.isCreativeMode) {
+                stack.shrink(1);
+                if (stack.isEmpty()) {
+                    return new ItemStack(ModItems.GLASS_FLASK);
+                }
+                entityplayer.inventory.addItemStackToInventory(new ItemStack(ModItems.GLASS_FLASK));
+            }
+        }
+        stack.shrink(1);
+        return stack;
     }
 
     @Override

@@ -53,6 +53,10 @@ public class LivingDeathHandler {
 		
 		final EntityPlayer p = (EntityPlayer) event.getEntity();
 		final IIncorporealHandler corp = CapabilityIncorporealHandler.getHandler(p);
+		if(corp.getCorporealityStatus().isIncorporeal() && corp.getPossessed() instanceof EntityLivingBase) {
+			((EntityLivingBase) corp.getPossessed()).attackEntityFrom(event.getSource(), Float.MAX_VALUE);
+			corp.setPossessed(null);
+		}
 		if(!corp.isStrongSoul() || corp.getCorporealityStatus() == CorporealityStatus.SOUL)
 			return;
 		if(corp.getCorporealityStatus() == CorporealityStatus.ECTOPLASM) {
@@ -92,7 +96,7 @@ public class LivingDeathHandler {
 			p.world.spawnEntity(body);
 			body.setPlayer(p.getUniqueID());
 		}
-		
+
 		if(!DissolutionConfig.respawn.wowLikeRespawn) {
 			p.setSpawnPoint(new BlockPos(p), true);
 		}

@@ -61,7 +61,7 @@ public class ItemJar extends Item implements ICustomLocation {
             return new ActionResult<>(EnumActionResult.SUCCESS, jar);
         FluidActionResult result = FluidUtil.tryPlaceFluid(playerIn, worldIn, pos.offset(raytraceresult.sideHit), jar, containedFluid);
         if(result.isSuccess())
-            return new ActionResult<>(EnumActionResult.SUCCESS, result.getResult());
+            return new ActionResult<>(EnumActionResult.SUCCESS, worldIn.isRemote ? jar : result.getResult());
         return super.onItemRightClick(worldIn, playerIn, handIn);
     }
 
@@ -71,13 +71,17 @@ public class ItemJar extends Item implements ICustomLocation {
             items.add(new ItemStack(this));
             ItemStack stack = new ItemStack(this);
             IFluidHandlerItem handler = FluidUtil.getFluidHandler(stack);
-            assert handler != null;
-            handler.fill(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), true);
+            if(handler == null)
+                Dissolution.LOGGER.error("An error occurred while populating the creative tab : water jar item had a null fluid handler");
+            else
+                handler.fill(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), true);
             items.add(stack);
             stack = new ItemStack(this);
             handler = FluidUtil.getFluidHandler(stack);
-            assert handler != null;
-            handler.fill(new FluidStack(ModFluids.MERCURY.fluid(), Fluid.BUCKET_VOLUME), true);
+            if(handler == null)
+                Dissolution.LOGGER.error("An error occurred while populating the creative tab : mercury jar item had a null fluid handler");
+            else
+                handler.fill(new FluidStack(ModFluids.MERCURY.fluid(), Fluid.BUCKET_VOLUME), true);
             items.add(stack);
         }
     }

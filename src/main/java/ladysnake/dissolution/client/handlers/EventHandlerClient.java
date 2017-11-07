@@ -29,6 +29,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
@@ -70,7 +71,7 @@ public class EventHandlerClient {
 	}
 
 	@SubscribeEvent
-	public static void onGameTick(TickEvent event) {
+	public static void onGameTick(TickEvent.ClientTickEvent event) {
 		final EntityPlayer player = Minecraft.getMinecraft().player;
 		if (player == null) return;
 		
@@ -83,7 +84,7 @@ public class EventHandlerClient {
 		{
 			IMessage msg = new PingMessage(player.getUniqueID().getMostSignificantBits(),
 					player.getUniqueID().getLeastSignificantBits());
-			PacketHandler.net.sendToServer(msg);
+			PacketHandler.NET.sendToServer(msg);
 		} else if(playerCorp.isSynced())
 			refreshTimer = 0;
 
@@ -107,10 +108,15 @@ public class EventHandlerClient {
 	}
 
 	@SubscribeEvent
+	public static void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+		refreshTimer = 0;
+	}
+
+	@SubscribeEvent
 	public static void onPlayerIncorporeal(PlayerIncorporealEvent event) {
 		EntityPlayer player = event.getPlayer();
 		if(player == Minecraft.getMinecraft().player) {
-			if (DissolutionConfigManager.isFlightEnabled(FlightModes.CUSTOM_FLIGHT)) {
+			if (DissolutionConfigManager.isFlightSetTo(FlightModes.CUSTOM_FLIGHT)) {
 				player.capabilities.setFlySpeed(event.getNewStatus().isIncorporeal() ? 0.025f : 0.05f);
 			}
 			if (!event.getNewStatus().isIncorporeal()) {
@@ -164,7 +170,7 @@ public class EventHandlerClient {
 				(playerCorp.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL
 						|| playerCorp.getEctoplasmStats().getActiveSpells().contains(EctoplasmStats.SoulSpells.FLIGHT))) {
 
-			if(DissolutionConfigManager.isFlightEnabled(FlightModes.CUSTOM_FLIGHT)) {
+			if(DissolutionConfigManager.isFlightSetTo(FlightModes.CUSTOM_FLIGHT)) {
 				player.capabilities.setFlySpeed(0.025f);
 				// Makes the player glide and stuff
 				if(playerSP.movementInput.jump && player.getRidingEntity() == null) {

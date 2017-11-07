@@ -60,7 +60,6 @@ public class CapabilityIncorporealHandler {
 	static Capability<IIncorporealHandler> CAPABILITY_INCORPOREAL;
 
 	private static MethodHandle entity$setSize;
-	private static Map<EntityPlayer, IIncorporealHandler> handlerMap = new HashMap<>();
 
 	static {
 		try {
@@ -82,7 +81,6 @@ public class CapabilityIncorporealHandler {
 	public static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
 		if ((event.getObject() instanceof EntityPlayer)) {
 			Provider provider = new Provider((EntityPlayer) event.getObject());
-			handlerMap.put((EntityPlayer) event.getObject(), provider.getCapability(CAPABILITY_INCORPOREAL, null));
 			event.addCapability(new ResourceLocation(Reference.MOD_ID, "incorporeal"), provider);
 		}
 	}
@@ -93,7 +91,7 @@ public class CapabilityIncorporealHandler {
      * @return the IncorporealHandler attached or null if there is none
      */
     public static IIncorporealHandler getHandler(@Nullable Entity entity) {
-		if(entity == null) return null;
+		if(!(entity instanceof EntityPlayer)) return null;
         if (entity.hasCapability(CAPABILITY_INCORPOREAL, EnumFacing.DOWN))
             return entity.getCapability(CAPABILITY_INCORPOREAL, EnumFacing.DOWN);
 
@@ -154,15 +152,18 @@ public class CapabilityIncorporealHandler {
 
 		@Override
 		public boolean isStrongSoul() {
-			return strongSoul;
+			return DissolutionConfig.dialogues.enforcedSoulStrength.getValue(strongSoul);
 		}
 
 		@Override
 		public void setStrongSoul(boolean strongSoul) {
-			this.corporealityStatus = CorporealityStatus.BODY;
 			this.strongSoul = strongSoul;
+			if(!strongSoul) {
+				//noinspection ConstantConditions
+				owner.setSpawnPoint(null, true);
+			}
 			if(!owner.world.isRemote)
-				PacketHandler.net.sendToAll(new IncorporealMessage(owner.getUniqueID().getMostSignificantBits(),
+				PacketHandler.NET.sendToAll(new IncorporealMessage(owner.getUniqueID().getMostSignificantBits(),
 						owner.getUniqueID().getLeastSignificantBits(), strongSoul, corporealityStatus));
 		}
 
@@ -170,7 +171,11 @@ public class CapabilityIncorporealHandler {
 		public void setCorporealityStatus(CorporealityStatus newStatus) {
 			if(!this.strongSoul) return;
 			if(owner == null || MinecraftForge.EVENT_BUS.post(new PlayerIncorporealEvent(owner, newStatus))) return;
+
 			corporealityStatus = newStatus;
+
+			if(!newStatus.isIncorporeal() && this.getPossessed() != null) this.setPossessed(null);
+
 			owner.setEntityInvulnerable(newStatus == CorporealityStatus.SOUL);
 
 			if(newStatus == CorporealityStatus.SOUL) {
@@ -178,8 +183,6 @@ public class CapabilityIncorporealHandler {
 			} else {
 				owner.eyeHeight = owner.getDefaultEyeHeight();
 			}
-
-			if(!newStatus.isIncorporeal() && this.getPossessed() != null) this.setPossessed(null);
 
 			try {
 				ObfuscationReflectionHelper.setPrivateValue(Entity.class, owner, newStatus.isIncorporeal(), "isImmuneToFire", "field_70178_ae");
@@ -190,13 +193,13 @@ public class CapabilityIncorporealHandler {
 			owner.setInvisible(newStatus.isIncorporeal() && DissolutionConfig.ghost.invisibleGhosts);
 
 			if(!owner.isCreative()) {
-				boolean enableFlight = (!DissolutionConfigManager.isFlightEnabled(FlightModes.NO_FLIGHT)) && (!DissolutionConfigManager.isFlightEnabled(FlightModes.CUSTOM_FLIGHT));
+				boolean enableFlight = (!DissolutionConfigManager.isFlightSetTo(FlightModes.NO_FLIGHT)) && (!DissolutionConfigManager.isFlightSetTo(FlightModes.CUSTOM_FLIGHT));
 				owner.capabilities.disableDamage = newStatus == CorporealityStatus.SOUL;
 				owner.capabilities.allowFlying = (newStatus.isIncorporeal() && (owner.experienceLevel > 0) && enableFlight);
 				owner.capabilities.isFlying = (newStatus.isIncorporeal() && owner.capabilities.isFlying && owner.experienceLevel > 0 && enableFlight);
 			}
 			if(!owner.world.isRemote) {
-				PacketHandler.net.sendToAll(new IncorporealMessage(owner.getUniqueID().getMostSignificantBits(),
+				PacketHandler.NET.sendToAll(new IncorporealMessage(owner.getUniqueID().getMostSignificantBits(),
 					owner.getUniqueID().getLeastSignificantBits(), strongSoul, newStatus));
 			}
 			setSynced(true);
@@ -213,12 +216,14 @@ public class CapabilityIncorporealHandler {
 			if(!this.isStrongSoul()) return false;
 			if(possessable != null && !(possessable instanceof Entity))
 				throw new IllegalArgumentException("A player can only possess an entity.");
+			owner.clearActivePotions();
 			if(possessable == null) {
 				IPossessable currentHost = getPossessed();
 				if (currentHost != null && !currentHost.onPossessionStop(owner)) return false;
 				hostID = 0;
 				hostUUID = null;
 				owner.setInvisible(DissolutionConfig.ghost.invisibleGhosts);
+				owner.dismountRidingEntity();
 			} else {
 				if(!possessable.onEntityPossessed(owner)) return false;
 				hostID = ((Entity)possessable).getEntityId();
@@ -227,7 +232,7 @@ public class CapabilityIncorporealHandler {
 			}
 			if(!owner.world.isRemote) {
 				((EntityPlayerMP) owner).connection.sendPacket(new SPacketCamera(possessable == null ? owner : (Entity) possessable));
-				PacketHandler.net.sendToAllAround(new PossessionMessage(owner.getUniqueID(), hostID),
+				PacketHandler.NET.sendToAllAround(new PossessionMessage(owner.getUniqueID(), hostID),
 						new NetworkRegistry.TargetPoint(owner.dimension, owner.posX, owner.posY, owner.posZ, 100));
 			}
 			return true;

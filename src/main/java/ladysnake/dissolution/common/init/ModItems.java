@@ -104,7 +104,7 @@ public final class ModItems {
 				LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"),
 //				BACA_SEEDS = name(new ItemSeeds(Blocks.LEAVES, Blocks.GRASS), "limobaca_seeds"),
 //				SEPULTURE = name(new ItemSepulture(), "sepulture"),
-				SOUL_IN_A_FLASK = name(new ItemSoulInAJar(), "will_o_wisp_flask"),
+				SOUL_IN_A_FLASK = name(new ItemSoulInAJar(), "will_o_wisp_jar"),
 				STONE_HEART = name(new ItemStoneHeart(), "stone_heart"));
 
 //		AlchemyModuleTypes.registerItems(allItems);

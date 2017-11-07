@@ -7,11 +7,14 @@ import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.registries.EnumPowderOres;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.*;
@@ -27,17 +30,6 @@ import java.util.Objects;
 public class TileEntityCrucible extends PowderContainer implements ITickable {
 
     public static final int MAX_VOLUME = 8;
-    private static Map<Item, EnumPowderOres> conversions = new HashMap<>();
-    private static Map<Item, Item> depletionOperations = new HashMap<>();
-
-    static {
-        conversions.put(Item.getItemFromBlock(Blocks.CLAY), EnumPowderOres.HALITE);
-        conversions.put(Item.getItemFromBlock(Blocks.COAL_BLOCK), EnumPowderOres.SULFUR);
-        conversions.put(Item.getItemFromBlock(Blocks.MAGMA), EnumPowderOres.CINNABAR);
-        depletionOperations.put(Item.getItemFromBlock(Blocks.CLAY), ModItems.DEPLETED_CLAY);
-        depletionOperations.put(Item.getItemFromBlock(Blocks.COAL_BLOCK), ModItems.DEPLETED_COAL);
-        depletionOperations.put(Item.getItemFromBlock(Blocks.MAGMA), ModItems.IGNEOUS_ROCK);
-    }
 
     private FluidTank fluidInventory = new CrucibleFluidTank(Fluid.BUCKET_VOLUME);
     private MagnetPowerMode magnetPowerMode = MagnetPowerMode.NO_MAGNET;
@@ -45,7 +37,8 @@ public class TileEntityCrucible extends PowderContainer implements ITickable {
 
     public TileEntityCrucible() {
         super();
-        this.itemInventory = new PowderContainer.ItemHandler(ModItems.DEPLETED_CLAY, ModItems.DEPLETED_COAL, ModItems.IGNEOUS_ROCK);
+        this.itemInventory = new PowderContainer.ItemHandler(Items.AIR);
+        this.evaporationTimer = (int) (Math.random() * 100) + 100;
     }
 
     @Override
@@ -53,7 +46,7 @@ public class TileEntityCrucible extends PowderContainer implements ITickable {
         IBlockState state = world.getBlockState(pos.down());
         if(state.getBlock().equals(ModBlocks.MAGNET)) {
            MagnetPowerMode newMagnetPowerMode = world.isBlockPowered(pos.down()) ? MagnetPowerMode.MAGNET_ON : MagnetPowerMode.MAGNET_OFF;
-           if(magnetPowerMode.isOpposite(newMagnetPowerMode) && ++separatingTimer % 10 == 0) {
+           if(magnetPowerMode.isOpposite(newMagnetPowerMode) && !this.powderInventory.isEmpty() && ++separatingTimer % 10 == 0) {
                GenericStack<EnumPowderOres> powderStack = this.powderInventory.extract(1, null);
                GenericStack<EnumPowderOres> result = new GenericStack<>(powderStack.getType().getRefinedPowder(), powderStack.getCount());
                this.powderInventory.insert(result.isEmpty() ? powderStack : result);
@@ -61,26 +54,41 @@ public class TileEntityCrucible extends PowderContainer implements ITickable {
            magnetPowerMode = newMagnetPowerMode;
         } else {
             magnetPowerMode = MagnetPowerMode.NO_MAGNET;
-            GenericStack<EnumPowderOres> cinnabarPowder = powderInventory.readContent(EnumPowderOres.CINNABAR);
-            if(!cinnabarPowder.isEmpty()) {
-                if((state.getMaterial().equals(Material.FIRE)
-                        || state.getMaterial().equals(Material.LAVA)
-                        || state.getBlock() instanceof BlockFluidBase && ((BlockFluidBase) state.getBlock()).getFluid().getTemperature(world, pos.down()) > 400)) {
-                    evaporationTimer += 9;
+            boolean evaporation = false;
+            if(this.getFluidInventory().getFluid() != null &&
+                    Objects.equals(this.getFluidInventory().getFluid().getFluid(), FluidRegistry.WATER)) {
+                if(--evaporationTimer <= 0) {
+                    this.getFluidInventory().drain(new FluidStack(FluidRegistry.WATER, 1), true);
+                    if(this.getFluidInventory().getFluidAmount() % (Fluid.BUCKET_VOLUME / getMaxVolume()) == 0) {
+                        GenericStack<EnumPowderOres> powder = powderInventory.extract(1, null);
+                        if(!powder.isEmpty()) {
+                            ItemStack crystal = new ItemStack(powder.getType().getComponent());
+                            if(!world.isRemote)
+                                world.spawnEntity(new EntityItem(world, pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5, crystal));
+//                            itemInventory.insertItem(0, crystal, false);
+                        }
+                    }
+                    evaporationTimer = world.rand.nextInt(100) + 100;
+                }
+                evaporation = true;
+            }
+            if((state.getMaterial().equals(Material.FIRE)
+                    || state.getMaterial().equals(Material.LAVA)
+                    || state.getBlock() instanceof BlockFluidBase && ((BlockFluidBase) state.getBlock()).getFluid().getTemperature(world, pos.down()) > 400)) {
+                GenericStack<EnumPowderOres> cinnabarPowder = powderInventory.readContent(EnumPowderOres.CINNABAR);
+                if(evaporation) {
+                    if(Math.random() < 0.075f)
+                    world.spawnParticle(EnumParticleTypes.CLOUD, (double)pos.getX() + 0.5, (double)pos.getY() + 1.1,
+                            (double)pos.getZ() + 0.5, 0.0D, 0.3D, 0.0D);
+                    evaporationTimer -= 100;
+                }
+                 if(!evaporation && !cinnabarPowder.isEmpty()) {
                     if (++meltingTimer % 200 == 0) {
                         powderInventory.extract(1, EnumPowderOres.CINNABAR);
                         FluidStack mercury = new FluidStack(ModFluids.MERCURY.fluid(), Fluid.BUCKET_VOLUME / MAX_VOLUME);
                         fluidInventory.fill(mercury, true);
                         this.markDirty();
                     }
-                }
-                if(this.getFluidInventory().getFluid() != null &&
-                        Objects.equals(this.getFluidInventory().getFluid().getFluid(), FluidRegistry.WATER) &&
-                        ++evaporationTimer % 200 == 0) {
-                    powderInventory.extract(1, EnumPowderOres.CINNABAR);
-                    ItemStack cinnabar = new ItemStack(ModItems.CINNABAR);
-                    itemInventory.insertItemInternal(0, cinnabar, false);
-                    this.markDirty();
                 }
             }
         }

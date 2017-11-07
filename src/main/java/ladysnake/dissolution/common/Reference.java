@@ -3,7 +3,7 @@ package ladysnake.dissolution.common;
 public class Reference {
 	public static final String MOD_ID = "dissolution";
 	static final String MOD_NAME = "Dissolution";
-	static final String VERSION = "0.5";
+	static final String VERSION = "0.5.1";
 	static final String MCVERSION = "[1.12]";
 	static final String DEPENDENCIES = "after:albedo;after:baubles;";
 	static final double CONFIG_VERSION = 2.0;

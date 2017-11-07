@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.blocks;
 
+import ladysnake.dissolution.common.capabilities.CapabilityGenericInventoryProvider;
 import ladysnake.dissolution.common.inventory.InputItemHandler;
 import ladysnake.dissolution.common.tileentities.TileEntityCrucible;
 import net.minecraft.block.material.Material;
@@ -20,6 +21,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
@@ -39,31 +41,14 @@ public class BlockCrucible extends BlockGenericContainer {
         if(super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ))
             return true;
         TileEntity tile = worldIn.getTileEntity(pos);
-        if(tile instanceof TileEntityCrucible && !worldIn.isRemote) {
+        if(tile instanceof TileEntityCrucible) {
             IFluidHandler fluidTank = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-            /*if(playerIn.getHeldItem(hand).getItem().equals(Items.WATER_BUCKET) && fluidTank != null) {
-                fluidTank.fill(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), true);
-                playerIn.setHeldItem(hand, new ItemStack(Items.BUCKET));
-            } else*/ if (playerIn.getHeldItem(hand).hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
-                IFluidHandlerItem fluidHandlerItem = playerIn.getHeldItem(hand).getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
-                if(fluidHandlerItem != null && fluidTank != null) {
-                    FluidStack fluidStack = fluidHandlerItem.drain(Fluid.BUCKET_VOLUME, !playerIn.isCreative());
-                    if(fluidStack != null) {
-                        worldIn.playSound(playerIn, pos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1, 1);
-                        fluidStack.amount -= fluidTank.fill(fluidStack, true);
-                        fluidHandlerItem.fill(fluidStack, !playerIn.isCreative());
-                    } else {
-                        FluidStack fluidStack1 = fluidTank.drain(Fluid.BUCKET_VOLUME, !playerIn.isCreative());
-                        if(fluidStack1 != null) {
-                            worldIn.playSound(playerIn, pos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1, 1);
-                            fluidStack1.amount -= fluidHandlerItem.fill(fluidStack1, true);
-                            fluidTank.fill(fluidStack1, !playerIn.isCreative());
-                        }
-                    }
-                }
+            if(fluidTank != null && playerIn.getHeldItem(hand).hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
+                FluidUtil.interactWithFluidHandler(playerIn, hand, fluidTank);
+                return true;
             }
         }
-        return true;
+        return playerIn.getHeldItem(hand).hasCapability(CapabilityGenericInventoryProvider.CAPABILITY_GENERIC, null);
     }
 
     @Nonnull

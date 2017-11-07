@@ -7,6 +7,7 @@ import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
+import ladysnake.dissolution.common.tileentities.TileEntityLamentStone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -18,6 +19,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -85,7 +87,7 @@ public class GuiIncorporealOverlay extends Gui {
 		anglePlayer = (anglePlayer < 0) ? anglePlayer + 360 : anglePlayer;
 		double angleLeftVision = (anglePlayer - (fov / 2.0D)) % 360D;
 		double angleRightVision = (anglePlayer + (fov / 2.0D)) % 360D;
-		boolean isInFieldOfView = angleToOrigin > angleLeftVision && angleToOrigin < angleRightVision;
+//		boolean isInFieldOfView = angleToOrigin > angleLeftVision && angleToOrigin < angleRightVision;
 		
 		int i = scaledRes.getScaledWidth() / 2 - 100;
 		int j = 10;
@@ -100,16 +102,25 @@ public class GuiIncorporealOverlay extends Gui {
         this.mc.getTextureManager().bindTexture(ORIGIN_PATH);
 		this.drawTexturedModalRect(i, j, 0, 0, compassWidth, 20);
 		
-		if(isInFieldOfView) {
+		/*if(isInFieldOfView) {
 			this.drawTexturedModalRect(i + 3 + (int)Math.round((angleToOrigin - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 200, 0, 7, 10);
+		}*/
+
+		for(TileEntity te : mc.player.world.loadedTileEntityList) {
+			if(te instanceof TileEntityLamentStone && DissolutionConfig.client.showLamentStones) {
+				double angleToTE = (180 - (Math.atan2(player.posX - te.getPos().getX(), player.posZ - te.getPos().getZ())) * (180 / Math.PI)) % 360D;
+				if (angleToTE > angleLeftVision && angleToTE < angleRightVision) {
+					this.drawTexturedModalRect(i + 3 + (int)Math.round((angleToTE - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 200, 0, 7, 10);
+				}
+			}
 		}
-		
+
 		for(Entity te : mc.player.world.loadedEntityList) {
 			if(te instanceof EntityPlayerCorpse) {
 				if(mc.player.getUniqueID().equals(((EntityPlayerCorpse) te).getPlayer())) {
 					double angleToTE = (180 - (Math.atan2(player.posX - te.posX, player.posZ - te.posZ)) * (180 / Math.PI)) % 360D;
 					if (angleToTE > angleLeftVision && angleToTE < angleRightVision) {
-						this.drawTexturedModalRect(i + 3 + (int)Math.round((angleToTE - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 214, 0, 7, 10);
+						this.drawTexturedModalRect(i + 3 + (int)Math.round((angleToTE - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 207, 0, 7, 10);
 					}
 				}
 			}

@@ -13,6 +13,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION,
 		acceptedMinecraftVersions = Reference.MCVERSION, dependencies = Reference.DEPENDENCIES)
@@ -22,6 +24,7 @@ public class Dissolution {
 	public static Dissolution instance;
 	
 	public static final CreativeTabs CREATIVE_TAB = new DissolutionTab();
+	public static final Logger LOGGER = LogManager.getLogger("Dissolution");
 	
 	 @SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS,serverSide = Reference.SERVER_PROXY_CLASS)
 	 public static CommonProxy proxy;
