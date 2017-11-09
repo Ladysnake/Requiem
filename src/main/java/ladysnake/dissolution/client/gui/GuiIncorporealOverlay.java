@@ -3,10 +3,12 @@
 import java.util.Random;
 
 import ladysnake.dissolution.api.IIncorporealHandler;
+import ladysnake.dissolution.api.IPossessable;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
+import ladysnake.dissolution.common.entity.minion.*;
 import ladysnake.dissolution.common.tileentities.TileEntityLamentStone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -48,7 +50,7 @@ public class GuiIncorporealOverlay extends Gui {
 	@SubscribeEvent
 	public void onRenderExperienceBar(RenderGameOverlayEvent.Post event) {
 		final IIncorporealHandler pl = CapabilityIncorporealHandler.getHandler(this.mc.player);
-		if (event.getType() == ElementType.EXPERIENCE) {
+		if (event.getType() == ElementType.ALL) {
 			OverlaysRenderer.INSTANCE.renderOverlays(event);
 
 			/* Draw Incorporeal Ingame Gui */
@@ -59,10 +61,22 @@ public class GuiIncorporealOverlay extends Gui {
 
 			if (this.mc.playerController.shouldDrawHUD() && this.mc.getRenderViewEntity() instanceof EntityPlayer && pl.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.ECTOPLASM) {
 				this.drawEctoplasmHealthBar(this.mc.player, event.getResolution(), 0);
-			} else if (this.mc.playerController.shouldDrawHUD() && pl.getPossessed() instanceof EntityLivingBase && ((EntityLivingBase) pl.getPossessed()).getHealth() > 0) {
-				this.drawEctoplasmHealthBar(this.mc.player, event.getResolution(), 1);
+			} else if (this.mc.playerController.shouldDrawHUD()) {
+				IPossessable possessed = pl.getPossessed();
+				if(possessed instanceof EntityLivingBase && ((EntityLivingBase) possessed).getHealth() > 0) {
+					int textureRow = 1;
+					if(possessed instanceof EntityMinionPigZombie) textureRow = 2;
+					else if(possessed instanceof EntityMinionZombie && ((EntityMinionZombie)possessed).isHusk())
+						textureRow = 3;
+					else if(possessed instanceof EntityMinionWitherSkeleton) textureRow = 5;
+					else if(possessed instanceof EntityMinionStray) textureRow = 6;
+					else if(possessed instanceof EntityMinionSkeleton) textureRow = 4;
+
+					this.drawEctoplasmHealthBar(this.mc.player, event.getResolution(), textureRow);
+					this.renderHotbar(event.getResolution(), event.getPartialTicks());
+				}
+			} else if (Minecraft.getMinecraft().player.isCreative() && pl.getPossessed() != null)
 				this.renderHotbar(event.getResolution(), event.getPartialTicks());
-			}
 		}
 	}
 
@@ -80,8 +94,8 @@ public class GuiIncorporealOverlay extends Gui {
 	private void drawOriginIndicator(ScaledResolution scaledRes) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		double fov = this.mc.gameSettings.fovSetting;
-		double angleToOrigin;
-		angleToOrigin = (180 - (Math.atan2(player.posX, player.posZ)) * (180 / Math.PI)) % 360D;
+//		double angleToOrigin;
+//		angleToOrigin = (180 - (Math.atan2(player.posX, player.posZ)) * (180 / Math.PI)) % 360D;
 		double anglePlayer;
 		anglePlayer = player.rotationYaw % 360;
 		anglePlayer = (anglePlayer < 0) ? anglePlayer + 360 : anglePlayer;

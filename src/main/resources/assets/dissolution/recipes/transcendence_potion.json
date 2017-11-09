@@ -1,0 +1,17 @@
+{
+  "type": "crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "dissolution:glass_flask",
+      "data": 0
+    },
+    {
+      "item": "dissolution:sulfur",
+      "data": 0
+    }
+  ],
+  "result": {
+    "item": "dissolution:filled_flask",
+    "data": 1
+  }
+}

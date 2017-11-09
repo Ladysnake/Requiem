@@ -63,10 +63,11 @@ public final class ModItems {
 	public static ItemSepulture SEPULTURE;
 	public static ItemSoulInAJar SOUL_IN_A_FLASK;
 	public static ItemStoneHeart STONE_HEART;
+	public static ItemFilledFlask FILLED_FLASK;
 
 	static Set<Item> allItems = new HashSet<>();
-	
-	@SuppressWarnings("unchecked")
+
+    @SuppressWarnings("unchecked")
     private static <T extends Item> T name(T item, String name) {
 		return (T) item.setUnlocalizedName(name).setRegistryName(new ResourceLocation(Reference.MOD_ID, name));
 	}
@@ -87,6 +88,7 @@ public final class ModItems {
 				DEPLETED_COAL = name(new ItemDepletedCoal(), "depleted_coal"),
 				EYE_OF_THE_UNDEAD = name(new ItemEyeUndead(), "eye_of_the_undead"),
 				EYE_OF_DISCORD = name(new ItemEyeOfDiscord(), "eye_of_discord"),
+				FILLED_FLASK = name(new ItemFilledFlask(), "filled_flask"),
 				GLASS_FLASK = name(new ItemFlask(), "glass_flask"),
 				GLASS_JAR = name(new ItemJar(), "glass_jar"),
 				CINNABAR = name(new ItemMineral(), "cinnabar"),

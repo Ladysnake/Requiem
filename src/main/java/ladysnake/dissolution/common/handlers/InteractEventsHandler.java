@@ -141,9 +141,10 @@ public class InteractEventsHandler {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onEntityMount(EntityMountEvent event) {
 		IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
-		if (!event.isMounting() && handler != null && handler.getCorporealityStatus().isIncorporeal()
-				&& !(event.getEntity() instanceof EntityPlayer && ((EntityPlayer)event.getEntity()).isCreative())) {
-			if(!event.isMounting()) {
+		if (!event.isMounting() && handler != null && handler.getCorporealityStatus().isIncorporeal()) {
+			if((event.getEntity() instanceof EntityPlayer && ((EntityPlayer)event.getEntity()).isCreative()))
+				handler.setPossessed(null);
+			else {
 				if (event.getEntityBeingMounted() == handler.getPossessed() && !(handler.setPossessed(null))) {
 					if(event.getEntity().isSneaking() && event.getEntity() instanceof EntityPlayer)
 						PlayerTickHandler.sneakingPossessingPlayers.add((EntityPlayer) event.getEntity());

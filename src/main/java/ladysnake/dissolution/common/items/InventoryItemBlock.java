@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -21,8 +22,13 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidActionResult;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -47,9 +53,27 @@ public class InventoryItemBlock extends ItemBlock {
     public EnumActionResult onItemUse(EntityPlayer player, World worldIn, @Nonnull BlockPos pos, @Nonnull EnumHand hand, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ) {
         if(player.isSneaking() && player.getHeldItem(hand).hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
             IItemHandler handler = player.getHeldItem(hand).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-            if(handler != null) {
+            if(handler != null && handler.getSlots() > 0 && !handler.getStackInSlot(0).isEmpty()) {
                 worldIn.spawnEntity(new EntityItem(worldIn, pos.getX() + hitX, pos.getY() + hitY, pos.getZ() + hitZ, handler.extractItem(0, Integer.MAX_VALUE, false)));
                 return EnumActionResult.SUCCESS;
+            }
+        }
+        if(player.isSneaking() && player.getHeldItem(hand).hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
+            IFluidHandlerItem handler = player.getHeldItem(hand).getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+            if(handler != null) {
+                if(FluidUtil.interactWithFluidHandler(player, hand, worldIn, pos, facing))
+                    return EnumActionResult.SUCCESS;
+                ItemStack heldItem = player.getHeldItem(hand);
+                FluidStack heldFluid = FluidUtil.getFluidContained(heldItem);
+                FluidActionResult result = FluidUtil.tryPlaceFluid(player, worldIn, pos.offset(facing), heldItem, heldFluid);
+                if(!result.isSuccess())
+                    result = FluidUtil.tryPickUpFluid(heldItem, player, worldIn, pos.offset(facing), facing);
+                if(result.isSuccess()) {
+                    player.setHeldItem(hand, result.getResult());
+                    return EnumActionResult.SUCCESS;
+                }
+                if(worldIn.getBlockState(pos.offset(facing)).getMaterial().isLiquid())
+                    return EnumActionResult.FAIL;
             }
         }
         return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);

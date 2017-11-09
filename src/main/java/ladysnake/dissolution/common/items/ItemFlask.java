@@ -4,18 +4,23 @@ import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.init.PotionTypes;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 
@@ -26,73 +31,51 @@ import java.util.List;
 
 public class ItemFlask extends Item implements ICustomLocation{
 
-    private final List<String> variants = Arrays.asList("glass_flask", "conservation_potion", "transcendence_potion", "water_flask");
-
     @Nonnull
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+        RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, true);
+        ItemStack itemstack = playerIn.getHeldItem(handIn);
+        //noinspection ConstantConditions
+        if (raytraceresult == null) {
+            return new ActionResult<>(EnumActionResult.PASS, itemstack);
+        } else {
+            if (raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK) {
+                BlockPos blockpos = raytraceresult.getBlockPos();
 
-        return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+                if (!worldIn.isBlockModifiable(playerIn, blockpos) || !playerIn.canPlayerEdit(blockpos.offset(raytraceresult.sideHit), raytraceresult.sideHit, itemstack)) {
+                    return new ActionResult<>(EnumActionResult.PASS, itemstack);
+                }
+
+                if (worldIn.getBlockState(blockpos).getMaterial() == Material.WATER) {
+                    worldIn.playSound(playerIn, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+                    return new ActionResult<>(EnumActionResult.SUCCESS, this.turnBottleIntoItem(itemstack, playerIn, new ItemStack(ModItems.FILLED_FLASK, 1, ItemFilledFlask.getMetaForVariant("transcendence_potion"))));
+                }
+            }
+
+            return new ActionResult<>(EnumActionResult.PASS, itemstack);
+        }
     }
 
-    @Nonnull
-    @Override
-    public ItemStack onItemUseFinish(@Nonnull ItemStack stack, World worldIn, EntityLivingBase entityLiving) {
-        if (entityLiving instanceof EntityPlayer && stack.getMetadata() != variants.indexOf("glass_flask")) {
-            EntityPlayer entityplayer = (EntityPlayer)entityLiving;
-            //noinspection ConstantConditions
-            entityplayer.addStat(StatList.getObjectUseStats(this));
+    protected ItemStack turnBottleIntoItem(ItemStack flask, EntityPlayer player, ItemStack waterFlask) {
+        flask.shrink(1);
+        //noinspection ConstantConditions
+        player.addStat(StatList.getObjectUseStats(this));
 
-            if(stack.getMetadata() == variants.indexOf("transcendence_potion")) {
-                ItemAcerbacaFruit.split(entityplayer, IIncorporealHandler.CorporealityStatus.SOUL);
-            }
-            if (entityplayer instanceof EntityPlayerMP) {
-                CriteriaTriggers.CONSUME_ITEM.trigger((EntityPlayerMP)entityplayer, stack);
-            }
-            if (!entityplayer.capabilities.isCreativeMode) {
-                stack.shrink(1);
-                if (stack.isEmpty()) {
-                    return new ItemStack(ModItems.GLASS_FLASK);
-                }
-                entityplayer.inventory.addItemStackToInventory(new ItemStack(ModItems.GLASS_FLASK));
-            }
+        if (flask.isEmpty()) {
+            return waterFlask;
         }
-        stack.shrink(1);
-        return stack;
+        else {
+            if (!player.inventory.addItemStackToInventory(waterFlask)) {
+                player.dropItem(waterFlask, false);
+            }
+            return flask;
+        }
     }
 
     @Override
     public ModelResourceLocation getModelLocation() {
         assert this.getRegistryName() != null;
         return new ModelResourceLocation(this.getRegistryName().getResourceDomain() + ":glassware/" + this.getRegistryName().getResourcePath());
-    }
-
-    @Override
-    public void registerRender() {
-        assert this.getRegistryName() != null;
-        for(int i = 0; i < variants.size(); i++)
-            ModelLoader.setCustomModelResourceLocation(this, i,
-                    new ModelResourceLocation(this.getRegistryName().getResourceDomain() + ":glassware/" + variants.get(i)));
-    }
-
-    @Override
-    public boolean getHasSubtypes() {
-        return true;
-    }
-
-    @Nonnull
-    @Override
-    public String getUnlocalizedName(ItemStack stack) {
-        if (stack.getMetadata() < variants.size())
-            return "item." + variants.get(stack.getMetadata());
-        return super.getUnlocalizedName(stack);
-    }
-
-    @Override
-    public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
-        if(tab == Dissolution.CREATIVE_TAB)
-            for (int i = 0; i < variants.size(); ++i) {
-                items.add(new ItemStack(this, 1, i));
-            }
     }
 }

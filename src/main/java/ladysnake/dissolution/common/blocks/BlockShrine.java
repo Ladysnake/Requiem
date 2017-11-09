@@ -34,6 +34,7 @@ public class BlockShrine extends Block {
         super(Material.ROCK);
         this.setHardness(50);
         this.setResistance(200);
+        this.setDefaultState(super.getDefaultState().withProperty(WATER, false));
     }
 
     @Override

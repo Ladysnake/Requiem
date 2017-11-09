@@ -1,9 +1,6 @@
 package ladysnake.dissolution.common.capabilities;
 
-import ladysnake.dissolution.api.IDialogueStats;
-import ladysnake.dissolution.api.IEctoplasmStats;
-import ladysnake.dissolution.api.IIncorporealHandler;
-import ladysnake.dissolution.api.IPossessable;
+import ladysnake.dissolution.api.*;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.DissolutionConfigManager;
 import ladysnake.dissolution.common.DissolutionConfigManager.FlightModes;
@@ -112,7 +109,7 @@ public class CapabilityIncorporealHandler {
     	IIncorporealHandler handler = getHandler(event.player);
     	handler.tick();
 		if(handler.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL || handler.getPossessed() != null) {
-			float size = event.player.isRiding() ? 0f : 1f;
+			float size = event.player.isRiding() ? 0f : 0.8f;
 			try {
 				entity$setSize.invoke(event.player, event.player.width, size);
 			} catch (Throwable throwable) {
@@ -157,6 +154,7 @@ public class CapabilityIncorporealHandler {
 
 		@Override
 		public void setStrongSoul(boolean strongSoul) {
+			if(owner == null || MinecraftForge.EVENT_BUS.post(new SoulStrengthModifiedEvent(owner, strongSoul))) return;
 			this.strongSoul = strongSoul;
 			if(!strongSoul) {
 				//noinspection ConstantConditions

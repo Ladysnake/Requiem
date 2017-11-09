@@ -1,5 +1,6 @@
 package ladysnake.dissolution.client.handlers;
 
+import ladysnake.dissolution.common.blocks.BlockFluidMercury;
 import ladysnake.dissolution.common.capabilities.EctoplasmStats;
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.api.ISoulInteractable;
@@ -12,6 +13,7 @@ import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.PlayerIncorporealEvent;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PingMessage;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngame;
@@ -47,7 +49,7 @@ public class EventHandlerClient {
 	private static int cameraAnimation = 0;
 
 	private static final float SOUL_VERTICAL_SPEED = 0.1f;
-	private static final MethodHandle highlightingItemStack;
+	private static MethodHandle highlightingItemStack;
 	private static int refreshTimer = 0;
 
 	private static float prevHealth = 20;
@@ -55,14 +57,12 @@ public class EventHandlerClient {
 	private static boolean wasRidingLastTick = false;
 
 	static {
-		MethodHandle methodHandle = null;
 		try {
 			Field f = ReflectionHelper.findField(GuiIngame.class, "highlightingItemStack", "field_92016_l");
-			methodHandle = MethodHandles.lookup().unreflectSetter(f);
+			highlightingItemStack = MethodHandles.lookup().unreflectSetter(f);
 		} catch (UnableToFindFieldException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
-		highlightingItemStack = methodHandle;
 	}
 	
 	@SubscribeEvent
@@ -114,7 +114,7 @@ public class EventHandlerClient {
 
 	@SubscribeEvent
 	public static void onPlayerIncorporeal(PlayerIncorporealEvent event) {
-		EntityPlayer player = event.getPlayer();
+		EntityPlayer player = event.getEntityPlayer();
 		if(player == Minecraft.getMinecraft().player) {
 			if (DissolutionConfigManager.isFlightSetTo(FlightModes.CUSTOM_FLIGHT)) {
 				player.capabilities.setFlySpeed(event.getNewStatus().isIncorporeal() ? 0.025f : 0.05f);
@@ -166,9 +166,23 @@ public class EventHandlerClient {
 		if(cameraAnimation-- > 0 && event.player.eyeHeight < 1.8f)
 			player.eyeHeight += player.getDefaultEyeHeight() / 20f;
 
+		if(player.world.isMaterialInBB(player.getEntityBoundingBox()
+				.grow(-0.1D, -0.4D, -0.1D), BlockFluidMercury.MATERIAL_MERCURY)) {
+			try {
+//				playerSP.motionY *= 0.2f;
+//				if(playerSP.movementInput.jump && playerSP.motionY < 0.6f)
+//					playerSP.motionY += 0.4f;
+//				else
+			} catch (Throwable throwable) {
+				throwable.printStackTrace();
+			}
+			playerSP.motionX *= 0.4f;
+			playerSP.motionZ *= 0.4f;
+		}
+
 		if(!event.player.isCreative() &&
 				(playerCorp.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL
-						|| playerCorp.getEctoplasmStats().getActiveSpells().contains(EctoplasmStats.SoulSpells.FLIGHT))) {
+						|| playerCorp.getEctoplasmStats().getActiveSpells().contains(EctoplasmStats.SoulSpells.FLIGHT)) && event.phase == TickEvent.Phase.START) {
 
 			if(DissolutionConfigManager.isFlightSetTo(FlightModes.CUSTOM_FLIGHT)) {
 				player.capabilities.setFlySpeed(0.025f);

@@ -68,10 +68,15 @@ public class EntityMinionSkeleton extends AbstractMinion {
 
     @Override
     public boolean onEntityPossessed(EntityPlayer player) {
+        return super.onEntityPossessed(player);
+    }
+
+    @Override
+    protected void updateAITasks() {
+        super.updateAITasks();
         IAttributeInstance iattributeinstance = this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
         if(!iattributeinstance.hasModifier(POSSESSED_SPEED_BOOST_MODIFIER))
             iattributeinstance.applyModifier(POSSESSED_SPEED_BOOST_MODIFIER);
-        return super.onEntityPossessed(player);
     }
 
     @Override

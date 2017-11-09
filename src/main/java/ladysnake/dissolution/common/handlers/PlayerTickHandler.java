@@ -1,12 +1,12 @@
 package ladysnake.dissolution.common.handlers;
 
-import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.capabilities.EctoplasmStats;
 import ladysnake.dissolution.api.IIncorporealHandler;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.DissolutionConfig;
 import ladysnake.dissolution.common.DissolutionConfigManager;
 import ladysnake.dissolution.common.DissolutionConfigManager.FlightModes;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.EctoplasmStats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
