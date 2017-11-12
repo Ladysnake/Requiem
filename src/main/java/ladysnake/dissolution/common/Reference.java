@@ -2,14 +2,15 @@ package ladysnake.dissolution.common;
 
 public class Reference {
 	public static final String MOD_ID = "dissolution";
-	static final String MOD_NAME = "Dissolution";
-	static final String VERSION = "0.5.1";
+	public static final String MOD_NAME = "Dissolution";
+	static final String VERSION = "0.5.2";
 	static final String MCVERSION = "[1.12]";
 	static final String DEPENDENCIES = "after:albedo;after:baubles;";
-	static final double CONFIG_VERSION = 2.0;
+	public static final double CONFIG_VERSION = 3.0;
 
 	static final String CLIENT_PROXY_CLASS = "ladysnake.dissolution.client.proxy.ClientProxy";
 	static final String SERVER_PROXY_CLASS = "ladysnake.dissolution.server.proxy.ServerProxy";
+	static final String GUI_FACTORY_CLASS = "ladysnake.dissolution.common.config.DissolutionGuiFactory";
 
 	public enum Blocks {
 		BASE_MACHINE,

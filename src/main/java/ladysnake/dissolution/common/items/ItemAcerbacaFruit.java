@@ -38,7 +38,7 @@ public class ItemAcerbacaFruit extends ItemFood {
 
 	public static void split(EntityPlayer owner, IIncorporealHandler.CorporealityStatus newStatus) {
 		IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(owner);
-		if(handler.getCorporealityStatus().isIncorporeal() || owner.world.isRemote)		// why are you trying to split a ghost ?
+		if(handler.getCorporealityStatus().isIncorporeal() || owner.world.isRemote || !handler.isStrongSoul())
 			return;
 
 		EntityPlayerCorpse body = new EntityPlayerCorpse(owner.world);

@@ -4,7 +4,7 @@ import java.util.Random;
 
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.api.IPossessable;
-import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;

@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.world;
 
 import java.util.Random;
 
-import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.config.DissolutionConfig;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;

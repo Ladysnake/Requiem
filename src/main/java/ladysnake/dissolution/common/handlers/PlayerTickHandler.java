@@ -2,9 +2,9 @@ package ladysnake.dissolution.common.handlers;
 
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.DissolutionConfig;
-import ladysnake.dissolution.common.DissolutionConfigManager;
-import ladysnake.dissolution.common.DissolutionConfigManager.FlightModes;
+import ladysnake.dissolution.common.config.DissolutionConfig;
+import ladysnake.dissolution.common.config.DissolutionConfigManager;
+import ladysnake.dissolution.common.config.DissolutionConfigManager.FlightModes;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.EctoplasmStats;
 import net.minecraft.entity.Entity;
@@ -165,7 +165,7 @@ public class PlayerTickHandler {
 	 * Makes the player tangible and runs some logic specific to Origin respawn
 	 */
 	private void respawnPlayerOrigin(EntityPlayer player) {
-		if(player.world.isRemote)
+		if(player.world.isRemote || !DissolutionConfig.respawn.wowLikeRespawn)
 			return;
 		
 		CapabilityIncorporealHandler.getHandler(player).setCorporealityStatus(IIncorporealHandler.CorporealityStatus.BODY);

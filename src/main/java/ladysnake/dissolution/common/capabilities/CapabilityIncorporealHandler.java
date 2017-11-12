@@ -1,9 +1,9 @@
 package ladysnake.dissolution.common.capabilities;
 
 import ladysnake.dissolution.api.*;
-import ladysnake.dissolution.common.DissolutionConfig;
-import ladysnake.dissolution.common.DissolutionConfigManager;
-import ladysnake.dissolution.common.DissolutionConfigManager.FlightModes;
+import ladysnake.dissolution.common.config.DissolutionConfig;
+import ladysnake.dissolution.common.config.DissolutionConfigManager;
+import ladysnake.dissolution.common.config.DissolutionConfigManager.FlightModes;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
@@ -149,14 +149,14 @@ public class CapabilityIncorporealHandler {
 
 		@Override
 		public boolean isStrongSoul() {
-			return DissolutionConfig.dialogues.enforcedSoulStrength.getValue(strongSoul);
+			return DissolutionConfig.enforcedSoulStrength.getValue(strongSoul);
 		}
 
 		@Override
 		public void setStrongSoul(boolean strongSoul) {
 			if(owner == null || MinecraftForge.EVENT_BUS.post(new SoulStrengthModifiedEvent(owner, strongSoul))) return;
 			this.strongSoul = strongSoul;
-			if(!strongSoul) {
+			if(!isStrongSoul()) {
 				//noinspection ConstantConditions
 				owner.setSpawnPoint(null, true);
 			}
@@ -167,7 +167,7 @@ public class CapabilityIncorporealHandler {
 
 		@Override
 		public void setCorporealityStatus(CorporealityStatus newStatus) {
-			if(!this.strongSoul) return;
+			if(!this.isStrongSoul()) return;
 			if(owner == null || MinecraftForge.EVENT_BUS.post(new PlayerIncorporealEvent(owner, newStatus))) return;
 
 			corporealityStatus = newStatus;

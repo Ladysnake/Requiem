@@ -27,7 +27,6 @@ public class RenderBrimstoneFire extends RenderEntity {
 
 	public RenderBrimstoneFire(RenderManager renderManagerIn) {
 		super(renderManagerIn);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

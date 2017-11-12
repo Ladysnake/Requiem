@@ -9,11 +9,10 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.ARBShaderObjects;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
-import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.config.DissolutionConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 

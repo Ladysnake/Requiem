@@ -1,6 +1,7 @@
 package ladysnake.dissolution.api;
 
 import javax.annotation.Nonnull;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,7 +35,7 @@ public interface IIncorporealHandler {
 
 		@Override
 		public String toString() {
-			return super.toString().toLowerCase();
+			return super.toString().toLowerCase(Locale.ENGLISH);
 		}
 	}
 

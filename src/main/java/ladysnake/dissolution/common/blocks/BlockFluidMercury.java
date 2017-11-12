@@ -25,6 +25,11 @@ import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
+/**
+ * A custom fluid class that emulates Archimede's principle as well as dynamic movement incapacitation
+ * TODO make the fluid's density use forge's quanta instead of being hardcoded
+ * TODO add a {@link net.minecraft.entity.ai.attributes.IAttribute} system to modify mob densities
+ */
 public class BlockFluidMercury extends BlockFluidClassic {
 
 	public static final MaterialLiquid MATERIAL_MERCURY = new MaterialLiquid(MapColor.IRON);
@@ -53,17 +58,25 @@ public class BlockFluidMercury extends BlockFluidClassic {
 	public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entityIn) {
 		if(state.getBlock() != this) return;
 
-		double archimedesPush = calculateVolumeImmersed(entityIn) * 0.08;
+		double immersedVolume = calculateVolumeImmersed(entityIn);
+		double archimedesPush = immersedVolume * 0.07;
 
 		try {
 			entityIn.onGround = false;
+			if(entityIn.fallDistance > 2 * entityIn.getMaxFallHeight())
+				entityIn.fall(entityIn.fallDistance, 0.5f);
 			entityIn.fallDistance = 0;
-			entityIn.motionY += archimedesPush;
 			if(entityIn instanceof EntityLivingBase) {
 				if((Boolean)isJumping.invoke(entityIn))
 					handleMercuryJump(entityIn);
 				jumpTicks.invoke(entityIn, 2);
+				if(entityIn.isSneaking())
+					entityIn.motionY -= 0.2;
 			}
+			entityIn.motionX *= (1.1 - immersedVolume);
+			entityIn.motionY *= (1.1 - immersedVolume);
+			entityIn.motionZ *= (1.1 - immersedVolume);
+			entityIn.motionY += archimedesPush;
 		} catch (Throwable throwable) {
 			throwable.printStackTrace();
 		}
@@ -94,7 +107,7 @@ public class BlockFluidMercury extends BlockFluidClassic {
 	}
 
 	private void handleMercuryJump(Entity entityIn) {
-		entityIn.motionY += 0.4;
+		entityIn.motionY = Math.max(entityIn.motionY, 0.4);
 	}
 
 	/**

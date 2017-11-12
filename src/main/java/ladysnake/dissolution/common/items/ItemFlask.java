@@ -49,7 +49,7 @@ public class ItemFlask extends Item implements ICustomLocation{
 
                 if (worldIn.getBlockState(blockpos).getMaterial() == Material.WATER) {
                     worldIn.playSound(playerIn, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
-                    return new ActionResult<>(EnumActionResult.SUCCESS, this.turnBottleIntoItem(itemstack, playerIn, new ItemStack(ModItems.FILLED_FLASK, 1, ItemFilledFlask.getMetaForVariant("transcendence_potion"))));
+                    return new ActionResult<>(EnumActionResult.SUCCESS, this.turnBottleIntoItem(itemstack, playerIn, new ItemStack(ModItems.FILLED_FLASK, 1, ItemFilledFlask.getMetaForVariant("water_flask"))));
                 }
             }
 

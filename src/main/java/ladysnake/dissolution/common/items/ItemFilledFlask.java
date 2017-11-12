@@ -25,7 +25,7 @@ import java.util.List;
 
 public class ItemFilledFlask extends ItemFlask {
 
-    private static final List<String> variants = Arrays.asList("conservation_potion", "transcendence_potion", "water_flask");
+    private static final List<String> variants = Arrays.asList("water_flask", "transcendence_potion", "conservation_potion");
 
     @Nonnull
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
@@ -42,7 +42,13 @@ public class ItemFilledFlask extends ItemFlask {
             entityplayer.addStat(StatList.getObjectUseStats(this));
 
             if(stack.getMetadata() == variants.indexOf("transcendence_potion")) {
+                stack.shrink(1);
+                if (stack.isEmpty())
+                    entityplayer.setHeldItem(entityplayer.getActiveHand(), new ItemStack(ModItems.GLASS_FLASK));
+                else
+                    entityplayer.addItemStackToInventory(new ItemStack(ModItems.GLASS_FLASK));
                 ItemAcerbacaFruit.split(entityplayer, IIncorporealHandler.CorporealityStatus.ECTOPLASM);
+                return ItemStack.EMPTY;
             }
             if (entityplayer instanceof EntityPlayerMP) {
                 CriteriaTriggers.CONSUME_ITEM.trigger((EntityPlayerMP)entityplayer, stack);

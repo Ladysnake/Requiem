@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.api.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.DissolutionConfigManager;
+import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIInert;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;
@@ -49,7 +49,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.apache.logging.log4j.LogManager;
 import org.lwjgl.util.vector.Vector2f;
 
 import javax.annotation.Nonnull;
@@ -243,14 +242,21 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 		this.handleSunExposure();
 	}
 
+	@Override
+	public boolean isEntityInvulnerable(@Nonnull DamageSource source) {
+		return (source.getTrueSource() == null && this.isInert() && !source.canHarmInCreative()) || super.isEntityInvulnerable(source);
+	}
+
 	protected void attractAttention() {
-		List<EntityCreature> nearby = this.world.getEntitiesWithinAABB(EntityCreature.class, new AxisAlignedBB(new BlockPos(this)).grow(30), this::isMobEligibleForAttention);
+		List<EntityCreature> nearby = this.world.getEntitiesWithinAABB(EntityCreature.class,
+				new AxisAlignedBB(new BlockPos(this)).grow(30), this::isMobEligibleForAttention);
 		Collections.shuffle(nearby);
 		int max = Math.min(rand.nextInt() % 5, nearby.size());
 		for(int i = 0; i < max; i++) {
 			for(EntityAITasks.EntityAITaskEntry taskEntry : nearby.get(i).targetTasks.taskEntries) {
 				if(shouldBeTargetedBy(nearby.get(i), taskEntry)) {
-					nearby.get(i).targetTasks.addTask(taskEntry.priority-1, new EntityAINearestAttackableTarget<>(nearby.get(i), this.getClass(), true));
+					nearby.get(i).targetTasks.addTask(taskEntry.priority-1,
+							new EntityAINearestAttackableTarget<>(nearby.get(i), this.getClass(), true));
 					break;
 				}
 			}
@@ -365,12 +371,6 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 	@Override
 	protected void damageEntity(@Nonnull DamageSource damageSrc, float damageAmount) {
 		super.damageEntity(damageSrc, damageAmount);
-	}
-
-	@Override
-	public boolean isEntityInvulnerable(@Nonnull DamageSource source) {
-		return this.isInert() && !(source.getTrueSource() instanceof EntityPlayer
-				|| source.canHarmInCreative()) || super.isEntityInvulnerable(source);
 	}
 
 	protected boolean isSuitableForInteraction(EntityPlayer player) {

@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.capabilities;
 
 import ladysnake.dissolution.api.IDialogueStats;
 import ladysnake.dissolution.api.IIncorporealHandler;
-import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.config.DissolutionConfig;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -17,7 +17,7 @@ import net.minecraft.util.text.event.HoverEvent;
 import java.util.LinkedList;
 import java.util.List;
 
-import static ladysnake.dissolution.common.DissolutionConfigManager.EnforcedSoulStrength.NONE;
+import static ladysnake.dissolution.common.config.DissolutionConfigManager.EnforcedSoulStrength.NONE;
 
 public class DialogueStats implements IDialogueStats {
     private boolean hasBeenContacted;
@@ -31,7 +31,7 @@ public class DialogueStats implements IDialogueStats {
 
     @Override
     public void checkFirstConnection() {
-        if(DissolutionConfig.dialogues.enforcedSoulStrength == NONE && !hasBeenContacted && !capability.getOwner().world.isRemote) {
+        if(DissolutionConfig.enforcedSoulStrength == NONE && !hasBeenContacted && !capability.getOwner().world.isRemote) {
             sendNextDialogue("dissolution.dialogues.first_contact.header", "dissolution.dialogues.first_contact", 2);
             hasBeenContacted = true;
         }

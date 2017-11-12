@@ -2,6 +2,8 @@ package ladysnake.dissolution.common.commands;
 
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.config.DissolutionConfig;
+import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -61,6 +63,8 @@ public class CommandSoulStrength extends CommandBase {
                     new TextComponentTranslation("commands.dissolution.soul_strength.get." + (player == sender ? "self" : "other"), player.getName(),
                             new TextComponentTranslation("dissolution.soul_strength." + (handler.isStrongSoul() ? "strong" : "weak"))));
         } else if("set".equals(args[0])) {
+            if(DissolutionConfig.enforcedSoulStrength != DissolutionConfigManager.EnforcedSoulStrength.NONE)
+                throw new CommandException("commands.dissolution.soul_strength.enforced_soul_strength");
             EntityPlayer player = args.length >= 3 ? getPlayer(server, sender, args[2]) : getCommandSenderAsPlayer(sender);
             IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
             TextComponentTranslation soulStrength;

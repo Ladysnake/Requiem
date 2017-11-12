@@ -5,10 +5,9 @@ import java.lang.reflect.Method;
 
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.api.IIncorporealHandler.CorporealityStatus;
-import ladysnake.dissolution.common.DissolutionConfig;
+import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
-import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
@@ -17,7 +16,6 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.IScoreCriteria;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
@@ -104,7 +102,7 @@ public class LivingDeathHandler {
 		if(DissolutionConfig.respawn.skipDeathScreen) {
 			if(!p.world.isRemote)
 				fakePlayerDeath((EntityPlayerMP)p, event.getSource());
-			corp.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.SOUL);
+			corp.setCorporealityStatus(DissolutionConfig.respawn.respawnCorporealityStatus);
 			p.setHealth(20f);
 			if(p.getBedLocation() != null && !DissolutionConfig.respawn.respawnInNether && DissolutionConfig.respawn.wowLikeRespawn) {
 				BlockPos respawnLoc = p.getBedLocation();

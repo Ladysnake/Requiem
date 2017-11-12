@@ -1,8 +1,8 @@
 package ladysnake.dissolution.common.handlers;
 
 import ladysnake.dissolution.api.IIncorporealHandler;
-import ladysnake.dissolution.common.DissolutionConfig;
-import ladysnake.dissolution.common.DissolutionConfigManager;
+import ladysnake.dissolution.common.config.DissolutionConfig;
+import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
@@ -73,7 +73,7 @@ public class EventHandlerCommon {
 			final IIncorporealHandler corpse = CapabilityIncorporealHandler.getHandler(event.getOriginal());
 			final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
 			clone.setStrongSoul(corpse.isStrongSoul());
-			clone.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.SOUL);
+			clone.setCorporealityStatus(DissolutionConfig.respawn.respawnCorporealityStatus);
 			clone.setLastDeathMessage(corpse.getLastDeathMessage());
 			clone.getDialogueStats().deserializeNBT(corpse.getDialogueStats().serializeNBT());
 			clone.setSynced(false);

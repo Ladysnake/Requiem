@@ -145,18 +145,6 @@ public class SetupGreenhouse extends ModularMachineSetup {
             }
             return null;
         }
-        
-        @Override
-        public void readFromNBT(NBTTagCompound compound) {
-        	// TODO Auto-generated method stub
-        	ISetupInstance.super.readFromNBT(compound);
-        }
-        
-        @Override
-        public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        	// TODO Auto-generated method stub
-        	return ISetupInstance.super.writeToNBT(compound);
-        }
     }
     
     private static class Recipe {

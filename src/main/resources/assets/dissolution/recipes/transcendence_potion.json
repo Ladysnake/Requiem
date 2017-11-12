@@ -1,8 +1,8 @@
 {
-  "type": "crafting_shapeless",
+  "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "dissolution:glass_flask",
+      "item": "dissolution:filled_flask",
       "data": 0
     },
     {
