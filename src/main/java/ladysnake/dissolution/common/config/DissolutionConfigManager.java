@@ -8,7 +8,6 @@ import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.block.Block;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityMob;
@@ -68,7 +67,7 @@ public final class DissolutionConfigManager {
 	public static boolean isFlightSetTo(FlightModes flightMode) {
 		return DissolutionConfig.ghost.flightMode == flightMode;
 	}
-	
+
 	public static boolean isEntityBlacklistedFromMinionAttacks(EntityMob EntityIn) {
 		return TARGET_BLACKLIST.contains(EntityIn.getClass());
 	}
@@ -139,7 +138,6 @@ public final class DissolutionConfigManager {
 		if(categoryObject != null) {
 			ConfigCategory configCategory = config.getCategory(category);
 			configCategory.setLanguageKey(I18N_PREFIX + "." + category);
-			configCategory.setComment(I18n.format(I18N_PREFIX + "." + category + ".tooltip"));
 			categoryNames.add(category);
 		}
 		for(Field child : children) {
@@ -176,7 +174,9 @@ public final class DissolutionConfigManager {
 				prop = handleArrayProperty(config, category, categoryObject, optionField);
 			else
 				prop = handleProperty(config, category, categoryObject, optionField);
-			prop.setComment(I18n.format(unlocalizedDesc + ".desc"));
+			Config.Comment commentAnnotation = optionField.getAnnotation(Config.Comment.class);
+			if (commentAnnotation != null)
+				prop.setComment(commentAnnotation.value());
 			prop.setLanguageKey(unlocalizedDesc);
 			if(optionField.getAnnotation(Config.RequiresWorldRestart.class) != null)
 				prop.setRequiresWorldRestart(true);
@@ -347,5 +347,5 @@ public final class DissolutionConfigManager {
 			builder.add(Pattern.compile("^" + blockName + "$"));
 		BLOCK_WHITELIST = builder.build();
 	}
-	
+
 }
