@@ -5,14 +5,11 @@ import ladysnake.dissolution.client.handlers.AlbedoEventHandler;
 import ladysnake.dissolution.client.models.blocks.BakedModelLoader;
 import ladysnake.dissolution.client.particles.AdditiveParticle;
 import ladysnake.dissolution.client.particles.DissolutionParticleManager;
-import ladysnake.dissolution.client.renders.entities.LayerDisguise;
 import ladysnake.dissolution.client.renders.entities.LayerScythe;
-import ladysnake.dissolution.client.renders.entities.RenderWillOWisp;
 import ladysnake.dissolution.client.renders.tileentities.TileEntityCrucibleRenderer;
 import ladysnake.dissolution.client.renders.tileentities.TileEntityMortarRenderer;
 import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.init.ModEntities;
-import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.tileentities.TileEntityCrucible;
 import ladysnake.dissolution.common.tileentities.TileEntityMortar;
 import net.minecraft.client.Minecraft;
@@ -75,5 +72,10 @@ public class ClientProxy extends CommonProxy {
 					.setMotion(vx, vy, vz));
 		}
     }
+
+	@Override
+	public Side getSide() {
+		return Side.CLIENT;
+	}
 
 }

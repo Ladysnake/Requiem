@@ -87,13 +87,11 @@ public class BlockFluidMercury extends BlockFluidClassic {
 			
 			if(player.getActivePotionEffects().isEmpty()){
 				player.addPotionEffect(new PotionEffect(Potion.getPotionById(19), 200, 2));
-
 			}
 			
 			if (CapabilityIncorporealHandler.getHandler(player).getCorporealityStatus().isIncorporeal()) {
 				
-				if(!world.isRemote)
-					world.playSound(null, player.getPosition(), SoundEvents.ITEM_TOTEM_USE, SoundCategory.HOSTILE, 9.0F, (float) (0.8F + Math.random() * 0.3F));
+				world.playSound(player, player.getPosition(), SoundEvents.ITEM_TOTEM_USE, SoundCategory.PLAYERS, 4.0F, (float) (0.8F + Math.random() * 0.3F));
 				CapabilityIncorporealHandler.getHandler(player).setCorporealityStatus(IIncorporealHandler.CorporealityStatus.BODY);
 				
 			}

@@ -121,8 +121,13 @@ public class GuiIncorporealOverlay extends Gui {
 		}*/
 
 		for(TileEntity te : mc.player.world.loadedTileEntityList) {
-			if(te instanceof TileEntityLamentStone && DissolutionConfig.client.showLamentStones) {
-				double angleToTE = (180 - (Math.atan2(player.posX - te.getPos().getX(), player.posZ - te.getPos().getZ())) * (180 / Math.PI)) % 360D;
+			renderLamentStones:
+			if(te instanceof TileEntityLamentStone && DissolutionConfig.client.lamentStonesCompassDistance > 0) {
+				double lengthX = player.posX - te.getPos().getX();
+				double lengthY = player.posZ - te.getPos().getZ();
+				if(lengthX * lengthX + lengthY * lengthY > DissolutionConfig.client.lamentStonesCompassDistance * DissolutionConfig.client.lamentStonesCompassDistance)
+					break renderLamentStones;
+				double angleToTE = (180 - (Math.atan2(lengthX, lengthY)) * (180 / Math.PI)) % 360D;
 				if (angleToTE > angleLeftVision && angleToTE < angleRightVision) {
 					this.drawTexturedModalRect(i + 3 + (int)Math.round((angleToTE - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 200, 0, 7, 10);
 				}
