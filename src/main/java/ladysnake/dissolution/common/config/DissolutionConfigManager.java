@@ -3,6 +3,7 @@ package ladysnake.dissolution.common.config;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Files;
 import ladysnake.dissolution.api.ISoulInteractable;
+import ladysnake.dissolution.client.proxy.ClientProxy;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
@@ -22,6 +23,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.File;
 import java.io.IOException;
@@ -176,7 +178,7 @@ public final class DissolutionConfigManager {
 				prop = handleProperty(config, category, categoryObject, optionField);
 			Config.Comment commentAnnotation = optionField.getAnnotation(Config.Comment.class);
 			if (commentAnnotation != null)
-				prop.setComment(commentAnnotation.value());
+				prop.setComment(commentAnnotation.value()[0]);
 			prop.setLanguageKey(unlocalizedDesc);
 			if(optionField.getAnnotation(Config.RequiresWorldRestart.class) != null)
 				prop.setRequiresWorldRestart(true);
@@ -253,7 +255,8 @@ public final class DissolutionConfigManager {
 		else if(boolean[].class.equals(optionField.getType()))
 			type = Property.Type.BOOLEAN;
 		prop = config.get(category, optionField.getName(), (String[]) optionField.get(categoryObject),null, type);
-		prop.setArrayEntryClass(GuiEditArrayEntries.StringEntry.class);
+		if(Dissolution.proxy.getSide() == Side.CLIENT)
+			prop.setArrayEntryClass(GuiEditArrayEntries.StringEntry.class);
 		switch (prop.getType()) {
 			case BOOLEAN: optionField.set(categoryObject, prop.getBooleanList()); break;
 			case INTEGER: optionField.set(categoryObject, prop.getIntList()); break;
@@ -288,25 +291,23 @@ public final class DissolutionConfigManager {
 	    	resetConfig(config.getConfigFile());
 	    }
 
-		/*
+	    // Updating configuration file to v3.1 (dissolution v0.5.3
 		if(isBehind(config.getLoadedConfigVersion(), 3.1)) {
-			// DO STUFF
+	    	Dissolution.LOGGER.info("Updating config from " + config.getLoadedConfigVersion() + " to v3.1");
+			config.getCategory("client").remove("showLamentStones");
 		}
-		*/
 
 	    config.save();
 	}
 
-/*
 	private static boolean isBehind(String compared, double reference) {
 		try {
-			return Double.compare(Double.parseDouble(compared), reference) < 0;
+			return compared == null || Double.compare(Double.parseDouble(compared), reference) < 0;
 		} catch (NumberFormatException e) {
 			Dissolution.LOGGER.warn("Someone tempered with the config's version number. Please don't do that.");
 			return true;
 		}
 	}
-*/
 
 	private static void resetConfig(File configFile) {
 		try {

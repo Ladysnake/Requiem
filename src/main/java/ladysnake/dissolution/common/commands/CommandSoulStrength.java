@@ -36,6 +36,11 @@ public class CommandSoulStrength extends CommandBase {
         return "commands.dissolution.soul_strength.usage";
     }
 
+    @Override
+    public int getRequiredPermissionLevel() {
+        return 2;
+    }
+
     @Nonnull
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {

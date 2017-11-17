@@ -50,8 +50,8 @@ public class DissolutionConfig {
 		@Config.Comment("If set to true, a hud element displaying relevant locations will appear when incorporeal")
 		public boolean soulCompass = true;
 
-		@Config.Comment("If set to true, locations of nearby lament stones will be displayed on the soul compass")
-		public boolean showLamentStones = true;
+		@Config.Comment("The maximum distance at which lament stones will render on the soul compass. Set it <= 0 to disable")
+		public int lamentStonesCompassDistance = 100;
 
 	}
 
@@ -85,6 +85,10 @@ public class DissolutionConfig {
 
 		@Config.Comment("If set to true, dead players will be fully invisible")
 		public boolean invisibleGhosts = false;
+
+		@Config.RangeDouble(min=0D,max=1D)
+		@Config.Comment("Any blocks having an average edge length below that value will let souls pass through")
+		public double maxThickness = 0.9;
 
 		@Config.Comment("A regex based list of block IDs that ectoplasm can interact with")
 		public String[] authorizedBlocks = new String[] {"minecraft:lever", "minecraft:.*door",

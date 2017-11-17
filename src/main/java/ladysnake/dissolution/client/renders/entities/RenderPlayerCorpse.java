@@ -54,6 +54,7 @@ public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
 	
 	@Override
 	public void doRender(@Nonnull EntityPlayerCorpse entity, double x, double y, double z, float entityYaw, float partialTicks) {
+		GlStateManager.pushMatrix();
 		ShaderHelper.useShader(ShaderHelper.dissolution);
 		ShaderHelper.setUniform("texture", 0);
 		ShaderHelper.setUniform("lightmap", 1);
@@ -69,6 +70,7 @@ public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
 		ShaderHelper.revert();
 		this.shouldRenderName = true;
 		this.renderName(entity, x, y, z);
+		GlStateManager.popMatrix();
 	}
 	
 	@Override

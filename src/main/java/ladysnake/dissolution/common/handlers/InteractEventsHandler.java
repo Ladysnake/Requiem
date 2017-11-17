@@ -3,6 +3,7 @@ package ladysnake.dissolution.common.handlers;
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.api.IPossessable;
 import ladysnake.dissolution.api.ISoulInteractable;
+import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
@@ -15,6 +16,7 @@ import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -22,6 +24,8 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.GetCollisionBoxesEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.util.Iterator;
 
 public class InteractEventsHandler {
 	
@@ -49,8 +53,12 @@ public class InteractEventsHandler {
 		if(event.getEntity() instanceof AbstractSoul
 				|| event.getEntity() instanceof EntityPlayer
 				&& CapabilityIncorporealHandler.getHandler((EntityPlayer)event.getEntity())
-						.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL)
-		event.getCollisionBoxesList().removeIf(aaBB -> aaBB.getAverageEdgeLength() < 1);
+						.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL) {
+			final Iterator<AxisAlignedBB> iterator = event.getCollisionBoxesList().iterator();
+			while(iterator.hasNext())
+				if(iterator.next().getAverageEdgeLength() < DissolutionConfig.ghost.maxThickness)
+					iterator.remove();
+		}
 	}
 	
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -65,8 +73,9 @@ public class InteractEventsHandler {
 	 */
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onPlayerEntityInteractSpecific(PlayerInteractEvent.EntityInteractSpecific event) {
-		event.setCanceled(isGhost(event));
-		if (isGhost(event) && event.getSide().isServer() && event.getTarget() instanceof EntityLivingBase && !event.getTarget().getIsInvulnerable()) {
+		if(!isGhost(event)) return;
+		event.setCanceled(true);
+		if (event.getSide().isServer() && event.getTarget() instanceof EntityLivingBase && !event.getTarget().getIsInvulnerable()) {
 			IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
 			IPossessable host = AbstractMinion.createMinion((EntityLivingBase) event.getTarget());
 			if (host instanceof EntityLivingBase && host.canBePossessedBy(event.getEntityPlayer())) {

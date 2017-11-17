@@ -307,9 +307,11 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 	
 	@Override
 	public void stopActiveHand() {
-		if(this.getActiveItemStack().getItem() instanceof ItemBow)
+		if(this.getActiveItemStack().getItem() instanceof ItemBow) {
 			this.fireBow();
-		super.stopActiveHand();
+			this.resetActiveHand();
+		} else
+			super.stopActiveHand();
 	}
 	
 	protected void fireBow() {
