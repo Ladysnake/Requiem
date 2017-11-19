@@ -53,9 +53,11 @@ public class DialogueStats implements IDialogueStats {
 
     protected void sendNextDialogue(String announcement, String npcLine, int choiceCount) {
         String[] choices = new String[choiceCount];
+        if(DissolutionConfig.technicianDialogue) npcLine += ".explicit";
         for(int i = 0; i < choiceCount; i++)
             choices[i] = npcLine + ".choice_" + i;
         if(announcement != null) {
+            if(DissolutionConfig.technicianDialogue) announcement += ".explicit";
             ITextComponent headerComponent = new TextComponentTranslation(announcement);
             headerComponent.getStyle().setColor(TextFormatting.WHITE);
             headerComponent.getStyle().setItalic(true);

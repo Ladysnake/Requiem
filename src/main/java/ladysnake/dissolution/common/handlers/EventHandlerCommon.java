@@ -12,6 +12,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.storage.loot.*;
 import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraftforge.event.LootTableLoadEvent;
@@ -74,20 +75,15 @@ public class EventHandlerCommon {
 			final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
 			clone.setStrongSoul(corpse.isStrongSoul());
 			clone.setCorporealityStatus(DissolutionConfig.respawn.respawnCorporealityStatus);
-			clone.setLastDeathMessage(corpse.getLastDeathMessage());
+			clone.getDeathStats().setLastDeathMessage(corpse.getDeathStats().getLastDeathMessage());
 			clone.getDialogueStats().deserializeNBT(corpse.getDialogueStats().serializeNBT());
 			clone.setSynced(false);
 			
-			if(clone.isStrongSoul() && !DissolutionConfig.respawn.wowLikeRespawn)
-				deathPos.put(event.getEntityPlayer().getUniqueID(), new double[] {event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ});
-		}
-	}
-
-	@SubscribeEvent
-	public void onPlayerRespawn(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent event) {
-		if(deathPos.containsKey(event.player.getUniqueID())) {
-			double[] pos = deathPos.remove(event.player.getUniqueID());
-			event.player.setPosition(pos[0], pos[1], pos[2]);
+			if(clone.isStrongSoul() && !DissolutionConfig.respawn.wowLikeRespawn) {
+				clone.getDeathStats().setDeathDimension(corpse.getDeathStats().getDeathDimension());
+				clone.getDeathStats().setDeathLocation(new Vec3d(event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ));
+				clone.getDeathStats().setDead(true);
+			}
 		}
 	}
 
@@ -103,7 +99,7 @@ public class EventHandlerCommon {
 	
 	@SubscribeEvent(priority=EventPriority.HIGHEST)
 	public void onLivingAttack(LivingAttackEvent event) {
-		if(event.getEntity() instanceof EntityPlayer) {
+		if(event.getEntity() instanceof EntityPlayer && !event.getSource().canHarmInCreative()) {
 			IIncorporealHandler.CorporealityStatus status = CapabilityIncorporealHandler.getHandler((EntityPlayer)event.getEntity()).getCorporealityStatus();
 			if(status.isIncorporeal()) {
 				if(event.getSource().getTrueSource() == null || !DissolutionConfigManager.canEctoplasmBeAttackedBy(event.getSource().getTrueSource()))

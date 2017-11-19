@@ -74,6 +74,8 @@ public interface IIncorporealHandler {
 	@Nonnull
 	IDialogueStats getDialogueStats();
 
+	IDeathStats getDeathStats();
+
 	/**
 	 * Sets the synchronization status of this handler (between server and client)
 	 * @param synced if true, this handler should be synchronized next tick
@@ -87,11 +89,7 @@ public interface IIncorporealHandler {
 	boolean isSynced();
 
 	void tick();
-	
-	String getLastDeathMessage();
-	
-	void setLastDeathMessage(String lastDeath);
-	
+
 	void setDisguise(UUID usurpedId);
 	
 	Optional<UUID> getDisguise();

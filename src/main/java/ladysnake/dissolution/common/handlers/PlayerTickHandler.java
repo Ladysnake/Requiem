@@ -7,15 +7,19 @@ import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.config.DissolutionConfigManager.FlightModes;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.EctoplasmStats;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.FoodStats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -23,6 +27,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
 
+import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
@@ -59,47 +64,98 @@ public class PlayerTickHandler {
 			event.player.setSneaking(true);
 		if(event.phase != TickEvent.Phase.END) return;
 		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.player);
-		if (playerCorp.getCorporealityStatus().isIncorporeal()) {
-			
-			if(!event.player.isCreative() &&
-					(playerCorp.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL
-							|| playerCorp.getEctoplasmStats().getActiveSpells().contains(EctoplasmStats.SoulSpells.FLIGHT)))
-				handleSoulFlight(event.player);
-			
-			handlePossessingTick(event.player);
-			
-			try {
-				foodTimer.invokeExact(event.player.getFoodStats(), 20);
-				foodExhaustionLevel.invokeExact(event.player.getFoodStats(), 0f);
-			} catch (Throwable throwable) {
-				throwable.printStackTrace();
-			}
+		if(playerCorp.isStrongSoul()) {
+			if (playerCorp.getCorporealityStatus().isIncorporeal()) {
+				if (!event.player.isCreative() &&
+						(playerCorp.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL
+								|| playerCorp.getEctoplasmStats().getActiveSpells().contains(EctoplasmStats.SoulSpells.FLIGHT)))
+					handleSoulFlight(event.player);
 
-			if (event.side.isClient())
-				return;
-			
-			// Makes the player tangible if he is near 0,0
-			if (event.player.getDistance(0, event.player.posY, 0) < SPAWN_RADIUS_FROM_ORIGIN
-					&& ++ticksSpentNearSpawn >= 100) {
-				respawnPlayerOrigin(event.player);
-			}
-			
-			// Randomly removes experience from the player
-			if(playerCorp.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL ) {
-				if (event.player.experience > 0 && rand.nextBoolean())
-					event.player.experience--;
-				else if (rand.nextInt() % 300 == 0 && event.player.experienceLevel > 0)
-					event.player.addExperienceLevel(-1);
-			}
+				handlePossessingTick(event.player);
 
-			// Teleports the player to the nether if needed
-			if (!playerCorp.isSynced() && !event.player.world.isRemote
-					&& DissolutionConfig.respawn.respawnInNether) {
-				CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, DissolutionConfig.respawn.respawnDimension);
+				try {
+					foodTimer.invokeExact(event.player.getFoodStats(), 0);
+					foodExhaustionLevel.invokeExact(event.player.getFoodStats(), 0f);
+				} catch (Throwable throwable) {
+					throwable.printStackTrace();
+				}
+
+				if (event.side.isClient())
+					return;
+
+				// Makes the player tangible if he is near 0,0
+				if (event.player.getDistance(0, event.player.posY, 0) < SPAWN_RADIUS_FROM_ORIGIN
+						&& ++ticksSpentNearSpawn >= 100) {
+					respawnPlayerOrigin(event.player);
+				}
+
+				// Randomly removes experience from the player
+				if (playerCorp.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL) {
+					if (event.player.experience > 0 && rand.nextBoolean())
+						event.player.experience--;
+					else if (rand.nextInt() % 300 == 0 && event.player.experienceLevel > 0)
+						event.player.addExperienceLevel(-1);
+				}
+			}
+			// Teleports the player to wherever they should be if needed
+			if (playerCorp.getDeathStats().wasDead() && !event.player.world.isRemote) {
+				event.player.world.profiler.startSection("placing_respawned_player");
+				// changes the player's dimension if required by the config or if they died there
+				if (DissolutionConfig.respawn.respawnInNether)
+					CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, DissolutionConfig.respawn.respawnDimension);
+				else if (!DissolutionConfig.respawn.wowLikeRespawn && event.player.dimension != playerCorp.getDeathStats().getDeathDimension())
+					CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, playerCorp.getDeathStats().getDeathDimension());
+
+				// changes the player's position to where they died
+				if(!DissolutionConfig.respawn.wowLikeRespawn) {
+					Vec3d deathLoc = playerCorp.getDeathStats().getDeathLocation();
+					BlockPos deathPos = new BlockPos(deathLoc);
+					if (!event.player.world.isOutsideBuildHeight(deathPos) && event.player.world.isAirBlock(deathPos))
+						((EntityPlayerMP)event.player).connection.setPlayerLocation(deathLoc.x, deathLoc.y, deathLoc.z, event.player.rotationYaw, event.player.rotationPitch);
+					else if (!event.player.world.isOutsideBuildHeight(deathPos)) {
+						deathPos = getSafeSpawnLocation(event.player.world, deathPos, 0);
+						if(deathPos != null)
+							((EntityPlayerMP)event.player).connection.setPlayerLocation(deathPos.getX(), deathPos.getY(), deathPos.getZ(), event.player.rotationYaw, event.player.rotationPitch);
+					}
+				}
+				event.player.world.profiler.endSection();
+				playerCorp.getDeathStats().setDead(false);
 			}
 		}
 		if(event.side.isServer())
 			playerCorp.setSynced(true);
+	}
+
+	@Nullable
+	private BlockPos getSafeSpawnLocation(World worldIn, BlockPos pos, int tries) {
+		int i = pos.getX();
+		int j = pos.getY();
+		int k = pos.getZ();
+
+		for (int l = 0; l <= 1; ++l) {
+			int i1 = i - 1;
+			int j1 = k - 1;
+			int k1 = i1 + 2;
+			int l1 = j1 + 2;
+
+			for (int i2 = i1; i2 <= k1; ++i2) {
+				for (int j2 = j1; j2 <= l1; ++j2) {
+					BlockPos blockpos = new BlockPos(i2, j, j2);
+
+					if (hasRoomForPlayer(worldIn, blockpos)) {
+						if (tries <= 0) {
+							return blockpos;
+						}
+						--tries;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	protected boolean hasRoomForPlayer(World worldIn, BlockPos pos) {
+		return !worldIn.getBlockState(pos).getMaterial().isSolid() && !worldIn.getBlockState(pos.up()).getMaterial().isSolid();
 	}
 	
 	/**

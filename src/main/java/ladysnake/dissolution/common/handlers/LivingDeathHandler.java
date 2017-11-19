@@ -48,7 +48,6 @@ public class LivingDeathHandler {
 	}
 	
 	protected void handlePlayerDeath(LivingDeathEvent event) {
-		
 		final EntityPlayer p = (EntityPlayer) event.getEntity();
 		final IIncorporealHandler corp = CapabilityIncorporealHandler.getHandler(p);
 		if(corp.getCorporealityStatus().isIncorporeal() && corp.getPossessed() instanceof EntityLivingBase) {
@@ -64,8 +63,9 @@ public class LivingDeathHandler {
 			return;
 		}
 		
-		corp.setLastDeathMessage(
+		corp.getDeathStats().setLastDeathMessage(
 				p.getDisplayNameString() + event.getSource().getDeathMessage(p).getUnformattedComponentText());
+		corp.getDeathStats().setDeathDimension(p.dimension);
 
 		if(!p.world.isRemote) {
 			final EntityPlayerCorpse body = new EntityPlayerCorpse(p.world);
@@ -93,10 +93,6 @@ public class LivingDeathHandler {
 			
 			p.world.spawnEntity(body);
 			body.setPlayer(p.getUniqueID());
-		}
-
-		if(!DissolutionConfig.respawn.wowLikeRespawn) {
-			p.setSpawnPoint(new BlockPos(p), true);
 		}
 		
 		if(DissolutionConfig.respawn.skipDeathScreen) {
