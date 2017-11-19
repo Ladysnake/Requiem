@@ -75,7 +75,7 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 		if(tile == null) return false;
 
 		if (playerCorp.getCorporealityStatus().isIncorporeal()) {
-			tile.setDeathMessage(playerCorp.getLastDeathMessage());
+			tile.setDeathMessage(playerCorp.getDeathStats().getLastDeathMessage());
 		} else {
 				if (tile.getDeathMessage() != null
 						&& !tile.getDeathMessage().trim().isEmpty())

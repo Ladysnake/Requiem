@@ -126,12 +126,11 @@ public class CapabilityIncorporealHandler {
 	public static class DefaultIncorporealHandler implements IIncorporealHandler {
 
 		private boolean strongSoul;
-		@Nonnull
 		private CorporealityStatus corporealityStatus = CorporealityStatus.BODY;
 		private EctoplasmStats ectoplasmStats = new EctoplasmStats();
 		private DialogueStats dialogueStats = new DialogueStats(this);
+		private IDeathStats deathStats = new DeathStats();
 		private int lastFood = -1;
-		private String lastDeathMessage;
 		private boolean synced = false;
 		/**Not used currently, allows the player to wear a different skin*/
 		private UUID disguise = null;
@@ -268,6 +267,11 @@ public class CapabilityIncorporealHandler {
 		}
 
 		@Override
+		public IDeathStats getDeathStats() {
+			return this.deathStats;
+		}
+
+		@Override
 		public void setSynced(boolean synced) {
 			this.synced = synced;
 		}
@@ -275,16 +279,6 @@ public class CapabilityIncorporealHandler {
 		@Override
 		public boolean isSynced() {
 			return this.synced;
-		}
-
-		@Override
-		public String getLastDeathMessage() {
-			return this.lastDeathMessage;
-		}
-
-		@Override
-		public void setLastDeathMessage(String deathMessage) {
-			this.lastDeathMessage = deathMessage;
 		}
 
 		@Override
@@ -359,10 +353,11 @@ public class CapabilityIncorporealHandler {
 		        final NBTTagCompound tag = new NBTTagCompound();
 				tag.setBoolean("strongSoul", instance.isStrongSoul());
 		        tag.setString("corporealityStatus", instance.getCorporealityStatus().name());
-		        tag.setString("lastDeath", instance.getLastDeathMessage() == null || instance.getLastDeathMessage().isEmpty() ? "This player has no recorded death" : instance.getLastDeathMessage());
+		        tag.setString("lastDeath", instance.getDeathStats().getLastDeathMessage() == null || instance.getDeathStats().getLastDeathMessage().isEmpty() ? "This player has no recorded death" : instance.getDeathStats().getLastDeathMessage());
 		        if(instance.getPossessed() instanceof Entity)
 		        	tag.setUniqueId("possessedEntity", ((Entity) instance.getPossessed()).getUniqueID());
 		        tag.setTag("dialogueStats", instance.getDialogueStats().serializeNBT());
+		        tag.setTag("deathStats", instance.getDeathStats().serializeNBT());
 		        return tag;
 		    }
 
@@ -375,8 +370,8 @@ public class CapabilityIncorporealHandler {
 		        	UUID hostUUID = tag.getUniqueId("possessedEntity");
 					((DefaultIncorporealHandler) instance).hostUUID = hostUUID == new UUID(0,0) ? null : hostUUID;
 		        }
-		        instance.setLastDeathMessage(tag.getString("lastDeath"));
 		        instance.getDialogueStats().deserializeNBT(tag.getCompoundTag("dialogueStats"));
+		        instance.getDeathStats().deserializeNBT(tag.getCompoundTag("deathStats"));
 		    }
 		}
 

@@ -26,6 +26,9 @@ public class DissolutionConfig {
 	@Config.RequiresWorldRestart
 	@Config.Comment("If set to anything other than \"none\", will force a soul strength upon players and prevent the dialogue from appearing")
 	public static DissolutionConfigManager.EnforcedSoulStrength enforcedSoulStrength = DissolutionConfigManager.EnforcedSoulStrength.NONE;
+
+	@Config.Comment("Because some people need dialogue to be explicit")
+	public static boolean technicianDialogue = false;
 //	public static Wip wip = new Wip();
 
 	public static class Blocks {

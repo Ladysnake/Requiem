@@ -164,5 +164,4 @@ public class InteractEventsHandler {
 		return handler.getCorporealityStatus().isIncorporeal() && handler.getPossessed() == null
 				&& !event.getEntityPlayer().isCreative();
 	}
-
 }

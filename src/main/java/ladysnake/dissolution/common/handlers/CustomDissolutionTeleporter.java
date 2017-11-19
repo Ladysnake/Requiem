@@ -12,8 +12,7 @@ import net.minecraft.world.WorldServer;
 
 public class CustomDissolutionTeleporter {
 
-	public static void transferPlayerToDimension(EntityPlayerMP player, int dimensionIn)
-    {
+	public static void transferPlayerToDimension(EntityPlayerMP player, int dimensionIn) {
         int i = player.dimension;
         WorldServer worldserver = player.mcServer.getWorld(player.dimension);
         player.dimension = dimensionIn;
@@ -30,15 +29,13 @@ public class CustomDissolutionTeleporter {
         player.mcServer.getPlayerList().updateTimeAndWeatherForPlayer(player, worldserver1);
         player.mcServer.getPlayerList().syncPlayerInventory(player);
 
-        for (PotionEffect potioneffect : player.getActivePotionEffects())
-        {
+        for (PotionEffect potioneffect : player.getActivePotionEffects()) {
             player.connection.sendPacket(new SPacketEntityEffect(player.getEntityId(), potioneffect));
         }
         net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerChangedDimensionEvent(player, i, dimensionIn);
     }
 
-    @SuppressWarnings("unused")
-    public static void transferEntityToWorld(Entity entityIn, int lastDimension, WorldServer oldWorldIn, WorldServer toWorldIn)
+    private static void transferEntityToWorld(Entity entityIn, int lastDimension, WorldServer oldWorldIn, WorldServer toWorldIn)
     {
         net.minecraft.world.WorldProvider pOld = oldWorldIn.provider;
         net.minecraft.world.WorldProvider pNew = toWorldIn.provider;

@@ -29,6 +29,7 @@ public class EntityMinionPigZombie extends EntityMinionZombie {
 
 	public EntityMinionPigZombie(World worldIn, boolean isChild) {
 		super(worldIn, false, isChild);
+		this.isImmuneToFire = true;
 	}
 
 	protected void updateAITasks()
