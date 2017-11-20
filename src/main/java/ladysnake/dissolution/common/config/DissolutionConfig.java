@@ -100,6 +100,9 @@ public class DissolutionConfig {
 		@Config.Comment("A regex based list of entity names that can be hurt by incorporeal players and that can attack ectoplasms")
 		public String[] authorizedEntities = new String[] {};
 
+		@Config.Comment("If set to false, incorporeal players won't be able to use the /dissolution stuck command to get back to their spawnpoint")
+		public boolean allowStuckCommand = true;
+
 	}
 
 	public static class Respawn {

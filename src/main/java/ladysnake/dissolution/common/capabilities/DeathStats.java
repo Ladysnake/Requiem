@@ -3,12 +3,12 @@ package ladysnake.dissolution.common.capabilities;
 import ladysnake.dissolution.api.IDeathStats;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 
 public class DeathStats implements IDeathStats {
     private boolean wasDead;
     private int deathDim;
-    private Vec3d deathLoc = Vec3d.ZERO;
+    private BlockPos deathLoc = BlockPos.ORIGIN;
     private String lastDeathMessage = "";
 
     @Override
@@ -32,12 +32,12 @@ public class DeathStats implements IDeathStats {
     }
 
     @Override
-    public Vec3d getDeathLocation() {
+    public BlockPos getDeathLocation() {
         return deathLoc;
     }
 
     @Override
-    public void setDeathLocation(Vec3d deathLoc) {
+    public void setDeathLocation(BlockPos deathLoc) {
         this.deathLoc = deathLoc;
     }
 
@@ -54,9 +54,8 @@ public class DeathStats implements IDeathStats {
     @Override
     public NBTTagCompound serializeNBT() {
         NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setDouble("deathLocX", deathLoc.x);
-        nbt.setDouble("deathLocY", deathLoc.y);
-        nbt.setDouble("deathLocZ", deathLoc.y);
+        nbt.setLong("deathLoc", deathLoc.toLong());
+        nbt.setInteger("deathDim", deathDim);
         nbt.setString("deathMsg", lastDeathMessage);
         nbt.setBoolean("wasDead", wasDead);
         return nbt;
@@ -64,7 +63,8 @@ public class DeathStats implements IDeathStats {
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-        this.deathLoc = new Vec3d(nbt.getDouble("deathLocX"), nbt.getDouble("deathLocY"), nbt.getDouble("deathLocZ"));
+        this.deathLoc = BlockPos.fromLong(nbt.getLong("deathLoc"));
+        this.deathDim = nbt.getInteger("deathDim");
         this.lastDeathMessage = nbt.getString("deathMsg");
         this.wasDead = nbt.getBoolean("wasDead");
     }

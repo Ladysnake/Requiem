@@ -1,6 +1,7 @@
 package ladysnake.dissolution.common.world;
 
 import ladysnake.dissolution.common.blocks.BlockLamentStone;
+import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.init.ModBlocks;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
@@ -14,6 +15,7 @@ import java.util.Random;
 public class WorldGenLamentStones extends WorldGenerator {
     @Override
     public boolean generate(@Nonnull World worldIn, @Nonnull Random rand, @Nonnull BlockPos position) {
+        if(DissolutionConfig.worldGen.spawnLamentStonesFreq < 0) return false;
         for (IBlockState iblockstate = worldIn.getBlockState(position);
              (iblockstate.getBlock().isAir(iblockstate, worldIn, position)
                      || iblockstate.getBlock().isLeaves(iblockstate, worldIn, position))
