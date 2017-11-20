@@ -86,11 +86,13 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 	}
 
 	@Override
+	@Deprecated
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
 
 	@Override
+	@Deprecated
 	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		EnumFacing enumfacing = state.getValue(FACING);
 
@@ -115,6 +117,7 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 
 	@Nonnull
 	@Override
+	@Deprecated
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		return SEPULTURE_AABB;
 	}
@@ -128,6 +131,7 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 
 	@Nonnull
 	@Override
+	@Deprecated
 	public EnumPushReaction getMobilityFlag(IBlockState state) {
 		return EnumPushReaction.DESTROY;
 	}
@@ -140,6 +144,7 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 
 	@Nonnull
 	@Override
+	@Deprecated
 	public ItemStack getItem(World worldIn, BlockPos pos, @Nonnull IBlockState state) {
 		return new ItemStack(ModItems.SEPULTURE);
 	}
@@ -156,6 +161,7 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 	}
 
 	@Nonnull
+	@Deprecated
 	public IBlockState getStateFromMeta(int meta) {
 		EnumFacing enumfacing = EnumFacing.getHorizontal(meta);
 		return (meta & 8) > 0
@@ -166,6 +172,7 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 	}
 
 	@Nonnull
+	@Deprecated
 	public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess worldIn, BlockPos pos) {
 		if (state.getValue(PART) == BlockSepulture.EnumPartType.FOOT) {
 			IBlockState iblockstate = worldIn.getBlockState(pos.offset(state.getValue(FACING)));
@@ -175,11 +182,13 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
 	}
 
 	@Nonnull
+	@Deprecated
 	public IBlockState withRotation(@Nonnull IBlockState state, Rotation rot) {
 		return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
 	}
 
 	@Nonnull
+	@Deprecated
 	public IBlockState withMirror(@Nonnull IBlockState state, Mirror mirrorIn) {
 		return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
 	}

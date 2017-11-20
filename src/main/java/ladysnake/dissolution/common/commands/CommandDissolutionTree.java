@@ -19,6 +19,7 @@ public class CommandDissolutionTree extends CommandDissolutionTreeBase {
         this.addSubcommand(new CommandCorporealMode());
         this.addSubcommand(new CommandSoulStrength());
         this.addSubcommand(new CommandDialogueTree());
+        this.addSubcommand(new CommandStuck());
     }
 
     @Nonnull

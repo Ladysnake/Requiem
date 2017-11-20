@@ -155,10 +155,6 @@ public class CapabilityIncorporealHandler {
 		public void setStrongSoul(boolean strongSoul) {
 			if(owner == null || MinecraftForge.EVENT_BUS.post(new SoulStrengthModifiedEvent(owner, strongSoul))) return;
 			this.strongSoul = strongSoul;
-			if(!isStrongSoul()) {
-				//noinspection ConstantConditions
-				owner.setSpawnPoint(null, true);
-			}
 			if(!owner.world.isRemote)
 				PacketHandler.NET.sendToAll(new IncorporealMessage(owner.getUniqueID().getMostSignificantBits(),
 						owner.getUniqueID().getLeastSignificantBits(), strongSoul, corporealityStatus));

@@ -2,7 +2,7 @@ package ladysnake.dissolution.api;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraftforge.common.util.INBTSerializable;
 
 public interface IDeathStats extends INBTSerializable<NBTTagCompound> {
@@ -15,9 +15,9 @@ public interface IDeathStats extends INBTSerializable<NBTTagCompound> {
      */
     boolean wasDead();
 
-    Vec3d getDeathLocation();
+    BlockPos getDeathLocation();
 
-    void setDeathLocation(Vec3d deathLocation);
+    void setDeathLocation(BlockPos deathLocation);
 
     int getDeathDimension();
 
