@@ -64,6 +64,7 @@ public class JEICompat implements IModPlugin {
 	private void blacklistStuff() {
 		IIngredientBlacklist blacklist = registry.getJeiHelpers().getIngredientBlacklist();
 		blacklist.addIngredientToBlacklist(new ItemStack(ModItems.DEBUG_ITEM));
+		blacklist.addIngredientToBlacklist(new ItemStack(ModItems.LOGO));
 	}
 	
 	@Override

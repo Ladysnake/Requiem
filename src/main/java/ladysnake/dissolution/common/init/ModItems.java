@@ -34,6 +34,7 @@ public final class ModItems {
 	static final ModItems INSTANCE = new ModItems();
 
 	public static Item PESTLE;
+	public static ItemLogo LOGO;
 	public static ItemAcerbacaFruit ACERBACA;
 	public static ItemFood INSUBACA;
 	public static ItemFood LIMOBACA;
@@ -110,6 +111,7 @@ public final class ModItems {
 				STONE_HEART = name(new ItemStoneHeart(), "stone_heart"));
 
 //		AlchemyModuleTypes.registerItems(allItems);
+		reg.register(LOGO = name(new ItemLogo(), "logo"));
 
 		for(Item i : allItems) {
 			reg.register(i);
