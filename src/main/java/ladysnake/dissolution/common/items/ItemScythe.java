@@ -63,8 +63,7 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
 	}
 	
 	@Override
-	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity target)
-    {
+	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity target) {
         if(!player.getHeldItemOffhand().isEmpty()) return true;
         if(alreadyRunningAOE) return false;
         Integer initialCooldown = 100;
@@ -100,7 +99,7 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
 	@Override
 	public float getDestroySpeed(ItemStack stack, IBlockState state) {
 		Material material = state.getMaterial();
-		return effectiveBlocks.get(material) == null ? 0.8F : effectiveBlocks.get(material);
+		return effectiveBlocks.getOrDefault(material, 0.8f);
 	}
 
 	@Override
