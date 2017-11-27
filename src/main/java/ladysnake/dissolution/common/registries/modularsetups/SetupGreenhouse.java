@@ -1,15 +1,6 @@
 package ladysnake.dissolution.common.registries.modularsetups;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import com.google.common.collect.ImmutableSet;
-
 import ladysnake.dissolution.api.DistillateStack;
 import ladysnake.dissolution.api.DistillateTypes;
 import ladysnake.dissolution.api.IDistillateHandler;
@@ -24,13 +15,20 @@ import ladysnake.dissolution.common.tileentities.TileEntityModularMachine;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class SetupGreenhouse extends ModularMachineSetup {
     private static final ImmutableSet<ItemAlchemyModule.AlchemyModule> setup = ImmutableSet.of(
@@ -43,8 +41,8 @@ public class SetupGreenhouse extends ModularMachineSetup {
     public SetupGreenhouse() {
         this.setRegistryName("setup_greenhouse");
         this.recipes = new LinkedList<>();
-        this.recipes.add(new Recipe(ModItems.BACA_SEEDS, new ItemStack(ModItems.SALERBACA), 
-        		new DistillateStack(DistillateTypes.SULPURIS, 9), new DistillateStack(DistillateTypes.SALIS, 9)));
+        this.recipes.add(new Recipe(ModItems.BACA_SEEDS, new ItemStack(ModItems.SALERBACA),
+                new DistillateStack(DistillateTypes.SULPURIS, 9), new DistillateStack(DistillateTypes.SALIS, 9)));
         addRecipe(ModItems.BACA_SEEDS, DistillateTypes.CINNABARIS, 9, new ItemStack(ModItems.INSUBACA));
         addRecipe(ModItems.BACA_SEEDS, DistillateTypes.SULPURIS, 9, new ItemStack(ModItems.ACERBACA));
         this.recipes.sort((r1, r2) -> Integer.compare(r2.distillates.size(), r1.distillates.size()));
@@ -95,27 +93,27 @@ public class SetupGreenhouse extends ModularMachineSetup {
 
         @Override
         public void onInteract(EntityPlayer playerIn, EnumHand hand, BlockCasing.EnumPartType part, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        	if(playerIn.world.isRemote) return;
+            if (playerIn.world.isRemote) return;
             ItemStack stack = playerIn.getHeldItem(hand);
-            if(recipes.stream().map(r -> r.seeds).anyMatch(stack.getItem()::equals) && this.fruitInv.getStackInSlot(0).isEmpty()) {
+            if (recipes.stream().map(r -> r.seeds).anyMatch(stack.getItem()::equals) && this.fruitInv.getStackInSlot(0).isEmpty()) {
                 this.fruitInv.insertItem(0, stack.splitStack(1), false);
             } else if (stack.isEmpty()) {
-            	playerIn.addItemStackToInventory(this.fruitInv.extractItem(0, 1, false));
+                playerIn.addItemStackToInventory(this.fruitInv.extractItem(0, 1, false));
             }
         }
 
         @Override
         public void onTick() {
-            if(time++ % 20 == 0) {
+            if (time++ % 20 == 0) {
                 ItemStack fruit = this.fruitInv.extractItem(0, 1, true);
                 if (tile.isPowered() && !fruit.isEmpty()) {
-                	recipes.stream()
-                	.filter(recipe -> recipe.accepts(fruit.getItem(), essentiaInv)).findFirst()
-                    .ifPresent(res -> {
-                    	this.fruitInv.extractItem(0, 1, false);
-                        res.distillates.forEach(dis -> essentiaInv.extract(dis.getCount(), dis.getType()));
-                    	this.fruitInv.insertItem(0, res.getResult(), false);
-                    });
+                    recipes.stream()
+                            .filter(recipe -> recipe.accepts(fruit.getItem(), essentiaInv)).findFirst()
+                            .ifPresent(res -> {
+                                this.fruitInv.extractItem(0, 1, false);
+                                res.distillates.forEach(dis -> essentiaInv.extract(dis.getCount(), dis.getType()));
+                                this.fruitInv.insertItem(0, res.getResult(), false);
+                            });
                 }
             }
         }
@@ -137,36 +135,36 @@ public class SetupGreenhouse extends ModularMachineSetup {
 
         @Override
         public <T> T getCapability(Capability<T> capability, EnumFacing facing, BlockCasing.EnumPartType part) {
-            if(part == BlockCasing.EnumPartType.BOTTOM) {
-                if(capability == CapabilityDistillateHandler.CAPABILITY_DISTILLATE)
+            if (part == BlockCasing.EnumPartType.BOTTOM) {
+                if (capability == CapabilityDistillateHandler.CAPABILITY_DISTILLATE)
                     return CapabilityDistillateHandler.CAPABILITY_DISTILLATE.cast(this.essentiaInv);
-                if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+                if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
                     return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(this.fruitInv);
             }
             return null;
         }
     }
-    
-    private static class Recipe {
-    	
-    	private Item seeds;
-    	private List<DistillateStack> distillates;
-    	private ItemStack result;
 
-    	Recipe(Item seeds, ItemStack result, DistillateStack... distillates) {
-			super();
-			this.seeds = seeds;
-			this.distillates = Arrays.asList(distillates);
-			this.result = result;
-		}
-    	
-    	boolean accepts (Item seeds, IDistillateHandler distillates) {
-    		return this.seeds == seeds && 
-    				this.distillates.stream().allMatch(dis -> StreamSupport.stream(distillates.spliterator(), false).anyMatch(dis2 -> dis.getType() == dis2.getType() && dis.getCount() <= dis2.getCount()));
-    	}
-    	
-    	ItemStack getResult() {
-    		return result.copy();
-    	}
+    private static class Recipe {
+
+        private Item seeds;
+        private List<DistillateStack> distillates;
+        private ItemStack result;
+
+        Recipe(Item seeds, ItemStack result, DistillateStack... distillates) {
+            super();
+            this.seeds = seeds;
+            this.distillates = Arrays.asList(distillates);
+            this.result = result;
+        }
+
+        boolean accepts(Item seeds, IDistillateHandler distillates) {
+            return this.seeds == seeds &&
+                    this.distillates.stream().allMatch(dis -> StreamSupport.stream(distillates.spliterator(), false).anyMatch(dis2 -> dis.getType() == dis2.getType() && dis.getCount() <= dis2.getCount()));
+        }
+
+        ItemStack getResult() {
+            return result.copy();
+        }
     }
 }

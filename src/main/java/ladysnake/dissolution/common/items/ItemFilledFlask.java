@@ -37,11 +37,11 @@ public class ItemFilledFlask extends ItemFlask {
     @Override
     public ItemStack onItemUseFinish(@Nonnull ItemStack stack, World worldIn, EntityLivingBase entityLiving) {
         if (entityLiving instanceof EntityPlayer) {
-            EntityPlayer entityplayer = (EntityPlayer)entityLiving;
+            EntityPlayer entityplayer = (EntityPlayer) entityLiving;
             //noinspection ConstantConditions
             entityplayer.addStat(StatList.getObjectUseStats(this));
 
-            if(stack.getMetadata() == variants.indexOf("transcendence_potion")) {
+            if (stack.getMetadata() == variants.indexOf("transcendence_potion")) {
                 stack.shrink(1);
                 if (stack.isEmpty())
                     entityplayer.setHeldItem(entityplayer.getActiveHand(), new ItemStack(ModItems.GLASS_FLASK));
@@ -51,7 +51,7 @@ public class ItemFilledFlask extends ItemFlask {
                 return ItemStack.EMPTY;
             }
             if (entityplayer instanceof EntityPlayerMP) {
-                CriteriaTriggers.CONSUME_ITEM.trigger((EntityPlayerMP)entityplayer, stack);
+                CriteriaTriggers.CONSUME_ITEM.trigger((EntityPlayerMP) entityplayer, stack);
             }
             if (!entityplayer.capabilities.isCreativeMode) {
                 stack.shrink(1);
@@ -72,7 +72,7 @@ public class ItemFilledFlask extends ItemFlask {
     @Override
     public void registerRender() {
         assert this.getRegistryName() != null;
-        for(int i = 0; i < variants.size(); i++)
+        for (int i = 0; i < variants.size(); i++)
             ModelLoader.setCustomModelResourceLocation(this, i,
                     new ModelResourceLocation(this.getRegistryName().getResourceDomain() + ":glassware/" + variants.get(i)));
     }
@@ -101,7 +101,7 @@ public class ItemFilledFlask extends ItemFlask {
 
     @Override
     public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
-        if(tab == Dissolution.CREATIVE_TAB)
+        if (tab == Dissolution.CREATIVE_TAB)
             for (int i = 0; i < variants.size(); ++i) {
                 items.add(new ItemStack(this, 1, i));
             }

@@ -8,7 +8,6 @@ import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 
 public class OreDictHelper {
@@ -20,7 +19,7 @@ public class OreDictHelper {
         OreDictionary.registerOre(PESTLE, ModItems.PESTLE);
         IForgeRegistry<Item> items = RegistryManager.ACTIVE.getRegistry(Item.class);
         ResourceLocation loc;
-        if(items.containsKey(loc = new ResourceLocation("roots:pestle")))
+        if (items.containsKey(loc = new ResourceLocation("roots:pestle")))
             OreDictionary.registerOre(PESTLE, items.getValue(loc));
     }
 

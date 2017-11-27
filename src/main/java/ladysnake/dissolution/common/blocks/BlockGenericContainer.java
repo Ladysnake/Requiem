@@ -47,27 +47,27 @@ public abstract class BlockGenericContainer extends Block {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack heldItem = playerIn.getHeldItem(hand);
         TileEntity tile = worldIn.getTileEntity(pos);
-        if(!(tile instanceof PowderContainer)) return false;
+        if (!(tile instanceof PowderContainer)) return false;
         if (heldItem.isEmpty() && playerIn.isSneaking()) {
-            if(!worldIn.isRemote) {
+            if (!worldIn.isRemote) {
                 playerIn.addItemStackToInventory(getDroppedItem(worldIn, pos));
                 ((PowderContainer) tile).dropContent();
                 ((PowderContainer) tile).setShouldDrop(false);
                 worldIn.setBlockToAir(pos);
             }
             return true;
-        } else if(heldItem.hasCapability(CapabilityGenericInventoryProvider.CAPABILITY_GENERIC, null)) {
+        } else if (heldItem.hasCapability(CapabilityGenericInventoryProvider.CAPABILITY_GENERIC, null)) {
             GenericStackInventory<EnumPowderOres> powderInv = CapabilityGenericInventoryProvider.getInventory(heldItem, EnumPowderOres.class);
-            if(powderInv != null) {
+            if (powderInv != null) {
                 return ((PowderContainer) tile).pourPowder(powderInv);
             }
         } else {
             InputItemHandler tileItemInventory = (InputItemHandler) tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-            if(tileItemInventory != null) {
+            if (tileItemInventory != null) {
                 if (heldItem.isEmpty()) {
                     playerIn.addItemStackToInventory(tileItemInventory.extractItem(0, TileEntityCrucible.MAX_VOLUME, false));
                     return true;
-                } else if(tileItemInventory.isWhitelisted(heldItem)) {
+                } else if (tileItemInventory.isWhitelisted(heldItem)) {
                     playerIn.setHeldItem(hand, ItemHandlerHelper.insertItem(tileItemInventory, heldItem, false));
                     return true;
                 }
@@ -77,20 +77,21 @@ public abstract class BlockGenericContainer extends Block {
     }
 
     @Override
-    public void dropBlockAsItemWithChance(World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state, float chance, int fortune) {}
+    public void dropBlockAsItemWithChance(World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state, float chance, int fortune) {
+    }
 
     @Override
     public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
         super.onBlockHarvested(worldIn, pos, state, player);
         TileEntity tile = worldIn.getTileEntity(pos);
-        if(player.isCreative() && tile instanceof PowderContainer)
+        if (player.isCreative() && tile instanceof PowderContainer)
             ((PowderContainer) tile).setShouldDrop(false);
     }
 
     @Override
     public void breakBlock(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state) {
         TileEntity tileEntity = worldIn.getTileEntity(pos);
-        if(tileEntity instanceof PowderContainer && ((PowderContainer) tileEntity).shouldDrop()) {
+        if (tileEntity instanceof PowderContainer && ((PowderContainer) tileEntity).shouldDrop()) {
             ((PowderContainer) tileEntity).dropContent();
             spawnAsEntity(worldIn, pos, getDroppedItem(worldIn, pos));
         }
@@ -99,8 +100,8 @@ public abstract class BlockGenericContainer extends Block {
 
     protected ItemStack getDroppedItem(World worldIn, BlockPos pos) {
         TileEntity tile = worldIn.getTileEntity(pos);
-        if(tile instanceof PowderContainer) {
-            PowderContainer powderContainer = ((PowderContainer)tile);
+        if (tile instanceof PowderContainer) {
+            PowderContainer powderContainer = ((PowderContainer) tile);
             ItemStack itemstack = new ItemStack(this);
             NBTTagCompound nbttagcompound = new NBTTagCompound();
             nbttagcompound.setTag("BlockEntityTag", powderContainer.saveToNbt(new NBTTagCompound()));
@@ -108,18 +109,18 @@ public abstract class BlockGenericContainer extends Block {
             IGenericInventoryProvider inventoryProvider = itemstack.getCapability(CapabilityGenericInventoryProvider.CAPABILITY_GENERIC, null);
             IFluidHandler fluidHandler = itemstack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
             IItemHandler itemHandler = itemstack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-            if(inventoryProvider != null) {
+            if (inventoryProvider != null) {
                 inventoryProvider.setInventory(EnumPowderOres.class, new GenericStackInventory<>(powderContainer.getPowderInventory()));
             } else
                 LogManager.getLogger().error("The dropped item stack had no generic inventory capability attached");
-            if(fluidHandler != null) {
+            if (fluidHandler != null) {
                 IFluidHandler tileFluidHandler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-                if(tileFluidHandler != null)
+                if (tileFluidHandler != null)
                     fluidHandler.fill(tileFluidHandler.drain(Integer.MAX_VALUE, true), true);
             }
-            if(itemHandler != null) {
+            if (itemHandler != null) {
                 IItemHandler tileItemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN);
-                if(tileItemHandler != null)
+                if (tileItemHandler != null)
                     itemHandler.insertItem(0, tileItemHandler.extractItem(0, Integer.MAX_VALUE, false), false);
             }
             return itemstack;
@@ -133,10 +134,10 @@ public abstract class BlockGenericContainer extends Block {
         GenericStackInventory<EnumPowderOres> inventory = CapabilityGenericInventoryProvider.getInventory(stack, EnumPowderOres.class);
         IFluidHandlerItem fluidHandler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
         IItemHandler itemHandler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-        if(inventory != null) {
+        if (inventory != null) {
             if (inventory.isEmpty()) {
-                if(advanced.isAdvanced())
-                   tooltip.add("No deposit left");
+                if (advanced.isAdvanced())
+                    tooltip.add("No deposit left");
             } else {
                 for (int i = 0; i < inventory.getSlotCount(); i++) {
                     if (inventory.getStackInSlot(i).isEmpty()) break;
@@ -144,18 +145,18 @@ public abstract class BlockGenericContainer extends Block {
                 }
             }
         }
-        if(fluidHandler != null) {
+        if (fluidHandler != null) {
             FluidStack fluidStack = fluidHandler.getTankProperties()[0].getContents();
-            if(fluidStack != null)
+            if (fluidStack != null)
                 tooltip.add(I18n.format(fluidStack.getFluid().getUnlocalizedName()) + " : " + fluidStack.amount);
-            else if(advanced.isAdvanced())
+            else if (advanced.isAdvanced())
                 tooltip.add("No liquid left");
         }
-        if(itemHandler != null) {
+        if (itemHandler != null) {
             ItemStack itemStack = itemHandler.getStackInSlot(0);
-            if(!itemStack.isEmpty())
+            if (!itemStack.isEmpty())
                 tooltip.add(I18n.format(itemStack.getItem().getUnlocalizedName()) + " : " + itemStack.getCount());
-            else if(advanced.isAdvanced())
+            else if (advanced.isAdvanced())
                 tooltip.add("No residue left");
         }
     }
@@ -165,7 +166,7 @@ public abstract class BlockGenericContainer extends Block {
     public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos pos, EntityPlayer player) {
         ItemStack itemstack = super.getPickBlock(state, target, world, pos, player);
         TileEntity tileEntity = world.getTileEntity(pos);
-        if(tileEntity instanceof PowderContainer) {
+        if (tileEntity instanceof PowderContainer) {
             NBTTagCompound nbttagcompound = ((PowderContainer) tileEntity).saveToNbt(new NBTTagCompound());
             if (!nbttagcompound.hasNoTags()) {
                 itemstack.setTagInfo("BlockEntityTag", nbttagcompound);

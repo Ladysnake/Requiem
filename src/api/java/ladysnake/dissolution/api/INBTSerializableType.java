@@ -4,6 +4,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 /**
  * An interface defining a type that can be externally serialized to NBT
+ *
  * @param <T> usually the type itself
  */
 public interface INBTSerializableType<T> {
@@ -28,7 +29,7 @@ public interface INBTSerializableType<T> {
 
         @Override
         public void serialize(T value, NBTTagCompound compound) {
-            if(value != null)
+            if (value != null)
                 compound.setString("type", value.name());
         }
 

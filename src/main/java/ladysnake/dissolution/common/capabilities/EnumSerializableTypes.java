@@ -17,8 +17,8 @@ public enum EnumSerializableTypes {
     }
 
     public static EnumSerializableTypes forClass(Class clazz) {
-        for(EnumSerializableTypes type : values())
-            if(type.clazz.equals(clazz))
+        for (EnumSerializableTypes type : values())
+            if (type.clazz.equals(clazz))
                 return type;
         throw new IllegalArgumentException("The provided class is not a registered entry");
     }

@@ -1,35 +1,24 @@
 package ladysnake.dissolution.common.items;
 
-import ladysnake.dissolution.api.IIncorporealHandler;
-import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.init.ModItems;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.init.PotionTypes;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionUtils;
 import net.minecraft.stats.StatList;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.ModelLoader;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
-public class ItemFlask extends Item implements ICustomLocation{
+public class ItemFlask extends Item implements ICustomLocation {
 
     @Nonnull
     @Override
@@ -64,8 +53,7 @@ public class ItemFlask extends Item implements ICustomLocation{
 
         if (flask.isEmpty()) {
             return waterFlask;
-        }
-        else {
+        } else {
             if (!player.inventory.addItemStackToInventory(waterFlask)) {
                 player.dropItem(waterFlask, false);
             }

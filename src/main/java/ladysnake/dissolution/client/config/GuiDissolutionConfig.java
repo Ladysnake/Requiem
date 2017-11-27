@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.config;
+package ladysnake.dissolution.client.config;
 
 import ladysnake.dissolution.common.Reference;
 import net.minecraft.client.gui.GuiScreen;

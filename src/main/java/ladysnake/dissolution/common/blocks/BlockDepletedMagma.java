@@ -35,53 +35,45 @@ public class BlockDepletedMagma extends BlockDepleted {
      * Get the MapColor for this Block and the given BlockState
      */
     @Nonnull
-    public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos)
-    {
+    public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
         return MapColor.NETHERRACK;
     }
 
     /**
      * Called when the given entity walks on this Block
      */
-    public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn)
-    {
+    public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn) {
         if (!entityIn.isImmuneToFire() && entityIn instanceof EntityLivingBase &&
-                !EnchantmentHelper.hasFrostWalkerEnchantment((EntityLivingBase)entityIn) &&
-                entityIn.getEntityWorld().rand.nextBoolean())
-        {
+                !EnchantmentHelper.hasFrostWalkerEnchantment((EntityLivingBase) entityIn) &&
+                entityIn.getEntityWorld().rand.nextBoolean()) {
             entityIn.attackEntityFrom(DamageSource.HOT_FLOOR, 0.5F);
         }
         super.onEntityWalk(worldIn, pos, entityIn);
     }
 
     @SideOnly(Side.CLIENT)
-    public int getPackedLightmapCoords(IBlockState state, IBlockAccess source, @Nonnull BlockPos pos)
-    {
+    public int getPackedLightmapCoords(IBlockState state, IBlockAccess source, @Nonnull BlockPos pos) {
         return 15728880;
     }
 
-    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
-    {
+    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
         BlockPos blockpos = pos.up();
         IBlockState iblockstate = worldIn.getBlockState(blockpos);
 
-        if (iblockstate.getBlock() == Blocks.WATER || iblockstate.getBlock() == Blocks.FLOWING_WATER)
-        {
+        if (iblockstate.getBlock() == Blocks.WATER || iblockstate.getBlock() == Blocks.FLOWING_WATER) {
             worldIn.setBlockToAir(blockpos);
             worldIn.playSound(null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F,
                     2.6F + (worldIn.rand.nextFloat() - worldIn.rand.nextFloat()) * 0.8F);
 
-            if (worldIn instanceof WorldServer)
-            {
-                ((WorldServer)worldIn).spawnParticle(EnumParticleTypes.SMOKE_LARGE,
+            if (worldIn instanceof WorldServer) {
+                ((WorldServer) worldIn).spawnParticle(EnumParticleTypes.SMOKE_LARGE,
                         blockpos.getX() + 0.5D, blockpos.getY() + 0.25D, blockpos.getZ() + 0.5D,
                         8, 0.5D, 0.25D, 0.5D, 0.0D);
             }
         }
     }
 
-    public boolean canEntitySpawn(IBlockState state, Entity entityIn)
-    {
+    public boolean canEntitySpawn(IBlockState state, Entity entityIn) {
         return entityIn.isImmuneToFire();
     }
 }

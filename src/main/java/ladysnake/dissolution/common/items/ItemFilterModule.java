@@ -18,29 +18,29 @@ public class ItemFilterModule extends ItemAlchemyModule {
     ItemFilterModule(AlchemyModuleTypes type, int tier) {
         super(type, tier);
     }
-    
+
     @Override
     public AlchemyModule toModule() {
-    	return new FilterModule(this.getType(), this.getTier(), 0);
+        return new FilterModule(this.getType(), this.getTier(), 0);
     }
 
     @Override
     public AlchemyModule toModule(BlockCasing.EnumPartType part, TileEntityModularMachine te) {
-        int slot = Stream.of(0,1,2).filter(i -> te.getInstalledModules().stream()
-                    .noneMatch(mod -> mod instanceof FilterModule && ((FilterModule)mod).slot == i)).findAny()
+        int slot = Stream.of(0, 1, 2).filter(i -> te.getInstalledModules().stream()
+                .noneMatch(mod -> mod instanceof FilterModule && ((FilterModule) mod).slot == i)).findAny()
                 .orElse(0);
         return new FilterModule(this.getType(), this.getTier(), slot);
     }
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerRender() {
-		super.registerRender();
-		for(int i = 1; i <= 2; i++) {
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerRender() {
+        super.registerRender();
+        for (int i = 1; i <= 2; i++) {
             DissolutionModelLoader.addModel(new ResourceLocation(Reference.MOD_ID, String.format("machine/%s_%s", this.getRegistryName().getResourcePath(), i)),
-							ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
-		}
-	}
+                    ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
+        }
+    }
 
     public static class FilterModule extends AlchemyModule {
         private int slot;
@@ -89,10 +89,10 @@ public class ItemFilterModule extends ItemAlchemyModule {
             return result;
         }
 
-		@Override
-		public String toString() {
-			return "FilterModule [type=" + getType() + "slot=" + slot + "]";
-		}
-        
+        @Override
+        public String toString() {
+            return "FilterModule [type=" + getType() + "slot=" + slot + "]";
+        }
+
     }
 }

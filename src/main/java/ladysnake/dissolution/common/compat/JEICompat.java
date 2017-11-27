@@ -2,12 +2,7 @@ package ladysnake.dissolution.common.compat;
 
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
-import mezz.jei.api.IJeiRuntime;
-import mezz.jei.api.IModPlugin;
-import mezz.jei.api.IModRegistry;
-import mezz.jei.api.IRecipeRegistry;
-import mezz.jei.api.ISubtypeRegistry;
-import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.*;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
@@ -22,54 +17,56 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class JEICompat implements IModPlugin {
 
     private IModRegistry registry;
-	
-	@Override
-	public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry) {}
 
-	@Override
-	public void registerIngredients(IModIngredientRegistration registry) {}
-	
-	@Override
-	public void registerCategories(IRecipeCategoryRegistration registry) {
-		// registry.addRecipeCategories(new CrystallizerRecipeCategory(registry.getJeiHelpers().getGuiHelper()));
-	}
+    @Override
+    public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry) {
+    }
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void register(IModRegistry registry) {
+    @Override
+    public void registerIngredients(IModIngredientRegistration registry) {
+    }
+
+    @Override
+    public void registerCategories(IRecipeCategoryRegistration registry) {
+        // registry.addRecipeCategories(new CrystallizerRecipeCategory(registry.getJeiHelpers().getGuiHelper()));
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void register(IModRegistry registry) {
         this.registry = registry;
         blacklistStuff();
-		addInformationTabs();
-	}
+        addInformationTabs();
+    }
 
-	@SideOnly(Side.CLIENT)
-	private void addInformationTabs() {
-		addInformationTab(ModBlocks.LAMENT_STONE);
-		addInformationTab(ModBlocks.CRUCIBLE);
-		addInformationTab(ModBlocks.MAGNET);
-		addInformationTab(ModBlocks.MORTAR);
-		addInformationTab(ModItems.IGNEOUS_ROCK);
-	}
+    @SideOnly(Side.CLIENT)
+    private void addInformationTabs() {
+        addInformationTab(ModBlocks.LAMENT_STONE);
+        addInformationTab(ModBlocks.CRUCIBLE);
+        addInformationTab(ModBlocks.MAGNET);
+        addInformationTab(ModBlocks.MORTAR);
+        addInformationTab(ModItems.IGNEOUS_ROCK);
+    }
 
-	@SideOnly(Side.CLIENT)
-	private void addInformationTab(Block block) {
-		this.addInformationTab(Item.getItemFromBlock(block));
-	}
+    @SideOnly(Side.CLIENT)
+    private void addInformationTab(Block block) {
+        this.addInformationTab(Item.getItemFromBlock(block));
+    }
 
-	@SideOnly(Side.CLIENT)
-	private void addInformationTab(Item item) {
-		registry.addIngredientInfo(new ItemStack(item), ItemStack.class, I18n.format("jei.description.dissolution.%s", item.getUnlocalizedName()));
-	}
-	
-	private void blacklistStuff() {
-		IIngredientBlacklist blacklist = registry.getJeiHelpers().getIngredientBlacklist();
-		blacklist.addIngredientToBlacklist(new ItemStack(ModItems.DEBUG_ITEM));
-		blacklist.addIngredientToBlacklist(new ItemStack(ModItems.LOGO));
-	}
-	
-	@Override
-	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+    @SideOnly(Side.CLIENT)
+    private void addInformationTab(Item item) {
+        registry.addIngredientInfo(new ItemStack(item), ItemStack.class, I18n.format("jei.description.dissolution.%s", item.getUnlocalizedName()));
+    }
+
+    private void blacklistStuff() {
+        IIngredientBlacklist blacklist = registry.getJeiHelpers().getIngredientBlacklist();
+        blacklist.addIngredientToBlacklist(new ItemStack(ModItems.DEBUG_ITEM));
+        blacklist.addIngredientToBlacklist(new ItemStack(ModItems.LOGO));
+    }
+
+    @Override
+    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
         IRecipeRegistry recipeRegistry = jeiRuntime.getRecipeRegistry();
-	}
+    }
 
 }

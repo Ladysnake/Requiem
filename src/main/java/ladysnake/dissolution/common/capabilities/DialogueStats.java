@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.capabilities;
 
 import ladysnake.dissolution.api.IDialogueStats;
 import ladysnake.dissolution.api.IIncorporealHandler;
-import ladysnake.dissolution.common.config.DissolutionConfig;
+import ladysnake.dissolution.common.Dissolution;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -31,7 +31,7 @@ public class DialogueStats implements IDialogueStats {
 
     @Override
     public void checkFirstConnection() {
-        if(DissolutionConfig.enforcedSoulStrength == NONE && !hasBeenContacted && !capability.getOwner().world.isRemote) {
+        if (Dissolution.config.enforcedSoulStrength == NONE && !hasBeenContacted && !capability.getOwner().world.isRemote) {
             sendNextDialogue("dissolution.dialogues.first_contact.header", "dissolution.dialogues.first_contact", 2);
             hasBeenContacted = true;
         }
@@ -39,9 +39,9 @@ public class DialogueStats implements IDialogueStats {
 
     @Override
     public void updateDialogue(int choice) {
-        if(hasBeenContacted && history.isEmpty()) {
+        if (hasBeenContacted && history.isEmpty()) {
             boolean strongSoul = choice == 0;
-            if(!strongSoul && capability.getCorporealityStatus().isIncorporeal())
+            if (!strongSoul && capability.getCorporealityStatus().isIncorporeal())
                 capability.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.BODY);
             capability.setStrongSoul(strongSoul);
             history.add(strongSoul ? "strong soul" : "weak soul");
@@ -53,11 +53,11 @@ public class DialogueStats implements IDialogueStats {
 
     protected void sendNextDialogue(String announcement, String npcLine, int choiceCount) {
         String[] choices = new String[choiceCount];
-        if(DissolutionConfig.technicianDialogue) npcLine += ".explicit";
-        for(int i = 0; i < choiceCount; i++)
+        if (Dissolution.config.technicianDialogue) npcLine += ".explicit";
+        for (int i = 0; i < choiceCount; i++)
             choices[i] = npcLine + ".choice_" + i;
-        if(announcement != null) {
-            if(DissolutionConfig.technicianDialogue) announcement += ".explicit";
+        if (announcement != null) {
+            if (Dissolution.config.technicianDialogue) announcement += ".explicit";
             ITextComponent headerComponent = new TextComponentTranslation(announcement);
             headerComponent.getStyle().setColor(TextFormatting.WHITE);
             headerComponent.getStyle().setItalic(true);
@@ -65,14 +65,14 @@ public class DialogueStats implements IDialogueStats {
         }
         ITextComponent npcComponent = new TextComponentTranslation(npcLine);
         npcComponent.getStyle().setColor(TextFormatting.RED);
-        for(ITextComponent chatMessage : generateDialogue(npcComponent, choices))
+        for (ITextComponent chatMessage : generateDialogue(npcComponent, choices))
             capability.getOwner().sendMessage(chatMessage);
     }
 
     protected static List<ITextComponent> generateDialogue(ITextComponent npcLine, String... choices) {
         List<ITextComponent> components = new LinkedList<>();
         components.add(npcLine);
-        for(int i = 0; i < choices.length; i++) {
+        for (int i = 0; i < choices.length; i++) {
             TextComponentTranslation choice = new TextComponentTranslation(choices[i]);
             TextComponentTranslation choiceDialogue = new TextComponentTranslation("dissolution.dialogues.choice", i, choice);
             Style style = new Style();
@@ -101,7 +101,7 @@ public class DialogueStats implements IDialogueStats {
         NBTTagCompound nbt = new NBTTagCompound();
         nbt.setBoolean("contacted", hasBeenContacted);
         NBTTagList nbtHistory = new NBTTagList();
-        for(String s : this.history)
+        for (String s : this.history)
             nbtHistory.appendTag(new NBTTagString(s));
         nbt.setTag("history", nbtHistory);
         return nbt;
@@ -111,7 +111,7 @@ public class DialogueStats implements IDialogueStats {
     public void deserializeNBT(NBTTagCompound nbt) {
         this.hasBeenContacted = nbt.getBoolean("contacted");
         NBTTagList nbtHistory = nbt.getTagList("history", 8);
-        for(NBTBase nbtBase : nbtHistory)
-            history.add(((NBTTagString)nbtBase).getString());
+        for (NBTBase nbtBase : nbtHistory)
+            history.add(((NBTTagString) nbtBase).getString());
     }
 }

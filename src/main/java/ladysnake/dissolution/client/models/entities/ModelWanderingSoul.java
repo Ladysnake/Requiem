@@ -10,22 +10,18 @@ public class ModelWanderingSoul extends ModelBiped {
 
     private final boolean smallArms;
 
-    public ModelWanderingSoul(float modelSize, boolean smallArmsIn)
-    {
+    public ModelWanderingSoul(float modelSize, boolean smallArmsIn) {
         super(modelSize, 0.0F, 64, 64);
         this.smallArms = smallArmsIn;
 
-        if (smallArmsIn)
-        {
+        if (smallArmsIn) {
             this.bipedLeftArm = new ModelRenderer(this, 32, 48);
             this.bipedLeftArm.addBox(-1.0F, -2.0F, -2.0F, 3, 12, 4, modelSize);
             this.bipedLeftArm.setRotationPoint(5.0F, 2.5F, 0.0F);
             this.bipedRightArm = new ModelRenderer(this, 40, 16);
             this.bipedRightArm.addBox(-2.0F, -2.0F, -2.0F, 3, 12, 4, modelSize);
             this.bipedRightArm.setRotationPoint(-5.0F, 2.5F, 0.0F);
-        }
-        else
-        {
+        } else {
             this.bipedLeftArm = new ModelRenderer(this, 32, 48);
             this.bipedLeftArm.addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, modelSize);
             this.bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
@@ -39,21 +35,16 @@ public class ModelWanderingSoul extends ModelBiped {
     /**
      * Sets the models various rotation angles then renders the model.
      */
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
         GlStateManager.pushMatrix();
 
-        if (this.isChild)
-        {
+        if (this.isChild) {
             float f = 2.0F;
             GlStateManager.scale(0.5F, 0.5F, 0.5F);
             GlStateManager.translate(0.0F, 24.0F * scale, 0.0F);
-        }
-        else
-        {
-            if (entityIn.isSneaking())
-            {
+        } else {
+            if (entityIn.isSneaking()) {
                 GlStateManager.translate(0.0F, 0.2F, 0.0F);
             }
         }
@@ -62,19 +53,15 @@ public class ModelWanderingSoul extends ModelBiped {
     }
 
     @Override
-    public void postRenderArm(float scale, EnumHandSide side)
-    {
+    public void postRenderArm(float scale, EnumHandSide side) {
         ModelRenderer modelrenderer = this.getArmForSide(side);
 
-        if (this.smallArms)
-        {
-            float f = 0.5F * (float)(side == EnumHandSide.RIGHT ? 1 : -1);
+        if (this.smallArms) {
+            float f = 0.5F * (float) (side == EnumHandSide.RIGHT ? 1 : -1);
             modelrenderer.rotationPointX += f;
             modelrenderer.postRender(scale);
             modelrenderer.rotationPointX -= f;
-        }
-        else
-        {
+        } else {
             modelrenderer.postRender(scale);
         }
     }

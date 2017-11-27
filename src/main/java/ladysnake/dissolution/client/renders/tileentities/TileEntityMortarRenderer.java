@@ -16,7 +16,7 @@ public class TileEntityMortarRenderer extends TileEntitySpecialRenderer<TileEnti
     @Override
     public void render(TileEntityMortar te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         GenericStackInventory<EnumPowderOres> powderInv = CapabilityGenericInventoryProvider.getInventory(te, EnumPowderOres.class);
-        if(powderInv != null) {
+        if (powderInv != null) {
             GlStateManager.disableCull();
             GlStateManager.disableLighting();
             GlStateManager.enableBlend();
@@ -27,15 +27,15 @@ public class TileEntityMortarRenderer extends TileEntitySpecialRenderer<TileEnti
             GlStateManager.pushMatrix();
             GlStateManager.translate(x, y, z);
 
-            GlStateManager.translate(0.1,-0.38,0.1);
-            GlStateManager.scale(0.8,1,0.8);
+            GlStateManager.translate(0.1, -0.38, 0.1);
+            GlStateManager.scale(0.8, 1, 0.8);
 
             double amount = powderInv.getTotalAmount();
             double capacity = powderInv.getSlotLimit(0);
             GlStateManager.disableBlend();
             TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("minecraft:blocks/sand");
             int i = te.getWorld().getLight(te.getPos());
-            if(amount > 0)
+            if (amount > 0)
                 TileEntityCrucibleRenderer.renderLevel(amount, capacity, sprite, i, 0xFF, 0xFF, 0xFF, 0xFF);
 
             GlStateManager.popMatrix();
@@ -45,11 +45,11 @@ public class TileEntityMortarRenderer extends TileEntitySpecialRenderer<TileEnti
             GlStateManager.enableLighting();
             GlStateManager.enableCull();
         }
-        if(!te.getContent().isEmpty()) {
+        if (!te.getContent().isEmpty()) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(x, y, z);
             GlStateManager.translate(0.5, 0.15, 0.4);
-            GlStateManager.scale(0.8,0.8,0.8);
+            GlStateManager.scale(0.8, 0.8, 0.8);
             GlStateManager.rotate(90, 1, 0, 0);
             Minecraft.getMinecraft().getRenderItem().renderItem(te.getContent(), ItemCameraTransforms.TransformType.GROUND);
             GlStateManager.popMatrix();

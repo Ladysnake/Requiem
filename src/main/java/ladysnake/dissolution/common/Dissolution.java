@@ -2,6 +2,7 @@ package ladysnake.dissolution.common;
 
 
 import ladysnake.dissolution.common.commands.CommandDissolutionTree;
+import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.inventory.DissolutionTab;
@@ -18,37 +19,39 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION,
-		acceptedMinecraftVersions = Reference.MCVERSION, dependencies = Reference.DEPENDENCIES,
-		guiFactory = Reference.GUI_FACTORY_CLASS)
+        acceptedMinecraftVersions = Reference.MCVERSION, dependencies = Reference.DEPENDENCIES,
+        guiFactory = Reference.GUI_FACTORY_CLASS)
 public class Dissolution {
-	
-	@Instance(Reference.MOD_ID)
-	public static Dissolution instance;
-	
-	public static final CreativeTabs CREATIVE_TAB = new DissolutionTab();
-	public static final Logger LOGGER = LogManager.getLogger("Dissolution");
-	
-	 @SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS,serverSide = Reference.SERVER_PROXY_CLASS)
-	 public static CommonProxy proxy;
-	 
-	 @EventHandler
-	 public void preInit(FMLPreInitializationEvent event) {
-		 proxy.preInit();
-		 DissolutionConfigManager.init(event.getSuggestedConfigurationFile());
-	 }
-	 
-	 @EventHandler
-	 public void init(FMLInitializationEvent event) {
-		 proxy.init();
-	 }
-	 
-	 @EventHandler
-	 public void postInit(FMLPostInitializationEvent event) {
-		 proxy.postInit();
-	 }
 
-	 @EventHandler
-	public void serverLoad(FMLServerStartingEvent event) {
-	 	event.registerServerCommand(new CommandDissolutionTree());
-	 }
+    @Instance(Reference.MOD_ID)
+    public static Dissolution instance;
+
+    public static DissolutionConfig config = new DissolutionConfig();
+
+    public static final CreativeTabs CREATIVE_TAB = new DissolutionTab();
+    public static final Logger LOGGER = LogManager.getLogger("Dissolution");
+
+    @SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS, serverSide = Reference.SERVER_PROXY_CLASS)
+    public static CommonProxy proxy;
+
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event) {
+        proxy.preInit();
+        DissolutionConfigManager.init(event.getSuggestedConfigurationFile());
+    }
+
+    @EventHandler
+    public void init(FMLInitializationEvent event) {
+        proxy.init();
+    }
+
+    @EventHandler
+    public void postInit(FMLPostInitializationEvent event) {
+        proxy.postInit();
+    }
+
+    @EventHandler
+    public void serverLoad(FMLServerStartingEvent event) {
+        event.registerServerCommand(new CommandDissolutionTree());
+    }
 }

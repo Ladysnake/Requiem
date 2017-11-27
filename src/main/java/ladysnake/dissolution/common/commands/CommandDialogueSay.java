@@ -2,7 +2,10 @@ package ladysnake.dissolution.common.commands;
 
 import ladysnake.dissolution.api.IDialogueStats;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import net.minecraft.command.*;
+import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 
@@ -33,7 +36,7 @@ public class CommandDialogueSay extends CommandBase {
 
     @Override
     public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException {
-        if(args.length <= 0) throw new WrongUsageException(getUsage(sender));
+        if (args.length <= 0) throw new WrongUsageException(getUsage(sender));
         EntityPlayer player = getCommandSenderAsPlayer(sender);
         IDialogueStats dialogueStats = CapabilityIncorporealHandler.getHandler(player).getDialogueStats();
         try {

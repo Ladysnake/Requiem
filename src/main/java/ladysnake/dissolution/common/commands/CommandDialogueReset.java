@@ -2,15 +2,13 @@ package ladysnake.dissolution.common.commands;
 
 import ladysnake.dissolution.api.IDialogueStats;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import net.minecraft.command.*;
+import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
 
 public class CommandDialogueReset extends CommandBase {
     @Nonnull

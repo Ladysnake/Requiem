@@ -21,41 +21,43 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 public abstract class CommonProxy {
-	
-	public void preInit() {
-		MinecraftForge.EVENT_BUS.register(ModBlocks.INSTANCE);
-		MinecraftForge.EVENT_BUS.register(ModItems.INSTANCE);
-		MinecraftForge.EVENT_BUS.register(ModModularSetups.INSTANCE);
-		CapabilityIncorporealHandler.register();
-		CapabilitySoulHandler.register();
-		CapabilityDistillateHandler.register();
-		CapabilityGenericInventoryProvider.register();
-		ModStructure.init();
-	}
-	
-	public void init() {
-		MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
-		MinecraftForge.EVENT_BUS.register(new LivingDeathHandler());
-		MinecraftForge.EVENT_BUS.register(new PlayerTickHandler());
-		MinecraftForge.EVENT_BUS.register(new InteractEventsHandler());
-		
-		OreDictHelper.registerOres();
-		
-		GameRegistry.registerTileEntity(TileEntityDistillatePipe.class, Reference.MOD_ID + ":tileentityessencecable");
-		GameRegistry.registerTileEntity(TileEntitySepulture.class, Reference.MOD_ID + ":tileentitysepulture");
-		GameRegistry.registerTileEntity(TileEntityModularMachine.class, Reference.MOD_ID + ":tileentitymodularmachine");
-		GameRegistry.registerTileEntity(TileEntityProxy.class, Reference.MOD_ID + ":tileentityproxy");
-		GameRegistry.registerTileEntity(TileEntityLamentStone.class, Reference.MOD_ID + ":tileentityancienttomb");
-		GameRegistry.registerTileEntity(TileEntityMortar.class, Reference.MOD_ID + ":tileentitymortar");
-		GameRegistry.registerTileEntity(TileEntityCrucible.class, Reference.MOD_ID + ":tileentitycrucible");
 
-		NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
-		PacketHandler.initPackets();
-	}
-	
-	public void postInit() {}
-	
-	public void spawnParticle(World world, float x, float y, float z, float vx, float vy, float vz, int r, int g, int b, int a, float scale, int lifetime) {}
+    public void preInit() {
+        MinecraftForge.EVENT_BUS.register(ModBlocks.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(ModItems.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(ModModularSetups.INSTANCE);
+        CapabilityIncorporealHandler.register();
+        CapabilitySoulHandler.register();
+        CapabilityDistillateHandler.register();
+        CapabilityGenericInventoryProvider.register();
+        ModStructure.init();
+    }
 
-	public abstract Side getSide();
+    public void init() {
+        MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
+        MinecraftForge.EVENT_BUS.register(new LivingDeathHandler());
+        MinecraftForge.EVENT_BUS.register(new PlayerTickHandler());
+        MinecraftForge.EVENT_BUS.register(new InteractEventsHandler());
+
+        OreDictHelper.registerOres();
+
+        GameRegistry.registerTileEntity(TileEntityDistillatePipe.class, Reference.MOD_ID + ":tileentityessencecable");
+        GameRegistry.registerTileEntity(TileEntitySepulture.class, Reference.MOD_ID + ":tileentitysepulture");
+        GameRegistry.registerTileEntity(TileEntityModularMachine.class, Reference.MOD_ID + ":tileentitymodularmachine");
+        GameRegistry.registerTileEntity(TileEntityProxy.class, Reference.MOD_ID + ":tileentityproxy");
+        GameRegistry.registerTileEntity(TileEntityLamentStone.class, Reference.MOD_ID + ":tileentityancienttomb");
+        GameRegistry.registerTileEntity(TileEntityMortar.class, Reference.MOD_ID + ":tileentitymortar");
+        GameRegistry.registerTileEntity(TileEntityCrucible.class, Reference.MOD_ID + ":tileentitycrucible");
+
+        NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
+        PacketHandler.initPackets();
+    }
+
+    public void postInit() {
+    }
+
+    public void spawnParticle(World world, float x, float y, float z, float vx, float vy, float vz, int r, int g, int b, int a, float scale, int lifetime) {
+    }
+
+    public abstract Side getSide();
 }

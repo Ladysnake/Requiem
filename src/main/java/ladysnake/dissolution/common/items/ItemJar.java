@@ -33,11 +33,11 @@ public class ItemJar extends Item implements ICustomLocation {
                 new ResourceLocation(Reference.MOD_ID, "fluid"),
                 (stack, worldIn, entityIn) -> {
                     FluidStack fluidStack = FluidUtil.getFluidContained(stack);
-                    if(fluidStack == null)
+                    if (fluidStack == null)
                         return 0;
-                    if(FluidRegistry.WATER.equals(fluidStack.getFluid()))
+                    if (FluidRegistry.WATER.equals(fluidStack.getFluid()))
                         return 1;
-                    if(ModFluids.MERCURY.fluid().equals(fluidStack.getFluid()))
+                    if (ModFluids.MERCURY.fluid().equals(fluidStack.getFluid()))
                         return 2;
                     return 0;
                 }
@@ -52,33 +52,32 @@ public class ItemJar extends Item implements ICustomLocation {
         RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, containedFluid == null);
         if (raytraceresult == null) {
             return new ActionResult<>(EnumActionResult.PASS, jar);
-        }
-        else if (raytraceresult.typeOfHit != RayTraceResult.Type.BLOCK) {
+        } else if (raytraceresult.typeOfHit != RayTraceResult.Type.BLOCK) {
             return new ActionResult<>(EnumActionResult.PASS, jar);
         }
         BlockPos pos = raytraceresult.getBlockPos();
-        if(FluidUtil.interactWithFluidHandler(playerIn, handIn, worldIn, pos, raytraceresult.sideHit))
+        if (FluidUtil.interactWithFluidHandler(playerIn, handIn, worldIn, pos, raytraceresult.sideHit))
             return new ActionResult<>(EnumActionResult.SUCCESS, jar);
         FluidActionResult result = FluidUtil.tryPlaceFluid(playerIn, worldIn, pos.offset(raytraceresult.sideHit), jar, containedFluid);
-        if(result.isSuccess())
+        if (result.isSuccess())
             return new ActionResult<>(EnumActionResult.SUCCESS, worldIn.isRemote ? jar : result.getResult());
         return super.onItemRightClick(worldIn, playerIn, handIn);
     }
 
     @Override
     public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
-        if(tab == Dissolution.CREATIVE_TAB) {
+        if (tab == Dissolution.CREATIVE_TAB) {
             items.add(new ItemStack(this));
             ItemStack stack = new ItemStack(this);
             IFluidHandlerItem handler = FluidUtil.getFluidHandler(stack);
-            if(handler == null)
+            if (handler == null)
                 Dissolution.LOGGER.error("An error occurred while populating the creative tab : water jar item had a null fluid handler");
             else
                 handler.fill(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), true);
             items.add(stack);
             stack = new ItemStack(this);
             handler = FluidUtil.getFluidHandler(stack);
-            if(handler == null)
+            if (handler == null)
                 Dissolution.LOGGER.error("An error occurred while populating the creative tab : mercury jar item had a null fluid handler");
             else
                 handler.fill(new FluidStack(ModFluids.MERCURY.fluid(), Fluid.BUCKET_VOLUME), true);
@@ -90,10 +89,10 @@ public class ItemJar extends Item implements ICustomLocation {
     @Override
     public String getUnlocalizedName(ItemStack stack) {
         FluidStack fluid = FluidUtil.getFluidContained(stack);
-        if(fluid != null) {
-            if(fluid.getFluid().equals(FluidRegistry.WATER))
+        if (fluid != null) {
+            if (fluid.getFluid().equals(FluidRegistry.WATER))
                 return "item.water_jar.name";
-            if(fluid.getFluid().equals(ModFluids.MERCURY.fluid()))
+            if (fluid.getFluid().equals(ModFluids.MERCURY.fluid()))
                 return "item.mercury_jar.name";
         }
         return super.getUnlocalizedName(stack);

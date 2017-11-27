@@ -2,31 +2,30 @@ package ladysnake.dissolution.common.items;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 
 public class ItemOccularePart extends Item implements ICustomLocation {
 
-	private static int currentId;
-	
-	private final int id;
+    private static int currentId;
 
-	public ItemOccularePart() {
-		this(0);
-	}
+    private final int id;
 
-	public ItemOccularePart(int durability) {
-		super();
-		this.id = currentId++;
-		this.setMaxDamage(durability);
-	}
+    public ItemOccularePart() {
+        this(0);
+    }
 
-	public int getId() {
-		return id;
-	}
+    public ItemOccularePart(int durability) {
+        super();
+        this.id = currentId++;
+        this.setMaxDamage(durability);
+    }
 
-	@Override
-	public ModelResourceLocation getModelLocation() {
-		assert this.getRegistryName() != null;
-		return new ModelResourceLocation(this.getRegistryName().getResourceDomain() + ":occularia_parts/" + this.getRegistryName().getResourcePath());
-	}
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public ModelResourceLocation getModelLocation() {
+        assert this.getRegistryName() != null;
+        return new ModelResourceLocation(this.getRegistryName().getResourceDomain() + ":occularia_parts/" + this.getRegistryName().getResourcePath());
+    }
 }

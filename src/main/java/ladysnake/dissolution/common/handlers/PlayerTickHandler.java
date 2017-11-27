@@ -4,9 +4,7 @@ import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.EctoplasmStats;
-import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
-import ladysnake.dissolution.common.config.DissolutionConfigManager.FlightModes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,7 +22,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
 
-import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
@@ -109,17 +106,17 @@ public class PlayerTickHandler {
     private void handleSoulFlight(EntityPlayer player) {
         if (player.getRidingEntity() != null) return;
 
-        if (DissolutionConfigManager.isFlightSetTo(FlightModes.SPECTATOR_FLIGHT)
-                || DissolutionConfigManager.isFlightSetTo(FlightModes.CUSTOM_FLIGHT))
+        if (DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.SPECTATOR_FLIGHT)
+                || DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT))
             player.capabilities.isFlying = true;
-        if (DissolutionConfigManager.isFlightSetTo(FlightModes.CUSTOM_FLIGHT)) {
+        if (DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT)) {
             player.onGround = false;
         }
 //		if (DissolutionConfigManager.isFlightEnabled(FlightModes.SPECTATOR_FLIGHT)
 //				|| DissolutionConfigManager.isFlightEnabled(FlightModes.CREATIVE_FLIGHT))
-        if (!DissolutionConfigManager.isFlightSetTo(FlightModes.NO_FLIGHT))
+        if (!DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.NO_FLIGHT))
             player.capabilities.allowFlying = true;
-        if (DissolutionConfigManager.isFlightSetTo(FlightModes.CUSTOM_FLIGHT)) {
+        if (DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT)) {
             try {
                 flyToggleTimer.invokeExact(player, 0);
             } catch (Throwable throwable) {
@@ -165,7 +162,7 @@ public class PlayerTickHandler {
      * Makes the player tangible and runs some logic specific to Origin respawn
      */
     private void respawnPlayerOrigin(EntityPlayer player) {
-        if (player.world.isRemote || !DissolutionConfig.respawn.wowLikeRespawn)
+        if (player.world.isRemote || !Dissolution.config.respawn.wowLikeRespawn)
             return;
 
         CapabilityIncorporealHandler.getHandler(player).setCorporealityStatus(IIncorporealHandler.CorporealityStatus.BODY);
@@ -174,7 +171,7 @@ public class PlayerTickHandler {
                 player.posX + 0.5D, player.posY + 1.0D, player.posZ + 0.5D, 50, 0.3D, 0.3D,
                 0.3D, 0.01D);
 
-        if (player.dimension == -1 && DissolutionConfig.respawn.respawnInNether) {
+        if (player.dimension == -1 && Dissolution.config.respawn.respawnInNether) {
             BlockPos spawnPos = player.getBedLocation(player.getSpawnDimension());
             if (spawnPos == null)
                 spawnPos = player.world.getMinecraftServer().getWorld(0).getSpawnPoint();

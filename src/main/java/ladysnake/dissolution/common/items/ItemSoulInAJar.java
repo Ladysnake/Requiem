@@ -28,72 +28,72 @@ import java.util.List;
 
 public class ItemSoulInAJar extends ItemJar {
 
-	public ItemSoulInAJar() {
-		super();
-		this.setHasSubtypes(false);
-	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-		Soul soul = getSoul(stack);
+    public ItemSoulInAJar() {
+        super();
+        this.setHasSubtypes(false);
+    }
 
-		if(soul == Soul.UNDEFINED) 
-			return;
-		
-		tooltip.add(soul.getType().toString());
-		if(flagIn.isAdvanced()) {
-			tooltip.add("Purity: " + soul.getPurity());
-			tooltip.add("Willingness: " + soul.getWillingness());
-		}
-	}
-	
-	@Nonnull
-	@Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, @Nonnull EnumHand handIn) {
-		ItemStack stack = playerIn.getHeldItem(handIn);
-		Soul soul = getSoul(stack);
-		RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, true);
-		if (raytraceresult.typeOfHit == RayTraceResult.Type.MISS) {
-			return new ActionResult<>(EnumActionResult.PASS, stack);
-		}
-		BlockPos pos = raytraceresult.getBlockPos().offset(raytraceresult.sideHit);
-		if(!worldIn.isRemote)
-			worldIn.spawnEntity(new EntityFleetingSoul(worldIn, pos.getX(), pos.getY(), pos.getZ(), soul));
-		stack.shrink(1);
-		ItemStack emptyJar = new ItemStack(ModItems.GLASS_JAR);
-		if(stack.isEmpty())
-			stack = emptyJar;
-		else
-			playerIn.addItemStackToInventory(emptyJar);
-		return new ActionResult<>(EnumActionResult.SUCCESS, stack);
-	}
-	
-	public Soul getSoul(ItemStack stack) {
-		NBTTagCompound soulNBT = stack.getSubCompound("soul");
-		if(soulNBT != null)
-			return new Soul(soulNBT);
-		return Soul.UNDEFINED;
-	}
-	
-	public static ItemStack newTypedSoulBottle(SoulTypes soulType) {
-		ItemStack stack = new ItemStack(ModItems.SOUL_IN_A_FLASK);
-		NBTTagCompound nbt = new NBTTagCompound();
-		Soul soul = new Soul(soulType);
-		nbt.setTag("soul", soul.writeToNBT());
-		stack.setTagCompound(nbt);
-		return stack;
-	}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+        Soul soul = getSoul(stack);
 
-	@Override
-	public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
-		if(tab == Dissolution.CREATIVE_TAB)
-			items.add(new ItemStack(this));
-	}
+        if (soul == Soul.UNDEFINED)
+            return;
 
-	@Nullable
-	@Override
-	public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt) {
-		return new CapabilitySoulHandler.Provider();
-	}
+        tooltip.add(soul.getType().toString());
+        if (flagIn.isAdvanced()) {
+            tooltip.add("Purity: " + soul.getPurity());
+            tooltip.add("Willingness: " + soul.getWillingness());
+        }
+    }
+
+    @Nonnull
+    @Override
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, @Nonnull EnumHand handIn) {
+        ItemStack stack = playerIn.getHeldItem(handIn);
+        Soul soul = getSoul(stack);
+        RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, true);
+        if (raytraceresult.typeOfHit == RayTraceResult.Type.MISS) {
+            return new ActionResult<>(EnumActionResult.PASS, stack);
+        }
+        BlockPos pos = raytraceresult.getBlockPos().offset(raytraceresult.sideHit);
+        if (!worldIn.isRemote)
+            worldIn.spawnEntity(new EntityFleetingSoul(worldIn, pos.getX(), pos.getY(), pos.getZ(), soul));
+        stack.shrink(1);
+        ItemStack emptyJar = new ItemStack(ModItems.GLASS_JAR);
+        if (stack.isEmpty())
+            stack = emptyJar;
+        else
+            playerIn.addItemStackToInventory(emptyJar);
+        return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+    }
+
+    public Soul getSoul(ItemStack stack) {
+        NBTTagCompound soulNBT = stack.getSubCompound("soul");
+        if (soulNBT != null)
+            return new Soul(soulNBT);
+        return Soul.UNDEFINED;
+    }
+
+    public static ItemStack newTypedSoulBottle(SoulTypes soulType) {
+        ItemStack stack = new ItemStack(ModItems.SOUL_IN_A_FLASK);
+        NBTTagCompound nbt = new NBTTagCompound();
+        Soul soul = new Soul(soulType);
+        nbt.setTag("soul", soul.writeToNBT());
+        stack.setTagCompound(nbt);
+        return stack;
+    }
+
+    @Override
+    public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
+        if (tab == Dissolution.CREATIVE_TAB)
+            items.add(new ItemStack(this));
+    }
+
+    @Nullable
+    @Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt) {
+        return new CapabilitySoulHandler.Provider();
+    }
 }

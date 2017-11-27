@@ -15,13 +15,11 @@ public class BlockDepletedClay extends BlockDepleted {
     }
 
     @Nonnull
-    public Item getItemDropped(IBlockState state, Random rand, int fortune)
-    {
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
         return ModItems.DEPLETED_CLAY;
     }
 
-    public int quantityDropped(Random random)
-    {
+    public int quantityDropped(Random random) {
         return 4;
     }
 

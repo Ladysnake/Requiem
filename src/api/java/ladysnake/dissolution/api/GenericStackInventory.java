@@ -6,9 +6,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Iterator;
-import java.util.Objects;
 
 public class GenericStackInventory<T> implements INBTSerializable<NBTTagCompound> {
     private int maxSize;
@@ -25,7 +22,7 @@ public class GenericStackInventory<T> implements INBTSerializable<NBTTagCompound
 
     public GenericStackInventory(GenericStackInventory<T> toClone) {
         this(toClone.maxSize, toClone.stacks.size(), toClone.typeClass, toClone.serializer);
-        for(GenericStack<T> stack : toClone.stacks) {
+        for (GenericStack<T> stack : toClone.stacks) {
             this.stacks.add(new GenericStack<>(stack));
         }
     }
@@ -53,22 +50,22 @@ public class GenericStackInventory<T> implements INBTSerializable<NBTTagCompound
 
     public static <T> void mergeInventories(GenericStackInventory<T> fromInventory, GenericStackInventory<T> toInventory) {
         mergeLoop:
-        for(GenericStack<T> stack : fromInventory.stacks) {
-            for(GenericStack<T> stack2 : toInventory.stacks) {
-                if(!fromInventory.canExtract() || !toInventory.canInsert()) return;
+        for (GenericStack<T> stack : fromInventory.stacks) {
+            for (GenericStack<T> stack2 : toInventory.stacks) {
+                if (!fromInventory.canExtract() || !toInventory.canInsert()) return;
                 stack2.merge(stack);
-                if(stack.isEmpty())
+                if (stack.isEmpty())
                     continue mergeLoop;
             }
         }
     }
 
     public GenericStack<T> insert(GenericStack<T> stack) {
-        if(!canInsert()) return stack;
+        if (!canInsert()) return stack;
         int i = this.stacks.indexOfType(stack.getType());
-        if(i == -1)
+        if (i == -1)
             i = this.stacks.indexOfType(null);
-        if(i > -1) {
+        if (i > -1) {
             GenericStack<T> stack2 = this.stacks.get(i);
             int currentAmount = stack2.getCount();
             int amount = Math.min(stack.getCount() + currentAmount, maxSize);
@@ -83,9 +80,9 @@ public class GenericStackInventory<T> implements INBTSerializable<NBTTagCompound
     }
 
     public GenericStack<T> extract(int amount, T type) {
-        if(!canExtract()) return GenericStack.empty();
+        if (!canExtract()) return GenericStack.empty();
         GenericStack<T> contentStack = this.stacks.get(type);
-        if(contentStack.isEmpty())
+        if (contentStack.isEmpty())
             return GenericStack.empty();
         amount = Math.min(amount, contentStack.getCount());
         GenericStack<T> ret = contentStack.withSize(amount);
@@ -112,8 +109,7 @@ public class GenericStackInventory<T> implements INBTSerializable<NBTTagCompound
                 this.stacks.set(slot, GenericStack.empty());
             }
             return existing;
-        }
-        else {
+        } else {
             if (!simulate) {
                 this.stacks.set(slot, existing.withSize(existing.getCount() - toExtract));
             }
@@ -131,7 +127,7 @@ public class GenericStackInventory<T> implements INBTSerializable<NBTTagCompound
         NBTTagCompound compound = new NBTTagCompound();
         compound.setInteger("maxSize", this.maxSize);
         NBTTagList content = new NBTTagList();
-        for(GenericStack<T> stack : this.stacks)
+        for (GenericStack<T> stack : this.stacks)
             content.appendTag(stack.writeToNBT(new NBTTagCompound(), serializer));
         compound.setTag("stacks", content);
         return compound;
@@ -142,8 +138,8 @@ public class GenericStackInventory<T> implements INBTSerializable<NBTTagCompound
         NBTTagList nbtContent = nbt.getTagList("stacks", 10);
         this.maxSize = nbt.getInteger("maxSize");
         stacks.clear();
-        for(NBTBase compound : nbtContent)
-            this.stacks.add(new GenericStack<>((NBTTagCompound)compound, serializer));
+        for (NBTBase compound : nbtContent)
+            this.stacks.add(new GenericStack<>((NBTTagCompound) compound, serializer));
     }
 
     protected void validateSlotIndex(int slot) {

@@ -1,7 +1,7 @@
-package ladysnake.dissolution.common.config;
+package ladysnake.dissolution.client.config;
 
-import com.google.common.collect.Lists;
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigCategory;
@@ -29,11 +29,10 @@ public class DissolutionGuiFactory implements IModGuiFactory {
     @Override
     public GuiScreen createConfigGui(GuiScreen parentScreen) {
         List<IConfigElement> elements = new ArrayList<>();
-        Set<String> catNames = DissolutionConfigManager.getCategoryNames();
-        for (String catName : catNames) {
-            if (catName.isEmpty())
+        Set<ConfigCategory> catNames = DissolutionConfigManager.getRootCategories();
+        for (ConfigCategory category : catNames) {
+            if (category.isEmpty())
                 continue;
-            ConfigCategory category = DissolutionConfigManager.config.getCategory(catName);
             DummyConfigElement.DummyCategoryElement element = new DummyConfigElement.DummyCategoryElement(category.getName(), category.getLanguagekey(), new ConfigElement(category).getChildElements());
             element.setRequiresMcRestart(category.requiresMcRestart());
             element.setRequiresWorldRestart(category.requiresWorldRestart());
@@ -41,6 +40,7 @@ public class DissolutionGuiFactory implements IModGuiFactory {
         }
         elements.addAll(new ConfigElement(DissolutionConfigManager.config.getCategory(Configuration.CATEGORY_GENERAL)).getChildElements());
         return new GuiDissolutionConfig(parentScreen, elements, Reference.MOD_NAME);
+//        return new GuiConfig(parentScreen, Reference.MOD_ID, Reference.MOD_NAME);
     }
 
     @Override

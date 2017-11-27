@@ -41,22 +41,20 @@ public class CommandDissolutionTree extends CommandDissolutionTreeBase {
     }
 
     @Override
-    public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException
-    {
-        if(args.length < 1) {
+    public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException {
+        if (args.length < 1) {
             sender.sendMessage(new TextComponentString(CommandBase.joinNiceStringFromCollection(getCommandMap().keySet())));
-        }
-        else {
+        } else {
             ICommand cmd = getCommandMap().get(args[0]);
 
-            if(cmd == null) {
+            if (cmd == null) {
                 Optional<ICommand> command = getSubCommands().stream().filter(iCommand -> iCommand.getAliases().contains(args[0])).findAny();
-                if(command.isPresent())
+                if (command.isPresent())
                     cmd = command.get();
                 else
                     throw new CommandException("commands.tree_base.invalid_cmd", args[0]);
             }
-            if(!cmd.checkPermission(server, sender)) {
+            if (!cmd.checkPermission(server, sender)) {
                 throw new CommandException("commands.generic.permission");
             }
             cmd.execute(server, sender, shiftArgs(args));
@@ -64,7 +62,7 @@ public class CommandDissolutionTree extends CommandDissolutionTreeBase {
     }
 
     protected static String[] shiftArgs(String[] s) {
-        if(s == null || s.length == 0) {
+        if (s == null || s.length == 0) {
             return new String[0];
         }
 

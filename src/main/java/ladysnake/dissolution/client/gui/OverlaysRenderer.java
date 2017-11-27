@@ -18,27 +18,26 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class OverlaysRenderer {
-	
-	public static final OverlaysRenderer INSTANCE = new OverlaysRenderer();
-	
-	private static final ResourceLocation INCORPOREAL_PATH = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_overlay.png");
-	private static final ResourceLocation RES_MERCURY_OVERLAY = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_overlay.png");
+
+    public static final OverlaysRenderer INSTANCE = new OverlaysRenderer();
+
+    private static final ResourceLocation INCORPOREAL_PATH = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_overlay.png");
+    private static final ResourceLocation RES_MERCURY_OVERLAY = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_overlay.png");
 
     private float b = 0.0F;
 
     void renderOverlays(RenderGameOverlayEvent.Post event) {
-		EntityPlayer player = Minecraft.getMinecraft().player;
-		final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
-		if(playerCorp.getCorporealityStatus().isIncorporeal() && playerCorp.getPossessed() == null)
-			drawIncorporealOverlay(event.getResolution());
-		if(player.world.getBlockState(player.getPosition().up()).getBlock() == ModFluids.MERCURY.fluidBlock()) {
-			renderWaterOverlayTexture(event.getPartialTicks());
-		}
-	}
-	
-	private void renderWaterOverlayTexture(float partialTicks)
-    {
-		Minecraft mc = Minecraft.getMinecraft();
+        EntityPlayer player = Minecraft.getMinecraft().player;
+        final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
+        if (playerCorp.getCorporealityStatus().isIncorporeal() && playerCorp.getPossessed() == null)
+            drawIncorporealOverlay(event.getResolution());
+        if (player.world.getBlockState(player.getPosition().up()).getBlock() == ModFluids.MERCURY.fluidBlock()) {
+            renderWaterOverlayTexture(event.getPartialTicks());
+        }
+    }
+
+    private void renderWaterOverlayTexture(float partialTicks) {
+        Minecraft mc = Minecraft.getMinecraft();
         mc.getTextureManager().bindTexture(RES_MERCURY_OVERLAY);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
@@ -67,35 +66,34 @@ public class OverlaysRenderer {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.disableBlend();
     }
-	
-	/**
-	 * Draws the blue overlay telling the player he's a ghost
-	 */
-    private void drawIncorporealOverlay(ScaledResolution scaledRes)
-    {
+
+    /**
+     * Draws the blue overlay telling the player he's a ghost
+     */
+    private void drawIncorporealOverlay(ScaledResolution scaledRes) {
         final float inc = 0.001F;
         b += inc;
-		//System.out.println(Math.cos(b));
-		
-		GlStateManager.pushAttrib();
-		GlStateManager.color((float) Math.cos(b), 1.0F, 1.0F, 0.5F);
-		GlStateManager.disableLighting();
-		GlStateManager.enableAlpha();
-		GlStateManager.enableBlend();
-				
+        //System.out.println(Math.cos(b));
+
+        GlStateManager.pushAttrib();
+        GlStateManager.color((float) Math.cos(b), 1.0F, 1.0F, 0.5F);
+        GlStateManager.disableLighting();
+        GlStateManager.enableAlpha();
+        GlStateManager.enableBlend();
+
         Minecraft.getMinecraft().getTextureManager().bindTexture(INCORPOREAL_PATH);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder vertexbuffer = tessellator.getBuffer();
-        
+
         vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        vertexbuffer.pos(0.0D, (double)scaledRes.getScaledHeight(), -90.0D).tex(0.0D, 1.0D).endVertex();
-        vertexbuffer.pos((double)scaledRes.getScaledWidth(), (double)scaledRes.getScaledHeight(), -90.0D).tex(1.0D, 1.0D).endVertex();
-        vertexbuffer.pos((double)scaledRes.getScaledWidth(), 0.0D, -90.0D).tex(1.0D, 0.0D).endVertex();
+        vertexbuffer.pos(0.0D, (double) scaledRes.getScaledHeight(), -90.0D).tex(0.0D, 1.0D).endVertex();
+        vertexbuffer.pos((double) scaledRes.getScaledWidth(), (double) scaledRes.getScaledHeight(), -90.0D).tex(1.0D, 1.0D).endVertex();
+        vertexbuffer.pos((double) scaledRes.getScaledWidth(), 0.0D, -90.0D).tex(1.0D, 0.0D).endVertex();
         vertexbuffer.pos(0.0D, 0.0D, -90.0D).tex(0.0D, 0.0D).endVertex();
         tessellator.draw();
-		
+
         GlStateManager.popAttrib();
-		/*
+        /*
 		GlStateManager.pushAttrib();
 		GlStateManager.depthMask(false);
         GlStateManager.depthFunc(514);

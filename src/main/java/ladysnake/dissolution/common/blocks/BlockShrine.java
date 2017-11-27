@@ -1,7 +1,6 @@
 package ladysnake.dissolution.common.blocks;
 
 import ladysnake.dissolution.api.IDialogueStats;
-import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
@@ -39,15 +38,15 @@ public class BlockShrine extends Block {
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if(!state.getValue(WATER) && playerIn.getHeldItem(hand).hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
+        if (!state.getValue(WATER) && playerIn.getHeldItem(hand).hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
             FluidStack water = playerIn.getHeldItem(hand).getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)
                     .drain(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), true);
-            if(water != null) {
+            if (water != null) {
                 worldIn.setBlockState(pos, state.withProperty(WATER, true));
                 worldIn.playSound(playerIn, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1, 1);
             }
             return true;
-        } else if(state.getValue(WATER)) {
+        } else if (state.getValue(WATER)) {
             IDialogueStats stats = CapabilityIncorporealHandler.getHandler(playerIn).getDialogueStats();
             stats.resetProgress();
             return true;
