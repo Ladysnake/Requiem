@@ -4,7 +4,6 @@ import ladysnake.dissolution.api.IIncorporealHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
-import net.minecraftforge.fml.common.eventhandler.Event;
 
 @Cancelable
 public class PlayerIncorporealEvent extends PlayerEvent {

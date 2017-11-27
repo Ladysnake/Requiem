@@ -8,27 +8,27 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
-@Mod.EventBusSubscriber(modid=Reference.MOD_ID)
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public enum ModSounds {
-	resonant_coil;
+    resonant_coil;
 
-	private final SoundEvent sound;
+    private final SoundEvent sound;
 
-	ModSounds() {
-		ResourceLocation soundLocation = new ResourceLocation(Reference.MOD_ID, this.name());
-		this.sound = new SoundEvent(soundLocation);
-		this.sound.setRegistryName(soundLocation);
-	}
+    ModSounds() {
+        ResourceLocation soundLocation = new ResourceLocation(Reference.MOD_ID, this.name());
+        this.sound = new SoundEvent(soundLocation);
+        this.sound.setRegistryName(soundLocation);
+    }
 
-	public SoundEvent sound() {
-		return this.sound;
-	}
+    public SoundEvent sound() {
+        return this.sound;
+    }
 
-	@SubscribeEvent
+    @SubscribeEvent
     public static void onRegister(RegistryEvent.Register<SoundEvent> event) {
-		IForgeRegistry<SoundEvent> reg = event.getRegistry();
-		for(ModSounds s : ModSounds.values())
-			reg.register(s.sound);
-	}
+        IForgeRegistry<SoundEvent> reg = event.getRegistry();
+        for (ModSounds s : ModSounds.values())
+            reg.register(s.sound);
+    }
 
 }

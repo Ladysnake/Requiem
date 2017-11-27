@@ -1,10 +1,10 @@
 package ladysnake.dissolution.common.handlers;
 
 import ladysnake.dissolution.api.IIncorporealHandler;
-import ladysnake.dissolution.common.config.DissolutionConfig;
-import ladysnake.dissolution.common.config.DissolutionConfigManager;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.init.ModBlocks;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -13,7 +13,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.*;
 import net.minecraft.world.storage.loot.conditions.LootCondition;
@@ -77,12 +76,12 @@ public class EventHandlerCommon {
             final IIncorporealHandler corpse = CapabilityIncorporealHandler.getHandler(event.getOriginal());
             final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
             clone.setStrongSoul(corpse.isStrongSoul());
-            clone.setCorporealityStatus(DissolutionConfig.respawn.respawnCorporealityStatus);
+            clone.setCorporealityStatus(Dissolution.config.respawn.respawnCorporealityStatus);
             clone.getDeathStats().setLastDeathMessage(corpse.getDeathStats().getLastDeathMessage());
             clone.getDialogueStats().deserializeNBT(corpse.getDialogueStats().serializeNBT());
             clone.setSynced(false);
 
-            if (clone.isStrongSoul() && !DissolutionConfig.respawn.wowLikeRespawn) {
+            if (clone.isStrongSoul() && !Dissolution.config.respawn.wowLikeRespawn) {
                 clone.getDeathStats().setDeathDimension(corpse.getDeathStats().getDeathDimension());
                 clone.getDeathStats().setDeathLocation(new BlockPos(event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ));
                 clone.getDeathStats().setDead(true);
@@ -97,13 +96,13 @@ public class EventHandlerCommon {
         if (playerCorp.getDeathStats().wasDead() && !event.player.world.isRemote) {
             event.player.world.profiler.startSection("placing_respawned_player");
             // changes the player's dimension if required by the config or if they died there
-            if (DissolutionConfig.respawn.respawnInNether)
-                CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, DissolutionConfig.respawn.respawnDimension);
-            else if (!DissolutionConfig.respawn.wowLikeRespawn && event.player.dimension != playerCorp.getDeathStats().getDeathDimension())
+            if (Dissolution.config.respawn.respawnInNether)
+                CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, Dissolution.config.respawn.respawnDimension);
+            else if (!Dissolution.config.respawn.wowLikeRespawn && event.player.dimension != playerCorp.getDeathStats().getDeathDimension())
                 CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, playerCorp.getDeathStats().getDeathDimension());
 
             // changes the player's position to where they died
-            if (!DissolutionConfig.respawn.wowLikeRespawn) {
+            if (!Dissolution.config.respawn.wowLikeRespawn) {
                 BlockPos deathPos = playerCorp.getDeathStats().getDeathLocation();
                 if (!event.player.world.isOutsideBuildHeight(deathPos) && event.player.world.isAirBlock(deathPos))
                     ((EntityPlayerMP) event.player).connection.setPlayerLocation(deathPos.getX(), deathPos.getY(), deathPos.getZ(),

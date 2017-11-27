@@ -1,17 +1,12 @@
 package ladysnake.dissolution.client.handlers;
 
-import elucent.albedo.event.GatherLightsEvent;
-import elucent.albedo.lighting.Light;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.registries.modularsetups.SetupGreenhouse;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.registries.RegistryManager;
 
 public class AlbedoEventHandler {
 
-	private static final ResourceLocation modularMachines = new ResourceLocation(Reference.MOD_ID, "modularmachinesetups");
-	private static final ResourceLocation setupGreenhouse = new ResourceLocation(Reference.MOD_ID, "setup_greenhouse");
+    private static final ResourceLocation modularMachines = new ResourceLocation(Reference.MOD_ID, "modularmachinesetups");
+    private static final ResourceLocation setupGreenhouse = new ResourceLocation(Reference.MOD_ID, "setup_greenhouse");
 
     // @SubscribeEvent
     // public static void onGatherLights(GatherLightsEvent event) {

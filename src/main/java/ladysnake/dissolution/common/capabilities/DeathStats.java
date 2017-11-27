@@ -3,7 +3,6 @@ package ladysnake.dissolution.common.capabilities;
 import ladysnake.dissolution.api.IDeathStats;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
 
 public class DeathStats implements IDeathStats {
     private boolean wasDead;

@@ -1,6 +1,5 @@
 package ladysnake.dissolution.common.items;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class ItemDepletedCoal extends ItemDepleted {

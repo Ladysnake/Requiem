@@ -44,11 +44,11 @@ public class CommandCorporealMode extends CommandBase {
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         List<String> possibilities = null;
-        if(args.length == 1) {
+        if (args.length == 1) {
             possibilities = Arrays.asList("query", "set");
         } else if (args.length == 2 && "set".equals(args[0])) {
             possibilities = Arrays.stream(IIncorporealHandler.CorporealityStatus.values()).map(IIncorporealHandler.CorporealityStatus::toString).collect(Collectors.toList());
-        } else if(args.length > 1) {
+        } else if (args.length > 1) {
             possibilities = Arrays.asList(server.getOnlinePlayerNames());
         }
         return possibilities == null ? Collections.EMPTY_LIST : getListOfStringsMatchingLastWord(args, possibilities);
@@ -59,23 +59,23 @@ public class CommandCorporealMode extends CommandBase {
      */
     @Override
     public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException {
-        if(args.length <= 0)
+        if (args.length <= 0)
             throw new WrongUsageException("commands.dissolution.corporeality_mode.usage");
-        if("query".equals(args[0]) || "get".equals(args[0])) {                 // dissolution cmode query  -> returns the player's current status
+        if ("query".equals(args[0]) || "get".equals(args[0])) {                 // dissolution cmode query  -> returns the player's current status
             EntityPlayer player = args.length >= 2 ? getPlayer(server, sender, args[1]) : getCommandSenderAsPlayer(sender);
             IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
             notifyCommandListener(sender, this,
                     "commands.dissolution.corporeality_mode.query." + (player == sender ? "self" : "other"),     // different feedback
                     player.getName(), new TextComponentTranslation(handler.getCorporealityStatus().getUnlocalizedName()));
-        } else if("set".equals(args[0])) {          // dissolution cmode set -> sets the player's status
-            if(args.length == 1)
+        } else if ("set".equals(args[0])) {          // dissolution cmode set -> sets the player's status
+            if (args.length == 1)
                 throw new WrongUsageException("commands.dissolution.corporeality_mode.set.usage");       // have a more precise usage
             try {
                 IIncorporealHandler.CorporealityStatus newStatus = IIncorporealHandler.CorporealityStatus.valueOf(args[1].toUpperCase());
                 EntityPlayer player = args.length >= 3 ? getPlayer(server, sender, args[2]) : getCommandSenderAsPlayer(sender);
                 IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
-                if(!handler.isStrongSoul())
-                    throw new CommandException("commands.dissolution.corporeality_mode.set.weak_soul",player.getName());
+                if (!handler.isStrongSoul())
+                    throw new CommandException("commands.dissolution.corporeality_mode.set.weak_soul", player.getName());
                 handler.setCorporealityStatus(newStatus);
                 ITextComponent iTextComponent = new TextComponentTranslation(newStatus.getUnlocalizedName());
                 if (sender.getEntityWorld().getGameRules().getBoolean("sendCommandFeedback"))

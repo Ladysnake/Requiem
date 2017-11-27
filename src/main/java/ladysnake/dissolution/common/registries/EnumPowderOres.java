@@ -2,7 +2,6 @@ package ladysnake.dissolution.common.registries;
 
 import ladysnake.dissolution.api.INBTSerializableType;
 import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.tileentities.TileEntityMortar;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 

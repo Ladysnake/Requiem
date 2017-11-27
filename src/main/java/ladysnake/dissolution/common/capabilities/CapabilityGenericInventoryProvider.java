@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-@Mod.EventBusSubscriber(modid=Reference.MOD_ID)
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class CapabilityGenericInventoryProvider {
 
     @CapabilityInject(IGenericInventoryProvider.class)
@@ -31,7 +31,7 @@ public class CapabilityGenericInventoryProvider {
 
     @SuppressWarnings("unchecked")
     public static <T> GenericStackInventory<T> getInventory(ICapabilitySerializable capabilitySerializable, Class<T> tClass) {
-        if(capabilitySerializable.hasCapability(CAPABILITY_GENERIC, null)) {
+        if (capabilitySerializable.hasCapability(CAPABILITY_GENERIC, null)) {
             IGenericInventoryProvider handler = capabilitySerializable.getCapability(CAPABILITY_GENERIC, null);
             return handler != null && handler.hasInventoryFor(tClass) ? handler.getInventoryFor(tClass) : null;
         }
@@ -79,7 +79,7 @@ public class CapabilityGenericInventoryProvider {
         @Nullable
         @Override
         public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-            if(capability.equals(CAPABILITY_GENERIC))
+            if (capability.equals(CAPABILITY_GENERIC))
                 return CAPABILITY_GENERIC.cast(instance);
             return null;
         }
@@ -102,7 +102,7 @@ public class CapabilityGenericInventoryProvider {
         public NBTBase writeNBT(Capability<IGenericInventoryProvider> capability, IGenericInventoryProvider instance, EnumFacing side) {
             NBTTagCompound compound = new NBTTagCompound();
             NBTTagList inventories = new NBTTagList();
-            for(Map.Entry<Class, GenericStackInventory> entry : instance) {
+            for (Map.Entry<Class, GenericStackInventory> entry : instance) {
                 NBTTagCompound nbt = new NBTTagCompound();
                 nbt.setString("type", EnumSerializableTypes.forClass(entry.getKey()).name());
                 nbt.setInteger("slotCount", entry.getValue().getSlotCount());
@@ -116,9 +116,9 @@ public class CapabilityGenericInventoryProvider {
         @SuppressWarnings("unchecked")
         @Override
         public void readNBT(Capability<IGenericInventoryProvider> capability, IGenericInventoryProvider instance, EnumFacing side, NBTBase nbt) {
-            if(nbt instanceof NBTTagCompound) {
+            if (nbt instanceof NBTTagCompound) {
                 NBTTagList inventories = ((NBTTagCompound) nbt).getTagList("inventories", 10);
-                for(NBTBase inventoryNBT : inventories) {
+                for (NBTBase inventoryNBT : inventories) {
                     try {
                         EnumSerializableTypes type = EnumSerializableTypes.valueOf(((NBTTagCompound) inventoryNBT).getString("type"));
                         int slotCount = ((NBTTagCompound) inventoryNBT).getInteger("slotCount");

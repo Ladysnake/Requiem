@@ -12,7 +12,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class BlockDepleted extends Block{
+public class BlockDepleted extends Block {
 
     public BlockDepleted(Material materialIn) {
         super(materialIn);

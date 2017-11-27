@@ -1,5 +1,11 @@
 package ladysnake.dissolution.common.init;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -8,144 +14,136 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-
 public class RecipeToJsonConverter {
 
-	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-	private static final File RECIPE_DIR = new File("recipes");
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final File RECIPE_DIR = new File("recipes");
 
-	public static void addShapedRecipe(ItemStack result, Object... components) {
-		if (!RECIPE_DIR.exists()) {
-			RECIPE_DIR.mkdir();
-		}
+    public static void addShapedRecipe(ItemStack result, Object... components) {
+        if (!RECIPE_DIR.exists()) {
+            RECIPE_DIR.mkdir();
+        }
 
-		// GameRegistry.addShapedRecipe(result, components);
+        // GameRegistry.addShapedRecipe(result, components);
 
-		Map<String, Object> json = new HashMap<>();
-		
-		List<String> pattern = new ArrayList<>();
-		int i = 0;
-		while (i < components.length && components[i] instanceof String) {
-			pattern.add((String) components[i]);
-			i++;
-		}
-		json.put("pattern", pattern);
+        Map<String, Object> json = new HashMap<>();
 
-		boolean isOreDict = false;
-		Map<String, Map<String, Object>> key = new HashMap<>();
-		Character curKey = null;
-		for (; i < components.length; i++) {
-			Object o = components[i];
-			if (o instanceof Character) {
-				if (curKey != null)
-					throw new IllegalArgumentException("Provided two char keys in a row");
-				curKey = (Character) o;
-			} else {
-				if (curKey == null)
-					throw new IllegalArgumentException("Providing object without a char key");
-				if (o instanceof String)
-					isOreDict = true;
-				key.put(Character.toString(curKey), serializeItem(o));
-				curKey = null;
-			}
-		}
-		json.put("key", key);
-		json.put("type", isOreDict ? "forge:ore_shaped" : "minecraft:crafting_shaped");
-		json.put("result", serializeItem(result));
+        List<String> pattern = new ArrayList<>();
+        int i = 0;
+        while (i < components.length && components[i] instanceof String) {
+            pattern.add((String) components[i]);
+            i++;
+        }
+        json.put("pattern", pattern);
 
-		// names the json the same name as the output's registry name
-		// repeatedly adds _alt if a file already exists
-		// janky I know but it works
-		StringBuilder suffix = new StringBuilder(result.getItem().getHasSubtypes() ? "_" + result.getItemDamage() : "");
-		File f = new File(RECIPE_DIR, result.getItem().getRegistryName().getResourcePath() + suffix + ".json");
-		
-		while (f.exists()) {
-			suffix.append("_alt");
-			f = new File(RECIPE_DIR, result.getItem().getRegistryName().getResourcePath() + suffix + ".json");
-		}
-		
-		try (FileWriter w = new FileWriter(f)) {
-			GSON.toJson(json, w);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+        boolean isOreDict = false;
+        Map<String, Map<String, Object>> key = new HashMap<>();
+        Character curKey = null;
+        for (; i < components.length; i++) {
+            Object o = components[i];
+            if (o instanceof Character) {
+                if (curKey != null)
+                    throw new IllegalArgumentException("Provided two char keys in a row");
+                curKey = (Character) o;
+            } else {
+                if (curKey == null)
+                    throw new IllegalArgumentException("Providing object without a char key");
+                if (o instanceof String)
+                    isOreDict = true;
+                key.put(Character.toString(curKey), serializeItem(o));
+                curKey = null;
+            }
+        }
+        json.put("key", key);
+        json.put("type", isOreDict ? "forge:ore_shaped" : "minecraft:crafting_shaped");
+        json.put("result", serializeItem(result));
 
-	public static void addShapelessRecipe(ItemStack result, Object... components)
-	{
-		if (!RECIPE_DIR.exists()) {
-			RECIPE_DIR.mkdir();
-		}
-		
-		// GameRegistry.addShapelessRecipe(result, components);
-		
-		Map<String, Object> json = new HashMap<>();
+        // names the json the same name as the output's registry name
+        // repeatedly adds _alt if a file already exists
+        // janky I know but it works
+        StringBuilder suffix = new StringBuilder(result.getItem().getHasSubtypes() ? "_" + result.getItemDamage() : "");
+        File f = new File(RECIPE_DIR, result.getItem().getRegistryName().getResourcePath() + suffix + ".json");
 
-		boolean isOreDict = false;
-		List<Map<String, Object>> ingredients = new ArrayList<>();
-		for (Object o : components) {
-			if (o instanceof String)
-				isOreDict = true;
-			ingredients.add(serializeItem(o));
-		}
-		json.put("ingredients", ingredients);
-		json.put("type", isOreDict ? "forge:ore_shapeless" : "minecraft:crafting_shapeless");
-		json.put("result", serializeItem(result));
+        while (f.exists()) {
+            suffix.append("_alt");
+            f = new File(RECIPE_DIR, result.getItem().getRegistryName().getResourcePath() + suffix + ".json");
+        }
 
-		// names the json the same name as the output's registry name
-		// repeatedly adds _alt if a file already exists
-		// janky I know but it works
-		StringBuilder suffix = new StringBuilder(result.getItem().getHasSubtypes() ? "_" + result.getItemDamage() : "");
-		File f = new File(RECIPE_DIR, result.getItem().getRegistryName().getResourcePath() + suffix + ".json");
-		
-		while (f.exists()) {
-			suffix.append("_alt");
-			f = new File(RECIPE_DIR, result.getItem().getRegistryName().getResourcePath() + suffix + ".json");
-		}
-		
-		
-		try (FileWriter w = new FileWriter(f)) {
-			GSON.toJson(json, w);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+        try (FileWriter w = new FileWriter(f)) {
+            GSON.toJson(json, w);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	private static Map<String, Object> serializeItem(Object thing) {
-		if (thing instanceof Item) {
-			return serializeItem(new ItemStack((Item) thing));
-		}
-		if (thing instanceof Block) {
-			return serializeItem(new ItemStack((Block) thing));
-		}
-		if (thing instanceof ItemStack) {
-			ItemStack stack = (ItemStack) thing;
-			Map<String, Object> ret = new HashMap<>();
-			ret.put("item", stack.getItem().getRegistryName().toString());
-			if (stack.getItem().getHasSubtypes() || stack.getItemDamage() != 0) {
-				ret.put("data", stack.getItemDamage());
-			}
-			if (stack.getCount() > 1) {
-				ret.put("count", stack.getCount());
-			}
-			
-			if (stack.hasTagCompound()) {
-				throw new IllegalArgumentException("Too lazy to implement nbt support rn");
-			}
+    public static void addShapelessRecipe(ItemStack result, Object... components) {
+        if (!RECIPE_DIR.exists()) {
+            RECIPE_DIR.mkdir();
+        }
 
-			return ret;
-		}
-		if (thing instanceof String) {
-			Map<String, Object> ret = new HashMap<>();
-			ret.put("item", "#" + thing); // NOTE you need to add this to your _constants.json!
-		}
+        // GameRegistry.addShapelessRecipe(result, components);
 
-		throw new IllegalArgumentException("Not a block, item, stack, or od name");
-	}
+        Map<String, Object> json = new HashMap<>();
+
+        boolean isOreDict = false;
+        List<Map<String, Object>> ingredients = new ArrayList<>();
+        for (Object o : components) {
+            if (o instanceof String)
+                isOreDict = true;
+            ingredients.add(serializeItem(o));
+        }
+        json.put("ingredients", ingredients);
+        json.put("type", isOreDict ? "forge:ore_shapeless" : "minecraft:crafting_shapeless");
+        json.put("result", serializeItem(result));
+
+        // names the json the same name as the output's registry name
+        // repeatedly adds _alt if a file already exists
+        // janky I know but it works
+        StringBuilder suffix = new StringBuilder(result.getItem().getHasSubtypes() ? "_" + result.getItemDamage() : "");
+        File f = new File(RECIPE_DIR, result.getItem().getRegistryName().getResourcePath() + suffix + ".json");
+
+        while (f.exists()) {
+            suffix.append("_alt");
+            f = new File(RECIPE_DIR, result.getItem().getRegistryName().getResourcePath() + suffix + ".json");
+        }
+
+
+        try (FileWriter w = new FileWriter(f)) {
+            GSON.toJson(json, w);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static Map<String, Object> serializeItem(Object thing) {
+        if (thing instanceof Item) {
+            return serializeItem(new ItemStack((Item) thing));
+        }
+        if (thing instanceof Block) {
+            return serializeItem(new ItemStack((Block) thing));
+        }
+        if (thing instanceof ItemStack) {
+            ItemStack stack = (ItemStack) thing;
+            Map<String, Object> ret = new HashMap<>();
+            ret.put("item", stack.getItem().getRegistryName().toString());
+            if (stack.getItem().getHasSubtypes() || stack.getItemDamage() != 0) {
+                ret.put("data", stack.getItemDamage());
+            }
+            if (stack.getCount() > 1) {
+                ret.put("count", stack.getCount());
+            }
+
+            if (stack.hasTagCompound()) {
+                throw new IllegalArgumentException("Too lazy to implement nbt support rn");
+            }
+
+            return ret;
+        }
+        if (thing instanceof String) {
+            Map<String, Object> ret = new HashMap<>();
+            ret.put("item", "#" + thing); // NOTE you need to add this to your _constants.json!
+        }
+
+        throw new IllegalArgumentException("Not a block, item, stack, or od name");
+    }
 }

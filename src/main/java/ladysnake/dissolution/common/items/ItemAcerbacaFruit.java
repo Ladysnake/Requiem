@@ -15,46 +15,46 @@ import javax.annotation.Nonnull;
 
 public class ItemAcerbacaFruit extends ItemFood {
 
-	private IIncorporealHandler.CorporealityStatus corporealChange;
+    private IIncorporealHandler.CorporealityStatus corporealChange;
 
-	public ItemAcerbacaFruit(int amount, float saturation, IIncorporealHandler.CorporealityStatus corporealChange) {
-		super(amount, saturation, false);
-		this.setAlwaysEdible();
-		this.corporealChange = corporealChange;
-	}
+    public ItemAcerbacaFruit(int amount, float saturation, IIncorporealHandler.CorporealityStatus corporealChange) {
+        super(amount, saturation, false);
+        this.setAlwaysEdible();
+        this.corporealChange = corporealChange;
+    }
 
-	@Nonnull
-	@Override
-	public ItemStack onItemUseFinish(ItemStack stack, @Nonnull World worldIn, EntityLivingBase entityLiving) {
-		super.onItemUseFinish(stack, worldIn, entityLiving);
-		return ItemStack.EMPTY;
-	}
+    @Nonnull
+    @Override
+    public ItemStack onItemUseFinish(ItemStack stack, @Nonnull World worldIn, EntityLivingBase entityLiving) {
+        super.onItemUseFinish(stack, worldIn, entityLiving);
+        return ItemStack.EMPTY;
+    }
 
-	@Override
-	protected void onFoodEaten(ItemStack stack, World worldIn, @Nonnull EntityPlayer player) {
-		super.onFoodEaten(stack, worldIn, player);
-		split(player, this.corporealChange);
-	}
+    @Override
+    protected void onFoodEaten(ItemStack stack, World worldIn, @Nonnull EntityPlayer player) {
+        super.onFoodEaten(stack, worldIn, player);
+        split(player, this.corporealChange);
+    }
 
-	public static void split(EntityPlayer owner, IIncorporealHandler.CorporealityStatus newStatus) {
-		IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(owner);
-		if(handler.getCorporealityStatus().isIncorporeal() || owner.world.isRemote || !handler.isStrongSoul())
-			return;
+    public static void split(EntityPlayer owner, IIncorporealHandler.CorporealityStatus newStatus) {
+        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(owner);
+        if (handler.getCorporealityStatus().isIncorporeal() || owner.world.isRemote || !handler.isStrongSoul())
+            return;
 
-		EntityPlayerCorpse body = new EntityPlayerCorpse(owner.world);
-		body.setPosition(owner.posX, owner.posY, owner.posZ);
-		body.setPlayer(owner.getUniqueID());
-		body.setInert(true);
-		body.setDecompositionCountdown(-1);
-		DissolutionInventoryHelper.transferEquipment(owner, body);
-		body.setCustomNameTag(owner.getName());
-		body.setInventory(new InventoryPlayerCorpse(owner.inventory.mainInventory, body));
-		owner.inventory.clear();
-		body.setPlayer(owner.getUniqueID());
-		owner.world.spawnEntity(body);
+        EntityPlayerCorpse body = new EntityPlayerCorpse(owner.world);
+        body.setPosition(owner.posX, owner.posY, owner.posZ);
+        body.setPlayer(owner.getUniqueID());
+        body.setInert(true);
+        body.setDecompositionCountdown(-1);
+        DissolutionInventoryHelper.transferEquipment(owner, body);
+        body.setCustomNameTag(owner.getName());
+        body.setInventory(new InventoryPlayerCorpse(owner.inventory.mainInventory, body));
+        owner.inventory.clear();
+        body.setPlayer(owner.getUniqueID());
+        owner.world.spawnEntity(body);
 
-		handler.setCorporealityStatus(newStatus);
-	}
+        handler.setCorporealityStatus(newStatus);
+    }
 
 
 }

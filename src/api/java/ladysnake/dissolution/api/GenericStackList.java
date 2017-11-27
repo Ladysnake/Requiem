@@ -34,12 +34,13 @@ public class GenericStackList<T> extends NonNullList<GenericStack<T>> {
 
     /**
      * Searches for a stack that has a type equal to the one specified.
+     *
      * @return the index of a stack of the requested type
      */
     public int indexOfType(@Nullable T type) {
         int index = -1;
-        for(int i = 0; i < this.size() && index == -1; i++)
-            if((get(i).isEmpty() && type == null) || get(i).getType() == type)
+        for (int i = 0; i < this.size() && index == -1; i++)
+            if ((get(i).isEmpty() && type == null) || get(i).getType() == type)
                 index = i;
         return index;
     }
@@ -49,8 +50,8 @@ public class GenericStackList<T> extends NonNullList<GenericStack<T>> {
     }
 
     public boolean add(GenericStack<T> stack) {
-        for(int i = 0; i < this.size(); i++)
-            if(this.get(i).isEmpty()) {
+        for (int i = 0; i < this.size(); i++)
+            if (this.get(i).isEmpty()) {
                 this.set(i, stack);
                 return true;
             }
@@ -65,7 +66,7 @@ public class GenericStackList<T> extends NonNullList<GenericStack<T>> {
     @Override
     public boolean remove(Object arg0) {
         int index = indexOf(arg0);
-        if(index == -1)
+        if (index == -1)
             return false;
         this.set(index, defaultElement);
         return true;

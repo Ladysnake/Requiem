@@ -27,12 +27,12 @@ public class ItemMineral extends Item implements ICustomLocation {
     @Nonnull
     @Override
     public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if(player.getHeldItem(hand).getItem() == ModItems.MAGMA_STONE) {
+        if (player.getHeldItem(hand).getItem() == ModItems.MAGMA_STONE) {
             TileEntity tileEntity = worldIn.getTileEntity(pos);
-            if(tileEntity != null && tileEntity.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing)) {
+            if (tileEntity != null && tileEntity.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing)) {
                 IFluidHandler fluidHandler = tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
-                if(fluidHandler != null) {
-                    if(fluidHandler.drain(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME / 8), true) != null) {
+                if (fluidHandler != null) {
+                    if (fluidHandler.drain(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME / 8), true) != null) {
                         player.getHeldItem(hand).shrink(1);
                         player.addItemStackToInventory(new ItemStack(ModItems.IGNEOUS_ROCK));
                         worldIn.playSound(player, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (worldIn.rand.nextFloat() - worldIn.rand.nextFloat()) * 0.8F);

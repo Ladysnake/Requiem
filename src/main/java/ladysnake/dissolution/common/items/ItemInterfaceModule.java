@@ -21,13 +21,13 @@ public class ItemInterfaceModule extends ItemAlchemyModule {
         return part == BlockCasing.EnumPartType.BOTTOM ? super.toModule() :
                 new AlchemyModule(AlchemyModuleTypes.ALCHEMICAL_INTERFACE_TOP, this.getTier());
     }
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerRender() {
-		super.registerRender();
-		ResourceLocation model = new ResourceLocation(Reference.MOD_ID, "machine/interface_up");
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerRender() {
+        super.registerRender();
+        ResourceLocation model = new ResourceLocation(Reference.MOD_ID, "machine/interface_up");
         modulesModels.put(this.toModule(BlockCasing.EnumPartType.TOP, null), model);
-		DissolutionModelLoader.addModel(model, ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
-	}
+        DissolutionModelLoader.addModel(model, ModelRotation.X0_Y90, ModelRotation.X0_Y180, ModelRotation.X0_Y270);
+    }
 }

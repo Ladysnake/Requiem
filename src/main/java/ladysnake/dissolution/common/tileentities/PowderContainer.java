@@ -22,8 +22,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -43,7 +41,7 @@ public abstract class PowderContainer extends TileEntity {
 
     public boolean pourPowder(GenericStackInventory<EnumPowderOres> powderStack) {
         GenericStack<EnumPowderOres> stack = powderStack.extract(getMaxVolume(), null);
-        if(stack.isEmpty())
+        if (stack.isEmpty())
             return false;
         GenericStack<EnumPowderOres> tilePowder = getPowderInventory().insert(stack);
         powderStack.insert(tilePowder);
@@ -82,8 +80,8 @@ public abstract class PowderContainer extends TileEntity {
     public void dropContent() {
         IItemHandler itemInventory = this.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         BlockPos pos = this.getPos();
-        if(itemInventory != null)
-            for(int i = 0; i < itemInventory.getSlots(); i++)
+        if (itemInventory != null)
+            for (int i = 0; i < itemInventory.getSlots(); i++)
                 this.getWorld().spawnEntity(new EntityItem(this.getWorld(), pos.getX(), pos.getY(), pos.getZ(), itemInventory.getStackInSlot(i)));
 
     }
@@ -104,19 +102,19 @@ public abstract class PowderContainer extends TileEntity {
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        if(compound.hasKey("powderInventory"))
+        if (compound.hasKey("powderInventory"))
             this.powderInventory.deserializeNBT(compound.getCompoundTag("powderInventory"));
-        if(compound.hasKey("itemInventory"))
+        if (compound.hasKey("itemInventory"))
             this.itemInventory.deserializeNBT(compound.getCompoundTag("itemInventory"));
     }
 
     @Override
     public void markDirty() {
         super.markDirty();
-        if(!world.isRemote) {
+        if (!world.isRemote) {
             ChunkPos cp = this.world.getChunkFromBlockCoords(getPos()).getPos();
-            PlayerChunkMapEntry entry = ((WorldServer)this.world).getPlayerChunkMap().getEntry(cp.x, cp.z);
-            if (entry!=null) {
+            PlayerChunkMapEntry entry = ((WorldServer) this.world).getPlayerChunkMap().getEntry(cp.x, cp.z);
+            if (entry != null) {
                 entry.sendPacket(this.getUpdatePacket());
             }
         }
@@ -136,9 +134,9 @@ public abstract class PowderContainer extends TileEntity {
     @Nullable
     @Override
     public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-        if(capability == CapabilityGenericInventoryProvider.CAPABILITY_GENERIC)
+        if (capability == CapabilityGenericInventoryProvider.CAPABILITY_GENERIC)
             return CapabilityGenericInventoryProvider.CAPABILITY_GENERIC.cast(inventoryProvider);
-        if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemInventory);
         return super.getCapability(capability, facing);
     }
@@ -147,9 +145,11 @@ public abstract class PowderContainer extends TileEntity {
 
     protected abstract boolean isFull();
 
-    protected void onPowderInsertion(GenericStack<EnumPowderOres> stack) {}
+    protected void onPowderInsertion(GenericStack<EnumPowderOres> stack) {
+    }
 
-    protected void onItemInsertion(ItemStack stack) {}
+    protected void onItemInsertion(ItemStack stack) {
+    }
 
     class PowderInventory extends GenericStackInventory<EnumPowderOres> {
 
@@ -189,7 +189,7 @@ public abstract class PowderContainer extends TileEntity {
 
         @Override
         public ItemStack insertItemInternal(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            if(PowderContainer.this.isFull())
+            if (PowderContainer.this.isFull())
                 return stack;
             onItemInsertion(stack);
             ItemStack ret = super.insertItemInternal(slot, stack, simulate);
@@ -200,11 +200,12 @@ public abstract class PowderContainer extends TileEntity {
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            if(PowderContainer.this.isFull())
+            if (PowderContainer.this.isFull())
                 return stack;
             onItemInsertion(stack);
             //noinspection StatementWithEmptyBody   -- inserts items one by one until full
-            while(!PowderContainer.this.isFull() && !stack.isEmpty() && super.insertItem(slot, stack.splitStack(1), simulate).isEmpty());
+            while (!PowderContainer.this.isFull() && !stack.isEmpty() && super.insertItem(slot, stack.splitStack(1), simulate).isEmpty())
+                ;
             markDirty();
             return stack;
         }

@@ -17,10 +17,10 @@ public class ItemStoneHeart extends Item {
 
     @Override
     public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer playerIn, EntityLivingBase target, EnumHand hand) {
-        if(!playerIn.world.isRemote && target.getCreatureAttribute() == EnumCreatureAttribute.UNDEAD) {
-            if(target instanceof EntityPlayerCorpse) {
-                if(!((EntityPlayerCorpse)target).hasLifeStone()) {
-                    ((EntityPlayerCorpse)target).setLifeStone(getQuality(stack));
+        if (!playerIn.world.isRemote && target.getCreatureAttribute() == EnumCreatureAttribute.UNDEAD) {
+            if (target instanceof EntityPlayerCorpse) {
+                if (!((EntityPlayerCorpse) target).hasLifeStone()) {
+                    ((EntityPlayerCorpse) target).setLifeStone(getQuality(stack));
                     stack.shrink(1);
                 }
             } else {
@@ -46,7 +46,7 @@ public class ItemStoneHeart extends Item {
 
     private byte getQuality(ItemStack lifeStone) {
         NBTTagCompound compound = lifeStone.getTagCompound();
-        if(compound == null)
+        if (compound == null)
             return 0;
         return compound.getByte("lifeStone");
     }

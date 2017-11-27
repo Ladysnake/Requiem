@@ -18,80 +18,80 @@ import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class DistillatePipeBakedModel implements IBakedModel {
-	
-	public static final String LOCATION_NAME = "baked_essentia_pipe";
-	public static final ModelResourceLocation BAKED_MODEL = new ModelResourceLocation(Reference.MOD_ID + ":" + LOCATION_NAME);
 
-	public static final ResourceLocation INTERSECTION = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_intersection");
-	public static final ResourceLocation SECTION = new ResourceLocation(Reference.MOD_ID, "machine/pipe/essential_pipe_section");
-	public static final ResourceLocation START = new ResourceLocation(Reference.MOD_ID, "machine/pipe/essential_pipe_start");
+    public static final String LOCATION_NAME = "baked_essentia_pipe";
+    public static final ModelResourceLocation BAKED_MODEL = new ModelResourceLocation(Reference.MOD_ID + ":" + LOCATION_NAME);
 
-	@Nonnull
-	@Override
-	public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
-		List<BakedQuad> quads = new ArrayList<>();
+    public static final ResourceLocation INTERSECTION = new ResourceLocation(Reference.MOD_ID, "machine/pipe/pipe_intersection");
+    public static final ResourceLocation SECTION = new ResourceLocation(Reference.MOD_ID, "machine/pipe/essential_pipe_section");
+    public static final ResourceLocation START = new ResourceLocation(Reference.MOD_ID, "machine/pipe/essential_pipe_start");
 
-		IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
-		Boolean north = extendedBlockState.getValue(BlockDistillatePipe.NORTH);
-		Boolean south = extendedBlockState.getValue(BlockDistillatePipe.SOUTH);
-		Boolean west = extendedBlockState.getValue(BlockDistillatePipe.WEST);
-		Boolean east = extendedBlockState.getValue(BlockDistillatePipe.EAST);
-		Boolean up = extendedBlockState.getValue(BlockDistillatePipe.UP);
-		Boolean down = extendedBlockState.getValue(BlockDistillatePipe.DOWN);
+    @Nonnull
+    @Override
+    public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
+        List<BakedQuad> quads = new ArrayList<>();
 
-		if(north && south && !(west || east || up || down)) {
-			quads.addAll(DissolutionModelLoader.getModel(SECTION, ModelRotation.X0_Y0).getQuads(state, side, rand));
-			return quads;
-		} else if (west && east && !(north || south || up || down)) {
-			quads.addAll(DissolutionModelLoader.getModel(SECTION, ModelRotation.X0_Y90).getQuads(state, side, rand));
-			return quads;
-		} else if (up && down && !(north || south || west || east)) {
-			quads.addAll(DissolutionModelLoader.getModel(SECTION, ModelRotation.X90_Y0).getQuads(state, side, rand));
-			return quads;
-		}
+        IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
+        Boolean north = extendedBlockState.getValue(BlockDistillatePipe.NORTH);
+        Boolean south = extendedBlockState.getValue(BlockDistillatePipe.SOUTH);
+        Boolean west = extendedBlockState.getValue(BlockDistillatePipe.WEST);
+        Boolean east = extendedBlockState.getValue(BlockDistillatePipe.EAST);
+        Boolean up = extendedBlockState.getValue(BlockDistillatePipe.UP);
+        Boolean down = extendedBlockState.getValue(BlockDistillatePipe.DOWN);
 
-		quads.addAll(DissolutionModelLoader.getModel(INTERSECTION).getQuads(state, side, rand));
+        if (north && south && !(west || east || up || down)) {
+            quads.addAll(DissolutionModelLoader.getModel(SECTION, ModelRotation.X0_Y0).getQuads(state, side, rand));
+            return quads;
+        } else if (west && east && !(north || south || up || down)) {
+            quads.addAll(DissolutionModelLoader.getModel(SECTION, ModelRotation.X0_Y90).getQuads(state, side, rand));
+            return quads;
+        } else if (up && down && !(north || south || west || east)) {
+            quads.addAll(DissolutionModelLoader.getModel(SECTION, ModelRotation.X90_Y0).getQuads(state, side, rand));
+            return quads;
+        }
 
-		if(up)
-			quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X270_Y0).getQuads(state, side, rand));
-		if(down)
-			quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X90_Y0).getQuads(state, side, rand));
-		if(north)
-			quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y0).getQuads(state, side, rand));
-		if(south)
-			quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y180).getQuads(state, side, rand));
-		if(west)
-			quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y270).getQuads(state, side, rand));
-		if(east)
-			quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y90).getQuads(state, side, rand));
-		return quads;
-	}
+        quads.addAll(DissolutionModelLoader.getModel(INTERSECTION).getQuads(state, side, rand));
 
-	@Override
-	public boolean isAmbientOcclusion() {
-		return false;
-	}
+        if (up)
+            quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X270_Y0).getQuads(state, side, rand));
+        if (down)
+            quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X90_Y0).getQuads(state, side, rand));
+        if (north)
+            quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y0).getQuads(state, side, rand));
+        if (south)
+            quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y180).getQuads(state, side, rand));
+        if (west)
+            quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y270).getQuads(state, side, rand));
+        if (east)
+            quads.addAll(DissolutionModelLoader.getModel(START, ModelRotation.X0_Y90).getQuads(state, side, rand));
+        return quads;
+    }
 
-	@Override
-	public boolean isGui3d() {
-		return false;
-	}
+    @Override
+    public boolean isAmbientOcclusion() {
+        return false;
+    }
 
-	@Override
-	public boolean isBuiltInRenderer() {
-		return false;
-	}
+    @Override
+    public boolean isGui3d() {
+        return false;
+    }
 
-	@Nonnull
-	@Override
-	public TextureAtlasSprite getParticleTexture() {
-		return DissolutionModelLoader.getModel(START).getParticleTexture();
-	}
+    @Override
+    public boolean isBuiltInRenderer() {
+        return false;
+    }
 
-	@Nonnull
-	@Override
-	public ItemOverrideList getOverrides() {
-		return ItemOverrideList.NONE;
-	}
+    @Nonnull
+    @Override
+    public TextureAtlasSprite getParticleTexture() {
+        return DissolutionModelLoader.getModel(START).getParticleTexture();
+    }
+
+    @Nonnull
+    @Override
+    public ItemOverrideList getOverrides() {
+        return ItemOverrideList.NONE;
+    }
 
 }

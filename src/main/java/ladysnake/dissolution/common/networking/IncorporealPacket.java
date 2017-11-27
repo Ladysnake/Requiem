@@ -12,20 +12,21 @@ import java.util.UUID;
 
 public class IncorporealPacket implements IMessageHandler<IncorporealMessage, IMessage> {
 
-	@Override
-	public IMessage onMessage(final IncorporealMessage message, MessageContext ctx) {
-		// just to make sure that the side is correct
-		if (ctx.side.isClient()) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
-				try {
-					final EntityPlayer player = Minecraft.getMinecraft().player.world
-							.getPlayerEntityByUUID(new UUID(message.playerUUIDMost, message.playerUUIDLeast));
-					final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
-					playerCorp.setStrongSoul(message.strongSoul);
-					playerCorp.setCorporealityStatus(message.corporealityStatus);
-				} catch (NullPointerException ignored){}
-			});
-		}
-		return null;
-	}
+    @Override
+    public IMessage onMessage(final IncorporealMessage message, MessageContext ctx) {
+        // just to make sure that the side is correct
+        if (ctx.side.isClient()) {
+            Minecraft.getMinecraft().addScheduledTask(() -> {
+                try {
+                    final EntityPlayer player = Minecraft.getMinecraft().player.world
+                            .getPlayerEntityByUUID(new UUID(message.playerUUIDMost, message.playerUUIDLeast));
+                    final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
+                    playerCorp.setStrongSoul(message.strongSoul);
+                    playerCorp.setCorporealityStatus(message.corporealityStatus);
+                } catch (NullPointerException ignored) {
+                }
+            });
+        }
+        return null;
+    }
 }

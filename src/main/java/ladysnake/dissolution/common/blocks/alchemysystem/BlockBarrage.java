@@ -9,44 +9,42 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockBarrage extends AbstractPowerConductor {
-	
-	public static final PropertyBool ENABLED = PropertyBool.create("enabled");
-	
-	public BlockBarrage() {
-		super();
-		this.setDefaultState(super.getDefaultState().withProperty(ENABLED, true));
-	}
-	
-	@Override
-	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
-		this.updateState(worldIn, pos, state);
-	}
-	
-	@Override
-	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-		updateState(worldIn, pos, state);
-	}
-	
-	private void updateState(World worldIn, BlockPos pos, IBlockState state)
-    {
+
+    public static final PropertyBool ENABLED = PropertyBool.create("enabled");
+
+    public BlockBarrage() {
+        super();
+        this.setDefaultState(super.getDefaultState().withProperty(ENABLED, true));
+    }
+
+    @Override
+    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+        this.updateState(worldIn, pos, state);
+    }
+
+    @Override
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+        updateState(worldIn, pos, state);
+    }
+
+    private void updateState(World worldIn, BlockPos pos, IBlockState state) {
         boolean flag = !worldIn.isBlockPowered(pos);
 
-        if (flag != state.getValue(ENABLED))
-        {
+        if (flag != state.getValue(ENABLED)) {
             worldIn.setBlockState(pos, state.withProperty(ENABLED, flag));
-    		if(!worldIn.isRemote)
-    			updatePowerCore(worldIn, pos);
+            if (!worldIn.isRemote)
+                updatePowerCore(worldIn, pos);
         }
     }
-	
-	@Override
-	public boolean isConductive(IBlockAccess worldIn, BlockPos pos) {
-		return worldIn.getBlockState(pos).getValue(ENABLED);
-	}
-	
-	@Override
-	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, POWERED, ENABLED);
-	}
+
+    @Override
+    public boolean isConductive(IBlockAccess worldIn, BlockPos pos) {
+        return worldIn.getBlockState(pos).getValue(ENABLED);
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, POWERED, ENABLED);
+    }
 
 }

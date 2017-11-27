@@ -14,11 +14,11 @@ public class PossessionPacket implements IMessageHandler<PossessionMessage, IMes
 
     @Override
     public IMessage onMessage(PossessionMessage message, MessageContext ctx) {
-        if(ctx.side.isClient())
+        if (ctx.side.isClient())
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 Entity possessed = Minecraft.getMinecraft().world.getEntityByID(message.possessedUuid);
                 EntityPlayer player = Minecraft.getMinecraft().world.getPlayerEntityByUUID(message.playerUuid);
-                if(player != null)
+                if (player != null)
                     CapabilityIncorporealHandler.getHandler(player).setPossessed((IPossessable) possessed);
             });
         else {
@@ -27,8 +27,8 @@ public class PossessionPacket implements IMessageHandler<PossessionMessage, IMes
             world.getMinecraftServer().addScheduledTask(() -> {
                 Entity possessed = world.getEntityByID(message.possessedUuid);
                 EntityPlayer player = world.getPlayerEntityByUUID(message.playerUuid);
-                if(possessed instanceof IPossessable) {
-                    if(player == null || possessed.getDistanceSq(player) < 1024)
+                if (possessed instanceof IPossessable) {
+                    if (player == null || possessed.getDistanceSq(player) < 1024)
                         ((IPossessable) possessed).onEntityPossessed(player != null && CapabilityIncorporealHandler
                                 .getHandler(player).getCorporealityStatus().isIncorporeal()
                                 ? player

@@ -1,16 +1,20 @@
 [
-{
-  "modid": "dissolution",
-  "name": "Dissolution",
-  "description": "A mod aimed at making death more interesting",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "https://minecraft.curseforge.com/projects/dissolution",
-  "updateUrl": "https://minecraft.curseforge.com/projects/dissolution",
-  "authorList": ["Pyrofab", "CobraDarkPoney", "Noprotox"],
-  "credits": "JanisX11 for Blockbench, without which we wouldn't have those fancy models.",
-  "logoFile": "/assets/dissolution/textures/tartaros_ico.png",
-  "screenshots": [],
-  "dependencies": []
-}
+  {
+    "modid": "dissolution",
+    "name": "Dissolution",
+    "description": "A mod aimed at making death more interesting",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://minecraft.curseforge.com/projects/dissolution",
+    "updateUrl": "https://minecraft.curseforge.com/projects/dissolution",
+    "authorList": [
+      "Pyrofab",
+      "CobraDarkPoney",
+      "Noprotox"
+    ],
+    "credits": "JanisX11 for Blockbench, without which we wouldn't have those fancy models.",
+    "logoFile": "/assets/dissolution/textures/tartaros_ico.png",
+    "screenshots": [],
+    "dependencies": []
+  }
 ]

@@ -12,7 +12,7 @@ import net.minecraft.world.WorldServer;
 
 public class CustomDissolutionTeleporter {
 
-	public static void transferPlayerToDimension(EntityPlayerMP player, int dimensionIn) {
+    public static void transferPlayerToDimension(EntityPlayerMP player, int dimensionIn) {
         int i = player.dimension;
         WorldServer worldserver = player.mcServer.getWorld(player.dimension);
         player.dimension = dimensionIn;
@@ -35,8 +35,7 @@ public class CustomDissolutionTeleporter {
         net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerChangedDimensionEvent(player, i, dimensionIn);
     }
 
-    private static void transferEntityToWorld(Entity entityIn, int lastDimension, WorldServer oldWorldIn, WorldServer toWorldIn)
-    {
+    private static void transferEntityToWorld(Entity entityIn, int lastDimension, WorldServer oldWorldIn, WorldServer toWorldIn) {
         net.minecraft.world.WorldProvider pOld = oldWorldIn.provider;
         net.minecraft.world.WorldProvider pNew = toWorldIn.provider;
         double moveFactor = pOld.getMovementFactor() / pNew.getMovementFactor();
@@ -46,67 +45,55 @@ public class CustomDissolutionTeleporter {
         float f = entityIn.rotationYaw;
         oldWorldIn.profiler.startSection("moving");
 
-        if (false && entityIn.dimension == -1)
-        {
+        if (false && entityIn.dimension == -1) {
             d0 = MathHelper.clamp(d0 / 8.0D, toWorldIn.getWorldBorder().minX() + 16.0D, toWorldIn.getWorldBorder().maxX() - 16.0D);
             d1 = MathHelper.clamp(d1 / 8.0D, toWorldIn.getWorldBorder().minZ() + 16.0D, toWorldIn.getWorldBorder().maxZ() - 16.0D);
             entityIn.setLocationAndAngles(d0, entityIn.posY, d1, entityIn.rotationYaw, entityIn.rotationPitch);
 
-            if (entityIn.isEntityAlive())
-            {
+            if (entityIn.isEntityAlive()) {
                 oldWorldIn.updateEntityWithOptionalForce(entityIn, false);
             }
-        }
-        else if (false && entityIn.dimension == 0)
-        {
+        } else if (false && entityIn.dimension == 0) {
             d0 = MathHelper.clamp(d0 * 8.0D, toWorldIn.getWorldBorder().minX() + 16.0D, toWorldIn.getWorldBorder().maxX() - 16.0D);
             d1 = MathHelper.clamp(d1 * 8.0D, toWorldIn.getWorldBorder().minZ() + 16.0D, toWorldIn.getWorldBorder().maxZ() - 16.0D);
             entityIn.setLocationAndAngles(d0, entityIn.posY, d1, entityIn.rotationYaw, entityIn.rotationPitch);
 
-            if (entityIn.isEntityAlive())
-            {
+            if (entityIn.isEntityAlive()) {
                 oldWorldIn.updateEntityWithOptionalForce(entityIn, false);
             }
         }
 
-        if (entityIn.dimension == 1)
-        {
+        if (entityIn.dimension == 1) {
             BlockPos blockpos;
 
-            if (lastDimension == 1)
-            {
+            if (lastDimension == 1) {
                 blockpos = toWorldIn.getSpawnPoint();
-            }
-            else
-            {
+            } else {
                 blockpos = toWorldIn.getSpawnCoordinate();
             }
 
-            d0 = (double)blockpos.getX();
-            entityIn.posY = (double)blockpos.getY();
-            d1 = (double)blockpos.getZ();
+            d0 = (double) blockpos.getX();
+            entityIn.posY = (double) blockpos.getY();
+            d1 = (double) blockpos.getZ();
             entityIn.setLocationAndAngles(d0, entityIn.posY, d1, 90.0F, 0.0F);
 
-            if (entityIn.isEntityAlive())
-            {
+            if (entityIn.isEntityAlive()) {
                 oldWorldIn.updateEntityWithOptionalForce(entityIn, false);
             }
         }
 
         oldWorldIn.profiler.endSection();
 
-        if (lastDimension != 1)
-        {
+        if (lastDimension != 1) {
             oldWorldIn.profiler.startSection("placing");
-            d0 = (double)MathHelper.clamp((int)d0, -29999872, 29999872);
-            d1 = (double)MathHelper.clamp((int)d1, -29999872, 29999872);
+            d0 = (double) MathHelper.clamp((int) d0, -29999872, 29999872);
+            d1 = (double) MathHelper.clamp((int) d1, -29999872, 29999872);
 
-            if (entityIn.isEntityAlive())
-            {
-            	BlockPos bp = new BlockPos(d0, 120, d1);
-            	while (!toWorldIn.isAirBlock(bp) || !toWorldIn.isAirBlock(bp.up()) || toWorldIn.isAirBlock(bp.down()) && bp.getY() > 0) {
-            		bp = bp.down();
-            	}
+            if (entityIn.isEntityAlive()) {
+                BlockPos bp = new BlockPos(d0, 120, d1);
+                while (!toWorldIn.isAirBlock(bp) || !toWorldIn.isAirBlock(bp.up()) || toWorldIn.isAirBlock(bp.down()) && bp.getY() > 0) {
+                    bp = bp.down();
+                }
                 entityIn.setLocationAndAngles(bp.getX(), bp.getY(), bp.getZ(), entityIn.rotationYaw, entityIn.rotationPitch);
                 toWorldIn.spawnEntity(entityIn);
                 toWorldIn.updateEntityWithOptionalForce(entityIn, false);

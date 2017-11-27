@@ -7,12 +7,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public interface ICustomLocation {
-	
-	ModelResourceLocation getModelLocation ();
 
-	@SideOnly(Side.CLIENT)
-	default void registerRender() {
-		ModelLoader.setCustomModelResourceLocation((Item) this, 0, getModelLocation());
-	}
+    ModelResourceLocation getModelLocation();
+
+    @SideOnly(Side.CLIENT)
+    default void registerRender() {
+        ModelLoader.setCustomModelResourceLocation((Item) this, 0, getModelLocation());
+    }
 
 }

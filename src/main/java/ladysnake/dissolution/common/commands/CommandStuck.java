@@ -3,7 +3,6 @@ package ladysnake.dissolution.common.commands;
 import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -36,7 +35,7 @@ public class CommandStuck extends CommandBase {
 
     @Override
     public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-        return sender instanceof EntityPlayer && DissolutionConfig.ghost.allowStuckCommand;
+        return sender instanceof EntityPlayer && Dissolution.config.ghost.allowStuckCommand;
     }
 
     @Nonnull
@@ -49,8 +48,8 @@ public class CommandStuck extends CommandBase {
     public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException {
         EntityPlayerMP player = getCommandSenderAsPlayer(sender);
         IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
-        if(sender.canUseCommand(getRequiredPermissionLevel(), getName()) || handler.getCorporealityStatus().isIncorporeal()) {
-            if(player.dimension != player.getSpawnDimension())
+        if (sender.canUseCommand(getRequiredPermissionLevel(), getName()) || handler.getCorporealityStatus().isIncorporeal()) {
+            if (player.dimension != player.getSpawnDimension())
                 CustomDissolutionTeleporter.transferPlayerToDimension(player, player.getSpawnDimension());
             player.connection.setPlayerLocation(player.getBedLocation().getX(), player.getBedLocation().getY(),
                     player.getBedLocation().getZ(), player.cameraYaw, player.cameraPitch);

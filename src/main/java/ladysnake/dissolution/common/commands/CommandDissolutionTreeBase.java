@@ -19,7 +19,7 @@ public abstract class CommandDissolutionTreeBase extends CommandTreeBase {
 
     @Override
     public int getRequiredPermissionLevel() {
-        return this.getSubCommands().stream().mapToInt(command -> ((CommandBase)command).getRequiredPermissionLevel()).min().orElse(4);
+        return this.getSubCommands().stream().mapToInt(command -> ((CommandBase) command).getRequiredPermissionLevel()).min().orElse(4);
     }
 
     @Override
@@ -31,36 +31,34 @@ public abstract class CommandDissolutionTreeBase extends CommandTreeBase {
     @Override
     public List<String> getTabCompletions(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args, @Nullable BlockPos pos) {
         List<String> ret = super.getTabCompletions(server, sender, args, pos);
-        if(ret.isEmpty() && args.length == 1) {
+        if (ret.isEmpty() && args.length == 1) {
             ret = getListOfStringsMatchingLastWord(args, getSubCommands().stream()
                     .filter(command -> command.checkPermission(server, sender))
                     .flatMap(command -> command.getAliases().stream())
                     .sorted().collect(Collectors.toList()));
-        } else if(ret.isEmpty()) {
+        } else if (ret.isEmpty()) {
             Optional<ICommand> cmd = this.getSubCommands().stream().filter(command -> command.getAliases().contains(args[0])).findAny();
-            if(cmd.isPresent())
+            if (cmd.isPresent())
                 return cmd.get().getTabCompletions(server, sender, shiftArgs(args), pos);
         }
         return ret;
     }
 
     @Override
-    public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException
-    {
-        if(args.length < 1) {
+    public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException {
+        if (args.length < 1) {
             sender.sendMessage(new TextComponentString(CommandBase.joinNiceStringFromCollection(getCommandMap().keySet())));
-        }
-        else {
+        } else {
             ICommand cmd = getCommandMap().get(args[0]);
 
-            if(cmd == null) {
+            if (cmd == null) {
                 Optional<ICommand> command = getSubCommands().stream().filter(iCommand -> iCommand.getAliases().contains(args[0])).findAny();
-                if(command.isPresent())
+                if (command.isPresent())
                     cmd = command.get();
                 else
                     throw new CommandException("commands.tree_base.invalid_cmd", args[0]);
             }
-            if(!cmd.checkPermission(server, sender)) {
+            if (!cmd.checkPermission(server, sender)) {
                 throw new CommandException("commands.generic.permission");
             }
             cmd.execute(server, sender, shiftArgs(args));
@@ -68,7 +66,7 @@ public abstract class CommandDissolutionTreeBase extends CommandTreeBase {
     }
 
     protected static String[] shiftArgs(String[] s) {
-        if(s == null || s.length == 0) {
+        if (s == null || s.length == 0) {
             return new String[0];
         }
 

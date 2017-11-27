@@ -9,16 +9,15 @@ import javax.annotation.Nonnull;
 
 public class DissolutionTab extends CreativeTabs {
 
-	public DissolutionTab() {
-		super(Reference.MOD_ID);
-	}
-	
-	@Nonnull
-	@Override
-	public ItemStack getTabIconItem() {
-		return new ItemStack(ModItems.LOGO);
-	}
+    public DissolutionTab() {
+        super(Reference.MOD_ID);
+    }
 
+    @Nonnull
+    @Override
+    public ItemStack getTabIconItem() {
+        return new ItemStack(ModItems.LOGO);
+    }
 
 
 }

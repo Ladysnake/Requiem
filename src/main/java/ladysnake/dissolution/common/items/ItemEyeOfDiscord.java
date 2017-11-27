@@ -27,7 +27,8 @@ public class ItemEyeOfDiscord extends ItemOcculare {
         if (!(entityLiving instanceof EntityPlayer) || this.getMaxItemUseDuration(stack) - timeLeft < 30) return;
         EntityPlayer player = (EntityPlayer) entityLiving;
 
-        if (CapabilityIncorporealHandler.getHandler(player).getCorporealityStatus().isIncorporeal() && !player.isCreative()) return;
+        if (CapabilityIncorporealHandler.getHandler(player).getCorporealityStatus().isIncorporeal() && !player.isCreative())
+            return;
 
         ItemStack ammo = DissolutionInventoryHelper.findItem(player, ModItems.SOUL_IN_A_FLASK);
 
@@ -38,35 +39,35 @@ public class ItemEyeOfDiscord extends ItemOcculare {
 
         boolean used = false;
         Collections.shuffle(entities);
-        if(!worldIn.isRemote)
-        while(entities.size() > 1) {    // swaps AI tasks of entities two by two
+        if (!worldIn.isRemote)
+            while (entities.size() > 1) {    // swaps AI tasks of entities two by two
 
-            EntityLiving entityLiving1 = entities.remove(1);
-            EntityLiving entityLiving2 = entities.remove(0);
-            Set<EntityAITasks.EntityAITaskEntry> tasks1 = new LinkedHashSet<>(entityLiving1.tasks.taskEntries);
-            Set<EntityAITasks.EntityAITaskEntry> targetTasks1 = new LinkedHashSet<>(entityLiving1.targetTasks.taskEntries);
-            Set<EntityAITasks.EntityAITaskEntry> tasks2 = new LinkedHashSet<>(entityLiving2.tasks.taskEntries);
-            Set<EntityAITasks.EntityAITaskEntry> targetTasks2 = new LinkedHashSet<>(entityLiving2.targetTasks.taskEntries);
+                EntityLiving entityLiving1 = entities.remove(1);
+                EntityLiving entityLiving2 = entities.remove(0);
+                Set<EntityAITasks.EntityAITaskEntry> tasks1 = new LinkedHashSet<>(entityLiving1.tasks.taskEntries);
+                Set<EntityAITasks.EntityAITaskEntry> targetTasks1 = new LinkedHashSet<>(entityLiving1.targetTasks.taskEntries);
+                Set<EntityAITasks.EntityAITaskEntry> tasks2 = new LinkedHashSet<>(entityLiving2.tasks.taskEntries);
+                Set<EntityAITasks.EntityAITaskEntry> targetTasks2 = new LinkedHashSet<>(entityLiving2.targetTasks.taskEntries);
 
-            tasks1.forEach(ai -> entityLiving1.tasks.removeTask(ai.action));
-            entityLiving1.tasks.taskEntries.addAll(tasks2);
-            targetTasks1.forEach(ai -> entityLiving1.targetTasks.removeTask(ai.action));
-            entityLiving1.targetTasks.taskEntries.addAll(targetTasks2);
-            entityLiving1.spawnExplosionParticle();
+                tasks1.forEach(ai -> entityLiving1.tasks.removeTask(ai.action));
+                entityLiving1.tasks.taskEntries.addAll(tasks2);
+                targetTasks1.forEach(ai -> entityLiving1.targetTasks.removeTask(ai.action));
+                entityLiving1.targetTasks.taskEntries.addAll(targetTasks2);
+                entityLiving1.spawnExplosionParticle();
 
-            tasks2.forEach(ai -> entityLiving2.tasks.removeTask(ai.action));
-            entityLiving2.tasks.taskEntries.addAll(tasks1);
-            targetTasks2.forEach(ai -> entityLiving2.targetTasks.removeTask(ai.action));
-            entityLiving2.targetTasks.taskEntries.addAll(targetTasks1);
-            entityLiving2.spawnExplosionParticle();
+                tasks2.forEach(ai -> entityLiving2.tasks.removeTask(ai.action));
+                entityLiving2.tasks.taskEntries.addAll(tasks1);
+                targetTasks2.forEach(ai -> entityLiving2.targetTasks.removeTask(ai.action));
+                entityLiving2.targetTasks.taskEntries.addAll(targetTasks1);
+                entityLiving2.spawnExplosionParticle();
 
-            used = true;
-        }
-        if(used) {
+                used = true;
+            }
+        if (used) {
             stack.damageItem(1, player);
             ammo.shrink(1);
             StatBase stat = StatList.getObjectUseStats(this);
-            if(stat != null)
+            if (stat != null)
                 player.addStat(stat);
         }
     }
