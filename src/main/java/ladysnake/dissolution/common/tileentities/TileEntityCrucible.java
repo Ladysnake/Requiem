@@ -7,6 +7,7 @@ import ladysnake.dissolution.common.registries.EnumPowderOres;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -38,7 +39,7 @@ public class TileEntityCrucible extends PowderContainer implements ITickable {
     @Override
     public void update() {
         IBlockState state = world.getBlockState(pos.down());
-        if (state.getBlock().equals(ModBlocks.MAGNET)) {
+        if (state.getBlock().equals(Blocks.IRON_BLOCK)) {
             MagnetPowerMode newMagnetPowerMode = world.isBlockPowered(pos.down()) ? MagnetPowerMode.MAGNET_ON : MagnetPowerMode.MAGNET_OFF;
             if (magnetPowerMode.isOpposite(newMagnetPowerMode) && !this.powderInventory.isEmpty() && ++separatingTimer % 10 == 0) {
                 GenericStack<EnumPowderOres> powderStack = this.powderInventory.extract(1, null);

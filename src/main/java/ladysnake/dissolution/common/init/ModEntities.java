@@ -4,6 +4,7 @@ import ladysnake.dissolution.client.models.entities.ModelMinionSkeleton;
 import ladysnake.dissolution.client.renders.entities.*;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
+import ladysnake.dissolution.common.entity.EntityRunicCircle;
 import ladysnake.dissolution.common.entity.boss.EntityBrimstoneFire;
 import ladysnake.dissolution.common.entity.boss.EntityMawOfTheVoid;
 import ladysnake.dissolution.common.entity.minion.*;
@@ -47,6 +48,7 @@ public class ModEntities {
         registerEntity(reg, EntityMawOfTheVoid::new, "maw_of_the_void", 64, true);
         registerEntity(reg, EntityBrimstoneFire::new, "brimstone_fire", 32, false);
         registerEntity(reg, EntityFleetingSoul::new, "fleeting_soul", 64, true);
+        registerEntity(reg, EntityRunicCircle::new, "runic_circle", 64, false);
         reg.register(createEntry(EntitySoulSpawner::new, "soul_spawner", 64, true)
                 .spawn(EnumCreatureType.AMBIENT, 50, 1, 1, BiomeDictionary.getBiomes(BiomeDictionary.Type.SWAMP))
                 .spawn(EnumCreatureType.AMBIENT, 50, 1, 2, BiomeDictionary.getBiomes(BiomeDictionary.Type.MAGICAL))
@@ -80,6 +82,7 @@ public class ModEntities {
         RenderingRegistry.registerEntityRenderingHandler(EntityMawOfTheVoid.class, renderManager -> new RenderBiped<>(renderManager, new ModelBiped(), 1.0f));
         RenderingRegistry.registerEntityRenderingHandler(EntityBrimstoneFire.class, RenderBrimstoneFire::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityFleetingSoul.class, RenderWillOWisp::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRunicCircle.class, RenderRunicCircle::new);
     }
 
 }

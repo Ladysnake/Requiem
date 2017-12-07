@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
 	"textures": {
-		"0": "blocks/obsidian_coffin",
-		"particle": "blocks/obsidian_coffin"
+		"0": "dissolution:blocks/obsidian_coffin",
+		"particle": "dissolution:blocks/obsidian_coffin"
 	},
 	"elements": [
 		{

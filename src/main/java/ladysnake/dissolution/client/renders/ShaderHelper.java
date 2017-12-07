@@ -1,6 +1,5 @@
 package ladysnake.dissolution.client.renders;
 
-import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
 import ladysnake.dissolution.common.Dissolution;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -159,7 +158,7 @@ public final class ShaderHelper {
     public static String fromFile(String filename) {
         StringBuilder source = new StringBuilder();
 
-        try (InputStream in = RenderPlayerCorpse.class.getResourceAsStream(filename);
+        try (InputStream in = ShaderHelper.class.getResourceAsStream(filename);
              BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"))) {
 
             String line;
@@ -175,7 +174,6 @@ public final class ShaderHelper {
         return source.toString();
     }
 
-    private ShaderHelper() {
-    }
+    private ShaderHelper() { }
 
 }

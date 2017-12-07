@@ -31,17 +31,16 @@ public final class ModItems {
     static final ModItems INSTANCE = new ModItems();
 
     public static Item PESTLE;
+    public static Item VERMILLION_POWDER;
     public static ItemLogo LOGO;
     public static ItemAcerbacaFruit ACERBACA;
     public static ItemFood INSUBACA;
-    public static ItemFood LIMOBACA;
     public static ItemAcerbacaFruit SALERBACA;
     public static ItemCasing WOODEN_CASING;
     public static ItemDebug DEBUG_ITEM;
     public static ItemDepleted DEPLETED_CLAY;
     public static ItemDepletedCoal DEPLETED_COAL;
     public static ItemEyeUndead EYE_OF_THE_UNDEAD;
-    public static ItemEyeOfDiscord EYE_OF_DISCORD;
     public static ItemFlask GLASS_FLASK;
     public static ItemJar GLASS_JAR;
     public static ItemMineral CINNABAR;
@@ -53,7 +52,6 @@ public final class ModItems {
     public static ItemOccularePart EMERALD_SHELL;
     public static ItemOccularePart IRON_SHELL;
     public static ItemOccularePart GOLD_SHELL;
-    public static ItemOccularePart TIRED_ETCHING;
     public static ItemPlug PLUG;
     public static ItemScythe IRON_SCYTHE;
     public static ItemScythe LURKING_SCYTHE;
@@ -62,6 +60,7 @@ public final class ModItems {
     public static ItemSoulInAJar SOUL_IN_A_FLASK;
     public static ItemStoneHeart STONE_HEART;
     public static ItemFilledFlask FILLED_FLASK;
+    public static ItemVermillionBed VERMILLION_BED;
 
     static Set<Item> allItems = new HashSet<>();
 
@@ -76,16 +75,11 @@ public final class ModItems {
         //noinspection ConstantConditions
         Collections.addAll(allItems,
                 PESTLE = name(new Item(), "pestle"),
-//				ACERBACA = name(new ItemAcerbacaFruit(0, 3f, IIncorporealHandler.CorporealityStatus.SOUL), "acerbaca"),
-//				INSUBACA = name(new ItemFood(-3, -0.3f, false).setPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:poison"), 200), 0.95f), "insubaca"),
-//				LIMOBACA = name(new ItemFood(5, 1.2f, false), "limobaca"),
-//				SALERBACA = name(new ItemAcerbacaFruit(1, 2.5f, IIncorporealHandler.CorporealityStatus.ECTOPLASM), "salerbaca"),
-//				WOODEN_CASING = name(new ItemCasing(), "wooden_machine_casing"),
+                VERMILLION_POWDER = name(new Item(), "vermillion_powder"),
                 DEBUG_ITEM = name(new ItemDebug(), "debug_item"),
                 DEPLETED_CLAY = name(new ItemDepleted(), "depleted_clay_ball"),
                 DEPLETED_COAL = name(new ItemDepletedCoal(), "depleted_coal"),
                 EYE_OF_THE_UNDEAD = name(new ItemEyeUndead(), "eye_of_the_undead"),
-                EYE_OF_DISCORD = name(new ItemEyeOfDiscord(), "eye_of_discord"),
                 FILLED_FLASK = name(new ItemFilledFlask(), "filled_flask"),
                 GLASS_FLASK = name(new ItemFlask(), "glass_flask"),
                 GLASS_JAR = name(new ItemJar(), "glass_jar"),
@@ -98,14 +92,12 @@ public final class ModItems {
                 EMERALD_SHELL = name(new ItemOccularePart(750), "emerald_occulare_shell"),
                 GOLD_SHELL = name(new ItemOccularePart(50), "gold_occulare_shell"),
                 IRON_SHELL = name(new ItemOccularePart(500), "iron_occulare_shell"),
-//				TIRED_ETCHING = name(new ItemOccularePart(), "tired_etching"),
-//				PLUG = name(new ItemPlug(), "plug"),
                 IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), "iron_scythe"),
                 LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"),
-//				BACA_SEEDS = name(new ItemSeeds(Blocks.LEAVES, Blocks.GRASS), "limobaca_seeds"),
-//				SEPULTURE = name(new ItemSepulture(), "sepulture"),
-                SOUL_IN_A_FLASK = name(new ItemSoulInAJar(), "will_o_wisp_jar"),
-                STONE_HEART = name(new ItemStoneHeart(), "stone_heart"));
+				SEPULTURE = name(new ItemSepulture(), "sepulture"),
+//                SOUL_IN_A_FLASK = name(new ItemSoulInAJar(), "will_o_wisp_jar"),
+                STONE_HEART = name(new ItemStoneHeart(), "stone_heart"),
+                VERMILLION_BED = name(new ItemVermillionBed(), "vermillion_bed"));
 
 //		AlchemyModuleTypes.registerItems(allItems);
         reg.register(LOGO = name(new ItemLogo(), "logo"));

@@ -1,0 +1,6 @@
+{
+    "parent": "dissolution:item/scythes/short_scythe",
+    "textures": {
+        "layer0": "dissolution:items/scythes/the_slasher"
+	}
+}
