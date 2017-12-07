@@ -6,9 +6,11 @@ import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.common.init.ModItems;
+import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
@@ -26,16 +28,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemSoulInAJar extends ItemJar {
+public class ItemSoulInAJar extends ItemBlock {
 
-    public ItemSoulInAJar() {
-        super();
-        this.setHasSubtypes(false);
+    public ItemSoulInAJar(Block block) {
+        super(block);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+    public void addInformation(@Nonnull ItemStack stack, World worldIn, @Nonnull List<String> tooltip, @Nonnull ITooltipFlag flagIn) {
         Soul soul = getSoul(stack);
 
         if (soul == Soul.UNDEFINED)
@@ -57,6 +58,10 @@ public class ItemSoulInAJar extends ItemJar {
         if (raytraceresult.typeOfHit == RayTraceResult.Type.MISS) {
             return new ActionResult<>(EnumActionResult.PASS, stack);
         }
+        if (raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK && playerIn.isSneaking()) {
+
+            return new ActionResult<>(EnumActionResult.SUCCESS, ItemStack.EMPTY);
+        }
         BlockPos pos = raytraceresult.getBlockPos().offset(raytraceresult.sideHit);
         if (!worldIn.isRemote)
             worldIn.spawnEntity(new EntityFleetingSoul(worldIn, pos.getX(), pos.getY(), pos.getZ(), soul));
@@ -69,7 +74,7 @@ public class ItemSoulInAJar extends ItemJar {
         return new ActionResult<>(EnumActionResult.SUCCESS, stack);
     }
 
-    public Soul getSoul(ItemStack stack) {
+    private Soul getSoul(ItemStack stack) {
         NBTTagCompound soulNBT = stack.getSubCompound("soul");
         if (soulNBT != null)
             return new Soul(soulNBT);

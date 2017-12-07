@@ -7,6 +7,7 @@ import ladysnake.dissolution.api.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
+import ladysnake.dissolution.common.entity.EntityRunicCircle;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.entity.souls.AbstractSoul;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
@@ -51,7 +52,9 @@ public class InteractEventsHandler {
         } else if(event.getEntityPlayer().getHeldItem(event.getHand()).getItem() == Items.STICK && event.getFace() == EnumFacing.UP) {
             IBlockState state = event.getWorld().getBlockState(event.getPos());
             if(SOIL_BLOCKS.contains(state.getBlock())) {
-
+                EntityRunicCircle runicCircle = new EntityRunicCircle(event.getWorld());
+                event.getWorld().spawnEntity(runicCircle);
+                //TODO open the gui for rune drawing
             }
         }
     }

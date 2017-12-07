@@ -1,0 +1,6 @@
+{
+    "parent": "dissolution:item/eye_of_the_undead",
+    "textures": {
+      "layer0": "dissolution:items/occularia/gold_occulare_shell"
+    }
+}

@@ -43,7 +43,7 @@ public class JEICompat implements IModPlugin {
     private void addInformationTabs() {
         addInformationTab(ModBlocks.LAMENT_STONE);
         addInformationTab(ModBlocks.CRUCIBLE);
-        addInformationTab(ModBlocks.MAGNET);
+//        addInformationTab(ModBlocks.MAGNET);
         addInformationTab(ModBlocks.MORTAR);
         addInformationTab(ModItems.IGNEOUS_ROCK);
     }

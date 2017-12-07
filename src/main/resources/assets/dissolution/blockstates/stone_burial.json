@@ -1,0 +1,12 @@
+{
+    "variants": {
+        "facing=north,part=foot": { "model": "", "y": 180 },
+        "facing=east,part=foot":  { "model": "", "y": 270 },
+        "facing=south,part=foot": { "model": "" },
+        "facing=west,part=foot":  { "model": "", "y": 90 },
+        "facing=north,part=head": { "model": "dissolution:stone_burial", "y": 180 },
+        "facing=east,part=head":  { "model": "dissolution:stone_burial", "y": 270 },
+        "facing=south,part=head": { "model": "dissolution:stone_burial" },
+        "facing=west,part=head":  { "model": "dissolution:stone_burial", "y": 90 }
+    }
+}
