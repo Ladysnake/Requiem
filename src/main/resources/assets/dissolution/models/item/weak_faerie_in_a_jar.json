@@ -1,0 +1,6 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "dissolution:items/weak_faerie_in_a_jar"
+    }
+}
