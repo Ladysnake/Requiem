@@ -1,6 +1,0 @@
-{
-    "parent": "dissolution:item/eye_of_the_undead/eye_of_the_undead_empty_diamond",
-    "textures": {
-      "layer0": "dissolution:items/occularia/emerald_occulare_shell"
-    }
-}
