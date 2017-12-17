@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
-public class ItemJar extends Item implements ICustomLocation {
+public class ItemJar extends Item {
 
     public ItemJar() {
         super();
@@ -64,26 +64,26 @@ public class ItemJar extends Item implements ICustomLocation {
         return super.onItemRightClick(worldIn, playerIn, handIn);
     }
 
-    @Override
-    public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
-        if (tab == Dissolution.CREATIVE_TAB) {
-            items.add(new ItemStack(this));
-            ItemStack stack = new ItemStack(this);
-            IFluidHandlerItem handler = FluidUtil.getFluidHandler(stack);
-            if (handler == null)
-                Dissolution.LOGGER.error("An error occurred while populating the creative tab : water jar item had a null fluid handler");
-            else
-                handler.fill(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), true);
-            items.add(stack);
-            stack = new ItemStack(this);
-            handler = FluidUtil.getFluidHandler(stack);
-            if (handler == null)
-                Dissolution.LOGGER.error("An error occurred while populating the creative tab : mercury jar item had a null fluid handler");
-            else
-                handler.fill(new FluidStack(ModFluids.MERCURY.fluid(), Fluid.BUCKET_VOLUME), true);
-            items.add(stack);
-        }
-    }
+//    @Override
+//    public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
+//        if (tab == Dissolution.CREATIVE_TAB) {
+//            items.add(new ItemStack(this));
+//            ItemStack stack = new ItemStack(this);
+//            IFluidHandlerItem handler = FluidUtil.getFluidHandler(stack);
+//            if (handler == null)
+//                Dissolution.LOGGER.error("An error occurred while populating the creative tab : water jar item had a null fluid handler");
+//            else
+//                handler.fill(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), true);
+//            items.add(stack);
+//            stack = new ItemStack(this);
+//            handler = FluidUtil.getFluidHandler(stack);
+//            if (handler == null)
+//                Dissolution.LOGGER.error("An error occurred while populating the creative tab : mercury jar item had a null fluid handler");
+//            else
+//                handler.fill(new FluidStack(ModFluids.MERCURY.fluid(), Fluid.BUCKET_VOLUME), true);
+//            items.add(stack);
+//        }
+//    }
 
     @Nonnull
     @Override
@@ -96,12 +96,6 @@ public class ItemJar extends Item implements ICustomLocation {
                 return "item.mercury_jar.name";
         }
         return super.getUnlocalizedName(stack);
-    }
-
-    @Override
-    public ModelResourceLocation getModelLocation() {
-        assert this.getRegistryName() != null;
-        return new ModelResourceLocation(this.getRegistryName().getResourceDomain() + ":glassware/" + this.getRegistryName().getResourcePath());
     }
 
     @Nullable

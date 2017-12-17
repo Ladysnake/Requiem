@@ -19,9 +19,9 @@ public class BakedModelLoader implements ICustomModelLoader {
 
     public BakedModelLoader() {
         models = new HashMap<>();
-        models.put(CableBakedModel.LOCATION_NAME, (state, format, mapper) -> new CableBakedModel());
-        models.put(DistillatePipeBakedModel.LOCATION_NAME, (state, format, mapper) -> new DistillatePipeBakedModel());
-        models.put(ModularMachineBakedModel.LOCATION_NAME, (state, format, mapper) -> new ModularMachineBakedModel());
+//        models.put(CableBakedModel.LOCATION_NAME, (state, format, mapper) -> new CableBakedModel());
+//        models.put(DistillatePipeBakedModel.LOCATION_NAME, (state, format, mapper) -> new DistillatePipeBakedModel());
+//        models.put(ModularMachineBakedModel.LOCATION_NAME, (state, format, mapper) -> new ModularMachineBakedModel());
     }
 
     @Override
@@ -31,7 +31,7 @@ public class BakedModelLoader implements ICustomModelLoader {
 
     @Nonnull
     @Override
-    public IModel loadModel(@Nonnull ResourceLocation modelLocation) throws Exception {
+    public IModel loadModel(@Nonnull ResourceLocation modelLocation) {
         return models.get(modelLocation.getResourcePath());
     }
 

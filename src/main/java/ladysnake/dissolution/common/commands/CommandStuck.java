@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.commands;
 
-import ladysnake.dissolution.api.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
@@ -10,6 +10,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -51,8 +52,11 @@ public class CommandStuck extends CommandBase {
         if (sender.canUseCommand(getRequiredPermissionLevel(), getName()) || handler.getCorporealityStatus().isIncorporeal()) {
             if (player.dimension != player.getSpawnDimension())
                 CustomDissolutionTeleporter.transferPlayerToDimension(player, player.getSpawnDimension());
-            player.connection.setPlayerLocation(player.getBedLocation().getX(), player.getBedLocation().getY(),
-                    player.getBedLocation().getZ(), player.cameraYaw, player.cameraPitch);
+            BlockPos spawnPos = player.getBedLocation();
+            if(spawnPos == null)
+                spawnPos = player.getServerWorld().getSpawnPoint();
+            player.connection.setPlayerLocation(spawnPos.getX(), spawnPos.getY(),
+                    spawnPos.getZ(), player.cameraYaw, player.cameraPitch);
         } else throw new CommandException("commands.dissolution.stuck.soulrequired");
     }
 }

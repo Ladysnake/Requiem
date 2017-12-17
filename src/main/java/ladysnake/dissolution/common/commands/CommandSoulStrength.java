@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.commands;
 
-import ladysnake.dissolution.api.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;

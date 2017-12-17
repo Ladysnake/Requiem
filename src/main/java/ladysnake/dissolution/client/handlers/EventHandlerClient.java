@@ -1,17 +1,19 @@
 package ladysnake.dissolution.client.handlers;
 
-import ladysnake.dissolution.api.IIncorporealHandler;
-import ladysnake.dissolution.api.ISoulInteractable;
+import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.client.particles.DissolutionParticleManager;
 import ladysnake.dissolution.client.renders.entities.RenderWillOWisp;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.BlockFluidMercury;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.EctoplasmStats;
-import ladysnake.dissolution.common.capabilities.PlayerIncorporealEvent;
+import ladysnake.dissolution.api.PlayerIncorporealEvent;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PingMessage;
+import ladysnake.dissolution.common.registries.EctoplasmCorporealityStatus;
+import ladysnake.dissolution.common.registries.SoulCorporealityStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngame;
@@ -178,7 +180,7 @@ public class EventHandlerClient {
         }
 
         if (!event.player.isCreative() &&
-                (playerCorp.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL
+                (playerCorp.getCorporealityStatus() == SoulCorporealityStatus.SOUL
                         || playerCorp.getEctoplasmStats().getActiveSpells().contains(EctoplasmStats.SoulSpells.FLIGHT)) && event.phase == TickEvent.Phase.START) {
 
             if (DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT)) {
@@ -209,9 +211,9 @@ public class EventHandlerClient {
     @SubscribeEvent
     public static void onPlayerRender(RenderPlayerEvent.Pre event) {
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
-        if (playerCorp.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.ECTOPLASM) {
+        if (playerCorp.getCorporealityStatus() == EctoplasmCorporealityStatus.ECTOPLASM) {
             GlStateManager.color(0.9F, 0.9F, 1.0F, 0.5F); // Tints the player blue and halves the transparency
-        } else if (playerCorp.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL) {
+        } else if (playerCorp.getCorporealityStatus() == SoulCorporealityStatus.SOUL) {
             if (playerCorp.getPossessed() == null) {
                 if (renderSoul == null)
                     renderSoul = new RenderWillOWisp<>(Minecraft.getMinecraft().getRenderManager());

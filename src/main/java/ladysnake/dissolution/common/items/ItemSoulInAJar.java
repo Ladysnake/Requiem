@@ -13,10 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -51,16 +48,20 @@ public class ItemSoulInAJar extends ItemBlock {
 
     @Nonnull
     @Override
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, @Nonnull BlockPos pos, @Nonnull EnumHand hand, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (player.isSneaking())
+            return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+        return EnumActionResult.PASS;
+    }
+
+    @Nonnull
+    @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, @Nonnull EnumHand handIn) {
         ItemStack stack = playerIn.getHeldItem(handIn);
         Soul soul = getSoul(stack);
         RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, true);
         if (raytraceresult.typeOfHit == RayTraceResult.Type.MISS) {
             return new ActionResult<>(EnumActionResult.PASS, stack);
-        }
-        if (raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK && playerIn.isSneaking()) {
-
-            return new ActionResult<>(EnumActionResult.SUCCESS, ItemStack.EMPTY);
         }
         BlockPos pos = raytraceresult.getBlockPos().offset(raytraceresult.sideHit);
         if (!worldIn.isRemote)
@@ -82,7 +83,7 @@ public class ItemSoulInAJar extends ItemBlock {
     }
 
     public static ItemStack newTypedSoulBottle(SoulTypes soulType) {
-        ItemStack stack = new ItemStack(ModItems.SOUL_IN_A_FLASK);
+        ItemStack stack = new ItemStack(ModItems.SOUL_IN_A_JAR);
         NBTTagCompound nbt = new NBTTagCompound();
         Soul soul = new Soul(soulType);
         nbt.setTag("soul", soul.writeToNBT());

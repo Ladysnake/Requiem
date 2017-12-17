@@ -3,14 +3,8 @@ package ladysnake.dissolution.common.init;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.*;
-import ladysnake.dissolution.common.blocks.alchemysystem.BlockCasing;
-import ladysnake.dissolution.common.items.InventoryItemBlock;
 import ladysnake.dissolution.common.items.ItemSoulInAJar;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockGlass;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
@@ -40,22 +34,7 @@ public final class ModBlocks {
      */
     static final ModBlocks INSTANCE = new ModBlocks();
 
-    public static Block CINNABAR;
-    public static Block CINNABAR_ORE;
-    public static Block VERMILLION_CONCRETE, VERMILLION_CONCRETE_POWDER,
-            VERMILLION_GLASS, VERMILLION_GLAZED_TERRACOTTA, VERMILLION_TERRACOTTA,
-            VERMILLION_WOOL;
-    public static Block DOLOSTONE;
-    public static Block IGNEOUS_ROCK;
-    public static Block HALITE;
-    public static Block SULPHUR;
-    public static Block MAGNET;
-    public static BlockVermillionBed VERMILLION_BED;
     public static BlockCrucible CRUCIBLE;
-    public static BlockCasing CASING;
-    public static BlockDepleted DEPLETED_CLAY;
-    public static BlockDepleted DEPLETED_COAL;
-    public static BlockDepletedMagma DEPLETED_MAGMA;
     public static BlockLamentStone LAMENT_STONE;
     public static BlockMortar MORTAR;
     public static BlockSepulture SEPULTURE;
@@ -74,31 +53,10 @@ public final class ModBlocks {
     public void onRegister(RegistryEvent.Register<Block> event) {
         IForgeRegistry<Block> blockRegistry = event.getRegistry();
         registerBlocks(blockRegistry,
-                CINNABAR = name(new Block(Material.ROCK).setHardness(1.5F).setResistance(10.0F), "cinnabar_block"),
-                CINNABAR_ORE = name(new BlockCinnabarOre().setHardness(1.5F).setResistance(5.0F), "cinnabar_ore"),
-                VERMILLION_CONCRETE = name(new Block(Material.ROCK, MapColor.ADOBE).setHardness(1.8F), "vermillion_concrete"),
-                VERMILLION_CONCRETE_POWDER = name(new Block(Material.ROCK, MapColor.ADOBE).setHardness(0.5F), "vermillion_concrete_powder"),
-                VERMILLION_GLASS = name(new BlockGlass(Material.GLASS, false).setHardness(0.3F), "vermillion_glass"),
-                VERMILLION_GLAZED_TERRACOTTA = name(new Block(Material.ROCK, MapColor.ORANGE_STAINED_HARDENED_CLAY), "vermillion_glazed_terracotta"),
-                VERMILLION_TERRACOTTA = name(new Block(Material.ROCK, MapColor.ORANGE_STAINED_HARDENED_CLAY), "vermillion_terracotta"),
-                VERMILLION_WOOL = name(new Block(Material.CLOTH, MapColor.ADOBE), "vermillion_wool"),
-                DOLOSTONE = name(new Block(Material.ROCK).setHardness(1.0F), "dolostone"),
-                IGNEOUS_ROCK = name(new Block(Material.ROCK).setHardness(1.5F).setResistance(10.0F), "igneous_rock_block"),
-                HALITE = name(new Block(Material.ROCK).setHardness(1.5F).setResistance(10.0F), "halite_block"),
-                SULPHUR = name(new Block(Material.ROCK).setHardness(1.5F).setResistance(10.0F), "sulfur_block"),
-                LAMENT_STONE = name(new BlockLamentStone(), "lament_stone"),
-                DEPLETED_CLAY = name(new BlockDepletedClay(), "depleted_clay_block"),
-                DEPLETED_COAL = name(new BlockDepleted(Material.ROCK), "depleted_coal_block"),
-                DEPLETED_MAGMA = name(new BlockDepletedMagma(), "depleted_magma"),
                 SHRINE = name(new BlockShrine(), "passeress_shrine"));
-        registerBlock(blockRegistry, MORTAR = name(new BlockMortar(), "mortar"), true,
-                block -> new InventoryItemBlock(block, true, false, false));
-        registerBlock(blockRegistry, CRUCIBLE = name(new BlockCrucible(), "crucible"), true,
-                block -> new InventoryItemBlock(block, true, true, true));
-        ModItems.SOUL_IN_A_FLASK = registerBlock(blockRegistry, WISP_IN_A_JAR = name(new BlockWisp(), "wisp_in_a_jar"), true,
-                ItemSoulInAJar::new);
+        ModItems.SOUL_IN_A_JAR = registerBlock(blockRegistry, WISP_IN_A_JAR = name(new BlockWisp(), "tile_wisp_in_a_jar"), true,
+                block -> (ItemSoulInAJar) new ItemSoulInAJar(block).setRegistryName("wisp_in_a_jar"));
         blockRegistry.register(SEPULTURE = name(new BlockSepulture(), "stone_burial"));
-        blockRegistry.register(VERMILLION_BED = (BlockVermillionBed) name(new BlockVermillionBed(), "vermillion_bed").setHardness(0.2F));
     }
 
     private void registerBlocks(IForgeRegistry<Block> blockRegistry, Block... blocks) {
@@ -107,14 +65,14 @@ public final class ModBlocks {
     }
 
     private void registerBlock(IForgeRegistry<Block> blockRegistry, Block block) {
-        registerBlock(blockRegistry, block, true, ItemBlock::new);
+        registerBlock(blockRegistry, block, true, ((Function<Block, ItemBlock>)(ItemBlock::new)).andThen(item -> item.setRegistryName(block.getRegistryName())));
     }
 
     @SuppressWarnings("unchecked")
-    <T extends ItemBlock> T registerBlock(IForgeRegistry<Block> blockRegistry, Block block, boolean addToTab, Function<Block, T> blockItemFunction) {
+    <T extends Item> T registerBlock(IForgeRegistry<Block> blockRegistry, Block block, boolean addToTab, Function<Block, T> blockItemFunction) {
         blockRegistry.register(block);
         assert block.getRegistryName() != null;
-        T item = (T) blockItemFunction.apply(block).setRegistryName(block.getRegistryName());
+        T item = blockItemFunction.apply(block);
         ModItems.allItems.add(item);
         if (addToTab)
             block.setCreativeTab(Dissolution.CREATIVE_TAB);

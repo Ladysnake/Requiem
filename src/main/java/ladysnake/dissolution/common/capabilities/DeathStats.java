@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.capabilities;
 
-import ladysnake.dissolution.api.IDeathStats;
+import ladysnake.dissolution.api.corporeality.IDeathStats;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 

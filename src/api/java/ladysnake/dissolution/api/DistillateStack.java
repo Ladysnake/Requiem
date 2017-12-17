@@ -3,7 +3,7 @@ package ladysnake.dissolution.api;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
- * It's a stack, for essentia.
+ * It's a stack, for distillate.
  *
  * @author Pyrofab
  */

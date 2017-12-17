@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.config;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Files;
-import ladysnake.dissolution.api.ISoulInteractable;
+import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
@@ -10,7 +10,6 @@ import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.networking.ConfigMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.block.Block;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityMob;

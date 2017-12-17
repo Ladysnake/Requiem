@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
 	"ambientocclusion": false,
 	"textures": {
-		"0": "blocks/glass_jar",
-		"particle": "blocks/glass_jar"
+		"0": "dissolution:blocks/glass_jar",
+		"particle": "dissolution:blocks/glass_jar"
 	},
 	"elements": [
 		{

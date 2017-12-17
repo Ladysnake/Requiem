@@ -1,8 +1,8 @@
 package ladysnake.dissolution.common.entity.minion;
 
 import com.google.common.base.Optional;
-import ladysnake.dissolution.api.IIncorporealHandler;
-import ladysnake.dissolution.api.IPossessable;
+import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
@@ -543,7 +543,7 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
     public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand) {
         ItemStack itemstack = player.getHeldItem(hand);
 
-        if (isSuitableForInteraction(player) && itemstack.getItem() != Items.NAME_TAG && itemstack.getItem() != ModItems.EYE_OF_THE_UNDEAD) {
+        if (isSuitableForInteraction(player) && itemstack.getItem() != Items.NAME_TAG) {
             if (!this.world.isRemote && !player.isSpectator()) {
                 EntityEquipmentSlot entityequipmentslot = EntityLiving.getSlotForItemStack(itemstack);
 

@@ -25,7 +25,6 @@ public abstract class CommonProxy {
     public void preInit() {
         MinecraftForge.EVENT_BUS.register(ModBlocks.INSTANCE);
         MinecraftForge.EVENT_BUS.register(ModItems.INSTANCE);
-        MinecraftForge.EVENT_BUS.register(ModModularSetups.INSTANCE);
         CapabilityIncorporealHandler.register();
         CapabilitySoulHandler.register();
         CapabilityDistillateHandler.register();
@@ -41,13 +40,8 @@ public abstract class CommonProxy {
 
         OreDictHelper.registerOres();
 
-        GameRegistry.registerTileEntity(TileEntityDistillatePipe.class, Reference.MOD_ID + ":tileentityessencecable");
         GameRegistry.registerTileEntity(TileEntitySepulture.class, Reference.MOD_ID + ":tileentitysepulture");
-        GameRegistry.registerTileEntity(TileEntityModularMachine.class, Reference.MOD_ID + ":tileentitymodularmachine");
-        GameRegistry.registerTileEntity(TileEntityProxy.class, Reference.MOD_ID + ":tileentityproxy");
         GameRegistry.registerTileEntity(TileEntityLamentStone.class, Reference.MOD_ID + ":tileentityancienttomb");
-        GameRegistry.registerTileEntity(TileEntityMortar.class, Reference.MOD_ID + ":tileentitymortar");
-        GameRegistry.registerTileEntity(TileEntityCrucible.class, Reference.MOD_ID + ":tileentitycrucible");
 
         NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
         PacketHandler.initPackets();

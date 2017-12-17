@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.capabilities;
 
-import ladysnake.dissolution.api.IEctoplasmStats;
+import ladysnake.dissolution.api.corporeality.IEctoplasmStats;
 
 import java.util.LinkedList;
 import java.util.List;

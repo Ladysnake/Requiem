@@ -10,24 +10,20 @@ import ladysnake.dissolution.common.items.ItemSoulInAJar;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.MoverType;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.List;
-
 @Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo", striprefs = true)
 public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
 
     private int delayBeforeCanPickup = 10;
     private int targetChangeCooldown = 0;
-    private Entity targetEntity;
+    protected Entity targetEntity;
 
     public EntityFleetingSoul(World worldIn) {
         super(worldIn);
@@ -66,18 +62,10 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
 
             if (this.soulAge % 100 == 0)
                 if (!(this.targetEntity instanceof EntityPlayer) || this.getDistanceSq(targetEntity) > 1024.0
-                        || DissolutionInventoryHelper.findItem((EntityPlayer) targetEntity, ModItems.HALITE).isEmpty()) {
-                    this.targetEntity = this.world.getClosestPlayer(this.posX, this.posY, this.posZ, 32.0,
-                            player -> player != null && !((EntityPlayer) player).isSpectator()
-                                    && !DissolutionInventoryHelper.findItem((EntityPlayer) player, ModItems.HALITE).isEmpty());
-                    if (targetEntity == null) {
-                        List<EntityItem> items = this.world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(getPosition()).grow(16),
-                                item -> item != null && item.getItem().getItem() == ModItems.HALITE);
-                        if (items.size() > 0)
-                            this.targetEntity = items.get(0);
-                        if (targetEntity == null && world.isAnyPlayerWithinRangeAt(this.posX, this.posY, this.posZ, 64))
-                            this.soulAge += 600;
-                    }
+                    /*|| DissolutionInventoryHelper.findItem((EntityPlayer) targetEntity, ModItems.HALITE).isEmpty()*/) {
+                    this.targetEntity = selectTarget();
+                    if (targetEntity == null && !world.isAnyPlayerWithinRangeAt(this.posX, this.posY, this.posZ, 64))
+                        this.soulAge += 600;
                 }
 
             if (this.targetEntity instanceof EntityPlayer && ((EntityPlayer) this.targetEntity).isSpectator()) {
@@ -102,6 +90,19 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
             motionZ = (1 - weight) * ((0.9) * motionZ + (0.1) * targetVector.z) - weight * targetVector.x;
             this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
         }
+    }
+
+    protected Entity selectTarget() {
+//                    this.targetEntity = this.world.getClosestPlayer(this.posX, this.posY, this.posZ, 32.0,
+//                            player -> player != null && !((EntityPlayer) player).isSpectator()
+//                                    && !DissolutionInventoryHelper.findItem((EntityPlayer) player, ModItems.HALITE).isEmpty());
+//                    if (targetEntity == null) {
+//                        List<EntityItem> items = this.world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(getPosition()).grow(16),
+//                                item -> item != null && item.getItem().getItem() == ModItems.HALITE);
+//                        if (items.size() > 0)
+//                            this.targetEntity = items.get(0);
+//                    }
+        return null;
     }
 
     @SideOnly(Side.CLIENT)

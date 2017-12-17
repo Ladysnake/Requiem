@@ -1,12 +1,13 @@
 package ladysnake.dissolution.client.gui;
 
-import ladysnake.dissolution.api.IIncorporealHandler;
-import ladysnake.dissolution.api.IPossessable;
+import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.entity.minion.*;
+import ladysnake.dissolution.common.registries.EctoplasmCorporealityStatus;
 import ladysnake.dissolution.common.tileentities.TileEntityLamentStone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -59,18 +60,18 @@ public class GuiIncorporealOverlay extends Gui {
                     this.drawOriginIndicator(event.getResolution());
             }
 
-            if (this.mc.playerController.shouldDrawHUD() && this.mc.getRenderViewEntity() instanceof EntityPlayer && pl.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.ECTOPLASM) {
+            if (this.mc.playerController.shouldDrawHUD() && this.mc.getRenderViewEntity() instanceof EntityPlayer && pl.getCorporealityStatus() == EctoplasmCorporealityStatus.ECTOPLASM) {
                 this.drawEctoplasmHealthBar(this.mc.player, event.getResolution(), 0);
             } else if (this.mc.playerController.shouldDrawHUD()) {
                 IPossessable possessed = pl.getPossessed();
                 if (possessed instanceof EntityLivingBase && ((EntityLivingBase) possessed).getHealth() > 0) {
-                    int textureRow = 1;
-                    if (possessed instanceof EntityMinionPigZombie) textureRow = 2;
+                    int textureRow = 0;
+                    if (possessed instanceof EntityMinionPigZombie) textureRow = 1;
                     else if (possessed instanceof EntityMinionZombie && ((EntityMinionZombie) possessed).isHusk())
-                        textureRow = 3;
-                    else if (possessed instanceof EntityMinionWitherSkeleton) textureRow = 5;
-                    else if (possessed instanceof EntityMinionStray) textureRow = 6;
-                    else if (possessed instanceof EntityMinionSkeleton) textureRow = 4;
+                        textureRow = 2;
+                    else if (possessed instanceof EntityMinionWitherSkeleton) textureRow = 4;
+                    else if (possessed instanceof EntityMinionStray) textureRow = 5;
+                    else if (possessed instanceof EntityMinionSkeleton) textureRow = 3;
 
                     this.drawEctoplasmHealthBar(this.mc.player, event.getResolution(), textureRow);
                     this.renderHotbar(event.getResolution(), event.getPartialTicks());

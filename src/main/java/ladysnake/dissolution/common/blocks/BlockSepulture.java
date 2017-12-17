@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.blocks;
 
-import ladysnake.dissolution.api.IIncorporealHandler;
-import ladysnake.dissolution.api.ISoulInteractable;
+import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.tileentities.TileEntitySepulture;
@@ -223,4 +223,10 @@ public class BlockSepulture extends BlockHorizontal implements ISoulInteractable
         return null;
     }
 
+    @Nonnull
+    @Override
+    @Deprecated
+    public EnumBlockRenderType getRenderType(IBlockState state) {
+        return state.getValue(PART) == EnumPartType.FOOT ? EnumBlockRenderType.MODEL : EnumBlockRenderType.INVISIBLE;
+    }
 }

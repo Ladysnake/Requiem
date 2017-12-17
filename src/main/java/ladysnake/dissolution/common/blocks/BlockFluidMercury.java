@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.blocks;
 
-import ladysnake.dissolution.api.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.registries.CorporealityStatus;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.MaterialLiquid;
 import net.minecraft.block.state.IBlockState;
@@ -92,7 +92,7 @@ public class BlockFluidMercury extends BlockFluidClassic {
             if (CapabilityIncorporealHandler.getHandler(player).getCorporealityStatus().isIncorporeal()) {
 
                 world.playSound(null, player.getPosition(), SoundEvents.ITEM_TOTEM_USE, SoundCategory.PLAYERS, 4.0F, (float) (0.8F + Math.random() * 0.3F));
-                CapabilityIncorporealHandler.getHandler(player).setCorporealityStatus(IIncorporealHandler.CorporealityStatus.BODY);
+                CapabilityIncorporealHandler.getHandler(player).setCorporealityStatus(CorporealityStatus.BODY);
 
             }
         }

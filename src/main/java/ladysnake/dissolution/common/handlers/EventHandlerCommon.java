@@ -1,11 +1,13 @@
 package ladysnake.dissolution.common.handlers;
 
-import ladysnake.dissolution.api.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
+import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.init.ModBlocks;
+import ladysnake.dissolution.common.registries.CorporealityStatus;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -41,8 +43,6 @@ import java.util.UUID;
  */
 public class EventHandlerCommon {
 
-    private Map<UUID, double[]> deathPos = new HashMap<>();
-
     public EventHandlerCommon() {
         LootTableList.register(new ResourceLocation(Reference.MOD_ID, "inject/nether_bridge"));
         LootTableList.register(new ResourceLocation(Reference.MOD_ID, "lament_stone"));
@@ -59,12 +59,6 @@ public class EventHandlerCommon {
     }
 
     @SubscribeEvent
-    public void onFurnaceFuelBurnTime(FurnaceFuelBurnTimeEvent event) {
-        if (event.getItemStack().getItem() == Item.getItemFromBlock(ModBlocks.DEPLETED_COAL))
-            event.setBurnTime(12000);
-    }
-
-    @SubscribeEvent
     public void onPlayerLoggedIn(PlayerLoggedInEvent event) {
         event.player.inventoryContainer.addListener(new PlayerInventoryListener((EntityPlayerMP) event.player));
     }
@@ -76,7 +70,7 @@ public class EventHandlerCommon {
             final IIncorporealHandler corpse = CapabilityIncorporealHandler.getHandler(event.getOriginal());
             final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
             clone.setStrongSoul(corpse.isStrongSoul());
-            clone.setCorporealityStatus(Dissolution.config.respawn.respawnCorporealityStatus);
+            clone.setCorporealityStatus(Dissolution.config.respawn.respawnCorporealityStatus.status);
             clone.getDeathStats().setLastDeathMessage(corpse.getDeathStats().getLastDeathMessage());
             clone.getDialogueStats().deserializeNBT(corpse.getDialogueStats().serializeNBT());
             clone.setSynced(false);
@@ -153,7 +147,7 @@ public class EventHandlerCommon {
      */
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onVisibilityPlayer(PlayerEvent.Visibility event) {
-        final IIncorporealHandler.CorporealityStatus playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer()).getCorporealityStatus();
+        final ICorporealityStatus playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer()).getCorporealityStatus();
         if (playerCorp.isIncorporeal())
             event.modifyVisibility(0D);
     }
@@ -161,8 +155,8 @@ public class EventHandlerCommon {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onLivingAttack(LivingAttackEvent event) {
         if (event.getEntity() instanceof EntityPlayer && !event.getSource().canHarmInCreative()) {
-            IIncorporealHandler.CorporealityStatus status = CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity()).getCorporealityStatus();
-            if (status.isIncorporeal()) {
+            ICorporealityStatus status = CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity()).getCorporealityStatus();
+            if (status.allowsInvulnerability()) {
                 if (event.getSource().getTrueSource() == null || !DissolutionConfigManager.canEctoplasmBeAttackedBy(event.getSource().getTrueSource()))
                     event.setCanceled(!event.getSource().canHarmInCreative());
             }
@@ -182,9 +176,8 @@ public class EventHandlerCommon {
                 if (event.getTarget() instanceof EntityLivingBase)
                     event.getEntityPlayer().getHeldItemMainhand().hitEntity((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
                 ((EntityLiving) playerCorp.getPossessed()).attackEntityAsMob(event.getTarget());
-            } else if (!DissolutionConfigManager.canEctoplasmBeAttackedBy(event.getTarget()))
-                event.setCanceled(true);
-            return;
+                return;
+            }
         }
         if (event.getTarget() instanceof EntityPlayer) {
             final IIncorporealHandler targetCorp = CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getTarget());
@@ -196,34 +189,10 @@ public class EventHandlerCommon {
     @SubscribeEvent
     public void onLivingSetAttackTarget(LivingSetAttackTargetEvent event) {
         IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getTarget());
-        if (handler != null && event.getEntity() instanceof EntityLiving && handler.getCorporealityStatus().isIncorporeal() && !DissolutionConfigManager.canEctoplasmBeAttackedBy(event.getEntity()))
+        if (handler != null && event.getEntity() instanceof EntityLiving && handler.getCorporealityStatus().isIncorporeal()
+                && !DissolutionConfigManager.canEctoplasmBeAttackedBy(event.getEntity()))
             ((EntityLiving) event.getEntity()).setAttackTarget(null);
     }
-
-/*
-    @SubscribeEvent
-	public void onSpecialSpawn(LivingSpawnEvent.SpecialSpawn event) {
-		if (event.getEntityLiving() instanceof EntityMob && (!event.getEntityLiving().isEntityUndead() || !event.getEntityLiving().isNonBoss())) {
-			EntityMob mob = (EntityMob) event.getEntityLiving();
-			if(mob.world.getMinecraftServer().getPlayerList().getPlayers().stream()
-					.anyMatch(entityPlayerMP -> CapabilityIncorporealHandler.getHandler(entityPlayerMP).getCorporealityStatus().isIncorporeal())
-					&& mob.targetTasks.taskEntries.stream().anyMatch(this::isMobTargetingPlayer))
-				mob.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(mob, AbstractMinion.class, true));
-		}
-	}
-
-	private boolean isMobTargetingPlayer(EntityAITasks.EntityAITaskEntry task) {
-		if (task.action instanceof EntityAINearestAttackableTarget) {
-			try {
-				Class<?> clazz = (Class<?>) entityAINearestAttackableTarget$targetClass.invoke(task.action);
-				return clazz == EntityPlayer.class || clazz == EntityPlayerMP.class;
-			} catch (Throwable throwable) {
-				throwable.printStackTrace();
-			}
-		}
-		return false;
-	}
-*/
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onEntityItemPickup(EntityItemPickupEvent event) {
@@ -240,9 +209,8 @@ public class EventHandlerCommon {
         if (event.getEntity() instanceof EntityPlayer) {
             final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity());
             if (playerCorp.getCorporealityStatus().isIncorporeal()) {
-                playerCorp.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.BODY);
+                playerCorp.setCorporealityStatus(CorporealityStatus.BODY);
             }
         }
     }
-
 }

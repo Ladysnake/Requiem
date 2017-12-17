@@ -1,9 +1,9 @@
 package ladysnake.dissolution.common.entity;
 
 import com.google.common.base.Optional;
-import ladysnake.dissolution.api.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.ISoulHandler;
-import ladysnake.dissolution.api.ISoulInteractable;
+import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
@@ -13,6 +13,7 @@ import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
+import ladysnake.dissolution.common.registries.CorporealityStatus;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
@@ -63,13 +64,13 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
                 DissolutionInventoryHelper.transferEquipment(this, player);
                 this.onDeath(DamageSource.GENERIC);
                 this.setDead();
-                handler.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.BODY);
+                handler.setCorporealityStatus(CorporealityStatus.BODY);
             }
             player.setPositionAndRotation(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
             player.cameraPitch = 90;
             player.prevCameraPitch = 90;
             player.setHealth(4f);
-        } else if (!world.isRemote && player.getHeldItem(hand).getItem() != ModItems.EYE_OF_THE_UNDEAD
+        } else if (!world.isRemote
                 && (!handler.getCorporealityStatus().isIncorporeal() || handler.getPossessed() != null)) {
             player.openGui(Dissolution.instance, GuiProxy.PLAYER_CORPSE, this.world, (int) this.posX, (int) this.posY, (int) this.posZ);
         }
