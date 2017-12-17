@@ -1,9 +1,6 @@
 package ladysnake.dissolution.api.corporeality;
 
 import ladysnake.dissolution.api.*;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
@@ -49,7 +46,7 @@ public interface IIncorporealHandler {
     IPossessable getPossessed();
 
     @Nonnull
-    IEctoplasmStats getEctoplasmStats();
+    IPossessedStats getPossessedStats();
 
     @Nonnull
     IDialogueStats getDialogueStats();
@@ -71,8 +68,6 @@ public interface IIncorporealHandler {
     boolean isSynced();
 
     void tick();
-
-    void setDisguise(UUID usurpedId);
 
     Optional<UUID> getDisguise();
 

@@ -8,6 +8,7 @@ import ladysnake.dissolution.common.entity.boss.EntityBrimstoneFire;
 import ladysnake.dissolution.common.entity.boss.EntityMawOfTheVoid;
 import ladysnake.dissolution.common.entity.minion.*;
 import ladysnake.dissolution.common.entity.souls.EntityFaerie;
+import ladysnake.dissolution.common.entity.souls.EntityFaerieSpawner;
 import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.common.entity.souls.EntitySoulSpawner;
 import net.minecraft.client.model.ModelBiped;
@@ -15,6 +16,7 @@ import net.minecraft.client.model.ModelZombie;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.BiomeDictionary;
@@ -53,6 +55,11 @@ public class ModEntities {
                 .spawn(EnumCreatureType.AMBIENT, 50, 1, 1, BiomeDictionary.getBiomes(BiomeDictionary.Type.SWAMP))
                 .spawn(EnumCreatureType.AMBIENT, 50, 1, 2, BiomeDictionary.getBiomes(BiomeDictionary.Type.MAGICAL))
                 .build());
+        reg.register(createEntry(EntityFaerieSpawner::new, "faerie_spawner", 64, true)
+                .spawn(EnumCreatureType.AMBIENT, 50, 1, 1, BiomeDictionary.getBiomes(BiomeDictionary.Type.FOREST))
+                .spawn(EnumCreatureType.AMBIENT, 50, 1, 2, BiomeDictionary.getBiomes(BiomeDictionary.Type.MAGICAL))
+                .spawn(EnumCreatureType.AMBIENT, 75, 1, 3, Biomes.MUTATED_FOREST)
+                .build());
     }
 
     private static void registerEntity(IForgeRegistry<EntityEntry> reg, Function<World, Entity> factory, String name, int trackingRange, boolean sendsVelocityUpdates) {
@@ -82,7 +89,7 @@ public class ModEntities {
         RenderingRegistry.registerEntityRenderingHandler(EntityMawOfTheVoid.class, renderManager -> new RenderBiped<>(renderManager, new ModelBiped(), 1.0f));
         RenderingRegistry.registerEntityRenderingHandler(EntityBrimstoneFire.class, RenderBrimstoneFire::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityFleetingSoul.class, RenderWillOWisp::new);
-        RenderingRegistry.registerEntityRenderingHandler(EntityFaerie.class, RenderWillOWisp::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityFaerie.class, RenderFaerie::new);
     }
 
 }

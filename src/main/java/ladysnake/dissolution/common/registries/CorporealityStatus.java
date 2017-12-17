@@ -14,6 +14,7 @@ import net.minecraftforge.registries.RegistryBuilder;
 
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
@@ -50,7 +51,7 @@ public class CorporealityStatus extends IForgeRegistryEntry.Impl<ICorporealitySt
     }
 
     public String getUnlocalizedName() {
-        return "dissolution.corporealitystatus." + this.toString();
+        return "dissolution.corporealitystatus." + Objects.requireNonNull(this.getRegistryName()).getResourcePath();
     }
 
     @Override
@@ -75,6 +76,6 @@ public class CorporealityStatus extends IForgeRegistryEntry.Impl<ICorporealitySt
 
     @Override
     public String toString() {
-        return super.toString().toLowerCase(Locale.ENGLISH);
+        return this.getRegistryName() == null ? super.toString() : this.getRegistryName().toString();
     }
 }
