@@ -6,12 +6,6 @@
   "variants": {
     "normal": [{}],
     "inventory": [{}],
-    "water": {
-      "false": {},
-      "true": {
-        "model": "dissolution:passeress_shrine_with_water"
-      }
-    },
     "facing": {
       "north": {},
       "south": {"y": 180},

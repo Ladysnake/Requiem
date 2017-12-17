@@ -24,6 +24,7 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 @SuppressWarnings("WeakerAccess")
@@ -54,7 +55,7 @@ public final class ModBlocks {
         IForgeRegistry<Block> blockRegistry = event.getRegistry();
         registerBlocks(blockRegistry,
                 SHRINE = name(new BlockShrine(), "passeress_shrine"));
-        ModItems.SOUL_IN_A_JAR = registerBlock(blockRegistry, WISP_IN_A_JAR = name(new BlockWisp(), "tile_wisp_in_a_jar"), true,
+        ModItems.SOUL_IN_A_JAR = registerBlock(blockRegistry, WISP_IN_A_JAR = name(new BlockWisp(), "wisp_jar"), true,
                 block -> (ItemSoulInAJar) new ItemSoulInAJar(block).setRegistryName("wisp_in_a_jar"));
         blockRegistry.register(SEPULTURE = name(new BlockSepulture(), "stone_burial"));
     }
@@ -65,7 +66,7 @@ public final class ModBlocks {
     }
 
     private void registerBlock(IForgeRegistry<Block> blockRegistry, Block block) {
-        registerBlock(blockRegistry, block, true, ((Function<Block, ItemBlock>)(ItemBlock::new)).andThen(item -> item.setRegistryName(block.getRegistryName())));
+        registerBlock(blockRegistry, block, true, ((Function<Block, ItemBlock>)(ItemBlock::new)).andThen(item -> item.setRegistryName(Objects.requireNonNull(block.getRegistryName()))));
     }
 
     @SuppressWarnings("unchecked")

@@ -12,18 +12,22 @@ import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+
 @Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo", striprefs = true)
 public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
 
     private int delayBeforeCanPickup = 10;
-    private int targetChangeCooldown = 0;
+    protected int targetChangeCooldown = 0;
     protected Entity targetEntity;
+    protected BlockPos forcedTarget = BlockPos.ORIGIN;
 
     public EntityFleetingSoul(World worldIn) {
         super(worldIn);
@@ -53,25 +57,26 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
 
             this.targetChangeCooldown -= (this.getPositionVector().squareDistanceTo(lastTickPosX, lastTickPosY, lastTickPosZ) < 0.0125) ? 10 : 1;
 
+            // Change the target position regularly to simulate erratic movement
             if ((xTarget == 0 && yTarget == 0 && zTarget == 0) || this.getPosition().distanceSq(xTarget, yTarget, zTarget) < 9 || targetChangeCooldown <= 0) {
-                this.xTarget = this.posX + rand.nextGaussian() * 10;
-                this.yTarget = Math.max(this.posY + rand.nextGaussian() * 10, (this.soulAge / 20.0));
-                this.zTarget = this.posZ + rand.nextGaussian() * 10;
-                targetChangeCooldown = rand.nextInt() % 200;
+                selectBlockTarget();
             }
 
-            if (this.soulAge % 100 == 0)
-                if (!(this.targetEntity instanceof EntityPlayer) || this.getDistanceSq(targetEntity) > 1024.0
-                    /*|| DissolutionInventoryHelper.findItem((EntityPlayer) targetEntity, ModItems.HALITE).isEmpty()*/) {
+            // every so often, update the target entity
+            if (this.soulAge % 100 == 0) {
+                if (!(this.targetEntity instanceof EntityPlayer) || this.getDistanceSq(targetEntity) > 1024.0) {
                     this.targetEntity = selectTarget();
                     if (targetEntity == null && !world.isAnyPlayerWithinRangeAt(this.posX, this.posY, this.posZ, 64))
                         this.soulAge += 600;
                 }
+            }
 
+            // don't target spectator players
             if (this.targetEntity instanceof EntityPlayer && ((EntityPlayer) this.targetEntity).isSpectator()) {
                 this.targetEntity = null;
             }
 
+            // targeted entities take precedence over target positions
             double targetX = this.targetEntity != null ? targetEntity.posX : this.xTarget;
             double targetY = this.targetEntity != null ? targetEntity.posY : this.yTarget;
             double targetZ = this.targetEntity != null ? targetEntity.posZ : this.zTarget;
@@ -79,10 +84,12 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
             double length = targetVector.lengthVector();
             targetVector = targetVector.scale(0.1 / length);
             double weight = 0;
-            final double maxRange = 6;
+            // the range at which the wisp will start orbiting
+            final double outerRange = 6;
+            // the range at which the wisp will stop approaching its target
             final double innerRange = 1;
-            if (length > innerRange && length < maxRange)
-                weight = 0.25 * ((maxRange - length) / (maxRange - innerRange));
+            if (length > innerRange && length < outerRange)
+                weight = 0.25 * ((outerRange - length) / (outerRange - innerRange));
             else if (length <= innerRange)
                 weight = 1;
             motionX = (1 - weight) * ((0.9) * motionX + (0.1) * targetVector.x) + weight * targetVector.z;
@@ -90,6 +97,19 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
             motionZ = (1 - weight) * ((0.9) * motionZ + (0.1) * targetVector.z) - weight * targetVector.x;
             this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
         }
+    }
+
+    protected void selectBlockTarget() {
+        if(this.forcedTarget == BlockPos.ORIGIN) {
+            this.xTarget = this.posX + rand.nextGaussian() * 10;
+            this.yTarget = Math.max(this.posY + rand.nextGaussian() * 10, (this.soulAge / 20.0));
+            this.zTarget = this.posZ + rand.nextGaussian() * 10;
+        } else {
+            this.xTarget = forcedTarget.getX() + 0.5;
+            this.yTarget = forcedTarget.getY() + rand.nextGaussian();
+            this.zTarget = forcedTarget.getZ() + 0.5;
+        }
+        targetChangeCooldown = rand.nextInt() % 200;
     }
 
     protected Entity selectTarget() {
@@ -133,7 +153,7 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
     }
 
     @Override
-    public boolean isCreatureType(EnumCreatureType type, boolean forSpawnCount) {
+    public boolean isCreatureType(@Nonnull EnumCreatureType type, boolean forSpawnCount) {
         return type == EnumCreatureType.AMBIENT;
     }
 

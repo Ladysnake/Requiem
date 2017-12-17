@@ -19,7 +19,6 @@ import javax.annotation.Nonnull;
 public class RenderWillOWisp<T extends Entity> extends Render<T> {
 
     public static final ResourceLocation WILL_O_WISP_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/entity/will_o_wisp.png");
-    public static final ResourceLocation FAERIE_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/entity/faerie.png");
 
     public RenderWillOWisp(RenderManager renderManager) {
         super(renderManager);
@@ -79,7 +78,7 @@ public class RenderWillOWisp<T extends Entity> extends Render<T> {
     @Override
     @Nonnull
     protected ResourceLocation getEntityTexture(@Nonnull T entity) {
-        return entity instanceof EntityFaerie ? FAERIE_TEXTURE : WILL_O_WISP_TEXTURE;
+        return WILL_O_WISP_TEXTURE;
     }
 
 }

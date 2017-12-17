@@ -7,7 +7,6 @@ import ladysnake.dissolution.client.renders.entities.RenderWillOWisp;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.BlockFluidMercury;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.EctoplasmStats;
 import ladysnake.dissolution.api.PlayerIncorporealEvent;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.networking.PacketHandler;
@@ -25,6 +24,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.fml.common.Mod;
@@ -94,7 +94,8 @@ public class EventHandlerClient {
                 IAttributeInstance maxHealth = player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
                 prevMaxHealth = maxHealth.getAttributeValue();
                 maxHealth.setBaseValue(
-                        ((EntityLiving) player.getRidingEntity()).getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
+                        playerCorp.getPossessedStats().getPurifiedHealth());
+//                        ((EntityLiving) player.getRidingEntity()).getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
                 wasRidingLastTick = true;
             }
             if (player.getHealth() != ((EntityLiving) player.getRidingEntity()).getHealth())
@@ -167,21 +168,12 @@ public class EventHandlerClient {
 
         if (player.world.isMaterialInBB(player.getEntityBoundingBox()
                 .grow(-0.1D, -0.4D, -0.1D), BlockFluidMercury.MATERIAL_MERCURY)) {
-            try {
-//				playerSP.motionY *= 0.2f;
-//				if(playerSP.movementInput.jump && playerSP.motionY < 0.6f)
-//					playerSP.motionY += 0.4f;
-//				else
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
             playerSP.motionX *= 0.4f;
             playerSP.motionZ *= 0.4f;
         }
 
         if (!event.player.isCreative() &&
-                (playerCorp.getCorporealityStatus() == SoulCorporealityStatus.SOUL
-                        || playerCorp.getEctoplasmStats().getActiveSpells().contains(EctoplasmStats.SoulSpells.FLIGHT)) && event.phase == TickEvent.Phase.START) {
+                playerCorp.getCorporealityStatus() == SoulCorporealityStatus.SOUL && event.phase == TickEvent.Phase.START) {
 
             if (DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT)) {
                 player.capabilities.setFlySpeed(0.025f);
@@ -272,7 +264,7 @@ public class EventHandlerClient {
 
     @SubscribeEvent
     public static void onDrawBlockHighlight(DrawBlockHighlightEvent event) {
-        if (event.getTarget().getBlockPos() != null)
+        if (event.getTarget().typeOfHit == RayTraceResult.Type.BLOCK)
             event.setCanceled(CapabilityIncorporealHandler.getHandler(event.getPlayer()).getCorporealityStatus().isIncorporeal() &&
                     !(event.getPlayer().world.getBlockState(event.getTarget().getBlockPos()).getBlock() instanceof ISoulInteractable));
     }

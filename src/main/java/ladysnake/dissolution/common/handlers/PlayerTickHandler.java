@@ -3,7 +3,6 @@ package ladysnake.dissolution.common.handlers;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.EctoplasmStats;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.registries.CorporealityStatus;
 import ladysnake.dissolution.common.registries.SoulCorporealityStatus;
@@ -63,8 +62,7 @@ public class PlayerTickHandler {
         if (playerCorp.isStrongSoul()) {
             if (playerCorp.getCorporealityStatus().isIncorporeal()) {
                 if (!event.player.isCreative() &&
-                        (playerCorp.getCorporealityStatus() == SoulCorporealityStatus.SOUL
-                                || playerCorp.getEctoplasmStats().getActiveSpells().contains(EctoplasmStats.SoulSpells.FLIGHT)))
+                        playerCorp.getCorporealityStatus() == SoulCorporealityStatus.SOUL)
                     handleSoulFlight(event.player);
 
                 handlePossessingTick(event.player);
@@ -175,6 +173,7 @@ public class PlayerTickHandler {
 
         if (player.dimension == -1 && Dissolution.config.respawn.respawnInNether) {
             BlockPos spawnPos = player.getBedLocation(player.getSpawnDimension());
+            //noinspection ConstantConditions
             if (spawnPos == null)
                 spawnPos = player.world.getMinecraftServer().getWorld(0).getSpawnPoint();
             player.setPosition(spawnPos.getX() / 8, spawnPos.getY() / 8, spawnPos.getZ() / 8);

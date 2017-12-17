@@ -80,25 +80,24 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
     /**
      * Checks if a given entity can access this corpse
      *
-     * @param entityPlayerCorpse
-     * @param entity
-     * @return
+     * @param entityPlayerCorpse the player corpse entity that's being interacted with
+     * @param entity an entity trying to access this corpse
+     * @return true if the entity meets all the requirement, or the config option is disabled
      */
     private static boolean canEntityAccess(EntityPlayerCorpse entityPlayerCorpse, Entity entity) {
-        World world = entityPlayerCorpse.getEntityWorld();
         if (Dissolution.config.entities.lockPlayerCorpses) {
             if (entity == null) return false;
             if (!Objects.equals(entity.getUniqueID(), entityPlayerCorpse.getOwnerId())) {
                 if (!(entity instanceof EntityPlayer)) return false;
-                if (world.isRemote && ((EntityPlayerSP) entity).getPermissionLevel() < 2)
-                    return false;
+                World world = entityPlayerCorpse.getEntityWorld();
+//                if (world.isRemote && ((EntityPlayerSP) entity).getPermissionLevel() < 2)
+//                    return false;
                 MinecraftServer server = world.getMinecraftServer();
                 if (server != null) {
                     UserListOpsEntry opsEntry = world.getMinecraftServer().getPlayerList().getOppedPlayers().getEntry(((EntityPlayer) entity).getGameProfile());
                     //noinspection ConstantConditions
                     int permissionLevel = opsEntry == null ? server.getOpPermissionLevel() : opsEntry.getPermissionLevel();
-                    if (permissionLevel < 2)
-                        return false;
+                    return permissionLevel >= 2;
                 }
             }
         }
