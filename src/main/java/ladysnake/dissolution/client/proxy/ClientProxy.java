@@ -6,12 +6,14 @@ import ladysnake.dissolution.client.models.blocks.BakedModelLoader;
 import ladysnake.dissolution.client.particles.AdditiveParticle;
 import ladysnake.dissolution.client.particles.DissolutionParticleManager;
 import ladysnake.dissolution.client.renders.entities.LayerScythe;
+import ladysnake.dissolution.client.renders.tileentities.RenderWispInAJar;
 import ladysnake.dissolution.client.renders.tileentities.TileEntityCrucibleRenderer;
 import ladysnake.dissolution.client.renders.tileentities.TileEntityMortarRenderer;
 import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.init.ModEntities;
 import ladysnake.dissolution.common.tileentities.TileEntityCrucible;
 import ladysnake.dissolution.common.tileentities.TileEntityMortar;
+import ladysnake.dissolution.common.tileentities.TileEntityWispInAJar;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
@@ -38,13 +40,10 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void init() {
         super.init();
-//		PacketHandler.initClientPackets();
         MinecraftForge.EVENT_BUS.register(new GuiIncorporealOverlay(Minecraft.getMinecraft()));
         if (Loader.isModLoaded("albedo"))
             MinecraftForge.EVENT_BUS.register(AlbedoEventHandler.class);
-        // ClientRegistry.bindTileEntitySpecialRenderer(TileEntityModularMachine.class, new RenderModularMachine());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrucible.class, new TileEntityCrucibleRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMortar.class, new TileEntityMortarRenderer());
+         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityWispInAJar.class, new RenderWispInAJar());
 
         initAddedLayers();
     }

@@ -1,10 +1,12 @@
 package ladysnake.dissolution.common.handlers;
 
-import ladysnake.dissolution.api.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.EctoplasmStats;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
+import ladysnake.dissolution.common.registries.CorporealityStatus;
+import ladysnake.dissolution.common.registries.SoulCorporealityStatus;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
@@ -61,7 +63,7 @@ public class PlayerTickHandler {
         if (playerCorp.isStrongSoul()) {
             if (playerCorp.getCorporealityStatus().isIncorporeal()) {
                 if (!event.player.isCreative() &&
-                        (playerCorp.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL
+                        (playerCorp.getCorporealityStatus() == SoulCorporealityStatus.SOUL
                                 || playerCorp.getEctoplasmStats().getActiveSpells().contains(EctoplasmStats.SoulSpells.FLIGHT)))
                     handleSoulFlight(event.player);
 
@@ -84,7 +86,7 @@ public class PlayerTickHandler {
                 }
 
                 // Randomly removes experience from the player
-                if (playerCorp.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL) {
+                if (playerCorp.getCorporealityStatus() == SoulCorporealityStatus.SOUL) {
                     if (event.player.experience > 0 && rand.nextBoolean())
                         event.player.experience--;
                     else if (rand.nextInt() % 300 == 0 && event.player.experienceLevel > 0)
@@ -165,7 +167,7 @@ public class PlayerTickHandler {
         if (player.world.isRemote || !Dissolution.config.respawn.wowLikeRespawn)
             return;
 
-        CapabilityIncorporealHandler.getHandler(player).setCorporealityStatus(IIncorporealHandler.CorporealityStatus.BODY);
+        CapabilityIncorporealHandler.getHandler(player).setCorporealityStatus(CorporealityStatus.BODY);
 
         ((WorldServer) player.world).spawnParticle(EnumParticleTypes.CLOUD, false,
                 player.posX + 0.5D, player.posY + 1.0D, player.posZ + 0.5D, 50, 0.3D, 0.3D,

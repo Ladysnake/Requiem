@@ -1,7 +1,6 @@
 package ladysnake.dissolution.common.handlers;
 
-import ladysnake.dissolution.api.IIncorporealHandler;
-import ladysnake.dissolution.api.IIncorporealHandler.CorporealityStatus;
+import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
@@ -9,6 +8,8 @@ import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
 import ladysnake.dissolution.common.items.ItemScythe;
+import ladysnake.dissolution.common.registries.EctoplasmCorporealityStatus;
+import ladysnake.dissolution.common.registries.SoulCorporealityStatus;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -53,10 +54,10 @@ public class LivingDeathHandler {
             ((EntityLivingBase) corp.getPossessed()).attackEntityFrom(event.getSource(), Float.MAX_VALUE);
             corp.setPossessed(null);
         }
-        if (!corp.isStrongSoul() || corp.getCorporealityStatus() == CorporealityStatus.SOUL)
+        if (!corp.isStrongSoul() || corp.getCorporealityStatus() == SoulCorporealityStatus.SOUL)
             return;
-        if (corp.getCorporealityStatus() == CorporealityStatus.ECTOPLASM) {
-            corp.setCorporealityStatus(CorporealityStatus.SOUL);
+        if (corp.getCorporealityStatus() == EctoplasmCorporealityStatus.ECTOPLASM) {
+            corp.setCorporealityStatus(SoulCorporealityStatus.SOUL);
             p.setHealth(20f);
             event.setCanceled(true);
             return;
@@ -75,8 +76,6 @@ public class LivingDeathHandler {
             boolean flag = false;
             if (event.getSource().getTrueSource() instanceof EntityPlayer) {
                 EntityPlayer killer = (EntityPlayer) event.getSource().getTrueSource();
-                if (!DissolutionInventoryHelper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD).isEmpty())
-                    flag = true;
             }
 
             if (Dissolution.config.respawn.bodiesHoldInventory) {
@@ -97,7 +96,7 @@ public class LivingDeathHandler {
         if (Dissolution.config.respawn.skipDeathScreen) {
             if (!p.world.isRemote)
                 fakePlayerDeath((EntityPlayerMP) p, event.getSource());
-            corp.setCorporealityStatus(Dissolution.config.respawn.respawnCorporealityStatus);
+            corp.setCorporealityStatus(Dissolution.config.respawn.respawnCorporealityStatus.status);
             p.setHealth(20f);
             if (p.getBedLocation() != null && !Dissolution.config.respawn.respawnInNether && Dissolution.config.respawn.wowLikeRespawn) {
                 BlockPos respawnLoc = p.getBedLocation();

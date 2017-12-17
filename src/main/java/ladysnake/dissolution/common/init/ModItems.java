@@ -7,8 +7,6 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
-import net.minecraft.item.ItemFood;
-import net.minecraft.item.ItemSeeds;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -31,36 +29,13 @@ public final class ModItems {
     static final ModItems INSTANCE = new ModItems();
 
     public static Item PESTLE;
-    public static Item VERMILLION_POWDER;
     public static ItemLogo LOGO;
-    public static ItemAcerbacaFruit ACERBACA;
-    public static ItemFood INSUBACA;
-    public static ItemAcerbacaFruit SALERBACA;
-    public static ItemCasing WOODEN_CASING;
     public static ItemDebug DEBUG_ITEM;
-    public static ItemDepleted DEPLETED_CLAY;
-    public static ItemDepletedCoal DEPLETED_COAL;
-    public static ItemEyeUndead EYE_OF_THE_UNDEAD;
-    public static ItemFlask GLASS_FLASK;
     public static ItemJar GLASS_JAR;
-    public static ItemMineral CINNABAR;
-    public static ItemMineral HALITE;
-    public static ItemMineral IGNEOUS_ROCK;
-    public static ItemMineral MAGMA_STONE;
-    public static ItemMineral SULFUR;
-    public static ItemOccularePart DIAMOND_SHELL;
-    public static ItemOccularePart EMERALD_SHELL;
-    public static ItemOccularePart IRON_SHELL;
-    public static ItemOccularePart GOLD_SHELL;
-    public static ItemPlug PLUG;
     public static ItemScythe IRON_SCYTHE;
     public static ItemScythe LURKING_SCYTHE;
-    public static ItemSeeds BACA_SEEDS;
     public static ItemSepulture SEPULTURE;
-    public static ItemSoulInAJar SOUL_IN_A_FLASK;
-    public static ItemStoneHeart STONE_HEART;
-    public static ItemFilledFlask FILLED_FLASK;
-    public static ItemVermillionBed VERMILLION_BED;
+    public static ItemSoulInAJar SOUL_IN_A_JAR;
 
     static Set<Item> allItems = new HashSet<>();
 
@@ -74,30 +49,11 @@ public final class ModItems {
         IForgeRegistry<Item> reg = event.getRegistry();
         //noinspection ConstantConditions
         Collections.addAll(allItems,
-                PESTLE = name(new Item(), "pestle"),
-                VERMILLION_POWDER = name(new Item(), "vermillion_powder"),
                 DEBUG_ITEM = name(new ItemDebug(), "debug_item"),
-                DEPLETED_CLAY = name(new ItemDepleted(), "depleted_clay_ball"),
-                DEPLETED_COAL = name(new ItemDepletedCoal(), "depleted_coal"),
-                EYE_OF_THE_UNDEAD = name(new ItemEyeUndead(), "eye_of_the_undead"),
-                FILLED_FLASK = name(new ItemFilledFlask(), "filled_flask"),
-                GLASS_FLASK = name(new ItemFlask(), "glass_flask"),
                 GLASS_JAR = name(new ItemJar(), "glass_jar"),
-                CINNABAR = name(new ItemMineral(), "cinnabar"),
-                HALITE = name(new ItemMineral(), "halite"),
-                IGNEOUS_ROCK = name(new ItemMineral(), "igneous_rock"),
-                MAGMA_STONE = name(new ItemMineral(), "molten_rock"),
-                SULFUR = name(new ItemMineral(), "sulfur"),
-                DIAMOND_SHELL = name(new ItemOccularePart(1500), "diamond_occulare_shell"),
-                EMERALD_SHELL = name(new ItemOccularePart(750), "emerald_occulare_shell"),
-                GOLD_SHELL = name(new ItemOccularePart(50), "gold_occulare_shell"),
-                IRON_SHELL = name(new ItemOccularePart(500), "iron_occulare_shell"),
                 IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), "iron_scythe"),
                 LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"),
-				SEPULTURE = name(new ItemSepulture(), "sepulture"),
-//                SOUL_IN_A_FLASK = name(new ItemSoulInAJar(), "will_o_wisp_jar"),
-                STONE_HEART = name(new ItemStoneHeart(), "stone_heart"),
-                VERMILLION_BED = name(new ItemVermillionBed(), "vermillion_bed"));
+				SEPULTURE = name(new ItemSepulture(), "sepulture"));
 
 //		AlchemyModuleTypes.registerItems(allItems);
         reg.register(LOGO = name(new ItemLogo(), "logo"));
@@ -114,10 +70,9 @@ public final class ModItems {
         List<Mapping<Item>> missingBlocks = event.getMappings();
         Map<String, Item> remaps = new HashMap<>();
         remaps.put("itemdebug", DEBUG_ITEM);
-        remaps.put("itemeyeofundead", EYE_OF_THE_UNDEAD);
         remaps.put("itemgrandfaux", IRON_SCYTHE);
         remaps.put("itemsepulture", SEPULTURE);
-        remaps.put("itemsoulinabottle", SOUL_IN_A_FLASK);
+        remaps.put("itemsoulinabottle", SOUL_IN_A_JAR);
         remaps.put("itemironscythe", IRON_SCYTHE);
         for (Mapping<Item> map : missingBlocks) {
             if (map.key.getResourceDomain().equals(Reference.MOD_ID)) {

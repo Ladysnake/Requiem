@@ -1,12 +1,14 @@
 package ladysnake.dissolution.common.capabilities;
 
 import ladysnake.dissolution.api.*;
+import ladysnake.dissolution.api.corporeality.*;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PossessionMessage;
+import ladysnake.dissolution.common.registries.CorporealityStatus;
+import ladysnake.dissolution.common.registries.SoulCorporealityStatus;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -24,14 +26,12 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToAccessFieldException;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
 import org.apache.logging.log4j.LogManager;
 
@@ -110,7 +110,7 @@ public class CapabilityIncorporealHandler {
         if (event.phase != TickEvent.Phase.END) return;
         IIncorporealHandler handler = getHandler(event.player);
         handler.tick();
-        if (handler.getCorporealityStatus() == IIncorporealHandler.CorporealityStatus.SOUL || handler.getPossessed() != null) {
+        if (handler.getCorporealityStatus() == SoulCorporealityStatus.SOUL || handler.getPossessed() != null) {
             float size = event.player.isRiding() ? 0f : 0.8f;
             try {
                 entity$setSize.invoke(event.player, event.player.width, size);
@@ -128,7 +128,7 @@ public class CapabilityIncorporealHandler {
     public static class DefaultIncorporealHandler implements IIncorporealHandler {
 
         private boolean strongSoul;
-        private CorporealityStatus corporealityStatus = CorporealityStatus.BODY;
+        private ICorporealityStatus corporealityStatus = CorporealityStatus.BODY;
         private EctoplasmStats ectoplasmStats = new EctoplasmStats();
         private DialogueStats dialogueStats = new DialogueStats(this);
         private IDeathStats deathStats = new DeathStats();
@@ -168,36 +168,20 @@ public class CapabilityIncorporealHandler {
         }
 
         @Override
-        public void setCorporealityStatus(CorporealityStatus newStatus) {
-            if (!this.isStrongSoul()) return;
+        public void setCorporealityStatus(ICorporealityStatus newStatus) {
+            if (!this.isStrongSoul() || newStatus == corporealityStatus) return;
             if (owner == null || MinecraftForge.EVENT_BUS.post(new PlayerIncorporealEvent(owner, newStatus))) return;
+
+            if(newStatus == null) newStatus = CorporealityStatus.BODY;
+
+            corporealityStatus.resetState(owner);
 
             corporealityStatus = newStatus;
 
+            corporealityStatus.initState(owner);
+
             if (!newStatus.isIncorporeal() && this.getPossessed() != null) this.setPossessed(null);
 
-            owner.setEntityInvulnerable(newStatus == CorporealityStatus.SOUL);
-
-            if (newStatus == CorporealityStatus.SOUL) {
-                owner.eyeHeight = 0.8f;
-            } else {
-                owner.eyeHeight = owner.getDefaultEyeHeight();
-            }
-
-            try {
-                ObfuscationReflectionHelper.setPrivateValue(Entity.class, owner, newStatus.isIncorporeal(), "isImmuneToFire", "field_70178_ae");
-            } catch (UnableToFindFieldException | UnableToAccessFieldException e) {
-                e.printStackTrace();
-            }
-
-            owner.setInvisible(newStatus.isIncorporeal() && Dissolution.config.ghost.invisibleGhosts);
-
-            if (!owner.isCreative()) {
-                boolean enableFlight = (!DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.NO_FLIGHT)) && (!DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT));
-                owner.capabilities.disableDamage = newStatus == CorporealityStatus.SOUL;
-                owner.capabilities.allowFlying = (newStatus.isIncorporeal() && (owner.experienceLevel > 0) && enableFlight);
-                owner.capabilities.isFlying = (newStatus.isIncorporeal() && owner.capabilities.isFlying && owner.experienceLevel > 0 && enableFlight);
-            }
             if (!owner.world.isRemote) {
                 PacketHandler.NET.sendToAll(new IncorporealMessage(owner.getUniqueID().getMostSignificantBits(),
                         owner.getUniqueID().getLeastSignificantBits(), strongSoul, newStatus));
@@ -207,7 +191,7 @@ public class CapabilityIncorporealHandler {
 
         @Nonnull
         @Override
-        public CorporealityStatus getCorporealityStatus() {
+        public ICorporealityStatus getCorporealityStatus() {
             return this.isStrongSoul() ? this.corporealityStatus : CorporealityStatus.BODY;
         }
 
@@ -355,7 +339,7 @@ public class CapabilityIncorporealHandler {
         public NBTBase writeNBT(Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side) {
             final NBTTagCompound tag = new NBTTagCompound();
             tag.setBoolean("strongSoul", instance.isStrongSoul());
-            tag.setString("corporealityStatus", instance.getCorporealityStatus().name());
+            tag.setString("corporealityStatus", instance.getCorporealityStatus().getRegistryName().toString());
             tag.setString("lastDeath", instance.getDeathStats().getLastDeathMessage() == null || instance.getDeathStats().getLastDeathMessage().isEmpty() ? "This player has no recorded death" : instance.getDeathStats().getLastDeathMessage());
             if (instance.getPossessed() instanceof Entity)
                 tag.setUniqueId("possessedEntity", ((Entity) instance.getPossessed()).getUniqueID());
@@ -368,7 +352,7 @@ public class CapabilityIncorporealHandler {
         public void readNBT(Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side, NBTBase nbt) {
             final NBTTagCompound tag = (NBTTagCompound) nbt;
             instance.setStrongSoul(((NBTTagCompound) nbt).getBoolean("strongSoul"));
-            instance.setCorporealityStatus(IIncorporealHandler.CorporealityStatus.valueOf(tag.getString("corporealityStatus")));
+            instance.setCorporealityStatus(CorporealityStatus.REGISTRY.getValue(new ResourceLocation(tag.getString("corporealityStatus"))));
             if (instance instanceof DefaultIncorporealHandler) {
                 UUID hostUUID = tag.getUniqueId("possessedEntity");
                 ((DefaultIncorporealHandler) instance).hostUUID = hostUUID == new UUID(0, 0) ? null : hostUUID;

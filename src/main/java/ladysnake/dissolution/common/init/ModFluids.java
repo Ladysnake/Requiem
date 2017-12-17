@@ -27,7 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+//@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public enum ModFluids {
 
     MERCURY("mercury", false,

@@ -1,6 +1,8 @@
 package ladysnake.dissolution.common.config;
 
-import ladysnake.dissolution.api.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
+import ladysnake.dissolution.common.registries.CorporealityStatus;
+import ladysnake.dissolution.common.registries.SoulCorporealityStatus;
 import net.minecraftforge.common.config.Config;
 
 public class DissolutionConfig {
@@ -109,7 +111,7 @@ public class DissolutionConfig {
         public int respawnDimension = -1;
 
         @Config.Comment("Controls players with strong souls' corporeal state when they respawn")
-        public IIncorporealHandler.CorporealityStatus respawnCorporealityStatus = IIncorporealHandler.CorporealityStatus.SOUL;
+        public EnumCorporealityStatus respawnCorporealityStatus = EnumCorporealityStatus.SOUL;
 
         @Config.Comment("Whether players should respawn instantly as souls without showing death screen (could mess with other mods)")
         public boolean skipDeathScreen = false;

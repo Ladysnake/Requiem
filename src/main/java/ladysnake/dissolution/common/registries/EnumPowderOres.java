@@ -6,12 +6,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 
 public enum EnumPowderOres {
-    CINNABAR(ModItems.CINNABAR),
-    HALITE(ModItems.HALITE),
-    SULFUR(ModItems.SULFUR),
-    CLAY(Items.CLAY_BALL, HALITE, ModItems.DEPLETED_CLAY),
-    COAL(Items.COAL, SULFUR, ModItems.DEPLETED_COAL),
-    MAGMA(ModItems.IGNEOUS_ROCK, CINNABAR, ModItems.IGNEOUS_ROCK);
+    CINNABAR(Items.AIR);
 
     private final Item component;
     private final EnumPowderOres refinedPowder;

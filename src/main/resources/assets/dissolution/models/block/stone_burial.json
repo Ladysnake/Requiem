@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11",
 	"textures": {
-		"0": "blocks/stone_burial",
-		"particle": "blocks/stone_burial"
+		"0": "dissolution:blocks/stone_burial",
+		"particle": "dissolution:blocks/stone_burial"
 	},
 	"elements": [
 		{

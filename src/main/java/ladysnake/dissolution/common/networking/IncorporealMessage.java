@@ -1,21 +1,22 @@
 package ladysnake.dissolution.common.networking;
 
 import io.netty.buffer.ByteBuf;
-import ladysnake.dissolution.api.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
+import ladysnake.dissolution.common.registries.CorporealityStatus;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class IncorporealMessage implements IMessage {
     long playerUUIDMost;
     long playerUUIDLeast;
     boolean strongSoul;
-    IIncorporealHandler.CorporealityStatus corporealityStatus;
+    ICorporealityStatus corporealityStatus;
 
     // this constructor is required otherwise you'll get errors (used somewhere in fml through reflection)
     @SuppressWarnings("unused")
     public IncorporealMessage() {
     }
 
-    public IncorporealMessage(long UUIDMost, long UUIDLeast, boolean strongSoul, IIncorporealHandler.CorporealityStatus corporealityStatus) {
+    public IncorporealMessage(long UUIDMost, long UUIDLeast, boolean strongSoul, ICorporealityStatus corporealityStatus) {
         this.playerUUIDMost = UUIDMost;
         this.playerUUIDLeast = UUIDLeast;
         this.strongSoul = strongSoul;
@@ -29,13 +30,14 @@ public class IncorporealMessage implements IMessage {
         this.playerUUIDLeast = buf.readLong();
         byte b = buf.readByte();
         this.strongSoul = (b & 0b1000_0000) > 0;
-        this.corporealityStatus = IIncorporealHandler.CorporealityStatus.values()[b & 0b0111_1111];
+        this.corporealityStatus = CorporealityStatus.REGISTRY.getValues().get(b & 0b0111_1111);    // yes I assume that there won't be more than 127 possible statuses
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
         buf.writeLong(playerUUIDMost);
         buf.writeLong(playerUUIDLeast);
-        buf.writeByte(corporealityStatus.ordinal() | (strongSoul ? 0b1000_0000 : 0));
+        int statusId = CorporealityStatus.REGISTRY.getValues().indexOf(corporealityStatus);
+        buf.writeByte(statusId | (strongSoul ? 0b1000_0000 : 0));
     }
 }
