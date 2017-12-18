@@ -53,7 +53,7 @@ public final class ModItems {
                 GLASS_JAR = name(new ItemJar(), "glass_jar"),
                 IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), "iron_scythe"),
                 LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"),
-				SEPULTURE = name(new ItemSepulture(), "sepulture"));
+				SEPULTURE = name(new ItemSepulture(), "stone_burial"));
 
 //		AlchemyModuleTypes.registerItems(allItems);
         reg.register(LOGO = name(new ItemLogo(), "logo"));

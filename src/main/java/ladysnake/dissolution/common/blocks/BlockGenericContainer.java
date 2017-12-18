@@ -129,6 +129,7 @@ public abstract class BlockGenericContainer extends Block {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, @Nullable World player, List<String> tooltip, ITooltipFlag advanced) {
         super.addInformation(stack, player, tooltip, advanced);
         GenericStackInventory<EnumPowderOres> inventory = CapabilityGenericInventoryProvider.getInventory(stack, EnumPowderOres.class);

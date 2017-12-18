@@ -1,12 +1,12 @@
 {
     "variants": {
-        "facing=north,part=foot": { "model": "dissolution:stone_burial", "y": 180 },
-        "facing=east,part=foot":  { "model": "dissolution:stone_burial", "y": 270 },
-        "facing=south,part=foot": { "model": "dissolution:stone_burial" },
-        "facing=west,part=foot":  { "model": "dissolution:stone_burial", "y": 90 },
-        "facing=north,part=head": { "model": "dissolution:stone_burial", "y": 180 },
-        "facing=east,part=head":  { "model": "dissolution:stone_burial", "y": 270 },
-        "facing=south,part=head": { "model": "dissolution:stone_burial" },
-        "facing=west,part=head":  { "model": "dissolution:stone_burial", "y": 90 }
+        "facing=north,part=center": { "model": "dissolution:stone_burial", "y": 180 },
+        "facing=east,part=center":  { "model": "dissolution:stone_burial", "y": 270 },
+        "facing=south,part=center": { "model": "dissolution:stone_burial" },
+        "facing=west,part=center":  { "model": "dissolution:stone_burial", "y": 90 },
+        "facing=north,part=side": { "model": "dissolution:stone_burial", "y": 180 },
+        "facing=east,part=side":  { "model": "dissolution:stone_burial", "y": 270 },
+        "facing=south,part=side": { "model": "dissolution:stone_burial" },
+        "facing=west,part=side":  { "model": "dissolution:stone_burial", "y": 90 }
     }
 }

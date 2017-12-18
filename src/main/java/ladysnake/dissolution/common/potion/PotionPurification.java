@@ -27,9 +27,10 @@ public class PotionPurification extends Potion {
         IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(entityLivingBaseIn);
         if (handler == null) return;
         if (handler.getPossessed() != null) {
-            handler.getPossessedStats().purifyHealth(amplifier + 1);
-        } else
+            handler.getPossessedStats().purifyHealth((amplifier + 1)*2);
+        } else {
             Objects.requireNonNull(Potion.getPotionFromResourceLocation("minecraft:regeneration")).performEffect(entityLivingBaseIn, amplifier);
+        }
     }
 
     @Override
