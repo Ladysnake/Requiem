@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.items;
 
-import ladysnake.dissolution.common.blocks.BlockSepulture;
+import ladysnake.dissolution.common.blocks.BlockSepulchre;
 import ladysnake.dissolution.common.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -16,6 +16,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+
 public class ItemSepulture extends Item {
 
     public ItemSepulture() {
@@ -23,6 +25,7 @@ public class ItemSepulture extends Item {
         this.setMaxStackSize(1);
     }
 
+    @Nonnull
     public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
                                       EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (worldIn.isRemote) {
@@ -38,38 +41,51 @@ public class ItemSepulture extends Item {
                 pos = pos.up();
             }
 
-            int i = MathHelper.floor((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
-            EnumFacing enumfacing = EnumFacing.getHorizontal(i);
-            BlockPos blockpos = pos.offset(enumfacing);
             ItemStack itemstack = player.getHeldItem(hand);
-
-            if (player.canPlayerEdit(pos, facing, itemstack) && player.canPlayerEdit(blockpos, facing, itemstack)) {
-                IBlockState iblockstate1 = worldIn.getBlockState(blockpos);
-                boolean flag1 = iblockstate1.getBlock().isReplaceable(worldIn, blockpos);
-                boolean flag2 = flag || worldIn.isAirBlock(pos);
-                boolean flag3 = flag1 || worldIn.isAirBlock(blockpos);
-
-                if (flag2 && flag3 && worldIn.getBlockState(pos.down()).isOpaqueCube()
-                        && worldIn.getBlockState(blockpos.down()).isOpaqueCube()) {
-                    IBlockState iblockstate2 = ModBlocks.SEPULTURE.getDefaultState()
-                            .withProperty(BlockSepulture.FACING, enumfacing)
-                            .withProperty(BlockSepulture.PART, BlockSepulture.EnumPartType.FOOT);
-                    worldIn.setBlockState(pos, iblockstate2, 10);
-                    worldIn.setBlockState(blockpos,
-                            iblockstate2.withProperty(BlockSepulture.PART, BlockSepulture.EnumPartType.HEAD), 10);
-                    worldIn.notifyNeighborsRespectDebug(pos, block, false);
-                    worldIn.notifyNeighborsRespectDebug(blockpos, iblockstate1.getBlock(), false);
-                    SoundType soundtype = iblockstate2.getBlock().getSoundType(iblockstate2, worldIn, pos, player);
-                    worldIn.playSound(null, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS,
-                            (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                    itemstack.shrink(1);
-                    return EnumActionResult.SUCCESS;
-                } else {
-                    return EnumActionResult.FAIL;
+            // First we check that the area meets the requirements to place the burial
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    BlockPos pos1 = pos.add(i, 0, j);
+                    IBlockState state = worldIn.getBlockState(pos1);
+                    boolean canEdit = player.canPlayerEdit(pos1, facing, itemstack);
+                    boolean replaceable = state.getBlock().isReplaceable(worldIn, pos1);
+                    boolean solidFloor = worldIn.getBlockState(pos1.down()).isOpaqueCube();
+                    if(!canEdit || !replaceable || !solidFloor)
+                        return EnumActionResult.FAIL;
                 }
-            } else {
-                return EnumActionResult.FAIL;
             }
+
+            int i = MathHelper.floor((player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+            EnumFacing enumfacing = EnumFacing.getHorizontal(i);
+
+            IBlockState baseState = ModBlocks.SEPULTURE.getDefaultState()
+                    .withProperty(BlockSepulchre.FACING, enumfacing)
+                    .withProperty(BlockSepulchre.PART, BlockSepulchre.EnumPartType.CENTER);
+
+            // Need to place the center first to avoid sides popping on update
+            IBlockState prevState = worldIn.getBlockState(pos);
+            worldIn.setBlockState(pos, baseState, 10);
+            worldIn.notifyNeighborsRespectDebug(pos, prevState.getBlock(), false);
+
+            IBlockState state = baseState.withProperty(BlockSepulchre.PART, BlockSepulchre.EnumPartType.SIDE);
+
+            // Then we actually place all the burial blocks
+            for (i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    if (i == 0 && j == 0) continue; // the center is already placed
+                    BlockPos pos1 = pos.add(i, 0, j);
+                    prevState = worldIn.getBlockState(pos1);
+                    worldIn.setBlockState(pos1, state, 10);
+                    worldIn.notifyNeighborsRespectDebug(pos1, prevState.getBlock(), false);
+                }
+            }
+
+            // Finish by playing the sound and stuff
+            SoundType soundtype = baseState.getBlock().getSoundType(baseState, worldIn, pos, player);
+            worldIn.playSound(null, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS,
+                    (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+            itemstack.shrink(1);
+            return EnumActionResult.SUCCESS;
         }
     }
 }

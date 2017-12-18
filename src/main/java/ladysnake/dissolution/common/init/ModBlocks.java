@@ -38,7 +38,7 @@ public final class ModBlocks {
     public static BlockCrucible CRUCIBLE;
     public static BlockLamentStone LAMENT_STONE;
     public static BlockMortar MORTAR;
-    public static BlockSepulture SEPULTURE;
+    public static BlockSepulchre SEPULTURE;
     public static BlockShrine SHRINE;
     public static BlockWisp WISP_IN_A_JAR;
 
@@ -57,7 +57,7 @@ public final class ModBlocks {
                 SHRINE = name(new BlockShrine(), "passeress_shrine"));
         ModItems.SOUL_IN_A_JAR = registerBlock(blockRegistry, WISP_IN_A_JAR = name(new BlockWisp(), "wisp_jar"), true,
                 block -> (ItemSoulInAJar) new ItemSoulInAJar(block).setRegistryName("wisp_in_a_jar"));
-        blockRegistry.register(SEPULTURE = name(new BlockSepulture(), "stone_burial"));
+        blockRegistry.register(SEPULTURE = name(new BlockSepulchre(), "stone_burial"));
     }
 
     private void registerBlocks(IForgeRegistry<Block> blockRegistry, Block... blocks) {
