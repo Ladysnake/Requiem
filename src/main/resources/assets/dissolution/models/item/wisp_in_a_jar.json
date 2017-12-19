@@ -2,5 +2,25 @@
     "parent": "item/generated",
     "textures": {
         "layer0": "dissolution:items/wisp_in_a_jar"
-    }
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "dissolution:soul": 0
+            },
+            "model": "dissolution:item/glass_jar"
+        },
+        {
+            "predicate": {
+                "dissolution:soul": 2
+            },
+            "model": "dissolution:item/faerie_in_a_jar"
+        },
+        {
+            "predicate": {
+                "dissolution:fluid": 3
+            },
+            "model": "dissolution:item/weak_faerie_in_a_jar"
+        }
+    ]
 }

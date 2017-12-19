@@ -1,6 +1,7 @@
 package ladysnake.dissolution.client.renders.entities;
 
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.entity.SoulType;
 import ladysnake.dissolution.common.entity.souls.AbstractSoul;
 import ladysnake.dissolution.common.entity.souls.EntityFaerie;
 import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
@@ -17,8 +18,6 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nonnull;
 
 public class RenderWillOWisp<T extends Entity> extends Render<T> {
-
-    public static final ResourceLocation WILL_O_WISP_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/entity/will_o_wisp.png");
 
     public RenderWillOWisp(RenderManager renderManager) {
         super(renderManager);
@@ -78,7 +77,7 @@ public class RenderWillOWisp<T extends Entity> extends Render<T> {
     @Override
     @Nonnull
     protected ResourceLocation getEntityTexture(@Nonnull T entity) {
-        return WILL_O_WISP_TEXTURE;
+        return SoulType.WILL_O_WISP.texture;
     }
 
 }

@@ -34,13 +34,15 @@ public final class ModItems {
     public static ItemJar GLASS_JAR;
     public static ItemScythe IRON_SCYTHE;
     public static ItemScythe LURKING_SCYTHE;
-    public static ItemSepulture SEPULTURE;
+    public static ItemBurial SEPULTURE;
+    public static ItemBurial WOODEN_COFFIN;
+    public static ItemBurial OBSIDIAN_COFFIN;
     public static ItemSoulInAJar SOUL_IN_A_JAR;
 
     static Set<Item> allItems = new HashSet<>();
 
     @SuppressWarnings("unchecked")
-    private static <T extends Item> T name(T item, String name) {
+    static <T extends Item> T name(T item, String name) {
         return (T) item.setUnlocalizedName(name).setRegistryName(new ResourceLocation(Reference.MOD_ID, name));
     }
 
@@ -52,8 +54,7 @@ public final class ModItems {
                 DEBUG_ITEM = name(new ItemDebug(), "debug_item"),
                 GLASS_JAR = name(new ItemJar(), "glass_jar"),
                 IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), "iron_scythe"),
-                LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"),
-				SEPULTURE = name(new ItemSepulture(), "stone_burial"));
+                LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"));
 
 //		AlchemyModuleTypes.registerItems(allItems);
         reg.register(LOGO = name(new ItemLogo(), "logo"));

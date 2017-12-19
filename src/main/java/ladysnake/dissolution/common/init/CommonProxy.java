@@ -42,6 +42,7 @@ public abstract class CommonProxy {
 
         GameRegistry.registerTileEntity(TileEntitySepulture.class, Reference.MOD_ID + ":tileentitysepulture");
         GameRegistry.registerTileEntity(TileEntityLamentStone.class, Reference.MOD_ID + ":tileentityancienttomb");
+        GameRegistry.registerTileEntity(TileEntityWispInAJar.class, Reference.MOD_ID + ":tileentitywispinajar");
 
         NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
         PacketHandler.initPackets();

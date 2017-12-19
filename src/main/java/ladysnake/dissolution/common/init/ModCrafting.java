@@ -19,7 +19,7 @@ public class ModCrafting {
 		RecipeToJsonConverter.addShapedRecipe(new ItemStack(ModItems.GRAND_FAUX), "IBB", "PSS", "SPP", 'I', Items.IRON_INGOT, 'B', Blocks.IRON_BLOCK, 'P', Items.PAPER, 'S', Items.STICK);
 		RecipeToJsonConverter.addShapedRecipe(new ItemStack(ModItems.SCYTHE_IRON), "III", " SS", "S  ", 'I', Items.IRON_INGOT, 'S', Items.STICK);
 		RecipeToJsonConverter.addShapedRecipe(new ItemStack(ModBlocks.MERCURIUS_WAYSTONE), "W", "G", "C", 'W', Blocks.COBBLESTONE_WALL, 'G', ModItems.SOUL_GEM, 'C', Blocks.COBBLESTONE);
-		RecipeToJsonConverter.addShapedRecipe(new ItemStack(ModItems.SEPULTURE), "CCC", "QGS", 'C', new ItemStack(Blocks.STONE_SLAB, 1, 0), 'Q', Items.QUARTZ, 'G', ModItems.SOUL_GEM, 'S', new ItemStack(Items.SKULL, 1, 1));
+		RecipeToJsonConverter.addShapedRecipe(new ItemStack(ModItems.STONE_BURIAL), "CCC", "QGS", 'C', new ItemStack(Blocks.STONE_SLAB, 1, 0), 'Q', Items.QUARTZ, 'G', ModItems.SOUL_GEM, 'S', new ItemStack(Items.SKULL, 1, 1));
 		RecipeToJsonConverter.addShapedRecipe(new ItemStack(ModBlocks.SOUL_EXTRACTOR), "SSD", "GIG", "QRS", 'S', Blocks.COBBLESTONE, 'D', Items.DIAMOND, 'G', Blocks.GLASS, 'I', Items.IRON_INGOT, 'Q', Items.QUARTZ, 'R', Items.REDSTONE);
 		RecipeToJsonConverter.addShapedRecipe(new ItemStack(Blocks.SOUL_SAND, 8), "SSS", "SBS", "SSS", 'S', Blocks.SAND, 'B', ModItems.SOUL_IN_A_JAR);
 		RecipeToJsonConverter.addShapelessRecipe(new ItemStack(ModItems.SOUL_GEM), ItemBaseResource.resourceFromName("ectoplasm"), ModItems.SOUL_IN_A_JAR);

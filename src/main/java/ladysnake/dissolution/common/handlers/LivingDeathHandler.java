@@ -43,8 +43,8 @@ public class LivingDeathHandler {
         if (event.getEntity() instanceof EntityPlayer)
             this.handlePlayerDeath(event);
 
-        if (event.getSource().getTrueSource() instanceof EntityPlayer)
-            this.handlePlayerKill((EntityPlayer) event.getSource().getTrueSource(), event.getEntityLiving());
+//        if (event.getSource().getTrueSource() instanceof EntityPlayer)
+//            this.handlePlayerKill((EntityPlayer) event.getSource().getTrueSource(), event.getEntityLiving());
     }
 
     protected void handlePlayerDeath(LivingDeathEvent event) {
@@ -73,14 +73,8 @@ public class LivingDeathHandler {
             body.setCustomNameTag(p.getName());
             body.setDecompositionCountdown(EntityPlayerCorpse.MAX_DECAY_TIME);
 
-            boolean flag = false;
-            if (event.getSource().getTrueSource() instanceof EntityPlayer) {
-                EntityPlayer killer = (EntityPlayer) event.getSource().getTrueSource();
-            }
-
             if (Dissolution.config.respawn.bodiesHoldInventory) {
-
-                if ((flag || Dissolution.config.respawn.bodiesHoldInventory) && !p.isSpectator() && !p.world.getGameRules().getBoolean("keepInventory")) {
+                if (Dissolution.config.respawn.bodiesHoldInventory && !p.isSpectator() && !p.world.getGameRules().getBoolean("keepInventory")) {
                     DissolutionInventoryHelper.transferEquipment(p, body);
                     body.setInventory(new InventoryPlayerCorpse(p.inventory.mainInventory, body));
                     p.inventory.clear();
@@ -98,6 +92,7 @@ public class LivingDeathHandler {
                 fakePlayerDeath((EntityPlayerMP) p, event.getSource());
             corp.setCorporealityStatus(Dissolution.config.respawn.respawnCorporealityStatus.status);
             p.setHealth(20f);
+            //noinspection ConstantConditions
             if (p.getBedLocation() != null && !Dissolution.config.respawn.respawnInNether && Dissolution.config.respawn.wowLikeRespawn) {
                 BlockPos respawnLoc = p.getBedLocation();
                 p.setPosition(respawnLoc.getX(), respawnLoc.getY(), respawnLoc.getZ());
@@ -168,22 +163,4 @@ public class LivingDeathHandler {
         player.getCombatTracker().reset();
     }
 
-    private void handlePlayerKill(@Nonnull EntityPlayer killer, EntityLivingBase victim) {
-
-        if (killer.getHeldItemMainhand().getItem() instanceof ItemScythe) {
-            ((ItemScythe) killer.getHeldItemMainhand().getItem()).harvestSoul(killer, victim);
-        }
-
-/*
-        ItemStack eye = DissolutionInventoryHelper.findItem(killer, ModItems.EYE_OF_THE_UNDEAD);
-		if (killer.world.rand.nextInt(1) == 0 && !eye.isEmpty() && !killer.world.isRemote) {
-			AbstractMinion corpse = AbstractMinion.createMinion(victim);
-			if(corpse != null) {
-				DissolutionInventoryHelper.transferEquipment(victim, corpse);
-				victim.world.spawnEntity(corpse);
-				victim.world.removeEntity(victim);
-			}
-		}
-*/
-    }
 }
