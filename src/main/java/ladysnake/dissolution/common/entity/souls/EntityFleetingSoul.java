@@ -7,6 +7,7 @@ import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.items.ItemSoulInAJar;
+import ladysnake.dissolution.common.entity.SoulType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.MoverType;
@@ -24,7 +25,7 @@ import javax.annotation.Nonnull;
 @Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo", striprefs = true)
 public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
 
-    private int delayBeforeCanPickup = 10;
+    protected int delayBeforeCanPickup = 10;
     protected int targetChangeCooldown = 0;
     protected Entity targetEntity;
     protected BlockPos forcedTarget = BlockPos.ORIGIN;
@@ -142,7 +143,7 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
         ItemStack bottle = DissolutionInventoryHelper.findItem(entityIn, ModItems.GLASS_JAR);
         if (!world.isRemote && !bottle.isEmpty() && this.delayBeforeCanPickup <= 0) {
             bottle.shrink(1);
-            entityIn.addItemStackToInventory(ItemSoulInAJar.newTypedSoulBottle(this.soul.getType()));
+            entityIn.addItemStackToInventory(ItemSoulInAJar.newTypedSoulBottle(SoulType.WILL_O_WISP));
             this.setDead();
         }
     }

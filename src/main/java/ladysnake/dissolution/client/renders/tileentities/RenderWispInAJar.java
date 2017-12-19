@@ -1,8 +1,7 @@
 package ladysnake.dissolution.client.renders.tileentities;
 
 import ladysnake.dissolution.client.renders.entities.RenderWillOWisp;
-import ladysnake.dissolution.common.entity.souls.AbstractSoul;
-import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
+import ladysnake.dissolution.common.entity.SoulType;
 import ladysnake.dissolution.common.tileentities.TileEntityWispInAJar;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -17,6 +16,8 @@ public class RenderWispInAJar extends TileEntitySpecialRenderer<TileEntityWispIn
 
     @Override
     public void render(TileEntityWispInAJar te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+        SoulType containedSoul = te.getContainedSoul();
+        if (containedSoul == SoulType.NONE) return;
         GlStateManager.pushMatrix();
 
         int time = (int) Minecraft.getMinecraft().player.world.getWorldTime() % 34;
@@ -36,7 +37,7 @@ public class RenderWispInAJar extends TileEntitySpecialRenderer<TileEntityWispIn
         GlStateManager.rotate(180.0F - renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate((float) (renderManager.options.thirdPersonView == 2 ? -1 : 1) * -renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
 
-        this.bindTexture(RenderWillOWisp.WILL_O_WISP_TEXTURE);
+        this.bindTexture(containedSoul.texture);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();

@@ -1,12 +1,15 @@
 package ladysnake.dissolution.common.entity.souls;
 
 import elucent.albedo.lighting.Light;
-import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.init.ModPotions;
-import ladysnake.dissolution.common.registries.CorporealityStatus;
+import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
+import ladysnake.dissolution.common.items.ItemSoulInAJar;
+import ladysnake.dissolution.common.entity.SoulType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -48,7 +51,14 @@ public class EntityFaerie extends EntityFleetingSoul {
 
     @Override
     public void onCollideWithPlayer(EntityPlayer entityIn) {
-        if(!this.isTired()) {
+        ItemStack bottle = DissolutionInventoryHelper.findItem(entityIn, ModItems.GLASS_JAR);
+        if (!world.isRemote && !bottle.isEmpty() && this.delayBeforeCanPickup <= 0) {
+            bottle.shrink(1);
+            entityIn.addItemStackToInventory(ItemSoulInAJar.newTypedSoulBottle(isTired()
+                    ? SoulType.TIRED_FAERIE
+                    : SoulType.FAERIE));
+            this.setDead();
+        } else if(!world.isRemote && !this.isTired()) {
             entityIn.addPotionEffect(new PotionEffect(ModPotions.PURIFICATION, 200));
             this.setTired(true);
         }

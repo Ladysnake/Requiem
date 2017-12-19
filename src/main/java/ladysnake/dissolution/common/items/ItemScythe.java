@@ -1,8 +1,6 @@
 package ladysnake.dissolution.common.items;
 
 import com.google.common.collect.Multimap;
-import ladysnake.dissolution.api.SoulTypes;
-import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -10,7 +8,6 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
@@ -137,6 +134,7 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
         return state.getBlock() instanceof IPlantable && state.getBlockHardness(world, pos) == 0;
     }
 
+    @Nonnull
     @Override
     public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot equipmentSlot) {
         Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(equipmentSlot);
@@ -147,25 +145,6 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
         }
 
         return multimap;
-    }
-
-    /**
-     * Fills an empty bottle in the wielder's inventory with a soul
-     *
-     * @param killer the player wielding this scythe
-     */
-    public void harvestSoul(EntityPlayer killer, EntityLivingBase victim) {
-        if (victim.getCreatureAttribute() == EnumCreatureAttribute.UNDEAD) return;
-        if (!(victim instanceof EntityLiving)) return;
-        this.fillBottle(killer, 1, SoulTypes.getSoulFor((EntityLiving) victim));
-    }
-
-    public void fillBottle(EntityPlayer p, int nb, SoulTypes soul) {
-        ItemStack bottle = DissolutionInventoryHelper.findItem(p, Items.GLASS_BOTTLE);
-        if (!bottle.isEmpty()) {
-            bottle.shrink(nb);
-            p.inventory.addItemStackToInventory(ItemSoulInAJar.newTypedSoulBottle(soul));
-        }
     }
 
     @Override

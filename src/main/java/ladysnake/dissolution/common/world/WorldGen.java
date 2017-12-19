@@ -43,8 +43,8 @@ public class WorldGen implements IWorldGenerator {
         int Ypos = 256;
         int Zpos = j + random.nextInt(8);
 
-        if (random.nextInt() % Dissolution.config.worldGen.spawnLamentStonesFreq == 0)
-            lamentStonesGenerator.generate(world, random, new BlockPos(Xpos, Ypos, Zpos));
+//        if (random.nextInt() % Dissolution.config.worldGen.spawnLamentStonesFreq == 0)
+//            lamentStonesGenerator.generate(world, random, new BlockPos(Xpos, Ypos, Zpos));
 
     }
 

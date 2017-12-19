@@ -1,0 +1,12 @@
+{
+    "variants": {
+        "facing=north,part=center": { "model": "dissolution:obsidian_coffin", "y": 180 },
+        "facing=east,part=center":  { "model": "dissolution:obsidian_coffin", "y": 270 },
+        "facing=south,part=center": { "model": "dissolution:obsidian_coffin" },
+        "facing=west,part=center":  { "model": "dissolution:obsidian_coffin", "y": 90 },
+        "facing=north,part=side": { "model": "dissolution:obsidian_coffin", "y": 180 },
+        "facing=east,part=side":  { "model": "dissolution:obsidian_coffin", "y": 270 },
+        "facing=south,part=side": { "model": "dissolution:obsidian_coffin" },
+        "facing=west,part=side":  { "model": "dissolution:obsidian_coffin", "y": 90 }
+    }
+}

@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.blocks;
 
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.init.ModBlocks;
-import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.items.ItemBurial;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.EnumPushReaction;
@@ -26,17 +26,21 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.Random;
+import java.util.function.Supplier;
 
 public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable {
 
     public static final PropertyEnum<BlockSepulchre.EnumPartType> PART = PropertyEnum.create("part",
             BlockSepulchre.EnumPartType.class);
     private static final float TEXEL = 1/16f;
-    protected static final AxisAlignedBB AABB_X = new AxisAlignedBB(-2* TEXEL, 0.0D, -12* TEXEL, 18* TEXEL, 12* TEXEL, 1.0D + 12* TEXEL);
-    protected static final AxisAlignedBB AABB_Z = new AxisAlignedBB(-12* TEXEL, 0, -2* TEXEL, 1.0D + 12* TEXEL, 12* TEXEL, 18* TEXEL);
+    protected static final AxisAlignedBB AABB_X = new AxisAlignedBB(-12* TEXEL, 0, -2* TEXEL, 1.0D + 12* TEXEL, 12* TEXEL, 18* TEXEL);
+    protected static final AxisAlignedBB AABB_Z = new AxisAlignedBB(-2* TEXEL, 0.0D, -12* TEXEL, 18* TEXEL, 12* TEXEL, 1.0D + 12* TEXEL);
 
-    public BlockSepulchre() {
-        super(Material.ROCK);
+    private final Supplier<ItemBurial> itemSupplier;
+
+    public BlockSepulchre(Material material, Supplier<ItemBurial> itemSupplier) {
+        super(material);
+        this.itemSupplier = itemSupplier;
         this.setDefaultState(this.blockState.getBaseState().withProperty(PART, BlockSepulchre.EnumPartType.CENTER));
         this.setHardness(1f);
         this.setHarvestLevel("pickaxe", 0);
@@ -84,7 +88,7 @@ public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable
                 BlockPos pos1 = pos.add(i, 0, j);
                 if (pos.equals(pos1)) continue;
                 IBlockState state = world.getBlockState(pos1);
-                if (state.getBlock() == ModBlocks.SEPULTURE && state.getValue(PART) == EnumPartType.CENTER)
+                if (state.getBlock() == ModBlocks.STONE_BURIAL && state.getValue(PART) == EnumPartType.CENTER)
                     return pos1;
             }
         }
@@ -94,7 +98,7 @@ public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable
     @Nonnull
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return state.getValue(PART) == BlockSepulchre.EnumPartType.SIDE ? Items.AIR : ModItems.SEPULTURE;
+        return state.getValue(PART) == BlockSepulchre.EnumPartType.SIDE ? Items.AIR : itemSupplier.get();
     }
 
     @Nonnull
@@ -111,7 +115,7 @@ public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable
     @Override
     @Deprecated
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull IBlockAccess worldIn, @Nonnull BlockPos pos) {
-        return blockState.getValue(PART) == EnumPartType.CENTER ? super.getCollisionBoundingBox(blockState, worldIn, pos) : null;
+        return /*blockState.getValue(PART) == EnumPartType.CENTER ? */super.getCollisionBoundingBox(blockState, worldIn, pos)/* : null*/;
     }
 
     @Override
@@ -156,7 +160,7 @@ public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable
     @Override
     @Deprecated
     public ItemStack getItem(World worldIn, BlockPos pos, @Nonnull IBlockState state) {
-        return new ItemStack(ModItems.SEPULTURE);
+        return new ItemStack(itemSupplier.get());
     }
 
     @Override

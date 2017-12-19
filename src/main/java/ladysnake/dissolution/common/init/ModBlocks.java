@@ -3,8 +3,10 @@ package ladysnake.dissolution.common.init;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.*;
+import ladysnake.dissolution.common.items.ItemBurial;
 import ladysnake.dissolution.common.items.ItemSoulInAJar;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
@@ -38,7 +40,9 @@ public final class ModBlocks {
     public static BlockCrucible CRUCIBLE;
     public static BlockLamentStone LAMENT_STONE;
     public static BlockMortar MORTAR;
-    public static BlockSepulchre SEPULTURE;
+    public static BlockSepulchre STONE_BURIAL;
+    public static BlockSepulchre WOODEN_COFFIN;
+    public static BlockSepulchre OBSIDIAN_COFFIN;
     public static BlockShrine SHRINE;
     public static BlockWisp WISP_IN_A_JAR;
 
@@ -57,7 +61,12 @@ public final class ModBlocks {
                 SHRINE = name(new BlockShrine(), "passeress_shrine"));
         ModItems.SOUL_IN_A_JAR = registerBlock(blockRegistry, WISP_IN_A_JAR = name(new BlockWisp(), "wisp_jar"), true,
                 block -> (ItemSoulInAJar) new ItemSoulInAJar(block).setRegistryName("wisp_in_a_jar"));
-        blockRegistry.register(SEPULTURE = name(new BlockSepulchre(), "stone_burial"));
+        ModItems.SEPULTURE = registerBlock(blockRegistry, STONE_BURIAL = name(new BlockSepulchre(Material.ROCK, () -> ModItems.SEPULTURE), "stone_burial"),
+                false, block -> ModItems.name(new ItemBurial((BlockSepulchre) block), "stone_burial"));
+        ModItems.WOODEN_COFFIN = registerBlock(blockRegistry, WOODEN_COFFIN= name(new BlockSepulchre(Material.WOOD, () -> ModItems.WOODEN_COFFIN), "wooden_coffin"),
+                false, block -> ModItems.name(new ItemBurial((BlockSepulchre) block), "wooden_coffin"));
+        ModItems.OBSIDIAN_COFFIN = registerBlock(blockRegistry, OBSIDIAN_COFFIN = name(new BlockSepulchre(Material.ROCK, () -> ModItems.OBSIDIAN_COFFIN), "obsidian_coffin"),
+                false, block -> ModItems.name(new ItemBurial((BlockSepulchre) block), "obsidian_coffin"));
     }
 
     private void registerBlocks(IForgeRegistry<Block> blockRegistry, Block... blocks) {
@@ -83,7 +92,7 @@ public final class ModBlocks {
     @SubscribeEvent
     public void remapIds(RegistryEvent.MissingMappings<Block> event) {
         List<Mapping<Block>> missingBlocks = event.getMappings();
-        remaps.put("blocksepulture", SEPULTURE);
+        remaps.put("blocksepulture", STONE_BURIAL);
 
         for (Mapping<Block> map : missingBlocks) {
             if (map.key.getResourceDomain().equals(Reference.MOD_ID)) {
