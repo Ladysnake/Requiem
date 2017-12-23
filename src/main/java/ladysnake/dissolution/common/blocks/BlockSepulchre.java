@@ -1,6 +1,8 @@
 package ladysnake.dissolution.common.blocks;
 
+import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.items.ItemBurial;
 import net.minecraft.block.Block;
@@ -10,7 +12,9 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -46,6 +50,18 @@ public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable
         this.setHarvestLevel("pickaxe", 0);
     }
 
+    @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(playerIn);
+        if (handler.getPossessed() instanceof EntityLivingBase) {
+            EntityLivingBase possessed = (EntityLivingBase) handler.getPossessed();
+            // TODO make something proper because I'm way too lazy right now
+            if (worldIn.isDaytime() && worldIn.getPlayers(EntityPlayerMP.class, p -> true).size() == 1)
+                worldIn.setWorldTime(14000);
+        }
+        return true;
+    }
+
     public enum EnumPartType implements IStringSerializable {
         SIDE, CENTER;
 
@@ -68,18 +84,10 @@ public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable
     @Override
     @Deprecated
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        EnumFacing enumfacing = state.getValue(FACING);
-
         if (state.getValue(PART) == BlockSepulchre.EnumPartType.SIDE) {
             BlockPos center = getCenter(worldIn, pos);
             if(center == null) worldIn.setBlockToAir(pos);
-        }/* else if (worldIn.getBlockState(pos.offset(enumfacing)).getBlock() != this) {
-            worldIn.setBlockToAir(pos);
-
-            if (!worldIn.isRemote) {
-                this.dropBlockAsItem(worldIn, pos, state, 0);
-            }
-        }*/
+        }
     }
 
     private BlockPos getCenter(World world, BlockPos pos) {
@@ -88,7 +96,7 @@ public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable
                 BlockPos pos1 = pos.add(i, 0, j);
                 if (pos.equals(pos1)) continue;
                 IBlockState state = world.getBlockState(pos1);
-                if (state.getBlock() == ModBlocks.STONE_BURIAL && state.getValue(PART) == EnumPartType.CENTER)
+                if (state.getBlock() == this && state.getValue(PART) == EnumPartType.CENTER)
                     return pos1;
             }
         }

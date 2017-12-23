@@ -66,8 +66,8 @@ public class ConfigTests {
         DissolutionConfigManager.init(new File("run/config/dissolution.cfg"));
         ConfigMessage message = new ConfigMessage(DissolutionConfigManager.syncedProps.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e-> e.getValue().getString())));
         DissolutionConfigManager.init(new File("run/config/dissolutiontest.cfg"));
-        DissolutionConfigManager.onClientDisconnect(null);
         new ConfigPacket().syncConfig(message);
+        DissolutionConfigManager.onClientDisconnect(null);
         assertEquals(DissolutionConfigManager.FlightModes.CREATIVE_FLIGHT, Dissolution.config.ghost.flightMode);
     }
 

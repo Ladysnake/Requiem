@@ -56,7 +56,6 @@ public final class ModItems {
                 IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), "iron_scythe"),
                 LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"));
 
-//		AlchemyModuleTypes.registerItems(allItems);
         reg.register(LOGO = name(new ItemLogo(), "logo"));
 
         for (Item i : allItems) {
