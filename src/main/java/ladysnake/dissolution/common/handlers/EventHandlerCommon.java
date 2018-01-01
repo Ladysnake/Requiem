@@ -66,7 +66,6 @@ public class EventHandlerCommon {
     @SubscribeEvent
     public void clonePlayer(PlayerEvent.Clone event) {
         if (event.isWasDeath() && !event.getEntityPlayer().isCreative()) {
-            event.getEntityPlayer().experienceLevel = event.getOriginal().experienceLevel;
             final IIncorporealHandler corpse = CapabilityIncorporealHandler.getHandler(event.getOriginal());
             final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
             clone.setStrongSoul(corpse.isStrongSoul());
@@ -76,6 +75,7 @@ public class EventHandlerCommon {
             clone.setSynced(false);
 
             if (clone.isStrongSoul() && !Dissolution.config.respawn.wowLikeRespawn) {
+                event.getEntityPlayer().experienceLevel = event.getOriginal().experienceLevel;
                 clone.getDeathStats().setDeathDimension(corpse.getDeathStats().getDeathDimension());
                 clone.getDeathStats().setDeathLocation(new BlockPos(event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ));
                 clone.getDeathStats().setDead(true);
