@@ -12,7 +12,7 @@ public class ItemLogo extends Item {
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        tooltip.add("You expected a great item but it was me, Dio !");
+        tooltip.add("You expected a great item but it was me, Logo !");
         super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 }
