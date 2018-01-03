@@ -9,7 +9,10 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -31,9 +34,10 @@ public class OverlaysRenderer {
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
         if (playerCorp.getCorporealityStatus().isIncorporeal() && playerCorp.getPossessed() == null)
             drawIncorporealOverlay(event.getResolution());
-        if (player.world.getBlockState(player.getPosition().up()).getBlock() == ModFluids.MERCURY.fluidBlock()) {
+        if (player.world.getBlockState(player.getPosition().up()).getBlock() == ModFluids.MERCURY.fluidBlock())
             renderWaterOverlayTexture(event.getPartialTicks());
-        }
+        if (playerCorp.getPossessed() instanceof EntityLivingBase && ((EntityLivingBase)playerCorp.getPossessed()).isBurning())
+            this.renderFireInFirstPerson(event.getResolution());
     }
 
     private void renderWaterOverlayTexture(float partialTicks) {
@@ -73,7 +77,6 @@ public class OverlaysRenderer {
     private void drawIncorporealOverlay(ScaledResolution scaledRes) {
         final float inc = 0.001F;
         b += inc;
-        //System.out.println(Math.cos(b));
 
         GlStateManager.pushAttrib();
         GlStateManager.color((float) Math.cos(b), 1.0F, 1.0F, 0.5F);
@@ -93,32 +96,45 @@ public class OverlaysRenderer {
         tessellator.draw();
 
         GlStateManager.popAttrib();
-        /*
-		GlStateManager.pushAttrib();
-		GlStateManager.depthMask(false);
-        GlStateManager.depthFunc(514);
-        GlStateManager.disableLighting();
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE);
-        this.mc.getTextureManager().bindTexture(ENCHANTED_ITEM_GLINT_RES);
-        GlStateManager.matrixMode(5890);
-        GlStateManager.pushMatrix();
-        GlStateManager.scale(8.0F, 8.0F, 8.0F);
-        float f = (float)(Minecraft.getSystemTime() % 3000L) / 3000.0F / 8.0F;
-        GlStateManager.translate(f, 0.0F, 0.0F);
-        GlStateManager.rotate(-50.0F, 0.0F, 0.0F, 1.0F);
-        GlStateManager.popMatrix();
-        GlStateManager.pushMatrix();
-        GlStateManager.scale(8.0F, 8.0F, 8.0F);
-        float f1 = (float)(Minecraft.getSystemTime() % 4873L) / 4873.0F / 8.0F;
-        GlStateManager.translate(-f1, 0.0F, 0.0F);
-        GlStateManager.rotate(10.0F, 0.0F, 0.0F, 1.0F);
-        GlStateManager.popMatrix();
-        GlStateManager.matrixMode(5888);
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        GlStateManager.enableLighting();
-        GlStateManager.depthFunc(515);
-        GlStateManager.depthMask(true);
-        GlStateManager.popAttrib();*/
     }
+
+    private void renderFireInFirstPerson(ScaledResolution scaledRes)
+    {
+        GlStateManager.disableAlpha();
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 0.9F);
+        GlStateManager.depthFunc(519);
+        GlStateManager.depthMask(false);
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+
+        for (int i = 0; i < 2; ++i)
+        {
+            GlStateManager.pushMatrix();
+            TextureAtlasSprite textureatlassprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("minecraft:blocks/fire_layer_1");
+            Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            float f1 = textureatlassprite.getMinU();
+            float f2 = textureatlassprite.getMaxU();
+            float f3 = textureatlassprite.getMinV();
+            float f4 = textureatlassprite.getMaxV();
+            GlStateManager.translate((float)(-(i * 2 - 1)) * 0.24F, -0.3F, 0.0F);
+            GlStateManager.rotate((float)(i * 2 - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
+            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+            bufferbuilder.pos(0.0D, 1.75*scaledRes.getScaledHeight(), -90.0D).tex((double)f2, (double)f4).endVertex();
+            bufferbuilder.pos((double) scaledRes.getScaledWidth(), 1.75*scaledRes.getScaledHeight(), -90.0D).tex((double)f1, (double)f4).endVertex();
+            bufferbuilder.pos((double) scaledRes.getScaledWidth(), 0.25*scaledRes.getScaledHeight(), -90.0D).tex((double)f1, (double)f3).endVertex();
+            bufferbuilder.pos(0.0D, 0.25*scaledRes.getScaledHeight(), -90.0D).tex((double)f2, (double)f3).endVertex();
+            tessellator.draw();
+            GlStateManager.popMatrix();
+        }
+
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.disableBlend();
+        GlStateManager.depthMask(true);
+        GlStateManager.depthFunc(515);
+        GlStateManager.enableAlpha();
+    }
+
 
 }

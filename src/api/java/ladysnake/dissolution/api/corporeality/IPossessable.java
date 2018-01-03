@@ -60,5 +60,4 @@ public interface IPossessable extends ISoulInteractable {
 
     @SideOnly(Side.CLIENT)
     void possessTickClient();
-
 }

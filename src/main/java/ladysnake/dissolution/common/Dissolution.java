@@ -15,8 +15,12 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.network.NetworkCheckHandler;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Map;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION,
         acceptedMinecraftVersions = Reference.MCVERSION, dependencies = Reference.DEPENDENCIES,
@@ -33,6 +37,8 @@ public class Dissolution {
 
     @SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS, serverSide = Reference.SERVER_PROXY_CLASS)
     public static CommonProxy proxy;
+    /**True if the last server checked does not have the mod installed*/
+    public static boolean noServerInstall;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -54,4 +60,17 @@ public class Dissolution {
     public void serverLoad(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandDissolutionTree());
     }
+
+    /**
+     * This is just here to store whether the current connected server has dissolution installed, used in {@link ladysnake.dissolution.client.handlers.EventHandlerClient}
+     * @see NetworkCheckHandler for signature information
+     */
+    @NetworkCheckHandler
+    public boolean checkModLists(Map<String,String> modList, Side side) {
+        boolean modInstalled = Reference.VERSION.equals(modList.get(Reference.MOD_ID));
+        if (side.isServer())
+            noServerInstall = !modInstalled;
+        return side.isServer() || modInstalled;
+    }
+
 }

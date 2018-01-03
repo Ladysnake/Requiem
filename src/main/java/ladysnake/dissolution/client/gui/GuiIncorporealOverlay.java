@@ -12,8 +12,13 @@ import ladysnake.dissolution.common.tileentities.TileEntityLamentStone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -31,6 +36,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.util.glu.Project;
 
 import java.util.Random;
 
@@ -62,6 +68,7 @@ public class GuiIncorporealOverlay extends Gui {
             }
 
             if (this.mc.playerController.shouldDrawHUD() && this.mc.getRenderViewEntity() instanceof EntityPlayer && pl.getCorporealityStatus() == EctoplasmCorporealityStatus.ECTOPLASM) {
+                this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
                 this.drawCustomHealthBar(this.mc.player, event.getResolution(), 0);
             } else if (this.mc.playerController.shouldDrawHUD()) {
                 IPossessable possessed = pl.getPossessed();
@@ -73,8 +80,10 @@ public class GuiIncorporealOverlay extends Gui {
                     else if (possessed instanceof EntityMinionWitherSkeleton) textureRow = 4;
                     else if (possessed instanceof EntityMinionStray) textureRow = 5;
                     else if (possessed instanceof EntityMinionSkeleton) textureRow = 3;
-
+                    this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
                     this.drawCustomHealthBar((EntityLivingBase) pl.getPossessed(), event.getResolution(), textureRow);
+                    this.mc.getTextureManager().bindTexture(GuiIngameForge.ICONS);
+                    this.drawCustomHealthBar(mc.player, event.getResolution(), 0);
                     this.renderHotbar(event.getResolution(), event.getPartialTicks());
                 }
             } else if (Minecraft.getMinecraft().player.isCreative() && pl.getPossessed() != null)
@@ -86,7 +95,7 @@ public class GuiIncorporealOverlay extends Gui {
     public void onRenderHealth(RenderGameOverlayEvent.Pre event) {
         if (event.getType() == ElementType.HEALTH) {
             final IIncorporealHandler pl = CapabilityIncorporealHandler.getHandler(this.mc.player);
-//            event.setCanceled(pl.getCorporealityStatus().isIncorporeal());
+            event.setCanceled(pl.getCorporealityStatus().isIncorporeal() && pl.getPossessed() == null);
         }
     }
 
@@ -151,7 +160,6 @@ public class GuiIncorporealOverlay extends Gui {
     }
 
     private void drawCustomHealthBar(EntityLivingBase player, ScaledResolution scaledResolution, int textureRow) {
-        this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
         int width = scaledResolution.getScaledWidth();
         int height = scaledResolution.getScaledHeight();
 
@@ -282,5 +290,7 @@ public class GuiIncorporealOverlay extends Gui {
             this.mc.getRenderItem().renderItemOverlays(this.mc.fontRenderer, stack, p_184044_1_, p_184044_2_);
         }
     }
+
+
 
 }
