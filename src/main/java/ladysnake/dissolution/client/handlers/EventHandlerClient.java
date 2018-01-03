@@ -4,6 +4,7 @@ import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.client.particles.DissolutionParticleManager;
 import ladysnake.dissolution.client.renders.entities.RenderWillOWisp;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.BlockFluidMercury;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
@@ -46,6 +47,8 @@ import java.lang.reflect.Field;
 @Mod.EventBusSubscriber(value = Side.CLIENT, modid = Reference.MOD_ID)
 public class EventHandlerClient {
 
+    /**True if this client is connected to a server without the mod*/
+    private static boolean noServerInstall;
     private static int cameraAnimation = 0;
 
     private static final float SOUL_VERTICAL_SPEED = 0.1f;
@@ -73,14 +76,14 @@ public class EventHandlerClient {
     @SubscribeEvent
     public static void onGameTick(TickEvent.ClientTickEvent event) {
         final EntityPlayer player = Minecraft.getMinecraft().player;
-        if (player == null) return;
+        if (player == null || noServerInstall) return;
 
         DissolutionParticleManager.INSTANCE.updateParticles();
 
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
 
         // Sends a request to the server
-        if (!playerCorp.isSynced() && refreshTimer++ % 100 == 0 && refreshTimer <= 1000) {
+        if (!playerCorp.isSynced() && refreshTimer++ % 100 == 0) {
             IMessage msg = new PingMessage(player.getUniqueID().getMostSignificantBits(),
                     player.getUniqueID().getLeastSignificantBits());
             PacketHandler.NET.sendToServer(msg);
@@ -110,6 +113,8 @@ public class EventHandlerClient {
     @SubscribeEvent
     public static void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
         refreshTimer = 0;
+        // if it's a local connection, the mod is installed
+        noServerInstall = Dissolution.noServerInstall && !event.isLocal();
     }
 
     @SubscribeEvent
@@ -154,8 +159,7 @@ public class EventHandlerClient {
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent event) {
-        if (event.side.isServer())
-            return;
+        if (noServerInstall) return;
 
         final EntityPlayer player = event.player;
         final EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
@@ -202,6 +206,8 @@ public class EventHandlerClient {
 
     @SubscribeEvent
     public static void onPlayerRender(RenderPlayerEvent.Pre event) {
+        if (noServerInstall) return;
+
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
         if (playerCorp.getCorporealityStatus() == EctoplasmCorporealityStatus.ECTOPLASM) {
             GlStateManager.color(0.9F, 0.9F, 1.0F, 0.5F); // Tints the player blue and halves the transparency
@@ -219,7 +225,7 @@ public class EventHandlerClient {
 
     @SubscribeEvent
     public static void onPlayerRender(RenderPlayerEvent.Post event) {
-        if (CapabilityIncorporealHandler.getHandler(event.getEntityPlayer()).getCorporealityStatus().isIncorporeal())
+        if (!noServerInstall && CapabilityIncorporealHandler.getHandler(event.getEntityPlayer()).getCorporealityStatus().isIncorporeal())
             GlStateManager.color(0, 0, 0, 0);
     }
 
@@ -230,6 +236,7 @@ public class EventHandlerClient {
 
     @SubscribeEvent
     public static void onRenderSpecificHand(RenderSpecificHandEvent event) {
+        if (noServerInstall) return;
         IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player);
         if (handler.getCorporealityStatus().isIncorporeal()) {
             if (handler.getPossessed() == null || event.getItemStack().isEmpty())
@@ -264,7 +271,7 @@ public class EventHandlerClient {
 
     @SubscribeEvent
     public static void onDrawBlockHighlight(DrawBlockHighlightEvent event) {
-        if (event.getTarget().typeOfHit == RayTraceResult.Type.BLOCK)
+        if (!noServerInstall && event.getTarget().typeOfHit == RayTraceResult.Type.BLOCK)
             event.setCanceled(CapabilityIncorporealHandler.getHandler(event.getPlayer()).getCorporealityStatus().isIncorporeal() &&
                     !(event.getPlayer().world.getBlockState(event.getTarget().getBlockPos()).getBlock() instanceof ISoulInteractable));
     }

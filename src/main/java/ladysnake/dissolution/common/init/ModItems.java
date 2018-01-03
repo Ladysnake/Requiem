@@ -49,20 +49,21 @@ public final class ModItems {
     @SubscribeEvent
     public void onRegister(RegistryEvent.Register<Item> event) {
         IForgeRegistry<Item> reg = event.getRegistry();
-        //noinspection ConstantConditions
+        // first row of additions : items that go into the creative tab
         Collections.addAll(allItems,
-                DEBUG_ITEM = name(new ItemDebug(), "debug_item"),
                 GLASS_JAR = name(new ItemJar(), "glass_jar"),
                 IRON_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.IRON).setMaxDamage(255), "iron_scythe"),
                 LURKING_SCYTHE = name((ItemScythe) new ItemScythe(ToolMaterial.DIAMOND).setMaxDamage(510), "lurking_scythe"));
 
-        reg.register(LOGO = name(new ItemLogo(), "logo"));
+        allItems.forEach(i -> i.setCreativeTab(Dissolution.CREATIVE_TAB));
 
-        for (Item i : allItems) {
-            reg.register(i);
-            if (i != DEBUG_ITEM)
-                i.setCreativeTab(Dissolution.CREATIVE_TAB);
-        }
+        // second row of additions : hidden items
+        Collections.addAll(allItems,
+                DEBUG_ITEM = name(new ItemDebug(), "debug_item"),
+                LOGO = name(new ItemLogo(), "logo")
+        );
+
+        allItems.forEach(reg::register);
     }
 
     @SubscribeEvent

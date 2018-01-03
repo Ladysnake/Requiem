@@ -80,6 +80,8 @@ public class EventHandlerCommon {
                 clone.getDeathStats().setDeathLocation(new BlockPos(event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ));
                 clone.getDeathStats().setDead(true);
             }
+            // avoid accumulation of tracked players and allow garbage collection
+            corpse.getCorporealityStatus().resetState(event.getOriginal());
         }
     }
 
