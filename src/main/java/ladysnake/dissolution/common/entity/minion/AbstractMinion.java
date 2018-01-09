@@ -6,9 +6,9 @@ import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
+import ladysnake.dissolution.common.entity.EntityPossessable;
 import ladysnake.dissolution.common.entity.ai.EntityAIInert;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;
-import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -62,7 +62,7 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings({"Guava", "WeakerAccess"})
-public abstract class AbstractMinion extends EntityMob implements IRangedAttackMob, IEntityOwnable, IPossessable {
+public abstract class AbstractMinion extends EntityPossessable implements IRangedAttackMob, IEntityOwnable, IPossessable {
 
     protected static final float SIZE_X = 0.6F, SIZE_Y = 1.95F;
 
@@ -74,26 +74,11 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
             .createKey(AbstractMinion.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager
             .createKey(AbstractMinion.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-    private static final DataParameter<Optional<UUID>> POSSESSING_ENTITY_ID = EntityDataManager
-            .createKey(AbstractMinion.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-    private static MethodHandle entityAINearestAttackableTarget$targetClass;
     private static final UUID BABY_SPEED_BOOST_ID = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
     private static final AttributeModifier BABY_SPEED_BOOST = new AttributeModifier(BABY_SPEED_BOOST_ID, "Baby speed boost", 0.5D, 1);
 
     private final EntityAIMinionRangedAttack aiArrowAttack = new EntityAIMinionRangedAttack(this, 1.0D, 20, 15.0F);
     private final EntityAIAttackMelee aiAttackOnCollide = new EntityAIAttackMelee(this, 1.2D, false);
-    protected EntityAIInert aiDontDoShit;
-    private List<Entity> triggeredMobs = new LinkedList<>();
-    protected List<Class<? extends EntityLivingBase>> equivalents = new LinkedList<>();
-
-    static {
-        try {
-            Field f = ReflectionHelper.findField(EntityAINearestAttackableTarget.class, "targetClass", "field_75307_b");
-            entityAINearestAttackableTarget$targetClass = MethodHandles.lookup().unreflectGetter(f);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Nullable
     public static IPossessable createMinion(EntityLivingBase deadGuy) {
@@ -146,13 +131,13 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
         super(worldIn);
         this.setSize(SIZE_X, SIZE_Y);
         this.setChild(isChild);
-        Collections.addAll(this.equivalents, EntityPlayer.class, EntityPlayerMP.class);
     }
 
     @Override
     protected abstract void initEntityAI();
 
     protected void applyEntityAI() {
+        super.applyEntityAI();
         this.tasks.addTask(99, aiDontDoShit = new EntityAIInert(false));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true) {
             @Override
@@ -179,7 +164,6 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
         this.getDataManager().register(LIFE_STONE, (byte) 0b0);
         this.getDataManager().register(IS_CHILD, false);
         this.getDataManager().register(OWNER_UNIQUE_ID, Optional.absent());
-        this.getDataManager().register(POSSESSING_ENTITY_ID, Optional.absent());
     }
 
     @Override
@@ -237,46 +221,12 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
     @Override
     public void onLivingUpdate() {
         super.onLivingUpdate();
-        if (this.rand.nextFloat() < 0.01f)
-            this.attractAttention();
         this.handleSunExposure();
     }
 
     @Override
     public boolean isEntityInvulnerable(@Nonnull DamageSource source) {
         return (source.getTrueSource() == null && this.isInert() && !source.canHarmInCreative()) || super.isEntityInvulnerable(source);
-    }
-
-    protected void attractAttention() {
-        List<EntityCreature> nearby = this.world.getEntitiesWithinAABB(EntityCreature.class,
-                new AxisAlignedBB(new BlockPos(this)).grow(30), this::isMobEligibleForAttention);
-        Collections.shuffle(nearby);
-        int max = Math.min(rand.nextInt() % 5, nearby.size());
-        for (int i = 0; i < max; i++) {
-            for (EntityAITasks.EntityAITaskEntry taskEntry : nearby.get(i).targetTasks.taskEntries) {
-                if (shouldBeTargetedBy(nearby.get(i), taskEntry)) {
-                    nearby.get(i).targetTasks.addTask(taskEntry.priority - 1,
-                            new EntityAINearestAttackableTarget<>(nearby.get(i), this.getClass(), true));
-                    break;
-                }
-            }
-        }
-    }
-
-    protected boolean isMobEligibleForAttention(EntityCreature other) {
-        return !this.triggeredMobs.contains(other) && (!other.isEntityUndead() || !other.isNonBoss());
-    }
-
-    protected boolean shouldBeTargetedBy(EntityCreature other, EntityAITasks.EntityAITaskEntry taskEntry) {
-        if (taskEntry.action instanceof EntityAINearestAttackableTarget) {
-            try {
-                Class<?> clazz = (Class<?>) entityAINearestAttackableTarget$targetClass.invoke(taskEntry.action);
-                return this.equivalents.contains(clazz);
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        }
-        return false;
     }
 
     protected void handleSunExposure() {
@@ -383,66 +333,6 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
     @Override
     public boolean canBePossessedBy(EntityPlayer player) {
         return this.getControllingPassenger() == player || this.getControllingPassenger() == null;
-    }
-
-    @Override
-    public boolean onEntityPossessed(EntityPlayer player) {
-        if (this.getControllingPassenger() == player)
-            return true;
-        if (this.getControllingPassenger() != null) {
-            Dissolution.LOGGER.warn("A player attempted to possess an entity that was already possessed");
-            return false;
-        }
-        this.setPossessingEntity(player.getUniqueID());
-        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values())
-            if (player.getItemStackFromSlot(slot).isEmpty())
-                player.setItemStackToSlot(slot, this.getItemStackFromSlot(slot));
-            else player.addItemStackToInventory(this.getItemStackFromSlot(slot));
-        player.startRiding(this);
-        return true;
-    }
-
-    @Override
-    public boolean onPossessionStop(EntityPlayer player, boolean force) {
-        if (!player.getUniqueID().equals(this.getPossessingEntity()))
-            return true;
-        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
-        if (!handler.getCorporealityStatus().isIncorporeal() || this.isDead || force) {
-            this.setPossessingEntity(null);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean proxyAttack(EntityLivingBase entity, DamageSource source, float amount) {
-        DamageSource newSource = null;
-        if (source instanceof EntityDamageSourceIndirect)
-            //noinspection ConstantConditions
-            newSource = new EntityDamageSourceIndirect(source.getDamageType(), source.getImmediateSource(), this);
-        else if (source instanceof EntityDamageSource)
-            newSource = new EntityDamageSource(source.getDamageType(), this);
-        if (newSource != null) {
-            entity.attackEntityFrom(newSource, amount);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean proxyRangedAttack(int charge) {
-        return true;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void possessTickClient() {
-        EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
-        Vector2f move = new Vector2f(playerSP.movementInput.moveStrafe, playerSP.movementInput.moveForward);
-        move.scale((float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
-        playerSP.moveStrafing = move.x;
-        playerSP.moveForward = move.y;
-        this.setJumping(playerSP.movementInput.jump);
     }
 
     @Override
@@ -698,8 +588,6 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
         if (this.isChild())
             compound.setBoolean("isBaby", true);
         compound.setByte("stoneHeart", this.getLifeStone());
-        if (this.getPossessingEntity() != null)
-            compound.setUniqueId("possessingEntity", this.getPossessingEntity());
         return compound;
     }
 
@@ -709,7 +597,6 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
         this.setInert(compound.getBoolean("inert"));
         this.setChild(compound.getBoolean("isBaby"));
         this.setLifeStone(compound.getByte("stoneHeart"));
-        this.setPossessingEntity(compound.getUniqueId("possessingEntity"));
     }
 
     @Override
@@ -723,17 +610,6 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
                 this.entityDropItem(itemstack, this.getEyeHeight());
             }
         }
-    }
-
-    @Nullable
-    public UUID getPossessingEntity() {
-        return this.getDataManager().get(POSSESSING_ENTITY_ID).orNull();
-    }
-
-    public void setPossessingEntity(@Nullable UUID possessingEntity) {
-        if (!world.isRemote)
-            this.aiDontDoShit.setShouldExecute(possessingEntity != null);
-        this.getDataManager().set(POSSESSING_ENTITY_ID, Optional.fromNullable(possessingEntity));
     }
 
     @Nullable

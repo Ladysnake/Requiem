@@ -58,6 +58,12 @@ public interface IPossessable extends ISoulInteractable {
      */
     boolean proxyRangedAttack(int charge);
 
+    int getPurifiedHealth();
+
+    void purifyHealth(int purified);
+
+    void setPurifiedHealth(int health);
+
     @SideOnly(Side.CLIENT)
     void possessTickClient();
 }

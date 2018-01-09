@@ -91,13 +91,12 @@ public class EventHandlerClient {
             refreshTimer = 0;
 
         // Convoluted way of displaying the health of the possessed entity
-        if (player.isRiding() && player.getRidingEntity() instanceof EntityLiving && ((EntityLiving) player.getRidingEntity()).getHealth() > 0) {
+        if (playerCorp.getPossessed() instanceof EntityLiving && ((EntityLiving) playerCorp.getPossessed()).getHealth() > 0) {
             if (!wasRidingLastTick) {
                 prevHealth = player.getHealth();
                 IAttributeInstance maxHealth = player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
                 prevMaxHealth = maxHealth.getAttributeValue();
-                maxHealth.setBaseValue(
-                        playerCorp.getPossessedStats().getPurifiedHealth());
+                maxHealth.setBaseValue(playerCorp.getPossessed().getPurifiedHealth());
 //                        ((EntityLiving) player.getRidingEntity()).getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
                 wasRidingLastTick = true;
             }

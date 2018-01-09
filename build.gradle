@@ -51,8 +51,8 @@ dependencies {
 }
 
 processResources {
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+    inputs.property "modVersion", project.version
+    inputs.property "mcVersion", project.minecraft.version
 
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'

@@ -82,8 +82,8 @@ public class GuiIncorporealOverlay extends Gui {
                     else if (possessed instanceof EntityMinionSkeleton) textureRow = 3;
                     this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
                     this.drawCustomHealthBar((EntityLivingBase) pl.getPossessed(), event.getResolution(), textureRow);
-                    this.mc.getTextureManager().bindTexture(GuiIngameForge.ICONS);
-                    this.drawCustomHealthBar(mc.player, event.getResolution(), 0);
+                    this.mc.player.setHealth(possessed.getPurifiedHealth());
+                    this.drawCustomHealthBar(mc.player, event.getResolution(), 6);
                     this.renderHotbar(event.getResolution(), event.getPartialTicks());
                 }
             } else if (Minecraft.getMinecraft().player.isCreative() && pl.getPossessed() != null)
