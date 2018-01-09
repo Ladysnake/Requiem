@@ -11,20 +11,16 @@ import ladysnake.dissolution.common.registries.EctoplasmCorporealityStatus;
 import ladysnake.dissolution.common.tileentities.TileEntityLamentStone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHandSide;
@@ -36,23 +32,20 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.glu.Project;
 
+import javax.annotation.Nonnull;
 import java.util.Random;
 
 @SideOnly(Side.CLIENT)
-public class GuiIncorporealOverlay extends Gui {
+public class GuiIncorporealOverlay extends GuiIngame {
 
     private static final ResourceLocation WIDGETS_TEX_PATH = new ResourceLocation("textures/gui/widgets.png");
     private static final ResourceLocation ORIGIN_PATH = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_compass.png");
     private static final ResourceLocation ECTOPLASM_ICONS = new ResourceLocation(Reference.MOD_ID, "textures/gui/icons.png");
     private final Random rand = new Random();
 
-    private final Minecraft mc;
-
     public GuiIncorporealOverlay(Minecraft mc) {
-        super();
-        this.mc = mc;
+        super(mc);
     }
 
     @SubscribeEvent
@@ -61,14 +54,13 @@ public class GuiIncorporealOverlay extends Gui {
         if (event.getType() == ElementType.ALL) {
             OverlaysRenderer.INSTANCE.renderOverlays(event);
 
-			/* Draw Incorporeal Ingame Gui */
+            /* Draw Incorporeal Ingame Gui */
             if (pl.getCorporealityStatus().isIncorporeal() && pl.getPossessed() == null) {
                 if (Dissolution.config.client.soulCompass)
                     this.drawOriginIndicator(event.getResolution());
             }
 
             if (this.mc.playerController.shouldDrawHUD() && this.mc.getRenderViewEntity() instanceof EntityPlayer && pl.getCorporealityStatus() == EctoplasmCorporealityStatus.ECTOPLASM) {
-                this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
                 this.drawCustomHealthBar(this.mc.player, event.getResolution(), 0);
             } else if (this.mc.playerController.shouldDrawHUD()) {
                 IPossessable possessed = pl.getPossessed();
@@ -82,8 +74,7 @@ public class GuiIncorporealOverlay extends Gui {
                     else if (possessed instanceof EntityMinionSkeleton) textureRow = 3;
                     this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
                     this.drawCustomHealthBar((EntityLivingBase) pl.getPossessed(), event.getResolution(), textureRow);
-                    this.mc.player.setHealth(possessed.getPurifiedHealth());
-                    this.drawCustomHealthBar(mc.player, event.getResolution(), 6);
+                    this.mc.getTextureManager().bindTexture(GuiIngameForge.ICONS);
                     this.renderHotbar(event.getResolution(), event.getPartialTicks());
                 }
             } else if (Minecraft.getMinecraft().player.isCreative() && pl.getPossessed() != null)
@@ -172,36 +163,98 @@ public class GuiIncorporealOverlay extends Gui {
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-        int health = (int) Math.ceil(player.getHealth());
+        int health = MathHelper.ceil(player.getHealth());
+        boolean highlight = healthUpdateCounter > (long) updateCounter && (healthUpdateCounter - (long) updateCounter) / 3L % 2L == 1L;
+
+        if (health < this.playerHealth && player.hurtResistantTime > 0) {
+            this.lastSystemTime = Minecraft.getSystemTime();
+            this.healthUpdateCounter = (long) (this.updateCounter + 20);
+        } else if (health > this.playerHealth && player.hurtResistantTime > 0) {
+            this.lastSystemTime = Minecraft.getSystemTime();
+            this.healthUpdateCounter = (long) (this.updateCounter + 10);
+        }
+
+        if (Minecraft.getSystemTime() - this.lastSystemTime > 1000L) {
+            this.playerHealth = health;
+            this.lastPlayerHealth = health;
+            this.lastSystemTime = Minecraft.getSystemTime();
+        }
+
+        this.playerHealth = health;
+        int healthLast = this.lastPlayerHealth;
+
         IAttributeInstance attrMaxHealth = player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
         float healthMax = (float) attrMaxHealth.getAttributeValue();
-        int healthRows = MathHelper.ceil((healthMax) / 2.0F / 10.0F);
+        float absorb = MathHelper.ceil(player.getAbsorptionAmount());
+
+        int healthRows = MathHelper.ceil((healthMax + absorb) / 2.0F / 10.0F);
         int rowHeight = Math.max(10 - (healthRows - 2), 3);
+
+        this.rand.setSeed((long) (updateCounter * 312871));
+
         int left = width / 2 - 91;
         int top = height - GuiIngameForge.left_height;
         GuiIngameForge.left_height += (healthRows * rowHeight);
         if (rowHeight != 10) GuiIngameForge.left_height += 10 - rowHeight;
 
-        final int TOP = textureRow * 9;
-        final int MARGIN = 0;
+        int regen = -1;
+        if (player.isPotionActive(MobEffects.REGENERATION)) {
+            regen = updateCounter % 25;
+        }
 
-        for (int i = MathHelper.ceil((healthMax) / 2.0F) - 1; i >= 0; --i) {
+        int MARGIN = 0;
+        final int BACKGROUND = (highlight ? MARGIN + 9 : MARGIN);
+        final int TOP = textureRow * 9;
+        if (player.isPotionActive(MobEffects.POISON)) {
+            MARGIN += 36;
+            this.mc.getTextureManager().bindTexture(ICONS);
+        } else if (player.isPotionActive(MobEffects.WITHER)) {
+            MARGIN += 72;
+            this.mc.getTextureManager().bindTexture(ICONS);
+        } else {
+            this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
+        }
+
+        float absorbRemaining = absorb;
+
+        for (int i = MathHelper.ceil((healthMax + absorb) / 2.0F) - 1; i >= 0; --i) {
+            //int b0 = (highlight ? 1 : 0);
             int row = MathHelper.ceil((float) (i + 1) / 10.0F) - 1;
             int x = left + i % 10 * 8;
             int y = top - row * rowHeight;
 
             if (health <= 4) y += rand.nextInt(2);
+            if (i == regen) y -= 2;
 
-            if (i * 2 + 1 < health)
-                drawTexturedModalRect(x, y, MARGIN + 36, TOP, 9, 9);
-            else if (i * 2 + 1 == health)
-                drawTexturedModalRect(x, y, MARGIN + 45, TOP, 9, 9);
+            drawTexturedModalRect(x, y, BACKGROUND, TOP, 9, 9);
 
+            if (highlight) {
+                if (i * 2 + 1 < healthLast)
+                    drawTexturedModalRect(x, y, MARGIN + 54, TOP, 9, 9); //6
+                else if (i * 2 + 1 == healthLast)
+                    drawTexturedModalRect(x, y, MARGIN + 63, TOP, 9, 9); //7
+            }
+
+            if (absorbRemaining > 0.0F) {
+                if (absorbRemaining == absorb && absorb % 2.0F == 1.0F) {
+                    drawTexturedModalRect(x, y, MARGIN + 153, TOP, 9, 9); //17
+                    absorbRemaining -= 1.0F;
+                } else {
+                    drawTexturedModalRect(x, y, MARGIN + 144, TOP, 9, 9); //16
+                    absorbRemaining -= 2.0F;
+                }
+            } else {
+                if (i * 2 + 1 < health)
+                    drawTexturedModalRect(x, y, MARGIN + 36, TOP, 9, 9); //4
+                else if (i * 2 + 1 == health)
+                    drawTexturedModalRect(x, y, MARGIN + 45, TOP, 9, 9); //5
+            }
         }
         GlStateManager.popAttrib();
     }
 
-    private void renderHotbar(ScaledResolution sr, float partialTicks) {
+    protected void renderHotbar(@Nonnull ScaledResolution sr, float partialTicks) {
+        // don't check that the render view entity is a player
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(WIDGETS_TEX_PATH);
         EntityPlayer entityplayer = this.mc.player;
@@ -268,29 +321,5 @@ public class GuiIncorporealOverlay extends Gui {
         GlStateManager.disableRescaleNormal();
         GlStateManager.disableBlend();
     }
-
-    private void renderHotbarItem(int p_184044_1_, int p_184044_2_, float p_184044_3_, EntityPlayer player, ItemStack stack) {
-        if (!stack.isEmpty()) {
-            float f = (float) stack.getAnimationsToGo() - p_184044_3_;
-
-            if (f > 0.0F) {
-                GlStateManager.pushMatrix();
-                float f1 = 1.0F + f / 5.0F;
-                GlStateManager.translate((float) (p_184044_1_ + 8), (float) (p_184044_2_ + 12), 0.0F);
-                GlStateManager.scale(1.0F / f1, (f1 + 1.0F) / 2.0F, 1.0F);
-                GlStateManager.translate((float) (-(p_184044_1_ + 8)), (float) (-(p_184044_2_ + 12)), 0.0F);
-            }
-
-            this.mc.getRenderItem().renderItemAndEffectIntoGUI(player, stack, p_184044_1_, p_184044_2_);
-
-            if (f > 0.0F) {
-                GlStateManager.popMatrix();
-            }
-
-            this.mc.getRenderItem().renderItemOverlays(this.mc.fontRenderer, stack, p_184044_1_, p_184044_2_);
-        }
-    }
-
-
 
 }

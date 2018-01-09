@@ -195,8 +195,13 @@ public class CapabilityIncorporealHandler {
             return this.isStrongSoul() ? this.corporealityStatus : CorporealityStatus.BODY;
         }
 
+        /**
+         * Sets the entity possessed by this player
+         * @param possessable the entity to possess. If null, will end existing possession
+         * @return true if the operation succeeded
+         */
         @Override
-        public boolean setPossessed(IPossessable possessable) {
+        public boolean setPossessed(@Nullable IPossessable possessable) {
             if (!this.isStrongSoul()) return false;
             if (possessable != null && !(possessable instanceof Entity))
                 throw new IllegalArgumentException("A player can only possess an entity.");

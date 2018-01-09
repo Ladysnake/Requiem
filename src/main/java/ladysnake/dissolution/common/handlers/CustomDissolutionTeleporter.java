@@ -1,5 +1,8 @@
 package ladysnake.dissolution.common.handlers;
 
+import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.IPossessable;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketEntityEffect;
@@ -10,28 +13,41 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldServer;
 
+import java.util.Objects;
+
 public class CustomDissolutionTeleporter {
 
     public static void transferPlayerToDimension(EntityPlayerMP player, int dimensionIn) {
         int i = player.dimension;
-        WorldServer worldserver = player.mcServer.getWorld(player.dimension);
+        WorldServer oldWorld = player.mcServer.getWorld(player.dimension);
         player.dimension = dimensionIn;
-        WorldServer worldserver1 = player.mcServer.getWorld(player.dimension);
-        player.connection.sendPacket(new SPacketRespawn(player.dimension, worldserver1.getDifficulty(), worldserver1.getWorldInfo().getTerrainType(), player.interactionManager.getGameType()));
+        WorldServer newWorld = player.mcServer.getWorld(player.dimension);
+        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
+        IPossessable possessed = handler.getPossessed();
+        if (possessed instanceof Entity) {
+            // force possession end
+            possessed.onPossessionStop(player, true);
+            handler.setPossessed(null);
+            transferEntityToWorld((Entity) possessed, player.dimension, oldWorld, newWorld);
+        }
+        player.connection.sendPacket(new SPacketRespawn(player.dimension, newWorld.getDifficulty(), newWorld.getWorldInfo().getTerrainType(), player.interactionManager.getGameType()));
         player.mcServer.getPlayerList().updatePermissionLevel(player);
-        worldserver.removeEntityDangerously(player);
+        oldWorld.removeEntityDangerously(player);
         player.isDead = false;
-        transferEntityToWorld(player, i, worldserver, worldserver1);
-        player.mcServer.getPlayerList().preparePlayer(player, worldserver);
+        transferEntityToWorld(player, i, oldWorld, newWorld);
+        player.mcServer.getPlayerList().preparePlayer(player, oldWorld);
         player.connection.setPlayerLocation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
-        player.interactionManager.setWorld(worldserver1);
+        player.interactionManager.setWorld(newWorld);
         player.connection.sendPacket(new SPacketPlayerAbilities(player.capabilities));
-        player.mcServer.getPlayerList().updateTimeAndWeatherForPlayer(player, worldserver1);
+        player.mcServer.getPlayerList().updateTimeAndWeatherForPlayer(player, newWorld);
         player.mcServer.getPlayerList().syncPlayerInventory(player);
 
         for (PotionEffect potioneffect : player.getActivePotionEffects()) {
             player.connection.sendPacket(new SPacketEntityEffect(player.getEntityId(), potioneffect));
         }
+
+        handler.setPossessed(possessed);
+
         net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerChangedDimensionEvent(player, i, dimensionIn);
     }
 
@@ -45,7 +61,8 @@ public class CustomDissolutionTeleporter {
         float f = entityIn.rotationYaw;
         oldWorldIn.profiler.startSection("moving");
 
-        if (false && entityIn.dimension == -1) {
+        // TODO check if this breaks anything
+        if (entityIn.dimension == -1) {
             d0 = MathHelper.clamp(d0 / 8.0D, toWorldIn.getWorldBorder().minX() + 16.0D, toWorldIn.getWorldBorder().maxX() - 16.0D);
             d1 = MathHelper.clamp(d1 / 8.0D, toWorldIn.getWorldBorder().minZ() + 16.0D, toWorldIn.getWorldBorder().maxZ() - 16.0D);
             entityIn.setLocationAndAngles(d0, entityIn.posY, d1, entityIn.rotationYaw, entityIn.rotationPitch);
@@ -53,7 +70,7 @@ public class CustomDissolutionTeleporter {
             if (entityIn.isEntityAlive()) {
                 oldWorldIn.updateEntityWithOptionalForce(entityIn, false);
             }
-        } else if (false && entityIn.dimension == 0) {
+        } else if (entityIn.dimension == 0) {
             d0 = MathHelper.clamp(d0 * 8.0D, toWorldIn.getWorldBorder().minX() + 16.0D, toWorldIn.getWorldBorder().maxX() - 16.0D);
             d1 = MathHelper.clamp(d1 * 8.0D, toWorldIn.getWorldBorder().minZ() + 16.0D, toWorldIn.getWorldBorder().maxZ() - 16.0D);
             entityIn.setLocationAndAngles(d0, entityIn.posY, d1, entityIn.rotationYaw, entityIn.rotationPitch);
@@ -72,7 +89,7 @@ public class CustomDissolutionTeleporter {
                 blockpos = toWorldIn.getSpawnCoordinate();
             }
 
-            d0 = (double) blockpos.getX();
+            d0 = (double) Objects.requireNonNull(blockpos).getX();
             entityIn.posY = (double) blockpos.getY();
             d1 = (double) blockpos.getZ();
             entityIn.setLocationAndAngles(d0, entityIn.posY, d1, 90.0F, 0.0F);
