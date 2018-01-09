@@ -130,7 +130,6 @@ public class CapabilityIncorporealHandler {
 
         private boolean strongSoul;
         private ICorporealityStatus corporealityStatus = CorporealityStatus.BODY;
-        private PossessedStats possessedStats = new PossessedStats(this);
         private DialogueStats dialogueStats = new DialogueStats(this);
         private IDeathStats deathStats = new DeathStats();
         private int lastFood = -1;
@@ -244,12 +243,6 @@ public class CapabilityIncorporealHandler {
 
         @Nonnull
         @Override
-        public IPossessedStats getPossessedStats() {
-            return this.possessedStats;
-        }
-
-        @Nonnull
-        @Override
         public IDialogueStats getDialogueStats() {
             return this.dialogueStats;
         }
@@ -341,7 +334,6 @@ public class CapabilityIncorporealHandler {
                 tag.setUniqueId("possessedEntity", ((Entity) instance.getPossessed()).getUniqueID());
             tag.setTag("dialogueStats", instance.getDialogueStats().serializeNBT());
             tag.setTag("deathStats", instance.getDeathStats().serializeNBT());
-            tag.setTag("possessedStats", instance.getPossessedStats().serializeNBT());
             return tag;
         }
 
@@ -356,7 +348,6 @@ public class CapabilityIncorporealHandler {
             }
             instance.getDialogueStats().deserializeNBT(tag.getCompoundTag("dialogueStats"));
             instance.getDeathStats().deserializeNBT(tag.getCompoundTag("deathStats"));
-            instance.getPossessedStats().deserializeNBT(tag.getCompoundTag("possessedStats"));
         }
     }
 

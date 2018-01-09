@@ -46,9 +46,6 @@ public interface IIncorporealHandler {
     IPossessable getPossessed();
 
     @Nonnull
-    IPossessedStats getPossessedStats();
-
-    @Nonnull
     IDialogueStats getDialogueStats();
 
     IDeathStats getDeathStats();
