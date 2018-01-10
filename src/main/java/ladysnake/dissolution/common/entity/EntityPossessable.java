@@ -6,9 +6,8 @@ import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIInert;
-import ladysnake.dissolution.common.entity.minion.AbstractMinion;
+import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
 import ladysnake.dissolution.common.registries.CorporealityStatus;
-import ladysnake.dissolution.common.registries.SoulCorporealityStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
@@ -36,6 +35,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.vector.Vector2f;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -181,6 +181,34 @@ public abstract class EntityPossessable extends EntityMob implements IPossessabl
             this.attractAttention();
     }
 
+    @Override
+    public void onEntityUpdate() {
+        super.onEntityUpdate();
+        int i = this.getMaxInPortalTime();
+
+        if (this.getControllingPassenger() instanceof EntityPlayerMP) {
+            if (this.portalCounter++ >= i) {
+                this.portalCounter = i;
+                this.timeUntilPortal = this.getPortalCooldown();
+                int j;
+
+                if (this.world.provider.getDimensionType().getId() == -1) {
+                    j = 0;
+                } else {
+                    j = -1;
+                }
+
+                EntityPlayerMP player = (EntityPlayerMP) this.getControllingPassenger();
+                this.onPossessionStop(player, true);
+                IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
+                handler.setPossessed(null);
+                this.changeDimension(j);
+                CustomDissolutionTeleporter.transferPlayerToDimension(player, j);
+                handler.setPossessed(this);
+            }
+        }
+    }
+
     protected void attractAttention() {
         List<EntityCreature> nearby = this.world.getEntitiesWithinAABB(EntityCreature.class,
                 new AxisAlignedBB(new BlockPos(this)).grow(30), this::isMobEligibleForAttention);
@@ -213,6 +241,7 @@ public abstract class EntityPossessable extends EntityMob implements IPossessabl
         return false;
     }
 
+    @Nonnull
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
