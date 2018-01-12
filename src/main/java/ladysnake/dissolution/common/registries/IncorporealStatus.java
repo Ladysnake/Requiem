@@ -92,6 +92,10 @@ public class IncorporealStatus extends CorporealityStatus {
         }
     }
 
+    protected boolean preventsInteraction(Entity entity) {
+        return preventsEntityInteract;
+    }
+
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerRightClickItem(PlayerInteractEvent.RightClickItem event) {
         if(this.subscribedPlayers.contains(event.getEntityPlayer())) {

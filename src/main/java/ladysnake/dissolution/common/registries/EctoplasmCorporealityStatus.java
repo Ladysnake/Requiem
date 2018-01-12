@@ -8,8 +8,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 public class EctoplasmCorporealityStatus extends IncorporealStatus {
 
-    public static final ICorporealityStatus ECTOPLASM = new EctoplasmCorporealityStatus().setRegistryName(Reference.MOD_ID, "ectoplasm");
-
     @Override
     public boolean preventsInteraction(IBlockState block) {
         return !DissolutionConfigManager.canEctoplasmInteractWith(block.getBlock());

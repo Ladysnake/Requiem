@@ -6,7 +6,7 @@ import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
-import ladysnake.dissolution.common.registries.CorporealityStatus;
+import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -45,8 +45,8 @@ public class ItemDebug extends Item implements ISoulInteractable {
         switch (debugWanted) {
             case 0:
                 IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(playerIn);
-                int current = CorporealityStatus.REGISTRY.getValues().indexOf(handler.getCorporealityStatus());
-                handler.setCorporealityStatus(CorporealityStatus.REGISTRY.getValues().get((current + 1) % 3));
+                int current = SoulStates.REGISTRY.getValues().indexOf(handler.getCorporealityStatus());
+                handler.setCorporealityStatus(SoulStates.REGISTRY.getValues().get((current + 1) % 3));
                 break;
             case 1:
                 if (!worldIn.isRemote) worldIn.getWorldInfo().setAllowCommands(true);

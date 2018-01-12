@@ -7,7 +7,7 @@ import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIInert;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
-import ladysnake.dissolution.common.registries.CorporealityStatus;
+import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
@@ -139,7 +139,7 @@ public abstract class EntityPossessable extends EntityMob implements IPossessabl
             Entity passenger = this.getControllingPassenger();
             if (passenger instanceof EntityPlayer && passenger.getUniqueID().equals(getPossessingEntity())) {
                 EntityPlayer soul = (EntityPlayer) passenger;
-                CapabilityIncorporealHandler.getHandler(soul).setCorporealityStatus(CorporealityStatus.BODY);
+                CapabilityIncorporealHandler.getHandler(soul).setCorporealityStatus(SoulStates.BODY);
                 this.world.removeEntity(this);
             }
         } else this.getDataManager().set(PURIFIED_HEALTH, health);
@@ -184,10 +184,11 @@ public abstract class EntityPossessable extends EntityMob implements IPossessabl
     @Override
     public void onEntityUpdate() {
         super.onEntityUpdate();
-        int i = this.getMaxInPortalTime();
 
         if (this.getControllingPassenger() instanceof EntityPlayerMP) {
-            if (this.portalCounter++ >= i) {
+            EntityPlayerMP player = (EntityPlayerMP) this.getControllingPassenger();
+            int i = this.getMaxInPortalTime();
+            if (++this.portalCounter >= i) {
                 this.portalCounter = i;
                 this.timeUntilPortal = this.getPortalCooldown();
                 int j;
@@ -198,13 +199,12 @@ public abstract class EntityPossessable extends EntityMob implements IPossessabl
                     j = -1;
                 }
 
-                EntityPlayerMP player = (EntityPlayerMP) this.getControllingPassenger();
-                this.onPossessionStop(player, true);
-                IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
-                handler.setPossessed(null);
+//                this.onPossessionStop(player, true);
+//                IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
+//                handler.setPossessed(null);
                 this.changeDimension(j);
-                CustomDissolutionTeleporter.transferPlayerToDimension(player, j);
-                handler.setPossessed(this);
+//                player.changeDimension(j);
+//                handler.setPossessed(this);
             }
         }
     }

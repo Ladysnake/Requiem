@@ -12,8 +12,7 @@ import ladysnake.dissolution.api.PlayerIncorporealEvent;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PingMessage;
-import ladysnake.dissolution.common.registries.EctoplasmCorporealityStatus;
-import ladysnake.dissolution.common.registries.SoulCorporealityStatus;
+import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngame;
@@ -176,7 +175,7 @@ public class EventHandlerClient {
         }
 
         if (!event.player.isCreative() &&
-                playerCorp.getCorporealityStatus() == SoulCorporealityStatus.SOUL && event.phase == TickEvent.Phase.START) {
+                playerCorp.getCorporealityStatus() == SoulStates.SOUL && event.phase == TickEvent.Phase.START) {
 
             if (DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT)) {
                 player.capabilities.setFlySpeed(0.025f);
@@ -208,9 +207,9 @@ public class EventHandlerClient {
         if (noServerInstall) return;
 
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
-        if (playerCorp.getCorporealityStatus() == EctoplasmCorporealityStatus.ECTOPLASM) {
+        if (playerCorp.getCorporealityStatus() == SoulStates.ECTOPLASM) {
             GlStateManager.color(0.9F, 0.9F, 1.0F, 0.5F); // Tints the player blue and halves the transparency
-        } else if (playerCorp.getCorporealityStatus() == SoulCorporealityStatus.SOUL) {
+        } else if (playerCorp.getCorporealityStatus() == SoulStates.SOUL) {
             if (playerCorp.getPossessed() == null) {
                 if (renderSoul == null)
                     renderSoul = new RenderWillOWisp<>(Minecraft.getMinecraft().getRenderManager());

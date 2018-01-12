@@ -7,8 +7,7 @@ import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PossessionMessage;
-import ladysnake.dissolution.common.registries.CorporealityStatus;
-import ladysnake.dissolution.common.registries.SoulCorporealityStatus;
+import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -111,7 +110,7 @@ public class CapabilityIncorporealHandler {
         if (event.phase != TickEvent.Phase.END) return;
         IIncorporealHandler handler = getHandler(event.player);
         handler.tick();
-        if (handler.getCorporealityStatus() == SoulCorporealityStatus.SOUL || handler.getPossessed() != null) {
+        if (handler.getCorporealityStatus() == SoulStates.SOUL || handler.getPossessed() != null) {
             float size = event.player.isRiding() ? 0f : 0.8f;
             try {
                 entity$setSize.invoke(event.player, event.player.width, size);
@@ -129,7 +128,7 @@ public class CapabilityIncorporealHandler {
     public static class DefaultIncorporealHandler implements IIncorporealHandler {
 
         private boolean strongSoul;
-        private ICorporealityStatus corporealityStatus = CorporealityStatus.BODY;
+        private ICorporealityStatus corporealityStatus = SoulStates.BODY;
         private DialogueStats dialogueStats = new DialogueStats(this);
         private IDeathStats deathStats = new DeathStats();
         private int lastFood = -1;
@@ -172,7 +171,7 @@ public class CapabilityIncorporealHandler {
             if (!this.isStrongSoul() || newStatus == corporealityStatus) return;
             if (owner == null || MinecraftForge.EVENT_BUS.post(new PlayerIncorporealEvent(owner, newStatus))) return;
 
-            if(newStatus == null) newStatus = CorporealityStatus.BODY;
+            if(newStatus == null) newStatus = SoulStates.BODY;
 
             corporealityStatus.resetState(owner);
 
@@ -192,7 +191,7 @@ public class CapabilityIncorporealHandler {
         @Nonnull
         @Override
         public ICorporealityStatus getCorporealityStatus() {
-            return this.isStrongSoul() ? this.corporealityStatus : CorporealityStatus.BODY;
+            return this.isStrongSoul() ? this.corporealityStatus : SoulStates.BODY;
         }
 
         /**
@@ -346,7 +345,7 @@ public class CapabilityIncorporealHandler {
         public void readNBT(Capability<IIncorporealHandler> capability, IIncorporealHandler instance, EnumFacing side, NBTBase nbt) {
             final NBTTagCompound tag = (NBTTagCompound) nbt;
             instance.setStrongSoul(((NBTTagCompound) nbt).getBoolean("strongSoul"));
-            instance.setCorporealityStatus(CorporealityStatus.REGISTRY.getValue(new ResourceLocation(tag.getString("corporealityStatus"))));
+            instance.setCorporealityStatus(SoulStates.REGISTRY.getValue(new ResourceLocation(tag.getString("corporealityStatus"))));
             if (instance instanceof DefaultIncorporealHandler) {
                 UUID hostUUID = tag.getUniqueId("possessedEntity");
                 ((DefaultIncorporealHandler) instance).hostUUID = hostUUID == new UUID(0, 0) ? null : hostUUID;
