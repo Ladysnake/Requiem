@@ -30,7 +30,7 @@ public class EntityFaerie extends EntityFleetingSoul {
     @Override
     public void onUpdate() {
         super.onUpdate();
-        if(rand.nextInt(1000) == 0)
+        if (rand.nextInt(1000) == 0)
             this.setTired(false);
     }
 

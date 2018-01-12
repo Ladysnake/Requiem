@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.capabilities;
 
 import ladysnake.dissolution.api.IDialogueStats;
 import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.registries.CorporealityStatus;
+import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -42,7 +42,7 @@ public class DialogueStats implements IDialogueStats {
         if (hasBeenContacted && history.isEmpty()) {
             boolean strongSoul = choice == 0;
             if (!strongSoul && capability.getCorporealityStatus().isIncorporeal())
-                capability.setCorporealityStatus(CorporealityStatus.BODY);
+                capability.setCorporealityStatus(SoulStates.BODY);
             capability.setStrongSoul(strongSoul);
             history.add(strongSoul ? "strong soul" : "weak soul");
             capability.getOwner().sendMessage(new TextComponentTranslation("dissolution.dialogues.choose_soul_strength").setStyle(new Style().setColor(TextFormatting.RED)));

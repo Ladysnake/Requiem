@@ -9,12 +9,10 @@ import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionAttack;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
-import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
-import ladysnake.dissolution.common.registries.CorporealityStatus;
-import net.minecraft.client.entity.EntityPlayerSP;
+import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
@@ -64,7 +62,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
                 DissolutionInventoryHelper.transferEquipment(this, player);
                 this.onDeath(DamageSource.GENERIC);
                 this.setDead();
-                handler.setCorporealityStatus(CorporealityStatus.BODY);
+                handler.setCorporealityStatus(SoulStates.BODY);
             }
             player.setPositionAndRotation(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
             player.cameraPitch = 90;

@@ -2,13 +2,12 @@ package ladysnake.dissolution.common.handlers;
 
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
-import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.entity.souls.AbstractSoul;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
-import ladysnake.dissolution.common.registries.SoulCorporealityStatus;
+import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -33,7 +32,7 @@ public class InteractEventsHandler {
         if (event.getEntity() instanceof AbstractSoul
                 || event.getEntity() instanceof EntityPlayer
                 && CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity())
-                .getCorporealityStatus() == SoulCorporealityStatus.SOUL) {
+                .getCorporealityStatus() == SoulStates.SOUL) {
             final Iterator<AxisAlignedBB> iterator = event.getCollisionBoxesList().iterator();
             while (iterator.hasNext())
                 if (iterator.next().getAverageEdgeLength() < Dissolution.config.ghost.maxThickness)

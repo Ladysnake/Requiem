@@ -6,9 +6,6 @@ import net.minecraft.entity.player.EntityPlayer;
 
 public class SoulCorporealityStatus extends IncorporealStatus {
 
-    public static final ICorporealityStatus SOUL = new SoulCorporealityStatus()
-            .setRegistryName(Reference.MOD_ID, "soul");
-
     public SoulCorporealityStatus() {
         super();
     }

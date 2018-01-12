@@ -1,16 +1,14 @@
 package ladysnake.dissolution.common.config;
 
 import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
-import ladysnake.dissolution.common.registries.CorporealityStatus;
-import ladysnake.dissolution.common.registries.EctoplasmCorporealityStatus;
-import ladysnake.dissolution.common.registries.SoulCorporealityStatus;
+import ladysnake.dissolution.common.registries.SoulStates;
 
 import java.util.Locale;
 
 public enum EnumCorporealityStatus {
-    BODY(CorporealityStatus.BODY),
-    ECTOPLASM(EctoplasmCorporealityStatus.ECTOPLASM),
-    SOUL(SoulCorporealityStatus.SOUL);
+    BODY(SoulStates.BODY),
+    ECTOPLASM(SoulStates.ECTOPLASM),
+    SOUL(SoulStates.SOUL);
 
     public final ICorporealityStatus status;
 

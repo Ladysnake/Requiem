@@ -4,12 +4,9 @@ import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
-import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
-import ladysnake.dissolution.common.items.ItemScythe;
-import ladysnake.dissolution.common.registries.EctoplasmCorporealityStatus;
-import ladysnake.dissolution.common.registries.SoulCorporealityStatus;
+import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,7 +23,6 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -54,10 +50,10 @@ public class LivingDeathHandler {
             ((EntityLivingBase) corp.getPossessed()).attackEntityFrom(event.getSource(), Float.MAX_VALUE);
             corp.setPossessed(null);
         }
-        if (!corp.isStrongSoul() || corp.getCorporealityStatus() == SoulCorporealityStatus.SOUL)
+        if (!corp.isStrongSoul() || corp.getCorporealityStatus() == SoulStates.SOUL)
             return;
-        if (corp.getCorporealityStatus() == EctoplasmCorporealityStatus.ECTOPLASM) {
-            corp.setCorporealityStatus(SoulCorporealityStatus.SOUL);
+        if (corp.getCorporealityStatus() == SoulStates.ECTOPLASM) {
+            corp.setCorporealityStatus(SoulStates.SOUL);
             p.setHealth(20f);
             event.setCanceled(true);
             return;

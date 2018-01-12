@@ -7,7 +7,7 @@ import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.entity.minion.*;
-import ladysnake.dissolution.common.registries.EctoplasmCorporealityStatus;
+import ladysnake.dissolution.common.registries.SoulStates;
 import ladysnake.dissolution.common.tileentities.TileEntityLamentStone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -60,7 +60,7 @@ public class GuiIncorporealOverlay extends GuiIngame {
                     this.drawOriginIndicator(event.getResolution());
             }
 
-            if (this.mc.playerController.shouldDrawHUD() && this.mc.getRenderViewEntity() instanceof EntityPlayer && pl.getCorporealityStatus() == EctoplasmCorporealityStatus.ECTOPLASM) {
+            if (this.mc.playerController.shouldDrawHUD() && this.mc.getRenderViewEntity() instanceof EntityPlayer && pl.getCorporealityStatus() == SoulStates.ECTOPLASM) {
                 this.drawCustomHealthBar(this.mc.player, event.getResolution(), 0);
             } else if (this.mc.playerController.shouldDrawHUD()) {
                 IPossessable possessed = pl.getPossessed();

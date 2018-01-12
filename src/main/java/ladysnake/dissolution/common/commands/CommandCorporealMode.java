@@ -4,7 +4,7 @@ import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.registries.CorporealityStatus;
+import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -51,7 +51,7 @@ public class CommandCorporealMode extends CommandBase {
         if (args.length == 1) {
             possibilities = Arrays.asList("query", "set");
         } else if (args.length == 2 && "set".equals(args[0])) {
-            possibilities = CorporealityStatus.REGISTRY.getValues().stream().map(status -> status.getRegistryName().getResourcePath()).collect(Collectors.toList());
+            possibilities = SoulStates.REGISTRY.getValues().stream().map(status -> status.getRegistryName().getResourcePath()).collect(Collectors.toList());
         } else if (args.length > 1) {
             possibilities = Arrays.asList(server.getOnlinePlayerNames());
         }
@@ -78,7 +78,7 @@ public class CommandCorporealMode extends CommandBase {
                 ResourceLocation regName = args[1].contains(":")
                         ? new ResourceLocation(args[1])
                         : new ResourceLocation(Reference.MOD_ID, args[1]);
-                ICorporealityStatus newStatus = CorporealityStatus.REGISTRY.getValue(regName);
+                ICorporealityStatus newStatus = SoulStates.REGISTRY.getValue(regName);
                 EntityPlayer player = args.length >= 3 ? getPlayer(server, sender, args[2]) : getCommandSenderAsPlayer(sender);
                 IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
                 if (!handler.isStrongSoul())
