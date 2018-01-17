@@ -55,10 +55,10 @@ public class GuiIncorporealOverlay extends GuiIngame {
             OverlaysRenderer.INSTANCE.renderOverlays(event);
 
             /* Draw Incorporeal Ingame Gui */
-            if (pl.getCorporealityStatus().isIncorporeal() && pl.getPossessed() == null) {
-                if (Dissolution.config.client.soulCompass)
-                    this.drawOriginIndicator(event.getResolution());
-            }
+//            if (pl.getCorporealityStatus().isIncorporeal() && pl.getPossessed() == null) {
+//                if (Dissolution.config.client.soulCompass)
+//                    this.drawOriginIndicator(event.getResolution());
+//            }
 
             if (this.mc.playerController.shouldDrawHUD() && this.mc.getRenderViewEntity() instanceof EntityPlayer && pl.getCorporealityStatus() == SoulStates.ECTOPLASM) {
                 this.drawCustomHealthBar(this.mc.player, event.getResolution(), 0);

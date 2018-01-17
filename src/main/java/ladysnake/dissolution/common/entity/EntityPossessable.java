@@ -181,34 +181,6 @@ public abstract class EntityPossessable extends EntityMob implements IPossessabl
             this.attractAttention();
     }
 
-    @Override
-    public void onEntityUpdate() {
-        super.onEntityUpdate();
-
-        if (this.getControllingPassenger() instanceof EntityPlayerMP) {
-            EntityPlayerMP player = (EntityPlayerMP) this.getControllingPassenger();
-            int i = this.getMaxInPortalTime();
-            if (++this.portalCounter >= i) {
-                this.portalCounter = i;
-                this.timeUntilPortal = this.getPortalCooldown();
-                int j;
-
-                if (this.world.provider.getDimensionType().getId() == -1) {
-                    j = 0;
-                } else {
-                    j = -1;
-                }
-
-//                this.onPossessionStop(player, true);
-//                IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
-//                handler.setPossessed(null);
-                this.changeDimension(j);
-//                player.changeDimension(j);
-//                handler.setPossessed(this);
-            }
-        }
-    }
-
     protected void attractAttention() {
         List<EntityCreature> nearby = this.world.getEntitiesWithinAABB(EntityCreature.class,
                 new AxisAlignedBB(new BlockPos(this)).grow(30), this::isMobEligibleForAttention);
@@ -232,7 +204,7 @@ public abstract class EntityPossessable extends EntityMob implements IPossessabl
     protected boolean shouldBeTargetedBy(EntityCreature other, EntityAITasks.EntityAITaskEntry taskEntry) {
         if (taskEntry.action instanceof EntityAINearestAttackableTarget) {
             try {
-                Class<?> clazz = (Class<?>) entityAINearestAttackableTarget$targetClass.invoke(taskEntry.action);
+                Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>) entityAINearestAttackableTarget$targetClass.invoke(taskEntry.action);
                 return this.equivalents.contains(clazz);
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
