@@ -1,7 +1,5 @@
 package ladysnake.dissolution.common.registries;
 
-import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
-import ladysnake.dissolution.common.Reference;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class SoulCorporealityStatus extends IncorporealStatus {
@@ -19,8 +17,8 @@ public class SoulCorporealityStatus extends IncorporealStatus {
 
     public void resetState(EntityPlayer owner) {
         super.resetState(owner);
-        owner.setEntityInvulnerable(false);
+        owner.setEntityInvulnerable(owner.isCreative());
         owner.eyeHeight = owner.getDefaultEyeHeight();
-        owner.capabilities.disableDamage = false;
+        owner.capabilities.disableDamage = owner.isCreative();
     }
 }

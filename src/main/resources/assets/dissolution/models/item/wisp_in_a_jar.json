@@ -6,12 +6,6 @@
     "overrides": [
         {
             "predicate": {
-                "dissolution:soul": 0
-            },
-            "model": "dissolution:item/glass_jar"
-        },
-        {
-            "predicate": {
                 "dissolution:soul": 2
             },
             "model": "dissolution:item/faerie_in_a_jar"

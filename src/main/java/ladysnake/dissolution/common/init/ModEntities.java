@@ -47,8 +47,8 @@ public class ModEntities {
         registerEntity(reg, EntityMinionWitherSkeleton::new, "minion_wither_skeleton", 64, true);
         registerEntity(reg, EntityGenericMinion::new, "generic_minion", 64, true);
         registerEntity(reg, EntityPlayerCorpse::new, "player_corpse", 64, true);
-        registerEntity(reg, EntityMawOfTheVoid::new, "maw_of_the_void", 64, true);
-        registerEntity(reg, EntityBrimstoneFire::new, "brimstone_fire", 32, false);
+//        registerEntity(reg, EntityMawOfTheVoid::new, "maw_of_the_void", 64, true);
+//        registerEntity(reg, EntityBrimstoneFire::new, "brimstone_fire", 32, false);
         registerEntity(reg, EntityFleetingSoul::new, "fleeting_soul", 64, true);
         registerEntity(reg, EntityFaerie::new, "faerie", 64, true);
         reg.register(createEntry(EntitySoulSpawner::new, "soul_spawner", 64, true)

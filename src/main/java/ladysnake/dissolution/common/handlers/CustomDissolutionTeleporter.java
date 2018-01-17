@@ -22,14 +22,14 @@ public class CustomDissolutionTeleporter {
         WorldServer oldWorld = player.mcServer.getWorld(player.dimension);
         player.dimension = dimensionIn;
         WorldServer newWorld = player.mcServer.getWorld(player.dimension);
-        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
-        IPossessable possessed = handler.getPossessed();
-        if (possessed instanceof Entity) {
-            // force possession end
-            possessed.onPossessionStop(player, true);
-            handler.setPossessed(null);
-            transferEntityToWorld((Entity) possessed, player.dimension, oldWorld, newWorld);
-        }
+//        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
+//        IPossessable possessed = handler.getPossessed();
+//        if (possessed instanceof Entity) {
+//            // force possession end
+//            possessed.onPossessionStop(player, true);
+//            handler.setPossessed(null);
+//            transferEntityToWorld((Entity) possessed, player.dimension, oldWorld, newWorld);
+//        }
         player.connection.sendPacket(new SPacketRespawn(player.dimension, newWorld.getDifficulty(), newWorld.getWorldInfo().getTerrainType(), player.interactionManager.getGameType()));
         player.mcServer.getPlayerList().updatePermissionLevel(player);
         oldWorld.removeEntityDangerously(player);
@@ -46,7 +46,7 @@ public class CustomDissolutionTeleporter {
             player.connection.sendPacket(new SPacketEntityEffect(player.getEntityId(), potioneffect));
         }
 
-        handler.setPossessed(possessed);
+//        handler.setPossessed(possessed);
 
         net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerChangedDimensionEvent(player, i, dimensionIn);
     }
