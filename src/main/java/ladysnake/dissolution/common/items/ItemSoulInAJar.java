@@ -8,6 +8,7 @@ import ladysnake.dissolution.common.init.ModFluids;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.tileentities.TileEntityWispInAJar;
 import net.minecraft.block.Block;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
@@ -25,6 +26,7 @@ import net.minecraftforge.fluids.FluidUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class ItemSoulInAJar extends ItemBlock {
 
@@ -61,7 +63,7 @@ public class ItemSoulInAJar extends ItemBlock {
         ItemStack stack = playerIn.getHeldItem(handIn);
         SoulType soul = getSoul(stack);
         RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, true);
-        if (raytraceresult.typeOfHit == RayTraceResult.Type.MISS) {
+        if (raytraceresult == null || raytraceresult.typeOfHit == RayTraceResult.Type.MISS) {
             return new ActionResult<>(EnumActionResult.PASS, stack);
         }
         BlockPos pos = raytraceresult.getBlockPos().offset(raytraceresult.sideHit);
@@ -86,6 +88,12 @@ public class ItemSoulInAJar extends ItemBlock {
         return SoulType.NONE;
     }
 
+    @Override
+    public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, @Nonnull List<String> tooltip, @Nonnull ITooltipFlag flagIn) {
+        super.addInformation(stack, worldIn, tooltip, flagIn);
+        tooltip.add(getSoul(stack).toString());
+    }
+
     public static ItemStack newTypedSoulBottle(SoulType soulType) {
         ItemStack stack = new ItemStack(ModItems.SOUL_IN_A_JAR);
         NBTTagCompound nbt = new NBTTagCompound();
@@ -98,6 +106,8 @@ public class ItemSoulInAJar extends ItemBlock {
     public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
         if (tab == Dissolution.CREATIVE_TAB) {
             items.add(newTypedSoulBottle(SoulType.WILL_O_WISP));
+            items.add(newTypedSoulBottle(SoulType.FAERIE));
+            items.add(newTypedSoulBottle(SoulType.TIRED_FAERIE));
         }
     }
 
