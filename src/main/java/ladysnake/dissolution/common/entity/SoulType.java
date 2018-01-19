@@ -6,6 +6,7 @@ import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -33,4 +34,9 @@ public enum SoulType {
         return ret;
     }
 
+
+    @Override
+    public String toString() {
+        return super.toString().toLowerCase(Locale.ENGLISH).replace('_', ' ');
+    }
 }

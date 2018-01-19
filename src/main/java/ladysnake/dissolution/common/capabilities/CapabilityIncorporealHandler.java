@@ -57,17 +57,6 @@ public class CapabilityIncorporealHandler {
     @CapabilityInject(IIncorporealHandler.class)
     static Capability<IIncorporealHandler> CAPABILITY_INCORPOREAL;
 
-    private static MethodHandle entity$setSize;
-
-    static {
-        try {
-            Method m = ReflectionHelper.findMethod(Entity.class, "setSize", "func_70105_a", float.class, float.class);
-            entity$setSize = MethodHandles.lookup().unreflect(m);
-        } catch (UnableToFindFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void register() {
         CapabilityManager.INSTANCE.register(IIncorporealHandler.class, new Storage(), DefaultIncorporealHandler::new);
     }
@@ -110,14 +99,6 @@ public class CapabilityIncorporealHandler {
         if (event.phase != TickEvent.Phase.END) return;
         IIncorporealHandler handler = getHandler(event.player);
         handler.tick();
-        if (handler.getCorporealityStatus() == SoulStates.SOUL || handler.getPossessed() != null) {
-            float size = event.player.isRiding() ? 0f : 0.8f;
-            try {
-                entity$setSize.invoke(event.player, event.player.width, size);
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        }
     }
 
     /**

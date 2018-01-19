@@ -200,16 +200,16 @@ public class EventHandlerClient {
         }
     }
 
-    private static RenderWillOWisp<EntityPlayer> renderSoul;
+//    private static RenderWillOWisp<EntityPlayer> renderSoul;
 
     @SubscribeEvent
     public static void onPlayerRender(RenderPlayerEvent.Pre event) {
         if (noServerInstall) return;
 
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
-        if (playerCorp.getCorporealityStatus() == SoulStates.ECTOPLASM) {
-            GlStateManager.color(0.9F, 0.9F, 1.0F, 0.5F); // Tints the player blue and halves the transparency
-        } else if (playerCorp.getCorporealityStatus() == SoulStates.SOUL) {
+        if (playerCorp.getCorporealityStatus().isIncorporeal()) {
+            GlStateManager.color(0.9F, 0.9F, 1.0F, 0.9F); // Tints the player blue and halves the transparency
+        }/* else if (playerCorp.getCorporealityStatus() == SoulStates.SOUL) {
             if (playerCorp.getPossessed() == null) {
                 if (renderSoul == null)
                     renderSoul = new RenderWillOWisp<>(Minecraft.getMinecraft().getRenderManager());
@@ -217,7 +217,7 @@ public class EventHandlerClient {
                         event.getEntityPlayer().getRotationYawHead(), event.getPartialRenderTick());
             }
             event.setCanceled(true);
-        }
+        }*/
         event.getRenderer().shadowOpaque = playerCorp.getCorporealityStatus().isIncorporeal() ? 0F : 1F;
     }
 

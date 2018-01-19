@@ -30,7 +30,8 @@ public class EntityFaerie extends EntityFleetingSoul {
     @Override
     public void onUpdate() {
         super.onUpdate();
-        if (rand.nextInt(1000) == 0)
+        // faeries heal once every 5 minutes on average
+        if (rand.nextInt(6000) == 0)
             this.setTired(false);
     }
 
@@ -80,6 +81,6 @@ public class EntityFaerie extends EntityFleetingSoul {
 
     @Override
     public Light provideLight() {
-        return Light.builder().pos(this).radius(this.isTired() ? 2 : 5).color(0.9f, 0.5f, 0.8f).build();
+        return Light.builder().pos(this).radius(this.isTired() ? 2 : 5).color(0.9f, 0.4f, 0.7f).build();
     }
 }
