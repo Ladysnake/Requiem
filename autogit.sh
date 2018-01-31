@@ -5,4 +5,4 @@ then
 else
 	msg=$1
 fi
-git stash && git pull && git stash apply && git add * && git commit -m $msg && git push
+git pull && git add * && git commit -m "$msg" && git push
