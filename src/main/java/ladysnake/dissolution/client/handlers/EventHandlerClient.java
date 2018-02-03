@@ -208,7 +208,8 @@ public class EventHandlerClient {
 
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
         if (playerCorp.getCorporealityStatus().isIncorporeal()) {
-            GlStateManager.color(0.9F, 0.9F, 1.0F, 0.9F); // Tints the player blue and halves the transparency
+            float alpha = CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player).isStrongSoul() ? 0.8F : 0.05F;
+            GlStateManager.color(0.9F, 0.9F, 1.0F, alpha); // Tints the player blue and reduces the transparency
         }/* else if (playerCorp.getCorporealityStatus() == SoulStates.SOUL) {
             if (playerCorp.getPossessed() == null) {
                 if (renderSoul == null)
