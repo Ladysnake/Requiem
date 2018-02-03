@@ -12,6 +12,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
@@ -60,7 +61,7 @@ public class EntityMinionPigZombie extends EntityMinionZombie {
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean attackEntityFrom(@Nonnull DamageSource source, float amount) {
         if (this.isEntityInvulnerable(source)) return false;
         if (source.getTrueSource() instanceof EntityLivingBase) {
             becomeAngryAt(source.getTrueSource());

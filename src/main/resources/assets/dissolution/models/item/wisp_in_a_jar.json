@@ -12,7 +12,7 @@
         },
         {
             "predicate": {
-                "dissolution:fluid": 3
+                "dissolution:soul": 3
             },
             "model": "dissolution:item/weak_faerie_in_a_jar"
         }

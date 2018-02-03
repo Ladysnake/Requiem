@@ -55,7 +55,16 @@ import java.util.UUID;
 public class CapabilityIncorporealHandler {
 
     @CapabilityInject(IIncorporealHandler.class)
-    static Capability<IIncorporealHandler> CAPABILITY_INCORPOREAL;
+    static Capability<IIncorporealHandler> CAPABILITY_INCORPOREAL;private static MethodHandle entity$setSize;
+
+    static {
+        try {
+            Method m = ReflectionHelper.findMethod(Entity.class, "setSize", "func_70105_a", float.class, float.class);
+            entity$setSize = MethodHandles.lookup().unreflect(m);
+        } catch (UnableToFindFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void register() {
         CapabilityManager.INSTANCE.register(IIncorporealHandler.class, new Storage(), DefaultIncorporealHandler::new);
@@ -249,12 +258,19 @@ public class CapabilityIncorporealHandler {
 
         @Override
         public void tick() {
-            if (getCorporealityStatus().isIncorporeal())
+            if (getCorporealityStatus().isIncorporeal()) {
                 if (this.lastFood < 0)
                     lastFood = owner.getFoodStats().getFoodLevel();
                 else
                     owner.getFoodStats().setFoodLevel(lastFood);
-            else
+                if (getPossessed() != null) {
+                    try {
+                        entity$setSize.invoke(owner, 0.0f, owner.height);
+                    } catch (Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                }
+            } else
                 lastFood = -1;
         }
 

@@ -26,6 +26,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -93,7 +94,7 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
     }
 
     @Override
-    public float getBlockPathWeight(BlockPos pos) {
+    public float getBlockPathWeight(@Nullable BlockPos pos) {
         return delegate == null ? super.getBlockPathWeight(pos) : delegate.getBlockPathWeight(pos);
     }
 
@@ -174,7 +175,7 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
     }
 
     @Override
-    public void addPotionEffect(PotionEffect potioneffectIn) {
+    public void addPotionEffect(@Nonnull PotionEffect potioneffectIn) {
         if (delegate == null)
             super.addPotionEffect(potioneffectIn);
         else
@@ -182,7 +183,7 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
     }
 
     @Override
-    public boolean addTag(String tag) {
+    public boolean addTag(@Nonnull String tag) {
         return delegate == null ? super.addTag(tag) : delegate.addTag(tag);
     }
 
@@ -209,7 +210,7 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
     }
 
     @Override
-    public void setItemStackToSlot(EntityEquipmentSlot slotIn, ItemStack stack) {
+    public void setItemStackToSlot(EntityEquipmentSlot slotIn, @Nonnull ItemStack stack) {
         if (this.delegate == null)
             super.setItemStackToSlot(slotIn, stack);
         else
@@ -217,7 +218,7 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean attackEntityFrom(@Nonnull DamageSource source, float amount) {
         boolean ret = false;
         Entity entity = source.getTrueSource();
         //if(!(this.isBeingRidden() && entity != null && this.isRidingOrBeingRiddenBy(entity))) {
@@ -243,22 +244,23 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
     }
 
     @Override
-    public PotionEffect getActivePotionEffect(Potion potionIn) {
+    public PotionEffect getActivePotionEffect(@Nonnull Potion potionIn) {
         return delegate == null ? super.getActivePotionEffect(potionIn) : delegate.getActivePotionEffect(potionIn);
     }
 
+    @Nonnull
     @Override
     public Collection<PotionEffect> getActivePotionEffects() {
         return delegate == null ? super.getActivePotionEffects() : delegate.getActivePotionEffects();
     }
 
     @Override
-    public boolean isPotionActive(Potion potionIn) {
+    public boolean isPotionActive(@Nonnull Potion potionIn) {
         return super.isPotionActive(potionIn);
     }
 
     @Override
-    public void awardKillScore(Entity p_191956_1_, int p_191956_2_, DamageSource p_191956_3_) {
+    public void awardKillScore(Entity p_191956_1_, int p_191956_2_, @Nonnull DamageSource p_191956_3_) {
         if (delegate == null)
             super.awardKillScore(p_191956_1_, p_191956_2_, p_191956_3_);
         else
@@ -271,7 +273,7 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
     }
 
     @Override
-    public void setActiveHand(EnumHand hand) {
+    public void setActiveHand(@Nonnull EnumHand hand) {
         if (delegate == null)
             super.setActiveHand(hand);
         else
@@ -318,7 +320,7 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
     }
 
     @Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+    public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
         if (delegate != null && delegate.hasCapability(capability, facing))
             return delegate.getCapability(capability, facing);
         return super.getCapability(capability, facing);
