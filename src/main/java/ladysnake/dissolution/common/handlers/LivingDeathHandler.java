@@ -3,6 +3,8 @@ package ladysnake.dissolution.common.handlers;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.config.DissolutionConfig;
+import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
@@ -63,7 +65,7 @@ public class LivingDeathHandler {
                 p.getDisplayNameString() + event.getSource().getDeathMessage(p).getUnformattedComponentText());
         corp.getDeathStats().setDeathDimension(p.dimension);
 
-        if (!p.world.isRemote) {
+        if (!p.world.isRemote && Dissolution.config.respawn.spawnCorpses) {
             final EntityPlayerCorpse body = new EntityPlayerCorpse(p.world);
             body.setPosition(p.posX, p.posY, p.posZ);
             body.setCustomNameTag(p.getName());

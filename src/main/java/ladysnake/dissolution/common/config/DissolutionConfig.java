@@ -98,6 +98,9 @@ public class DissolutionConfig {
 
     public class Respawn {
 
+        @Config.Comment("If set to true, a player corpse will be created each time a player dies")
+        public boolean spawnCorpses = false;
+
         @Config.Comment("If set to true, the player will respawn as a ghost at their spawnpoint. They will then have the choice to go to 0,0 to respawn without stuff or to reach their corpse under 5 minutes.")
         public boolean wowLikeRespawn = false;
 

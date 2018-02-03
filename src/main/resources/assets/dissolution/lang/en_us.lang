@@ -64,6 +64,7 @@ dissolution.dialogues.first_contact.explicit.choice_0=Yes, I know what the so-ca
 dissolution.dialogues.first_contact.explicit.choice_1=No, I don't want this mod to affect me in any way that doesn't involve other players.
 dissolution.dialogues.first_contact.header=An empyrean voice makes your soul trembles.
 dissolution.dialogues.first_contact.header.explicit=This is a dialogue prompted by the Dissolution mod. More information can be found at https://minecraft.curseforge.com/projects/dissolution.
+dissolution.potion.purification.name=Purification
 dissolution.soul_strength.changed=Your soul is now %s
 dissolution.soul_strength.strong=strong
 dissolution.soul_strength.weak=weak

@@ -56,10 +56,7 @@ import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @SuppressWarnings({"Guava", "WeakerAccess"})
 public abstract class AbstractMinion extends EntityPossessable implements IRangedAttackMob, IEntityOwnable, IPossessable {
@@ -315,7 +312,7 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
                     }
                 }
 
-                entityPlayer.addStat(StatList.getObjectUseStats(bow.getItem()));
+                entityPlayer.addStat(Objects.requireNonNull(StatList.getObjectUseStats(bow.getItem())));
             }
         }
     }
@@ -351,7 +348,7 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean attackEntityFrom(@Nonnull DamageSource source, float amount) {
 //        Entity entity = source.getTrueSource();
         return /*this.isBeingRidden() && entity != null && this.isRidingOrBeingRiddenBy(entity) ? false : */super.attackEntityFrom(source, amount);
     }
@@ -395,8 +392,8 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
         if (passenger.getUniqueID().equals(this.getPossessingEntity())) {
             passenger.setPosition(this.posX, this.posY, this.posZ);
             if (passenger instanceof EntityPlayer) {
-                for (PotionEffect potionEffect : ((EntityPlayer) passenger).getActivePotionMap().values())
-                    this.addPotionEffect(new PotionEffect(potionEffect));
+//                for (PotionEffect potionEffect : ((EntityPlayer) passenger).getActivePotionMap().values())
+//                    this.addPotionEffect(new PotionEffect(potionEffect));
                 ((EntityPlayer) passenger).clearActivePotions();
                 for (PotionEffect potionEffect : this.getActivePotionMap().values())
                     ((EntityPlayer) passenger).addPotionEffect(new PotionEffect(potionEffect));
