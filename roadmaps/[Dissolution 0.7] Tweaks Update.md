@@ -7,6 +7,7 @@
 - Glass jar
 - Passeress shrine
 - Purification effect
+- Week faeries
 
 #### Addition of:
 
@@ -14,13 +15,13 @@
      -         Strong Soul: Allows you to possess undead mobs in order to regain a body.
 -         New possession system: The possession system has been entirely rewritten, in order to fix the problems it had and make it overall cleaner and better.
 -         Regeneration now works on undead players as Purification, the previous effect has therefore been removed.
+-         Faerie aura: Faeries will now affect the player when close to them, granting a constant regeneration effect when staying near. They no longer just touch the player and get weak. Regeneration stacks up to regeneration 5, at a rate of one level per Faerie.
 
 #### New items:
 
--         Empty soul orb: 4 crafted with 4 soul glass blocks, they are used to capture will o’wisps, faeries and watchers. Right-clicking with a soul orb in hand results in throwing the soul orb like a snowball. Upon impact, it destroys itself and liberates its content. Empty soul orbs stack by 16, while non-empty soul orbs can’t be stacked.
--         Will o’ wisp in a soul orb
--         Faerie in a soul orb
--         Weak Faerie in a soul orb
+-         Empty soul orb: Crafted like normal bottles except with soul glass, they are used to capture will o’ wisps and faeries. Right-clicking with a soul bottle in hand results in releasing the content (can't be placed).
+-         Will o’ wisp in a soul bottle
+-         Faerie in a soul bottle
 -         Faerie dust: Obtained by slashing a Faerie with a sword, this dust can be used as an alternative to ghast tears, in order to brew regeneration potions.
 
 #### New blocks:
