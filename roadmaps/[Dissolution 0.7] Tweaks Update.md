@@ -7,7 +7,7 @@
 - Glass jar
 - Passeress shrine
 - Purification effect
-- Week faeries
+- Weak faeries
 
 #### Addition of:
 
