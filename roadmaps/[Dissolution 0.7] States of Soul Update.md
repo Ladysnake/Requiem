@@ -11,29 +11,29 @@
 
 #### Addition of:
 
--         States of Soul (abbreviated "SoS") system: States of Soul defines how you will be able to exit your soul state after death. For now, there is only one available, but more will be added in the future, as a part of modules. It is important to note that a player can’t stack States of Soul: only one can be active at a time, and therefore, accepting a new State of Soul means losing the previous one you had. Not having a SoS will ensure you get the vanilla death. This update adds two States of Soul:
-     -         Strong Soul: This SoS is the most basic Dissolution has to offer. Upon death, you have the choice to stay on this world as a soul. If this option is chosen instead of a simple respawn, your soul and body splits, resulting in you becoming a ghost. However, you have no way to regain a body. In order to become tangible again, you will have to "suicide" as a soul by pressing the "Fade away" button. This will result in bringing the Game Over screen and make you reappear on the world. Since this SoS is obtained at death, its icon will not show until you are a soul.
-     -         Lich Cursed Soul: Upon death, you become a ghost, in a similar fashion to Strong Soul (without the option to choose). The only way to regain a body is by possessing an undead mob (zombie, skeleton, etc...). Once you have a new body, you will share its strengths and weaknesses. To become a player again, you will have to use the Regeneration effect. (Note: The SoS is currently unobtainable through survival means, but can be obtained by using the command ``/dissolution sos lich``)
--         Module system: In a similar fashion to Quark and BetterWithMods, Dissolution now possesses a module system. Modules be activated or de-activated for an optimal customisation, and for most of cases, they will concern a SoS and what orbits around it. For extra customisation, modules regroup features that can be independently toggled or not. Three modules and features will be implemented with this update: 
-     -         Elysian:
-          -         Faeries
-          -         Will o' Wisps
-          -         Soul Glass and Soul Glass panes
-          -         Soul bottles
-          -         Faerie dust
-     -         Azure:
-          -         Strong Soul SoS
-     -         Jade:
-          -         Lich Cursed SoS
-          -         Coffins
--         Event support: Event support has been added and will be used in order to organize future events. These events will require the latest version of the mod to be played, and will be part of modules as features that can be turned on or off, whether or not you want to participate in them. They will grant special and unique rewards, if the corresponding module is enabled.
+- States of Soul (abbreviated "SoS") system: States of Soul defines how you will be able to exit your soul state after death. For now, there is only one available, but more will be added in the future, as a part of modules. It is important to note that a player can’t stack States of Soul: only one can be active at a time, and therefore, accepting a new State of Soul means losing the previous one you had. Not having a SoS will ensure you get the vanilla death. This update adds two States of Soul:
+  - Strong Soul: This SoS is the most basic Dissolution has to offer. Upon death, you have the choice to stay on this world as a soul. If this option is chosen instead of a simple respawn, your soul and body splits, resulting in you becoming a ghost. However, you have no way to regain a body. In order to become tangible again, you will have to "suicide" as a soul by pressing the "Fade away" button. This will result in bringing the Game Over screen and make you reappear on the world. Since this SoS is obtained at death, its icon will not show until you are a soul.
+  - Lich Cursed Soul: Upon death, you become a ghost, in a similar fashion to Strong Soul (without the option to choose). The only way to regain a body is by possessing an undead mob (zombie, skeleton, etc...). Once you have a new body, you will share its strengths and weaknesses. To become a player again, you will have to use the Regeneration effect. (Note: The SoS is currently unobtainable through survival means, but can be obtained by using the command ``/dissolution sos lich``)
+- Module system: In a similar fashion to Quark and BetterWithMods, Dissolution now possesses a module system. Modules be activated or de-activated for an optimal customisation, and for most of cases, they will concern a SoS and what orbits around it. For extra customisation, modules regroup features that can be independently toggled or not. Three modules and features will be implemented with this update: 
+  - Elysian:
+    - Faeries
+    - Will o' Wisps
+    - Soul Glass and Soul Glass panes
+    - Soul bottles
+    - Faerie dust
+  - Azure:
+    - Strong Soul SoS
+  - Jade:
+    - Lich Cursed SoS
+    - Coffins
+- Event support: Event support has been added and will be used in order to organize future events. These events will require the latest version of the mod to be played, and will be part of modules as features that can be turned on or off, whether or not you want to participate in them. They will grant special and unique rewards, if the corresponding module is enabled.
 
 #### New items:
 
--         Empty soul bottle: Crafted like normal bottles except with soul glass, they are used to capture will o’ wisps and faeries. Right-clicking with a soul bottle in hand results in releasing the content (can't be placed).
--         Will o’ wisp in a soul bottle
--         Faerie in a soul bottle
--         Faerie dust: Obtained by slashing a Faerie. Serves as an alternative to ghast tears. (Note: if disabled, Faeries can't be slashed)
+- Empty soul bottle: Crafted like normal bottles except with soul glass, they are used to capture will o’ wisps and faeries. Right-clicking with a soul bottle in hand results in releasing the content (can't be placed).
+- Will o’ wisp in a soul bottle
+- Faerie in a soul bottle
+- Faerie dust: Obtained by slashing a Faerie. Serves as an alternative to ghast tears. (Note: if disabled, Faeries can't be slashed)
 
 #### New blocks:
 
