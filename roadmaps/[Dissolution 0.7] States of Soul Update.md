@@ -18,8 +18,7 @@
   - Elysian:
     - Faeries
     - Will o' Wisps
-    - Soul Glass and Soul Glass panes
-    - Soul bottles
+    - Soul Glass, Soul Glass panes and Soul bottles
     - Faerie dust
   - Azure:
     - Strong Soul SoS
