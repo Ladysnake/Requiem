@@ -21,6 +21,15 @@
       - Obtained when renaming a Will O' Wisp in a soul vial to Splinter in an anvil (case sensitive).
       - Right clicking the bottle will result in making a grey will o' wisp appear: Splinter. This will o' wisp will follow your player, even after your death, and can only be put back in a vial by its owner (right clicking on it with a vial in the main hand).
       - Tooltip: "You were an angel among the rats. May you find your way back to heaven. Rest in peace."
+- Flawless diamond:
+  - Obtained when mining a diamond ore (10% chance to drop for each diamond, meaning that fortune doesn't cause a diamond ore to drop solely flawless diamonds).
+  - Used to craft the Undying gemstone.
+  - Can be used as a normal diamond.
+- Undying gemstone:
+  - Crafted from a flawless diamond, a wisp in a vial and a ghast tear (shapeless).
+  - Can be put in the Ethereal Focus in order to activate the altar structure.
+  - Retains the person who crafted it, in order to attribute the altar it is used on.
+  - When crafted, the gem is inactive. Inactive gemstones can be activated by right clicking on them, if the user has no attributed gemstone or altar active. If contrary, the gemstone will not activate.
 
 #### Miscellaneous changes:
 
