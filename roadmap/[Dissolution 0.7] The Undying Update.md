@@ -26,10 +26,35 @@
   - Used to craft the Undying gemstone.
   - Can be used as a normal diamond.
 - Undying gemstone:
-  - Crafted from a flawless diamond, a wisp in a vial and a ghast tear (shapeless).
+  - Crafted from a flawless diamond, a wisp in a vial, a ghast tear and paper (shapeless).
   - Can be put in the Ethereal Focus in order to activate the altar structure.
   - Retains the person who crafted it, in order to attribute the altar it is used on.
   - When crafted, the gem is inactive. Inactive gemstones can be activated by right clicking on them, if the user has no attributed gemstone or altar active. If contrary, the gemstone will not activate.
+
+#### New Blocks:
+
+- Ethereal Focus:
+  - Craft: ![](img/ethereal_focus_craft.png) (With glass blocks)
+  - Center piece of the undying altar.
+  - Can be clicked upon with an active undying gemstone in order to place the gemstone in the focus.
+  - Two states:
+    - Inactive (no gemstone):
+      - When broken with an iron pickaxe or higher, will drop as a block.
+    - Active (with gemstone):
+      - When broken, will return to an inactive state without breaking, resulting in the gemstone being destroyed.
+      - Will teleport the player upon his death on top of itself.
+      - Grants the Regeneration I effect (10 seconds every tick) to its attributed player when the player is in a radius of 10 blocks or less.
+
+#### Major changes:
+
+- New SoS, Undying:
+  - Obtained when building an undying altar and activating it with an undying gemstone.
+  - Upon death, the player (or its corpse) is instantly teleported to the altar (precisely on top of the focus) in a beam of energy. All items the player had are conserved (but not potion effects or pathologies, in case pathos is installed). From the player's point of view, the screen turns completely black, and fades back to normal when teleportation is finished and the player has regenerated at least 2hp.
+  - The Undying SoS disables natural regeneration, no matter the difficulty or food level. Regeneration, however, still affects them as normal.
+  - Undying players will obtain Regeneration I when at least 10 blocks near to their altars.
+- New structure detected, Altar of the Undying:
+
+![]()
 
 #### Miscellaneous changes:
 
