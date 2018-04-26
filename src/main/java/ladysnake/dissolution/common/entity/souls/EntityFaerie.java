@@ -56,14 +56,7 @@ public class EntityFaerie extends EntityFleetingSoul {
 
     @Override
     public void onCollideWithPlayer(EntityPlayer entityIn) {
-        ItemStack bottle = DissolutionInventoryHelper.findItem(entityIn, ModItems.GLASS_JAR);
-        if (!world.isRemote && !bottle.isEmpty() && this.delayBeforeCanPickup <= 0) {
-            bottle.shrink(1);
-            entityIn.addItemStackToInventory(ItemSoulInAJar.newTypedSoulBottle(isTired()
-                    ? SoulType.TIRED_FAERIE
-                    : SoulType.FAERIE));
-            this.setDead();
-        } else if(!world.isRemote && !this.isTired()) {
+        if(!world.isRemote && !this.isTired()) {
             IPossessable possessed = CapabilityIncorporealHandler.getHandler(entityIn).getPossessed();
             if (possessed instanceof EntityLivingBase)
                 ((EntityLivingBase) possessed).addPotionEffect(new PotionEffect(ModPotions.PURIFICATION, 200, 1));
@@ -85,6 +78,11 @@ public class EntityFaerie extends EntityFleetingSoul {
 
     public void setTired(boolean tired) {
         this.getDataManager().set(TIRED, tired);
+    }
+
+    @Override
+    public SoulType getSoulType() {
+        return isTired() ? SoulType.TIRED_FAERIE : SoulType.FAERIE;
     }
 
     @Override

@@ -68,7 +68,7 @@ public class ItemSoulInAJar extends ItemBlock {
         }
         BlockPos pos = raytraceresult.getBlockPos().offset(raytraceresult.sideHit);
         if (!worldIn.isRemote)
-            soul.instantiate(worldIn, pos.getX(), pos.getY(), pos.getZ()).ifPresent(worldIn::spawnEntity);
+            soul.instantiate(worldIn, pos.getX(), pos.getY(), pos.getZ(), playerIn).ifPresent(worldIn::spawnEntity);
         stack.shrink(1);
         ItemStack emptyJar = new ItemStack(ModItems.GLASS_JAR);
         if (stack.isEmpty())

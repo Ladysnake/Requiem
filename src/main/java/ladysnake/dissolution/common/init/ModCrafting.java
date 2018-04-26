@@ -1,12 +1,28 @@
 package ladysnake.dissolution.common.init;
 
+
+import ladysnake.dissolution.common.Reference;
+import net.minecraft.init.PotionTypes;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.potion.PotionHelper;
+import net.minecraftforge.common.brewing.BrewingRecipe;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
 /**
  * Class previously used to register recipes
  *
  * @author Pyrofab
  */
-@Deprecated
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class ModCrafting {
+
+    @SubscribeEvent
+    public static void registerPotions(RegistryEvent.Register<IRecipe> event) {
+        // TODO make this work only with faeries
+        PotionHelper.addMix(PotionTypes.AWKWARD, ModItems.SOUL_IN_A_JAR, PotionTypes.REGENERATION);
+    }
 
     public static void register() {
         /*

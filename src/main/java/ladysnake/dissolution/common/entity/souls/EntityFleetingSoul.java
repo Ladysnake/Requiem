@@ -2,13 +2,11 @@ package ladysnake.dissolution.common.entity.souls;
 
 import elucent.albedo.lighting.ILightProvider;
 import elucent.albedo.lighting.Light;
-import ladysnake.dissolution.api.Soul;
-import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
-import ladysnake.dissolution.common.items.ItemSoulInAJar;
-import ladysnake.dissolution.common.entity.SoulType;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,10 +15,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nonnull;
+import ladysnake.dissolution.api.Soul;
+import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.entity.SoulType;
+import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
+import ladysnake.dissolution.common.items.ItemSoulInAJar;
 
 @Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo", striprefs = true)
 public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
@@ -138,6 +142,10 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
         }
     }
 
+    public boolean canBePickupBy(EntityLivingBase entity) {
+        return !world.isRemote && this.delayBeforeCanPickup <= 0;
+    }
+
     @Override
     public void onCollideWithPlayer(EntityPlayer entityIn) {
         ItemStack bottle = DissolutionInventoryHelper.findItem(entityIn, ModItems.GLASS_JAR);
@@ -146,6 +154,10 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
             entityIn.addItemStackToInventory(ItemSoulInAJar.newTypedSoulBottle(SoulType.WILL_O_WISP));
             this.setDead();
         }
+    }
+
+    public SoulType getSoulType() {
+        return SoulType.WILL_O_WISP;
     }
 
     @Override
