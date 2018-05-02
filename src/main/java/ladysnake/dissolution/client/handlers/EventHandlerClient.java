@@ -76,6 +76,7 @@ public class EventHandlerClient {
     public static void onGameTick(TickEvent.ClientTickEvent event) {
         final EntityPlayer player = Minecraft.getMinecraft().player;
         if (player == null || noServerInstall) return;
+        player.getAlwaysRenderNameTagForRender();
 
         DissolutionParticleManager.INSTANCE.updateParticles();
 

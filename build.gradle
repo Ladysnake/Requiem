@@ -19,6 +19,17 @@ compileJava {
     sourceCompatibility = targetCompatibility = '1.8'
 }
 
+sourceSets {
+    core {
+        compileClasspath = main.compileClasspath
+        runtimeClasspath = main.runtimeClasspath
+    }
+    main {
+        compileClasspath += core.output
+        runtimeClasspath += core.output
+    }
+}
+
 minecraft {
     version = "${forge_version}"
     runDir = "run"
@@ -26,6 +37,7 @@ minecraft {
     // stable_#            stables are built at the discretion of the MCP team.
     mappings = "snapshot_20171010"
     replace '@VERSION@', mod_version
+    clientJvmArgs = serverJvmArgs = ['-Dfml.coreMods.load=ladysnake.dissolution.core.DissolutionLoadingPlugin']
 }
 
 repositories {
