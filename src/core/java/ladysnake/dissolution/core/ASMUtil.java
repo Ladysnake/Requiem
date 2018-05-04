@@ -4,83 +4,11 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.ParameterNode;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ASMUtil {
-    public static char[] parseMethodArguments(String desc) {
-        String[] splitDesc = splitMethodDesc(desc);
-        char[] returnChars = new char[splitDesc.length];
-        int count = 0;
-        for(String type : splitDesc) {
-            if(type.startsWith("L") || type.startsWith("[")) {
-                returnChars[count] = 'L';
-            }
-            else {
-                if(type.length() > 1) { throw new RuntimeException(); }
-                returnChars[count] = type.charAt(0);
-            }
-            count += 1;
-        }
-        return returnChars;
-    }
-
-    public static String[] splitMethodDesc(String desc) {
-        int beginIndex = desc.indexOf('(');
-        int endIndex = desc.lastIndexOf(')');
-        if((beginIndex == -1 && endIndex != -1) || (beginIndex != -1 && endIndex == -1)) {
-            System.err.println(beginIndex);
-            System.err.println(endIndex);
-            throw new RuntimeException();
-        }
-        String x0;
-        if(beginIndex == -1 && endIndex == -1) {
-            x0 = desc;
-        }
-        else {
-            x0 = desc.substring(beginIndex + 1, endIndex);
-        }
-        Pattern pattern = Pattern.compile("\\[*L[^;]+;|\\[[ZBCSIFDJ]|[ZBCSIFDJ]"); //Regex for desc \[*L[^;]+;|\[[ZBCSIFDJ]|[ZBCSIFDJ]
-        Matcher matcher = pattern.matcher(x0);
-        ArrayList<String> listMatches = new ArrayList<>();
-        while(matcher.find()) {
-            listMatches.add(matcher.group());
-        }
-        return listMatches.toArray(new String[0]);
-    }
-
-    static int getReturnCode(String desc) {
-        char t = desc.charAt(desc.indexOf(')')+1);
-        int code;
-        switch (t) {
-            case 'Z':
-            case 'B':
-            case 'C':
-            case 'S':
-            case 'I':
-                code = Opcodes.IRETURN;
-                break;
-            case 'J':
-                code = Opcodes.LRETURN;
-                break;
-            case 'F':
-                code = Opcodes.FRETURN;
-                break;
-            case 'D':
-                code = Opcodes.DRETURN;
-                break;
-            case 'V':
-                code = Opcodes.RETURN;
-                break;
-            default:
-                code = Opcodes.ARETURN;
-        }
-        return code;
-    }
 
     static class MethodKey {
         String name, desc;

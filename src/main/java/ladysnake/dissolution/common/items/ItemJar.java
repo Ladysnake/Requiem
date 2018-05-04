@@ -59,7 +59,7 @@ public class ItemJar extends Item {
         } else if (raytraceresult.typeOfHit != RayTraceResult.Type.ENTITY) {
             return new ActionResult<>(EnumActionResult.PASS, jar);
         }
-                                        Entity target = raytraceresult.entityHit;
+        Entity target = raytraceresult.entityHit;
         if (target instanceof EntityFleetingSoul) {
             EntityFleetingSoul soul = (EntityFleetingSoul) target;
             if (soul.canBePickupBy(playerIn)) {

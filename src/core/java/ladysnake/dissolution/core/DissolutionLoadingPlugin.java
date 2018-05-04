@@ -5,6 +5,7 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import javax.annotation.Nullable;
 import java.util.Map;
 
+@IFMLLoadingPlugin.SortingIndex(1001)   // run after forge's runtime deobfuscation
 @IFMLLoadingPlugin.MCVersion("1.12.2")
 @IFMLLoadingPlugin.TransformerExclusions("ladysnake.dissolution.core.")
 public class DissolutionLoadingPlugin implements IFMLLoadingPlugin {
