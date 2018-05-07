@@ -8,6 +8,7 @@ import org.objectweb.asm.ClassWriter;
  * Safe class writer.
  * The way COMPUTE_FRAMES works may require loading additional classes. This can cause ClassCircularityErrors.
  * The override for getCommonSuperClass will ensure that COMPUTE_FRAMES works properly by using the right ClassLoader.
+ *
  * @author JamiesWhiteShirt
  */
 public class SafeClassWriter extends ClassWriter {

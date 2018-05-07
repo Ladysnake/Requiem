@@ -11,7 +11,7 @@ import java.util.Map;
 public class DissolutionLoadingPlugin implements IFMLLoadingPlugin {
     @Override
     public String[] getASMTransformerClass() {
-        return new String[] {DissolutionClassTransformer.class.getCanonicalName()};
+        return new String[]{DissolutionClassTransformer.class.getCanonicalName()};
     }
 
     @Override

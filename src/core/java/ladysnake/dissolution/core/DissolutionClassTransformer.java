@@ -1,17 +1,17 @@
 package ladysnake.dissolution.core;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemArmor;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
-import org.objectweb.asm.*;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
-import org.objectweb.asm.util.Printer;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class DissolutionClassTransformer implements IClassTransformer {
@@ -28,9 +28,9 @@ public class DissolutionClassTransformer implements IClassTransformer {
                     reader.accept(classNode, 0);
                     {
                         for (MethodNode methodNode : classNode.methods) {
-                            // do not try to override a final method nor methods that can't be called
-                            if ((methodNode.access & (Opcodes.ACC_FINAL | Opcodes.ACC_STATIC | Opcodes.ACC_PRIVATE | Opcodes.ACC_PROTECTED)) == 0) {
-                                System.out.println(FMLDeobfuscatingRemapper.INSTANCE.unmap(methodNode.name) + " | " + methodNode.desc);
+                            // do not try to override a final method, methods that can't be called nor the constructor
+                            if ((methodNode.access & (Opcodes.ACC_FINAL | Opcodes.ACC_STATIC | Opcodes.ACC_PRIVATE | Opcodes.ACC_PROTECTED)) == 0 &&
+                                    !methodNode.name.equals("<init>")) {
                                 // store the method information for use in EntityPlayer
                                 ASMUtil.MethodInfo info = new ASMUtil.MethodInfo(methodNode);
                                 livingBaseMethods.put(new ASMUtil.MethodKey(methodNode.name, methodNode.desc), info);
@@ -41,24 +41,66 @@ public class DissolutionClassTransformer implements IClassTransformer {
                     e.printStackTrace();
                 }
                 return invokeCthulhu(basicClass, classNode -> {
-                    for (MethodNode methodNode : classNode.methods) {
+                    List<MethodNode> methods = classNode.methods;
+                    for (MethodNode methodNode : methods) {
                         ASMUtil.MethodKey key = new ASMUtil.MethodKey(methodNode.name, methodNode.desc);
                         ASMUtil.MethodInfo info = livingBaseMethods.remove(key);
                         // if the method overrides an EntityLivingBase method, inject a hook
                         if (info != null) {
-                            InsnList preInstructions = generateDelegationInsnList(methodNode.name, methodNode.desc);
-                            System.out.println("==================" + methodNode.name + methodNode.desc + "===============");
-                            dump(preInstructions);
-                            methodNode.instructions.insert(preInstructions);
+                            methodNode.instructions.insert(generateDelegationInsnList(methodNode.name, methodNode.desc));
+                        }
+
+                        // special case capability methods to avoid recursive calls
+                        if (methodNode.name.equals("getCapability") || methodNode.name.equals("hasCapability")) {
+                            insertCapabilityHook(methodNode);
                         }
                     }
                     // go through every remaining method and generate a delegating override
-//                    livingBaseMethods.forEach((methodKey, methodInfo) -> createDelegationOverride(classNode, methodKey.name, methodKey.desc, methodInfo));
+                    livingBaseMethods.forEach((methodKey, methodInfo) -> createDelegationOverride(classNode, methodKey.name, methodKey.desc, methodInfo));
                 });
         }
         return basicClass;
     }
 
+    /**
+     * Inserts a set of instructions in a (has/get)Capability method to special case the possession capability
+     *
+     * @param methodNode the method in which the instructions should be inserted
+     */
+    private void insertCapabilityHook(MethodNode methodNode) {
+        InsnList preInstructions = new InsnList();
+        preInstructions.add(new VarInsnNode(Opcodes.ALOAD, 1));
+        preInstructions.add(new FieldInsnNode(
+                Opcodes.GETSTATIC,
+                "ladysnake/dissolution/core/DissolutionHooks",
+                "cap",
+                "Lnet/minecraftforge/common/capabilities/Capability;"
+        ));
+        LabelNode lbl = new LabelNode();
+        preInstructions.add(new JumpInsnNode(Opcodes.IF_ACMPNE, lbl));
+        preInstructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
+        preInstructions.add(new VarInsnNode(Opcodes.ALOAD, 1));
+        preInstructions.add(new VarInsnNode(Opcodes.ALOAD, 2));
+        preInstructions.add(new MethodInsnNode(
+                Opcodes.INVOKESPECIAL,
+                "net/minecraft/entity/EntityLivingBase",
+                methodNode.name,
+                methodNode.desc,
+                false
+        ));
+        preInstructions.add(new InsnNode(Type.getReturnType(methodNode.desc).getOpcode(Opcodes.IRETURN)));
+        preInstructions.add(lbl);
+        methodNode.instructions.insert(preInstructions);
+    }
+
+    /**
+     * Creates a method override from scratch, delegating the call if possible and calling super if not
+     *
+     * @param classNode  the class in which to add the method
+     * @param methodName the name of the method to override
+     * @param methodDesc the description of the method to override
+     * @param info       the additional information defining the method
+     */
     private void createDelegationOverride(ClassNode classNode, String methodName, String methodDesc, ASMUtil.MethodInfo info) {
         MethodNode methodNode = new MethodNode(info.access, methodName, methodDesc, info.signature, info.exceptions);
         if (info.abstr) throw new RuntimeException("Why do I have to generate an abstract method ?!");
@@ -67,13 +109,19 @@ public class DissolutionClassTransformer implements IClassTransformer {
         InsnList instructions = generateDelegationInsnList(methodName, methodDesc);
         // else call super
         instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
-        instructions.add(new InsnNode(Opcodes.POP));
-        instructions.add(new InsnNode(Opcodes.ACONST_NULL));
-//        generateCall(instructions, methodName, methodDesc, Opcodes.INVOKESPECIAL);
+        generateCall(instructions, methodName, methodDesc, Opcodes.INVOKESPECIAL);
+        instructions.add(new InsnNode(Type.getType(methodDesc).getReturnType().getOpcode(Opcodes.IRETURN)));
         methodNode.instructions.add(instructions);
         classNode.methods.add(methodNode);
     }
 
+    /**
+     * Generates the bytecode instructions to delegate a call to the possessed entity, if any
+     *
+     * @param methodName the name of the method for which to generate a delegating call
+     * @param methodDesc the description of the method for which to generate a delegating call
+     * @return an instruction list containing the generated instructions
+     */
     private InsnList generateDelegationInsnList(String methodName, String methodDesc) {
         InsnList instructions = new InsnList();
         instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // thisPlayer
@@ -82,7 +130,7 @@ public class DissolutionClassTransformer implements IClassTransformer {
                 Opcodes.INVOKESTATIC,
                 "ladysnake/dissolution/core/DissolutionHooks",
                 "getPossessedEntity",
-                "(Lnet/minecraft/entity/player/EntityPlayer;)Lnet/minecraft/entity/EntityLivingBase;",
+                "(Lnet/minecraft/entity/Entity;)Lnet/minecraft/entity/EntityLivingBase;",
                 false
         ));
         // store the result in a local variable
@@ -94,63 +142,30 @@ public class DissolutionClassTransformer implements IClassTransformer {
         instructions.add(new JumpInsnNode(Opcodes.IFNULL, lbl));
         // else, delegate the call to the possessed entity
         instructions.add(new VarInsnNode(Opcodes.ALOAD, storedRet));
-        generateCall(instructions, methodName, methodDesc, Opcodes.INVOKEDYNAMIC, storedRet);
-//        // and return immediately
-//        instructions.add(new InsnNode(Type.getType(methodDesc).getReturnType().getOpcode(Opcodes.IRETURN)));
+        generateCall(instructions, methodName, methodDesc, Opcodes.INVOKEVIRTUAL);
+        // and return immediately
+        instructions.add(new InsnNode(Type.getType(methodDesc).getReturnType().getOpcode(Opcodes.IRETURN)));
         instructions.add(lbl);
         return instructions;
     }
 
-    public static void dump(InsnList instructions) {
-        Iterator<AbstractInsnNode> iterator = instructions.iterator();
-        while (iterator.hasNext()) {
-            AbstractInsnNode node = iterator.next();
-            String s = node instanceof LabelNode ? "LABEL" : Printer.OPCODES[node.getOpcode()] + " ";
-            if (node instanceof VarInsnNode) s += ((VarInsnNode) node).var;
-            else if (node instanceof MethodInsnNode) s += ((MethodInsnNode) node).name + ((MethodInsnNode) node).desc;
-            System.out.println(s);
-        }
-    }
-
     /**
      * Generates the instructions to load method parameters. The callee should already be on the stack.
-     *  @param methodName the name of the method to call
+     *
+     * @param methodName the name of the method to call
      * @param methodDesc the description of the method to call
      * @param invokeCode the {@link Opcodes} that should be used when invoking the method
      */
-    private void generateCall(InsnList instructions, String methodName, String methodDesc, int invokeCode, int storedRet) {
+    private void generateCall(InsnList instructions, String methodName, String methodDesc, int invokeCode) {
         Type[] paramTypes = Type.getArgumentTypes(methodDesc);
         int paramIndex = 1;
         // add each additional parameter in order, starting from 1
         for (Type paramType : paramTypes) {
             int code = paramType.getOpcode(Opcodes.ILOAD);
-            for (int i = 0; i < paramType.getSize(); i++)
-                instructions.add(new VarInsnNode(code, paramIndex+i));
+            instructions.add(new VarInsnNode(code, paramIndex));
             paramIndex += paramType.getSize();
         }
-//        for (int i = paramTypes.length-1; i >= 0; i--) {
-//            Type type = paramTypes[i];
-
-//            instructions.add(new InsnNode(Opcodes.POP));
-//            instructions.add(new MethodInsnNode(
-//                    Opcodes.INVOKESTATIC,
-//                    "ladysnake/dissolution/core/DissolutionHooks",
-//                    "print",
-//                    "(" +(type.getDescriptor().charAt(0) == 'L' ? "Ljava/lang/Object;" : type.getDescriptor()) + ")V",
-//                    false
-//            ));
-//        }
-//        instructions.add(new MethodInsnNode(
-//                Opcodes.INVOKESTATIC,
-//                "ladysnake/dissolution/core/DissolutionHooks",
-//                "print",
-//                "(Ljava/lang/Object;)V",
-//                false
-//        ));
         instructions.add(new MethodInsnNode(invokeCode, "net/minecraft/entity/EntityLivingBase", methodName, methodDesc, false));
-        // if it returns something, remove
-        if (!Type.getReturnType(methodDesc).getDescriptor().equals("V"))
-            instructions.add(new InsnNode(Opcodes.POP));
     }
 
     /**
@@ -169,7 +184,8 @@ public class DissolutionClassTransformer implements IClassTransformer {
 
     /**
      * Transforms a class using the given transformer
-     * @param basicClass a byte array representing the class being transformed
+     *
+     * @param basicClass  a byte array representing the class being transformed
      * @param transformer a consumer taking a {@link ClassNode}
      * @return the class' bytecode after transformation
      */
@@ -180,13 +196,9 @@ public class DissolutionClassTransformer implements IClassTransformer {
 
         transformer.accept(classNode);
 
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+        ClassWriter writer = new SafeClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
         classNode.accept(writer);
 
         return writer.toByteArray();
-    }
-
-    public static boolean hook(EntityPlayer d) {
-        return d.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() instanceof ItemArmor;
     }
 }

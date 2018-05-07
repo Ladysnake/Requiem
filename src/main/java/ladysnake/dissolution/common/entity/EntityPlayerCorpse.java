@@ -13,8 +13,11 @@ import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
 import ladysnake.dissolution.common.registries.SoulStates;
+import ladysnake.dissolution.core.DissolutionHooks;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
@@ -30,6 +33,7 @@ import net.minecraft.server.management.UserListOpsEntry;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 
@@ -51,6 +55,16 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
         super(worldIn);
         inventory = new InventoryPlayerCorpse(this);
         this.setInert(true);
+    }
+
+    @Override
+    public void knockBack(Entity entityIn, float strength, double xRatio, double zRatio) {
+        EntityLivingBase possessed = DissolutionHooks.getPossessedEntity(this);
+        if (possessed != null) {
+            possessed.knockBack(entityIn, strength, xRatio, zRatio);
+            return;
+        }
+        super.knockBack(entityIn, strength, xRatio, zRatio);
     }
 
     @Override

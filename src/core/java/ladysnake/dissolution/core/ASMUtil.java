@@ -1,14 +1,42 @@
 package ladysnake.dissolution.core;
 
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.ParameterNode;
+import org.objectweb.asm.tree.*;
+import org.objectweb.asm.util.Printer;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ASMUtil {
+
+    /**
+     * Quick debug method to print an instruction list
+     *
+     * @param instructions the instructions to print
+     */
+    public static void dump(InsnList instructions) {
+        Iterator<AbstractInsnNode> iterator = instructions.iterator();
+        while (iterator.hasNext()) {
+            AbstractInsnNode node = iterator.next();
+            String s;
+            if (node instanceof LabelNode)
+                s = "LABEL";
+            else if (node instanceof LineNumberNode)
+                s = "LINE";
+            else if (node.getOpcode() >= 0)
+                s = Printer.OPCODES[node.getOpcode()];
+            else s = node.toString();
+            s += " ";
+            if (node instanceof VarInsnNode) s += ((VarInsnNode) node).var;
+            else if (node instanceof MethodInsnNode) s += ((MethodInsnNode) node).name + ((MethodInsnNode) node).desc;
+            else if (node instanceof JumpInsnNode) s += ((JumpInsnNode) node).label.getLabel().toString();
+            else if (node instanceof LabelNode) s += ((LabelNode) node).getLabel().toString();
+            else if (node instanceof LineNumberNode) s += ((LineNumberNode) node).line;
+            System.out.println(s);
+        }
+    }
 
     static class MethodKey {
         String name, desc;
