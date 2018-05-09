@@ -2,16 +2,12 @@ package ladysnake.dissolution.core;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
+import org.apache.logging.log4j.message.FormattedMessage;
+import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class DissolutionClassTransformer implements IClassTransformer {
@@ -19,14 +15,52 @@ public class DissolutionClassTransformer implements IClassTransformer {
 
     @Override
     public byte[] transform(String className, String transformedName, byte[] basicClass) {
+        // replace every direct access to entity fields by getters and setters
+        // TODO make it work
+//        basicClass = kotlinify(basicClass);
+
+        // create getters and setters for every public field
+        if (AddGetterClassAdapter.entityClasses.contains(className.replace('.', '/'))) {
+            basicClass = invokeCthulhu(basicClass, classNode -> {
+                for (FieldNode fieldNode : classNode.fields) {
+                    if ((fieldNode.access & Opcodes.ACC_PUBLIC) == Opcodes.ACC_PUBLIC) {
+                        MethodNode methodNode = new MethodNode(
+                                Opcodes.ACC_PUBLIC,
+                                "get" + fieldNode.name.substring(0,1).toUpperCase(Locale.ENGLISH) + fieldNode.name.substring(1) + 0,
+                                "()" + fieldNode.desc,
+                                fieldNode.signature,
+                                null
+                        );
+
+                        methodNode.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                        methodNode.instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, fieldNode.name, fieldNode.desc));
+                        methodNode.instructions.add(new InsnNode(Type.getType(fieldNode.desc).getOpcode(Opcodes.IRETURN)));
+                        classNode.methods.add(methodNode);
+                        methodNode = new MethodNode(
+                                Opcodes.ACC_PUBLIC,
+                                "set" + fieldNode.name.substring(0,1).toUpperCase(Locale.ENGLISH) + fieldNode.name.substring(1) + 0,
+                                "(" + fieldNode.desc + ")V",
+                                fieldNode.signature,
+                                null
+                        );
+                        methodNode.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                        methodNode.instructions.add(new VarInsnNode(Type.getType(fieldNode.desc).getOpcode(Opcodes.ILOAD), 1));
+                        methodNode.instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, fieldNode.name, fieldNode.desc));
+                        methodNode.instructions.add(new InsnNode(Opcodes.RETURN));
+                        System.out.println("Created getters and setters for " + fieldNode.name + fieldNode.desc + " in class " + transformedName);
+                        classNode.methods.add(methodNode);
+                    }
+                }
+            });
+        }
         switch (transformedName) {
             case "net.minecraft.entity.player.EntityPlayer":
-                try {
-                    // get every method from EntityLivingBase
-                    ClassReader reader = new ClassReader(Launch.classLoader.getClassBytes("net.minecraft.entity.EntityLivingBase"));
-                    ClassNode classNode = new ClassNode();
-                    reader.accept(classNode, 0);
-                    {
+                for (String clazz : new String[] {"net.minecraft.entity.Entity", "net.minecraft.entity.EntityLivingBase"}) {
+                    try {
+                        // get every method from the parent class
+                        ClassReader reader = new ClassReader(Launch.classLoader.getClassBytes(clazz));
+                        ClassNode classNode = new ClassNode();
+                        reader.accept(classNode, 0);
                         for (MethodNode methodNode : classNode.methods) {
                             // do not try to override a final method, methods that can't be called nor the constructor
                             if ((methodNode.access & (Opcodes.ACC_FINAL | Opcodes.ACC_STATIC | Opcodes.ACC_PRIVATE | Opcodes.ACC_PROTECTED)) == 0 &&
@@ -36,9 +70,9 @@ public class DissolutionClassTransformer implements IClassTransformer {
                                 livingBaseMethods.put(new ASMUtil.MethodKey(methodNode.name, methodNode.desc), info);
                             }
                         }
+                    } catch (IOException e) {
+                        DissolutionLoadingPlugin.LOGGER.error(new FormattedMessage("Error while reading {} methods !", clazz), e);
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
                 return invokeCthulhu(basicClass, classNode -> {
                     List<MethodNode> methods = classNode.methods;
@@ -182,6 +216,14 @@ public class DissolutionClassTransformer implements IClassTransformer {
         return paramIndex;
     }
 
+    private byte[] kotlinify(byte[] basicClass) {
+        ClassReader reader = new ClassReader(basicClass);
+        ClassVisitor writer = new SafeClassWriter(0);
+        ClassVisitor kotlinifier = new AddGetterClassAdapter(Opcodes.ASM5, writer);
+        reader.accept(kotlinifier, 0);
+        return ((SafeClassWriter) writer).toByteArray();
+    }
+
     /**
      * Transforms a class using the given transformer
      *
@@ -196,7 +238,7 @@ public class DissolutionClassTransformer implements IClassTransformer {
 
         transformer.accept(classNode);
 
-        ClassWriter writer = new SafeClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
         classNode.accept(writer);
 
         return writer.toByteArray();
