@@ -36,7 +36,7 @@ public class InteractEventsHandler {
             final Iterator<AxisAlignedBB> iterator = event.getCollisionBoxesList().iterator();
             while (iterator.hasNext())
                 if (iterator.next().getAverageEdgeLength() < Dissolution.config.ghost.maxThickness)
-                    iterator.remove();
+                iterator.remove();
         }
     }
 
@@ -68,33 +68,33 @@ public class InteractEventsHandler {
         }
     }
 
-    @SubscribeEvent
-    public void onItemUseStart(LivingEntityUseItemEvent.Start event) {
-        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
-        if (handler != null && handler.getPossessed() instanceof EntityLivingBase) {        // synchronizes item use between player and possessed entity
-            ((EntityLivingBase) handler.getPossessed()).setActiveHand(event.getEntityLiving().getHeldItemMainhand().equals(event.getItem()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
-        }
-    }
+//    @SubscribeEvent
+//    public void onItemUseStart(LivingEntityUseItemEvent.Start event) {
+//        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
+//        if (handler != null && handler.getPossessed() instanceof EntityLivingBase) {        // synchronizes item use between player and possessed entity
+//            ((EntityLivingBase) handler.getPossessed()).setActiveHand(event.getEntityLiving().getHeldItemMainhand().equals(event.getItem()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
+//        }
+//    }
 
-    @SubscribeEvent
-    public void onItemUseTick(LivingEntityUseItemEvent.Tick event) {
-        if (event.getDuration() <= 1) {            // prevent the player from finishing the item use if possessing an entity
-            final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
-            if (handler != null && handler.getPossessed() instanceof EntityLivingBase) {
-                event.getEntityLiving().resetActiveHand();
-                event.setCanceled(true);
-            }
-        }
-    }
+//    @SubscribeEvent
+//    public void onItemUseTick(LivingEntityUseItemEvent.Tick event) {
+//        if (event.getDuration() <= 1) {            // prevent the player from finishing the item use if possessing an entity
+//            final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
+//            if (handler != null && handler.getPossessed() instanceof EntityLivingBase) {
+//                event.getEntityLiving().resetActiveHand();
+//                event.setCanceled(true);
+//            }
+//        }
+//    }
 
-    @SubscribeEvent
-    public void onItemUseStop(LivingEntityUseItemEvent.Stop event) {
-        final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
-        if (handler != null && handler.getPossessed() instanceof EntityLivingBase) {
-            ((EntityLivingBase) handler.getPossessed()).stopActiveHand();
-            event.setCanceled(true);            // prevent the player from duplicating the action
-        }
-    }
+//    @SubscribeEvent
+//    public void onItemUseStop(LivingEntityUseItemEvent.Stop event) {
+//        final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
+//        if (handler != null && handler.getPossessed() instanceof EntityLivingBase) {
+//            ((EntityLivingBase) handler.getPossessed()).stopActiveHand();
+//            event.setCanceled(true);            // prevent the player from duplicating the action
+//        }
+//    }
 
     /**
      * Prevents a player from ending possession prematurely

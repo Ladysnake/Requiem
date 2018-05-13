@@ -19,6 +19,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -201,20 +202,20 @@ public class CapabilityIncorporealHandler {
             if (!this.isStrongSoul()) return false;
             if (possessable != null && !(possessable instanceof Entity))
                 throw new IllegalArgumentException("A player can only possess an entity.");
-            owner.clearActivePotions();
-            if (possessable == null) {
-                IPossessable currentHost = getPossessed();
-                if (currentHost != null && !currentHost.onPossessionStop(owner)) return false;
-                hostID = 0;
-                hostUUID = null;
-                owner.setInvisible(Dissolution.config.ghost.invisibleGhosts);
-                owner.dismountRidingEntity();
-            } else {
-                if (!possessable.onEntityPossessed(owner)) return false;
-                hostID = ((Entity) possessable).getEntityId();
-                hostUUID = ((Entity) possessable).getUniqueID();
-                owner.setInvisible(true);
-            }
+//            owner.clearActivePotions();
+//            if (possessable == null) {
+//                IPossessable currentHost = getPossessed();
+//                if (currentHost != null && !currentHost.onPossessionStop(owner)) return false;
+//                hostID = 0;
+//                hostUUID = null;
+//                owner.setInvisible(Dissolution.config.ghost.invisibleGhosts);
+//                owner.dismountRidingEntity();
+//            } else {
+//                if (!possessable.onEntityPossessed(owner)) return false;
+//                hostID = ((Entity) possessable).getEntityId();
+//                hostUUID = ((Entity) possessable).getUniqueID();
+//                owner.setInvisible(true);
+//            }
             if (!owner.world.isRemote) {
                 ((EntityPlayerMP) owner).connection.sendPacket(new SPacketCamera(possessable == null ? owner : (Entity) possessable));
                 PacketHandler.NET.sendToAllAround(new PossessionMessage(owner.getUniqueID(), hostID),
@@ -229,14 +230,12 @@ public class CapabilityIncorporealHandler {
                 return null;
             Entity host = this.owner.world.getEntityByID(hostID);
             if (host == null) {
-                List<Entity> list = owner.getEntityWorld().getEntitiesWithinAABB(Entity.class,
-                        new AxisAlignedBB(new BlockPos(owner)),
-                        e -> e != null && e.getUniqueID().equals(hostUUID));
-                if (!list.isEmpty()) {
-                    host = list.get(0);
-                    this.setPossessed((IPossessable) host);
+                if (owner.world instanceof WorldServer)
+                    host = ((WorldServer) owner.world).getEntityFromUuid(hostUUID);
+                if (host == null) {
+                    Dissolution.LOGGER.debug(String.format("%s: this player's possessed entity is nowhere to be found", owner));
                 } else {
-                    LogManager.getLogger().debug(String.format("%s: this player's possessed entity is nowhere to be found", owner));
+                    this.setPossessed((IPossessable) host);
                 }
             }
             return (IPossessable) host;

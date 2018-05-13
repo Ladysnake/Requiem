@@ -101,11 +101,14 @@ public class AddGetterClassAdapter extends ClassVisitor {
                                 "()" + desc,
                                 false
                         );
+                    } else {
+                        super.visitFieldInsn(opcode, owner, name, desc);
                     }
                 } catch (ExecutionException e) {
                     DissolutionLoadingPlugin.LOGGER.error(new FormattedMessage("Error while looking up whether {} is an entity subclass", owner), e);
                 }
             } else if (opcode == Opcodes.PUTFIELD && isPublicField(name, desc) && entityClasses.contains(owner)) {
+                System.out.println("Visiting " + name + desc + " in " + owner);
                 visitMethodInsn(
                         Opcodes.INVOKEVIRTUAL,
                         owner,

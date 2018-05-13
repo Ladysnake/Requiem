@@ -36,8 +36,8 @@ public class OverlaysRenderer {
             drawIncorporealOverlay(event.getResolution());
         if (player.world.getBlockState(player.getPosition().up()).getBlock() == ModFluids.MERCURY.fluidBlock())
             renderWaterOverlayTexture(event.getPartialTicks());
-        if (playerCorp.getPossessed() instanceof EntityLivingBase && ((EntityLivingBase)playerCorp.getPossessed()).isBurning())
-            this.renderFireInFirstPerson(event.getResolution());
+//        if (playerCorp.getPossessed() instanceof EntityLivingBase && ((EntityLivingBase)playerCorp.getPossessed()).isBurning())
+//            this.renderFireInFirstPerson(event.getResolution());
     }
 
     private void renderWaterOverlayTexture(float partialTicks) {

@@ -90,22 +90,22 @@ public class EventHandlerClient {
             refreshTimer = 0;
 
         // Convoluted way of displaying the health of the possessed entity
-        if (playerCorp.getPossessed() instanceof EntityLiving && ((EntityLiving) playerCorp.getPossessed()).getHealth() > 0) {
-            if (!wasRidingLastTick) {
-                prevHealth = player.getHealth();
-                IAttributeInstance maxHealth = player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
-                prevMaxHealth = maxHealth.getAttributeValue();
-                maxHealth.setBaseValue(playerCorp.getPossessed().getPurifiedHealth());
-//                        ((EntityLiving) player.getRidingEntity()).getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
-                wasRidingLastTick = true;
-            }
-            if (player.getHealth() != ((EntityLiving) player.getRidingEntity()).getHealth())
-                player.setHealth(((EntityLiving) player.getRidingEntity()).getHealth());
-        } else if (wasRidingLastTick) {
-            player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(prevMaxHealth);
-            player.setHealth(prevHealth);
-            wasRidingLastTick = false;
-        }
+//        if (playerCorp.getPossessed() instanceof EntityLiving && ((EntityLiving) playerCorp.getPossessed()).getHealth() > 0) {
+//            if (!wasRidingLastTick) {
+//                prevHealth = player.getHealth();
+//                IAttributeInstance maxHealth = player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
+//                prevMaxHealth = maxHealth.getAttributeValue();
+//                maxHealth.setBaseValue(playerCorp.getPossessed().getPurifiedHealth());
+////                        ((EntityLiving) player.getRidingEntity()).getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
+//                wasRidingLastTick = true;
+//            }
+//            if (player.getHealth() != ((EntityLiving) player.getRidingEntity()).getHealth())
+//                player.setHealth(((EntityLiving) player.getRidingEntity()).getHealth());
+//        } else if (wasRidingLastTick) {
+//            player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(prevMaxHealth);
+//            player.setHealth(prevHealth);
+//            wasRidingLastTick = false;
+//        }
     }
 
     @SubscribeEvent

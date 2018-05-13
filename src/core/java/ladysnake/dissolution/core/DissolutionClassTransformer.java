@@ -17,7 +17,7 @@ public class DissolutionClassTransformer implements IClassTransformer {
     public byte[] transform(String className, String transformedName, byte[] basicClass) {
         // replace every direct access to entity fields by getters and setters
         // TODO make it work
-//        basicClass = kotlinify(basicClass);
+        basicClass = kotlinify(basicClass);
 
         // create getters and setters for every public field
         if (AddGetterClassAdapter.entityClasses.contains(className.replace('.', '/'))) {

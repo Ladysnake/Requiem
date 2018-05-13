@@ -62,21 +62,21 @@ public class GuiIncorporealOverlay extends GuiIngame {
 
             if (this.mc.playerController.shouldDrawHUD() && this.mc.getRenderViewEntity() instanceof EntityPlayer && pl.getCorporealityStatus() == SoulStates.ECTOPLASM) {
                 this.drawCustomHealthBar(this.mc.player, event.getResolution(), 0);
-            } else if (this.mc.playerController.shouldDrawHUD()) {
-                IPossessable possessed = pl.getPossessed();
-                if (possessed instanceof EntityLivingBase && ((EntityLivingBase) possessed).getHealth() > 0) {
-                    int textureRow = 0;
-                    if (possessed instanceof EntityMinionPigZombie) textureRow = 1;
-                    else if (possessed instanceof EntityMinionZombie && ((EntityMinionZombie) possessed).isHusk())
-                        textureRow = 2;
-                    else if (possessed instanceof EntityMinionWitherSkeleton) textureRow = 4;
-                    else if (possessed instanceof EntityMinionStray) textureRow = 5;
-                    else if (possessed instanceof EntityMinionSkeleton) textureRow = 3;
-                    this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
-                    this.drawCustomHealthBar((EntityLivingBase) pl.getPossessed(), event.getResolution(), textureRow);
-                    this.mc.getTextureManager().bindTexture(GuiIngameForge.ICONS);
-                    this.renderHotbar(event.getResolution(), event.getPartialTicks());
-                }
+//            } else if (this.mc.playerController.shouldDrawHUD()) {
+//                IPossessable possessed = pl.getPossessed();
+//                if (possessed instanceof EntityLivingBase && ((EntityLivingBase) possessed).getHealth() > 0) {
+//                    int textureRow = 0;
+//                    if (possessed instanceof EntityMinionPigZombie) textureRow = 1;
+//                    else if (possessed instanceof EntityMinionZombie && ((EntityMinionZombie) possessed).isHusk())
+//                        textureRow = 2;
+//                    else if (possessed instanceof EntityMinionWitherSkeleton) textureRow = 4;
+//                    else if (possessed instanceof EntityMinionStray) textureRow = 5;
+//                    else if (possessed instanceof EntityMinionSkeleton) textureRow = 3;
+//                    this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
+//                    this.drawCustomHealthBar((EntityLivingBase) pl.getPossessed(), event.getResolution(), textureRow);
+//                    this.mc.getTextureManager().bindTexture(GuiIngameForge.ICONS);
+//                    this.renderHotbar(event.getResolution(), event.getPartialTicks());
+//                }
             } else if (Minecraft.getMinecraft().player.isCreative() && pl.getPossessed() != null)
                 this.renderHotbar(event.getResolution(), event.getPartialTicks());
         }
