@@ -1,4 +1,4 @@
-package ladysnake.dissolution.core.plugin;
+package ladysnake.dissolution.core.asm;
 
 import ladysnake.dissolution.core.DissolutionLoadingPlugin;
 import net.minecraft.launchwrapper.Launch;

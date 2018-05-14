@@ -82,6 +82,7 @@ public class DissolutionConfig {
         @Config.Comment("Any blocks having an average edge length below that value will let souls pass through")
         public double maxThickness = 0.9;
 
+        @RegExCheck("^/.+/$|^\\w+:\\w+$")
         @Config.Comment("A list of block IDs that ectoplasm can interact with. " +
                 "If the name begins and ends with a \'/\', it will be interpreted as a regular expression.")
         public String[] authorizedBlocks = new String[]{"minecraft:lever", "/minecraft:.*door/",

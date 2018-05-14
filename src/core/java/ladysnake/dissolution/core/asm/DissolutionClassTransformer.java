@@ -1,4 +1,4 @@
-package ladysnake.dissolution.core.plugin;
+package ladysnake.dissolution.core.asm;
 
 import ladysnake.dissolution.core.SafeClassWriter;
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -36,6 +36,7 @@ public class DissolutionClassTransformer implements IClassTransformer {
             });
         }
 
+        // there may be more classes statically affected in the future
         switch (transformedName) {
             case "net.minecraft.entity.player.EntityPlayer":
                 return invokeCthulhu(basicClass, classNode -> {

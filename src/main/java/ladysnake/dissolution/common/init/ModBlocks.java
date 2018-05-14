@@ -49,9 +49,9 @@ public final class ModBlocks {
     Map<String, Block> remaps = new HashMap<>();
 
     @Nonnull
-    @SuppressWarnings("unchecked")
     static <T extends Block> T name(T block, String name) {
-        return (T) block.setUnlocalizedName(name).setRegistryName(new ResourceLocation(Reference.MOD_ID, name));
+        block.setUnlocalizedName(name).setRegistryName(new ResourceLocation(Reference.MOD_ID, name));
+        return block;
     }
 
     @SubscribeEvent

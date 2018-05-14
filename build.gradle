@@ -66,6 +66,7 @@ repositories {
 }
 
 dependencies {
+    compile 'org.jetbrains:annotations:15.0'
     testCompile group: 'junit', name: 'junit', version: '4.12'
     deobfCompile "albedo:albedo:0.1.3"
     deobfCompile "com.azanor.baubles:Baubles:1.12-1.5.2"
@@ -95,11 +96,12 @@ task coreJar(type: Jar) {
     manifest {
         attributes([
                 'FMLCorePlugin' : 'ladysnake.dissolution.core.DissolutionLoadingPlugin',
-                'Maven-Artifact': "${project.group}:${project.archivesBaseName}-core:${project.version}",
+                'Maven-Artifact': "${project.group}:${project.archivesBaseName}-core:${project.core_version}",
                 'Timestamp'     : System.currentTimeMillis()
         ])
     }
-    classifier 'core'
+    archiveName = "${archivesBaseName}-${mc_version}-${core_version}.jar"
+    classifier = "core"
 }
 
 //Signs the coremod jar
@@ -116,7 +118,24 @@ task signCoreJar(type: SignJar, dependsOn: coreJar) {
 
 //Builds the main jar
 jar {
+    dependsOn coreJar
+    if (canJarBeSigned()) {
+        dependsOn signCoreJar //Sign core jar *before* including!
+    }
+
+    from(coreJar.archivePath.absolutePath) {
+        include '*'
+    }
+
+    manifest {
+        attributes([
+                'ContainedDeps' : coreJar.archivePath.name,
+                'Maven-Artifact': "${project.group}:${project.archivesBaseName}:${project.version}",
+                'Timestamp'     : System.currentTimeMillis()
+        ])
+    }
     archiveName = "${archivesBaseName}-${mc_version}-${mod_version}.jar"
+
     manifest {
         attributes 'FMLAT': 'dissolution_at.cfg'
     }

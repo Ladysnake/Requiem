@@ -1,4 +1,4 @@
-package ladysnake.dissolution.core.plugin;
+package ladysnake.dissolution.core.asm;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;

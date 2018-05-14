@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * A class that does mostly the same things as {@link net.minecraftforge.common.config.ConfigManager} but with a few tweaks
@@ -84,6 +85,10 @@ public class DissolutionConfigReader {
             Sync syncAnnotation = optionField.getAnnotation(Sync.class);
             if(syncAnnotation != null) {
                 DissolutionConfigManager.syncedProps.put(optionField.getName(), prop);
+            }
+            RegExCheck regExCheck = optionField.getAnnotation(RegExCheck.class);
+            if (regExCheck != null) {
+                prop.setValidationPattern(Pattern.compile(regExCheck.value()));
             }
             Config.Comment commentAnnotation = optionField.getAnnotation(Config.Comment.class);
             if (commentAnnotation != null)
