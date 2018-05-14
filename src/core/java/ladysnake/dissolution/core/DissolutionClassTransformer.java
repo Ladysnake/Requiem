@@ -2,6 +2,7 @@ package ladysnake.dissolution.core;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.message.FormattedMessage;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
@@ -13,67 +14,44 @@ import java.util.function.Consumer;
 public class DissolutionClassTransformer implements IClassTransformer {
     private final Map<ASMUtil.MethodKey, ASMUtil.MethodInfo> livingBaseMethods = new HashMap<>();
 
+    static {
+        AddGetterClassAdapter.AddGetterAdapter.init();
+    }
+
     @Override
     public byte[] transform(String className, String transformedName, byte[] basicClass) {
         // replace every direct access to entity fields by getters and setters
-        // TODO make it work
         basicClass = kotlinify(basicClass);
 
-        // create getters and setters for every public field
-        if (AddGetterClassAdapter.entityClasses.contains(className.replace('.', '/'))) {
+        // if the target is EntityPlayer or a parent class
+        String type = transformedName.replace('.', '/');
+        if (AddGetterClassAdapter.AddGetterAdapter.entityClasses.contains(type)) {
             basicClass = invokeCthulhu(basicClass, classNode -> {
-                for (FieldNode fieldNode : classNode.fields) {
-                    if ((fieldNode.access & Opcodes.ACC_PUBLIC) == Opcodes.ACC_PUBLIC) {
-                        MethodNode methodNode = new MethodNode(
-                                Opcodes.ACC_PUBLIC,
-                                "get" + fieldNode.name.substring(0,1).toUpperCase(Locale.ENGLISH) + fieldNode.name.substring(1) + 0,
-                                "()" + fieldNode.desc,
-                                fieldNode.signature,
-                                null
-                        );
-
-                        methodNode.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
-                        methodNode.instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, fieldNode.name, fieldNode.desc));
-                        methodNode.instructions.add(new InsnNode(Type.getType(fieldNode.desc).getOpcode(Opcodes.IRETURN)));
-                        classNode.methods.add(methodNode);
-                        methodNode = new MethodNode(
-                                Opcodes.ACC_PUBLIC,
-                                "set" + fieldNode.name.substring(0,1).toUpperCase(Locale.ENGLISH) + fieldNode.name.substring(1) + 0,
-                                "(" + fieldNode.desc + ")V",
-                                fieldNode.signature,
-                                null
-                        );
-                        methodNode.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
-                        methodNode.instructions.add(new VarInsnNode(Type.getType(fieldNode.desc).getOpcode(Opcodes.ILOAD), 1));
-                        methodNode.instructions.add(new FieldInsnNode(Opcodes.PUTFIELD, classNode.name, fieldNode.name, fieldNode.desc));
-                        methodNode.instructions.add(new InsnNode(Opcodes.RETURN));
-                        System.out.println("Created getters and setters for " + fieldNode.name + fieldNode.desc + " in class " + transformedName);
-                        classNode.methods.add(methodNode);
+                // generate getters and setters for every public field
+                for (FieldNode node : classNode.fields) {
+                    if ((node.access & Opcodes.ACC_PUBLIC) == Opcodes.ACC_PUBLIC) {
+                        Pair<String, String> names = AddGetterClassAdapter.AddGetterAdapter.gettersSettersNames.get(new ASMUtil.MethodKey(node.name, node.desc));
+                        if (names != null)
+                            AddGetterClassAdapter.generateGetterSetter(classNode, node, names.getLeft(), names.getRight());
+                    }
+                }
+                // search for methods that can be overridden in EntityLivingBase and Entity
+                if (!type.equals("net/minecraft/entity/player/EntityPlayer")) {
+                    for (MethodNode methodNode : classNode.methods) {
+                        // do not try to override a final method, methods that can't be called nor the constructor
+                        if ((methodNode.access & (Opcodes.ACC_FINAL | Opcodes.ACC_STATIC | Opcodes.ACC_PRIVATE | Opcodes.ACC_PROTECTED | Opcodes.ACC_ABSTRACT)) == 0 &&
+                                !methodNode.name.equals("<init>")) {
+                            // store the method information for use in EntityPlayer
+                            ASMUtil.MethodInfo info = new ASMUtil.MethodInfo(methodNode);
+                            livingBaseMethods.put(new ASMUtil.MethodKey(methodNode.name, methodNode.desc), info);
+                        }
                     }
                 }
             });
         }
+
         switch (transformedName) {
             case "net.minecraft.entity.player.EntityPlayer":
-                for (String clazz : new String[] {"net.minecraft.entity.Entity", "net.minecraft.entity.EntityLivingBase"}) {
-                    try {
-                        // get every method from the parent class
-                        ClassReader reader = new ClassReader(Launch.classLoader.getClassBytes(clazz));
-                        ClassNode classNode = new ClassNode();
-                        reader.accept(classNode, 0);
-                        for (MethodNode methodNode : classNode.methods) {
-                            // do not try to override a final method, methods that can't be called nor the constructor
-                            if ((methodNode.access & (Opcodes.ACC_FINAL | Opcodes.ACC_STATIC | Opcodes.ACC_PRIVATE | Opcodes.ACC_PROTECTED)) == 0 &&
-                                    !methodNode.name.equals("<init>")) {
-                                // store the method information for use in EntityPlayer
-                                ASMUtil.MethodInfo info = new ASMUtil.MethodInfo(methodNode);
-                                livingBaseMethods.put(new ASMUtil.MethodKey(methodNode.name, methodNode.desc), info);
-                            }
-                        }
-                    } catch (IOException e) {
-                        DissolutionLoadingPlugin.LOGGER.error(new FormattedMessage("Error while reading {} methods !", clazz), e);
-                    }
-                }
                 return invokeCthulhu(basicClass, classNode -> {
                     List<MethodNode> methods = classNode.methods;
                     for (MethodNode methodNode : methods) {

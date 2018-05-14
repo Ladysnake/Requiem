@@ -57,7 +57,6 @@ public class ASMUtil {
 
         @Override
         public int hashCode() {
-
             return Objects.hash(name, desc);
         }
     }
