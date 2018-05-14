@@ -51,20 +51,13 @@ public class InteractEventsHandler {
         event.setCanceled(true);
         if (handler.getCorporealityStatus().isIncorporeal() && event.getSide().isServer()
                 && event.getTarget() instanceof EntityLivingBase && !event.getTarget().getIsInvulnerable()) {
-            IPossessable host = AbstractMinion.createMinion((EntityLivingBase) event.getTarget());
-            if (host instanceof EntityLivingBase && host.canBePossessedBy(event.getEntityPlayer())) {
-                EntityLivingBase eHost = (EntityLivingBase) host;
-                if (((EntityLivingBase) event.getTarget()).getHeldItemMainhand().getItem() instanceof ItemBow)
-                    event.getEntityPlayer().addItemStackToInventory(new ItemStack(Items.ARROW, eHost.world.rand.nextInt(10) + 2));
-                DissolutionInventoryHelper.transferEquipment((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
-                if (host != event.getTarget()) {
-                    event.getTarget().setPosition(0, -100, 0);
-                    event.getTarget().world.spawnEntity(eHost);
-                    event.getTarget().world.removeEntity(event.getTarget());
-                }
-                handler.setPossessed(host);
-                event.setCancellationResult(EnumActionResult.SUCCESS);
-            }
+//            IPossessable host = AbstractMinion.createMinion((EntityLivingBase) event.getTarget());
+            EntityLivingBase eHost = (EntityLivingBase) event.getTarget();
+            if (((EntityLivingBase) event.getTarget()).getHeldItemMainhand().getItem() instanceof ItemBow)
+                event.getEntityPlayer().addItemStackToInventory(new ItemStack(Items.ARROW, eHost.world.rand.nextInt(10) + 2));
+//            DissolutionInventoryHelper.transferEquipment((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
+            handler.setPossessed(eHost);
+            event.setCancellationResult(EnumActionResult.SUCCESS);
         }
     }
 
@@ -103,15 +96,15 @@ public class InteractEventsHandler {
     public void onEntityMount(EntityMountEvent event) {
         IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
         if (!event.isMounting() && handler != null && handler.getCorporealityStatus().isIncorporeal()) {
-            if ((event.getEntity() instanceof EntityPlayer && ((EntityPlayer) event.getEntity()).isCreative()))
+//            if ((event.getEntity() instanceof EntityPlayer && ((EntityPlayer) event.getEntity()).isCreative()))
                 handler.setPossessed(null);
-            else {
-                if (event.getEntityBeingMounted() == handler.getPossessed() && !(handler.setPossessed(null))) {
-                    if (event.getEntity().isSneaking() && event.getEntity() instanceof EntityPlayer)
-                        PlayerTickHandler.sneakingPossessingPlayers.add((EntityPlayer) event.getEntity());
-                    event.setCanceled(true);
-                }
-            }
+//            else {
+//                if (event.getEntityBeingMounted() == handler.getPossessed() && !(handler.setPossessed(null))) {
+//                    if (event.getEntity().isSneaking() && event.getEntity() instanceof EntityPlayer)
+//                        PlayerTickHandler.sneakingPossessingPlayers.add((EntityPlayer) event.getEntity());
+//                    event.setCanceled(true);
+//                }
+//            }
         }
     }
 }

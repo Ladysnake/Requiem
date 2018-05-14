@@ -1,6 +1,7 @@
 package ladysnake.dissolution.api.corporeality;
 
 import ladysnake.dissolution.api.*;
+import net.minecraft.entity.EntityLivingBase;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
@@ -41,9 +42,9 @@ public interface IIncorporealHandler {
      * @return false if the change could not occur
      * @throws IllegalArgumentException if the possessable argument is not an entity
      */
-    boolean setPossessed(IPossessable possessable);
+    boolean setPossessed(EntityLivingBase possessable);
 
-    IPossessable getPossessed();
+    EntityLivingBase getPossessed();
 
     @Nonnull
     IDialogueStats getDialogueStats();

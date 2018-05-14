@@ -57,9 +57,9 @@ public class EntityFaerie extends EntityFleetingSoul {
     @Override
     public void onCollideWithPlayer(EntityPlayer entityIn) {
         if(!world.isRemote && !this.isTired()) {
-            IPossessable possessed = CapabilityIncorporealHandler.getHandler(entityIn).getPossessed();
-            if (possessed instanceof EntityLivingBase)
-                ((EntityLivingBase) possessed).addPotionEffect(new PotionEffect(ModPotions.PURIFICATION, 200, 1));
+            EntityLivingBase possessed = CapabilityIncorporealHandler.getHandler(entityIn).getPossessed();
+            if (possessed != null)
+                possessed.addPotionEffect(new PotionEffect(ModPotions.PURIFICATION, 200, 1));
             else
                 entityIn.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 200));
             this.setTired(true);

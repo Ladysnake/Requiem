@@ -156,11 +156,12 @@ public class EventHandlerCommon {
                 if (event.getSource().getTrueSource() == null || !DissolutionConfigManager.canEctoplasmBeAttackedBy(event.getSource().getTrueSource()))
                     event.setCanceled(!event.getSource().canHarmInCreative());
             }
-        } else {
-            IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getSource().getTrueSource());
-            if (handler != null && handler.getPossessed() != null)
-                if (handler.getPossessed().proxyAttack(event.getEntityLiving(), event.getSource(), event.getAmount()))
-                    event.setCanceled(true);
+//        } else {
+//            IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getSource().getTrueSource());
+//            if (handler != null && handler.getPossessed() != null) {
+//                if (handler.getPossessed().proxyAttack(event.getEntityLiving(), event.getSource(), event.getAmount()))
+//                    event.setCanceled(true);
+//            }
         }
     }
 
@@ -171,7 +172,7 @@ public class EventHandlerCommon {
             if (playerCorp.getPossessed() instanceof EntityLiving && !((EntityLiving) playerCorp.getPossessed()).isDead) {
                 if (event.getTarget() instanceof EntityLivingBase)
                     event.getEntityPlayer().getHeldItemMainhand().hitEntity((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
-                ((EntityLiving) playerCorp.getPossessed()).attackEntityAsMob(event.getTarget());
+                playerCorp.getPossessed().attackEntityAsMob(event.getTarget());
                 return;
             }
         }

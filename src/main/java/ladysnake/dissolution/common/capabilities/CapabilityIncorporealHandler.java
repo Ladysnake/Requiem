@@ -10,15 +10,12 @@ import ladysnake.dissolution.common.networking.PossessionMessage;
 import ladysnake.dissolution.common.registries.SoulStates;
 import ladysnake.dissolution.core.DissolutionHooks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.play.server.SPacketCamera;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -41,7 +38,6 @@ import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -198,26 +194,26 @@ public class CapabilityIncorporealHandler {
          * @return true if the operation succeeded
          */
         @Override
-        public boolean setPossessed(@Nullable IPossessable possessable) {
+        public boolean setPossessed(@Nullable EntityLivingBase possessable) {
             if (!this.isStrongSoul()) return false;
-            if (possessable != null && !(possessable instanceof Entity))
-                throw new IllegalArgumentException("A player can only possess an entity.");
+//            if (possessable != null && !(possessable instanceof Entity))
+//                throw new IllegalArgumentException("A player can only possess an entity.");
 //            owner.clearActivePotions();
-//            if (possessable == null) {
+            if (possessable == null) {
 //                IPossessable currentHost = getPossessed();
 //                if (currentHost != null && !currentHost.onPossessionStop(owner)) return false;
-//                hostID = 0;
-//                hostUUID = null;
+                hostID = 0;
+                hostUUID = null;
 //                owner.setInvisible(Dissolution.config.ghost.invisibleGhosts);
 //                owner.dismountRidingEntity();
-//            } else {
+            } else {
 //                if (!possessable.onEntityPossessed(owner)) return false;
-//                hostID = ((Entity) possessable).getEntityId();
-//                hostUUID = ((Entity) possessable).getUniqueID();
+                hostID = possessable.getEntityId();
+                hostUUID = possessable.getUniqueID();
 //                owner.setInvisible(true);
-//            }
+            }
             if (!owner.world.isRemote) {
-                ((EntityPlayerMP) owner).connection.sendPacket(new SPacketCamera(possessable == null ? owner : (Entity) possessable));
+//                ((EntityPlayerMP) owner).connection.sendPacket(new SPacketCamera(possessable == null ? owner : (Entity) possessable));
                 PacketHandler.NET.sendToAllAround(new PossessionMessage(owner.getUniqueID(), hostID),
                         new NetworkRegistry.TargetPoint(owner.dimension, owner.posX, owner.posY, owner.posZ, 100));
             }
@@ -225,7 +221,7 @@ public class CapabilityIncorporealHandler {
         }
 
         @Override
-        public IPossessable getPossessed() {
+        public EntityLivingBase getPossessed() {
             if (hostUUID == null || !this.isStrongSoul())
                 return null;
             Entity host = this.owner.world.getEntityByID(hostID);
@@ -233,12 +229,14 @@ public class CapabilityIncorporealHandler {
                 if (owner.world instanceof WorldServer)
                     host = ((WorldServer) owner.world).getEntityFromUuid(hostUUID);
                 if (host == null) {
-                    Dissolution.LOGGER.debug(String.format("%s: this player's possessed entity is nowhere to be found", owner));
+                    Dissolution.LOGGER.debug("{}: this player's possessed entity is nowhere to be found", owner);
+                } else if (!(host instanceof EntityLivingBase)) {
+                    Dissolution.LOGGER.warn("A possessed entity has been found for {} but it is of the wrong class ({})", owner.getName(), host.getClass());
                 } else {
-                    this.setPossessed((IPossessable) host);
+                    this.setPossessed((EntityLivingBase) host);
                 }
             }
-            return (IPossessable) host;
+            return host instanceof EntityLivingBase ? (EntityLivingBase) host : null;
         }
 
         @Nonnull
@@ -337,8 +335,8 @@ public class CapabilityIncorporealHandler {
             tag.setBoolean("strongSoul", instance.isStrongSoul());
             tag.setString("corporealityStatus", Objects.requireNonNull(instance.getCorporealityStatus().getRegistryName()).toString());
             tag.setString("lastDeath", instance.getDeathStats().getLastDeathMessage() == null || instance.getDeathStats().getLastDeathMessage().isEmpty() ? "This player has no recorded death" : instance.getDeathStats().getLastDeathMessage());
-            if (instance.getPossessed() instanceof Entity)
-                tag.setUniqueId("possessedEntity", ((Entity) instance.getPossessed()).getUniqueID());
+            if (instance.getPossessed() != null)
+                tag.setUniqueId("possessedEntity", instance.getPossessed().getUniqueID());
             tag.setTag("dialogueStats", instance.getDialogueStats().serializeNBT());
             tag.setTag("deathStats", instance.getDeathStats().serializeNBT());
             return tag;

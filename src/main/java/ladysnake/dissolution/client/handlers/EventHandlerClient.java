@@ -195,9 +195,9 @@ public class EventHandlerClient {
                 }
             }
         }
-        if (playerCorp.getPossessed() != null) {
-            playerCorp.getPossessed().possessTickClient();
-        }
+//        if (playerCorp.getPossessed() != null) {
+//            playerCorp.getPossessed().possessTickClient();
+//        }
     }
 
 //    private static RenderWillOWisp<EntityPlayer> renderSoul;
@@ -240,16 +240,16 @@ public class EventHandlerClient {
         if (handler.getCorporealityStatus().isIncorporeal()) {
             if (handler.getPossessed() == null || event.getItemStack().isEmpty())
                 event.setCanceled(true);
-            else if (handler.getPossessed() instanceof EntityLivingBase) {
-                EntityLivingBase possessed = (EntityLivingBase) CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player).getPossessed();
-                EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
-                float f1 = playerSP.prevRotationPitch + (playerSP.rotationPitch - playerSP.prevRotationPitch) * event.getPartialTicks();
-                float f2 = playerSP.prevRotationYaw + (playerSP.rotationYaw - playerSP.prevRotationYaw) * event.getPartialTicks();
-                float f3 = possessed.prevRotationPitch + (possessed.rotationPitch - possessed.prevRotationPitch) * event.getPartialTicks();
-                float f4 = possessed.prevRotationYaw + (possessed.rotationYaw - possessed.prevRotationYaw) * event.getPartialTicks();
-                rotateArmReverse(playerSP, possessed, f3, f4, event.getPartialTicks());
-                rotateAroundXAndYReverse(f1, f2, f3, f4);
-            }
+//            else if (handler.getPossessed() instanceof EntityLivingBase) {
+//                EntityLivingBase possessed = (EntityLivingBase) CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player).getPossessed();
+//                EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
+//                float f1 = playerSP.prevRotationPitch + (playerSP.rotationPitch - playerSP.prevRotationPitch) * event.getPartialTicks();
+//                float f2 = playerSP.prevRotationYaw + (playerSP.rotationYaw - playerSP.prevRotationYaw) * event.getPartialTicks();
+//                float f3 = possessed.prevRotationPitch + (possessed.rotationPitch - possessed.prevRotationPitch) * event.getPartialTicks();
+//                float f4 = possessed.prevRotationYaw + (possessed.rotationYaw - possessed.prevRotationYaw) * event.getPartialTicks();
+//                rotateArmReverse(playerSP, possessed, f3, f4, event.getPartialTicks());
+//                rotateAroundXAndYReverse(f1, f2, f3, f4);
+//            }
         }
     }
 
