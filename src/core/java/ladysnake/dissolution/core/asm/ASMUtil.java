@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ASMUtil {
+public final class ASMUtil {
 
     /**
      * Quick debug method to print an instruction list
@@ -64,6 +64,34 @@ public class ASMUtil {
         @Override
         public String toString() {
             return name + " " + desc;
+        }
+    }
+
+    static class GetterSetterPair {
+        String getter, setter;
+
+        GetterSetterPair(String getter, String setter) {
+            this.getter = getter;
+            this.setter = setter;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            MethodKey methodKey = (MethodKey) o;
+            return Objects.equals(getter, methodKey.name) &&
+                    Objects.equals(setter, methodKey.desc);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(getter, setter);
+        }
+
+        @Override
+        public String toString() {
+            return "get:" + getter + "; set:" + setter;
         }
     }
 

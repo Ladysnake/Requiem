@@ -2,7 +2,6 @@ package ladysnake.dissolution.core.asm;
 
 import ladysnake.dissolution.core.DissolutionLoadingPlugin;
 import net.minecraft.launchwrapper.Launch;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.message.FormattedMessage;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
@@ -41,7 +40,7 @@ public class AddGetterClassAdapter extends ClassVisitor {
                         // add the field name and description to the list of accesses to replace
                         AddGetterAdapter.gettersSettersNames.put(
                                 new ASMUtil.MethodKey(fieldNode.name, fieldNode.desc),
-                                Pair.of(getterBuilder.toString(), setterBuilder.toString())
+                                new ASMUtil.GetterSetterPair(getterBuilder.toString(), setterBuilder.toString())
                         );
                     }
                 }
@@ -66,13 +65,13 @@ public class AddGetterClassAdapter extends ClassVisitor {
     }
 
     static void generateGetterSetter(ClassNode classNode, FieldNode fieldNode) {
-        Pair<String, String> names = AddGetterClassAdapter.AddGetterAdapter.gettersSettersNames.get(new ASMUtil.MethodKey(fieldNode.name, fieldNode.desc));
+        ASMUtil.GetterSetterPair names = AddGetterClassAdapter.AddGetterAdapter.gettersSettersNames.get(new ASMUtil.MethodKey(fieldNode.name, fieldNode.desc));
         if (names == null) return;
 
         // generate a getter for the field
         MethodNode methodNode = new MethodNode(
                 Opcodes.ACC_PUBLIC,
-                names.getLeft(),
+                names.getter,
                 "()" + fieldNode.desc,
                 fieldNode.signature,
                 null
@@ -87,7 +86,7 @@ public class AddGetterClassAdapter extends ClassVisitor {
         if ((fieldNode.access & Opcodes.ACC_FINAL) == 0) {
             methodNode = new MethodNode(
                     Opcodes.ACC_PUBLIC,
-                    names.getRight(),
+                    names.setter,
                     "(" + fieldNode.desc + ")V",
                     fieldNode.signature,
                     null
@@ -122,7 +121,7 @@ public class AddGetterClassAdapter extends ClassVisitor {
 
     public static class AddGetterAdapter extends MethodVisitor {
         static final List<String> entityClasses = new ArrayList<>();
-        private static Map<ASMUtil.MethodKey, Pair<String, String>> gettersSettersNames = null;
+        private static Map<ASMUtil.MethodKey, ASMUtil.GetterSetterPair> gettersSettersNames = null;
         private static final ASMUtil.MethodKey mutableKey = new ASMUtil.MethodKey(null, null);
 
         AddGetterAdapter(final int api, final MethodVisitor mv) {
@@ -138,7 +137,7 @@ public class AddGetterClassAdapter extends ClassVisitor {
                 visitMethodInsn(
                         Opcodes.INVOKEVIRTUAL,
                         owner,
-                        gettersSettersNames.get(new ASMUtil.MethodKey(name, desc)).getLeft(),
+                        gettersSettersNames.get(new ASMUtil.MethodKey(name, desc)).getter,
                         "()" + desc,
                         false
                 );
@@ -146,7 +145,7 @@ public class AddGetterClassAdapter extends ClassVisitor {
                 visitMethodInsn(
                         Opcodes.INVOKEVIRTUAL,
                         owner,
-                        gettersSettersNames.get(new ASMUtil.MethodKey(name, desc)).getRight(),
+                        gettersSettersNames.get(new ASMUtil.MethodKey(name, desc)).setter,
                         "(" + desc + ")V",
                         false
                 );
