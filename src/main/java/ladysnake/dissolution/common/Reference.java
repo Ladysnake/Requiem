@@ -1,11 +1,17 @@
 package ladysnake.dissolution.common;
 
+import ladysnake.dissolution.core.DissolutionCore;
+
 public class Reference {
     public static final String MOD_ID = "dissolution";
     public static final String MOD_NAME = "Dissolution";
-    static final String VERSION = "0.6";
-    static final String MCVERSION = "[1.12]";
-    static final String DEPENDENCIES = "after:albedo;after:baubles;";
+    static final String VERSION = "@VERSION@";
+    static final String MCVERSION = "[1.12.2]";
+    static final String DEPENDENCIES =
+            "required-after:forge@[14.23.3.2665,);" +
+            "required-after:"+DissolutionCore.MOD_ID+"@"+DissolutionCore.VERSION+";" + // need the exact version of the plugin
+            "after:albedo;" +
+            "after:baubles;";
     public static final double CONFIG_VERSION = 3.1;
 
     static final String CLIENT_PROXY_CLASS = "ladysnake.dissolution.client.proxy.ClientProxy";

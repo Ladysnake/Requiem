@@ -1,21 +1,21 @@
-package ladysnake.dissolution.core;
+package ladysnake.dissolution.core.plugin;
 
+import ladysnake.dissolution.core.SafeClassWriter;
 import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraft.launchwrapper.Launch;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.message.FormattedMessage;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class DissolutionClassTransformer implements IClassTransformer {
     private final Map<ASMUtil.MethodKey, ASMUtil.MethodInfo> livingBaseMethods = new HashMap<>();
 
-    static {
-        AddGetterClassAdapter.AddGetterAdapter.init();
+    public DissolutionClassTransformer() {
+        super();
+        AddGetterClassAdapter.init(livingBaseMethods);
     }
 
     @Override
@@ -30,21 +30,7 @@ public class DissolutionClassTransformer implements IClassTransformer {
                 // generate getters and setters for every public field
                 for (FieldNode node : classNode.fields) {
                     if ((node.access & Opcodes.ACC_PUBLIC) == Opcodes.ACC_PUBLIC) {
-                        Pair<String, String> names = AddGetterClassAdapter.AddGetterAdapter.gettersSettersNames.get(new ASMUtil.MethodKey(node.name, node.desc));
-                        if (names != null)
-                            AddGetterClassAdapter.generateGetterSetter(classNode, node, names.getLeft(), names.getRight());
-                    }
-                }
-                // search for methods that can be overridden in EntityLivingBase and Entity
-                if (!type.equals("net/minecraft/entity/player/EntityPlayer")) {
-                    for (MethodNode methodNode : classNode.methods) {
-                        // do not try to override a final method, methods that can't be called nor the constructor
-                        if ((methodNode.access & (Opcodes.ACC_FINAL | Opcodes.ACC_STATIC | Opcodes.ACC_PRIVATE | Opcodes.ACC_PROTECTED | Opcodes.ACC_ABSTRACT)) == 0 &&
-                                !methodNode.name.equals("<init>")) {
-                            // store the method information for use in EntityPlayer
-                            ASMUtil.MethodInfo info = new ASMUtil.MethodInfo(methodNode);
-                            livingBaseMethods.put(new ASMUtil.MethodKey(methodNode.name, methodNode.desc), info);
-                        }
+                        AddGetterClassAdapter.generateGetterSetter(classNode, node);
                     }
                 }
             });
@@ -196,10 +182,10 @@ public class DissolutionClassTransformer implements IClassTransformer {
 
     private byte[] kotlinify(byte[] basicClass) {
         ClassReader reader = new ClassReader(basicClass);
-        ClassVisitor writer = new SafeClassWriter(0);
+        ClassWriter writer = new SafeClassWriter(0);
         ClassVisitor kotlinifier = new AddGetterClassAdapter(Opcodes.ASM5, writer);
         reader.accept(kotlinifier, 0);
-        return ((SafeClassWriter) writer).toByteArray();
+        return writer.toByteArray();
     }
 
     /**

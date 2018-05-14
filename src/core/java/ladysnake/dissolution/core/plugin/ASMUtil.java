@@ -1,9 +1,10 @@
-package ladysnake.dissolution.core;
+package ladysnake.dissolution.core.plugin;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.util.Printer;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -59,13 +60,17 @@ public class ASMUtil {
         public int hashCode() {
             return Objects.hash(name, desc);
         }
+
+        @Override
+        public String toString() {
+            return name + " " + desc;
+        }
     }
 
     /**
      * Immutable class storing a method's information
      */
     static class MethodInfo {
-        final int retCode;
         final int access;
         final String signature;
         final String[] exceptions;
@@ -74,7 +79,6 @@ public class ASMUtil {
 
         MethodInfo(MethodNode methodNode) {
             this.abstr = (methodNode.access & Opcodes.ACC_ABSTRACT) == Opcodes.ACC_ABSTRACT;
-            this.retCode = abstr ? Opcodes.RETURN : methodNode.instructions.getLast().getOpcode();
             this.access = methodNode.access;
             this.signature = methodNode.signature;
             this.exceptions = methodNode.exceptions == null ? null : methodNode.exceptions.toArray(new String[0]);
@@ -82,5 +86,15 @@ public class ASMUtil {
             this.params = methodNode.parameters == null ? null : methodNode.parameters.stream().map(p -> new ParameterNode(p.name, p.access)).collect(Collectors.toList());
         }
 
+        @Override
+        public String toString() {
+            return "MethodInfo{" +
+                    "access=" + access +
+                    ", signature='" + signature + '\'' +
+                    ", exceptions=" + Arrays.toString(exceptions) +
+                    ", params=" + params +
+                    ", abstr=" + abstr +
+                    '}';
+        }
     }
 }
