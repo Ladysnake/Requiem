@@ -51,6 +51,16 @@ public class DissolutionClassTransformer implements IClassTransformer {
         blacklist.add(new ASMUtil.MethodKey(name, desc));
         name = "getEntityId";   // workaround because the remapper does not work here for some reason
         blacklist.add(new ASMUtil.MethodKey(name, desc));
+        // applyEntityCollision
+        desc = "(Lnet/minecraft/entity/Entity;)V";
+        name = FMLDeobfuscatingRemapper.INSTANCE.mapMethodName(
+                "net.minecraft.entity.EntityPlayer",
+                "func_70108_f",
+                desc
+        );
+        blacklist.add(new ASMUtil.MethodKey(name, desc));
+        name = "applyEntityCollision";   // workaround because the remapper does not work here for some reason
+        blacklist.add(new ASMUtil.MethodKey(name, desc));
     }
 
     @Override
@@ -89,6 +99,34 @@ public class DissolutionClassTransformer implements IClassTransformer {
                         // special case capability methods to avoid recursive calls
                         if (methodNode.name.equals("getCapability") || methodNode.name.equals("hasCapability")) {
                             insertCapabilityHook(methodNode);
+                        }
+                        if ((methodNode.name.equals("isWearing") || methodNode.name.equals("func_175148_a")) && methodNode.desc.equals("(Lnet/minecraft/entity/player/EnumPlayerModelParts;)Z")) {
+                            for (int i = 0; i < methodNode.instructions.size(); i++) {
+                                AbstractInsnNode node = methodNode.instructions.get(i);
+                                if (node instanceof MethodInsnNode && ((MethodInsnNode) node).desc.equals("()Lnet/minecraft/network/datasync/EntityDataManager;") && ((MethodInsnNode) node).owner.equals("net/minecraft/entity/player/EntityPlayer")) {
+                                    ((MethodInsnNode) node).setOpcode(Opcodes.INVOKESPECIAL);
+                                    ((MethodInsnNode) node).owner = "net/minecraft/entity/EntityLivingBase";
+                                }
+                            }
+                        }
+                        // don't apply collisions at all if the player is possessing something
+                        if ((methodNode.name.equals("applyEntityCollision") || methodNode.name.equals("func_70108_f")) && methodNode.desc.equals("(Lnet/minecraft/entity/Entity;)V")) {
+                            InsnList instructions = new InsnList();
+                            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0)); // thisPlayer
+                            // get the possessed entity
+                            instructions.add(new MethodInsnNode(
+                                    Opcodes.INVOKESTATIC,
+                                    "ladysnake/dissolution/core/DissolutionHooks",
+                                    "getPossessedEntity",
+                                    "(Lnet/minecraft/entity/Entity;)Lnet/minecraft/entity/EntityLivingBase;",
+                                    false
+                            ));
+                            // If the result is null, execute the rest of the method normally
+                            LabelNode lbl = new LabelNode();
+                            instructions.add(new JumpInsnNode(Opcodes.IFNULL, lbl));
+                            instructions.add(new InsnNode(Opcodes.RETURN));
+                            instructions.add(lbl);
+                            methodNode.instructions.insert(instructions);
                         }
                     }
                     // go through every remaining method and generate a delegating override

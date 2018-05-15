@@ -1,14 +1,13 @@
 package ladysnake.dissolution.client.handlers;
 
+import ladysnake.dissolution.api.PlayerIncorporealEvent;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.client.particles.DissolutionParticleManager;
-import ladysnake.dissolution.client.renders.entities.RenderWillOWisp;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.BlockFluidMercury;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.api.PlayerIncorporealEvent;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PingMessage;
@@ -18,10 +17,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.RayTraceResult;
@@ -74,7 +70,7 @@ public class EventHandlerClient {
 
     @SubscribeEvent
     public static void onGameTick(TickEvent.ClientTickEvent event) {
-        final EntityPlayer player = Minecraft.getMinecraft().player;
+        final EntityPlayerSP player = Minecraft.getMinecraft().player;
         if (player == null || noServerInstall) return;
 
         DissolutionParticleManager.INSTANCE.updateParticles();
@@ -88,6 +84,9 @@ public class EventHandlerClient {
             PacketHandler.NET.sendToServer(msg);
         } else if (playerCorp.isSynced())
             refreshTimer = 0;
+        if (playerCorp.getPossessed() != null && event.phase == TickEvent.Phase.START) {
+            player.updateEntityActionState();
+        }
 
         // Convoluted way of displaying the health of the possessed entity
 //        if (playerCorp.getPossessed() instanceof EntityLiving && ((EntityLiving) playerCorp.getPossessed()).getHealth() > 0) {
@@ -194,9 +193,6 @@ public class EventHandlerClient {
                     }
                 }
             }
-        }
-        if (playerCorp.getPossessed() != null && event.phase == TickEvent.Phase.START) {
-            playerSP.updateEntityActionState();
         }
     }
 
