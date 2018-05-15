@@ -2,20 +2,55 @@ package ladysnake.dissolution.core.asm;
 
 import ladysnake.dissolution.core.SafeClassWriter;
 import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class DissolutionClassTransformer implements IClassTransformer {
     private final Map<ASMUtil.MethodKey, ASMUtil.MethodInfo> livingBaseMethods = new HashMap<>();
+    private final Set<String> noNullsFromDelegation = new HashSet<>();
+    private final Set<ASMUtil.MethodKey> blacklist = new HashSet<>();
+    private String getentityattribute;
 
     public DissolutionClassTransformer() {
         super();
         AddGetterClassAdapter.init(livingBaseMethods);
+        String desc;
+        String name;
+        // getEntityAttribute
+        desc = "(Lnet/minecraft/entity/ai/attributes/IAttribute;)Lnet/minecraft/entity/ai/attributes/IAttributeInstance;";
+        name = FMLDeobfuscatingRemapper.INSTANCE.mapMethodName(
+                "net/minecraft/entity/EntityLivingBase",
+                "func_110148_a",
+                desc
+        );
+        noNullsFromDelegation.add(name + desc);
+        getentityattribute = name + desc;
+        // getCapability
+        desc = "(Lnet/minecraftforge/common/capabilities/Capability;Lnet/minecraft/util/EnumFacing;)Ljava/lang/Object;";
+        name = "getCapability";
+        noNullsFromDelegation.add(name + desc);
+        // updateEntityActionState
+        desc = "()V";
+        name = FMLDeobfuscatingRemapper.INSTANCE.mapMethodName(
+                "net.minecraft.entity.player.EntityPlayer",
+                "func_70626_be",
+                desc
+        );
+        blacklist.add(new ASMUtil.MethodKey(name, desc));
+        // getEntityId
+        desc = "()I";
+        name = FMLDeobfuscatingRemapper.INSTANCE.mapMethodName(
+                "net.minecraft.entity.Entity",
+                "func_145782_y",
+                desc
+        );
+        blacklist.add(new ASMUtil.MethodKey(name, desc));
+        name = "getEntityId";   // workaround because the remapper does not work here for some reason
+        blacklist.add(new ASMUtil.MethodKey(name, desc));
     }
 
     @Override
@@ -45,8 +80,10 @@ public class DissolutionClassTransformer implements IClassTransformer {
                         ASMUtil.MethodKey key = new ASMUtil.MethodKey(methodNode.name, methodNode.desc);
                         ASMUtil.MethodInfo info = livingBaseMethods.remove(key);
                         // if the method overrides an EntityLivingBase method, inject a hook
-                        if (info != null) {
+                        if (info != null && !blacklist.contains(key)) {
                             methodNode.instructions.insert(generateDelegationInsnList(methodNode.name, methodNode.desc));
+                            if (noNullsFromDelegation.contains(methodNode.name + methodNode.desc))
+                                ASMUtil.dump(methodNode.instructions);
                         }
 
                         // special case capability methods to avoid recursive calls
@@ -55,7 +92,11 @@ public class DissolutionClassTransformer implements IClassTransformer {
                         }
                     }
                     // go through every remaining method and generate a delegating override
-                    livingBaseMethods.forEach((methodKey, methodInfo) -> createDelegationOverride(classNode, methodKey.name, methodKey.desc, methodInfo));
+                    livingBaseMethods.forEach((methodKey, methodInfo) -> {
+                        // do not override blacklisted methods
+                        if (!blacklist.contains(methodKey))
+                            createDelegationOverride(classNode, methodKey.name, methodKey.desc, methodInfo);
+                    });
                 });
         }
         return basicClass;
@@ -108,8 +149,29 @@ public class DissolutionClassTransformer implements IClassTransformer {
         InsnList instructions = generateDelegationInsnList(methodName, methodDesc);
         // else call super
         instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
-        generateCall(instructions, methodName, methodDesc, Opcodes.INVOKESPECIAL);
-        instructions.add(new InsnNode(Type.getType(methodDesc).getReturnType().getOpcode(Opcodes.IRETURN)));
+        // hardcode a way to get the player's own attributes
+        if (getentityattribute.equals(methodName + methodDesc)) {
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
+            instructions.add(new MethodInsnNode(
+                    Opcodes.INVOKESPECIAL,
+                    "net/minecraft/entity/EntityLivingBase",
+                    "getAttributeMap",
+                    "()Lnet/minecraft/entity/ai/attributes/AbstractAttributeMap;",
+                    false
+            ));
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, 1));
+            instructions.add(new MethodInsnNode(
+                    Opcodes.INVOKEVIRTUAL,
+                    "net/minecraft/entity/ai/attributes/AbstractAttributeMap",
+                    "getAttributeInstance",
+                    "(Lnet/minecraft/entity/ai/attributes/IAttribute;)Lnet/minecraft/entity/ai/attributes/IAttributeInstance;",
+                    false
+            ));
+            instructions.add(new InsnNode(Opcodes.ARETURN));
+        } else {
+            generateCall(instructions, methodName, methodDesc, Opcodes.INVOKESPECIAL);
+            instructions.add(new InsnNode(Type.getType(methodDesc).getReturnType().getOpcode(Opcodes.IRETURN)));
+        }
         methodNode.instructions.add(instructions);
         classNode.methods.add(methodNode);
     }
@@ -143,6 +205,14 @@ public class DissolutionClassTransformer implements IClassTransformer {
         instructions.add(new VarInsnNode(Opcodes.ALOAD, storedRet));
         generateCall(instructions, methodName, methodDesc, Opcodes.INVOKEVIRTUAL);
         // and return immediately
+        // except for some methods that need to call the player variant if the possessed returned null
+        if (noNullsFromDelegation.contains(methodName + methodDesc)) {
+            instructions.add(new VarInsnNode(Opcodes.ASTORE, storedRet));
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, storedRet));
+            // if the delegation returns null, jump to player code, otherwise load the value again for return
+            instructions.add(new JumpInsnNode(Opcodes.IFNULL, lbl));
+            instructions.add(new VarInsnNode(Opcodes.ALOAD, storedRet));
+        }
         instructions.add(new InsnNode(Type.getType(methodDesc).getReturnType().getOpcode(Opcodes.IRETURN)));
         instructions.add(lbl);
         return instructions;

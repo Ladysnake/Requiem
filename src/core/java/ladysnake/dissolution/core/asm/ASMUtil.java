@@ -114,6 +114,14 @@ public final class ASMUtil {
             this.params = methodNode.parameters == null ? null : methodNode.parameters.stream().map(p -> new ParameterNode(p.name, p.access)).collect(Collectors.toList());
         }
 
+        public MethodInfo(int access, String signature, String[] exceptions, List<ParameterNode> params, boolean abstr) {
+            this.access = access;
+            this.signature = signature;
+            this.exceptions = exceptions;
+            this.params = params;
+            this.abstr = abstr;
+        }
+
         @Override
         public String toString() {
             return "MethodInfo{" +

@@ -16,6 +16,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -214,8 +215,10 @@ public class CapabilityIncorporealHandler {
             }
             if (!owner.world.isRemote) {
 //                ((EntityPlayerMP) owner).connection.sendPacket(new SPacketCamera(possessable == null ? owner : (Entity) possessable));
-                PacketHandler.NET.sendToAllAround(new PossessionMessage(owner.getUniqueID(), hostID),
-                        new NetworkRegistry.TargetPoint(owner.dimension, owner.posX, owner.posY, owner.posZ, 100));
+                // avoid calling getPossessed here
+                Entity emission = possessable == null ? owner : possessable;
+                PacketHandler.NET.sendToAllAround(new PossessionMessage(DissolutionHooks.getUUIDDirect(owner), hostID),
+                        new NetworkRegistry.TargetPoint(emission.dimension, emission.posX, emission.posY, emission.posZ, 100));
             }
             return true;
         }
@@ -224,13 +227,16 @@ public class CapabilityIncorporealHandler {
         public EntityLivingBase getPossessed() {
             if (hostUUID == null || !this.isStrongSoul())
                 return null;
-            Entity host = this.owner.world.getEntityByID(hostID);
+            World world = DissolutionHooks.getWorldDirect(this.owner);
+            Entity host = world.getEntityByID(hostID);
             if (host == null) {
-                if (owner.world instanceof WorldServer)
-                    host = ((WorldServer) owner.world).getEntityFromUuid(hostUUID);
+                if (world instanceof WorldServer)
+                    host = ((WorldServer) world).getEntityFromUuid(hostUUID);
                 if (host == null) {
+                    setPossessed(null);
                     Dissolution.LOGGER.debug("{}: this player's possessed entity is nowhere to be found", owner);
                 } else if (!(host instanceof EntityLivingBase)) {
+                    setPossessed(null);
                     Dissolution.LOGGER.warn("A possessed entity has been found for {} but it is of the wrong class ({})", owner.getName(), host.getClass());
                 } else {
                     this.setPossessed((EntityLivingBase) host);

@@ -19,10 +19,10 @@ public class AddGetterClassAdapter extends ClassVisitor {
         if (AddGetterAdapter.gettersSettersNames != null) return;
 
         AddGetterAdapter.gettersSettersNames = new HashMap<>();
-        String clazz = "net/minecraft/entity/player/EntityPlayer";
+        String clazz = "net/minecraft/entity/EntityLivingBase";
         try {
             do {
-                // get every public field from the EntityPlayer class and its parents
+                // get every public field from the parents of EntityPlayer
                 final ClassReader reader = new ClassReader(Launch.classLoader.getClassBytes(clazz));
                 final ClassNode classNode = new ClassNode();
                 reader.accept(classNode, 0);
@@ -30,8 +30,8 @@ public class AddGetterClassAdapter extends ClassVisitor {
                     // if it is public and not static
                     if ((fieldNode.access & (Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC)) == Opcodes.ACC_PUBLIC) {
                         // create getter / setter names that do not collide with existing methods
-                        final StringBuilder setterBuilder = new StringBuilder("get").append(fieldNode.name.substring(0,1).toUpperCase(Locale.ENGLISH)).append(fieldNode.name.substring(1));
-                        final StringBuilder getterBuilder = new StringBuilder("set").append(fieldNode.name.substring(0,1).toUpperCase(Locale.ENGLISH)).append(fieldNode.name.substring(1));
+                        final StringBuilder getterBuilder = new StringBuilder("get").append(fieldNode.name.substring(0,1).toUpperCase(Locale.ENGLISH)).append(fieldNode.name.substring(1));
+                        final StringBuilder setterBuilder = new StringBuilder("set").append(fieldNode.name.substring(0,1).toUpperCase(Locale.ENGLISH)).append(fieldNode.name.substring(1));
                         do {
                             setterBuilder.insert(0, '_');
                             getterBuilder.insert(0, '_');
@@ -42,18 +42,18 @@ public class AddGetterClassAdapter extends ClassVisitor {
                                 new ASMUtil.MethodKey(fieldNode.name, fieldNode.desc),
                                 new ASMUtil.GetterSetterPair(getterBuilder.toString(), setterBuilder.toString())
                         );
+                        livingBaseMethods.put(new ASMUtil.MethodKey(getterBuilder.toString(), "()" + fieldNode.desc), new ASMUtil.MethodInfo(Opcodes.ACC_PUBLIC, null, null, null, false));
+                        livingBaseMethods.put(new ASMUtil.MethodKey(setterBuilder.toString(), "(" + fieldNode.desc + ")V"), new ASMUtil.MethodInfo(Opcodes.ACC_PUBLIC, null, null, null, false));
                     }
                 }
                 // search for methods that can be overridden in EntityLivingBase and Entity
-                if (!classNode.name.equals("net/minecraft/entity/player/EntityPlayer")) {
-                    for (MethodNode methodNode : classNode.methods) {
-                        // do not try to override a final method, methods that can't be called nor the constructor
-                        if ((methodNode.access & (Opcodes.ACC_FINAL | Opcodes.ACC_STATIC | Opcodes.ACC_PRIVATE | Opcodes.ACC_PROTECTED | Opcodes.ACC_ABSTRACT)) == 0 &&
-                                !methodNode.name.equals("<init>")) {
-                            // store the method information for use in EntityPlayer
-                            ASMUtil.MethodInfo info = new ASMUtil.MethodInfo(methodNode);
-                            livingBaseMethods.put(new ASMUtil.MethodKey(methodNode.name, methodNode.desc), info);
-                        }
+                for (MethodNode methodNode : classNode.methods) {
+                    // do not try to override a final method, methods that can't be called nor the constructor
+                    if ((methodNode.access & (Opcodes.ACC_FINAL | Opcodes.ACC_STATIC | Opcodes.ACC_PRIVATE | Opcodes.ACC_PROTECTED | Opcodes.ACC_ABSTRACT)) == 0 &&
+                            !methodNode.name.equals("<init>")) {
+                        // store the method information for use in EntityPlayer
+                        ASMUtil.MethodInfo info = new ASMUtil.MethodInfo(methodNode);
+                        livingBaseMethods.put(new ASMUtil.MethodKey(methodNode.name, methodNode.desc), info);
                     }
                 }
                 AddGetterAdapter.entityClasses.add(clazz);
@@ -69,13 +69,15 @@ public class AddGetterClassAdapter extends ClassVisitor {
         if (names == null) return;
 
         // generate a getter for the field
+        String desc = "()" + fieldNode.desc;
         MethodNode methodNode = new MethodNode(
                 Opcodes.ACC_PUBLIC,
                 names.getter,
-                "()" + fieldNode.desc,
+                desc,
                 fieldNode.signature,
                 null
         );
+
 
         methodNode.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
         methodNode.instructions.add(new FieldInsnNode(Opcodes.GETFIELD, classNode.name, fieldNode.name, fieldNode.desc));
@@ -83,11 +85,12 @@ public class AddGetterClassAdapter extends ClassVisitor {
         classNode.methods.add(methodNode);
 
         // generate a setter for the field
+        desc = "(" + fieldNode.desc + ")V";
         if ((fieldNode.access & Opcodes.ACC_FINAL) == 0) {
             methodNode = new MethodNode(
                     Opcodes.ACC_PUBLIC,
                     names.setter,
-                    "(" + fieldNode.desc + ")V",
+                    desc,
                     fieldNode.signature,
                     null
             );

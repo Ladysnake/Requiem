@@ -195,9 +195,9 @@ public class EventHandlerClient {
                 }
             }
         }
-//        if (playerCorp.getPossessed() != null) {
-//            playerCorp.getPossessed().possessTickClient();
-//        }
+        if (playerCorp.getPossessed() != null && event.phase == TickEvent.Phase.START) {
+            playerSP.updateEntityActionState();
+        }
     }
 
 //    private static RenderWillOWisp<EntityPlayer> renderSoul;

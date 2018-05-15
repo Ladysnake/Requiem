@@ -44,6 +44,10 @@ public interface IIncorporealHandler {
      */
     boolean setPossessed(EntityLivingBase possessable);
 
+    /**
+     * This method is called by every single method of EntityPlayer. It should be as efficient as possible
+     * and should not call any EntityPlayer method to avoid infinite recursion
+     */
     EntityLivingBase getPossessed();
 
     @Nonnull
