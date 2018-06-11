@@ -3,9 +3,6 @@ package ladysnake.dissolution.common.handlers;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.entity.minion.EntityPlayerCorpse;
-import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
-import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
 import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
@@ -17,7 +14,6 @@ import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -65,25 +61,25 @@ public class LivingDeathHandler {
                 p.getDisplayNameString() + event.getSource().getDeathMessage(p).getUnformattedComponentText());
         corp.getDeathStats().setDeathDimension(p.dimension);
 
-        if (!p.world.isRemote && Dissolution.config.respawn.spawnCorpses) {
-            final EntityPlayerCorpse body = new EntityPlayerCorpse(p.world);
-            body.setPosition(p.posX, p.posY, p.posZ);
-            body.setCustomNameTag(p.getName());
-            body.setDecompositionCountdown(EntityPlayerCorpse.MAX_DECAY_TIME);
-
-            if (Dissolution.config.respawn.bodiesHoldInventory) {
-                if (Dissolution.config.respawn.bodiesHoldInventory && !p.isSpectator() && !p.world.getGameRules().getBoolean("keepInventory")) {
-                    DissolutionInventoryHelper.transferEquipment(p, body);
-                    body.setInventory(new InventoryPlayerCorpse(p.inventory.mainInventory, body));
-                    p.inventory.clear();
-                }
-            }
-
-            body.onUpdate();
-
-            p.world.spawnEntity(body);
-            body.setPlayer(p.getUniqueID());
-        }
+//        if (!p.world.isRemote && Dissolution.config.respawn.spawnCorpses) {
+//            final EntityPlayerCorpse body = new EntityPlayerCorpse(p.world);
+//            body.setPosition(p.posX, p.posY, p.posZ);
+//            body.setCustomNameTag(p.getName());
+//            body.setDecompositionCountdown(EntityPlayerCorpse.MAX_DECAY_TIME);
+//
+//            if (Dissolution.config.respawn.bodiesHoldInventory) {
+//                if (Dissolution.config.respawn.bodiesHoldInventory && !p.isSpectator() && !p.world.getGameRules().getBoolean("keepInventory")) {
+//                    DissolutionInventoryHelper.transferEquipment(p, body);
+//                    body.setInventory(new InventoryPlayerCorpse(p.inventory.mainInventory, body));
+//                    p.inventory.clear();
+//                }
+//            }
+//
+//            body.onUpdate();
+//
+//            p.world.spawnEntity(body);
+//            body.setPlayer(p.getUniqueID());
+//        }
 
         if (Dissolution.config.respawn.skipDeathScreen) {
             if (!p.world.isRemote) {
@@ -92,10 +88,7 @@ public class LivingDeathHandler {
             corp.setCorporealityStatus(Dissolution.config.respawn.respawnCorporealityStatus.status);
             p.setHealth(20f);
             //noinspection ConstantConditions
-            if (p.getBedLocation() != null && !Dissolution.config.respawn.respawnInNether && Dissolution.config.respawn.wowLikeRespawn) {
-                BlockPos respawnLoc = p.getBedLocation();
-                p.setPosition(respawnLoc.getX(), respawnLoc.getY(), respawnLoc.getZ());
-            }
+            p.getBedLocation();
             if (Dissolution.config.respawn.respawnInNether && !p.world.isRemote) {
                 CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) p, Dissolution.config.respawn.respawnDimension);
             }

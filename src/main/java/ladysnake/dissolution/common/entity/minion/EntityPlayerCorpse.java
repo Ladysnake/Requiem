@@ -14,12 +14,10 @@ import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
 import ladysnake.dissolution.common.registries.SoulStates;
 import ladysnake.dissolution.core.DissolutionHooks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -70,7 +68,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
             return false;
         }
         final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
-        if (this.ticksExisted > 100 && (!this.isDecaying() || Dissolution.config.respawn.wowLikeRespawn)) {
+        if (this.ticksExisted > 100 && (!this.isDecaying())) {
             if (!world.isRemote) {
                 DissolutionInventoryHelper.transferEquipment(this, player);
                 this.onDeath(DamageSource.GENERIC);
@@ -96,7 +94,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
      * @return true if the entity meets all the requirement, or the config option is disabled
      */
     private static boolean canEntityAccess(EntityPlayerCorpse entityPlayerCorpse, Entity entity) {
-        if (Dissolution.config.entities.lockPlayerCorpses) {
+        if (true/*Dissolution.config.entities.lockPlayerCorpses*/) {
             if (entity == null) {
                 return false;
             }
@@ -121,25 +119,10 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 
     @Override
     public boolean isEntityInvulnerable(@Nonnull DamageSource source) {
-        if (Dissolution.config.entities.lockPlayerCorpses && this.isInert()) {
+        if (/*Dissolution.config.entities.lockPlayerCorpses &&*/ this.isInert()) {
             return source.canHarmInCreative() || canEntityAccess(this, source.getTrueSource());
         }
         return super.isEntityInvulnerable(source);
-    }
-
-    @Override
-    protected boolean isMobEligibleForAttention(EntityCreature other) {
-        return !Dissolution.config.entities.lockPlayerCorpses && other instanceof EntityZombie && super.isMobEligibleForAttention(other);
-    }
-
-    @Override
-    public boolean canBePossessedBy(EntityPlayer player) {
-        return this.hasLifeStone() && canEntityAccess(this, player) && super.canBePossessedBy(player);
-    }
-
-    @Override
-    public boolean onEntityPossessed(EntityPlayer player) {
-        return this.hasLifeStone() && super.onEntityPossessed(player);
     }
 
     @Override
@@ -156,7 +139,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
     }
 
     public boolean isDecaying() {
-        return getRemainingTicks() >= 0 && !this.hasLifeStone() && Dissolution.config.entities.bodiesDespawn;
+        return getRemainingTicks() >= 0 && !this.hasLifeStone()/* && Dissolution.config.entities.bodiesDespawn*/;
     }
 
     @Override

@@ -3,7 +3,6 @@ package ladysnake.dissolution.common.items;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
 import ladysnake.dissolution.common.registries.SoulStates;
@@ -15,7 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
@@ -72,14 +70,6 @@ public class ItemDebug extends Item implements ISoulInteractable {
                     fires.forEach(System.out::println);
                 }
                 break;
-            case 5: {
-                AbstractMinion minion =
-                        playerIn.world.findNearestEntityWithinAABB(AbstractMinion.class, new AxisAlignedBB(playerIn.getPosition()), null);
-                if (minion != null) {
-                    minion.onEntityPossessed(playerIn);
-                }
-                break;
-            }
             default:
                 break;
         }

@@ -3,9 +3,7 @@ package ladysnake.dissolution.common.entity.minion;
 import com.google.common.base.Optional;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.entity.PossessableEntityFactory;
-import ladysnake.dissolution.common.entity.ai.EntityAIInert;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -49,7 +47,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @SuppressWarnings({"Guava", "WeakerAccess"})
-public abstract class AbstractMinion extends EntityPossessable implements IRangedAttackMob, IEntityOwnable, IPossessable {
+public abstract class AbstractMinion extends EntityMob implements IRangedAttackMob, IEntityOwnable {
 
     protected static final float SIZE_X = 0.6F, SIZE_Y = 1.95F;
 
@@ -123,8 +121,6 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
     protected abstract void initEntityAI();
 
     protected void applyEntityAI() {
-        super.applyEntityAI();
-        this.tasks.addTask(99, aiDontDoShit = new EntityAIInert(false));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true) {
             @Override
             protected boolean isSuitableTarget(EntityLivingBase target, boolean includeInvincibles) {
@@ -132,7 +128,7 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
             }
         });
         this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityMob.class, 10, true, false,
-                e -> e != null && !DissolutionConfigManager.isEntityBlacklistedFromMinionAttacks(e)));
+                Objects::nonNull /* && !DissolutionConfigManager.isEntityBlacklistedFromMinionAttacks(e)*/));
     }
 
     @Override
@@ -324,11 +320,6 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
     }
 
     @Override
-    public boolean canBePossessedBy(EntityPlayer player) {
-        return this.getControllingPassenger() == player || this.getControllingPassenger() == null;
-    }
-
-    @Override
     protected void addPassenger(Entity passenger) {
         super.addPassenger(passenger);
     }
@@ -369,32 +360,6 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
             }
         } else {
             super.travel(strafe, vertical, forward);
-        }
-    }
-
-    @Nullable
-    public Entity getControllingPassenger() {
-        return this.getPassengers().stream().filter(e -> e.getUniqueID().equals(getPossessingEntityId())).findAny().orElse(null);
-    }
-
-    @Override
-    public boolean canBeSteered() {
-        return this.getControllingPassenger() instanceof EntityLivingBase;
-    }
-
-    @Override
-    public void updatePassenger(@Nonnull Entity passenger) {
-        super.updatePassenger(passenger);
-        if (passenger.getUniqueID().equals(this.getPossessingEntityId())) {
-            passenger.setPosition(this.posX, this.posY, this.posZ);
-            if (passenger instanceof EntityPlayer) {
-//                for (PotionEffect potionEffect : ((EntityPlayer) passenger).getActivePotionMap().values())
-//                    this.addPotionEffect(new PotionEffect(potionEffect));
-                ((EntityPlayer) passenger).clearActivePotions();
-                for (PotionEffect potionEffect : this.getActivePotionMap().values()) {
-                    ((EntityPlayer) passenger).addPotionEffect(new PotionEffect(potionEffect));
-                }
-            }
         }
     }
 

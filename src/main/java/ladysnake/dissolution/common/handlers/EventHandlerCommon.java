@@ -68,7 +68,7 @@ public class EventHandlerCommon {
             clone.getDialogueStats().deserializeNBT(corpse.getDialogueStats().serializeNBT());
             clone.setSynced(false);
 
-            if (clone.isStrongSoul() && !Dissolution.config.respawn.wowLikeRespawn) {
+            if (clone.isStrongSoul()) {
                 event.getEntityPlayer().experienceLevel = event.getOriginal().experienceLevel;
                 clone.getDeathStats().setDeathDimension(corpse.getDeathStats().getDeathDimension());
                 clone.getDeathStats().setDeathLocation(new BlockPos(event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ));
@@ -88,22 +88,20 @@ public class EventHandlerCommon {
             // changes the player's dimension if required by the config or if they died there
             if (Dissolution.config.respawn.respawnInNether) {
                 CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, Dissolution.config.respawn.respawnDimension);
-            } else if (!Dissolution.config.respawn.wowLikeRespawn && event.player.dimension != playerCorp.getDeathStats().getDeathDimension()) {
+            } else if (event.player.dimension != playerCorp.getDeathStats().getDeathDimension()) {
                 CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, playerCorp.getDeathStats().getDeathDimension());
             }
 
             // changes the player's position to where they died
-            if (!Dissolution.config.respawn.wowLikeRespawn) {
-                BlockPos deathPos = playerCorp.getDeathStats().getDeathLocation();
-                if (!event.player.world.isOutsideBuildHeight(deathPos) && event.player.world.isAirBlock(deathPos)) {
-                    ((EntityPlayerMP) event.player).connection.setPlayerLocation(deathPos.getX(), deathPos.getY(), deathPos.getZ(),
-                            event.player.rotationYaw, event.player.rotationPitch);
-                } else if (!event.player.world.isOutsideBuildHeight(deathPos)) {
-                    deathPos = getSafeSpawnLocation(event.player.world, deathPos);
-                    if (deathPos != null) {
-                        ((EntityPlayerMP) event.player).connection.setPlayerLocation(deathPos.getX(), deathPos.getY(),
-                                deathPos.getZ(), event.player.rotationYaw, event.player.rotationPitch);
-                    }
+            BlockPos deathPos = playerCorp.getDeathStats().getDeathLocation();
+            if (!event.player.world.isOutsideBuildHeight(deathPos) && event.player.world.isAirBlock(deathPos)) {
+                ((EntityPlayerMP) event.player).connection.setPlayerLocation(deathPos.getX(), deathPos.getY(), deathPos.getZ(),
+                        event.player.rotationYaw, event.player.rotationPitch);
+            } else if (!event.player.world.isOutsideBuildHeight(deathPos)) {
+                deathPos = getSafeSpawnLocation(event.player.world, deathPos);
+                if (deathPos != null) {
+                    ((EntityPlayerMP) event.player).connection.setPlayerLocation(deathPos.getX(), deathPos.getY(),
+                            deathPos.getZ(), event.player.rotationYaw, event.player.rotationPitch);
                 }
             }
             event.player.world.profiler.endSection();
@@ -156,7 +154,7 @@ public class EventHandlerCommon {
         if (event.getEntity() instanceof EntityPlayer && !event.getSource().canHarmInCreative()) {
             ICorporealityStatus status = CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity()).getCorporealityStatus();
             if (status.allowsInvulnerability()) {
-                if (event.getSource().getTrueSource() == null || !DissolutionConfigManager.canEctoplasmBeAttackedBy(event.getSource().getTrueSource())) {
+                if (event.getSource().getTrueSource() == null || DissolutionConfigManager.isEctoplasmImmuneTo(event.getSource().getTrueSource())) {
                     event.setCanceled(!event.getSource().canHarmInCreative());
                 }
             }
@@ -194,7 +192,7 @@ public class EventHandlerCommon {
     @SubscribeEvent
     public void onLivingSetAttackTarget(LivingSetAttackTargetEvent event) {
         CapabilityIncorporealHandler.getHandler(event.getTarget()).ifPresent(handler -> {
-            if (event.getEntity() instanceof EntityLiving && handler.getCorporealityStatus().isIncorporeal() && !DissolutionConfigManager.canEctoplasmBeAttackedBy(event.getEntity())) {
+            if (event.getEntity() instanceof EntityLiving && handler.getCorporealityStatus().isIncorporeal() && DissolutionConfigManager.isEctoplasmImmuneTo(event.getEntity())) {
                 ((EntityLiving) event.getEntity()).setAttackTarget(null);
             }
         });

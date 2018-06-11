@@ -6,13 +6,9 @@ public class DissolutionConfig {
 
     public Client client = new Client();
 
-    public Entities entities = new Entities();
-
     public Respawn respawn = new Respawn();
 
     public Ghost ghost = new Ghost();
-
-    public WorldGen worldGen = new WorldGen();
 
     @Config.RequiresWorldRestart
     @Config.Comment("If set to anything other than \"none\", will force a soul strength upon players and prevent the dialogue from appearing")
@@ -21,14 +17,6 @@ public class DissolutionConfig {
     @Config.Comment("Because some people need dialogue to be explicit")
     public boolean technicianDialogue = false;
 
-    public class Blocks {
-
-//		@Config.LangKey("config.dissolution.blocks.doSablePop")
-//		@Config.Comment("Whether machines should output items in world when there is no appropriate container available")
-//		public boolean doSablePop = true;
-
-    }
-
     public class Client {
 
         @Config.Comment("Whether this mod should use shaders as an attempt to make things prettier")
@@ -36,28 +24,15 @@ public class DissolutionConfig {
 
     }
 
-    public class Dialogues {
-        //		@Config.LangKey("config.dissolution.dialogues.broadcastPlayerDialogue")
+//    public class Dialogues {
+//        @Config.LangKey("config.dissolution.dialogues.broadcastPlayerDialogue")
 //		@Config.Comment("If set to true, every dialogue choice made by the player will be broadcasted to all other players")
 //		public boolean broadcastPlayerDialogue = false;
 //
 //		@Config.LangKey("config.dissolution.dialogues.broadcastMajorNPCDialogue")
 //		@Config.Comment("If set to true, dialogues emitted by global entities (gods) will be broadcasted to all players")
 //		public boolean broadcastMajorNPCDialogue = false;
-    }
-
-    public class Entities {
-
-        @Config.Comment("If set to false, Eye of the Undead's minions won't do kamikaze attacks on creepers")
-        public boolean minionsAttackCreepers = true;
-
-        @Config.Comment("If set to true, only the corpse's owner and admins will be able to interact with it")
-        public boolean lockPlayerCorpses = false;
-
-        @Config.Comment("If set to false, player bodies will not require any special circumstances to prevent decay")
-        public boolean bodiesDespawn = true;
-
-    }
+//    }
 
     public class Ghost {
 
@@ -90,14 +65,11 @@ public class DissolutionConfig {
 
     public class Respawn {
 
-        @Config.Comment("If set to true, a player corpse will be created each time a player dies")
-        public boolean spawnCorpses = false;
+//        @Config.Comment("If set to true, a player corpse will be created each time a player dies")
+//        public boolean spawnCorpses = false;
 
-        @Config.Comment("If set to true, the player will respawn as a ghost at their spawnpoint. They will then have the choice to go to 0,0 to respawn without stuff or to reach their corpse under 5 minutes.")
-        public boolean wowLikeRespawn = false;
-
-        @Config.Comment("Whether player corpses hold their owner's inventory upon death")
-        public boolean bodiesHoldInventory = true;
+        //        @Config.Comment("Whether player corpses hold their owner's inventory upon death")
+//        public boolean bodiesHoldInventory = true;
 
         @Config.Comment("Whether players should respawn in a specific dimension when they die")
         public boolean respawnInNether = false;
@@ -110,17 +82,6 @@ public class DissolutionConfig {
 
         @Config.Comment("Whether players should respawn instantly as souls without showing death screen (could mess with other mods)")
         public boolean skipDeathScreen = false;
-
-    }
-
-    public class WorldGen {
-
-        @Config.Comment("A Lament Stone has a 1 in N chances to spawn in a given chunk (the higher the number here, the less stones). -1 to disable.")
-        public int spawnLamentStonesFreq = 50;
-
-    }
-
-    public class Wip {
 
     }
 

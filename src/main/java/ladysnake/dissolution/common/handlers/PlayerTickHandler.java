@@ -8,14 +8,11 @@ import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.FoodStats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
@@ -34,10 +31,7 @@ public class PlayerTickHandler {
     static Set<EntityPlayer> sneakingPossessingPlayers = new HashSet<>();
 
     protected static final Random rand = new Random();
-    private static final int SPAWN_RADIUS_FROM_ORIGIN = 10;
     private static MethodHandle foodTimer, foodExhaustionLevel, flyToggleTimer;
-
-    private int ticksSpentNearSpawn = 0;
 
     static {
         try {
@@ -79,12 +73,6 @@ public class PlayerTickHandler {
 
                 if (event.side.isClient()) {
                     return;
-                }
-
-                // Makes the player tangible if he is near 0,0
-                if (event.player.getDistance(0, event.player.posY, 0) < SPAWN_RADIUS_FROM_ORIGIN
-                        && ++ticksSpentNearSpawn >= 100) {
-                    respawnPlayerOrigin(event.player);
                 }
 
                 // Randomly removes experience from the player
@@ -151,12 +139,6 @@ public class PlayerTickHandler {
             if (possessed instanceof EntityLiving) {
                 ((EntityLiving) possessed).cameraPitch = player.cameraPitch;
                 ((EntityLiving) possessed).randomYawVelocity = 0;
-//				possessed.moveRelative(player.moveStrafing, 0.5f, player.moveForward, 0.02f);
-//				float f1 = MathHelper.sin(player.rotationYaw * 0.017453292F);
-//	            float f2 = MathHelper.cos(player.rotationYaw * 0.017453292F);
-//	            BlockPos target = rayTrace(player).getBlockPos();
-//	            if(target != null)
-//					((EntityLiving)possessed).getNavigator().tryMoveToXYZ(target.getX(), target.getY(), target.getZ(), 1);
             }
         }
     }
@@ -168,30 +150,4 @@ public class PlayerTickHandler {
         return player.world.rayTraceBlocks(vec3d, vec3d2, false, false, true);
     }
 
-    /**
-     * Makes the player tangible and runs some logic specific to Origin respawn
-     */
-    private void respawnPlayerOrigin(EntityPlayer player) {
-        if (player.world.isRemote || !Dissolution.config.respawn.wowLikeRespawn) {
-            return;
-        }
-
-        CapabilityIncorporealHandler.getHandler(player).setCorporealityStatus(SoulStates.BODY);
-
-        ((WorldServer) player.world).spawnParticle(EnumParticleTypes.CLOUD, false,
-                player.posX + 0.5D, player.posY + 1.0D, player.posZ + 0.5D, 50, 0.3D, 0.3D,
-                0.3D, 0.01D);
-
-        if (player.dimension == -1 && Dissolution.config.respawn.respawnInNether) {
-            BlockPos spawnPos = player.getBedLocation(player.getSpawnDimension());
-            //noinspection ConstantConditions
-            if (spawnPos == null) {
-                spawnPos = player.world.getMinecraftServer().getWorld(0).getSpawnPoint();
-            }
-            player.setPosition(spawnPos.getX() / 8, spawnPos.getY() / 8, spawnPos.getZ() / 8);
-            CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) player,
-                    player.getSpawnDimension());
-        }
-        ticksSpentNearSpawn = 0;
-    }
 }

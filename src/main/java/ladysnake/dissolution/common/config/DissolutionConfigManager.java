@@ -29,9 +29,13 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public final class DissolutionConfigManager {
+
+    private static final Pattern WILDCARD_PATTERN = Pattern.compile("(.*?)\\*");
 
     public static Configuration config;
     private static ImmutableSet<Class<? extends EntityMob>> TARGET_BLACKLIST;
@@ -68,24 +72,24 @@ public final class DissolutionConfigManager {
         return false;
     }
 
-    public static boolean canEctoplasmBeAttackedBy(Entity entity) {
+    public static boolean isEctoplasmImmuneTo(Entity entity) {
         if (entity instanceof ISoulInteractable) {
-            return true;
+            return false;
         }
         if (GHOST_HUNTER_WHITELIST.isEmpty()) {
-            return false;
+            return true;
         }
         Class<? extends Entity> entityClass = entity.getClass();
         EntityEntry entityEntry = EntityRegistry.getEntry(entityClass);
         if(entityEntry == null || entityEntry.getRegistryName() == null) {
-            return false;
+            return true;
         }
         for(StringChecker checker : GHOST_HUNTER_WHITELIST) {
             if(checker.matches(entityEntry.getRegistryName().toString())) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     public static boolean canEctoplasmInteractWith(Item item) {
@@ -191,7 +195,7 @@ public final class DissolutionConfigManager {
     private static void buildMinionAttackBlacklist() {
         ImmutableSet.Builder<Class<? extends EntityMob>> builder = ImmutableSet.builder();
         builder.add(AbstractMinion.class);
-        if (!Dissolution.config.entities.minionsAttackCreepers) {
+        if (true/*!Dissolution.config.entities.minionsAttackCreepers*/) {
             builder.add(EntityCreeper.class);
         }
         TARGET_BLACKLIST = builder.build();
@@ -211,6 +215,18 @@ public final class DissolutionConfigManager {
             builder.add(StringChecker.from(blockName));
         }
         BLOCK_WHITELIST = builder.build();
+    }
+
+    public static Pattern wildcardToRegex(String wildcard) {
+        Matcher m = WILDCARD_PATTERN.matcher(wildcard);
+        String regex;
+        if (m.find()) {
+            regex = m.replaceAll("$1\\\\E\\\\w*\\\\Q");
+        } else {
+            regex = wildcard;
+        }
+        regex = "\\Q" + regex + "\\E";
+        return Pattern.compile(regex);
     }
 
     public enum FlightModes {

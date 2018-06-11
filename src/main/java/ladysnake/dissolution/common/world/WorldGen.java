@@ -1,7 +1,5 @@
 package ladysnake.dissolution.common.world;
 
-import ladysnake.dissolution.common.Dissolution;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
@@ -10,9 +8,6 @@ import net.minecraftforge.fml.common.IWorldGenerator;
 import java.util.Random;
 
 public class WorldGen implements IWorldGenerator {
-
-    //private WorldGenLakes mercuryLakesGenerator = new WorldGenLakes(ModFluids.MERCURY.fluidBlock());
-    private WorldGenLamentStones lamentStonesGenerator = new WorldGenLamentStones();
 
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
