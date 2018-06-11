@@ -80,7 +80,7 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
 
         if (deadGuy instanceof EntityMob) {
             Class<? extends EntityMob> clazz = ((EntityMob)deadGuy).getClass();
-            Class<? extends EntityMob> possessableClass = GenericMinionFactory.getPossessable(clazz);
+            Class<? extends EntityMob> possessableClass = PossessableEntityFactory.getPossessable(clazz);
             if (possessableClass != null) {
                 corpse = (EntityMob) EntityList.newEntity(possessableClass, deadGuy.world);
             }

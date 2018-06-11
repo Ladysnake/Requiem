@@ -6,6 +6,7 @@ import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIInert;
+import ladysnake.dissolution.common.entity.minion.PossessableEntityFactory;
 import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -47,6 +48,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * The template class for possessable entities. <br>
+ * Used in {@link PossessableEntityFactory} to generate possessable versions of any mob.
+ */
 public class EntityPossessableImpl extends EntityMob implements IPossessable {
     protected static final DataParameter<Optional<UUID>> POSSESSING_ENTITY_ID =
             EntityDataManager.createKey(EntityPossessableImpl.class, DataSerializers.OPTIONAL_UNIQUE_ID);
@@ -70,10 +75,9 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     public EntityPossessableImpl(World worldIn) {
         super(worldIn);
         Collections.addAll(this.equivalents, EntityPlayer.class, EntityPlayerMP.class);
-    }
-
-    protected void applyEntityAI() {
-        this.tasks.addTask(99, aiDontDoShit = new EntityAIInert(false));
+        if (worldIn != null && !worldIn.isRemote) {
+            this.tasks.addTask(99, aiDontDoShit = new EntityAIInert(false));
+        }
     }
 
     @Override

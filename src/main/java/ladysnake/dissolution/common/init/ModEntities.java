@@ -1,6 +1,5 @@
 package ladysnake.dissolution.common.init;
 
-import ladylib.LadyLib;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.client.renders.entities.RenderBrimstoneFire;
 import ladysnake.dissolution.client.renders.entities.RenderFaerie;
@@ -11,7 +10,7 @@ import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.entity.boss.EntityBrimstoneFire;
 import ladysnake.dissolution.common.entity.boss.EntityMawOfTheVoid;
-import ladysnake.dissolution.common.entity.minion.GenericMinionFactory;
+import ladysnake.dissolution.common.entity.minion.PossessableEntityFactory;
 import ladysnake.dissolution.common.entity.souls.EntityFaerie;
 import ladysnake.dissolution.common.entity.souls.EntityFaerieSpawner;
 import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
@@ -32,16 +31,21 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class ModEntities {
 
     private static int id = 0;
+    private static Field entityentry$factory;
+    private static Class<?> contructorFactoryClass;
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void registerPossessables(RegistryEvent.Register<EntityEntry> event) {
@@ -49,17 +53,15 @@ public class ModEntities {
             if (EntityMob.class.isAssignableFrom(entityEntry.getEntityClass()) && !IPossessable.class.isAssignableFrom(entityEntry.getEntityClass())) {
                 boolean flag = false;
                 try {
-                    Entity instance = entityEntry.newInstance(null);
+                    Entity instance = newInstance(entityEntry);
                     flag = instance != null && ((EntityMob)instance).isEntityUndead() && instance.isNonBoss();
-                } catch (Exception ignored) {
-                    // countless mobs will probably fail due to the null world, no need to log them outside of dev
-                    if (LadyLib.isDevEnv()) {
-                        Dissolution.LOGGER.warn("Could not check whether to create a possessable version for {}", entityEntry);
-                    }
+                } catch (Exception e) {
+                    // countless mobs will probably fail due to the null world, no need to spam the log with the stacktrace
+                    Dissolution.LOGGER.warn("Could not check whether to create a possessable version of {} ({})", entityEntry.getRegistryName(), e);
                 }
                 if (flag) {
                     @SuppressWarnings("unchecked") Class<? extends EntityMob> possessableClass =
-                            GenericMinionFactory.defineGenericMinion((Class)entityEntry.getEntityClass());
+                            PossessableEntityFactory.defineGenericMinion((Class)entityEntry.getEntityClass());
                     event.getRegistry().register(
                             EntityEntryBuilder.create()
                                     .entity(possessableClass)
@@ -71,6 +73,22 @@ public class ModEntities {
                 }
             }
         }
+    }
+
+    /**
+     * Just a workaround to suppress the exceptions that are normally caught by ConstructorFactory
+     */
+    private static Entity newInstance(EntityEntry entry) throws NoSuchFieldException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
+        if (entityentry$factory == null) {
+            entityentry$factory = EntityEntry.class.getDeclaredField("factory");
+            entityentry$factory.setAccessible(true);
+            contructorFactoryClass = Class.forName(EntityEntryBuilder.class.getName() + "$ConstructorFactory");
+        }
+        Class<?> factoryClass = entityentry$factory.get(entry).getClass();
+        if (contructorFactoryClass.isAssignableFrom(factoryClass)) {
+            return ReflectionHelper.findConstructor(entry.getEntityClass(), World.class).newInstance((Object) null);
+        }
+        return entry.newInstance(null);
     }
 
     @SubscribeEvent

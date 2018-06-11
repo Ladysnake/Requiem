@@ -12,12 +12,15 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GenericMinionFactory {
+public class PossessableEntityFactory {
     private static final ASMClassLoader LOADER = new ASMClassLoader();
+    // A cache containing every possessable entity type created by this factory
     private static final Map<Class<? extends EntityMob>, Class<? extends EntityMob>> POSSESSABLES = new HashMap<>();
 
     /**
-     * Creates a new class of possessable entity derived from the given base
+     * Creates a new class of {@link IPossessable possessable} entity derived from the given base.
+     * The new class will have the given base class as its superclass and implement {@link IPossessable}, using
+     * {@link EntityPossessableImpl} as a template
      */
     @SuppressWarnings("unchecked")
     public static <T extends EntityMob, P extends EntityMob & IPossessable> Class<P> defineGenericMinion(Class<T> baseEntityClass) {
@@ -41,6 +44,14 @@ public class GenericMinionFactory {
         });
     }
 
+    /**
+     * Gets the possessable type generated from the given <code>base</code> or <code>null</code> if it was never
+     * {@link #defineGenericMinion(Class) defined}.
+     * @param base the base entity class
+     * @param <T> the type of <code>base</code>
+     * @param <P> the type of the generated class, having <code>T</code> as parent and implementing {@link IPossessable}
+     * @return the generated possessable entity type
+     */
     @Nullable
     @SuppressWarnings("unchecked")
     public static <T extends EntityMob, P extends EntityMob & IPossessable> Class<P> getPossessable(Class<T> base) {
