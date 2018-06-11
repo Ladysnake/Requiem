@@ -61,9 +61,19 @@ public class ModEntities {
                     @SuppressWarnings("unchecked") Class<? extends EntityMob> possessableClass =
                             PossessableEntityFactory.defineGenericPossessable((Class)entityEntry.getEntityClass());
                     EntityRegistry.EntityRegistration info = EntityRegistry.instance().lookupModSpawn(entityEntry.getEntityClass(), true);
+                    int trackingRange, updateFrequency;
+                    boolean sendVelocityUpdates;
                     if (info == null) {
-                        Dissolution.LOGGER.warn("No entity registration found for {}", entityEntry.getRegistryName());
-                        continue;   // is this even possible ?
+                        if (entityEntry.getRegistryName().getResourceDomain().equals("minecraft")) {
+                            Dissolution.LOGGER.info("No entity registration found for {}, using default values", entityEntry.getRegistryName());
+                        }
+                        trackingRange = 64;
+                        updateFrequency = 1;
+                        sendVelocityUpdates = true;
+                    } else {
+                        trackingRange = info.getTrackingRange();
+                        updateFrequency = info.getUpdateFrequency();
+                        sendVelocityUpdates = info.sendsVelocityUpdates();
                     }
                     // register the new class with the same characteristics as the original
                     event.getRegistry().register(
@@ -71,7 +81,7 @@ public class ModEntities {
                                     .entity(possessableClass)
                                     .id(new ResourceLocation(Reference.MOD_ID, entityEntry.getRegistryName().getResourcePath() + "_possessable"), id++)
                                     .name(entityEntry.getName())
-                                    .tracker(info.getTrackingRange(), info.getUpdateFrequency(), info.sendsVelocityUpdates())
+                                    .tracker(trackingRange, updateFrequency, sendVelocityUpdates)
                                     .build()
                     );
                 }
