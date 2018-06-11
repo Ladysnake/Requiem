@@ -16,6 +16,8 @@ import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngame;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.EntityLivingBase;
@@ -136,17 +138,18 @@ public class EventHandlerClient {
     public static void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
         EntityPlayer player = Minecraft.getMinecraft().player;
         IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
-        if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && handler.getCorporealityStatus().isIncorporeal()) {
+        boolean show = !handler.getCorporealityStatus().isIncorporeal();
+        if (event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
 
             // Disables most gui renders
-            GuiIngameForge.renderFood = false;
-            GuiIngameForge.renderHotbar = player.isCreative() || handler.getPossessed() != null;
-            GuiIngameForge.renderHealthMount = false;
-            GuiIngameForge.renderArmor = handler.getPossessed() != null;
-            GuiIngameForge.renderAir = false;
+            GuiIngameForge.renderFood = show;
+            GuiIngameForge.renderHotbar = show || player.isCreative() || handler.getPossessed() != null;
+            GuiIngameForge.renderHealthMount = show;
+            GuiIngameForge.renderArmor = show || handler.getPossessed() != null;
+            GuiIngameForge.renderAir = show;
 
             // Prevents the display of the name of the selected ItemStack
-            if (!player.isCreative() && handler.getPossessed() == null) {
+            if (!show && !player.isCreative() && handler.getPossessed() == null) {
                 try {
                     highlightingItemStack.invoke(Minecraft.getMinecraft().ingameGUI, ItemStack.EMPTY);
                 } catch (Throwable throwable) {
