@@ -36,7 +36,9 @@ public class CommandDialogueSay extends CommandBase {
 
     @Override
     public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException {
-        if (args.length <= 0) throw new WrongUsageException(getUsage(sender));
+        if (args.length <= 0) {
+            throw new WrongUsageException(getUsage(sender));
+        }
         EntityPlayer player = getCommandSenderAsPlayer(sender);
         IDialogueStats dialogueStats = CapabilityIncorporealHandler.getHandler(player).getDialogueStats();
         try {

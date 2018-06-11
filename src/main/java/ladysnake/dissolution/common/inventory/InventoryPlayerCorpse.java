@@ -29,8 +29,9 @@ public class InventoryPlayerCorpse implements IInventory {
 
     public InventoryPlayerCorpse(NonNullList<ItemStack> inv, EntityPlayerCorpse corpse) {
         super();
-        for (int i = 0; i < inv.size(); i++)
+        for (int i = 0; i < inv.size(); i++) {
             this.mainInventory.set(i, inv.get(i));
+        }
         this.corpseEntity = corpse;
     }
 

@@ -25,7 +25,9 @@ public class EntityAIMinionAttack extends EntityAIAttackMelee {
     public void updateTask() {
         super.updateTask();
 
-        if (minion.getHeldItemMainhand().getItem() != Items.BOW) return;
+        if (minion.getHeldItemMainhand().getItem() != Items.BOW) {
+            return;
+        }
 
         EntityLivingBase entitylivingbase = this.minion.getAttackTarget();
 

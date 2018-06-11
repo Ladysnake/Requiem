@@ -70,8 +70,9 @@ public final class ModBlocks {
     }
 
     private void registerBlocks(IForgeRegistry<Block> blockRegistry, Block... blocks) {
-        for (Block b : blocks)
+        for (Block b : blocks) {
             registerBlock(blockRegistry, b);
+        }
     }
 
     private void registerBlock(IForgeRegistry<Block> blockRegistry, Block block) {
@@ -84,8 +85,9 @@ public final class ModBlocks {
         assert block.getRegistryName() != null;
         T item = blockItemFunction.apply(block);
         ModItems.allItems.add(item);
-        if (addToTab)
+        if (addToTab) {
             block.setCreativeTab(Dissolution.CREATIVE_TAB);
+        }
         return item;
     }
 
@@ -96,8 +98,9 @@ public final class ModBlocks {
 
         for (Mapping<Block> map : missingBlocks) {
             if (map.key.getResourceDomain().equals(Reference.MOD_ID)) {
-                if (remaps.get(map.key.getResourcePath()) != null)
+                if (remaps.get(map.key.getResourcePath()) != null) {
                     map.remap(remaps.get(map.key.getResourcePath()));
+                }
             }
         }
     }

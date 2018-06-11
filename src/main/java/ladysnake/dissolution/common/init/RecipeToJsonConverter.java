@@ -42,14 +42,17 @@ public class RecipeToJsonConverter {
         for (; i < components.length; i++) {
             Object o = components[i];
             if (o instanceof Character) {
-                if (curKey != null)
+                if (curKey != null) {
                     throw new IllegalArgumentException("Provided two char keys in a row");
+                }
                 curKey = (Character) o;
             } else {
-                if (curKey == null)
+                if (curKey == null) {
                     throw new IllegalArgumentException("Providing object without a char key");
-                if (o instanceof String)
+                }
+                if (o instanceof String) {
                     isOreDict = true;
+                }
                 key.put(Character.toString(curKey), serializeItem(o));
                 curKey = null;
             }
@@ -88,8 +91,9 @@ public class RecipeToJsonConverter {
         boolean isOreDict = false;
         List<Map<String, Object>> ingredients = new ArrayList<>();
         for (Object o : components) {
-            if (o instanceof String)
+            if (o instanceof String) {
                 isOreDict = true;
+            }
             ingredients.add(serializeItem(o));
         }
         json.put("ingredients", ingredients);

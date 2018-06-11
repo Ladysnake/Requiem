@@ -30,7 +30,7 @@ public class TileEntityMortar extends PowderContainer {
     }
 
     public void crush() {
-        if (!itemInventory.getStackInSlot(0).isEmpty())
+        if (!itemInventory.getStackInSlot(0).isEmpty()) {
             for (int i = 0; i < 10; i++) {
                 Vec3d vec3d = new Vec3d((world.rand.nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
                 double d0 = (-world.rand.nextFloat()) * 0.6D - 0.3D;
@@ -38,6 +38,7 @@ public class TileEntityMortar extends PowderContainer {
                 this.world.spawnParticle(EnumParticleTypes.ITEM_CRACK, vec3d1.x, vec3d1.y, vec3d1.z, vec3d.x, vec3d.y + 0.05D, vec3d.z,
                         Item.getIdFromItem(itemInventory.getStackInSlot(0).getItem()));
             }
+        }
         if (!world.isRemote && ++crushTime % 30 == 0) {
             ItemStack item = itemInventory.extractItem(0, 1, false);
             GenericStack<EnumPowderOres> powderStack = Arrays.stream(EnumPowderOres.values())
@@ -60,8 +61,9 @@ public class TileEntityMortar extends PowderContainer {
     @Nullable
     @Override
     public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-        if (capability == CapabilityGenericInventoryProvider.CAPABILITY_GENERIC)
+        if (capability == CapabilityGenericInventoryProvider.CAPABILITY_GENERIC) {
             return CapabilityGenericInventoryProvider.CAPABILITY_GENERIC.cast(inventoryProvider);
+        }
         return super.getCapability(capability, facing);
     }
 

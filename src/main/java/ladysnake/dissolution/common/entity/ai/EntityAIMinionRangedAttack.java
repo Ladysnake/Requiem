@@ -55,8 +55,9 @@ public class EntityAIMinionRangedAttack extends EntityAIBase {
      */
     public void startExecuting() {
         super.startExecuting();
-        if (this.entity instanceof EntityMinionSkeleton)
+        if (this.entity instanceof EntityMinionSkeleton) {
             this.entity.setSwingingArms(true);
+        }
     }
 
     /**
@@ -64,8 +65,9 @@ public class EntityAIMinionRangedAttack extends EntityAIBase {
      */
     public void resetTask() {
         super.resetTask();
-        if (this.entity instanceof EntityMinionSkeleton)
+        if (this.entity instanceof EntityMinionSkeleton) {
             this.entity.setSwingingArms(false);
+        }
         this.seeTime = 0;
         this.attackTime = -1;
         this.entity.resetActiveHand();

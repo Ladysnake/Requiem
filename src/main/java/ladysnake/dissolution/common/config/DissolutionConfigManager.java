@@ -56,25 +56,35 @@ public final class DissolutionConfigManager {
 
     @SuppressWarnings("ConstantConditions")
     public static boolean canEctoplasmInteractWith(Block block) {
-        if (block instanceof ISoulInteractable)
+        if (block instanceof ISoulInteractable) {
             return true;
+        }
         String name = block.getRegistryName().toString();
-        for (StringChecker checker : BLOCK_WHITELIST)
-            if (checker.matches(name))
+        for (StringChecker checker : BLOCK_WHITELIST) {
+            if (checker.matches(name)) {
                 return true;
+            }
+        }
         return false;
     }
 
     public static boolean canEctoplasmBeAttackedBy(Entity entity) {
-        if (entity instanceof ISoulInteractable)
+        if (entity instanceof ISoulInteractable) {
             return true;
-        if (GHOST_HUNTER_WHITELIST.isEmpty()) return false;
+        }
+        if (GHOST_HUNTER_WHITELIST.isEmpty()) {
+            return false;
+        }
         Class<? extends Entity> entityClass = entity.getClass();
         EntityEntry entityEntry = EntityRegistry.getEntry(entityClass);
-        if(entityEntry == null || entityEntry.getRegistryName() == null) return false;
-        for(StringChecker checker : GHOST_HUNTER_WHITELIST)
-            if(checker.matches(entityEntry.getRegistryName().toString()))
+        if(entityEntry == null || entityEntry.getRegistryName() == null) {
+            return false;
+        }
+        for(StringChecker checker : GHOST_HUNTER_WHITELIST) {
+            if(checker.matches(entityEntry.getRegistryName().toString())) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -152,10 +162,13 @@ public final class DissolutionConfigManager {
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         EntityPlayerMP playerMP = (EntityPlayerMP) event.player;
-        if(playerMP.mcServer.isSinglePlayer()) return;      // don't sync with yourself, silly
+        if(playerMP.mcServer.isSinglePlayer()) {
+            return;      // don't sync with yourself, silly
+        }
         Map<String, String> values = new HashMap<>();
-        for (Map.Entry<String, Property> entry : syncedProps.entrySet())
+        for (Map.Entry<String, Property> entry : syncedProps.entrySet()) {
             values.put(entry.getKey(), entry.getValue().getString());
+        }
         PacketHandler.NET.sendTo(new ConfigMessage(values), playerMP);
     }
 
@@ -178,22 +191,25 @@ public final class DissolutionConfigManager {
     private static void buildMinionAttackBlacklist() {
         ImmutableSet.Builder<Class<? extends EntityMob>> builder = ImmutableSet.builder();
         builder.add(AbstractMinion.class);
-        if (!Dissolution.config.entities.minionsAttackCreepers)
+        if (!Dissolution.config.entities.minionsAttackCreepers) {
             builder.add(EntityCreeper.class);
+        }
         TARGET_BLACKLIST = builder.build();
     }
 
     private static void buildEctoplasmAttackWhitelist() {
         ImmutableSet.Builder<StringChecker> builder = ImmutableSet.builder();
-        for (String entityName : Dissolution.config.ghost.authorizedEntities)
+        for (String entityName : Dissolution.config.ghost.authorizedEntities) {
             builder.add(StringChecker.from(entityName));
+        }
         GHOST_HUNTER_WHITELIST = builder.build();
     }
 
     private static void buildBlockWhitelist() {
         ImmutableSet.Builder<StringChecker> builder = ImmutableSet.builder();
-        for (String blockName : Dissolution.config.ghost.authorizedBlocks)
+        for (String blockName : Dissolution.config.ghost.authorizedBlocks) {
             builder.add(StringChecker.from(blockName));
+        }
         BLOCK_WHITELIST = builder.build();
     }
 

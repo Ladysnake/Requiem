@@ -34,8 +34,9 @@ public class BlockLamentStone extends Block {
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
             TileEntity tileEntity = worldIn.getTileEntity(pos);
-            if (tileEntity instanceof TileEntityLamentStone)
+            if (tileEntity instanceof TileEntityLamentStone) {
                 playerIn.displayGUIChest((TileEntityLamentStone) tileEntity);
+            }
         }
         return true;
     }

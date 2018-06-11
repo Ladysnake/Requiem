@@ -1,7 +1,6 @@
 package ladysnake.dissolution.common.tileentities;
 
 import ladysnake.dissolution.api.GenericStack;
-import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModFluids;
 import ladysnake.dissolution.common.registries.EnumPowderOres;
 import net.minecraft.block.material.Material;
@@ -58,8 +57,9 @@ public class TileEntityCrucible extends PowderContainer implements ITickable {
                         GenericStack<EnumPowderOres> powder = powderInventory.extract(1, null);
                         if (!powder.isEmpty()) {
                             ItemStack crystal = new ItemStack(powder.getType().getComponent());
-                            if (!world.isRemote)
+                            if (!world.isRemote) {
                                 world.spawnEntity(new EntityItem(world, pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5, crystal));
+                            }
 //                            itemInventory.insertItem(0, crystal, false);
                         }
                     }
@@ -72,9 +72,10 @@ public class TileEntityCrucible extends PowderContainer implements ITickable {
                     || state.getBlock() instanceof BlockFluidBase && ((BlockFluidBase) state.getBlock()).getFluid().getTemperature(world, pos.down()) > 400)) {
                 GenericStack<EnumPowderOres> cinnabarPowder = powderInventory.readContent(EnumPowderOres.CINNABAR);
                 if (evaporation) {
-                    if (Math.random() < 0.075f)
+                    if (Math.random() < 0.075f) {
                         world.spawnParticle(EnumParticleTypes.CLOUD, (double) pos.getX() + 0.5, (double) pos.getY() + 1.1,
                                 (double) pos.getZ() + 0.5, 0.0D, 0.3D, 0.0D);
+                    }
                     evaporationTimer -= 100;
                 }
                 if (!evaporation && !cinnabarPowder.isEmpty()) {
@@ -107,16 +108,18 @@ public class TileEntityCrucible extends PowderContainer implements ITickable {
     @Nullable
     @Override
     public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
+        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(fluidInventory);
+        }
         return super.getCapability(capability, facing);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        if (compound.hasKey("fluidInventory"))
+        if (compound.hasKey("fluidInventory")) {
             this.fluidInventory.readFromNBT(compound.getCompoundTag("fluidInventory"));
+        }
     }
 
     @Nonnull
@@ -151,8 +154,9 @@ public class TileEntityCrucible extends PowderContainer implements ITickable {
         @Override
         public int fillInternal(FluidStack resource, boolean doFill) {
             int ret = super.fillInternal(resource, doFill);
-            if (doFill)
+            if (doFill) {
                 markDirty();
+            }
             return ret;
         }
 

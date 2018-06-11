@@ -54,15 +54,19 @@ public class PlayerTickHandler {
 
     @SubscribeEvent
     public void onPlayerTick(PlayerTickEvent event) {
-        if (sneakingPossessingPlayers.remove(event.player))
+        if (sneakingPossessingPlayers.remove(event.player)) {
             event.player.setSneaking(true);
-        if (event.phase != TickEvent.Phase.END) return;
+        }
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.player);
         if (playerCorp.isStrongSoul()) {
             if (playerCorp.getCorporealityStatus().isIncorporeal()) {
                 if (!event.player.isCreative() &&
-                        playerCorp.getCorporealityStatus() == SoulStates.SOUL)
+                        playerCorp.getCorporealityStatus() == SoulStates.SOUL) {
                     handleSoulFlight(event.player);
+                }
 
                 handlePossessingTick(event.player);
 
@@ -73,8 +77,9 @@ public class PlayerTickHandler {
                     throwable.printStackTrace();
                 }
 
-                if (event.side.isClient())
+                if (event.side.isClient()) {
                     return;
+                }
 
                 // Makes the player tangible if he is near 0,0
                 if (event.player.getDistance(0, event.player.posY, 0) < SPAWN_RADIUS_FROM_ORIGIN
@@ -84,15 +89,17 @@ public class PlayerTickHandler {
 
                 // Randomly removes experience from the player
                 if (playerCorp.getCorporealityStatus() == SoulStates.SOUL) {
-                    if (event.player.experience > 0 && rand.nextBoolean())
+                    if (event.player.experience > 0 && rand.nextBoolean()) {
                         event.player.experience--;
-                    else if (rand.nextInt() % 300 == 0 && event.player.experienceLevel > 0)
+                    } else if (rand.nextInt() % 300 == 0 && event.player.experienceLevel > 0) {
                         event.player.addExperienceLevel(-1);
+                    }
                 }
             }
         }
-        if (event.side.isServer())
+        if (event.side.isServer()) {
             playerCorp.setSynced(true);
+        }
     }
 
     protected boolean hasRoomForPlayer(World worldIn, BlockPos pos) {
@@ -103,18 +110,22 @@ public class PlayerTickHandler {
      * Sets the player's motion and capabilities according to its soul status and the current configuration
      */
     private void handleSoulFlight(EntityPlayer player) {
-        if (player.getRidingEntity() != null) return;
+        if (player.getRidingEntity() != null) {
+            return;
+        }
 
         if (DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.SPECTATOR_FLIGHT)
-                || DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT))
+                || DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT)) {
             player.capabilities.isFlying = true;
+        }
         if (DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT)) {
             player.onGround = false;
         }
 //		if (DissolutionConfigManager.isFlightEnabled(FlightModes.SPECTATOR_FLIGHT)
 //				|| DissolutionConfigManager.isFlightEnabled(FlightModes.CREATIVE_FLIGHT))
-        if (!DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.NO_FLIGHT))
+        if (!DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.NO_FLIGHT)) {
             player.capabilities.allowFlying = true;
+        }
         if (DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT)) {
             try {
                 flyToggleTimer.invokeExact(player, 0);
@@ -161,8 +172,9 @@ public class PlayerTickHandler {
      * Makes the player tangible and runs some logic specific to Origin respawn
      */
     private void respawnPlayerOrigin(EntityPlayer player) {
-        if (player.world.isRemote || !Dissolution.config.respawn.wowLikeRespawn)
+        if (player.world.isRemote || !Dissolution.config.respawn.wowLikeRespawn) {
             return;
+        }
 
         CapabilityIncorporealHandler.getHandler(player).setCorporealityStatus(SoulStates.BODY);
 
@@ -173,8 +185,9 @@ public class PlayerTickHandler {
         if (player.dimension == -1 && Dissolution.config.respawn.respawnInNether) {
             BlockPos spawnPos = player.getBedLocation(player.getSpawnDimension());
             //noinspection ConstantConditions
-            if (spawnPos == null)
+            if (spawnPos == null) {
                 spawnPos = player.world.getMinecraftServer().getWorld(0).getSpawnPoint();
+            }
             player.setPosition(spawnPos.getX() / 8, spawnPos.getY() / 8, spawnPos.getZ() / 8);
             CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) player,
                     player.getSpawnDimension());

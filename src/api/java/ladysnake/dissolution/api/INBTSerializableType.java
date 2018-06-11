@@ -29,8 +29,9 @@ public interface INBTSerializableType<T> {
 
         @Override
         public void serialize(T value, NBTTagCompound compound) {
-            if (value != null)
+            if (value != null) {
                 compound.setString("type", value.name());
+            }
         }
 
         @Override

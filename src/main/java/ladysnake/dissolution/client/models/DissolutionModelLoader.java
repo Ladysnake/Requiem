@@ -69,13 +69,15 @@ public class DissolutionModelLoader {
      */
     public static void addModel(ResourceLocation modelLocation, ModelRotation... rotations) {
         INSTANCE.modelsLocation.computeIfAbsent(modelLocation, rl -> new HashSet<>()).add(ModelRotation.X0_Y0);
-        for (ModelRotation rot : rotations)
+        for (ModelRotation rot : rotations) {
             INSTANCE.modelsLocation.get(modelLocation).add(rot);
+        }
     }
 
     public static void addAllModels(ResourceLocation... locations) {
-        for (ResourceLocation loc : locations)
+        for (ResourceLocation loc : locations) {
             addModel(loc);
+        }
     }
 
     /**
@@ -170,8 +172,9 @@ public class DissolutionModelLoader {
     }
 
     private IBakedModel bakeModel(ModelBlock modelBlockIn, ModelRotation modelRotationIn) {
-        if (modelBlockIn == null)
+        if (modelBlockIn == null) {
             return null;
+        }
         TextureAtlasSprite textureatlassprite = this.sprites
                 .get(new ResourceLocation(modelBlockIn.resolveTextureName("particle")));
         SimpleBakedModel.Builder simpleBakedModel$builder = (new SimpleBakedModel.Builder(modelBlockIn,

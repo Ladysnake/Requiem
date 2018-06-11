@@ -1,7 +1,6 @@
 package ladysnake.dissolution.common.items;
 
 import ladysnake.dissolution.common.blocks.BlockSepulchre;
-import ladysnake.dissolution.common.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
@@ -53,8 +52,9 @@ public class ItemBurial extends Item {
                     boolean canEdit = player.canPlayerEdit(pos1, facing, itemstack);
                     boolean replaceable = state.getBlock().isReplaceable(worldIn, pos1);
                     boolean solidFloor = worldIn.getBlockState(pos1.down()).isOpaqueCube();
-                    if(!canEdit || !replaceable || !solidFloor)
+                    if(!canEdit || !replaceable || !solidFloor) {
                         return EnumActionResult.FAIL;
+                    }
                 }
             }
 
@@ -75,7 +75,9 @@ public class ItemBurial extends Item {
             // Then we actually place all the burial blocks
             for (i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
-                    if (i == 0 && j == 0) continue; // the center is already placed
+                    if (i == 0 && j == 0) {
+                        continue; // the center is already placed
+                    }
                     BlockPos pos1 = pos.add(i, 0, j);
                     prevState = worldIn.getBlockState(pos1);
                     worldIn.setBlockState(pos1, state, 10);

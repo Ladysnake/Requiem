@@ -41,8 +41,9 @@ public class DialogueStats implements IDialogueStats {
     public void updateDialogue(int choice) {
         if (hasBeenContacted && history.isEmpty()) {
             boolean strongSoul = choice == 0;
-            if (!strongSoul && capability.getCorporealityStatus().isIncorporeal())
+            if (!strongSoul && capability.getCorporealityStatus().isIncorporeal()) {
                 capability.setCorporealityStatus(SoulStates.BODY);
+            }
             capability.setStrongSoul(strongSoul);
             history.add(strongSoul ? "strong soul" : "weak soul");
             capability.getOwner().sendMessage(new TextComponentTranslation("dissolution.dialogues.choose_soul_strength").setStyle(new Style().setColor(TextFormatting.RED)));
@@ -53,11 +54,16 @@ public class DialogueStats implements IDialogueStats {
 
     protected void sendNextDialogue(String announcement, String npcLine, int choiceCount) {
         String[] choices = new String[choiceCount];
-        if (Dissolution.config.technicianDialogue) npcLine += ".explicit";
-        for (int i = 0; i < choiceCount; i++)
+        if (Dissolution.config.technicianDialogue) {
+            npcLine += ".explicit";
+        }
+        for (int i = 0; i < choiceCount; i++) {
             choices[i] = npcLine + ".choice_" + i;
+        }
         if (announcement != null) {
-            if (Dissolution.config.technicianDialogue) announcement += ".explicit";
+            if (Dissolution.config.technicianDialogue) {
+                announcement += ".explicit";
+            }
             ITextComponent headerComponent = new TextComponentTranslation(announcement);
             headerComponent.getStyle().setColor(TextFormatting.WHITE);
             headerComponent.getStyle().setItalic(true);
@@ -65,8 +71,9 @@ public class DialogueStats implements IDialogueStats {
         }
         ITextComponent npcComponent = new TextComponentTranslation(npcLine);
         npcComponent.getStyle().setColor(TextFormatting.RED);
-        for (ITextComponent chatMessage : generateDialogue(npcComponent, choices))
+        for (ITextComponent chatMessage : generateDialogue(npcComponent, choices)) {
             capability.getOwner().sendMessage(chatMessage);
+        }
     }
 
     protected static List<ITextComponent> generateDialogue(ITextComponent npcLine, String... choices) {
@@ -101,8 +108,9 @@ public class DialogueStats implements IDialogueStats {
         NBTTagCompound nbt = new NBTTagCompound();
         nbt.setBoolean("contacted", hasBeenContacted);
         NBTTagList nbtHistory = new NBTTagList();
-        for (String s : this.history)
+        for (String s : this.history) {
             nbtHistory.appendTag(new NBTTagString(s));
+        }
         nbt.setTag("history", nbtHistory);
         return nbt;
     }
@@ -111,7 +119,8 @@ public class DialogueStats implements IDialogueStats {
     public void deserializeNBT(NBTTagCompound nbt) {
         this.hasBeenContacted = nbt.getBoolean("contacted");
         NBTTagList nbtHistory = nbt.getTagList("history", 8);
-        for (NBTBase nbtBase : nbtHistory)
+        for (NBTBase nbtBase : nbtHistory) {
             history.add(((NBTTagString) nbtBase).getString());
+        }
     }
 }

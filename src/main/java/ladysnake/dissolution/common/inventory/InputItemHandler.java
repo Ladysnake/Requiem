@@ -21,8 +21,9 @@ public class InputItemHandler extends ItemStackHandler {
 
     public InputItemHandler(Block... whitelist) {
         this.whiteList = new HashSet<>();
-        for (Block b : whitelist)
+        for (Block b : whitelist) {
             this.whiteList.add(Item.getItemFromBlock(b));
+        }
     }
 
     public void addWhitelistedItem(Item item) {
@@ -36,8 +37,9 @@ public class InputItemHandler extends ItemStackHandler {
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-        if (whiteList.isEmpty() || whiteList.contains(stack.getItem()))
+        if (whiteList.isEmpty() || whiteList.contains(stack.getItem())) {
             stack = super.insertItem(slot, stack, simulate);
+        }
         return stack;
     }
 

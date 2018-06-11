@@ -52,8 +52,9 @@ public class EntityBrimstoneFire extends Entity {
     }
 
     public BlockPos getTarget() {
-        if (this.getDataManager().get(TARGET_FIRE).isPresent())
+        if (this.getDataManager().get(TARGET_FIRE).isPresent()) {
             return this.getDataManager().get(TARGET_FIRE).get();
+        }
         return BlockPos.ORIGIN;
     }
 

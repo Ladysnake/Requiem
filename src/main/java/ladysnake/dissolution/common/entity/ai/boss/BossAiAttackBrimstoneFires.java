@@ -58,8 +58,9 @@ public class BossAiAttackBrimstoneFires extends EntityAIBase {
                 fire.posX = this.attacker.posX + rand.nextGaussian() * 5;
                 fire.posY = this.attacker.posY + rand.nextGaussian() * 5;
                 fire.posZ = this.attacker.posZ + rand.nextGaussian() * 5;
-                if (!allFires.isEmpty())
+                if (!allFires.isEmpty()) {
                     allFires.get(allFires.size() - 1).setTarget(fire.getPosition());
+                }
                 this.attacker.world.spawnEntity(fire);
                 allFires.add(fire);
                 System.out.print(" : spawned fire");

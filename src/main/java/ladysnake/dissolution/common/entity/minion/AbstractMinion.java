@@ -1,26 +1,21 @@
 package ladysnake.dissolution.common.entity.minion;
 
 import com.google.common.base.Optional;
-import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
-import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.entity.EntityPossessable;
 import ladysnake.dissolution.common.entity.ai.EntityAIInert;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.monster.*;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -39,24 +34,19 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SPacketCamera;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.stats.StatList;
-import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.vector.Vector2f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Objects;
+import java.util.UUID;
 
 @SuppressWarnings({"Guava", "WeakerAccess"})
 public abstract class AbstractMinion extends EntityPossessable implements IRangedAttackMob, IEntityOwnable, IPossessable {
@@ -79,24 +69,37 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
 
     @Nullable
     public static IPossessable createMinion(EntityLivingBase deadGuy) {
-        if (deadGuy instanceof IPossessable)
+        if (deadGuy instanceof IPossessable) {
             return (IPossessable) deadGuy;
-        if (!deadGuy.isEntityUndead())
+        }
+        if (!deadGuy.isEntityUndead()) {
             return null;
+        }
 
-        AbstractMinion corpse = null;
-        if (deadGuy instanceof EntityPigZombie) {
-            corpse = new EntityMinionPigZombie(deadGuy.world, deadGuy.isChild());
-        } else if (deadGuy instanceof EntityZombie) {
-            corpse = new EntityMinionZombie(deadGuy.world, deadGuy instanceof EntityHusk, deadGuy.isChild());
-        } else if (deadGuy instanceof EntitySkeleton) {
-            corpse = new EntityMinionSkeleton(deadGuy.world);
-        } else if (deadGuy instanceof EntityStray) {
-            corpse = new EntityMinionStray(deadGuy.world);
-        } else if (deadGuy instanceof EntityWitherSkeleton) {
-            corpse = new EntityMinionWitherSkeleton(deadGuy.world);
-        } else if (deadGuy.isNonBoss() && deadGuy instanceof EntityMob)
-            corpse = new EntityGenericMinion(deadGuy.world, (EntityMob) deadGuy);
+        EntityMob corpse = null;
+
+        if (deadGuy instanceof EntityMob) {
+            Class<? extends EntityMob> clazz = ((EntityMob)deadGuy).getClass();
+            Class<? extends EntityMob> possessableClass = GenericMinionFactory.getPossessable(clazz);
+            if (possessableClass != null) {
+                corpse = (EntityMob) EntityList.newEntity(possessableClass, deadGuy.world);
+            }
+        }
+//        Class<? extends EntityLivingBase> clazz = deadGuy.getClass();
+//
+//        if (clazz == EntityPigZombie.class) {
+//            corpse = new EntityMinionPigZombie(deadGuy.world, deadGuy.isChild());
+//        } else if (clazz == EntityZombie.class) {
+//            corpse = new EntityMinionZombie(deadGuy.world, deadGuy instanceof EntityHusk, deadGuy.isChild());
+//        } else if (clazz == EntitySkeleton.class) {
+//            corpse = new EntityMinionSkeleton(deadGuy.world);
+//        } else if (clazz == EntityStray.class) {
+//            corpse = new EntityMinionStray(deadGuy.world);
+//        } else if (clazz == EntityWitherSkeleton.class) {
+//            corpse = new EntityMinionWitherSkeleton(deadGuy.world);
+//        } else if (deadGuy.isNonBoss() && deadGuy instanceof EntityMob) {
+//            corpse = new EntityGenericMinion(deadGuy.world, (EntityMob) deadGuy);
+//        }
 
         if (corpse != null) {
             for (IAttributeInstance attribute : deadGuy.getAttributeMap().getAllAttributes()) {
@@ -111,13 +114,14 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
                     corpseAttribute.applyModifier(modifier);
                 }
             }
-            for (PotionEffect potionEffect : deadGuy.getActivePotionEffects())
+            for (PotionEffect potionEffect : deadGuy.getActivePotionEffects()) {
                 corpse.addPotionEffect(new PotionEffect(potionEffect));
+            }
             corpse.setPositionAndRotation(deadGuy.posX, deadGuy.posY, deadGuy.posZ, deadGuy.rotationYaw, deadGuy.rotationPitch);
             corpse.onUpdate();
         }
 
-        return corpse;
+        return (IPossessable) corpse;
     }
 
     public AbstractMinion(World worldIn) {
@@ -143,7 +147,7 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
             }
         });
         this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityMob.class, 10, true, false,
-                e -> !DissolutionConfigManager.isEntityBlacklistedFromMinionAttacks(e)));
+                e -> e != null && !DissolutionConfigManager.isEntityBlacklistedFromMinionAttacks(e)));
     }
 
     @Override
@@ -168,6 +172,7 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
         return isInert() || super.isAIDisabled();
     }
 
+    // TODO make this clever
     @Override
     public boolean isPreventingPlayerRest(EntityPlayer playerIn) {
         return false;
@@ -210,15 +215,16 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
     protected EntityArrow getArrow(EntityTippedArrow baseArrow, float distanceFactor) {
         ItemStack itemstack = this.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND);
         baseArrow.setEnchantmentEffectsFromEntity(this, distanceFactor);
-        if (itemstack.getItem() == Items.TIPPED_ARROW)
+        if (itemstack.getItem() == Items.TIPPED_ARROW) {
             baseArrow.setPotionEffect(itemstack);
+        }
         return baseArrow;
     }
 
     @Override
     public void onLivingUpdate() {
         super.onLivingUpdate();
-        this.handleSunExposure();
+        this.handleSunExposition();
     }
 
     @Override
@@ -226,7 +232,7 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
         return (source.getTrueSource() == null && this.isInert() && !source.canHarmInCreative()) || super.isEntityInvulnerable(source);
     }
 
-    protected void handleSunExposure() {
+    protected void handleSunExposition() {
         if (this.world.isDaytime() && !this.world.isRemote
                 && this.world.canSeeSky(new BlockPos(this.posX, this.posY + (double) this.getEyeHeight(), this.posZ))
                 && !this.world.isRaining()) {
@@ -257,12 +263,15 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
         if (this.getActiveItemStack().getItem() instanceof ItemBow) {
             this.fireBow();
             this.resetActiveHand();
-        } else
+        } else {
             super.stopActiveHand();
+        }
     }
 
     protected void fireBow() {
-        if (!(this.getControllingPassenger() instanceof EntityPlayer)) return;
+        if (!(this.getControllingPassenger() instanceof EntityPlayer)) {
+            return;
+        }
         EntityPlayer entityPlayer = (EntityPlayer) this.getControllingPassenger();
         ItemStack bow = this.getActiveItemStack();
         boolean infiniteAmmo = entityPlayer.capabilities.isCreativeMode || EnchantmentHelper.getEnchantmentLevel(Enchantments.INFINITY, bow) > 0;
@@ -272,7 +281,9 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
 
         int i = Items.BOW.getMaxItemUseDuration(bow) - timeLeft;
         i = net.minecraftforge.event.ForgeEventFactory.onArrowLoose(bow, worldIn, entityPlayer, i, !ammoStack.isEmpty() || infiniteAmmo);
-        if (i < 0) return;
+        if (i < 0) {
+            return;
+        }
 
         if (!ammoStack.isEmpty() || infiniteAmmo) {
             if (ammoStack.isEmpty()) {
@@ -339,11 +350,11 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
 
     @Override
     protected void removePassenger(Entity passenger) {
-        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(passenger);
-        if (handler != null) {
-            if (!world.isRemote)
+        CapabilityIncorporealHandler.getHandler(passenger).ifPresent(handler -> {
+            if (!world.isRemote) {
                 ((EntityPlayerMP) passenger).connection.sendPacket(new SPacketCamera(passenger));
-        }
+            }
+        });
         super.removePassenger(passenger);
     }
 
@@ -378,7 +389,7 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
 
     @Nullable
     public Entity getControllingPassenger() {
-        return this.getPassengers().stream().filter(e -> e.getUniqueID().equals(getPossessingEntity())).findAny().orElse(null);
+        return this.getPassengers().stream().filter(e -> e.getUniqueID().equals(getPossessingEntityId())).findAny().orElse(null);
     }
 
     @Override
@@ -389,16 +400,15 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
     @Override
     public void updatePassenger(@Nonnull Entity passenger) {
         super.updatePassenger(passenger);
-        if (passenger.getUniqueID().equals(this.getPossessingEntity())) {
+        if (passenger.getUniqueID().equals(this.getPossessingEntityId())) {
             passenger.setPosition(this.posX, this.posY, this.posZ);
             if (passenger instanceof EntityPlayer) {
 //                for (PotionEffect potionEffect : ((EntityPlayer) passenger).getActivePotionMap().values())
 //                    this.addPotionEffect(new PotionEffect(potionEffect));
                 ((EntityPlayer) passenger).clearActivePotions();
-                for (PotionEffect potionEffect : this.getActivePotionMap().values())
+                for (PotionEffect potionEffect : this.getActivePotionMap().values()) {
                     ((EntityPlayer) passenger).addPotionEffect(new PotionEffect(potionEffect));
-                for (EntityEquipmentSlot slot : EntityEquipmentSlot.values())
-                    this.setItemStackToSlot(slot, ((EntityPlayer) passenger).getItemStackFromSlot(slot));
+                }
             }
         }
     }
@@ -407,10 +417,12 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
     public void onDeath(@Nonnull DamageSource cause) {
         if (this.getControllingPassenger() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) this.getControllingPassenger();
-            for (EntityEquipmentSlot slot : EntityEquipmentSlot.values())
+            for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
                 player.setItemStackToSlot(slot, ItemStack.EMPTY);
-            if (!world.isRemote)
+            }
+            if (!world.isRemote) {
                 player.inventory.dropAllItems();
+            }
             CapabilityIncorporealHandler.getHandler(player).setPossessed(null);
         }
         super.onDeath(cause);
@@ -446,8 +458,9 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
 
                     this.swapItem(player, entityequipmentslot, itemstack, hand);
                 }
-                if (entityequipmentslot == EntityEquipmentSlot.MAINHAND)
+                if (entityequipmentslot == EntityEquipmentSlot.MAINHAND) {
                     this.setCombatTask();
+                }
 
                 return EnumActionResult.SUCCESS;
             } else {
@@ -525,10 +538,11 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
 
     protected void setChildSize(boolean isChild) {
         float ratio = (isChild ? 0.5F : 1.0F);
-        if (isInert())
+        if (isInert()) {
             super.setSize(SIZE_Y * ratio, SIZE_X * ratio);
-        else
+        } else {
             super.setSize(SIZE_X * ratio, SIZE_Y * ratio);
+        }
     }
 
     public void notifyDataManagerChange(@Nonnull DataParameter<?> key) {
@@ -565,9 +579,11 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
 
         if (isCorpse)
             //noinspection SuspiciousNameCombination
+        {
             this.setSize(SIZE_Y, SIZE_X);
-        else
+        } else {
             this.setSize(SIZE_X, SIZE_Y);
+        }
     }
 
     /**
@@ -582,8 +598,9 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         compound.setBoolean("inert", this.isInert());
-        if (this.isChild())
+        if (this.isChild()) {
             compound.setBoolean("isBaby", true);
+        }
         compound.setByte("stoneHeart", this.getLifeStone());
         return compound;
     }

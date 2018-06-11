@@ -1,21 +1,26 @@
 package ladysnake.dissolution.common.init;
 
-import ladysnake.dissolution.client.models.entities.ModelMinionSkeleton;
-import ladysnake.dissolution.client.renders.entities.*;
+import ladylib.LadyLib;
+import ladysnake.dissolution.api.corporeality.IPossessable;
+import ladysnake.dissolution.client.renders.entities.RenderBrimstoneFire;
+import ladysnake.dissolution.client.renders.entities.RenderFaerie;
+import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
+import ladysnake.dissolution.client.renders.entities.RenderWillOWisp;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.entity.boss.EntityBrimstoneFire;
 import ladysnake.dissolution.common.entity.boss.EntityMawOfTheVoid;
-import ladysnake.dissolution.common.entity.minion.*;
+import ladysnake.dissolution.common.entity.minion.GenericMinionFactory;
 import ladysnake.dissolution.common.entity.souls.EntityFaerie;
 import ladysnake.dissolution.common.entity.souls.EntityFaerieSpawner;
 import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.common.entity.souls.EntitySoulSpawner;
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.model.ModelZombie;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -23,6 +28,7 @@ import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
@@ -37,15 +43,45 @@ public class ModEntities {
 
     private static int id = 0;
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void registerPossessables(RegistryEvent.Register<EntityEntry> event) {
+        for (EntityEntry entityEntry : event.getRegistry()) {
+            if (EntityMob.class.isAssignableFrom(entityEntry.getEntityClass()) && !IPossessable.class.isAssignableFrom(entityEntry.getEntityClass())) {
+                boolean flag = false;
+                try {
+                    Entity instance = entityEntry.newInstance(null);
+                    flag = instance != null && ((EntityMob)instance).isEntityUndead() && instance.isNonBoss();
+                } catch (Exception ignored) {
+                    // countless mobs will probably fail due to the null world, no need to log them outside of dev
+                    if (LadyLib.isDevEnv()) {
+                        Dissolution.LOGGER.warn("Could not check whether to create a possessable version for {}", entityEntry);
+                    }
+                }
+                if (flag) {
+                    @SuppressWarnings("unchecked") Class<? extends EntityMob> possessableClass =
+                            GenericMinionFactory.defineGenericMinion((Class)entityEntry.getEntityClass());
+                    event.getRegistry().register(
+                            EntityEntryBuilder.create()
+                                    .entity(possessableClass)
+                                    .id(new ResourceLocation(Reference.MOD_ID, entityEntry.getRegistryName().getResourcePath() + "_possessable"), id++)
+                                    .name(entityEntry.getName())
+                                    .tracker(64, 1, true)
+                                    .build()
+                    );
+                }
+            }
+        }
+    }
+
     @SubscribeEvent
     public static void register(RegistryEvent.Register<EntityEntry> event) {
         IForgeRegistry<EntityEntry> reg = event.getRegistry();
-        registerEntity(reg, EntityMinionZombie::new, "minion_zombie", 64, true);
-        registerEntity(reg, EntityMinionPigZombie::new, "minion_pig_zombie", 64, true);
-        registerEntity(reg, EntityMinionSkeleton::new, "minion_skeleton", 64, true);
-        registerEntity(reg, EntityMinionStray::new, "minion_stray", 64, true);
-        registerEntity(reg, EntityMinionWitherSkeleton::new, "minion_wither_skeleton", 64, true);
-        registerEntity(reg, EntityGenericMinion::new, "generic_minion", 64, true);
+//        registerEntity(reg, EntityMinionZombie::new, "minion_zombie", 64, true);
+//        registerEntity(reg, EntityMinionPigZombie::new, "minion_pig_zombie", 64, true);
+//        registerEntity(reg, EntityMinionSkeleton::new, "minion_skeleton", 64, true);
+//        registerEntity(reg, EntityMinionStray::new, "minion_stray", 64, true);
+//        registerEntity(reg, EntityMinionWitherSkeleton::new, "minion_wither_skeleton", 64, true);
+//        registerEntity(reg, EntityGenericMinion::new, "generic_minion", 64, true);
         registerEntity(reg, EntityPlayerCorpse::new, "player_corpse", 64, true);
 //        registerEntity(reg, EntityMawOfTheVoid::new, "maw_of_the_void", 64, true);
 //        registerEntity(reg, EntityBrimstoneFire::new, "brimstone_fire", 32, false);
@@ -79,12 +115,12 @@ public class ModEntities {
 
     @SideOnly(Side.CLIENT)
     public static void registerRenders() {
-        RenderingRegistry.registerEntityRenderingHandler(EntityMinionZombie.class, RenderMinionZombie::new);
-        RenderingRegistry.registerEntityRenderingHandler(EntityMinionPigZombie.class, manager -> new RenderMinion<>(manager, ModelZombie::new, RenderMinion.ZOMBIE_PIGMAN_TEXTURE, RenderMinion.ZOMBIE_PIGMAN_TEXTURE));
-        RenderingRegistry.registerEntityRenderingHandler(EntityMinionSkeleton.class, manager -> new RenderMinion<>(manager, ModelMinionSkeleton::new, RenderMinion.SKELETON_TEXTURE, RenderMinion.SKELETON_TEXTURE));
-        RenderingRegistry.registerEntityRenderingHandler(EntityMinionStray.class, manager -> new RenderMinion<>(manager, ModelMinionSkeleton::new, RenderMinion.STRAY_TEXTURE, RenderMinion.STRAY_TEXTURE, LayerMinionStrayClothing::new));
-        RenderingRegistry.registerEntityRenderingHandler(EntityMinionWitherSkeleton.class, RenderMinionWitherSkeleton::new);
-        RenderingRegistry.registerEntityRenderingHandler(EntityGenericMinion.class, RenderGenericMinion::new);
+//        RenderingRegistry.registerEntityRenderingHandler(EntityMinionZombie.class, RenderMinionZombie::new);
+//        RenderingRegistry.registerEntityRenderingHandler(EntityMinionPigZombie.class, manager -> new RenderMinion<>(manager, ModelZombie::new, RenderMinion.ZOMBIE_PIGMAN_TEXTURE, RenderMinion.ZOMBIE_PIGMAN_TEXTURE));
+//        RenderingRegistry.registerEntityRenderingHandler(EntityMinionSkeleton.class, manager -> new RenderMinion<>(manager, ModelMinionSkeleton::new, RenderMinion.SKELETON_TEXTURE, RenderMinion.SKELETON_TEXTURE));
+//        RenderingRegistry.registerEntityRenderingHandler(EntityMinionStray.class, manager -> new RenderMinion<>(manager, ModelMinionSkeleton::new, RenderMinion.STRAY_TEXTURE, RenderMinion.STRAY_TEXTURE, LayerMinionStrayClothing::new));
+//        RenderingRegistry.registerEntityRenderingHandler(EntityMinionWitherSkeleton.class, RenderMinionWitherSkeleton::new);
+//        RenderingRegistry.registerEntityRenderingHandler(EntityGenericMinion.class, RenderGenericMinion::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityPlayerCorpse.class, RenderPlayerCorpse::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityMawOfTheVoid.class, renderManager -> new RenderBiped<>(renderManager, new ModelBiped(), 1.0f));
         RenderingRegistry.registerEntityRenderingHandler(EntityBrimstoneFire.class, RenderBrimstoneFire::new);

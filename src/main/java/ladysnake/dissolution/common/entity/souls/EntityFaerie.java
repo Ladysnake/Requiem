@@ -1,19 +1,14 @@
 package ladysnake.dissolution.common.entity.souls;
 
 import elucent.albedo.lighting.Light;
-import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.init.ModPotions;
-import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
-import ladysnake.dissolution.common.items.ItemSoulInAJar;
 import ladysnake.dissolution.common.entity.SoulType;
+import ladysnake.dissolution.common.init.ModPotions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -35,8 +30,9 @@ public class EntityFaerie extends EntityFleetingSoul {
     public void onUpdate() {
         super.onUpdate();
         // faeries heal once every 5 minutes on average
-        if (!world.isRemote && rand.nextInt(6000) == 0)
+        if (!world.isRemote && rand.nextInt(6000) == 0) {
             this.setTired(false);
+        }
     }
 
     @Override
@@ -51,17 +47,18 @@ public class EntityFaerie extends EntityFleetingSoul {
     protected Entity selectTarget() {
         return this.world.getClosestPlayer(this.posX, this.posY, this.posZ, 32.0,
                 player -> player instanceof EntityPlayer && !((EntityPlayer) player).isSpectator()
-                        && CapabilityIncorporealHandler.getHandler(player).getPossessed() != null);
+                        && CapabilityIncorporealHandler.getHandler(player).isPresent());
     }
 
     @Override
     public void onCollideWithPlayer(EntityPlayer entityIn) {
         if(!world.isRemote && !this.isTired()) {
-            EntityLivingBase possessed = CapabilityIncorporealHandler.getHandler(entityIn).getPossessed();
-            if (possessed != null)
-                possessed.addPotionEffect(new PotionEffect(ModPotions.PURIFICATION, 200, 1));
-            else
+            IPossessable possessed = CapabilityIncorporealHandler.getHandler(entityIn).getPossessed();
+            if (possessed instanceof EntityLivingBase) {
+                ((EntityLivingBase) possessed).addPotionEffect(new PotionEffect(ModPotions.PURIFICATION, 200, 1));
+            } else {
                 entityIn.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 200));
+            }
             this.setTired(true);
         }
     }

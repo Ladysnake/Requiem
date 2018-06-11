@@ -50,13 +50,17 @@ public class CommandStuck extends CommandBase {
         EntityPlayerMP player = getCommandSenderAsPlayer(sender);
         IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
         if (sender.canUseCommand(getRequiredPermissionLevel(), getName()) || handler.getCorporealityStatus().isIncorporeal()) {
-            if (player.dimension != player.getSpawnDimension())
+            if (player.dimension != player.getSpawnDimension()) {
                 CustomDissolutionTeleporter.transferPlayerToDimension(player, player.getSpawnDimension());
+            }
             BlockPos spawnPos = player.getBedLocation();
-            if(spawnPos == null)
+            if(spawnPos == null) {
                 spawnPos = player.getServerWorld().getSpawnPoint();
+            }
             player.connection.setPlayerLocation(spawnPos.getX(), spawnPos.getY(),
                     spawnPos.getZ(), player.cameraYaw, player.cameraPitch);
-        } else throw new CommandException("commands.dissolution.stuck.soulrequired");
+        } else {
+            throw new CommandException("commands.dissolution.stuck.soulrequired");
+        }
     }
 }

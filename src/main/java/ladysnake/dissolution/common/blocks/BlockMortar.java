@@ -23,12 +23,14 @@ public class BlockMortar extends BlockGenericContainer {
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ))
+        if (super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)) {
             return true;
+        }
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileEntityMortar) {
-            if (OreDictHelper.doesItemMatch(playerIn.getHeldItem(hand), OreDictHelper.PESTLE, OreDictHelper.PESTLE_AND_MORTAR))
+            if (OreDictHelper.doesItemMatch(playerIn.getHeldItem(hand), OreDictHelper.PESTLE, OreDictHelper.PESTLE_AND_MORTAR)) {
                 ((TileEntityMortar) tile).crush();
+            }
         }
         return true;
     }

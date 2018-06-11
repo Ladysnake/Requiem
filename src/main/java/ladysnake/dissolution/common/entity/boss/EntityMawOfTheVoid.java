@@ -66,8 +66,9 @@ public class EntityMawOfTheVoid extends EntityCreature {
 
         @Override
         public void updateTask() {
-            if (i > 1998)
+            if (i > 1998) {
                 lastAttack = 0;
+            }
         }
     }
 

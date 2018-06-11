@@ -16,6 +16,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import javax.annotation.Nonnull;
@@ -23,6 +24,7 @@ import javax.annotation.Nonnull;
 public class EntityMinionZombie extends AbstractMinion implements IEntityAdditionalSpawnData {
 
     private boolean isHusk;
+    private static Boolean isQuarkInstalled;
 
     /**
      * Used by minecraft to spawn the entity internally
@@ -77,9 +79,10 @@ public class EntityMinionZombie extends AbstractMinion implements IEntityAdditio
 
 
     @Override
-    protected void handleSunExposure() {
-        if (!this.isHusk)
-            super.handleSunExposure();
+    protected void handleSunExposition() {
+        if (!this.isHusk && (!this.isChild() || (isQuarkInstalled == null ? (isQuarkInstalled = Loader.isModLoaded("quark")) : isQuarkInstalled))) {
+            super.handleSunExposition();
+        }
     }
 
     @Override

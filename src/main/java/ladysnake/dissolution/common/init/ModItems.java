@@ -77,10 +77,12 @@ public final class ModItems {
         remaps.put("itemironscythe", IRON_SCYTHE);
         for (Mapping<Item> map : missingBlocks) {
             if (map.key.getResourceDomain().equals(Reference.MOD_ID)) {
-                if (ModBlocks.INSTANCE.remaps.get(map.key.getResourcePath()) != null)
+                if (ModBlocks.INSTANCE.remaps.get(map.key.getResourcePath()) != null) {
                     map.remap(Item.getItemFromBlock(ModBlocks.INSTANCE.remaps.get(map.key.getResourcePath())));
-                if (remaps.get(map.key.getResourcePath()) != null)
+                }
+                if (remaps.get(map.key.getResourcePath()) != null) {
                     map.remap(remaps.get(map.key.getResourcePath()));
+                }
             }
         }
     }
@@ -96,10 +98,11 @@ public final class ModItems {
     @SideOnly(Side.CLIENT)
     private void registerRender(Item item) {
         assert item.getRegistryName() != null;
-        if (item instanceof ICustomLocation)
+        if (item instanceof ICustomLocation) {
             ((ICustomLocation) item).registerRender();
-        else
+        } else {
             registerRender(item, new ModelResourceLocation(item.getRegistryName().toString()));
+        }
     }
 
     @SideOnly(Side.CLIENT)

@@ -3,8 +3,6 @@ package ladysnake.dissolution.common.handlers;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.config.DissolutionConfig;
-import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
@@ -38,8 +36,9 @@ public class LivingDeathHandler {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onLivingDeath(LivingDeathEvent event) {
-        if (event.getEntity() instanceof EntityPlayer)
+        if (event.getEntity() instanceof EntityPlayer) {
             this.handlePlayerDeath(event);
+        }
 
 //        if (event.getSource().getTrueSource() instanceof EntityPlayer)
 //            this.handlePlayerKill((EntityPlayer) event.getSource().getTrueSource(), event.getEntityLiving());
@@ -52,8 +51,9 @@ public class LivingDeathHandler {
             ((EntityLivingBase) corp.getPossessed()).attackEntityFrom(event.getSource(), Float.MAX_VALUE);
             corp.setPossessed(null);
         }
-        if (!corp.isStrongSoul() || corp.getCorporealityStatus() == SoulStates.SOUL)
+        if (!corp.isStrongSoul() || corp.getCorporealityStatus() == SoulStates.SOUL) {
             return;
+        }
         if (corp.getCorporealityStatus() == SoulStates.ECTOPLASM) {
             corp.setCorporealityStatus(SoulStates.SOUL);
             p.setHealth(20f);
@@ -86,8 +86,9 @@ public class LivingDeathHandler {
         }
 
         if (Dissolution.config.respawn.skipDeathScreen) {
-            if (!p.world.isRemote)
+            if (!p.world.isRemote) {
                 fakePlayerDeath((EntityPlayerMP) p, event.getSource());
+            }
             corp.setCorporealityStatus(Dissolution.config.respawn.respawnCorporealityStatus.status);
             p.setHealth(20f);
             //noinspection ConstantConditions
@@ -95,8 +96,9 @@ public class LivingDeathHandler {
                 BlockPos respawnLoc = p.getBedLocation();
                 p.setPosition(respawnLoc.getX(), respawnLoc.getY(), respawnLoc.getZ());
             }
-            if (Dissolution.config.respawn.respawnInNether && !p.world.isRemote)
+            if (Dissolution.config.respawn.respawnInNether && !p.world.isRemote) {
                 CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) p, Dissolution.config.respawn.respawnDimension);
+            }
             event.setCanceled(true);
         }
     }

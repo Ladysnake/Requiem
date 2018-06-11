@@ -31,9 +31,11 @@ public class DistillateList extends GenericStackList<DistillateTypes> {
      */
     public int indexOf(DistillateTypes type) {
         int index = -1;
-        for (int i = 0; i < this.size() && index == -1; i++)
-            if ((get(i).isEmpty() && type == DistillateTypes.UNTYPED) || get(i).getType() == type)
+        for (int i = 0; i < this.size() && index == -1; i++) {
+            if ((get(i).isEmpty() && type == DistillateTypes.UNTYPED) || get(i).getType() == type) {
                 index = i;
+            }
+        }
         return index;
     }
 
@@ -42,11 +44,12 @@ public class DistillateList extends GenericStackList<DistillateTypes> {
     }
 
     public boolean add(GenericStack<DistillateTypes> stack) {
-        for (int i = 0; i < this.size(); i++)
+        for (int i = 0; i < this.size(); i++) {
             if (this.get(i).isEmpty()) {
                 this.set(i, stack);
                 return true;
             }
+        }
         return false;
     }
 
@@ -58,8 +61,9 @@ public class DistillateList extends GenericStackList<DistillateTypes> {
     @Override
     public boolean remove(Object arg0) {
         int index = indexOf(arg0);
-        if (index == -1)
+        if (index == -1) {
             return false;
+        }
         this.set(index, GenericStack.empty());
         return true;
     }

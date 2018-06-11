@@ -38,8 +38,9 @@ public abstract class CommandDissolutionTreeBase extends CommandTreeBase {
                     .sorted().collect(Collectors.toList()));
         } else if (ret.isEmpty()) {
             Optional<ICommand> cmd = this.getSubCommands().stream().filter(command -> command.getAliases().contains(args[0])).findAny();
-            if (cmd.isPresent())
+            if (cmd.isPresent()) {
                 return cmd.get().getTabCompletions(server, sender, shiftArgs(args), pos);
+            }
         }
         return ret;
     }
@@ -53,10 +54,11 @@ public abstract class CommandDissolutionTreeBase extends CommandTreeBase {
 
             if (cmd == null) {
                 Optional<ICommand> command = getSubCommands().stream().filter(iCommand -> iCommand.getAliases().contains(args[0])).findAny();
-                if (command.isPresent())
+                if (command.isPresent()) {
                     cmd = command.get();
-                else
+                } else {
                     throw new CommandException("commands.tree_base.invalid_cmd", args[0]);
+                }
             }
             if (!cmd.checkPermission(server, sender)) {
                 throw new CommandException("commands.generic.permission");

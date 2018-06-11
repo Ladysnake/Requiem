@@ -51,8 +51,9 @@ public interface IDistillateHandler extends Iterable<DistillateStack> {
      */
     default boolean isFull() {
         for (DistillateStack stack : this) {
-            if ((getChannels() < getMaxChannels() || this.getMaxSize() > stack.getCount()))
+            if ((getChannels() < getMaxChannels() || this.getMaxSize() > stack.getCount())) {
                 return false;
+            }
         }
         return true;
     }
@@ -85,8 +86,9 @@ public interface IDistillateHandler extends Iterable<DistillateStack> {
      * Attempts to make distillate flow from this handler to the destination
      */
     default void flow(IDistillateHandler dest, DistillateTypes type) {
-        if (dest.getSuction(type) > this.getSuction(type))
+        if (dest.getSuction(type) > this.getSuction(type)) {
             this.insert(dest.insert(this.extract(1, type)));
+        }
     }
 
 }

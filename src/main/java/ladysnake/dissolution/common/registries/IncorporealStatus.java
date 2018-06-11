@@ -1,6 +1,7 @@
 package ladysnake.dissolution.common.registries;
 
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
@@ -42,16 +43,16 @@ public class IncorporealStatus extends CorporealityStatus {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerAttackEntity(AttackEntityEvent event) {
-        if (subscribedPlayers.contains(event.getEntityPlayer()))
+        if (subscribedPlayers.contains(event.getEntityPlayer())) {
             event.setCanceled(!DissolutionConfigManager.canEctoplasmBeAttackedBy(event.getTarget()));
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
         if (subscribedPlayers.contains(event.getEntityPlayer())) {
             IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
-            if (handler.getPossessed() == null
-                    && !event.getEntityPlayer().isCreative()) {
+            if (handler.getPossessed() == null && !event.getEntityPlayer().isCreative()) {
                 event.setCanceled(true);
             }
         }
@@ -61,8 +62,11 @@ public class IncorporealStatus extends CorporealityStatus {
     public void onBreakSpeed(PlayerEvent.BreakSpeed event) {
         if (subscribedPlayers.contains(event.getEntityPlayer())) {
             IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
-            if (handler.getPossessed() != null)
+            IPossessable possessed = handler.getPossessed();
+            // restores the mining speed as minecraft inflicts a penalty each time you mount something
+            if (handler.getPossessed() instanceof Entity && ((Entity)possessed).onGround && !event.getEntityPlayer().onGround) {
                 event.setNewSpeed(event.getOriginalSpeed() * 5);
+            }
         }
     }
 
@@ -101,8 +105,9 @@ public class IncorporealStatus extends CorporealityStatus {
         if(this.subscribedPlayers.contains(event.getEntityPlayer())) {
             IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
             if(this.preventsInteraction(event.getItemStack()) && handler.getPossessed() == null
-                    && !event.getEntityPlayer().isCreative())
+                    && !event.getEntityPlayer().isCreative()) {
                 event.setCanceled(true);
+            }
         }
     }
 
@@ -113,8 +118,9 @@ public class IncorporealStatus extends CorporealityStatus {
     @Override
     public void initState(EntityPlayer owner) {
         // if it's the first player in this state, we need to subscribe this as an event handler
-        if (this.subscribedPlayers.isEmpty())
+        if (this.subscribedPlayers.isEmpty()) {
             MinecraftForge.EVENT_BUS.register(this);
+        }
         super.initState(owner);
         changeState(owner, true);
         owner.setInvisible(Dissolution.config.ghost.invisibleGhosts);
@@ -124,18 +130,21 @@ public class IncorporealStatus extends CorporealityStatus {
     public void resetState(EntityPlayer owner) {
         super.resetState(owner);
         // to avoid unnecessary event handling, we unregister this when no one is in this status
-        if (this.subscribedPlayers.isEmpty())
+        if (this.subscribedPlayers.isEmpty()) {
             MinecraftForge.EVENT_BUS.register(this);
+        }
 
         changeState(owner, false);
-        if (Dissolution.config.ghost.invisibleGhosts)
+        if (Dissolution.config.ghost.invisibleGhosts) {
             owner.setInvisible(false);
+        }
     }
 
     protected void changeState(EntityPlayer owner, boolean init) {
         try {
-            if (isImmuneToFireMH != null)
+            if (isImmuneToFireMH != null) {
                 isImmuneToFireMH.invoke(owner, init);
+            }
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }

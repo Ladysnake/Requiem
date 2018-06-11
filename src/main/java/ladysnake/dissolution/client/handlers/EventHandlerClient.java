@@ -2,6 +2,7 @@ package ladysnake.dissolution.client.handlers;
 
 import ladysnake.dissolution.api.PlayerIncorporealEvent;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.client.particles.DissolutionParticleManager;
 import ladysnake.dissolution.common.Dissolution;
@@ -20,6 +21,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.*;
@@ -70,8 +72,10 @@ public class EventHandlerClient {
 
     @SubscribeEvent
     public static void onGameTick(TickEvent.ClientTickEvent event) {
-        final EntityPlayerSP player = Minecraft.getMinecraft().player;
-        if (player == null || noServerInstall) return;
+        final EntityPlayer player = Minecraft.getMinecraft().player;
+        if (player == null || noServerInstall) {
+            return;
+        }
 
         DissolutionParticleManager.INSTANCE.updateParticles();
 
@@ -82,10 +86,8 @@ public class EventHandlerClient {
             IMessage msg = new PingMessage(player.getUniqueID().getMostSignificantBits(),
                     player.getUniqueID().getLeastSignificantBits());
             PacketHandler.NET.sendToServer(msg);
-        } else if (playerCorp.isSynced())
+        } else if (playerCorp.isSynced()) {
             refreshTimer = 0;
-        if (playerCorp.getPossessed() != null && event.phase == TickEvent.Phase.START) {
-            player.updateEntityActionState();
         }
 
         // Convoluted way of displaying the health of the possessed entity
@@ -156,16 +158,21 @@ public class EventHandlerClient {
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent event) {
-        if (noServerInstall) return;
+        if (noServerInstall) {
+            return;
+        }
 
         final EntityPlayer player = event.player;
         final EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
-        if (player != playerSP) return;
+        if (player != playerSP) {
+            return;
+        }
 
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
 
-        if (cameraAnimation-- > 0 && event.player.eyeHeight < 1.8f)
+        if (cameraAnimation-- > 0 && event.player.eyeHeight < 1.8f) {
             player.eyeHeight += player.getDefaultEyeHeight() / 20f;
+        }
 
         if (player.world.isMaterialInBB(player.getEntityBoundingBox()
                 .grow(-0.1D, -0.4D, -0.1D), BlockFluidMercury.MATERIAL_MERCURY)) {
@@ -194,13 +201,30 @@ public class EventHandlerClient {
                 }
             }
         }
+        if (playerCorp.getPossessed() != null) {
+            playerCorp.getPossessed().possessTickClient();
+        }
     }
 
-//    private static RenderWillOWisp<EntityPlayer> renderSoul;
+    @SubscribeEvent
+    public static void onEntityViewRenderCameraSetup(EntityViewRenderEvent.CameraSetup event) {
+        EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
+        IPossessable possessed = CapabilityIncorporealHandler.getHandler(playerSP).getPossessed();
+        if (possessed != null) {
+            float yaw = (float) (playerSP.prevRotationYaw + (playerSP.rotationYaw - playerSP.prevRotationYaw) * event.getRenderPartialTicks() + 180.0F);
+            float pitch = (float) (playerSP.prevRotationPitch + (playerSP.rotationPitch - playerSP.prevRotationPitch) * event.getRenderPartialTicks());
+            event.setYaw(yaw);
+            event.setPitch(pitch);
+        }
+    }
+
+    //    private static RenderWillOWisp<EntityPlayer> renderSoul;
 
     @SubscribeEvent
     public static void onPlayerRender(RenderPlayerEvent.Pre event) {
-        if (noServerInstall) return;
+        if (noServerInstall) {
+            return;
+        }
 
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
         if (playerCorp.getCorporealityStatus().isIncorporeal()) {
@@ -220,8 +244,9 @@ public class EventHandlerClient {
 
     @SubscribeEvent
     public static void onPlayerRender(RenderPlayerEvent.Post event) {
-        if (!noServerInstall && CapabilityIncorporealHandler.getHandler(event.getEntityPlayer()).getCorporealityStatus().isIncorporeal())
+        if (!noServerInstall && CapabilityIncorporealHandler.getHandler(event.getEntityPlayer()).getCorporealityStatus().isIncorporeal()) {
             GlStateManager.color(0, 0, 0, 0);
+        }
     }
 
     @SubscribeEvent
@@ -231,21 +256,24 @@ public class EventHandlerClient {
 
     @SubscribeEvent
     public static void onRenderSpecificHand(RenderSpecificHandEvent event) {
-        if (noServerInstall) return;
-        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player);
+        if (noServerInstall) {
+            return;
+        }
+        EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
+        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(playerSP);
         if (handler.getCorporealityStatus().isIncorporeal()) {
-            if (handler.getPossessed() == null || event.getItemStack().isEmpty())
+            IPossessable possessed = handler.getPossessed();
+            if (possessed == null && !playerSP.isCreative() || event.getItemStack().isEmpty()) {
                 event.setCanceled(true);
-//            else if (handler.getPossessed() instanceof EntityLivingBase) {
-//                EntityLivingBase possessed = (EntityLivingBase) CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player).getPossessed();
-//                EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
-//                float f1 = playerSP.prevRotationPitch + (playerSP.rotationPitch - playerSP.prevRotationPitch) * event.getPartialTicks();
-//                float f2 = playerSP.prevRotationYaw + (playerSP.rotationYaw - playerSP.prevRotationYaw) * event.getPartialTicks();
-//                float f3 = possessed.prevRotationPitch + (possessed.rotationPitch - possessed.prevRotationPitch) * event.getPartialTicks();
-//                float f4 = possessed.prevRotationYaw + (possessed.rotationYaw - possessed.prevRotationYaw) * event.getPartialTicks();
-//                rotateArmReverse(playerSP, possessed, f3, f4, event.getPartialTicks());
-//                rotateAroundXAndYReverse(f1, f2, f3, f4);
-//            }
+            } else if (possessed instanceof EntityLivingBase && (event.getHand() == EnumHand.MAIN_HAND || playerSP.getHeldItemMainhand().isEmpty())) {
+                EntityLivingBase livingPossessed = (EntityLivingBase) possessed;
+                float f1 = playerSP.prevRotationPitch + (playerSP.rotationPitch - playerSP.prevRotationPitch) * event.getPartialTicks();
+                float f2 = playerSP.prevRotationYaw + (playerSP.rotationYaw - playerSP.prevRotationYaw) * event.getPartialTicks();
+                float f3 = livingPossessed.prevRotationPitch + (livingPossessed.rotationPitch - livingPossessed.prevRotationPitch) * event.getPartialTicks();
+                float f4 = livingPossessed.prevRotationYaw + (livingPossessed.rotationYaw - livingPossessed.prevRotationYaw) * event.getPartialTicks();
+                rotateArmReverse(playerSP, livingPossessed, f3, f4, event.getPartialTicks());
+                rotateAroundXAndYReverse(f1, f2, f3, f4);
+            }
         }
     }
 
@@ -266,8 +294,9 @@ public class EventHandlerClient {
 
     @SubscribeEvent
     public static void onDrawBlockHighlight(DrawBlockHighlightEvent event) {
-        if (!noServerInstall && event.getTarget().typeOfHit == RayTraceResult.Type.BLOCK)
+        if (!noServerInstall && event.getTarget().typeOfHit == RayTraceResult.Type.BLOCK) {
             event.setCanceled(CapabilityIncorporealHandler.getHandler(event.getPlayer()).getCorporealityStatus().isIncorporeal() &&
                     !(event.getPlayer().world.getBlockState(event.getTarget().getBlockPos()).getBlock() instanceof ISoulInteractable));
+        }
     }
 }

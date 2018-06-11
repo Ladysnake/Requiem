@@ -26,8 +26,9 @@ public class RenderBrimstoneFire extends RenderEntity {
     public void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks) {
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
 
-        if (!(entity instanceof EntityBrimstoneFire) || ((EntityBrimstoneFire) entity).getTarget() == BlockPos.ORIGIN)
+        if (!(entity instanceof EntityBrimstoneFire) || ((EntityBrimstoneFire) entity).getTarget() == BlockPos.ORIGIN) {
             return;
+        }
 
         this.bindTexture(BEAM_TEXTURE);
 

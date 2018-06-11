@@ -1,6 +1,5 @@
 package ladysnake.dissolution.common.potion;
 
-import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.client.Minecraft;
@@ -24,13 +23,13 @@ public class PotionPurification extends Potion {
 
     @Override
     public void performEffect(@Nonnull EntityLivingBase entityLivingBaseIn, int amplifier) {
-        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(entityLivingBaseIn);
-        if (handler == null) return;
-//        if (handler.getPossessed() != null) {
-//            handler.getPossessed().purifyHealth((amplifier + 1)*4);
-//        } else {
-            Objects.requireNonNull(Potion.getPotionFromResourceLocation("minecraft:regeneration")).performEffect(entityLivingBaseIn, amplifier);
-//        }
+        CapabilityIncorporealHandler.getHandler(entityLivingBaseIn).ifPresent(handler -> {
+            if (handler.getPossessed() != null) {
+                handler.getPossessed().purifyHealth((amplifier + 1)*4);
+            } else {
+                Objects.requireNonNull(Potion.getPotionFromResourceLocation("minecraft:regeneration")).performEffect(entityLivingBaseIn, amplifier);
+            }
+        });
     }
 
     @Override

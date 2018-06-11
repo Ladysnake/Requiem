@@ -68,8 +68,9 @@ public class Dissolution {
     @NetworkCheckHandler
     public boolean checkModLists(Map<String,String> modList, Side side) {
         boolean modInstalled = Reference.VERSION.equals(modList.get(Reference.MOD_ID));
-        if (side.isServer())
+        if (side.isServer()) {
             noServerInstall = !modInstalled;
+        }
         return side.isServer() || modInstalled;
     }
 

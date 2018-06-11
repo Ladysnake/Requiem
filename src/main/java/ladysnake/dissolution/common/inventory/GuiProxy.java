@@ -23,8 +23,9 @@ public class GuiProxy implements IGuiHandler {
         switch (ID) {
             case PLAYER_CORPSE:
                 EntityPlayerCorpse pc = world.getEntitiesWithinAABB(EntityPlayerCorpse.class, new AxisAlignedBB(pos)).stream().findAny().orElse(null);
-                if (pc != null)
+                if (pc != null) {
                     return new ContainerChest(player.inventory, pc.getInventory(), player);
+                }
             default:
                 return null;
         }
@@ -37,8 +38,9 @@ public class GuiProxy implements IGuiHandler {
         switch (ID) {
             case PLAYER_CORPSE:
                 List<EntityPlayerCorpse> pc = world.getEntitiesWithinAABB(EntityPlayerCorpse.class, new AxisAlignedBB(pos));
-                if (!pc.isEmpty())
+                if (!pc.isEmpty()) {
                     return new GuiChest(player.inventory, pc.get(0).getInventory());
+                }
         }
         return null;
     }

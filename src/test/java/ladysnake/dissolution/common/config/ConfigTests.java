@@ -14,12 +14,10 @@ import org.junit.Test;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class ConfigTests {
@@ -79,8 +77,9 @@ public class ConfigTests {
         }
         cat.forEach((key, value) -> {
             ret.append(convert(value));
-            if (DissolutionConfigManager.syncedProps.containsKey(key))
+            if (DissolutionConfigManager.syncedProps.containsKey(key)) {
                 ret.append(" [synced]");
+            }
             ret.append("\n");
         });
         ret.append("}");

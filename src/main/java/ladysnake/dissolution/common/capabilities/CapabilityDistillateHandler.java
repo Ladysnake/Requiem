@@ -31,8 +31,9 @@ public class CapabilityDistillateHandler {
 
     public static IDistillateHandler getHandler(TileEntity te) {
 
-        if (te.hasCapability(CAPABILITY_DISTILLATE, EnumFacing.DOWN))
+        if (te.hasCapability(CAPABILITY_DISTILLATE, EnumFacing.DOWN)) {
             return te.getCapability(CAPABILITY_DISTILLATE, EnumFacing.DOWN);
+        }
 
         return null;
     }
@@ -80,8 +81,9 @@ public class CapabilityDistillateHandler {
         @Override
         public DistillateStack insert(GenericStack<DistillateTypes> stack) {
             int i = this.content.indexOf(stack.getType());
-            if (i == -1)
+            if (i == -1) {
                 i = this.content.indexOf(DistillateTypes.UNTYPED);
+            }
             if (i > -1) {
                 GenericStack<DistillateTypes> stack2 = this.content.get(i);
                 int currentAmount = stack2.getCount();
@@ -95,8 +97,9 @@ public class CapabilityDistillateHandler {
         @Override
         public DistillateStack extract(int amount, DistillateTypes type) {
             DistillateStack contentStack = (DistillateStack) this.content.get(type);
-            if (contentStack.isEmpty())
+            if (contentStack.isEmpty()) {
                 return (DistillateStack) DistillateStack.EMPTY;
+            }
             amount = Math.min(amount, contentStack.getCount());
             DistillateStack ret = (DistillateStack) contentStack.withSize(amount);
             contentStack.shrink(amount);
@@ -193,8 +196,9 @@ public class CapabilityDistillateHandler {
             ret.setTag("suctions", suctions);
             ret.setInteger("maxSize", instance.getMaxSize());
             NBTTagList essentiaList = new NBTTagList();
-            for (DistillateStack stack : instance)
+            for (DistillateStack stack : instance) {
                 essentiaList.appendTag(stack.writeToNBT(new NBTTagCompound()));
+            }
             ret.setTag("essentiaList", essentiaList);
             return ret;
         }
@@ -208,8 +212,9 @@ public class CapabilityDistillateHandler {
             }
             if (instance instanceof IDistillateHandlerModifiable) {
                 NBTTagList essentiaList = compound.getTagList("essentiaList", 10);
-                for (int i = 0; i < essentiaList.tagCount(); i++)
+                for (int i = 0; i < essentiaList.tagCount(); i++) {
                     ((IDistillateHandlerModifiable) instance).setContent(i, new DistillateStack((NBTTagCompound) essentiaList.get(i)));
+                }
                 ((IDistillateHandlerModifiable) instance).setMaxSize(compound.getInteger("maxSize"));
             }
         }

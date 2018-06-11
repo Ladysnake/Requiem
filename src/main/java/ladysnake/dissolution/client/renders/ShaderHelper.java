@@ -46,8 +46,9 @@ public final class ShaderHelper {
      * Initializes all known shaders
      */
     private static void initShaders() {
-        if (!shouldUseShaders())
+        if (!shouldUseShaders()) {
             return;
+        }
         dissolution = initShader("VertexBase.vsh", "corpsedissolution.fsh");
         bloom = initShader("VertexBase.vsh", "bloom.fsh");
     }
@@ -101,8 +102,9 @@ public final class ShaderHelper {
      * @param program the reference to the desired shader (0 to remove any current shader)
      */
     public static void useShader(int program) {
-        if (!shouldUseShaders())
+        if (!shouldUseShaders()) {
             return;
+        }
 
         prevProgram = GlStateManager.glGetInteger(GL20.GL_CURRENT_PROGRAM);
         OpenGlHelper.glUseProgram(program);
@@ -119,12 +121,14 @@ public final class ShaderHelper {
      * @param value       an int value for this uniform
      */
     public static void setUniform(String uniformName, int value) {
-        if (!shouldUseShaders() || currentProgram == 0)
+        if (!shouldUseShaders() || currentProgram == 0) {
             return;
+        }
 
         int uniform = GL20.glGetUniformLocation(currentProgram, uniformName);
-        if (uniform != -1)
+        if (uniform != -1) {
             GL20.glUniform1i(uniform, value);
+        }
     }
 
     /**
@@ -134,12 +138,14 @@ public final class ShaderHelper {
      * @param value       a float value for this uniform
      */
     public static void setUniform(String uniformName, float value) {
-        if (!shouldUseShaders())
+        if (!shouldUseShaders()) {
             return;
+        }
 
         int uniform = GL20.glGetUniformLocation(currentProgram, uniformName);
-        if (uniform != -1)
+        if (uniform != -1) {
             GL20.glUniform1f(uniform, value);
+        }
     }
 
     /**
@@ -162,8 +168,9 @@ public final class ShaderHelper {
              BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"))) {
 
             String line;
-            while ((line = reader.readLine()) != null)
+            while ((line = reader.readLine()) != null) {
                 source.append(line).append('\n');
+            }
         } catch (IOException exc) {
             exc.printStackTrace();
         } catch (NullPointerException e) {

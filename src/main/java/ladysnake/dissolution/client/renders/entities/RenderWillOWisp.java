@@ -1,9 +1,7 @@
 package ladysnake.dissolution.client.renders.entities;
 
-import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.SoulType;
 import ladysnake.dissolution.common.entity.souls.AbstractSoul;
-import ladysnake.dissolution.common.entity.souls.EntityFaerie;
 import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -39,8 +37,9 @@ public class RenderWillOWisp<T extends Entity> extends Render<T> {
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
             float alpha = 1f;
-            if (entity instanceof EntityFleetingSoul)
+            if (entity instanceof EntityFleetingSoul) {
                 alpha = Math.min((6000 - ((AbstractSoul) entity).getSoulAge()) / 2000f, alpha);
+            }
             GlStateManager.color(1.0F, 1.0F, 1.0F, alpha);
             GlStateManager.rotate(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
             GlStateManager.rotate((float) (this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * -this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);

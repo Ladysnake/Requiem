@@ -29,8 +29,9 @@ public enum ModSounds {
     @SubscribeEvent
     public static void onRegister(RegistryEvent.Register<SoundEvent> event) {
         IForgeRegistry<SoundEvent> reg = event.getRegistry();
-        for (ModSounds s : ModSounds.values())
+        for (ModSounds s : ModSounds.values()) {
             reg.register(s.sound);
+        }
     }
 
     @Override

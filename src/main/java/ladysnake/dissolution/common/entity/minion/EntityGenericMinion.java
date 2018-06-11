@@ -29,6 +29,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 public class EntityGenericMinion extends AbstractMinion implements IEntityAdditionalSpawnData {
 
@@ -53,8 +54,9 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
     public void onLivingUpdate() {
         super.onLivingUpdate();
         if (this.delegate != null) {
-            if (!this.world.isRemote)
+            if (!this.world.isRemote) {
                 this.setHealth(delegate.getHealth());
+            }
             this.hurtTime = this.delegate.hurtTime;
             this.delegate.setPositionAndRotation(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
             this.delegate.swingProgress = this.swingProgress;
@@ -77,7 +79,7 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
     }
 
     @Override
-    protected void handleSunExposure() {
+    protected void handleSunExposition() {
     }
 
     @Override
@@ -176,10 +178,11 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
 
     @Override
     public void addPotionEffect(@Nonnull PotionEffect potioneffectIn) {
-        if (delegate == null)
+        if (delegate == null) {
             super.addPotionEffect(potioneffectIn);
-        else
+        } else {
             delegate.addPotionEffect(potioneffectIn);
+        }
     }
 
     @Override
@@ -190,17 +193,19 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
     @Override
     public boolean attackEntityAsMob(Entity entityIn) {
         boolean flag = delegate == null ? super.attackEntityAsMob(entityIn) : delegate.attackEntityAsMob(entityIn);
-        if (entityIn instanceof EntityLivingBase)
+        if (entityIn instanceof EntityLivingBase) {
             ((EntityLivingBase) entityIn).setRevengeTarget(this);
+        }
         return flag;
     }
 
     @Override
     public void attackEntityWithRangedAttack(@Nonnull EntityLivingBase target, float distanceFactor) {
-        if (delegate instanceof IRangedAttackMob)
+        if (delegate instanceof IRangedAttackMob) {
             ((IRangedAttackMob) delegate).attackEntityWithRangedAttack(target, distanceFactor);
-        else
+        } else {
             super.attackEntityWithRangedAttack(target, distanceFactor);
+        }
     }
 
     @Override
@@ -211,10 +216,11 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
 
     @Override
     public void setItemStackToSlot(EntityEquipmentSlot slotIn, @Nonnull ItemStack stack) {
-        if (this.delegate == null)
+        if (this.delegate == null) {
             super.setItemStackToSlot(slotIn, stack);
-        else
+        } else {
             delegate.setItemStackToSlot(slotIn, stack);
+        }
     }
 
     @Override
@@ -222,9 +228,9 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
         boolean ret = false;
         Entity entity = source.getTrueSource();
         //if(!(this.isBeingRidden() && entity != null && this.isRidingOrBeingRiddenBy(entity))) {
-        if (delegate == null)
+        if (delegate == null) {
             ret = super.attackEntityFrom(source, amount);
-        else if (!delegate.equals(entity)) {
+        } else if (!delegate.equals(entity)) {
             ret = delegate.attackEntityFrom(source, amount);
             this.isAirBorne = delegate.isAirBorne;
             this.motionX = delegate.motionX;
@@ -237,10 +243,11 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
 
     @Override
     public void clearActivePotions() {
-        if (delegate == null)
+        if (delegate == null) {
             super.clearActivePotions();
-        else
+        } else {
             delegate.clearActivePotions();
+        }
     }
 
     @Override
@@ -254,17 +261,24 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
         return delegate == null ? super.getActivePotionEffects() : delegate.getActivePotionEffects();
     }
 
+    @Nonnull
+    @Override
+    public Map<Potion, PotionEffect> getActivePotionMap() {
+        return delegate == null ? super.getActivePotionMap() : delegate.getActivePotionMap();
+    }
+
     @Override
     public boolean isPotionActive(@Nonnull Potion potionIn) {
-        return super.isPotionActive(potionIn);
+        return delegate == null ? super.isPotionActive(potionIn) : delegate.isPotionActive(potionIn);
     }
 
     @Override
     public void awardKillScore(Entity p_191956_1_, int p_191956_2_, @Nonnull DamageSource p_191956_3_) {
-        if (delegate == null)
+        if (delegate == null) {
             super.awardKillScore(p_191956_1_, p_191956_2_, p_191956_3_);
-        else
+        } else {
             delegate.awardKillScore(p_191956_1_, p_191956_2_, p_191956_3_);
+        }
     }
 
     @Override
@@ -274,10 +288,11 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
 
     @Override
     public void setActiveHand(@Nonnull EnumHand hand) {
-        if (delegate == null)
+        if (delegate == null) {
             super.setActiveHand(hand);
-        else
+        } else {
             delegate.setActiveHand(hand);
+        }
     }
 
     @Override
@@ -302,10 +317,11 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
         if (this.getActiveItemStack().getItem() instanceof ItemBow) {
             this.fireBow();
         } else {
-            if (this.delegate == null)
+            if (this.delegate == null) {
                 super.stopActiveHand();
-            else
+            } else {
                 this.delegate.stopActiveHand();
+            }
         }
     }
 
@@ -321,8 +337,9 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
 
     @Override
     public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
-        if (delegate != null && delegate.hasCapability(capability, facing))
+        if (delegate != null && delegate.hasCapability(capability, facing)) {
             return delegate.getCapability(capability, facing);
+        }
         return super.getCapability(capability, facing);
     }
 
@@ -333,8 +350,9 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
 
     @Override
     public void setSwingingArms(boolean swingingArms) {
-        if (delegate instanceof IRangedAttackMob)
+        if (delegate instanceof IRangedAttackMob) {
             ((IRangedAttackMob) delegate).setSwingingArms(swingingArms);
+        }
     }
 
     @Override
@@ -359,8 +377,9 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
 
     @Override
     public void playLivingSound() {
-        if (delegate == null)
+        if (delegate == null) {
             super.playLivingSound();
+        }
     }
 
     @Override
@@ -375,32 +394,36 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
 
     @Override
     protected void playStepSound(BlockPos pos, Block blockIn) {
-        if (delegate == null)
+        if (delegate == null) {
             super.playStepSound(pos, blockIn);
+        }
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         Entity ent = EntityList.createEntityFromNBT(compound.getCompoundTag("delegate"), this.world);
-        if (ent instanceof EntityMob)
+        if (ent instanceof EntityMob) {
             this.delegate = (EntityMob) ent;
+        }
     }
 
     @Nonnull
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         NBTTagCompound ret = super.writeToNBT(compound);
-        if (delegate != null)
+        if (delegate != null) {
             ret.setTag("delegate", delegate.serializeNBT());
+        }
         return ret;
     }
 
     @Override
     public void writeSpawnData(ByteBuf buffer) {
         PacketBuffer wrapper = new PacketBuffer(buffer);
-        if (delegate != null)
+        if (delegate != null) {
             wrapper.writeCompoundTag(this.delegate.serializeNBT());
+        }
     }
 
     @Override
@@ -409,8 +432,9 @@ public class EntityGenericMinion extends AbstractMinion implements IEntityAdditi
             NBTTagCompound delegateCompound = new PacketBuffer(additionalData).readCompoundTag();
             if (delegateCompound != null) {
                 Entity ent = EntityList.createEntityFromNBT(delegateCompound, this.world);
-                if (ent instanceof EntityMob)
+                if (ent instanceof EntityMob) {
                     this.delegate = (EntityMob) ent;
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

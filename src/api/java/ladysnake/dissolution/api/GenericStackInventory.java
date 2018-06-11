@@ -52,19 +52,25 @@ public class GenericStackInventory<T> implements INBTSerializable<NBTTagCompound
         mergeLoop:
         for (GenericStack<T> stack : fromInventory.stacks) {
             for (GenericStack<T> stack2 : toInventory.stacks) {
-                if (!fromInventory.canExtract() || !toInventory.canInsert()) return;
+                if (!fromInventory.canExtract() || !toInventory.canInsert()) {
+                    return;
+                }
                 stack2.merge(stack);
-                if (stack.isEmpty())
+                if (stack.isEmpty()) {
                     continue mergeLoop;
+                }
             }
         }
     }
 
     public GenericStack<T> insert(GenericStack<T> stack) {
-        if (!canInsert()) return stack;
+        if (!canInsert()) {
+            return stack;
+        }
         int i = this.stacks.indexOfType(stack.getType());
-        if (i == -1)
+        if (i == -1) {
             i = this.stacks.indexOfType(null);
+        }
         if (i > -1) {
             GenericStack<T> stack2 = this.stacks.get(i);
             int currentAmount = stack2.getCount();
@@ -80,10 +86,13 @@ public class GenericStackInventory<T> implements INBTSerializable<NBTTagCompound
     }
 
     public GenericStack<T> extract(int amount, T type) {
-        if (!canExtract()) return GenericStack.empty();
-        GenericStack<T> contentStack = this.stacks.get(type);
-        if (contentStack.isEmpty())
+        if (!canExtract()) {
             return GenericStack.empty();
+        }
+        GenericStack<T> contentStack = this.stacks.get(type);
+        if (contentStack.isEmpty()) {
+            return GenericStack.empty();
+        }
         amount = Math.min(amount, contentStack.getCount());
         GenericStack<T> ret = contentStack.withSize(amount);
         contentStack.shrink(amount);
@@ -92,15 +101,17 @@ public class GenericStackInventory<T> implements INBTSerializable<NBTTagCompound
 
     @Nonnull
     public GenericStack<T> extract(int slot, int amount, boolean simulate) {
-        if (amount == 0 || !canExtract())
+        if (amount == 0 || !canExtract()) {
             return GenericStack.empty();
+        }
 
         validateSlotIndex(slot);
 
         GenericStack<T> existing = this.stacks.get(slot);
 
-        if (existing.isEmpty())
+        if (existing.isEmpty()) {
             return GenericStack.empty();
+        }
 
         int toExtract = Math.min(amount, existing.getMaxStackSize());
 
@@ -127,8 +138,9 @@ public class GenericStackInventory<T> implements INBTSerializable<NBTTagCompound
         NBTTagCompound compound = new NBTTagCompound();
         compound.setInteger("maxSize", this.maxSize);
         NBTTagList content = new NBTTagList();
-        for (GenericStack<T> stack : this.stacks)
+        for (GenericStack<T> stack : this.stacks) {
             content.appendTag(stack.writeToNBT(new NBTTagCompound(), serializer));
+        }
         compound.setTag("stacks", content);
         return compound;
     }
@@ -138,13 +150,15 @@ public class GenericStackInventory<T> implements INBTSerializable<NBTTagCompound
         NBTTagList nbtContent = nbt.getTagList("stacks", 10);
         this.maxSize = nbt.getInteger("maxSize");
         stacks.clear();
-        for (NBTBase compound : nbtContent)
+        for (NBTBase compound : nbtContent) {
             this.stacks.add(new GenericStack<>((NBTTagCompound) compound, serializer));
+        }
     }
 
     protected void validateSlotIndex(int slot) {
-        if (slot < 0 || slot >= stacks.size())
+        if (slot < 0 || slot >= stacks.size()) {
             throw new IllegalArgumentException("Slot " + slot + " not in valid range - [0," + stacks.size() + ")");
+        }
     }
 
     public boolean isEmpty() {

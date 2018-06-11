@@ -49,11 +49,14 @@ public class ItemDebug extends Item implements ISoulInteractable {
                 handler.setCorporealityStatus(SoulStates.REGISTRY.getValues().get((current + 1) % 3));
                 break;
             case 1:
-                if (!worldIn.isRemote) worldIn.getWorldInfo().setAllowCommands(true);
+                if (!worldIn.isRemote) {
+                    worldIn.getWorldInfo().setAllowCommands(true);
+                }
                 break;
             case 2:
-                if (!playerIn.world.isRemote)
+                if (!playerIn.world.isRemote) {
                     CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) playerIn, playerIn.dimension == -1 ? 0 : -1);
+                }
                 break;
             case 3:
                 if (!playerIn.world.isRemote) {
@@ -72,7 +75,9 @@ public class ItemDebug extends Item implements ISoulInteractable {
             case 5: {
                 AbstractMinion minion =
                         playerIn.world.findNearestEntityWithinAABB(AbstractMinion.class, new AxisAlignedBB(playerIn.getPosition()), null);
-                if (minion != null) minion.onEntityPossessed(playerIn);
+                if (minion != null) {
+                    minion.onEntityPossessed(playerIn);
+                }
                 break;
             }
             default:

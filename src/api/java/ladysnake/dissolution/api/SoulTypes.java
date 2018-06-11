@@ -26,8 +26,9 @@ public enum SoulTypes {
 
     static {
         byte idCount = 0;
-        for (SoulTypes s : SoulTypes.values())
+        for (SoulTypes s : SoulTypes.values()) {
             s.id = idCount++;
+        }
     }
 
     private List<Class<? extends EntityLiving>> sources;
@@ -46,17 +47,20 @@ public enum SoulTypes {
     }
 
     public static SoulTypes getById(byte id) {
-        for (SoulTypes soul : SoulTypes.values())
-            if (soul.id == id)
+        for (SoulTypes soul : SoulTypes.values()) {
+            if (soul.id == id) {
                 return soul;
+            }
+        }
         return SoulTypes.UNTYPED;
     }
 
     public static SoulTypes getSoulFor(EntityLiving entityIn) {
         for (SoulTypes soul : SoulTypes.values()) {
             for (Class<? extends EntityLiving> cl : soul.getSources()) {
-                if (cl.isInstance(entityIn))
+                if (cl.isInstance(entityIn)) {
                     return soul;
+                }
             }
         }
         return SoulTypes.UNTYPED;

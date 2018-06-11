@@ -62,23 +62,29 @@ public class GuiIncorporealOverlay extends GuiIngame {
 
             if (this.mc.playerController.shouldDrawHUD() && this.mc.getRenderViewEntity() instanceof EntityPlayer && pl.getCorporealityStatus() == SoulStates.ECTOPLASM) {
                 this.drawCustomHealthBar(this.mc.player, event.getResolution(), 0);
-//            } else if (this.mc.playerController.shouldDrawHUD()) {
-//                IPossessable possessed = pl.getPossessed();
-//                if (possessed instanceof EntityLivingBase && ((EntityLivingBase) possessed).getHealth() > 0) {
-//                    int textureRow = 0;
-//                    if (possessed instanceof EntityMinionPigZombie) textureRow = 1;
-//                    else if (possessed instanceof EntityMinionZombie && ((EntityMinionZombie) possessed).isHusk())
-//                        textureRow = 2;
-//                    else if (possessed instanceof EntityMinionWitherSkeleton) textureRow = 4;
-//                    else if (possessed instanceof EntityMinionStray) textureRow = 5;
-//                    else if (possessed instanceof EntityMinionSkeleton) textureRow = 3;
-//                    this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
-//                    this.drawCustomHealthBar((EntityLivingBase) pl.getPossessed(), event.getResolution(), textureRow);
-//                    this.mc.getTextureManager().bindTexture(GuiIngameForge.ICONS);
-//                    this.renderHotbar(event.getResolution(), event.getPartialTicks());
-//                }
-            } else if (Minecraft.getMinecraft().player.isCreative() && pl.getPossessed() != null)
+            } else if (this.mc.playerController.shouldDrawHUD()) {
+                IPossessable possessed = pl.getPossessed();
+                if (possessed instanceof EntityLivingBase && ((EntityLivingBase) possessed).getHealth() > 0) {
+                    int textureRow = 0;
+                    if (possessed instanceof EntityMinionPigZombie) {
+                        textureRow = 1;
+                    } else if (possessed instanceof EntityMinionZombie && ((EntityMinionZombie) possessed).isHusk()) {
+                        textureRow = 2;
+                    } else if (possessed instanceof EntityMinionWitherSkeleton) {
+                        textureRow = 4;
+                    } else if (possessed instanceof EntityMinionStray) {
+                        textureRow = 5;
+                    } else if (possessed instanceof EntityMinionSkeleton) {
+                        textureRow = 3;
+                    }
+                    this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
+                    this.drawCustomHealthBar((EntityLivingBase) pl.getPossessed(), event.getResolution(), textureRow);
+                    this.mc.getTextureManager().bindTexture(GuiIngameForge.ICONS);
+                    this.renderHotbar(event.getResolution(), event.getPartialTicks());
+                }
+            } else if (Minecraft.getMinecraft().player.isCreative() && pl.getPossessed() != null) {
                 this.renderHotbar(event.getResolution(), event.getPartialTicks());
+            }
         }
     }
 
@@ -127,8 +133,9 @@ public class GuiIncorporealOverlay extends GuiIngame {
             if (te instanceof TileEntityLamentStone && Dissolution.config.client.lamentStonesCompassDistance > 0) {
                 double lengthX = player.posX - te.getPos().getX();
                 double lengthY = player.posZ - te.getPos().getZ();
-                if (lengthX * lengthX + lengthY * lengthY > Dissolution.config.client.lamentStonesCompassDistance * Dissolution.config.client.lamentStonesCompassDistance)
+                if (lengthX * lengthX + lengthY * lengthY > Dissolution.config.client.lamentStonesCompassDistance * Dissolution.config.client.lamentStonesCompassDistance) {
                     break renderLamentStones;
+                }
                 double angleToTE = (180 - (Math.atan2(lengthX, lengthY)) * (180 / Math.PI)) % 360D;
                 if (angleToTE > angleLeftVision && angleToTE < angleRightVision) {
                     this.drawTexturedModalRect(i + 3 + (int) Math.round((angleToTE - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 200, 0, 7, 10);
@@ -195,7 +202,9 @@ public class GuiIncorporealOverlay extends GuiIngame {
         int left = width / 2 - 91;
         int top = height - GuiIngameForge.left_height;
         GuiIngameForge.left_height += (healthRows * rowHeight);
-        if (rowHeight != 10) GuiIngameForge.left_height += 10 - rowHeight;
+        if (rowHeight != 10) {
+            GuiIngameForge.left_height += 10 - rowHeight;
+        }
 
         int regen = -1;
         if (player.isPotionActive(MobEffects.REGENERATION)) {
@@ -223,16 +232,21 @@ public class GuiIncorporealOverlay extends GuiIngame {
             int x = left + i % 10 * 8;
             int y = top - row * rowHeight;
 
-            if (health <= 4) y += rand.nextInt(2);
-            if (i == regen) y -= 2;
+            if (health <= 4) {
+                y += rand.nextInt(2);
+            }
+            if (i == regen) {
+                y -= 2;
+            }
 
             drawTexturedModalRect(x, y, BACKGROUND, TOP, 9, 9);
 
             if (highlight) {
-                if (i * 2 + 1 < healthLast)
+                if (i * 2 + 1 < healthLast) {
                     drawTexturedModalRect(x, y, MARGIN + 54, TOP, 9, 9); //6
-                else if (i * 2 + 1 == healthLast)
+                } else if (i * 2 + 1 == healthLast) {
                     drawTexturedModalRect(x, y, MARGIN + 63, TOP, 9, 9); //7
+                }
             }
 
             if (absorbRemaining > 0.0F) {
@@ -244,10 +258,11 @@ public class GuiIncorporealOverlay extends GuiIngame {
                     absorbRemaining -= 2.0F;
                 }
             } else {
-                if (i * 2 + 1 < health)
+                if (i * 2 + 1 < health) {
                     drawTexturedModalRect(x, y, MARGIN + 36, TOP, 9, 9); //4
-                else if (i * 2 + 1 == health)
+                } else if (i * 2 + 1 == health) {
                     drawTexturedModalRect(x, y, MARGIN + 45, TOP, 9, 9); //5
+                }
             }
         }
         GlStateManager.popAttrib();

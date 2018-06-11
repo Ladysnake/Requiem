@@ -61,15 +61,17 @@ public class EntityMinionSkeleton extends AbstractMinion {
     protected void updateAITasks() {
         super.updateAITasks();
         IAttributeInstance iattributeinstance = this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-        if (!iattributeinstance.hasModifier(POSSESSED_SPEED_BOOST_MODIFIER))
+        if (!iattributeinstance.hasModifier(POSSESSED_SPEED_BOOST_MODIFIER)) {
             iattributeinstance.applyModifier(POSSESSED_SPEED_BOOST_MODIFIER);
+        }
     }
 
     @Override
     public boolean onPossessionStop(EntityPlayer player, boolean force) {
         IAttributeInstance iattributeinstance = this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-        if (iattributeinstance.hasModifier(POSSESSED_SPEED_BOOST_MODIFIER))
+        if (iattributeinstance.hasModifier(POSSESSED_SPEED_BOOST_MODIFIER)) {
             iattributeinstance.removeModifier(POSSESSED_SPEED_BOOST_MODIFIER);
+        }
         return super.onPossessionStop(player, force);
     }
 

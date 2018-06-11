@@ -63,8 +63,9 @@ public class CommandCorporealMode extends CommandBase {
      */
     @Override
     public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException {
-        if (args.length <= 0)
+        if (args.length <= 0) {
             throw new WrongUsageException("commands.dissolution.corporeality_mode.usage");
+        }
         if ("query".equals(args[0]) || "get".equals(args[0])) {                 // dissolution cmode query  -> returns the player's current status
             EntityPlayer player = args.length >= 2 ? getPlayer(server, sender, args[1]) : getCommandSenderAsPlayer(sender);
             IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
@@ -72,8 +73,9 @@ public class CommandCorporealMode extends CommandBase {
                     "commands.dissolution.corporeality_mode.query." + (player == sender ? "self" : "other"),     // different feedback
                     player.getName(), new TextComponentTranslation(handler.getCorporealityStatus().getUnlocalizedName()));
         } else if ("set".equals(args[0])) {          // dissolution cmode set -> sets the player's status
-            if (args.length == 1)
+            if (args.length == 1) {
                 throw new WrongUsageException("commands.dissolution.corporeality_mode.set.usage");       // have a more precise usage
+            }
             try {
                 ResourceLocation regName = args[1].contains(":")
                         ? new ResourceLocation(args[1])
@@ -81,17 +83,21 @@ public class CommandCorporealMode extends CommandBase {
                 ICorporealityStatus newStatus = SoulStates.REGISTRY.getValue(regName);
                 EntityPlayer player = args.length >= 3 ? getPlayer(server, sender, args[2]) : getCommandSenderAsPlayer(sender);
                 IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
-                if (!handler.isStrongSoul())
+                if (!handler.isStrongSoul()) {
                     throw new CommandException("commands.dissolution.corporeality_mode.set.weak_soul", player.getName());
+                }
                 handler.setCorporealityStatus(newStatus);
                 ITextComponent iTextComponent = new TextComponentTranslation(newStatus.getUnlocalizedName());
-                if (sender.getEntityWorld().getGameRules().getBoolean("sendCommandFeedback"))
+                if (sender.getEntityWorld().getGameRules().getBoolean("sendCommandFeedback")) {
                     player.sendMessage(new TextComponentTranslation("dissolution.corporeality_mode.changed", iTextComponent));
+                }
                 notifyCommandListener(sender, this, "commands.dissolution.corporeality_mode.success", player.getName());
             } catch (IllegalArgumentException e) {    // the status name is invalid
                 throw new CommandException("commands.dissolution.corporeality_mode.no_such_status", args[1]);
             }
-        } else throw new WrongUsageException("commands.dissolution.corporeality_mode.usage");
+        } else {
+            throw new WrongUsageException("commands.dissolution.corporeality_mode.usage");
+        }
     }
 
     @Override

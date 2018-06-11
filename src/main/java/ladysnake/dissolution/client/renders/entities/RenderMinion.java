@@ -35,8 +35,9 @@ public class RenderMinion<V extends AbstractMinion> extends RenderBiped<V> {
         super(renderManagerIn, modelBipedIn.apply(0f, false), 0.5f);
         this.texture = texture;
         this.textureInert = textureInert;
-        for (Function<RenderMinion, LayerRenderer<V>> layer : layers)
+        for (Function<RenderMinion, LayerRenderer<V>> layer : layers) {
             this.addLayer(layer.apply(this));
+        }
         this.addLayer(new LayerBipedArmor(this) {
             protected void initArmor() {
                 this.modelLeggings = modelBipedIn.apply(0.5F, true);
@@ -48,8 +49,9 @@ public class RenderMinion<V extends AbstractMinion> extends RenderBiped<V> {
     @Override
     @Nonnull
     protected ResourceLocation getEntityTexture(@Nonnull V entity) {
-        if (entity.isInert())
+        if (entity.isInert()) {
             return textureInert;
+        }
         return texture;
     }
 

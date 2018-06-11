@@ -93,7 +93,7 @@ public class EntityMinionWitherSkeleton extends EntityMinionSkeleton {
     }
 
     @Override
-    protected void handleSunExposure() {
+    protected void handleSunExposition() {
     }
 
 }

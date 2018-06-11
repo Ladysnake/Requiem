@@ -24,6 +24,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.play.server.SPacketCamera;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
@@ -45,11 +47,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class EntityPossessable extends EntityMob implements IPossessable {
+public class EntityPossessableImpl extends EntityMob implements IPossessable {
     protected static final DataParameter<Optional<UUID>> POSSESSING_ENTITY_ID =
-            EntityDataManager.createKey(EntityPossessable.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+            EntityDataManager.createKey(EntityPossessableImpl.class, DataSerializers.OPTIONAL_UNIQUE_ID);
     protected static final DataParameter<Integer> PURIFIED_HEALTH =
-            EntityDataManager.createKey(EntityPossessable.class, DataSerializers.VARINT);
+            EntityDataManager.createKey(EntityPossessableImpl.class, DataSerializers.VARINT);
     private static MethodHandle entityAINearestAttackableTarget$targetClass;
 
     protected List<Entity> triggeredMobs = new LinkedList<>();
@@ -65,7 +67,7 @@ public abstract class EntityPossessable extends EntityMob implements IPossessabl
         }
     }
 
-    public EntityPossessable(World worldIn) {
+    public EntityPossessableImpl(World worldIn) {
         super(worldIn);
         Collections.addAll(this.equivalents, EntityPlayer.class, EntityPlayerMP.class);
     }
@@ -76,21 +78,17 @@ public abstract class EntityPossessable extends EntityMob implements IPossessabl
 
     @Override
     public boolean onEntityPossessed(EntityPlayer player) {
-        if (this.getControllingPassenger() == player) {
+        if (this.getControllingPassenger() == player)
             return true;
-        }
         if (this.getControllingPassenger() != null) {
             Dissolution.LOGGER.warn("A player attempted to possess an entity that was already possessed");
             return false;
         }
         this.setPossessingEntity(player.getUniqueID());
-        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
-            if (player.getItemStackFromSlot(slot).isEmpty()) {
+        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values())
+            if (player.getItemStackFromSlot(slot).isEmpty())
                 player.setItemStackToSlot(slot, this.getItemStackFromSlot(slot));
-            } else {
-                player.addItemStackToInventory(this.getItemStackFromSlot(slot));
-            }
-        }
+            else player.addItemStackToInventory(this.getItemStackFromSlot(slot));
         player.startRiding(this);
         return true;
     }
@@ -113,11 +111,9 @@ public abstract class EntityPossessable extends EntityMob implements IPossessabl
         DamageSource newSource = null;
         if (source instanceof EntityDamageSourceIndirect)
             //noinspection ConstantConditions
-        {
             newSource = new EntityDamageSourceIndirect(source.getDamageType(), source.getImmediateSource(), this);
-        } else if (source instanceof EntityDamageSource) {
+        else if (source instanceof EntityDamageSource)
             newSource = new EntityDamageSource(source.getDamageType(), this);
-        }
         if (newSource != null) {
             entity.attackEntityFrom(newSource, amount);
             return true;
@@ -131,7 +127,7 @@ public abstract class EntityPossessable extends EntityMob implements IPossessabl
     }
 
     @Override
-    public boolean isEntityInvulnerable(DamageSource source) {
+    public boolean isEntityInvulnerable(@Nonnull DamageSource source) {
         EntityPlayer possessing = getPossessingEntity();
         if (possessing != null && possessing.isCreative()) {
             return true;
@@ -158,9 +154,7 @@ public abstract class EntityPossessable extends EntityMob implements IPossessabl
                 CapabilityIncorporealHandler.getHandler(soul).setCorporealityStatus(SoulStates.BODY);
                 this.world.removeEntity(this);
             }
-        } else {
-            this.getDataManager().set(PURIFIED_HEALTH, health);
-        }
+        } else this.getDataManager().set(PURIFIED_HEALTH, health);
     }
 
     @Override
@@ -202,9 +196,8 @@ public abstract class EntityPossessable extends EntityMob implements IPossessabl
     @Override
     public void onLivingUpdate() {
         super.onLivingUpdate();
-        if (this.rand.nextFloat() < 0.01f) {
+        if (this.rand.nextFloat() < 0.01f)
             this.attractAttention();
-        }
     }
 
     protected void attractAttention() {
@@ -311,9 +304,8 @@ public abstract class EntityPossessable extends EntityMob implements IPossessabl
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         compound.setInteger("purifiedHealth", getPurifiedHealth());
-        if (this.getPossessingEntityId() != null) {
+        if (this.getPossessingEntityId() != null)
             compound.setUniqueId("possessingEntity", this.getPossessingEntityId());
-        }
         return compound;
     }
 
@@ -323,4 +315,86 @@ public abstract class EntityPossessable extends EntityMob implements IPossessabl
         this.setPurifiedHealth(compound.getInteger("purifiedHealth"));
         this.setPossessingEntity(compound.getUniqueId("possessingEntity"));
     }
+
+    @Override
+    public boolean canBePossessedBy(EntityPlayer player) {
+        return this.getControllingPassenger() == player || this.getControllingPassenger() == null;
+    }
+
+    @Override
+    protected void removePassenger(Entity passenger) {
+        CapabilityIncorporealHandler.getHandler(passenger).ifPresent(handler -> {
+            if (!world.isRemote) {
+                ((EntityPlayerMP) passenger).connection.sendPacket(new SPacketCamera(passenger));
+            }
+        });
+        super.removePassenger(passenger);
+    }
+    @Override
+    public void travel(float strafe, float vertical, float forward) {
+        if (this.isBeingRidden() && this.canBeSteered()) {
+            EntityLivingBase entityLivingBase = (EntityLivingBase) this.getControllingPassenger();
+            assert entityLivingBase != null;
+            this.rotationYaw = entityLivingBase.rotationYaw;
+            this.prevRotationYaw = this.rotationYaw;
+            this.rotationPitch = entityLivingBase.rotationPitch;
+            this.setRotation(this.rotationYaw, this.rotationPitch);
+            this.renderYawOffset = this.rotationYaw;
+            this.rotationYawHead = this.renderYawOffset;
+            strafe = entityLivingBase.moveStrafing;
+            forward = entityLivingBase.moveForward;
+
+            if (this.canPassengerSteer()) {
+                this.setAIMoveSpeed((float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
+                super.travel(strafe, vertical, forward);
+            }
+        } else {
+            super.travel(strafe, vertical, forward);
+        }
+    }
+    @Nullable
+    public Entity getControllingPassenger() {
+        return this.getPassengers().stream().filter(e -> e.getUniqueID().equals(getPossessingEntityId())).findAny().orElse(null);
+    }
+
+    @Override
+    public boolean canBeSteered() {
+        return this.getControllingPassenger() instanceof EntityLivingBase;
+    }
+
+    @Override
+    public void updatePassenger(@Nonnull Entity passenger) {
+        super.updatePassenger(passenger);
+        if (passenger.getUniqueID().equals(this.getPossessingEntityId())) {
+            passenger.setPosition(this.posX, this.posY, this.posZ);
+            if (passenger instanceof EntityPlayer) {
+//                for (PotionEffect potionEffect : ((EntityPlayer) passenger).getActivePotionMap().values())
+//                    this.addPotionEffect(new PotionEffect(potionEffect));
+                ((EntityPlayer) passenger).clearActivePotions();
+                for (PotionEffect potionEffect : this.getActivePotionMap().values()) {
+                    ((EntityPlayer) passenger).addPotionEffect(new PotionEffect(potionEffect));
+                }
+            }
+        }
+    }
+    @Override
+    public void onDeath(@Nonnull DamageSource cause) {
+        if (this.getControllingPassenger() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) this.getControllingPassenger();
+            for (EntityEquipmentSlot slot : EntityEquipmentSlot.values())
+                player.setItemStackToSlot(slot, ItemStack.EMPTY);
+            if (!world.isRemote)
+                player.inventory.dropAllItems();
+            CapabilityIncorporealHandler.getHandler(player).setPossessed(null);
+        }
+        super.onDeath(cause);
+    }
+
+    @Override
+    public boolean isOnSameTeam(Entity entityIn) {
+        return entityIn.equals(this.getControllingPassenger())
+                || (this.getControllingPassenger() != null && this.getControllingPassenger().isOnSameTeam(entityIn))
+                || super.isOnSameTeam(entityIn);
+    }
+
 }

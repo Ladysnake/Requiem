@@ -93,8 +93,9 @@ public class GenericStack<T> {
      * @return the remainder of the operation
      */
     public int grow(int quantity) {
-        if (this.isEmpty())
+        if (this.isEmpty()) {
             this.setCount(quantity);
+        }
         return this.setCount(this.stackSize + quantity);
     }
 
@@ -144,11 +145,14 @@ public class GenericStack<T> {
      * @return true if the two stacks could be merged
      */
     public boolean merge(GenericStack<T> stack) {
-        if (stack.isEmpty()) return true;
-        if (this.isEmpty())
+        if (stack.isEmpty()) {
+            return true;
+        }
+        if (this.isEmpty()) {
             this.type = stack.type;
-        else if (this.getType() != stack.getType())
+        } else if (this.getType() != stack.getType()) {
             return false;
+        }
         stack.setCount(this.grow(stack.getCount()));
         return true;
     }
@@ -162,8 +166,9 @@ public class GenericStack<T> {
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        if (type instanceof INBTSerializableType)
+        if (type instanceof INBTSerializableType) {
             return writeToNBT(compound, ((INBTSerializableType<T>) type).getSerializer());
+        }
         throw new UnsupportedOperationException(this.type.getClass() + " has no default serializer");
     }
 
@@ -180,14 +185,22 @@ public class GenericStack<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         GenericStack<?> that = (GenericStack<?>) o;
 
-        if (maxStackSize != that.maxStackSize) return false;
+        if (maxStackSize != that.maxStackSize) {
+            return false;
+        }
         //noinspection SimplifiableIfStatement
-        if (stackSize != that.stackSize) return false;
+        if (stackSize != that.stackSize) {
+            return false;
+        }
         return type != null ? type.equals(that.type) : that.type == null;
     }
 

@@ -62,7 +62,9 @@ public class EntityMinionPigZombie extends EntityMinionZombie {
 
     @Override
     public boolean attackEntityFrom(@Nonnull DamageSource source, float amount) {
-        if (this.isEntityInvulnerable(source)) return false;
+        if (this.isEntityInvulnerable(source)) {
+            return false;
+        }
         if (source.getTrueSource() instanceof EntityLivingBase) {
             becomeAngryAt(source.getTrueSource());
         }
@@ -86,7 +88,7 @@ public class EntityMinionPigZombie extends EntityMinionZombie {
     }
 
     @Override
-    protected void handleSunExposure() {
+    protected void handleSunExposition() {
     }
 
     @Override

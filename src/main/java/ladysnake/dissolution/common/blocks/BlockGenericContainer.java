@@ -47,7 +47,9 @@ public abstract class BlockGenericContainer extends Block {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack heldItem = playerIn.getHeldItem(hand);
         TileEntity tile = worldIn.getTileEntity(pos);
-        if (!(tile instanceof PowderContainer)) return false;
+        if (!(tile instanceof PowderContainer)) {
+            return false;
+        }
         if (heldItem.isEmpty() && playerIn.isSneaking()) {
             if (!worldIn.isRemote) {
                 playerIn.addItemStackToInventory(getDroppedItem(worldIn, pos));
@@ -84,8 +86,9 @@ public abstract class BlockGenericContainer extends Block {
     public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
         super.onBlockHarvested(worldIn, pos, state, player);
         TileEntity tile = worldIn.getTileEntity(pos);
-        if (player.isCreative() && tile instanceof PowderContainer)
+        if (player.isCreative() && tile instanceof PowderContainer) {
             ((PowderContainer) tile).setShouldDrop(false);
+        }
     }
 
     @Override
@@ -111,17 +114,20 @@ public abstract class BlockGenericContainer extends Block {
             IItemHandler itemHandler = itemstack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
             if (inventoryProvider != null) {
                 inventoryProvider.setInventory(EnumPowderOres.class, new GenericStackInventory<>(powderContainer.getPowderInventory()));
-            } else
+            } else {
                 LogManager.getLogger().error("The dropped item stack had no generic inventory capability attached");
+            }
             if (fluidHandler != null) {
                 IFluidHandler tileFluidHandler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-                if (tileFluidHandler != null)
+                if (tileFluidHandler != null) {
                     fluidHandler.fill(tileFluidHandler.drain(Integer.MAX_VALUE, true), true);
+                }
             }
             if (itemHandler != null) {
                 IItemHandler tileItemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN);
-                if (tileItemHandler != null)
+                if (tileItemHandler != null) {
                     itemHandler.insertItem(0, tileItemHandler.extractItem(0, Integer.MAX_VALUE, false), false);
+                }
             }
             return itemstack;
         }
@@ -137,28 +143,33 @@ public abstract class BlockGenericContainer extends Block {
         IItemHandler itemHandler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         if (inventory != null) {
             if (inventory.isEmpty()) {
-                if (advanced.isAdvanced())
+                if (advanced.isAdvanced()) {
                     tooltip.add("No deposit left");
+                }
             } else {
                 for (int i = 0; i < inventory.getSlotCount(); i++) {
-                    if (inventory.getStackInSlot(i).isEmpty()) break;
+                    if (inventory.getStackInSlot(i).isEmpty()) {
+                        break;
+                    }
                     tooltip.add(inventory.getStackInSlot(i).getType() + ":" + inventory.getStackInSlot(i).getCount());
                 }
             }
         }
         if (fluidHandler != null) {
             FluidStack fluidStack = fluidHandler.getTankProperties()[0].getContents();
-            if (fluidStack != null)
+            if (fluidStack != null) {
                 tooltip.add(I18n.format(fluidStack.getFluid().getUnlocalizedName()) + " : " + fluidStack.amount);
-            else if (advanced.isAdvanced())
+            } else if (advanced.isAdvanced()) {
                 tooltip.add("No liquid left");
+            }
         }
         if (itemHandler != null) {
             ItemStack itemStack = itemHandler.getStackInSlot(0);
-            if (!itemStack.isEmpty())
+            if (!itemStack.isEmpty()) {
                 tooltip.add(I18n.format(itemStack.getItem().getUnlocalizedName()) + " : " + itemStack.getCount());
-            else if (advanced.isAdvanced())
+            } else if (advanced.isAdvanced()) {
                 tooltip.add("No residue left");
+            }
         }
     }
 

@@ -27,9 +27,9 @@ public class EntitySoulSpawner extends EntityLiving {
     }
 
     public static boolean isValidLightLevel(World world, BlockPos blockpos) {
-        if (world.getLightFor(EnumSkyBlock.SKY, blockpos) > world.rand.nextInt(32))
+        if (world.getLightFor(EnumSkyBlock.SKY, blockpos) > world.rand.nextInt(32)) {
             return false;
-        else {
+        } else {
             int i = world.getLightFromNeighbors(blockpos);
 
             if (world.isThundering()) {

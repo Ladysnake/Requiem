@@ -59,19 +59,22 @@ public class InventoryItemBlock extends ItemBlock {
         if (player.isSneaking() && player.getHeldItem(hand).hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
             IFluidHandlerItem handler = player.getHeldItem(hand).getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
             if (handler != null) {
-                if (FluidUtil.interactWithFluidHandler(player, hand, worldIn, pos, facing))
+                if (FluidUtil.interactWithFluidHandler(player, hand, worldIn, pos, facing)) {
                     return EnumActionResult.SUCCESS;
+                }
                 ItemStack heldItem = player.getHeldItem(hand);
                 FluidStack heldFluid = FluidUtil.getFluidContained(heldItem);
                 FluidActionResult result = FluidUtil.tryPlaceFluid(player, worldIn, pos.offset(facing), heldItem, heldFluid);
-                if (!result.isSuccess())
+                if (!result.isSuccess()) {
                     result = FluidUtil.tryPickUpFluid(heldItem, player, worldIn, pos.offset(facing), facing);
+                }
                 if (result.isSuccess()) {
                     player.setHeldItem(hand, result.getResult());
                     return EnumActionResult.SUCCESS;
                 }
-                if (worldIn.getBlockState(pos.offset(facing)).getMaterial().isLiquid())
+                if (worldIn.getBlockState(pos.offset(facing)).getMaterial().isLiquid()) {
                     return EnumActionResult.FAIL;
+                }
             }
         }
         return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
@@ -86,18 +89,22 @@ public class InventoryItemBlock extends ItemBlock {
                 GenericStackInventory<EnumPowderOres> tileInventory = CapabilityGenericInventoryProvider.getInventory(tileEntity, EnumPowderOres.class);
                 if (tileInventory != null) {
                     GenericStackInventory<EnumPowderOres> inventory = CapabilityGenericInventoryProvider.getInventory(stack, EnumPowderOres.class);
-                    if (inventory != null)
-                        while (inventory.getTotalAmount() > 0 && tileInventory.canInsert())
+                    if (inventory != null) {
+                        while (inventory.getTotalAmount() > 0 && tileInventory.canInsert()) {
                             tileInventory.insert(inventory.extract(Integer.MAX_VALUE, null));
+                        }
+                    }
                 }
                 IFluidHandler tank = tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
                 IFluidHandler stackFluidHandler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
-                if (tank != null && stackFluidHandler != null)
+                if (tank != null && stackFluidHandler != null) {
                     tank.fill(stackFluidHandler.drain(Integer.MAX_VALUE, !player.isCreative()), true);
+                }
                 IItemHandler itemHandler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN);
                 IItemHandler stackItemHandler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-                if (itemHandler != null && stackItemHandler != null)
+                if (itemHandler != null && stackItemHandler != null) {
                     itemHandler.insertItem(0, stackItemHandler.extractItem(0, Integer.MAX_VALUE, player.isCreative()), false);
+                }
                 tileEntity.markDirty();
             }
         }
@@ -117,54 +124,66 @@ public class InventoryItemBlock extends ItemBlock {
 
         public CapabilityProvider(ItemStack stack) {
             super();
-            if (generic)
+            if (generic) {
                 genericProvider = new CapabilityGenericInventoryProvider.Provider();
-            if (fluid)
+            }
+            if (fluid) {
                 fluidProvider = new FluidHandlerItemStack(stack, Fluid.BUCKET_VOLUME);
-            if (item)
+            }
+            if (item) {
                 itemHandler = new ItemStackHandler();
+            }
         }
 
         @Override
         public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
-            if (capability == CapabilityGenericInventoryProvider.CAPABILITY_GENERIC)
+            if (capability == CapabilityGenericInventoryProvider.CAPABILITY_GENERIC) {
                 return generic;
-            if (capability == CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
+            }
+            if (capability == CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY) {
                 return fluid;
+            }
             return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && item;
         }
 
         @Nullable
         @Override
         public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-            if (capability == CapabilityGenericInventoryProvider.CAPABILITY_GENERIC && generic)
+            if (capability == CapabilityGenericInventoryProvider.CAPABILITY_GENERIC && generic) {
                 return genericProvider.getCapability(capability, facing);
-            if (capability == CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY && fluid)
+            }
+            if (capability == CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY && fluid) {
                 return fluidProvider.getCapability(capability, facing);
-            if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && item)
+            }
+            if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && item) {
                 return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemHandler);
+            }
             return null;
         }
 
         @Override
         public NBTTagCompound serializeNBT() {
             NBTTagCompound compound = new NBTTagCompound();
-            if (generic)
+            if (generic) {
                 compound.setTag("generic", genericProvider.serializeNBT());
+            }
             if (item) {
                 NBTBase itemCompound = CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().writeNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, itemHandler, null);
-                if (itemCompound != null)
+                if (itemCompound != null) {
                     compound.setTag("item", itemCompound);
+                }
             }
             return compound;
         }
 
         @Override
         public void deserializeNBT(NBTTagCompound nbt) {
-            if (generic)
+            if (generic) {
                 genericProvider.deserializeNBT(nbt.getTag("generic"));
-            if (item)
+            }
+            if (item) {
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().readNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, itemHandler, null, nbt.getTag("item"));
+            }
         }
     }
 }

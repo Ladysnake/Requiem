@@ -86,23 +86,25 @@ public final class DissolutionInventoryHelper {
     public static void transferEquipment(EntityLivingBase source, EntityLivingBase dest) {
         for (ItemStack stuff : source.getEquipmentAndArmor()) {
             EntityEquipmentSlot slot = null;
-            if (stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.HEAD, source))
+            if (stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.HEAD, source)) {
                 slot = EntityEquipmentSlot.HEAD;
-            else if (stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.CHEST, source))
+            } else if (stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.CHEST, source)) {
                 slot = EntityEquipmentSlot.CHEST;
-            else if (stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.LEGS, source))
+            } else if (stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.LEGS, source)) {
                 slot = EntityEquipmentSlot.LEGS;
-            else if (stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.FEET, source))
+            } else if (stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.FEET, source)) {
                 slot = EntityEquipmentSlot.FEET;
-            else if (stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.MAINHAND, source) && !stuff.isEmpty())
+            } else if (stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.MAINHAND, source) && !stuff.isEmpty()) {
                 slot = EntityEquipmentSlot.MAINHAND;
-            else if (stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.OFFHAND, source) && !stuff.isEmpty())
+            } else if (stuff.getItem().isValidArmor(stuff, EntityEquipmentSlot.OFFHAND, source) && !stuff.isEmpty()) {
                 slot = EntityEquipmentSlot.OFFHAND;
+            }
             if (slot != null) {
-                if (dest.getItemStackFromSlot(slot) != ItemStack.EMPTY)
+                if (dest.getItemStackFromSlot(slot) != ItemStack.EMPTY) {
                     dest.entityDropItem(stuff, 0.5f);
-                else
+                } else {
                     dest.setItemStackToSlot(slot, stuff);
+                }
                 source.setItemStackToSlot(slot, ItemStack.EMPTY);
             }
         }

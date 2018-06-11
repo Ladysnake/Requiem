@@ -30,8 +30,9 @@ public class RenderMinionZombie extends RenderMinion<EntityMinionZombie> {
 
     @Override
     protected void preRenderCallback(EntityMinionZombie minionIn, float partialTickTime) {
-        if (minionIn.isHusk())
+        if (minionIn.isHusk()) {
             GlStateManager.scale(1.0625F, 1.0625F, 1.0625F);
+        }
         super.preRenderCallback(minionIn, partialTickTime);
     }
 }

@@ -2,9 +2,12 @@ package ladysnake.dissolution.common.entity.souls;
 
 import elucent.albedo.lighting.ILightProvider;
 import elucent.albedo.lighting.Light;
-
-import javax.annotation.Nonnull;
-
+import ladysnake.dissolution.api.Soul;
+import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.entity.SoulType;
+import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
+import ladysnake.dissolution.common.items.ItemSoulInAJar;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
@@ -15,16 +18,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
-
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import ladysnake.dissolution.api.Soul;
-import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.entity.SoulType;
-import ladysnake.dissolution.common.init.ModItems;
-import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
-import ladysnake.dissolution.common.items.ItemSoulInAJar;
+import javax.annotation.Nonnull;
 
 @Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo", striprefs = true)
 public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
@@ -51,8 +48,9 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
     public void onUpdate() {
         super.onUpdate();
 
-        if (this.posY > 300)
+        if (this.posY > 300) {
             this.outOfWorld();
+        }
 
         if (this.delayBeforeCanPickup > 0) {
             --this.delayBeforeCanPickup;
@@ -71,8 +69,9 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
             if (this.soulAge % 100 == 0) {
                 if (!(this.targetEntity instanceof EntityPlayer) || this.getDistanceSq(targetEntity) > 1024.0) {
                     this.targetEntity = selectTarget();
-                    if (targetEntity == null && !world.isAnyPlayerWithinRangeAt(this.posX, this.posY, this.posZ, 64))
+                    if (targetEntity == null && !world.isAnyPlayerWithinRangeAt(this.posX, this.posY, this.posZ, 64)) {
                         this.soulAge += 600;
+                    }
                 }
             }
 
@@ -93,10 +92,11 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
             final double outerRange = 6;
             // the range at which the wisp will stop approaching its target
             final double innerRange = 1;
-            if (length > innerRange && length < outerRange)
+            if (length > innerRange && length < outerRange) {
                 weight = 0.25 * ((outerRange - length) / (outerRange - innerRange));
-            else if (length <= innerRange)
+            } else if (length <= innerRange) {
                 weight = 1;
+            }
             motionX = (1 - weight) * ((0.9) * motionX + (0.1) * targetVector.x) + weight * targetVector.z;
             motionY = (1 - weight) * ((0.9) * motionY + (0.1) * targetVector.y) + weight * targetVector.y;
             motionZ = (1 - weight) * ((0.9) * motionZ + (0.1) * targetVector.z) - weight * targetVector.x;

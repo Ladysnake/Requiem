@@ -79,8 +79,9 @@ public class CapabilityGenericInventoryProvider {
         @Nullable
         @Override
         public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-            if (capability.equals(CAPABILITY_GENERIC))
+            if (capability.equals(CAPABILITY_GENERIC)) {
                 return CAPABILITY_GENERIC.cast(instance);
+            }
             return null;
         }
 

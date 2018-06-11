@@ -40,7 +40,7 @@ public interface IPossessable extends ISoulInteractable {
 
     boolean onPossessionStop(EntityPlayer player, boolean force);
 
-    UUID getPossessingEntity();
+    UUID getPossessingEntityId();
 
     /**
      * Called when an entity is attacked by the player possessing this entity

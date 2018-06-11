@@ -64,8 +64,9 @@ public class TileEntityCrucibleRenderer extends TileEntitySpecialRenderer<TileEn
                 GlStateManager.disableBlend();
                 TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("minecraft:blocks/sand");
                 int i = te.getWorld().getLight(te.getPos());
-                if (amount > 0)
+                if (amount > 0) {
                     renderLevel(amount, capacity, sprite, i, 0xFF, 0xFF, 0xFF, 0xFF);
+                }
             }
 
             GlStateManager.popMatrix();

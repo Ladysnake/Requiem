@@ -1,5 +1,7 @@
 package ladysnake.dissolution.core.asm;
 
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.util.Printer;
@@ -8,6 +10,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public final class ASMUtil {
@@ -22,21 +25,49 @@ public final class ASMUtil {
         while (iterator.hasNext()) {
             AbstractInsnNode node = iterator.next();
             String s;
-            if (node instanceof LabelNode)
+            if (node instanceof LabelNode) {
                 s = "LABEL";
-            else if (node instanceof LineNumberNode)
+            } else if (node instanceof LineNumberNode) {
                 s = "LINE";
-            else if (node.getOpcode() >= 0)
+            } else if (node.getOpcode() >= 0) {
                 s = Printer.OPCODES[node.getOpcode()];
-            else s = node.toString();
+            } else {
+                s = node.toString();
+            }
             s += " ";
-            if (node instanceof VarInsnNode) s += ((VarInsnNode) node).var;
-            else if (node instanceof MethodInsnNode) s += ((MethodInsnNode) node).name + ((MethodInsnNode) node).desc;
-            else if (node instanceof JumpInsnNode) s += ((JumpInsnNode) node).label.getLabel().toString();
-            else if (node instanceof LabelNode) s += ((LabelNode) node).getLabel().toString();
-            else if (node instanceof LineNumberNode) s += ((LineNumberNode) node).line;
+            if (node instanceof VarInsnNode) {
+                s += ((VarInsnNode) node).var;
+            } else if (node instanceof MethodInsnNode) {
+                s += ((MethodInsnNode) node).name + ((MethodInsnNode) node).desc;
+            } else if (node instanceof JumpInsnNode) {
+                s += ((JumpInsnNode) node).label.getLabel().toString();
+            } else if (node instanceof LabelNode) {
+                s += ((LabelNode) node).getLabel().toString();
+            } else if (node instanceof LineNumberNode) {
+                s += ((LineNumberNode) node).line;
+            }
             System.out.println(s);
         }
+    }
+
+    /**
+     * Transforms a class using the given transformer
+     *
+     * @param basicClass  a byte array representing the class being transformed
+     * @param transformer a consumer taking a {@link ClassNode}
+     * @return the class' bytecode after transformation
+     */
+    static byte[] invokeCthulhu(byte[] basicClass, Consumer<ClassNode> transformer) {
+        ClassReader reader = new ClassReader(basicClass);
+        ClassNode classNode = new ClassNode();
+        reader.accept(classNode, 0);
+
+        transformer.accept(classNode);
+
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+        classNode.accept(writer);
+
+        return writer.toByteArray();
     }
 
     static class MethodKey {
@@ -49,8 +80,12 @@ public final class ASMUtil {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             MethodKey methodKey = (MethodKey) o;
             return Objects.equals(name, methodKey.name) &&
                     Objects.equals(desc, methodKey.desc);
@@ -77,8 +112,12 @@ public final class ASMUtil {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             MethodKey methodKey = (MethodKey) o;
             return Objects.equals(getter, methodKey.name) &&
                     Objects.equals(setter, methodKey.desc);

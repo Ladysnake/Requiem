@@ -16,7 +16,9 @@ public class AddGetterClassAdapter extends ClassVisitor {
     }
 
     static void init(Map<ASMUtil.MethodKey, ASMUtil.MethodInfo> livingBaseMethods) {
-        if (AddGetterAdapter.gettersSettersNames != null) return;
+        if (AddGetterAdapter.gettersSettersNames != null) {
+            return;
+        }
 
         AddGetterAdapter.gettersSettersNames = new HashMap<>();
         String clazz = "net/minecraft/entity/EntityLivingBase";
@@ -66,7 +68,9 @@ public class AddGetterClassAdapter extends ClassVisitor {
 
     static void generateGetterSetter(ClassNode classNode, FieldNode fieldNode) {
         ASMUtil.GetterSetterPair names = AddGetterClassAdapter.AddGetterAdapter.gettersSettersNames.get(new ASMUtil.MethodKey(fieldNode.name, fieldNode.desc));
-        if (names == null) return;
+        if (names == null) {
+            return;
+        }
 
         // generate a getter for the field
         String desc = "()" + fieldNode.desc;

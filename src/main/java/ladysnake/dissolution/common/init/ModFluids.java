@@ -17,7 +17,6 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -114,16 +113,18 @@ public enum ModFluids {
 
     @SubscribeEvent
     public static void onRegister(RegistryEvent.Register<Block> event) {
-        for (final ModFluids modFluid : ModFluids.values())
+        for (final ModFluids modFluid : ModFluids.values()) {
             modFluid.registerFluidBlock(event.getRegistry());
+        }
         registerFluidContainers();
     }
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public static void registerAllModels(final ModelRegistryEvent event) {
-        for (ModFluids mf : ModFluids.values())
+        for (ModFluids mf : ModFluids.values()) {
             mf.registerFluidModel();
+        }
     }
 
     private static void registerFluidContainers() {

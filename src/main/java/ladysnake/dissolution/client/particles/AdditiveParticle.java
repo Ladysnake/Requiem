@@ -58,8 +58,9 @@ public class AdditiveParticle extends Particle implements IDissolutionParticle {
     }
 
     public AdditiveParticle setTexture(ResourceLocation texture) {
-        if (texture == null)
+        if (texture == null) {
             texture = STAR_PARTICLE_TEXTURE;
+        }
         TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(texture.toString());
         this.setParticleTexture(sprite);
         return this;

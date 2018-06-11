@@ -10,8 +10,9 @@ public class DisplayItemPacket implements IMessageHandler<DisplayItemMessage, IM
 
     @Override
     public IMessage onMessage(DisplayItemMessage message, MessageContext ctx) {
-        if (ctx.side.isClient())
+        if (ctx.side.isClient()) {
             Minecraft.getMinecraft().addScheduledTask(() -> PlayerInventoryListener.setItemToDisplay(message.playerUuid, message.stack));
+        }
         return null;
     }
 

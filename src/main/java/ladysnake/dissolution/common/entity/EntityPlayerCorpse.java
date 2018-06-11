@@ -1,8 +1,8 @@
 package ladysnake.dissolution.common.entity;
 
 import com.google.common.base.Optional;
-import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.ISoulHandler;
+import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
@@ -14,7 +14,6 @@ import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
 import ladysnake.dissolution.common.registries.SoulStates;
 import ladysnake.dissolution.core.DissolutionHooks;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
@@ -33,7 +32,6 @@ import net.minecraft.server.management.UserListOpsEntry;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 
@@ -58,7 +56,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
     }
 
     @Override
-    public void knockBack(Entity entityIn, float strength, double xRatio, double zRatio) {
+    public void knockBack(@Nonnull Entity entityIn, float strength, double xRatio, double zRatio) {
         EntityLivingBase possessed = DissolutionHooks.getPossessedEntity(this);
         if (possessed != null) {
             possessed.knockBack(entityIn, strength, xRatio, zRatio);
@@ -69,7 +67,9 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 
     @Override
     protected boolean processInteract(EntityPlayer player, EnumHand hand) {
-        if (!canEntityAccess(this, player)) return false;
+        if (!canEntityAccess(this, player)) {
+            return false;
+        }
         final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
         if (this.ticksExisted > 100 && (!this.isDecaying() || Dissolution.config.respawn.wowLikeRespawn)) {
             if (!world.isRemote) {
@@ -98,9 +98,13 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
      */
     private static boolean canEntityAccess(EntityPlayerCorpse entityPlayerCorpse, Entity entity) {
         if (Dissolution.config.entities.lockPlayerCorpses) {
-            if (entity == null) return false;
+            if (entity == null) {
+                return false;
+            }
             if (!Objects.equals(entity.getUniqueID(), entityPlayerCorpse.getOwnerId())) {
-                if (!(entity instanceof EntityPlayer)) return false;
+                if (!(entity instanceof EntityPlayer)) {
+                    return false;
+                }
                 World world = entityPlayerCorpse.getEntityWorld();
 //                if (world.isRemote && ((EntityPlayerSP) entity).getPermissionLevel() < 2)
 //                    return false;
@@ -209,7 +213,7 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
     }
 
     @Override
-    protected void handleSunExposure() {
+    protected void handleSunExposition() {
     }
 
     public UUID getPlayer() {
@@ -230,8 +234,9 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
     @Override
     protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, @Nonnull DamageSource cause) {
         super.dropLoot(wasRecentlyHit, lootingModifier, cause);
-        if (this.inventory != null)
+        if (this.inventory != null) {
             this.inventory.dropAllItems(this);
+        }
     }
 
     @Override
@@ -272,15 +277,17 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 
     @Override
     public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
-        if (capability == CapabilitySoulHandler.CAPABILITY_SOUL_INVENTORY)
+        if (capability == CapabilitySoulHandler.CAPABILITY_SOUL_INVENTORY) {
             return soulInventoryProvider.hasCapability(capability, facing);
+        }
         return super.hasCapability(capability, facing);
     }
 
     @Override
     public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
-        if (capability == CapabilitySoulHandler.CAPABILITY_SOUL_INVENTORY)
+        if (capability == CapabilitySoulHandler.CAPABILITY_SOUL_INVENTORY) {
             return soulInventoryProvider.getCapability(capability, facing);
+        }
         return super.getCapability(capability, facing);
     }
 

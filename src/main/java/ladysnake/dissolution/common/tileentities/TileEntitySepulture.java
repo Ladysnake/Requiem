@@ -23,8 +23,9 @@ public class TileEntitySepulture extends TileEntity {
 
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
-        if (deathMessage != null)
+        if (deathMessage != null) {
             compound.setString("deathMessage", deathMessage);
+        }
         return compound;
     }
 }

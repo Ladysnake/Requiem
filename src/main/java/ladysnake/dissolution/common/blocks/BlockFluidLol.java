@@ -43,7 +43,9 @@ public class BlockFluidLol extends BlockFluidClassic {
 
     @Override
     public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entityIn) {
-        if (state.getBlock() != this) return;
+        if (state.getBlock() != this) {
+            return;
+        }
 
         double archimedesPush = calculateVolumeImmersed(entityIn) * 0.08;
 
@@ -52,8 +54,9 @@ public class BlockFluidLol extends BlockFluidClassic {
             entityIn.fallDistance = 0;
             entityIn.motionY += archimedesPush;
             if (entityIn instanceof EntityLivingBase) {
-                if ((Boolean) isJumping.invoke(entityIn))
+                if ((Boolean) isJumping.invoke(entityIn)) {
                     handleMercuryJump(entityIn);
+                }
                 jumpTicks.invoke(entityIn, 2);
             }
         } catch (Throwable throwable) {
@@ -87,18 +90,24 @@ public class BlockFluidLol extends BlockFluidClassic {
                 for (int z = minZ; z <= maxZ; ++z) {
                     if (entity.world.getBlockState(blockPos$pooledMutableBlockPos.setPos(x, y, z)).getMaterial() == MATERIAL_MERCURY) {
                         double immX = 1, immY = 1, immZ = 1;
-                        if (x < bb.minX)
+                        if (x < bb.minX) {
                             immX -= bb.minX - x;
-                        if (y < bb.minY)
+                        }
+                        if (y < bb.minY) {
                             immY -= bb.minY - y;
-                        if (z < bb.minZ)
+                        }
+                        if (z < bb.minZ) {
                             immZ -= bb.minZ - z;
-                        if (x + 1 > bb.maxX)
+                        }
+                        if (x + 1 > bb.maxX) {
                             immX -= x + 1 - bb.maxX;
-                        if (y + 1 > bb.maxY)
+                        }
+                        if (y + 1 > bb.maxY) {
                             immY -= y + 1 - bb.maxY;
-                        if (z + 1 > bb.maxZ)
+                        }
+                        if (z + 1 > bb.maxZ) {
                             immZ -= z + 1 - bb.maxZ;
+                        }
                         volume += immX * immY * immZ;
                     }
                 }

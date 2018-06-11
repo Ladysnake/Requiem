@@ -24,8 +24,9 @@ public class LayerScythe implements LayerRenderer<EntityPlayer> {
             GlStateManager.rotate(90F / (float) Math.PI, 1.0F, 0.0F, 0.0F);
         }
         ItemStack displayItem = PlayerInventoryListener.getItemToDisplay(player.getUniqueID());
-        if (!displayItem.isEmpty() && !ItemStack.areItemStacksEqual(displayItem, player.getHeldItemMainhand()))
+        if (!displayItem.isEmpty() && !ItemStack.areItemStacksEqual(displayItem, player.getHeldItemMainhand())) {
             Minecraft.getMinecraft().getRenderItem().renderItem(displayItem, ItemCameraTransforms.TransformType.NONE);
+        }
         GlStateManager.popMatrix();
         return;
     }

@@ -59,7 +59,9 @@ public class CommandSoulStrength extends CommandBase {
      */
     @Override
     public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException {
-        if (args.length <= 0) throw new WrongUsageException("commands.dissolution.soul_strength.usage");
+        if (args.length <= 0) {
+            throw new WrongUsageException("commands.dissolution.soul_strength.usage");
+        }
         if ("query".equals(args[0]) || "get".equals(args[0])) {
             EntityPlayer player = args.length >= 2 ? getPlayer(server, sender, args[1]) : getCommandSenderAsPlayer(sender);
             IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
@@ -67,8 +69,9 @@ public class CommandSoulStrength extends CommandBase {
                     new TextComponentTranslation("commands.dissolution.soul_strength.get." + (player == sender ? "self" : "other"), player.getName(),
                             new TextComponentTranslation("dissolution.soul_strength." + (handler.isStrongSoul() ? "strong" : "weak"))));
         } else if ("set".equals(args[0])) {
-            if (Dissolution.config.enforcedSoulStrength != DissolutionConfigManager.EnforcedSoulStrength.NONE)
+            if (Dissolution.config.enforcedSoulStrength != DissolutionConfigManager.EnforcedSoulStrength.NONE) {
                 throw new CommandException("commands.dissolution.soul_strength.enforced_soul_strength");
+            }
             EntityPlayer player = args.length >= 3 ? getPlayer(server, sender, args[2]) : getCommandSenderAsPlayer(sender);
             IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
             TextComponentTranslation soulStrength;
@@ -78,10 +81,15 @@ public class CommandSoulStrength extends CommandBase {
             } else if (weakAliases.contains(args[1])) {
                 handler.setStrongSoul(false);
                 soulStrength = new TextComponentTranslation("dissolution.soul_strength.weak");
-            } else throw new WrongUsageException("commands.dissolution.soul_strength.set.usage");
+            } else {
+                throw new WrongUsageException("commands.dissolution.soul_strength.set.usage");
+            }
             notifyCommandListener(sender, this, "commands.dissolution.soul_strength.update", player.getName());
-            if (sender.getEntityWorld().getGameRules().getBoolean("sendCommandFeedback"))
+            if (sender.getEntityWorld().getGameRules().getBoolean("sendCommandFeedback")) {
                 player.sendMessage(new TextComponentTranslation("dissolution.soul_strength.changed", soulStrength));
-        } else throw new WrongUsageException("commands.dissolution.soul_strength.usage");
+            }
+        } else {
+            throw new WrongUsageException("commands.dissolution.soul_strength.usage");
+        }
     }
 }
