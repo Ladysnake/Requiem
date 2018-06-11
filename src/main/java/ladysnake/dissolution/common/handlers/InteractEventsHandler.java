@@ -110,6 +110,9 @@ public class InteractEventsHandler {
      */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onEntityMount(EntityMountEvent event) {
+        if (event.getEntityMounting().world.isRemote) {
+            return;
+        }
         CapabilityIncorporealHandler.getHandler(event.getEntity()).ifPresent(handler -> {
             if (handler.getCorporealityStatus().isIncorporeal()) {
                 Entity beingMounted = event.getEntityBeingMounted();
