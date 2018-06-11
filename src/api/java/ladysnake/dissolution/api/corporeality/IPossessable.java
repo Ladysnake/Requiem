@@ -42,6 +42,8 @@ public interface IPossessable extends ISoulInteractable {
 
     UUID getPossessingEntityId();
 
+    void setSleeping(boolean sleeping);
+
     /**
      * Called when an entity is attacked by the player possessing this entity
      *

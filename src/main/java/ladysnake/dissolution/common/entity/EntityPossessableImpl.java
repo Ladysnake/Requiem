@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.blocks.BlockSepulchre;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIInert;
 import ladysnake.dissolution.common.registries.SoulStates;
@@ -50,6 +51,7 @@ import java.util.UUID;
 /**
  * The template class for possessable entities. <br>
  * Used in {@link PossessableEntityFactory} to generate possessable versions of any mob.
+ * Note: do <b>NOT</b> check whether entities are instances of this class, it will always return false.
  */
 public class EntityPossessableImpl extends EntityMob implements IPossessable {
     protected static final DataParameter<Optional<UUID>> POSSESSING_ENTITY_ID =
@@ -236,6 +238,12 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             }
         }
         return false;
+    }
+
+    @Override
+    public void setSleeping(boolean sleeping) {
+        this.sleeping = sleeping;
+        BlockSepulchre.updateAllZombiesSleepingFlag();
     }
 
     @Override
