@@ -62,6 +62,9 @@ public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (worldIn.isRemote) {
+            return true;
+        }
         IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(playerIn);
         if (handler.getPossessed() instanceof EntityLivingBase) {
             IPossessable possessed = handler.getPossessed();
@@ -104,7 +107,10 @@ public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable
         if (allZombiesSleeping) {
             for (EntityPlayer entityplayer : playerEntities) {
                 if (!entityplayer.isSpectator()) {
-                    return false;
+                    IPossessable possessed = CapabilityIncorporealHandler.getHandler(entityplayer).getPossessed();
+                    if (!(possessed instanceof EntityLivingBase) || !((EntityLivingBase) possessed).isPlayerSleeping()) {
+                        return false;
+                    }
                 }
             }
             return true;
