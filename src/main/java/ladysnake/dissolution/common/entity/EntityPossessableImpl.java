@@ -54,9 +54,9 @@ import java.util.UUID;
  * Note: do <b>NOT</b> check whether entities are instances of this class, it will always return false.
  */
 public class EntityPossessableImpl extends EntityMob implements IPossessable {
-    protected static final DataParameter<Optional<UUID>> POSSESSING_ENTITY_ID =
+    private static final DataParameter<Optional<UUID>> POSSESSING_ENTITY_ID =
             EntityDataManager.createKey(EntityPossessableImpl.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-    protected static final DataParameter<Integer> PURIFIED_HEALTH =
+    private static final DataParameter<Integer> PURIFIED_HEALTH =
             EntityDataManager.createKey(EntityPossessableImpl.class, DataSerializers.VARINT);
     private static MethodHandle entityAINearestAttackableTarget$targetClass;
 
@@ -92,11 +92,15 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             return false;
         }
         this.setPossessingEntity(player.getUniqueID());
-        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values())
-            if (player.getItemStackFromSlot(slot).isEmpty())
+        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+            if (player.getItemStackFromSlot(slot).isEmpty()) {
                 player.setItemStackToSlot(slot, this.getItemStackFromSlot(slot));
-            else player.addItemStackToInventory(this.getItemStackFromSlot(slot));
+            } else {
+                player.addItemStackToInventory(this.getItemStackFromSlot(slot));
+            }
+        }
         player.startRiding(this);
+        player.eyeHeight = this.getEyeHeight();
         return true;
     }
 
@@ -108,6 +112,7 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
         IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
         if (!handler.getCorporealityStatus().isIncorporeal() || this.isDead || force) {
             this.setPossessingEntity(null);
+            player.eyeHeight = player.getDefaultEyeHeight();
             return true;
         }
         return false;
@@ -181,12 +186,12 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     }
 
     @Nullable
-    public EntityPlayer getPossessingEntity() {
+    private EntityPlayer getPossessingEntity() {
         UUID possessingId = getPossessingEntityId();
         return possessingId == null ? null : world.getPlayerEntityByUUID(possessingId);
     }
 
-    public void setPossessingEntity(@Nullable UUID possessingEntity) {
+    private void setPossessingEntity(@Nullable UUID possessingEntity) {
         if (!world.isRemote) {
             this.aiDontDoShit.setShouldExecute(possessingEntity != null);
         }
@@ -207,14 +212,14 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             this.attractAttention();
     }
 
-    protected void attractAttention() {
+    private void attractAttention() {
         List<EntityCreature> nearby = this.world.getEntitiesWithinAABB(EntityCreature.class,
                 new AxisAlignedBB(new BlockPos(this)).grow(30), this::isMobEligibleForAttention);
         Collections.shuffle(nearby);
         int max = Math.min(rand.nextInt() % 5, nearby.size());
         for (int i = 0; i < max; i++) {
             for (EntityAITasks.EntityAITaskEntry taskEntry : nearby.get(i).targetTasks.taskEntries) {
-                if (shouldBeTargetedBy(nearby.get(i), taskEntry)) {
+                if (shouldBeTargetedBy(taskEntry)) {
                     nearby.get(i).targetTasks.addTask(taskEntry.priority - 1,
                             new EntityAINearestAttackableTarget<>(nearby.get(i), this.getClass(), true));
                     this.triggeredMobs.add(nearby.get(i));
@@ -224,11 +229,11 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
         }
     }
 
-    protected boolean isMobEligibleForAttention(EntityCreature other) {
+    private boolean isMobEligibleForAttention(EntityCreature other) {
         return !this.triggeredMobs.contains(other) && (!other.isEntityUndead() || !other.isNonBoss());
     }
 
-    protected boolean shouldBeTargetedBy(EntityCreature other, EntityAITasks.EntityAITaskEntry taskEntry) {
+    private boolean shouldBeTargetedBy(EntityAITasks.EntityAITaskEntry taskEntry) {
         if (taskEntry.action instanceof EntityAINearestAttackableTarget) {
             try {
                 @SuppressWarnings("unchecked") Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>) entityAINearestAttackableTarget$targetClass.invoke(taskEntry.action);

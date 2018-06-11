@@ -301,7 +301,6 @@ public class CapabilityIncorporealHandler {
                 }
                 IPossessable possessed = getPossessed();
                 if (possessed instanceof Entity) {
-                    owner.eyeHeight = ((Entity) possessed).getEyeHeight();
                     try {
                         entity$setSize.invoke(owner, 0.0f, owner.height);
                     } catch (Throwable throwable) {
