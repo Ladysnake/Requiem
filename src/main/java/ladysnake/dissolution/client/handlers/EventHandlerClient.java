@@ -160,6 +160,21 @@ public class EventHandlerClient {
     }
 
     @SubscribeEvent
+    public void onInventoryRender(GuiScreenEvent.DrawScreenEvent.Post event) {
+        EntityPlayerSP player = Minecraft.getMinecraft().player;
+        GuiScreen gui = event.getGui();
+        if (player != null && gui instanceof GuiInventory) {
+            GuiInventory inv = (GuiInventory) gui;
+            int guiLeft = inv.getGuiLeft();
+            int guiTop = inv.getGuiTop();
+            IPossessable possessed = CapabilityIncorporealHandler.getHandler(player).getPossessed();
+            if (possessed instanceof EntityLivingBase) {
+                GuiInventory.drawEntityOnScreen(guiLeft + 51, guiTop + 75, 30, guiLeft + 51 - inv.oldMouseX, guiTop + 75 - 50 - inv.oldMouseY, (EntityLivingBase) possessed);
+            }
+        }
+    }
+
+    @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent event) {
         if (noServerInstall) {
             return;
