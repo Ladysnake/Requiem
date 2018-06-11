@@ -18,12 +18,19 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumHandSide;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.*;
@@ -53,10 +60,6 @@ public class EventHandlerClient {
     private static final float SOUL_VERTICAL_SPEED = 0.1f;
     private static MethodHandle highlightingItemStack;
     private static int refreshTimer = 0;
-
-    private static float prevHealth = 20;
-    private static double prevMaxHealth = 20;
-    private static boolean wasRidingLastTick = false;
 
     static {
         try {
@@ -91,24 +94,6 @@ public class EventHandlerClient {
         } else if (playerCorp.isSynced()) {
             refreshTimer = 0;
         }
-
-        // Convoluted way of displaying the health of the possessed entity
-//        if (playerCorp.getPossessed() instanceof EntityLiving && ((EntityLiving) playerCorp.getPossessed()).getHealth() > 0) {
-//            if (!wasRidingLastTick) {
-//                prevHealth = player.getHealth();
-//                IAttributeInstance maxHealth = player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
-//                prevMaxHealth = maxHealth.getAttributeValue();
-//                maxHealth.setBaseValue(playerCorp.getPossessed().getPurifiedHealth());
-////                        ((EntityLiving) player.getRidingEntity()).getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
-//                wasRidingLastTick = true;
-//            }
-//            if (player.getHealth() != ((EntityLiving) player.getRidingEntity()).getHealth())
-//                player.setHealth(((EntityLiving) player.getRidingEntity()).getHealth());
-//        } else if (wasRidingLastTick) {
-//            player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(prevMaxHealth);
-//            player.setHealth(prevHealth);
-//            wasRidingLastTick = false;
-//        }
     }
 
     @SubscribeEvent
@@ -160,7 +145,7 @@ public class EventHandlerClient {
     }
 
     @SubscribeEvent
-    public void onInventoryRender(GuiScreenEvent.DrawScreenEvent.Post event) {
+    public static void onInventoryRender(GuiScreenEvent.DrawScreenEvent.Pre event) {
         EntityPlayerSP player = Minecraft.getMinecraft().player;
         GuiScreen gui = event.getGui();
         if (player != null && gui instanceof GuiInventory) {
@@ -169,6 +154,7 @@ public class EventHandlerClient {
             int guiTop = inv.getGuiTop();
             IPossessable possessed = CapabilityIncorporealHandler.getHandler(player).getPossessed();
             if (possessed instanceof EntityLivingBase) {
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 GuiInventory.drawEntityOnScreen(guiLeft + 51, guiTop + 75, 30, guiLeft + 51 - inv.oldMouseX, guiTop + 75 - 50 - inv.oldMouseY, (EntityLivingBase) possessed);
             }
         }
@@ -236,8 +222,6 @@ public class EventHandlerClient {
         }
     }
 
-    //    private static RenderWillOWisp<EntityPlayer> renderSoul;
-
     @SubscribeEvent
     public static void onPlayerRender(RenderPlayerEvent.Pre event) {
         if (noServerInstall) {
@@ -248,15 +232,7 @@ public class EventHandlerClient {
         if (playerCorp.getCorporealityStatus().isIncorporeal()) {
             float alpha = CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player).isStrongSoul() ? 0.8F : 0.05F;
             GlStateManager.color(0.9F, 0.9F, 1.0F, alpha); // Tints the player blue and reduces the transparency
-        }/* else if (playerCorp.getCorporealityStatus() == SoulStates.SOUL) {
-            if (playerCorp.getPossessed() == null) {
-                if (renderSoul == null)
-                    renderSoul = new RenderWillOWisp<>(Minecraft.getMinecraft().getRenderManager());
-                renderSoul.doRender(event.getEntityPlayer(), event.getX(), event.getY(), event.getZ(),
-                        event.getEntityPlayer().getRotationYawHead(), event.getPartialRenderTick());
-            }
-            event.setCanceled(true);
-        }*/
+        }
         event.getRenderer().shadowOpaque = playerCorp.getCorporealityStatus().isIncorporeal() ? 0F : 1F;
     }
 
@@ -272,6 +248,7 @@ public class EventHandlerClient {
         DissolutionParticleManager.INSTANCE.renderParticles(event.getPartialTicks());
     }
 
+    @SuppressWarnings("unchecked")
     @SubscribeEvent
     public static void onRenderSpecificHand(RenderSpecificHandEvent event) {
         if (noServerInstall) {
@@ -281,18 +258,76 @@ public class EventHandlerClient {
         IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(playerSP);
         if (handler.getCorporealityStatus().isIncorporeal()) {
             IPossessable possessed = handler.getPossessed();
-            if (possessed == null && !playerSP.isCreative() || event.getItemStack().isEmpty()) {
+            if (possessed == null && !playerSP.isCreative()) {
                 event.setCanceled(true);
-            } else if (possessed instanceof EntityLivingBase && (event.getHand() == EnumHand.MAIN_HAND || playerSP.getHeldItemMainhand().isEmpty())) {
+            } else if (possessed instanceof EntityLivingBase) {
                 EntityLivingBase livingPossessed = (EntityLivingBase) possessed;
-                float f1 = playerSP.prevRotationPitch + (playerSP.rotationPitch - playerSP.prevRotationPitch) * event.getPartialTicks();
-                float f2 = playerSP.prevRotationYaw + (playerSP.rotationYaw - playerSP.prevRotationYaw) * event.getPartialTicks();
-                float f3 = livingPossessed.prevRotationPitch + (livingPossessed.rotationPitch - livingPossessed.prevRotationPitch) * event.getPartialTicks();
-                float f4 = livingPossessed.prevRotationYaw + (livingPossessed.rotationYaw - livingPossessed.prevRotationYaw) * event.getPartialTicks();
-                rotateArmReverse(playerSP, livingPossessed, f3, f4, event.getPartialTicks());
-                rotateAroundXAndYReverse(f1, f2, f3, f4);
+                if(event.getHand() == EnumHand.MAIN_HAND) {
+                    // adjust matrices to avoid a completely broken render
+                    float f1 = playerSP.prevRotationPitch + (playerSP.rotationPitch - playerSP.prevRotationPitch) * event.getPartialTicks();
+                    float f2 = playerSP.prevRotationYaw + (playerSP.rotationYaw - playerSP.prevRotationYaw) * event.getPartialTicks();
+                    float f3 = livingPossessed.prevRotationPitch + (livingPossessed.rotationPitch - livingPossessed.prevRotationPitch) * event.getPartialTicks();
+                    float f4 = livingPossessed.prevRotationYaw + (livingPossessed.rotationYaw - livingPossessed.prevRotationYaw) * event.getPartialTicks();
+                    rotateArmReverse(playerSP, livingPossessed, f3, f4, event.getPartialTicks());
+                    rotateAroundXAndYReverse(f1, f2, f3, f4);
+                }
+                // render hand if possible
+                if (event.getItemStack().isEmpty()) {
+                    Render render = Minecraft.getMinecraft().getRenderManager().getEntityRenderObject(livingPossessed);
+                    if (render instanceof RenderLivingBase) {
+                        RenderLivingBase renderLivingBase = (RenderLivingBase) render;
+                        ModelBase model = renderLivingBase.getMainModel();
+                        if (model instanceof ModelBiped && renderLivingBase.bindEntityTexture(livingPossessed)) {
+                            ModelBiped modelBiped = (ModelBiped) model;
+                            if (event.getHand() == EnumHand.MAIN_HAND) {
+                                EnumHandSide handSide = playerSP.getPrimaryHand();
+                                GlStateManager.pushMatrix();
+                                renderArmFirstPerson(livingPossessed, modelBiped, event.getEquipProgress(), 0, handSide);
+                                GlStateManager.popMatrix();
+                                event.setCanceled(true);
+                            }
+                        }
+                    }
+                }
             }
         }
+    }
+
+    private static void renderArmFirstPerson(EntityLivingBase entity, ModelBiped model, float equippedProgress, float partialTicks, EnumHandSide handSide) {
+        boolean rightHand = handSide != EnumHandSide.LEFT;
+        float translation = rightHand ? 1.0F : -1.0F;
+        float partialTicksSqrt = MathHelper.sqrt(partialTicks);
+        float f2 = -0.3F * MathHelper.sin(partialTicksSqrt * (float) Math.PI);
+        float f3 = 0.4F * MathHelper.sin(partialTicksSqrt * ((float) Math.PI * 2F));
+        float f4 = -0.4F * MathHelper.sin(partialTicks * (float) Math.PI);
+        GlStateManager.translate(translation * (f2 + 0.64000005F), f3 + -0.6F + equippedProgress * -0.6F, f4 + -0.71999997F);
+        GlStateManager.rotate(translation * 45.0F, 0.0F, 1.0F, 0.0F);
+        float f5 = MathHelper.sin(partialTicks * partialTicks * (float) Math.PI);
+        float f6 = MathHelper.sin(partialTicksSqrt * (float) Math.PI);
+        GlStateManager.rotate(translation * f6 * 70.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(translation * f5 * -20.0F, 0.0F, 0.0F, 1.0F);
+        GlStateManager.translate(translation * -1.0F, 3.6F, 3.5F);
+        GlStateManager.rotate(translation * 120.0F, 0.0F, 0.0F, 1.0F);
+        GlStateManager.rotate(200.0F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(translation * -135.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.translate(translation * 5.6F, 0.0F, 0.0F);
+        GlStateManager.disableCull();
+
+        renderArm(entity, model, rightHand);
+
+        GlStateManager.enableCull();
+    }
+
+    private static void renderArm(EntityLivingBase entity, ModelBiped model, boolean right) {
+        GlStateManager.color(1.0F, 1.0F, 1.0F);
+        GlStateManager.enableBlend();
+        model.swingProgress = 0.0F;
+        model.isSneak = false;
+        model.setRotationAngles(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F, entity);
+        ModelRenderer arm = right ? model.bipedRightArm : model.bipedLeftArm;
+        arm.rotateAngleX = 0.0F;
+        arm.render(0.0625F);
+        GlStateManager.disableBlend();
     }
 
     private static void rotateArmReverse(EntityPlayerSP entityplayersp, EntityLivingBase possessed, float f2, float f3, float partialTicks) {
