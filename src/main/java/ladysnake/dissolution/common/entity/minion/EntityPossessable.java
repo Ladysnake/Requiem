@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.entity;
+package ladysnake.dissolution.common.entity.minion;
 
 import com.google.common.base.Optional;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
@@ -131,7 +131,7 @@ public abstract class EntityPossessable extends EntityMob implements IPossessabl
     }
 
     @Override
-    public boolean isEntityInvulnerable(DamageSource source) {
+    public boolean isEntityInvulnerable(@Nonnull DamageSource source) {
         EntityPlayer possessing = getPossessingEntity();
         if (possessing != null && possessing.isCreative()) {
             return true;

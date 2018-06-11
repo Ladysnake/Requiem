@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import ladysnake.dissolution.client.models.entities.ModelMinionZombie;
 import ladysnake.dissolution.client.models.entities.ModelPlayerCorpse;
 import ladysnake.dissolution.client.renders.ShaderHelper;
-import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
+import ladysnake.dissolution.common.entity.minion.EntityPlayerCorpse;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderBiped;

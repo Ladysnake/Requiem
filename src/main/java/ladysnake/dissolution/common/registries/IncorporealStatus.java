@@ -129,10 +129,6 @@ public class IncorporealStatus extends CorporealityStatus {
     @Override
     public void resetState(EntityPlayer owner) {
         super.resetState(owner);
-        // to avoid unnecessary event handling, we unregister this when no one is in this status
-        if (this.subscribedPlayers.isEmpty()) {
-            MinecraftForge.EVENT_BUS.register(this);
-        }
 
         changeState(owner, false);
         if (Dissolution.config.ghost.invisibleGhosts) {

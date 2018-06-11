@@ -1,12 +1,14 @@
 package ladysnake.dissolution.client.models.entities;
 
-import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
+import ladysnake.dissolution.common.entity.minion.EntityPlayerCorpse;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.MathHelper;
+
+import javax.annotation.Nonnull;
 
 public class ModelPlayerCorpse extends ModelBiped {
 
@@ -70,7 +72,7 @@ public class ModelPlayerCorpse extends ModelBiped {
     /**
      * Sets the models various rotation angles then renders the model.
      */
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+    public void render(@Nonnull Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
         GlStateManager.pushMatrix();
 
@@ -114,7 +116,7 @@ public class ModelPlayerCorpse extends ModelBiped {
      * and legs, where par1 represents the time(so that arms and legs swing back and forth) and par2 represents how
      * "far" arms and legs can swing at most.
      */
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, @Nonnull Entity entityIn) {
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
 
         if (((EntityPlayerCorpse) entityIn).isInert()) {
@@ -245,7 +247,7 @@ public class ModelPlayerCorpse extends ModelBiped {
         this.bipedDeadmau5Head.showModel = visible;
     }
 
-    public void postRenderArm(float scale, EnumHandSide side) {
+    public void postRenderArm(float scale, @Nonnull EnumHandSide side) {
         ModelRenderer modelrenderer = this.getArmForSide(side);
 
         if (this.smallArms) {

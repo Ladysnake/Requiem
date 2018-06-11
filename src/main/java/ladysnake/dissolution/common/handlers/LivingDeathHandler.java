@@ -3,7 +3,7 @@ package ladysnake.dissolution.common.handlers;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
+import ladysnake.dissolution.common.entity.minion.EntityPlayerCorpse;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
 import ladysnake.dissolution.common.registries.SoulStates;

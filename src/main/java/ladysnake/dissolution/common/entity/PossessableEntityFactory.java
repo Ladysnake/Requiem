@@ -1,7 +1,6 @@
-package ladysnake.dissolution.common.entity.minion;
+package ladysnake.dissolution.common.entity;
 
 import ladysnake.dissolution.api.corporeality.IPossessable;
-import ladysnake.dissolution.common.entity.EntityPossessableImpl;
 import ladysnake.dissolution.core.SafeClassWriter;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.launchwrapper.Launch;
@@ -23,7 +22,7 @@ public class PossessableEntityFactory {
      * {@link EntityPossessableImpl} as a template
      */
     @SuppressWarnings("unchecked")
-    public static <T extends EntityMob, P extends EntityMob & IPossessable> Class<P> defineGenericMinion(Class<T> baseEntityClass) {
+    public static <T extends EntityMob, P extends EntityMob & IPossessable> Class<P> defineGenericPossessable(Class<T> baseEntityClass) {
         return (Class<P>) POSSESSABLES.computeIfAbsent(baseEntityClass, base -> {
             try {
                 final byte[] possessableImplBytes = Launch.classLoader.getClassBytes(EntityPossessableImpl.class.getName().replace('.', '/'));
@@ -46,7 +45,7 @@ public class PossessableEntityFactory {
 
     /**
      * Gets the possessable type generated from the given <code>base</code> or <code>null</code> if it was never
-     * {@link #defineGenericMinion(Class) defined}.
+     * {@link #defineGenericPossessable(Class) defined}.
      * @param base the base entity class
      * @param <T> the type of <code>base</code>
      * @param <P> the type of the generated class, having <code>T</code> as parent and implementing {@link IPossessable}

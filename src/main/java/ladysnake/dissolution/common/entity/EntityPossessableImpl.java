@@ -6,7 +6,6 @@ import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIInert;
-import ladysnake.dissolution.common.entity.minion.PossessableEntityFactory;
 import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -59,10 +58,6 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             EntityDataManager.createKey(EntityPossessableImpl.class, DataSerializers.VARINT);
     private static MethodHandle entityAINearestAttackableTarget$targetClass;
 
-    protected List<Entity> triggeredMobs = new LinkedList<>();
-    protected List<Class<? extends EntityLivingBase>> equivalents = new LinkedList<>();
-    protected EntityAIInert aiDontDoShit;
-
     static {
         try {
             Field f = ReflectionHelper.findField(EntityAINearestAttackableTarget.class, "targetClass", "field_75307_b");
@@ -71,6 +66,12 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             e.printStackTrace();
         }
     }
+
+    private List<Entity> triggeredMobs = new LinkedList<>();
+    private List<Class<? extends EntityLivingBase>> equivalents = new LinkedList<>();
+    private EntityAIInert aiDontDoShit;
+
+    private boolean sleeping;
 
     public EntityPossessableImpl(World worldIn) {
         super(worldIn);
@@ -214,6 +215,7 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
                 if (shouldBeTargetedBy(nearby.get(i), taskEntry)) {
                     nearby.get(i).targetTasks.addTask(taskEntry.priority - 1,
                             new EntityAINearestAttackableTarget<>(nearby.get(i), this.getClass(), true));
+                    this.triggeredMobs.add(nearby.get(i));
                     break;
                 }
             }
@@ -234,6 +236,11 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean isPlayerSleeping() {
+        return sleeping;
     }
 
     @Override
@@ -301,6 +308,14 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             return possessing.isHandActive();
         }
         return super.isHandActive();
+    }
+
+    @Override
+    protected void updateActiveHand() {
+        EntityPlayer possessing = getPossessingEntity();
+        if (possessing == null) {
+            super.updateActiveHand();
+        }
     }
 
     @Nonnull

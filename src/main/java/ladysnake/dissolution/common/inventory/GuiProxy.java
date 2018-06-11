@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.inventory;
 
-import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
+import ladysnake.dissolution.common.entity.minion.EntityPlayerCorpse;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ContainerChest;

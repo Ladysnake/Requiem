@@ -11,9 +11,6 @@ import javax.annotation.Nonnull;
 
 @SideOnly(Side.CLIENT)
 public class ModelMinionZombie extends ModelZombie {
-    public ModelMinionZombie() {
-        this(0.0F, false);
-    }
 
     public ModelMinionZombie(float modelSize, boolean show) {
         super(modelSize, show);

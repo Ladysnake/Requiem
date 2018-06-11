@@ -1,8 +1,5 @@
 package ladysnake.dissolution.common.config;
 
-import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
-import ladysnake.dissolution.common.registries.CorporealityStatus;
-import ladysnake.dissolution.common.registries.SoulCorporealityStatus;
 import net.minecraftforge.common.config.Config;
 
 public class DissolutionConfig {
@@ -36,12 +33,6 @@ public class DissolutionConfig {
 
         @Config.Comment("Whether this mod should use shaders as an attempt to make things prettier")
         public boolean useShaders = true;
-
-        @Config.Comment("If set to true, a hud element displaying relevant locations will appear when incorporeal")
-        public boolean soulCompass = true;
-
-        @Config.Comment("The maximum distance at which lament stones will render on the soul compass. Set it <= 0 to disable")
-        public int lamentStonesCompassDistance = 100;
 
     }
 

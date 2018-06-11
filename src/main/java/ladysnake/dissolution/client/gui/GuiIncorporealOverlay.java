@@ -2,27 +2,22 @@ package ladysnake.dissolution.client.gui;
 
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
-import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
-import ladysnake.dissolution.common.entity.minion.*;
 import ladysnake.dissolution.common.registries.SoulStates;
-import ladysnake.dissolution.common.tileentities.TileEntityLamentStone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.monster.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -40,7 +35,6 @@ import java.util.Random;
 public class GuiIncorporealOverlay extends GuiIngame {
 
     private static final ResourceLocation WIDGETS_TEX_PATH = new ResourceLocation("textures/gui/widgets.png");
-    private static final ResourceLocation ORIGIN_PATH = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_compass.png");
     private static final ResourceLocation ECTOPLASM_ICONS = new ResourceLocation(Reference.MOD_ID, "textures/gui/icons.png");
     private final Random rand = new Random();
 
@@ -66,15 +60,15 @@ public class GuiIncorporealOverlay extends GuiIngame {
                 IPossessable possessed = pl.getPossessed();
                 if (possessed instanceof EntityLivingBase && ((EntityLivingBase) possessed).getHealth() > 0) {
                     int textureRow = 0;
-                    if (possessed instanceof EntityMinionPigZombie) {
+                    if (possessed instanceof EntityPigZombie) {
                         textureRow = 1;
-                    } else if (possessed instanceof EntityMinionZombie && ((EntityMinionZombie) possessed).isHusk()) {
+                    } else if (possessed instanceof EntityHusk) {
                         textureRow = 2;
-                    } else if (possessed instanceof EntityMinionWitherSkeleton) {
+                    } else if (possessed instanceof EntityWitherSkeleton) {
                         textureRow = 4;
-                    } else if (possessed instanceof EntityMinionStray) {
+                    } else if (possessed instanceof EntityStray) {
                         textureRow = 5;
-                    } else if (possessed instanceof EntityMinionSkeleton) {
+                    } else if (possessed instanceof EntitySkeleton) {
                         textureRow = 3;
                     }
                     this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
@@ -94,67 +88,6 @@ public class GuiIncorporealOverlay extends GuiIngame {
             final IIncorporealHandler pl = CapabilityIncorporealHandler.getHandler(this.mc.player);
             event.setCanceled(pl.getCorporealityStatus().isIncorporeal() && pl.getPossessed() == null);
         }
-    }
-
-    /**
-     * Draws the HUD indicating 0,0
-     */
-    private void drawOriginIndicator(ScaledResolution scaledRes) {
-        EntityPlayer player = Minecraft.getMinecraft().player;
-        double fov = this.mc.gameSettings.fovSetting;
-//		double angleToOrigin;
-//		angleToOrigin = (180 - (Math.atan2(player.posX, player.posZ)) * (180 / Math.PI)) % 360D;
-        double anglePlayer;
-        anglePlayer = player.rotationYaw % 360;
-        anglePlayer = (anglePlayer < 0) ? anglePlayer + 360 : anglePlayer;
-        double angleLeftVision = (anglePlayer - (fov / 2.0D)) % 360D;
-        double angleRightVision = (anglePlayer + (fov / 2.0D)) % 360D;
-//		boolean isInFieldOfView = angleToOrigin > angleLeftVision && angleToOrigin < angleRightVision;
-
-        int i = scaledRes.getScaledWidth() / 2 - 100;
-        int j = 10;
-        int compassWidth = 200;
-
-        GlStateManager.pushAttrib();
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.disableLighting();
-        GlStateManager.enableAlpha();
-        GlStateManager.enableBlend();
-
-        this.mc.getTextureManager().bindTexture(ORIGIN_PATH);
-        this.drawTexturedModalRect(i, j, 0, 0, compassWidth, 20);
-
-		/*if(isInFieldOfView) {
-			this.drawTexturedModalRect(i + 3 + (int)Math.round((angleToOrigin - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 200, 0, 7, 10);
-		}*/
-
-        for (TileEntity te : mc.player.world.loadedTileEntityList) {
-            renderLamentStones:
-            if (te instanceof TileEntityLamentStone && Dissolution.config.client.lamentStonesCompassDistance > 0) {
-                double lengthX = player.posX - te.getPos().getX();
-                double lengthY = player.posZ - te.getPos().getZ();
-                if (lengthX * lengthX + lengthY * lengthY > Dissolution.config.client.lamentStonesCompassDistance * Dissolution.config.client.lamentStonesCompassDistance) {
-                    break renderLamentStones;
-                }
-                double angleToTE = (180 - (Math.atan2(lengthX, lengthY)) * (180 / Math.PI)) % 360D;
-                if (angleToTE > angleLeftVision && angleToTE < angleRightVision) {
-                    this.drawTexturedModalRect(i + 3 + (int) Math.round((angleToTE - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 200, 0, 7, 10);
-                }
-            }
-        }
-
-        for (Entity te : mc.player.world.loadedEntityList) {
-            if (te instanceof EntityPlayerCorpse) {
-                if (mc.player.getUniqueID().equals(((EntityPlayerCorpse) te).getPlayer())) {
-                    double angleToTE = (180 - (Math.atan2(player.posX - te.posX, player.posZ - te.posZ)) * (180 / Math.PI)) % 360D;
-                    if (angleToTE > angleLeftVision && angleToTE < angleRightVision) {
-                        this.drawTexturedModalRect(i + 3 + (int) Math.round((angleToTE - angleLeftVision) / (angleRightVision - angleLeftVision) * (compassWidth - 13)), j + 5, 207, 0, 7, 10);
-                    }
-                }
-            }
-        }
-
-        GlStateManager.popAttrib();
     }
 
     private void drawCustomHealthBar(EntityLivingBase player, ScaledResolution scaledResolution, int textureRow) {

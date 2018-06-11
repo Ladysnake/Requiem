@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
-import ladysnake.dissolution.common.entity.EntityPossessable;
+import ladysnake.dissolution.common.entity.PossessableEntityFactory;
 import ladysnake.dissolution.common.entity.ai.EntityAIInert;
 import ladysnake.dissolution.common.entity.ai.EntityAIMinionRangedAttack;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
@@ -85,21 +85,6 @@ public abstract class AbstractMinion extends EntityPossessable implements IRange
                 corpse = (EntityMob) EntityList.newEntity(possessableClass, deadGuy.world);
             }
         }
-//        Class<? extends EntityLivingBase> clazz = deadGuy.getClass();
-//
-//        if (clazz == EntityPigZombie.class) {
-//            corpse = new EntityMinionPigZombie(deadGuy.world, deadGuy.isChild());
-//        } else if (clazz == EntityZombie.class) {
-//            corpse = new EntityMinionZombie(deadGuy.world, deadGuy instanceof EntityHusk, deadGuy.isChild());
-//        } else if (clazz == EntitySkeleton.class) {
-//            corpse = new EntityMinionSkeleton(deadGuy.world);
-//        } else if (clazz == EntityStray.class) {
-//            corpse = new EntityMinionStray(deadGuy.world);
-//        } else if (clazz == EntityWitherSkeleton.class) {
-//            corpse = new EntityMinionWitherSkeleton(deadGuy.world);
-//        } else if (deadGuy.isNonBoss() && deadGuy instanceof EntityMob) {
-//            corpse = new EntityGenericMinion(deadGuy.world, (EntityMob) deadGuy);
-//        }
 
         if (corpse != null) {
             for (IAttributeInstance attribute : deadGuy.getAttributeMap().getAllAttributes()) {
