@@ -2,16 +2,16 @@ package ladysnake.dissolution.common.init;
 
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.client.renders.entities.RenderFaerie;
-import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
 import ladysnake.dissolution.client.renders.entities.RenderWillOWisp;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.PossessableEntityFactory;
-import ladysnake.dissolution.common.entity.minion.EntityPlayerCorpse;
 import ladysnake.dissolution.common.entity.souls.EntityFaerie;
 import ladysnake.dissolution.common.entity.souls.EntityFaerieSpawner;
 import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.common.entity.souls.EntitySoulSpawner;
+import ladysnake.dissolution.unused.client.renders.entities.RenderPlayerCorpse;
+import ladysnake.dissolution.unused.common.entity.EntityPlayerCorpse;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.monster.EntityMob;

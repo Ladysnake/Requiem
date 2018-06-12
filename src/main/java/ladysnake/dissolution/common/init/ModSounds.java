@@ -12,7 +12,7 @@ import java.util.Locale;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public enum ModSounds {
-    wisp_ambiance_1, wisp_ambiance_2, wisp_ambiance_3;
+    WISP_AMBIANCE_1, WISP_AMBIANCE_2, WISP_AMBIANCE_3;
 
     private final SoundEvent sound;
 

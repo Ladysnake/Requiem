@@ -21,7 +21,7 @@ public enum SoulType {
         ret.setTired(true);
         return ret;
     }),
-    SPLINTER("textures/entity/splinter.png", EntitySplinterSoul::new);
+    SPLINTER("textures/entity/will_o_splinter.png", EntitySplinterSoul::new);
 
     public final ResourceLocation texture;
     private Function<World, EntityFleetingSoul> factory;

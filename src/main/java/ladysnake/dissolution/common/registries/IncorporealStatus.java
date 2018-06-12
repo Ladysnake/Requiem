@@ -1,7 +1,6 @@
 package ladysnake.dissolution.common.registries;
 
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
-import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
@@ -62,9 +61,9 @@ public class IncorporealStatus extends CorporealityStatus {
     public void onBreakSpeed(PlayerEvent.BreakSpeed event) {
         if (subscribedPlayers.contains(event.getEntityPlayer())) {
             IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
-            IPossessable possessed = handler.getPossessed();
+            Entity possessed = handler.getPossessed();
             // restores the mining speed as minecraft inflicts a penalty each time you mount something
-            if (handler.getPossessed() instanceof Entity && ((Entity)possessed).onGround && !event.getEntityPlayer().onGround) {
+            if (possessed != null && possessed.onGround && !event.getEntityPlayer().onGround) {
                 event.setNewSpeed(event.getOriginalSpeed() * 5);
             }
         }

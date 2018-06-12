@@ -15,6 +15,7 @@ import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
@@ -66,7 +67,7 @@ public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable
             return true;
         }
         IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(playerIn);
-        if (handler.getPossessed() instanceof EntityLivingBase) {
+        if (handler.getPossessed() != null) {
             IPossessable possessed = handler.getPossessed();
             if (worldIn.isDaytime()) {
                 possessed.setSleeping(true);
@@ -107,8 +108,8 @@ public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable
         if (allZombiesSleeping) {
             for (EntityPlayer entityplayer : playerEntities) {
                 if (!entityplayer.isSpectator()) {
-                    IPossessable possessed = CapabilityIncorporealHandler.getHandler(entityplayer).getPossessed();
-                    if (!(possessed instanceof EntityLivingBase) || !((EntityLivingBase) possessed).isPlayerSleeping()) {
+                    EntityMob possessed = CapabilityIncorporealHandler.getHandler(entityplayer).getPossessed();
+                    if (possessed == null || !possessed.isPlayerSleeping()) {
                         return false;
                     }
                 }
@@ -136,7 +137,7 @@ public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable
                     ++i;
                 } else {
                     IPossessable possessed = CapabilityIncorporealHandler.getHandler(entityplayer).getPossessed();
-                    if (possessed instanceof EntityLivingBase && ((EntityLivingBase) possessed).isPlayerSleeping()) {
+                    if (possessed != null && ((EntityLivingBase) possessed).isPlayerSleeping()) {
                         ++j;
                     }
                 }

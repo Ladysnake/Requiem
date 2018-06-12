@@ -35,7 +35,7 @@ public class DissolutionHooks {
     @SuppressWarnings("unused") // called by ASM voodoo magic
     public static EntityLivingBase getPossessedEntity(Entity player) {
         if (player.hasCapability(cap, null)) {
-            EntityLivingBase possessable = (EntityLivingBase) player.getCapability(cap, null).getPossessed();
+            EntityLivingBase possessable = player.getCapability(cap, null).getPossessed();
             if (possessable != null) {
                 return possessable;
             }

@@ -2,6 +2,7 @@ package ladysnake.dissolution.common.handlers;
 
 import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
@@ -160,8 +161,9 @@ public class EventHandlerCommon {
             }
         } else {
             CapabilityIncorporealHandler.getHandler(event.getSource().getTrueSource()).ifPresent(handler -> {
-                if (handler.getPossessed() != null) {
-                    if (handler.getPossessed().proxyAttack(event.getEntityLiving(), event.getSource(), event.getAmount())) {
+                IPossessable possessed = handler.getPossessed();
+                if (possessed != null) {
+                    if (possessed.proxyAttack(event.getEntityLiving(), event.getSource(), event.getAmount())) {
                         event.setCanceled(true);
                     }
                 }
@@ -173,11 +175,12 @@ public class EventHandlerCommon {
     public void onPlayerAttackEntity(AttackEntityEvent event) {
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
         if (playerCorp.getCorporealityStatus().isIncorporeal() && !event.getEntityPlayer().isCreative()) {
-            if (playerCorp.getPossessed() instanceof EntityLiving && !((EntityLiving) playerCorp.getPossessed()).isDead) {
+            final EntityLivingBase possessed = playerCorp.getPossessed();
+            if (possessed != null && !possessed.isDead) {
                 if (event.getTarget() instanceof EntityLivingBase) {
                     event.getEntityPlayer().getHeldItemMainhand().hitEntity((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
                 }
-                ((EntityLiving) playerCorp.getPossessed()).attackEntityAsMob(event.getTarget());
+                possessed.attackEntityAsMob(event.getTarget());
                 return;
             }
         }

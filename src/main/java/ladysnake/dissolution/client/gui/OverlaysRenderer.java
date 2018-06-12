@@ -3,7 +3,6 @@ package ladysnake.dissolution.client.gui;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.init.ModFluids;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -25,7 +24,6 @@ public class OverlaysRenderer {
     public static final OverlaysRenderer INSTANCE = new OverlaysRenderer();
 
     private static final ResourceLocation INCORPOREAL_PATH = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_overlay.png");
-    private static final ResourceLocation RES_MERCURY_OVERLAY = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_overlay.png");
 
     private float b = 0.0F;
 
@@ -35,43 +33,10 @@ public class OverlaysRenderer {
         if (playerCorp.getCorporealityStatus().isIncorporeal() && playerCorp.getPossessed() == null) {
             drawIncorporealOverlay(event.getResolution());
         }
-        if (player.world.getBlockState(player.getPosition().up()).getBlock() == ModFluids.MERCURY.fluidBlock()) {
-            renderWaterOverlayTexture(event.getPartialTicks());
-        }
-        if (playerCorp.getPossessed() instanceof EntityLivingBase && ((EntityLivingBase)playerCorp.getPossessed()).isBurning()) {
+        EntityLivingBase possessed = playerCorp.getPossessed();
+        if (possessed != null && possessed.isBurning()) {
             this.renderFireInFirstPerson(event.getResolution());
         }
-    }
-
-    private void renderWaterOverlayTexture(float partialTicks) {
-        Minecraft mc = Minecraft.getMinecraft();
-        mc.getTextureManager().bindTexture(RES_MERCURY_OVERLAY);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
-        float f = mc.player.getBrightness();
-        GlStateManager.color(f, f, f, 0.5F);
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.pushMatrix();
-        float texMin = 0f;
-        float texMax = 4.0F;
-        float xMin = -1.0F;
-        float xMax = 1.0F;
-        float yMin = -1.0F;
-        float yMax = 1.0F;
-        float z = -0.5F;
-        float f7 = -mc.player.rotationYaw / 64.0F;
-        float f8 = mc.player.rotationPitch / 64.0F;
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-        bufferbuilder.pos(xMin, yMin, z).tex((texMax + f7), (texMax + f8)).endVertex();
-        bufferbuilder.pos(xMax, yMin, z).tex((texMin + f7), (texMax + f8)).endVertex();
-        bufferbuilder.pos(xMax, yMax, z).tex((texMin + f7), (texMin + f8)).endVertex();
-        bufferbuilder.pos(xMin, yMax, z).tex((texMax + f7), (texMin + f8)).endVertex();
-        tessellator.draw();
-        GlStateManager.popMatrix();
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.disableBlend();
     }
 
     /**

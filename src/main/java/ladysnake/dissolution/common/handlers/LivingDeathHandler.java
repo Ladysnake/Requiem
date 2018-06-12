@@ -43,8 +43,8 @@ public class LivingDeathHandler {
     protected void handlePlayerDeath(LivingDeathEvent event) {
         final EntityPlayer p = (EntityPlayer) event.getEntity();
         final IIncorporealHandler corp = CapabilityIncorporealHandler.getHandler(p);
-        if (corp.getCorporealityStatus().isIncorporeal() && corp.getPossessed() instanceof EntityLivingBase) {
-            ((EntityLivingBase) corp.getPossessed()).attackEntityFrom(event.getSource(), Float.MAX_VALUE);
+        if (corp.getCorporealityStatus().isIncorporeal() && corp.getPossessed() != null) {
+            corp.getPossessed().attackEntityFrom(event.getSource(), Float.MAX_VALUE);
             corp.setPossessed(null);
         }
         if (!corp.isStrongSoul() || corp.getCorporealityStatus() == SoulStates.SOUL) {
@@ -145,7 +145,6 @@ public class LivingDeathHandler {
                 player.addStat(entitylist$entityegginfo.entityKilledByStat);
             }
 
-            //entitylivingbase.func_191956_a(player, player.scoreValue, cause);
         }
 
         player.clearActivePotions();

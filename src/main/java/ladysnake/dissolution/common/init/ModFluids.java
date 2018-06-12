@@ -1,7 +1,6 @@
 package ladysnake.dissolution.common.init;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.BlockFluidMercury;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelBakery;
@@ -17,22 +16,25 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.apache.logging.log4j.LogManager;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-//@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public enum ModFluids {
 
-    MERCURY("mercury", false,
-            fluid -> fluid.setLuminosity(5).setDensity(1600).setViscosity(1000),
-            BlockFluidMercury::new);
+//    MERCURY("mercury", false,
+//            fluid -> fluid.setLuminosity(5).setDensity(1600).setViscosity(1000),
+//            BlockFluidMercury::new);
     // just add new fluids here
+    ;
 
     /**
      * The forge fluid associated with this block
@@ -104,8 +106,9 @@ public enum ModFluids {
         ModelLoader.setCustomMeshDefinition(item, stack -> modelResourceLocation);
 
         ModelLoader.setCustomStateMapper(fluidBlock, new StateMapperBase() {
+            @Nonnull
             @Override
-            protected ModelResourceLocation getModelResourceLocation(final IBlockState state) {
+            protected ModelResourceLocation getModelResourceLocation(@Nonnull final IBlockState state) {
                 return modelResourceLocation;
             }
         });
@@ -128,7 +131,7 @@ public enum ModFluids {
     }
 
     private static void registerFluidContainers() {
-        FluidRegistry.addBucketForFluid(MERCURY.fluid); //Actually we don't because mercury is too heavy, obviously
+//        FluidRegistry.addBucketForFluid(MERCURY.fluid);
     }
 
 }

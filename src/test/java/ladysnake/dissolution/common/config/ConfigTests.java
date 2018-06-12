@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.config;
 
-import ladysnake.dissolution.client.proxy.ClientProxy;
+import ladysnake.dissolution.client.ClientProxy;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.networking.ConfigMessage;
 import ladysnake.dissolution.common.networking.ConfigPacket;

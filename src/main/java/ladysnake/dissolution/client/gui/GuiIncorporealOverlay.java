@@ -1,7 +1,6 @@
 package ladysnake.dissolution.client.gui;
 
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
-import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.registries.SoulStates;
@@ -57,8 +56,8 @@ public class GuiIncorporealOverlay extends GuiIngame {
             if (this.mc.playerController.shouldDrawHUD() && this.mc.getRenderViewEntity() instanceof EntityPlayer && pl.getCorporealityStatus() == SoulStates.ECTOPLASM) {
                 this.drawCustomHealthBar(this.mc.player, event.getResolution(), 0);
             } else if (this.mc.playerController.shouldDrawHUD()) {
-                IPossessable possessed = pl.getPossessed();
-                if (possessed instanceof EntityLivingBase && ((EntityLivingBase) possessed).getHealth() > 0) {
+                EntityLivingBase possessed = pl.getPossessed();
+                if (possessed != null && possessed.getHealth() > 0) {
                     int textureRow = 0;
                     if (possessed instanceof EntityPigZombie) {
                         textureRow = 1;
@@ -72,7 +71,7 @@ public class GuiIncorporealOverlay extends GuiIngame {
                         textureRow = 3;
                     }
                     this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
-                    this.drawCustomHealthBar((EntityLivingBase) pl.getPossessed(), event.getResolution(), textureRow);
+                    this.drawCustomHealthBar(possessed, event.getResolution(), textureRow);
                     this.mc.getTextureManager().bindTexture(GuiIngameForge.ICONS);
                     this.renderHotbar(event.getResolution(), event.getPartialTicks());
                 }

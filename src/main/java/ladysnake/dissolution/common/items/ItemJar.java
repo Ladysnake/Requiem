@@ -2,7 +2,6 @@ package ladysnake.dissolution.common.items;
 
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
-import ladysnake.dissolution.common.init.ModFluids;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -23,7 +22,7 @@ import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStackSimpl
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ItemJar extends Item {
@@ -42,9 +41,6 @@ public class ItemJar extends Item {
                     if (FluidRegistry.WATER.equals(fluidStack.getFluid())) {
                         return 1;
                     }
-                    if (ModFluids.MERCURY.fluid().equals(fluidStack.getFluid())) {
-                        return 2;
-                    }
                     return 0;
                 }
         );
@@ -56,9 +52,7 @@ public class ItemJar extends Item {
         ItemStack jar = playerIn.getHeldItem(handIn);
         FluidStack containedFluid = FluidUtil.getFluidContained(jar);
         RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, containedFluid == null);
-        if (raytraceresult == null) {
-            return new ActionResult<>(EnumActionResult.PASS, jar);
-        } else if (raytraceresult.typeOfHit != RayTraceResult.Type.ENTITY) {
+        if (raytraceresult == null || raytraceresult.typeOfHit != RayTraceResult.Type.ENTITY) {
             return new ActionResult<>(EnumActionResult.PASS, jar);
         }
         Entity target = raytraceresult.entityHit;
@@ -83,9 +77,6 @@ public class ItemJar extends Item {
             if (fluid.getFluid().equals(FluidRegistry.WATER)) {
                 return "item.water_jar.name";
             }
-            if (fluid.getFluid().equals(ModFluids.MERCURY.fluid())) {
-                return "item.mercury_jar.name";
-            }
         }
         return super.getUnlocalizedName(stack);
     }
@@ -98,7 +89,7 @@ public class ItemJar extends Item {
 
     static class FluidHandlerJar extends FluidHandlerItemStackSimple {
 
-        static List<Fluid> acceptedFluids = Arrays.asList(FluidRegistry.WATER, ModFluids.MERCURY.fluid());
+        static List<Fluid> acceptedFluids = Collections.singletonList(FluidRegistry.WATER);
 
         /**
          * @param container The container itemStack, data is stored on it directly as NBT.

@@ -4,12 +4,13 @@ import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.entity.souls.AbstractSoul;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.registries.SoulStates;
+import ladysnake.dissolution.unused.common.entity.AbstractMinion;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemBow;
@@ -48,19 +49,18 @@ public class InteractEventsHandler {
         event.setCanceled(true);
         if (handler.getCorporealityStatus().isIncorporeal() && event.getSide().isServer()
                 && event.getTarget() instanceof EntityLivingBase && !event.getTarget().getIsInvulnerable()) {
-            IPossessable host = AbstractMinion.createMinion((EntityLivingBase) event.getTarget());
-            if (host instanceof EntityLivingBase && host.canBePossessedBy(event.getEntityPlayer())) {
-                EntityLivingBase eHost = (EntityLivingBase) host;
+            EntityLivingBase host = AbstractMinion.createMinion((EntityLivingBase) event.getTarget());
+            if (host != null && ((IPossessable)host).canBePossessedBy(event.getEntityPlayer())) {
                 if (((EntityLivingBase) event.getTarget()).getHeldItemMainhand().getItem() instanceof ItemBow) {
-                    event.getEntityPlayer().addItemStackToInventory(new ItemStack(Items.ARROW, eHost.world.rand.nextInt(10) + 2));
+                    event.getEntityPlayer().addItemStackToInventory(new ItemStack(Items.ARROW, host.world.rand.nextInt(10) + 2));
                 }
                 DissolutionInventoryHelper.transferEquipment((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
                 if (host != event.getTarget()) {
                     event.getTarget().setPosition(0, -100, 0);
-                    event.getTarget().world.spawnEntity(eHost);
+                    event.getTarget().world.spawnEntity(host);
                     event.getTarget().world.removeEntity(event.getTarget());
                 }
-                handler.setPossessed(host);
+                handler.setPossessed((EntityMob & IPossessable) host);
                 event.setCancellationResult(EnumActionResult.SUCCESS);
             }
         }
@@ -117,18 +117,18 @@ public class InteractEventsHandler {
             if (handler.getCorporealityStatus().isIncorporeal()) {
                 Entity beingMounted = event.getEntityBeingMounted();
                 if (event.isMounting()) {
-                    if (!beingMounted.getUniqueID().equals(handler.getPossessedUUID()) && handler.getPossessed() instanceof Entity) {
-                        ((Entity) handler.getPossessed()).startRiding(beingMounted);
+                    if (!beingMounted.getUniqueID().equals(handler.getPossessedUUID()) && handler.getPossessed() != null) {
+                        handler.getPossessed().startRiding(beingMounted);
                         event.setCanceled(true);
                     }
                 } else {
-                    IPossessable possessed = handler.getPossessed();
+                    EntityLivingBase possessed = handler.getPossessed();
                     if (possessed != null && event.getEntity() instanceof EntityPlayer && ((EntityPlayer) event.getEntity()).isCreative()) {
                         handler.setPossessed(null);
                     } else {
                         if (beingMounted == possessed && !(handler.setPossessed(null))) {
-                            if (possessed instanceof Entity && ((Entity) possessed).isRiding()) {
-                                ((Entity) possessed).dismountRidingEntity();
+                            if (possessed != null && possessed.isRiding()) {
+                                possessed.dismountRidingEntity();
                             } else if (event.getEntity().isSneaking() && event.getEntity() instanceof EntityPlayer) {
                                 PlayerTickHandler.sneakingPossessingPlayers.add((EntityPlayer) event.getEntity());
                             }

@@ -2,6 +2,7 @@ package ladysnake.dissolution.api.corporeality;
 
 import ladysnake.dissolution.api.IDialogueStats;
 import ladysnake.dissolution.api.PlayerIncorporealEvent;
+import net.minecraft.entity.monster.EntityMob;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
@@ -42,13 +43,9 @@ public interface IIncorporealHandler {
      * @return false if the change could not occur
      * @throws IllegalArgumentException if the possessable argument is not an entity
      */
-    boolean setPossessed(IPossessable possessable);
+    <T extends EntityMob & IPossessable> boolean setPossessed(T possessable);
 
-    /**
-     * This method is called by every single method of EntityPlayer. It should be as efficient as possible
-     * and should not call any EntityPlayer method to avoid infinite recursion
-     */
-    IPossessable getPossessed();
+    <T extends EntityMob & IPossessable> T getPossessed();
 
     UUID getPossessedUUID();
 

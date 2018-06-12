@@ -1,7 +1,6 @@
 package ladysnake.dissolution.common.networking;
 
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
-import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -22,10 +21,10 @@ public class PingPacket implements IMessageHandler<PingMessage, IMessage> {
                 final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(thePlayer);
                 PacketHandler.NET.sendToAll(new IncorporealMessage(message.uuidMost, message.uuidLeast, clone.isStrongSoul(), clone.getCorporealityStatus()));
 //			  PacketHandler.NET.sendTo(new SoulMessage(SoulMessage.FULL_UPDATE, CapabilitySoulHandler.getHandler(thePlayer).getSoulList()), thePlayer);
-                IPossessable possessed = clone.getPossessed();
-                if (possessed instanceof Entity) {
-                    PacketHandler.NET.sendTo(new PossessionMessage(thePlayer.getUniqueID(), ((Entity) possessed).getEntityId()), thePlayer);
-                    thePlayer.connection.sendPacket(new SPacketCamera((Entity) possessed));
+                Entity possessed = clone.getPossessed();
+                if (possessed != null) {
+                    PacketHandler.NET.sendTo(new PossessionMessage(thePlayer.getUniqueID(), possessed.getEntityId()), thePlayer);
+                    thePlayer.connection.sendPacket(new SPacketCamera(possessed));
                 }
                 clone.getDialogueStats().checkFirstConnection();
             });

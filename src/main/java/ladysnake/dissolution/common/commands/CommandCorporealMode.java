@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("SpellCheckingInspection")
 public class CommandCorporealMode extends CommandBase {
 
     @Nonnull

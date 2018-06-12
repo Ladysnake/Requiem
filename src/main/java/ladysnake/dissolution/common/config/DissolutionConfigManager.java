@@ -5,10 +5,10 @@ import com.google.common.io.Files;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.networking.ConfigMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
+import ladysnake.dissolution.unused.common.entity.AbstractMinion;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityCreeper;
@@ -29,13 +29,9 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public final class DissolutionConfigManager {
-
-    private static final Pattern WILDCARD_PATTERN = Pattern.compile("(.*?)\\*");
 
     public static Configuration config;
     private static ImmutableSet<Class<? extends EntityMob>> TARGET_BLACKLIST;
@@ -215,18 +211,6 @@ public final class DissolutionConfigManager {
             builder.add(StringChecker.from(blockName));
         }
         BLOCK_WHITELIST = builder.build();
-    }
-
-    public static Pattern wildcardToRegex(String wildcard) {
-        Matcher m = WILDCARD_PATTERN.matcher(wildcard);
-        String regex;
-        if (m.find()) {
-            regex = m.replaceAll("$1\\\\E\\\\w*\\\\Q");
-        } else {
-            regex = wildcard;
-        }
-        regex = "\\Q" + regex + "\\E";
-        return Pattern.compile(regex);
     }
 
     public enum FlightModes {
