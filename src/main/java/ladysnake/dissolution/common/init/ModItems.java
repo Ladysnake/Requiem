@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.init;
 
+import ladylib.client.ICustomLocation;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.items.*;

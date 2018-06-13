@@ -133,7 +133,7 @@ jar {
 
     manifest {
         attributes([
-                'ContainedDeps' : coreJar.archivePath.name,
+//                'ContainedDeps' : coreJar.archivePath.name,
                 'Maven-Artifact': "${project.group}:${project.archivesBaseName}:${project.version}",
                 'Timestamp'     : System.currentTimeMillis()
         ])

@@ -23,6 +23,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketCamera;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -157,7 +158,7 @@ public class CapabilityIncorporealHandler {
 
         @Override
         public boolean isStrongSoul() {
-            return Dissolution.config.enforcedSoulStrength.getValue(strongSoul);
+            return owner.world.getDifficulty() != EnumDifficulty.PEACEFUL && Dissolution.config.enforcedSoulStrength.getValue(strongSoul);
         }
 
         @Override
@@ -269,7 +270,10 @@ public class CapabilityIncorporealHandler {
             if (!(host instanceof EntityMob && host instanceof IPossessable)) {
                 Dissolution.LOGGER.error("{}'s possessed entity is supposed to be {} but it cannot be possessed", owner, host);
                 host = null;
-                this.setPossessed(null);
+                hostID = 0;
+                hostUUID = null;
+                owner.setInvisible(Dissolution.config.ghost.invisibleGhosts);
+                owner.dismountRidingEntity();
             }
             return (T) host;
         }
