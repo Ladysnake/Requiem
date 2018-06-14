@@ -482,9 +482,9 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
     public void setInert(boolean isCorpse) {
         this.getDataManager().set(INERT, isCorpse);
 
-        if (isCorpse)
+        if (isCorpse) {
+            // I know what I'm doing for once
             //noinspection SuspiciousNameCombination
-        {
             this.setSize(SIZE_Y, SIZE_X);
         } else {
             this.setSize(SIZE_X, SIZE_Y);

@@ -30,7 +30,7 @@ public class OverlaysRenderer {
     void renderOverlays(RenderGameOverlayEvent.Post event) {
         EntityPlayer player = Minecraft.getMinecraft().player;
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
-        if (playerCorp.getCorporealityStatus().isIncorporeal() && playerCorp.getPossessed() == null) {
+        if (playerCorp.getCorporealityStatus().isIncorporeal() && playerCorp.getPossessed() == null && !player.isCreative()) {
             drawIncorporealOverlay(event.getResolution());
         }
         EntityLivingBase possessed = playerCorp.getPossessed();

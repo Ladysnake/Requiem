@@ -13,6 +13,7 @@ import ladysnake.dissolution.common.entity.souls.EntitySoulSpawner;
 import ladysnake.dissolution.unused.client.renders.entities.RenderPlayerCorpse;
 import ladysnake.dissolution.unused.common.entity.EntityPlayerCorpse;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.init.Biomes;
@@ -58,7 +59,7 @@ public class ModEntities {
                     Dissolution.LOGGER.warn("Could not check whether to create a possessable version of {} ({})", entityEntry.getRegistryName(), e);
                 }
                 if (defineImpl) {
-                    @SuppressWarnings("unchecked") Class<? extends EntityMob> possessableClass =
+                    @SuppressWarnings("unchecked") Class<? extends EntityLivingBase> possessableClass =
                             PossessableEntityFactory.defineGenericPossessable((Class)entityEntry.getEntityClass());
                     EntityRegistry.EntityRegistration info = EntityRegistry.instance().lookupModSpawn(entityEntry.getEntityClass(), true);
                     int trackingRange, updateFrequency;

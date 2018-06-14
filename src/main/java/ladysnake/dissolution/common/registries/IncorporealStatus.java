@@ -42,7 +42,7 @@ public class IncorporealStatus extends CorporealityStatus {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerAttackEntity(AttackEntityEvent event) {
-        if (subscribedPlayers.contains(event.getEntityPlayer())) {
+        if (subscribedPlayers.contains(event.getEntityPlayer()) && !event.getEntityPlayer().isCreative()) {
             event.setCanceled(DissolutionConfigManager.isEctoplasmImmuneTo(event.getTarget()));
         }
     }
