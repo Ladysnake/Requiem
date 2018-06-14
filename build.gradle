@@ -127,9 +127,9 @@ jar {
         dependsOn signCoreJar //Sign core jar *before* including!
     }
 
-    from(coreJar.archivePath.absolutePath) {
-        include '*'
-    }
+//    from(coreJar.archivePath.absolutePath) {
+//        include '*' into
+//    }
 
     manifest {
         attributes([

@@ -13,7 +13,6 @@ import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PossessionMessage;
 import ladysnake.dissolution.common.registries.SoulStates;
-import ladysnake.dissolution.core.DissolutionHooks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
@@ -63,11 +62,6 @@ public class CapabilityIncorporealHandler {
     @CapabilityInject(IIncorporealHandler.class)
     private static Capability<IIncorporealHandler> CAPABILITY_INCORPOREAL;
     private static MethodHandle entity$setSize;
-
-    @CapabilityInject(IIncorporealHandler.class)
-    private static void injectCapability(Capability<IIncorporealHandler> cap) {
-        DissolutionHooks.cap = cap;
-    }
 
     static {
         try {
