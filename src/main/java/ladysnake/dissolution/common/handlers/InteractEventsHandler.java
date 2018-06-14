@@ -4,10 +4,10 @@ import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.entity.PossessableEntityFactory;
 import ladysnake.dissolution.common.entity.souls.AbstractSoul;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.registries.SoulStates;
-import ladysnake.dissolution.unused.common.entity.AbstractMinion;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -26,12 +26,15 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class InteractEventsHandler {
 
+    /**
+     * Make wisps and soul players go through thin walls
+     */
     @SubscribeEvent
     public void onGetCollisionBoxes(GetCollisionBoxesEvent event) {
-        if (event.getEntity() instanceof AbstractSoul
-                || event.getEntity() instanceof EntityPlayer
-                && CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity())
-                .getCorporealityStatus() == SoulStates.SOUL) {
+        if ((event.getEntity() instanceof AbstractSoul)
+                || ((event.getEntity() instanceof EntityPlayer)
+                && (CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity())
+                .getCorporealityStatus() == SoulStates.SOUL))) {
             event.getCollisionBoxesList().removeIf(axisAlignedBB -> axisAlignedBB.getAverageEdgeLength() < Dissolution.config.ghost.maxThickness);
         }
     }
@@ -49,12 +52,12 @@ public class InteractEventsHandler {
         event.setCanceled(true);
         if (handler.getCorporealityStatus().isIncorporeal() && event.getSide().isServer()
                 && event.getTarget() instanceof EntityLivingBase && !event.getTarget().getIsInvulnerable()) {
-            EntityLivingBase host = AbstractMinion.createMinion((EntityLivingBase) event.getTarget());
+            EntityLivingBase host = PossessableEntityFactory.createMinion((EntityLivingBase) event.getTarget());
             if (host != null && ((IPossessable)host).canBePossessedBy(event.getEntityPlayer())) {
+                DissolutionInventoryHelper.transferEquipment((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
                 if (((EntityLivingBase) event.getTarget()).getHeldItemMainhand().getItem() instanceof ItemBow) {
                     event.getEntityPlayer().addItemStackToInventory(new ItemStack(Items.ARROW, host.world.rand.nextInt(10) + 2));
                 }
-                DissolutionInventoryHelper.transferEquipment((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
                 if (host != event.getTarget()) {
                     event.getTarget().setPosition(0, -100, 0);
                     event.getTarget().world.spawnEntity(host);
@@ -66,6 +69,9 @@ public class InteractEventsHandler {
         }
     }
 
+    /**
+     * Prevent possessed mobs from shooting themselves
+     */
     @SubscribeEvent
     public void onProjectileImpact(ProjectileImpactEvent.Arrow event) {
         if (event.getRayTraceResult().typeOfHit == RayTraceResult.Type.ENTITY &&
@@ -76,34 +82,6 @@ public class InteractEventsHandler {
             event.setCanceled(true);
         }
     }
-
-    //    @SubscribeEvent
-//    public void onItemUseStart(LivingEntityUseItemEvent.Start event) {
-//        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
-//        if (handler != null && handler.getPossessed() instanceof EntityLivingBase) {        // synchronizes item use between player and possessed entity
-//            ((EntityLivingBase) handler.getPossessed()).setActiveHand(event.getEntityLiving().getHeldItemMainhand().equals(event.getItem()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
-//        }
-//    }
-
-//    @SubscribeEvent
-//    public void onItemUseTick(LivingEntityUseItemEvent.Tick event) {
-//        if (event.getDuration() <= 1) {            // prevent the player from finishing the item use if possessing an entity
-//            final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
-//            if (handler != null && handler.getPossessed() instanceof EntityLivingBase) {
-//                event.getEntityLiving().resetActiveHand();
-//                event.setCanceled(true);
-//            }
-//        }
-//    }
-
-//    @SubscribeEvent
-//    public void onItemUseStop(LivingEntityUseItemEvent.Stop event) {
-//        final IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntity());
-//        if (handler != null && handler.getPossessed() instanceof EntityLivingBase) {
-//            ((EntityLivingBase) handler.getPossessed()).stopActiveHand();
-//            event.setCanceled(true);            // prevent the player from duplicating the action
-//        }
-//    }
 
     /**
      * Prevents a player from ending possession prematurely

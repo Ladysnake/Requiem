@@ -11,7 +11,6 @@ import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
 import ladysnake.dissolution.common.registries.SoulStates;
-import ladysnake.dissolution.core.DissolutionHooks;
 import ladysnake.dissolution.unused.common.entity.ai.EntityAIMinionAttack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -54,9 +53,9 @@ public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteracta
 
     @Override
     public void knockBack(@Nonnull Entity entityIn, float strength, double xRatio, double zRatio) {
-        EntityLivingBase possessed = DissolutionHooks.getPossessedEntity(this);
-        if (possessed != null) {
-            possessed.knockBack(entityIn, strength, xRatio, zRatio);
+        java.util.Optional<EntityLivingBase> possessed = CapabilityIncorporealHandler.getHandler(entityIn).map(IIncorporealHandler::getPossessed);
+        if (possessed.isPresent()) {
+            possessed.get().knockBack(entityIn, strength, xRatio, zRatio);
             return;
         }
         super.knockBack(entityIn, strength, xRatio, zRatio);

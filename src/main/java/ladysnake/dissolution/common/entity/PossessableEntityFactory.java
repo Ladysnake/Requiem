@@ -1,9 +1,12 @@
 package ladysnake.dissolution.common.entity;
 
 import ladysnake.dissolution.api.corporeality.IPossessable;
-import ladysnake.dissolution.core.SafeClassWriter;
-import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.potion.PotionEffect;
 import org.objectweb.asm.*;
 
 import javax.annotation.Nullable;
@@ -13,8 +16,8 @@ import java.util.Map;
 
 public class PossessableEntityFactory {
     private static final ASMClassLoader LOADER = new ASMClassLoader();
-    // A cache containing every possessable entity type created by this factory
-    private static final Map<Class<? extends EntityMob>, Class<? extends EntityMob>> POSSESSABLES = new HashMap<>();
+    // A cache containing every entity type created by this factory
+    private static final Map<Class<? extends EntityLivingBase>, Class<? extends EntityLivingBase>> POSSESSABLES = new HashMap<>();
 
     /**
      * Creates a new class of {@link IPossessable possessable} entity derived from the given base.
@@ -22,13 +25,13 @@ public class PossessableEntityFactory {
      * {@link EntityPossessableImpl} as a template
      */
     @SuppressWarnings("unchecked")
-    public static <T extends EntityMob, P extends EntityMob & IPossessable> Class<P> defineGenericPossessable(Class<T> baseEntityClass) {
+    public static <T extends EntityLivingBase, P extends EntityLivingBase & IPossessable> Class<P> defineGenericPossessable(Class<T> baseEntityClass) {
         return (Class<P>) POSSESSABLES.computeIfAbsent(baseEntityClass, base -> {
             try {
                 final byte[] possessableImplBytes = Launch.classLoader.getClassBytes(EntityPossessableImpl.class.getName().replace('.', '/'));
                 final ClassReader reader = new ClassReader(possessableImplBytes);
                 final String name = getName(base);
-                ClassWriter writer = new SafeClassWriter(0);
+                ClassWriter writer = new ClassWriter(0);
 //                ClassVisitor traceVisitor = new TraceClassVisitor(writer, new PrintWriter(System.out));
                 ClassVisitor adapter = new ChangeParentClassAdapter(Opcodes.ASM5, writer, name.replace('.', '/'), base.getName().replace('.', '/'));
                 reader.accept(adapter, 0);
@@ -53,14 +56,58 @@ public class PossessableEntityFactory {
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    public static <T extends EntityMob, P extends EntityMob & IPossessable> Class<P> getPossessable(Class<T> base) {
+    public static <T extends EntityLivingBase, P extends EntityLivingBase & IPossessable> Class<P> getPossessable(Class<T> base) {
         return (Class<P>) POSSESSABLES.get(base);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public static <T extends EntityLivingBase & IPossessable> T createMinion(EntityLivingBase deadGuy) {
+        if (deadGuy instanceof IPossessable) {
+            return (T) deadGuy;
+        }
+        if (!deadGuy.isEntityUndead()) {
+            return null;
+        }
+
+        EntityLivingBase corpse = null;
+
+        Class<? extends EntityLivingBase> clazz = deadGuy.getClass();
+        Class<? extends EntityLivingBase> possessableClass = getPossessable(clazz);
+        if (possessableClass != null) {
+            corpse = (EntityLivingBase) EntityList.newEntity(possessableClass, deadGuy.world);
+        }
+
+        if (corpse != null) {
+            for (IAttributeInstance attribute : deadGuy.getAttributeMap().getAllAttributes()) {
+                IAttributeInstance corpseAttribute = corpse.getAttributeMap().getAttributeInstance(attribute.getAttribute());
+                //noinspection ConstantConditions
+                if (corpseAttribute == null) {
+                    corpseAttribute = corpse.getAttributeMap().registerAttribute(attribute.getAttribute());
+                }
+                corpseAttribute.setBaseValue(attribute.getBaseValue());
+                for (AttributeModifier modifier : attribute.getModifiers()) {
+                    corpseAttribute.removeModifier(modifier.getID());
+                    corpseAttribute.applyModifier(modifier);
+                }
+            }
+            for (PotionEffect potionEffect : deadGuy.getActivePotionEffects()) {
+                corpse.addPotionEffect(new PotionEffect(potionEffect));
+            }
+            corpse.setPositionAndRotation(deadGuy.posX, deadGuy.posY, deadGuy.posZ, deadGuy.rotationYaw, deadGuy.rotationPitch);
+            corpse.onUpdate();
+        }
+
+        return (T) corpse;
     }
 
     private static String getName(Class baseClass) {
         return String.format("%s_%s", EntityPossessableImpl.class.getName(), baseClass.getSimpleName());
     }
 
+    /**
+     * A class loader allowing the creation of any class from its bytecode, as well as its injection into the classpath
+     */
     private static class ASMClassLoader extends ClassLoader {
         private ASMClassLoader() {
             super(ASMClassLoader.class.getClassLoader());
@@ -71,6 +118,9 @@ public class PossessableEntityFactory {
         }
     }
 
+    /**
+     * A class visitor that can change a class' supertype
+     */
     private static class ChangeParentClassAdapter extends ClassVisitor {
         private static final String TEMPLATE_NAME = EntityPossessableImpl.class.getName().replace('.', '/');
         private static final Type TEMPLATE_TYPE = Type.getType("L" + TEMPLATE_NAME + ";");
@@ -98,6 +148,9 @@ public class PossessableEntityFactory {
             return mv;
         }
 
+        /**
+         * A method visitor that replaces all references to the old superclass
+         */
         private class ChangeParentMethodAdapter extends MethodVisitor {
 
             public ChangeParentMethodAdapter(int api, MethodVisitor mv) {
@@ -108,6 +161,7 @@ public class PossessableEntityFactory {
             public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
                 desc = replaceDesc(desc);
                 if (opcode == Opcodes.INVOKESPECIAL && owner.equals(oldSuperName)) {
+                    // change super calls
                     visitMethodInsn(
                             Opcodes.INVOKESPECIAL,
                             newSuperName,
@@ -116,6 +170,7 @@ public class PossessableEntityFactory {
                             false
                     );
                 } else if (owner.equals(TEMPLATE_NAME)) {
+                    // change calls to self
                     visitMethodInsn(
                             opcode,
                             ChangeParentClassAdapter.this.name,

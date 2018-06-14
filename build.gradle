@@ -24,10 +24,10 @@ sourceSets {
         compileClasspath = main.compileClasspath
         runtimeClasspath = main.runtimeClasspath
     }
-    main {
-        compileClasspath += core.output
-        runtimeClasspath += core.output
-    }
+//    main {
+//        compileClasspath += core.output
+//        runtimeClasspath += core.output
+//    }
 }
 
 minecraft {
@@ -127,9 +127,9 @@ jar {
         dependsOn signCoreJar //Sign core jar *before* including!
     }
 
-    from(coreJar.archivePath.absolutePath) {
-        include '*'
-    }
+//    from(coreJar.archivePath.absolutePath) {
+//        include '*' into
+//    }
 
     manifest {
         attributes([
