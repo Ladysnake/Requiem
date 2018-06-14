@@ -1,9 +1,7 @@
 package ladysnake.dissolution.unused.common.entity;
 
 import com.google.common.base.Optional;
-import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.entity.PossessableEntityFactory;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.unused.common.entity.ai.EntityAIMinionRangedAttack;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -30,7 +28,6 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SPacketCamera;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
@@ -64,49 +61,6 @@ public abstract class AbstractMinion extends EntityMob implements IRangedAttackM
 
     private final EntityAIMinionRangedAttack aiArrowAttack = new EntityAIMinionRangedAttack(this, 1.0D, 20, 15.0F);
     private final EntityAIAttackMelee aiAttackOnCollide = new EntityAIAttackMelee(this, 1.2D, false);
-
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public static <T extends EntityLivingBase & IPossessable> T createMinion(EntityLivingBase deadGuy) {
-        if (deadGuy instanceof IPossessable) {
-            return (T) deadGuy;
-        }
-        if (!deadGuy.isEntityUndead()) {
-            return null;
-        }
-
-        EntityMob corpse = null;
-
-        if (deadGuy instanceof EntityMob) {
-            Class<? extends EntityMob> clazz = ((EntityMob)deadGuy).getClass();
-            Class<? extends EntityMob> possessableClass = PossessableEntityFactory.getPossessable(clazz);
-            if (possessableClass != null) {
-                corpse = (EntityMob) EntityList.newEntity(possessableClass, deadGuy.world);
-            }
-        }
-
-        if (corpse != null) {
-            for (IAttributeInstance attribute : deadGuy.getAttributeMap().getAllAttributes()) {
-                IAttributeInstance corpseAttribute = corpse.getAttributeMap().getAttributeInstance(attribute.getAttribute());
-                //noinspection ConstantConditions
-                if (corpseAttribute == null) {
-                    corpseAttribute = corpse.getAttributeMap().registerAttribute(attribute.getAttribute());
-                }
-                corpseAttribute.setBaseValue(attribute.getBaseValue());
-                for (AttributeModifier modifier : attribute.getModifiers()) {
-                    corpseAttribute.removeModifier(modifier.getID());
-                    corpseAttribute.applyModifier(modifier);
-                }
-            }
-            for (PotionEffect potionEffect : deadGuy.getActivePotionEffects()) {
-                corpse.addPotionEffect(new PotionEffect(potionEffect));
-            }
-            corpse.setPositionAndRotation(deadGuy.posX, deadGuy.posY, deadGuy.posZ, deadGuy.rotationYaw, deadGuy.rotationPitch);
-            corpse.onUpdate();
-        }
-
-        return (T) corpse;
-    }
 
     public AbstractMinion(World worldIn) {
         this(worldIn, false);

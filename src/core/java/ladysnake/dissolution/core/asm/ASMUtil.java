@@ -1,5 +1,6 @@
 package ladysnake.dissolution.core.asm;
 
+import ladysnake.dissolution.core.SafeClassWriter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -64,7 +65,7 @@ public final class ASMUtil {
 
         transformer.accept(classNode);
 
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+        ClassWriter writer = new SafeClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
         classNode.accept(writer);
 
         return writer.toByteArray();
