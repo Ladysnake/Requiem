@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.init;
 
+import ladylib.LadyLib;
 import ladysnake.dissolution.common.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -88,7 +89,7 @@ public enum ModFluids {
     private void registerFluidBlock(IForgeRegistry<Block> reg) {
         fluidBlock.setRegistryName(Reference.MOD_ID, "fluid." + fluid.getName());
         fluidBlock.setUnlocalizedName(Reference.MOD_ID + ":" + fluid.getUnlocalizedName());
-        ModBlocks.INSTANCE.registerBlock(reg, fluidBlock, false, ItemBlock::new);
+        LadyLib.instance.getBlockRegistrar().addBlock(fluidBlock, ItemBlock::new, false);
     }
 
     @SideOnly(Side.CLIENT)

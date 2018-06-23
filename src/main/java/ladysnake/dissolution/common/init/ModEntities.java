@@ -1,25 +1,21 @@
 package ladysnake.dissolution.common.init;
 
+import ladylib.LadyLib;
 import ladysnake.dissolution.api.corporeality.IPossessable;
-import ladysnake.dissolution.client.renders.entities.RenderFaerie;
-import ladysnake.dissolution.client.renders.entities.RenderWillOWisp;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.entity.EntityPlayerShell;
+import ladysnake.dissolution.common.entity.EntityPossessableImpl;
 import ladysnake.dissolution.common.entity.PossessableEntityFactory;
-import ladysnake.dissolution.common.entity.souls.EntityFaerie;
-import ladysnake.dissolution.common.entity.souls.EntityFaerieSpawner;
-import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
-import ladysnake.dissolution.common.entity.souls.EntitySoulSpawner;
 import ladysnake.dissolution.unused.client.renders.entities.RenderPlayerCorpse;
 import ladysnake.dissolution.unused.common.entity.EntityPlayerCorpse;
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -109,18 +105,21 @@ public class ModEntities {
     @SubscribeEvent
     public static void register(RegistryEvent.Register<EntityEntry> event) {
         IForgeRegistry<EntityEntry> reg = event.getRegistry();
+        if (LadyLib.isDevEnv()) {
+            registerEntity(reg, EntityPossessableImpl::new, "possessed_base", 64, true);
+        }
         registerEntity(reg, EntityPlayerCorpse::new, "player_corpse", 64, true);
-        registerEntity(reg, EntityFleetingSoul::new, "ignis_faatus", 64, true);
-        registerEntity(reg, EntityFaerie::new, "faerie", 64, true);
-        reg.register(createEntry(EntitySoulSpawner::new, "soul_spawner", 64, true)
-                .spawn(EnumCreatureType.AMBIENT, 50, 1, 1, BiomeDictionary.getBiomes(BiomeDictionary.Type.SWAMP))
-                .spawn(EnumCreatureType.AMBIENT, 50, 1, 2, BiomeDictionary.getBiomes(BiomeDictionary.Type.MAGICAL))
-                .build());
-        reg.register(createEntry(EntityFaerieSpawner::new, "faerie_spawner", 64, true)
-                .spawn(EnumCreatureType.AMBIENT, 50, 1, 1, BiomeDictionary.getBiomes(BiomeDictionary.Type.FOREST))
-                .spawn(EnumCreatureType.AMBIENT, 50, 1, 2, BiomeDictionary.getBiomes(BiomeDictionary.Type.MAGICAL))
-                .spawn(EnumCreatureType.AMBIENT, 75, 1, 3, Biomes.MUTATED_FOREST)
-                .build());
+//        registerEntity(reg, EntityFleetingSoul::new, "ignis_faatus", 64, true);
+//        registerEntity(reg, EntityFaerie::new, "faerie", 64, true);
+//        reg.register(createEntry(EntitySoulSpawner::new, "soul_spawner", 64, true)
+//                .spawn(EnumCreatureType.AMBIENT, 50, 1, 1, BiomeDictionary.getBiomes(BiomeDictionary.Type.SWAMP))
+//                .spawn(EnumCreatureType.AMBIENT, 50, 1, 2, BiomeDictionary.getBiomes(BiomeDictionary.Type.MAGICAL))
+//                .build());
+//        reg.register(createEntry(EntityFaerieSpawner::new, "faerie_spawner", 64, true)
+//                .spawn(EnumCreatureType.AMBIENT, 50, 1, 1, BiomeDictionary.getBiomes(BiomeDictionary.Type.FOREST))
+//                .spawn(EnumCreatureType.AMBIENT, 50, 1, 2, BiomeDictionary.getBiomes(BiomeDictionary.Type.MAGICAL))
+//                .spawn(EnumCreatureType.AMBIENT, 75, 1, 3, Biomes.MUTATED_FOREST)
+//                .build());
     }
 
     private static void registerEntity(IForgeRegistry<EntityEntry> reg, Function<World, Entity> factory, String name, int trackingRange, boolean sendsVelocityUpdates) {
@@ -140,9 +139,10 @@ public class ModEntities {
 
     @SideOnly(Side.CLIENT)
     public static void registerRenders() {
-        RenderingRegistry.registerEntityRenderingHandler(EntityPlayerCorpse.class, RenderPlayerCorpse::new);
-        RenderingRegistry.registerEntityRenderingHandler(EntityFleetingSoul.class, RenderWillOWisp::new);
-        RenderingRegistry.registerEntityRenderingHandler(EntityFaerie.class, RenderFaerie::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityPlayerShell.class, RenderPlayerCorpse::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityPossessableImpl.class, renderManagerIn -> new RenderBiped<>(renderManagerIn, new ModelBiped(), 1f));
+//        RenderingRegistry.registerEntityRenderingHandler(EntityFleetingSoul.class, RenderWillOWisp::new);
+//        RenderingRegistry.registerEntityRenderingHandler(EntityFaerie.class, RenderFaerie::new);
     }
 
 }

@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.inventory;
 
-import ladysnake.dissolution.unused.common.entity.EntityPlayerCorpse;
+import ladysnake.dissolution.common.entity.EntityPlayerShell;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ContainerChest;
@@ -22,7 +22,7 @@ public class GuiProxy implements IGuiHandler {
         BlockPos pos = new BlockPos(x, y, z);
         switch (ID) {
             case PLAYER_CORPSE:
-                EntityPlayerCorpse pc = world.getEntitiesWithinAABB(EntityPlayerCorpse.class, new AxisAlignedBB(pos)).stream().findAny().orElse(null);
+                EntityPlayerShell pc = world.getEntitiesWithinAABB(EntityPlayerShell.class, new AxisAlignedBB(pos)).stream().findAny().orElse(null);
                 if (pc != null) {
                     return new ContainerChest(player.inventory, pc.getInventory(), player);
                 }
@@ -37,7 +37,7 @@ public class GuiProxy implements IGuiHandler {
         BlockPos pos = new BlockPos(x, y, z);
         switch (ID) {
             case PLAYER_CORPSE:
-                List<EntityPlayerCorpse> pc = world.getEntitiesWithinAABB(EntityPlayerCorpse.class, new AxisAlignedBB(pos));
+                List<EntityPlayerShell> pc = world.getEntitiesWithinAABB(EntityPlayerShell.class, new AxisAlignedBB(pos));
                 if (!pc.isEmpty()) {
                     return new GuiChest(player.inventory, pc.get(0).getInventory());
                 }

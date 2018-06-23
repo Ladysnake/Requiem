@@ -2,13 +2,7 @@ package ladysnake.dissolution.common.init;
 
 
 import ladysnake.dissolution.common.Reference;
-import net.minecraft.init.PotionTypes;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.potion.PotionHelper;
-import net.minecraftforge.common.brewing.BrewingRecipe;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * Class previously used to register recipes
@@ -17,12 +11,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  */
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class ModCrafting {
-
-    @SubscribeEvent
-    public static void registerPotions(RegistryEvent.Register<IRecipe> event) {
-        // TODO make this work only with faeries
-        PotionHelper.addMix(PotionTypes.AWKWARD, ModItems.SOUL_IN_A_JAR, PotionTypes.REGENERATION);
-    }
 
     public static void register() {
         /*
@@ -37,8 +25,8 @@ public class ModCrafting {
 		RecipeToJsonConverter.addShapedRecipe(new ItemStack(ModBlocks.MERCURIUS_WAYSTONE), "W", "G", "C", 'W', Blocks.COBBLESTONE_WALL, 'G', ModItems.SOUL_GEM, 'C', Blocks.COBBLESTONE);
 		RecipeToJsonConverter.addShapedRecipe(new ItemStack(ModItems.STONE_BURIAL), "CCC", "QGS", 'C', new ItemStack(Blocks.STONE_SLAB, 1, 0), 'Q', Items.QUARTZ, 'G', ModItems.SOUL_GEM, 'S', new ItemStack(Items.SKULL, 1, 1));
 		RecipeToJsonConverter.addShapedRecipe(new ItemStack(ModBlocks.SOUL_EXTRACTOR), "SSD", "GIG", "QRS", 'S', Blocks.COBBLESTONE, 'D', Items.DIAMOND, 'G', Blocks.GLASS, 'I', Items.IRON_INGOT, 'Q', Items.QUARTZ, 'R', Items.REDSTONE);
-		RecipeToJsonConverter.addShapedRecipe(new ItemStack(Blocks.SOUL_SAND, 8), "SSS", "SBS", "SSS", 'S', Blocks.SAND, 'B', ModItems.SOUL_IN_A_JAR);
-		RecipeToJsonConverter.addShapelessRecipe(new ItemStack(ModItems.SOUL_GEM), ItemBaseResource.resourceFromName("ectoplasm"), ModItems.SOUL_IN_A_JAR);
+		RecipeToJsonConverter.addShapedRecipe(new ItemStack(Blocks.SOUL_SAND, 8), "SSS", "SBS", "SSS", 'S', Blocks.SAND, 'B', ModItems.WISP_IN_A_JAR);
+		RecipeToJsonConverter.addShapelessRecipe(new ItemStack(ModItems.SOUL_GEM), ItemBaseResource.resourceFromName("ectoplasm"), ModItems.WISP_IN_A_JAR);
 		*/
     }
 }

@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.inventory;
 
-import ladysnake.dissolution.unused.common.entity.EntityPlayerCorpse;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
@@ -20,14 +20,14 @@ public class InventoryPlayerCorpse implements IInventory {
      * An array of 36 item stacks indicating the main player inventory (including the visible bar).
      */
     private NonNullList<ItemStack> mainInventory = NonNullList.withSize(36, ItemStack.EMPTY);
-    private EntityPlayerCorpse corpseEntity;
+    private EntityLivingBase corpseEntity;
     private boolean dirty;
 
-    public InventoryPlayerCorpse(EntityPlayerCorpse corpse) {
+    public InventoryPlayerCorpse(EntityLivingBase corpse) {
         this(NonNullList.withSize(36, ItemStack.EMPTY), corpse);
     }
 
-    public InventoryPlayerCorpse(NonNullList<ItemStack> inv, EntityPlayerCorpse corpse) {
+    public InventoryPlayerCorpse(NonNullList<ItemStack> inv, EntityLivingBase corpse) {
         super();
         for (int i = 0; i < inv.size(); i++) {
             this.mainInventory.set(i, inv.get(i));

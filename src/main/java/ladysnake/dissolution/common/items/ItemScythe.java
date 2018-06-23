@@ -160,6 +160,13 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
         return multimap;
     }
 
+    @Nonnull
+    @Override
+    public ItemScythe setMaxDamage(int maxDamageIn) {
+        super.setMaxDamage(maxDamageIn);
+        return this;
+    }
+
     @Override
     public ModelResourceLocation getModelLocation() {
         //noinspection ConstantConditions

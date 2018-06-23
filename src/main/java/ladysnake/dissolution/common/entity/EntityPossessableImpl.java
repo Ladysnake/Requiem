@@ -298,7 +298,7 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     @Override
     public void setItemStackToSlot(EntityEquipmentSlot slotIn, @Nonnull ItemStack stack) {
         EntityPlayer possessing = getPossessingEntity();
-        if (possessing != null) {
+        if (possessing != null && !world.isRemote) {
             possessing.setItemStackToSlot(slotIn, stack);
             return;
         }

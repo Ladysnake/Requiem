@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -96,7 +97,7 @@ public class ItemSoulInAJar extends ItemBlock {
     }
 
     public static ItemStack newTypedSoulBottle(SoulType soulType) {
-        ItemStack stack = new ItemStack(ModItems.SOUL_IN_A_JAR);
+        ItemStack stack = new ItemStack(Items.GLASS_BOTTLE);//ModItems.WISP_IN_A_JAR);
         NBTTagCompound nbt = new NBTTagCompound();
         nbt.setString("soultype", soulType.name());
         stack.setTagCompound(nbt);

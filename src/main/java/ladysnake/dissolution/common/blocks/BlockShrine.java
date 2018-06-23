@@ -3,6 +3,7 @@ package ladysnake.dissolution.common.blocks;
 import ladysnake.dissolution.api.IDialogueStats;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.init.ModItems;
+import ladysnake.dissolution.common.items.ItemSoulInAJar;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
@@ -31,7 +32,7 @@ public class BlockShrine extends Block {
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (playerIn.getHeldItem(hand).getItem() == ModItems.SOUL_IN_A_JAR) {
+        if (playerIn.getHeldItem(hand).getItem() instanceof ItemSoulInAJar) {
             IDialogueStats stats = CapabilityIncorporealHandler.getHandler(playerIn).getDialogueStats();
             stats.resetProgress();
             playerIn.setHeldItem(hand, new ItemStack(ModItems.GLASS_JAR));
