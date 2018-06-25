@@ -49,8 +49,8 @@ public final class ShaderHelper {
         if (!shouldUseShaders()) {
             return;
         }
-        dissolution = initShader("VertexBase.vsh", "corpsedissolution.fsh");
-        bloom = initShader("VertexBase.vsh", "bloom.fsh");
+        dissolution = initShader("vertex_base.vsh", "corpsedissolution.fsh");
+        bloom = initShader("vertex_base.vsh", "bloom.fsh");
     }
 
     /**
@@ -135,16 +135,29 @@ public final class ShaderHelper {
      * Sets the value of a uniform from the current program
      *
      * @param uniformName
-     * @param value       a float value for this uniform
+     * @param values       one or more float values for this uniform
      */
-    public static void setUniform(String uniformName, float value) {
+    public static void setUniform(String uniformName, float... values) {
         if (!shouldUseShaders()) {
             return;
         }
 
         int uniform = GL20.glGetUniformLocation(currentProgram, uniformName);
         if (uniform != -1) {
-            GL20.glUniform1f(uniform, value);
+            switch (values.length) {
+                case 1:
+                    GL20.glUniform1f(uniform, values[0]);
+                    break;
+                case 2:
+                    GL20.glUniform2f(uniform, values[0], values[1]);
+                    break;
+                case 3:
+                    GL20.glUniform3f(uniform, values[0], values[1], values[2]);
+                    break;
+                case 4:
+                    GL20.glUniform4f(uniform, values[0], values[1], values[2], values[3]);
+                    break;
+            }
         }
     }
 

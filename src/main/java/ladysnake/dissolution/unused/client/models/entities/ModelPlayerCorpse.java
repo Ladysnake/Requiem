@@ -1,6 +1,6 @@
 package ladysnake.dissolution.unused.client.models.entities;
 
-import ladysnake.dissolution.unused.common.entity.EntityPlayerCorpse;
+import ladysnake.dissolution.common.entity.EntityPlayerShell;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -119,9 +119,9 @@ public class ModelPlayerCorpse extends ModelBiped {
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, @Nonnull Entity entityIn) {
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
 
-        if (((EntityPlayerCorpse) entityIn).isInert()) {
+        if (((EntityPlayerShell) entityIn).isInert()) {
 
-            ((EntityPlayerCorpse) entityIn).isAIDisabled();
+            ((EntityPlayerShell) entityIn).isAIDisabled();
             // right arm
             this.bipedRightArm.rotateAngleX = 1.5F;
             this.bipedRightArm.rotateAngleY = -0.1F;

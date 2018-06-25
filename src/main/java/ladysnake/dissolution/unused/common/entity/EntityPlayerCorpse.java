@@ -38,7 +38,7 @@ import java.util.UUID;
 @SuppressWarnings("Guava")
 public class EntityPlayerCorpse extends AbstractMinion implements ISoulInteractable {
 
-    private static DataParameter<Optional<UUID>> PLAYER = EntityDataManager.createKey(EntityPlayerCorpse.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+    private static final DataParameter<Optional<UUID>> PLAYER = EntityDataManager.createKey(EntityPlayerCorpse.class, DataSerializers.OPTIONAL_UNIQUE_ID);
     private static final DataParameter<Integer> DECOMPOSITION_COUNTDOWN = EntityDataManager
             .createKey(EntityPlayerCorpse.class, DataSerializers.VARINT);
     protected InventoryPlayerCorpse inventory;

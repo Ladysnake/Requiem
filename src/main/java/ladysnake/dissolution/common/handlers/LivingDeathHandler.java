@@ -1,13 +1,15 @@
 package ladysnake.dissolution.common.handlers;
 
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
-import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.IScoreCriteria;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
@@ -34,6 +36,8 @@ public class LivingDeathHandler {
     public void onLivingDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof EntityPlayer) {
             this.handlePlayerDeath(event);
+        } else if (event.getEntity() instanceof EntityVillager) {
+            event.getEntityLiving().dropItem(ModItems.HUMAN_FLESH_RAW, 1 + event.getEntity().world.rand.nextInt(3));
         }
 
 //        if (event.getSource().getTrueSource() instanceof EntityPlayer)
@@ -61,6 +65,8 @@ public class LivingDeathHandler {
                 p.getDisplayNameString() + event.getSource().getDeathMessage(p).getUnformattedComponentText());
         corp.getDeathStats().setDeathDimension(p.dimension);
 
+        p.dropItem(new ItemStack(ModItems.HUMAN_FLESH_RAW, 1 + p.world.rand.nextInt(3)), true, true);
+
 //        if (!p.world.isRemote && Dissolution.config.respawn.spawnCorpses) {
 //            final EntityPlayerCorpse body = new EntityPlayerCorpse(p.world);
 //            body.setPosition(p.posX, p.posY, p.posZ);
@@ -81,19 +87,19 @@ public class LivingDeathHandler {
 //            body.setPlayer(p.getUniqueID());
 //        }
 
-        if (Dissolution.config.respawn.skipDeathScreen) {
-            if (!p.world.isRemote) {
-                fakePlayerDeath((EntityPlayerMP) p, event.getSource());
-            }
-            corp.setCorporealityStatus(Dissolution.config.respawn.respawnCorporealityStatus.status);
-            p.setHealth(20f);
-            //noinspection ConstantConditions
-            p.getBedLocation();
-            if (Dissolution.config.respawn.respawnInNether && !p.world.isRemote) {
-                CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) p, Dissolution.config.respawn.respawnDimension);
-            }
-            event.setCanceled(true);
-        }
+//        if (Dissolution.config.respawn.skipDeathScreen) {
+//            if (!p.world.isRemote) {
+//                fakePlayerDeath((EntityPlayerMP) p, event.getSource());
+//            }
+//            corp.setCorporealityStatus(Dissolution.config.respawn.respawnCorporealityStatus.status);
+//            p.setHealth(20f);
+//            //noinspection ConstantConditions
+//            p.getBedLocation();
+//            if (Dissolution.config.respawn.respawnInNether && !p.world.isRemote) {
+//                CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) p, Dissolution.config.respawn.respawnDimension);
+//            }
+//            event.setCanceled(true);
+//        }
     }
 
     public static void fakePlayerDeath(EntityPlayerMP player, DamageSource cause) {

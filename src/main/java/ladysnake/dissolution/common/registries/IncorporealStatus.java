@@ -1,7 +1,6 @@
 package ladysnake.dissolution.common.registries;
 
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
-import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
@@ -89,7 +88,7 @@ public class IncorporealStatus extends CorporealityStatus {
         if(this.subscribedPlayers.contains(event.getEntityPlayer()) && !event.getEntityPlayer().isCreative()) {
             IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
             if (this.preventsInteraction(event.getTarget()) && handler.getPossessed() == null
-                    && !event.getEntityPlayer().isCreative() && !(event.getTarget() instanceof ISoulInteractable)) {
+                    && !event.getEntityPlayer().isCreative()) {
                 event.setCanceled(true);
             }
         }

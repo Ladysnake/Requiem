@@ -17,6 +17,9 @@ public class DissolutionConfig {
     @Config.Comment("Because some people need dialogue to be explicit")
     public boolean technicianDialogue = false;
 
+    @Config.Comment("Make human flesh consumption add warp if Thaumcraft is installed")
+    public boolean warpyFlesh = true;
+
     public class Client {
 
         @Config.Comment("Whether this mod should use shaders as an attempt to make things prettier")

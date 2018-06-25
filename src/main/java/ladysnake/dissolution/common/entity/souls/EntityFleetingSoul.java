@@ -5,7 +5,6 @@ import elucent.albedo.lighting.Light;
 import ladysnake.dissolution.api.Soul;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.entity.SoulType;
-import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.items.ItemSoulInAJar;
 import net.minecraft.entity.Entity;
@@ -13,6 +12,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -148,7 +148,7 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
 
     @Override
     public void onCollideWithPlayer(EntityPlayer entityIn) {
-        ItemStack bottle = DissolutionInventoryHelper.findItem(entityIn, ModItems.GLASS_JAR);
+        ItemStack bottle = DissolutionInventoryHelper.findItem(entityIn, Items.GLASS_BOTTLE/*ModItems.GLASS_JAR*/);
         if (!world.isRemote && !bottle.isEmpty() && this.delayBeforeCanPickup <= 0) {
             bottle.shrink(1);
             entityIn.addItemStackToInventory(ItemSoulInAJar.newTypedSoulBottle(SoulType.WILL_O_WISP));

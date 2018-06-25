@@ -1,6 +1,8 @@
 package ladysnake.dissolution.common;
 
 
+import ladylib.LLibContainer;
+import ladylib.LadyLib;
 import ladysnake.dissolution.common.commands.CommandDissolutionTree;
 import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
@@ -40,10 +42,14 @@ public class Dissolution {
     /**True if the last server checked does not have the mod installed*/
     public static boolean noServerInstall;
 
+    @LadyLib.LLInstance
+    private static LLibContainer lib;
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         proxy.preInit();
         DissolutionConfigManager.init(event.getSuggestedConfigurationFile());
+        lib.setCreativeTab(CREATIVE_TAB);
     }
 
     @EventHandler

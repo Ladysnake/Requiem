@@ -69,3 +69,6 @@ item.wooden_coffin.name=Wooden Coffin
 itemGroup.dissolution=Dissolution
 jei.description.dissolution.item.sepulture=This sepulture gives rest to worried souls by giving them a new body and assuring that their death will be remembered by the livings.
 tile.wisp_jar.name=Wisp in a jar
+
+dissolution.soul_upgrade=Despite the headache, you feel abnormally lightened.
+dissolution.soul_downgrade=You feel heavy all of a sudden.

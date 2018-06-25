@@ -69,3 +69,6 @@ item.wooden_coffin.name=木棺材
 itemGroup.dissolution=溶尸
 jei.description.dissolution.item.sepulture=这座坟墓让忧虑的灵魂得到安息，通过给他们一个新的身体，并确保他们的死将被生者记住。
 tile.wisp_jar.name=罐中的耀子
+
+dissolution.soul_upgrade=Despite the headache, you feel abnormally lightened.
+dissolution.soul_downgrade=You feel heavy all of a sudden.

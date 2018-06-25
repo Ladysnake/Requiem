@@ -1,6 +1,6 @@
 package ladysnake.dissolution.unused.client.models.entities;
 
-import ladysnake.dissolution.unused.common.entity.AbstractMinion;
+import ladysnake.dissolution.common.entity.EntityPlayerShell;
 import net.minecraft.client.model.ModelZombie;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
@@ -19,7 +19,7 @@ public class ModelMinionZombie extends ModelZombie {
     @Override
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, @Nonnull Entity entityIn) {
 
-        if (!((AbstractMinion) entityIn).isInert()) {
+        if (!((EntityPlayerShell) entityIn).isInert()) {
             super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
             float f = MathHelper.sin(this.swingProgress * (float) Math.PI);
             float f1 = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float) Math.PI);
@@ -71,7 +71,7 @@ public class ModelMinionZombie extends ModelZombie {
             this.bipedHeadwear.rotationPointZ = 0.0F;
         } else {
 
-            ((AbstractMinion) entityIn).isAIDisabled();
+            ((EntityPlayerShell) entityIn).isAIDisabled();
             // right arm
             this.bipedRightArm.rotateAngleX = 1.5F;
             this.bipedRightArm.rotateAngleY = -0.1F;

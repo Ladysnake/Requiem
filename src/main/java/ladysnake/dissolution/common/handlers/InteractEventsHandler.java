@@ -2,6 +2,7 @@ package ladysnake.dissolution.common.handlers;
 
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
+import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.PossessableEntityFactory;
@@ -50,21 +51,25 @@ public class InteractEventsHandler {
             return;
         }
         event.setCanceled(true);
-        if (handler.getCorporealityStatus().isIncorporeal() && event.getSide().isServer()
-                && event.getTarget() instanceof EntityLivingBase && !event.getTarget().getIsInvulnerable()) {
-            EntityLivingBase host = PossessableEntityFactory.createMinion((EntityLivingBase) event.getTarget());
-            if (host != null && ((IPossessable)host).canBePossessedBy(event.getEntityPlayer())) {
-                DissolutionInventoryHelper.transferEquipment((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
-                if (((EntityLivingBase) event.getTarget()).getHeldItemMainhand().getItem() instanceof ItemBow) {
-                    event.getEntityPlayer().addItemStackToInventory(new ItemStack(Items.ARROW, host.world.rand.nextInt(10) + 2));
+        if (handler.getCorporealityStatus().isIncorporeal()) {
+            if (event.getTarget() instanceof ISoulInteractable) {
+                event.setCancellationResult(((ISoulInteractable) event.getTarget()).applySoulInteraction(event.getEntityPlayer(), event.getLocalPos(), event.getHand()));
+            } else if (event.getSide().isServer()
+                    && event.getTarget() instanceof EntityLivingBase && !event.getTarget().getIsInvulnerable()) {
+                EntityLivingBase host = PossessableEntityFactory.createMinion((EntityLivingBase) event.getTarget());
+                if (host != null && ((IPossessable)host).canBePossessedBy(event.getEntityPlayer())) {
+                    DissolutionInventoryHelper.transferEquipment((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
+                    if (((EntityLivingBase) event.getTarget()).getHeldItemMainhand().getItem() instanceof ItemBow) {
+                        event.getEntityPlayer().addItemStackToInventory(new ItemStack(Items.ARROW, host.world.rand.nextInt(10) + 2));
+                    }
+                    if (host != event.getTarget()) {
+                        event.getTarget().setPosition(0, -100, 0);
+                        event.getTarget().world.spawnEntity(host);
+                        event.getTarget().world.removeEntity(event.getTarget());
+                    }
+                    handler.setPossessed((EntityMob & IPossessable) host);
+                    event.setCancellationResult(EnumActionResult.SUCCESS);
                 }
-                if (host != event.getTarget()) {
-                    event.getTarget().setPosition(0, -100, 0);
-                    event.getTarget().world.spawnEntity(host);
-                    event.getTarget().world.removeEntity(event.getTarget());
-                }
-                handler.setPossessed((EntityMob & IPossessable) host);
-                event.setCancellationResult(EnumActionResult.SUCCESS);
             }
         }
     }

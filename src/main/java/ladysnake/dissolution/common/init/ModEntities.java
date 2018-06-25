@@ -2,13 +2,12 @@ package ladysnake.dissolution.common.init;
 
 import ladylib.LadyLib;
 import ladysnake.dissolution.api.corporeality.IPossessable;
+import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.EntityPlayerShell;
 import ladysnake.dissolution.common.entity.EntityPossessableImpl;
 import ladysnake.dissolution.common.entity.PossessableEntityFactory;
-import ladysnake.dissolution.unused.client.renders.entities.RenderPlayerCorpse;
-import ladysnake.dissolution.unused.common.entity.EntityPlayerCorpse;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.Entity;
@@ -61,7 +60,7 @@ public class ModEntities {
                     int trackingRange, updateFrequency;
                     boolean sendVelocityUpdates;
                     if (info == null) {
-                        if (entityEntry.getRegistryName().getResourceDomain().equals("minecraft")) {
+                        if (!entityEntry.getRegistryName().getResourceDomain().equals("minecraft")) {
                             Dissolution.LOGGER.info("No entity registration found for {}, using default values", entityEntry.getRegistryName());
                         }
                         trackingRange = 64;
@@ -108,7 +107,7 @@ public class ModEntities {
         if (LadyLib.isDevEnv()) {
             registerEntity(reg, EntityPossessableImpl::new, "possessed_base", 64, true);
         }
-        registerEntity(reg, EntityPlayerCorpse::new, "player_corpse", 64, true);
+        registerEntity(reg, EntityPlayerShell::new, "player_corpse", 64, true);
 //        registerEntity(reg, EntityFleetingSoul::new, "ignis_faatus", 64, true);
 //        registerEntity(reg, EntityFaerie::new, "faerie", 64, true);
 //        reg.register(createEntry(EntitySoulSpawner::new, "soul_spawner", 64, true)

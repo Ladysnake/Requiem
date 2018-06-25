@@ -1,11 +1,9 @@
 package ladysnake.dissolution.common.items;
 
-import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
-import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
-import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -18,6 +16,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 public class ItemDebug extends Item implements ISoulInteractable {
@@ -42,9 +42,15 @@ public class ItemDebug extends Item implements ISoulInteractable {
         }
         switch (debugWanted) {
             case 0:
-                IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(playerIn);
-                int current = SoulStates.REGISTRY.getValues().indexOf(handler.getCorporealityStatus());
-                handler.setCorporealityStatus(SoulStates.REGISTRY.getValues().get((current + 1) % 3));
+                if (worldIn.isRemote) {
+                    try {
+                        Method m = ShaderHelper.class.getDeclaredMethod("initShaders");
+                        m.setAccessible(true);
+                        m.invoke(null);
+                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                }
                 break;
             case 1:
                 if (!worldIn.isRemote) {

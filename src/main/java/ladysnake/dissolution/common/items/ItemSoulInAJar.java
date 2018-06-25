@@ -4,7 +4,6 @@ import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.entity.SoulType;
-import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.tileentities.TileEntityWispInAJar;
 import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
@@ -70,7 +69,7 @@ public class ItemSoulInAJar extends ItemBlock {
             soul.instantiate(worldIn, pos.getX(), pos.getY(), pos.getZ(), playerIn).ifPresent(worldIn::spawnEntity);
         }
         stack.shrink(1);
-        ItemStack emptyJar = new ItemStack(ModItems.GLASS_JAR);
+        ItemStack emptyJar = new ItemStack(Items.GLASS_BOTTLE/*ModItems.GLASS_JAR*/);
         if (stack.isEmpty()) {
             stack = emptyJar;
         } else {
