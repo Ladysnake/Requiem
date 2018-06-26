@@ -73,7 +73,7 @@ public class CommandSoulStrength extends CommandBase {
                     new TextComponentTranslation("commands.dissolution.soul_strength.get." + (player == sender ? "self" : "other"), player.getName(),
                             new TextComponentTranslation("dissolution.soul_strength." + (handler.isStrongSoul() ? "strong" : "weak"))));
         } else {
-            if (Dissolution.config.enforcedSoulStrength != DissolutionConfigManager.EnforcedSoulStrength.NONE) {
+            if (Dissolution.config.forceRemnant != DissolutionConfigManager.EnforcedSoulStrength.DEFAULT) {
                 throw new CommandException("commands.dissolution.soul_strength.enforced_soul_strength");
             }
             TextComponentTranslation soulStrength;

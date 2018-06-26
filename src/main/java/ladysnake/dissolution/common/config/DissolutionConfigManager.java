@@ -221,10 +221,10 @@ public final class DissolutionConfigManager {
     }
 
     public enum EnforcedSoulStrength {
-        NONE, STRONG, WEAK;
+        DEFAULT, TRUE, FALSE;
 
         public boolean getValue(boolean defaultStrength) {
-            return (defaultStrength && (this == NONE)) || (this == STRONG);
+            return (defaultStrength && (this == DEFAULT)) || (this == TRUE);
         }
     }
 }

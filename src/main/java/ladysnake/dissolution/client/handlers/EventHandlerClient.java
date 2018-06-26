@@ -15,9 +15,9 @@ import ladysnake.dissolution.common.registries.SoulStates;
 import ladysnake.dissolution.unused.common.blocks.BlockFluidMercury;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
@@ -148,8 +148,9 @@ public class EventHandlerClient {
 
     @SubscribeEvent
     public static void onGuiScreenInitGui(GuiScreenEvent.InitGuiEvent.Pre event) {
-        if (event.getGui() instanceof GuiCrafting) {
+        if (event.getGui() instanceof GuiGameOver && Dissolution.config.respawn.skipDeathScreen) {
             event.setCanceled(true);
+            Minecraft.getMinecraft().player.respawnPlayer();
         }
     }
 

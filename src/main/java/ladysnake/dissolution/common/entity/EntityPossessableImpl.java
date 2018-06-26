@@ -71,7 +71,7 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
 
     private List<Entity> triggeredMobs = new LinkedList<>();
     private List<Class<? extends EntityLivingBase>> equivalents = new LinkedList<>();
-    private EntityAIInert aiDontDoShit;
+    private EntityAIInert aiDontDoShit = new EntityAIInert(false);
 
     private boolean sleeping;
 
@@ -79,7 +79,7 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
         super(worldIn);
         Collections.addAll(this.equivalents, EntityPlayer.class, EntityPlayerMP.class);
         if (worldIn != null && !worldIn.isRemote) {
-            this.tasks.addTask(99, aiDontDoShit = new EntityAIInert(false));
+            this.tasks.addTask(99, aiDontDoShit);
         }
     }
 
@@ -101,6 +101,7 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
         }
         player.startRiding(this);
         player.eyeHeight = this.getEyeHeight();
+        this.aiDontDoShit.setShouldExecute(true);
         return true;
     }
 
@@ -113,6 +114,7 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
         if (!handler.getCorporealityStatus().isIncorporeal() || this.isDead || force) {
             this.setPossessingEntity(null);
             player.eyeHeight = player.getDefaultEyeHeight();
+            this.aiDontDoShit.setShouldExecute(false);
             return true;
         }
         return false;

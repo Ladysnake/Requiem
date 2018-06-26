@@ -43,7 +43,16 @@ public interface IIncorporealHandler {
      * @return false if the change could not occur
      * @throws IllegalArgumentException if the possessable argument is not an entity
      */
-    <T extends EntityMob & IPossessable> boolean setPossessed(T possessable);
+    default <T extends EntityMob & IPossessable> boolean setPossessed(T possessable) {
+        return setPossessed(possessable, false);
+    }
+
+    /**
+     * @param possessable the entity to possess
+     * @return false if the change could not occur
+     * @throws IllegalArgumentException if the possessable argument is not an entity
+     */
+    <T extends EntityMob & IPossessable> boolean setPossessed(T possessable, boolean force);
 
     <T extends EntityMob & IPossessable> T getPossessed();
 

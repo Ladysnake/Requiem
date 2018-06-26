@@ -42,20 +42,29 @@ public class ItemAethereus extends Item {
             Optional<IIncorporealHandler> handler = CapabilityIncorporealHandler.getHandler(entityLiving);
             if (handler.isPresent()) {
                 if (handler.get().isStrongSoul()) {
-                    EntityPlayerShell shell = new EntityPlayerShell(worldIn);
-                    shell.setPositionAndRotation(entityLiving.posX, entityLiving.posY, entityLiving.posZ, entityLiving.rotationYaw, entityLiving.rotationPitch);
-                    shell.setPlayer(entityLiving.getUniqueID());
-                    shell.setCustomNameTag(entityLiving.getName());
-                    DissolutionInventoryHelper.transferEquipment(entityLiving, shell);
-                    if (player != null) {
-                        for (int i = 0; i < player.inventory.mainInventory.size(); i++) {
-                            shell.getInventory().setInventorySlotContents(i, player.inventory.mainInventory.get(i));
-                            player.inventory.mainInventory.set(i, ItemStack.EMPTY);
+                    EntityLivingBase possessed = handler.get().getPossessed();
+                    if (possessed != null) {
+                        handler.get().setPossessed(null, true);
+                        if (!worldIn.isRemote) {
+                            DissolutionInventoryHelper.transferEquipment(possessed, player);
+                            player.inventory.dropAllItems();
                         }
+                    } else {
+                        EntityPlayerShell shell = new EntityPlayerShell(worldIn);
+                        shell.setPositionAndRotation(entityLiving.posX, entityLiving.posY, entityLiving.posZ, entityLiving.rotationYaw, entityLiving.rotationPitch);
+                        shell.setPlayer(entityLiving.getUniqueID());
+                        shell.setCustomNameTag(entityLiving.getName());
+                        DissolutionInventoryHelper.transferEquipment(entityLiving, shell);
+                        if (player != null) {
+                            for (int i = 0; i < player.inventory.mainInventory.size(); i++) {
+                                shell.getInventory().setInventorySlotContents(i, player.inventory.mainInventory.get(i));
+                                player.inventory.mainInventory.set(i, ItemStack.EMPTY);
+                            }
+                        }
+                        shell.setHeldItem(entityLiving.getActiveHand(), stack);
+                        worldIn.spawnEntity(shell);
+                        handler.get().setCorporealityStatus(SoulStates.SOUL);
                     }
-                    shell.setHeldItem(entityLiving.getActiveHand(), stack);
-                    worldIn.spawnEntity(shell);
-                    handler.get().setCorporealityStatus(SoulStates.SOUL);
                     return ItemStack.EMPTY;
                 } else {
                     entityLiving.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 60 * 20));

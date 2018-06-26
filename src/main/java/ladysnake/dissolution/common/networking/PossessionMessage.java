@@ -10,6 +10,7 @@ public class PossessionMessage implements IMessage {
     UUID playerUuid;
     int possessedUuid;
 
+    @SuppressWarnings("unused")
     public PossessionMessage() {
     }
 

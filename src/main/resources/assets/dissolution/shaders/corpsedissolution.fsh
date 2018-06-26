@@ -3,7 +3,7 @@
 
 // varying variables are given by the vertex shader. See VertexBase.vsh
 varying vec2 texcoord;        // the texture coordinate of the current pixel
-varying vec4 vPosition;       // the screen position of the current pixel
+varying vec3 normal;
 
 // uniform variables are given in the java code
 uniform sampler2D texture;    // represents what's currently displayed on the screen
@@ -22,7 +22,8 @@ float rand(vec2 co) {
 
 void main() {
     vec4 color = texture2D(texture, texcoord);    // gets the color of the current pixel
-    vec4 light = texture2D(lightmap, lightmapCoords);   // supposed to get the light of the current pixel
+    vec4 light = texture2D(lightmap, lightmapCoords);   // gets the light of the entity
+    // vec4 light = vec4((normal.y / 2 + 0.5) / 2 + 0.5);
 
     color *= vec4(light.rgb, 1.0);
 

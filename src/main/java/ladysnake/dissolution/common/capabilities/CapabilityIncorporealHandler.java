@@ -152,7 +152,7 @@ public class CapabilityIncorporealHandler {
 
         @Override
         public boolean isStrongSoul() {
-            return owner.world.getDifficulty() != EnumDifficulty.PEACEFUL && Dissolution.config.enforcedSoulStrength.getValue(strongSoul);
+            return owner.world.getDifficulty() != EnumDifficulty.PEACEFUL && Dissolution.config.forceRemnant.getValue(strongSoul);
         }
 
         @Override
@@ -206,17 +206,18 @@ public class CapabilityIncorporealHandler {
         /**
          * Sets the entity possessed by this player
          * @param possessable the entity to possess. If null, will end existing possession
+         * @param force
          * @return true if the operation succeeded
          */
         @Override
-        public <T extends EntityMob & IPossessable> boolean setPossessed(@Nullable T possessable) {
+        public <T extends EntityMob & IPossessable> boolean setPossessed(@Nullable T possessable, boolean force) {
             if (!this.isStrongSoul()) {
                 return false;
             }
             owner.clearActivePotions();
             if (possessable == null) {
                 IPossessable currentHost = getPossessed();
-                if (currentHost != null && !currentHost.onPossessionStop(owner, owner.isCreative())) {
+                if (currentHost != null && !currentHost.onPossessionStop(owner, force || owner.isCreative())) {
                     return false;
                 }
                 hostID = 0;

@@ -10,9 +10,12 @@ import ladysnake.dissolution.common.items.ItemLogo;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.potion.PotionEffect;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 @AutoRegister(Reference.MOD_ID)
@@ -31,16 +34,14 @@ public final class ModItems {
     public static final ItemDebug DEBUG_ITEM = new ItemDebug();
     public static final Item AETHEREUS = new ItemAethereus().setMaxStackSize(1);
     @AutoRegister.Ore(OreDictHelper.HUMAN_FLESH_RAW)
-    public static final ItemFood HUMAN_FLESH_RAW = new ItemHumanFlesh(4, 4, true).setPotionEffect(new PotionEffect(MobEffects.NAUSEA, 15*20), 0.6f);
+    public static final ItemFood HUMAN_FLESH_RAW = new ItemHumanFlesh(4, 4, true).setAlwaysEdible().setPotionEffect(new PotionEffect(MobEffects.NAUSEA, 15*20), 0.6f);
     @AutoRegister.Ore(OreDictHelper.HUMAN_FLESH_COOKED)
-    public static final ItemFood HUMAN_FLESH_COOKED = new ItemFood(8, false);
+    public static final ItemFood HUMAN_FLESH_COOKED = new ItemFood(8, false).setAlwaysEdible();
 
-    @NotNull
-    @SuppressWarnings("ConstantConditions")
-    public static <T> T nonNullInjected() {
-        return null;
+    @SubscribeEvent
+    public void onRegistryRegister(RegistryEvent.Register<IRecipe> event) {
+        GameRegistry.addSmelting(HUMAN_FLESH_RAW, new ItemStack(HUMAN_FLESH_COOKED), 0.35f);
     }
-
 
     private ModItems() {
     }

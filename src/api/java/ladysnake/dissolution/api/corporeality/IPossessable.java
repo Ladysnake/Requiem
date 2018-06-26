@@ -11,7 +11,7 @@ import java.util.UUID;
 /**
  * Indicates that an entity is able to be possessed by a soul
  */
-public interface IPossessable extends ISoulInteractable {
+public interface IPossessable {
 
     /**
      * Checks if this entity is ready to be possessed by the given player

@@ -11,8 +11,8 @@ public class DissolutionConfig {
     public Ghost ghost = new Ghost();
 
     @Config.RequiresWorldRestart
-    @Config.Comment("If set to anything other than \"none\", will force a soul strength upon players and prevent the dialogue from appearing")
-    public DissolutionConfigManager.EnforcedSoulStrength enforcedSoulStrength = DissolutionConfigManager.EnforcedSoulStrength.NONE;
+    @Config.Comment("If set to anything other than \"default\", will force players' remnant status and prevent the dialogue from appearing")
+    public DissolutionConfigManager.EnforcedSoulStrength forceRemnant = DissolutionConfigManager.EnforcedSoulStrength.DEFAULT;
 
     @Config.Comment("Because some people need dialogue to be explicit")
     public boolean technicianDialogue = false;

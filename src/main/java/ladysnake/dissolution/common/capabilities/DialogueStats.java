@@ -17,7 +17,7 @@ import net.minecraft.util.text.event.HoverEvent;
 import java.util.LinkedList;
 import java.util.List;
 
-import static ladysnake.dissolution.common.config.DissolutionConfigManager.EnforcedSoulStrength.NONE;
+import static ladysnake.dissolution.common.config.DissolutionConfigManager.EnforcedSoulStrength.DEFAULT;
 
 public class DialogueStats implements IDialogueStats {
     private boolean hasBeenContacted;
@@ -31,7 +31,7 @@ public class DialogueStats implements IDialogueStats {
 
     @Override
     public void checkFirstConnection() {
-        if (Dissolution.config.enforcedSoulStrength == NONE && !hasBeenContacted && !capability.getOwner().world.isRemote) {
+        if (Dissolution.config.forceRemnant == DEFAULT && !hasBeenContacted && !capability.getOwner().world.isRemote) {
             sendNextDialogue("dissolution.dialogues.first_contact.header", "dissolution.dialogues.first_contact", 2);
             hasBeenContacted = true;
         }

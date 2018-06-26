@@ -6,7 +6,6 @@ import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.FoodStats;
 import net.minecraft.util.math.BlockPos;
@@ -129,17 +128,17 @@ public class PlayerTickHandler {
     private void handlePossessingTick(EntityPlayer player) {
         Entity possessed = player.getRidingEntity();
         if (possessed != null) {
-            if (!player.world.isRemote) {
-                possessed.rotationYaw = player.rotationYaw;
-                possessed.prevRotationYaw = possessed.rotationYaw;
-                possessed.setRotationYawHead(player.getRotationYawHead());
-            }
-            possessed.rotationPitch = player.rotationPitch;
-            possessed.prevRotationPitch = possessed.rotationPitch;
-            if (possessed instanceof EntityLiving) {
-                ((EntityLiving) possessed).cameraPitch = player.cameraPitch;
-                ((EntityLiving) possessed).randomYawVelocity = 0;
-            }
+//            if (!player.world.isRemote) {
+//                possessed.rotationYaw = player.rotationYaw;
+//                possessed.prevRotationYaw = possessed.rotationYaw;
+//                possessed.setRotationYawHead(player.getRotationYawHead());
+//            }
+//            possessed.rotationPitch = player.rotationPitch;
+//            possessed.prevRotationPitch = possessed.rotationPitch;
+//            if (possessed instanceof EntityLiving) {
+//                ((EntityLiving) possessed).cameraPitch = player.cameraPitch;
+//                ((EntityLiving) possessed).randomYawVelocity = 0;
+//            }
         }
     }
 
