@@ -6,12 +6,14 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.potion.PotionEffect;
 import org.objectweb.asm.*;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PossessableEntityFactory {
@@ -93,6 +95,12 @@ public class PossessableEntityFactory {
             }
             for (PotionEffect potionEffect : deadGuy.getActivePotionEffects()) {
                 corpse.addPotionEffect(new PotionEffect(potionEffect));
+            }
+            List<EntityDataManager.DataEntry<?>> dataEntries = deadGuy.getDataManager().getAll();
+            if (dataEntries != null) {
+                for (EntityDataManager.DataEntry entry : dataEntries) {
+                    corpse.getDataManager().set(entry.getKey(), entry.getValue());
+                }
             }
             corpse.setPositionAndRotation(deadGuy.posX, deadGuy.posY, deadGuy.posZ, deadGuy.rotationYaw, deadGuy.rotationPitch);
             corpse.onUpdate();
