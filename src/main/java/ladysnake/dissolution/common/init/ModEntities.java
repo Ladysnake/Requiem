@@ -15,6 +15,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -108,6 +109,7 @@ public class ModEntities {
             registerEntity(reg, EntityPossessableImpl::new, "possessed_base", 64, true);
         }
         registerEntity(reg, EntityPlayerShell::new, "player_corpse", 64, true);
+        LootTableList.register(EntityPlayerShell.LOOT);
 //        registerEntity(reg, EntityFleetingSoul::new, "ignis_faatus", 64, true);
 //        registerEntity(reg, EntityFaerie::new, "faerie", 64, true);
 //        reg.register(createEntry(EntitySoulSpawner::new, "soul_spawner", 64, true)

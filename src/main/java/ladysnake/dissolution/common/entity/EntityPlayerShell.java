@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.mojang.authlib.GameProfile;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.inventory.GuiProxy;
@@ -22,14 +23,18 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 @SuppressWarnings("Guava")
 public class EntityPlayerShell extends EntityLiving implements ISoulInteractable {
+
+    public static final ResourceLocation LOOT = new ResourceLocation(Reference.MOD_ID, "entities/player_shell");
 
     protected static final float SIZE_X = 0.6F, SIZE_Y = 1.95F;
 
@@ -193,6 +198,12 @@ public class EntityPlayerShell extends EntityLiving implements ISoulInteractable
 
     public InventoryPlayerCorpse getInventory() {
         return inventory;
+    }
+
+    @Nullable
+    @Override
+    protected ResourceLocation getLootTable() {
+        return LOOT;
     }
 
     @Override
