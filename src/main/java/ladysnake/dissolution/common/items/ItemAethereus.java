@@ -9,6 +9,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
@@ -61,11 +62,11 @@ public class ItemAethereus extends Item {
                                 player.inventory.mainInventory.set(i, ItemStack.EMPTY);
                             }
                         }
-                        shell.setHeldItem(entityLiving.getActiveHand(), stack);
+                        shell.setHeldItem(entityLiving.getActiveHand(), new ItemStack(Items.GLASS_BOTTLE));
                         worldIn.spawnEntity(shell);
                         handler.get().setCorporealityStatus(SoulStates.SOUL);
+                        return ItemStack.EMPTY;
                     }
-                    return ItemStack.EMPTY;
                 } else {
                     entityLiving.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 60 * 20));
                     handler.get().setStrongSoul(true);
@@ -76,8 +77,7 @@ public class ItemAethereus extends Item {
             }
         }
 
-
-        return super.onItemUseFinish(stack, worldIn, entityLiving);
+        return new ItemStack(Items.GLASS_BOTTLE);
     }
 
     /**

@@ -34,9 +34,9 @@ public final class ModItems {
     public static final ItemDebug DEBUG_ITEM = new ItemDebug();
     public static final Item AETHEREUS = new ItemAethereus().setMaxStackSize(1);
     @AutoRegister.Ore(OreDictHelper.HUMAN_FLESH_RAW)
-    public static final ItemFood HUMAN_FLESH_RAW = new ItemHumanFlesh(4, 4, true).setAlwaysEdible().setPotionEffect(new PotionEffect(MobEffects.NAUSEA, 15*20), 0.6f);
+    public static final ItemFood HUMAN_FLESH_RAW = new ItemHumanFlesh(4, 4, true).setPotionEffect(new PotionEffect(MobEffects.NAUSEA, 15*20), 0.6f);
     @AutoRegister.Ore(OreDictHelper.HUMAN_FLESH_COOKED)
-    public static final ItemFood HUMAN_FLESH_COOKED = new ItemFood(8, false).setAlwaysEdible();
+    public static final ItemFood HUMAN_FLESH_COOKED = new ItemFood(8, false);
 
     @SubscribeEvent
     public void onRegistryRegister(RegistryEvent.Register<IRecipe> event) {
