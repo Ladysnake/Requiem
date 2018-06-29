@@ -47,6 +47,9 @@ minecraft {
     }
     replace '@VERSION@', mod_version
     clientJvmArgs = serverJvmArgs = ['-Dfml.coreMods.load=ladysnake.dissolution.core.DissolutionLoadingPlugin']
+    if (project.hasProperty('mc_uuid')) {
+        clientRunArgs += ['--uuid', "${project.mc_uuid}"]
+    }
 }
 
 repositories {

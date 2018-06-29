@@ -20,6 +20,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -232,7 +233,7 @@ public class EntityPlayerShell extends EntityLiving implements ISoulInteractable
     @Override
     public void notifyDataManagerChange(@Nonnull DataParameter<?> key) {
         if (PLAYER.equals(key)) {
-            this.profile = new GameProfile(getPlayer(), getName());
+            this.profile = TileEntitySkull.updateGameprofile(new GameProfile(getPlayer(), getName()));
         }
         super.notifyDataManagerChange(key);
     }
