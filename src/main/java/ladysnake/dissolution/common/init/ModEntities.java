@@ -61,6 +61,7 @@ public class ModEntities {
                     int trackingRange, updateFrequency;
                     boolean sendVelocityUpdates;
                     if (info == null) {
+                        // vanilla entities never have associated registration information
                         if (!entityEntry.getRegistryName().getResourceDomain().equals("minecraft")) {
                             Dissolution.LOGGER.info("No entity registration found for {}, using default values", entityEntry.getRegistryName());
                         }
@@ -105,6 +106,7 @@ public class ModEntities {
     @SubscribeEvent
     public static void register(RegistryEvent.Register<EntityEntry> event) {
         IForgeRegistry<EntityEntry> reg = event.getRegistry();
+        // this entity is only there to allow debug features
         if (LadyLib.isDevEnv()) {
             registerEntity(reg, EntityPossessableImpl::new, "possessed_base", 64, true);
         }

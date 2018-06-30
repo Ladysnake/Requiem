@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class PossessableEntityFactory {
     private static final ASMClassLoader LOADER = new ASMClassLoader();
@@ -58,6 +59,10 @@ public class PossessableEntityFactory {
     @SuppressWarnings("unchecked")
     public static <T extends EntityLivingBase, P extends EntityLivingBase & IPossessable> Class<P> getPossessable(Class<T> base) {
         return (Class<P>) POSSESSABLES.get(base);
+    }
+
+    public static Stream<Map.Entry<Class<? extends EntityLivingBase>, Class<? extends EntityLivingBase>>> getAllGeneratedPossessables() {
+        return POSSESSABLES.entrySet().stream();
     }
 
     @SuppressWarnings("unchecked")
