@@ -7,12 +7,18 @@ import ladysnake.dissolution.common.items.ItemAethereus;
 import ladysnake.dissolution.common.items.ItemDebug;
 import ladysnake.dissolution.common.items.ItemHumanFlesh;
 import ladysnake.dissolution.common.items.ItemLogo;
+import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.potion.PotionType;
+import net.minecraft.potion.PotionUtils;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.brewing.BrewingRecipe;
+import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -41,6 +47,14 @@ public final class ModItems {
     @SubscribeEvent
     public void onRegistryRegister(RegistryEvent.Register<IRecipe> event) {
         GameRegistry.addSmelting(HUMAN_FLESH_RAW, new ItemStack(HUMAN_FLESH_COOKED), 0.35f);
+        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(
+                PotionUtils.addPotionToItemStack(
+                        new ItemStack(Items.POTIONITEM),
+                        PotionType.REGISTRY.getObject(new ResourceLocation("minecraft", "thick"))
+                ),
+                new ItemStack(ModItems.HUMAN_FLESH_RAW),
+                new ItemStack(ModItems.AETHEREUS)
+        ));
     }
 
     private ModItems() {
