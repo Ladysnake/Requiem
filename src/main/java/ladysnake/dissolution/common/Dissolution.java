@@ -4,11 +4,13 @@ package ladysnake.dissolution.common;
 import ladylib.LLibContainer;
 import ladylib.LadyLib;
 import ladysnake.dissolution.common.commands.CommandDissolutionTree;
+import ladysnake.dissolution.common.compat.ThaumcraftCompat;
 import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.inventory.DissolutionTab;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -60,6 +62,9 @@ public class Dissolution {
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         proxy.postInit();
+        if (Loader.isModLoaded("thaumcraft")) {
+            ThaumcraftCompat.assignAspects();
+        }
     }
 
     @EventHandler

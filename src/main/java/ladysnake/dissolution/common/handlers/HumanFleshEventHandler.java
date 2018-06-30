@@ -20,6 +20,9 @@ public class HumanFleshEventHandler {
      */
     @SubscribeEvent
     public static void onLivingEntityUseItem(LivingEntityUseItemEvent.Finish event) {
+        if (event.getEntity().world.isRemote) {
+            return;
+        }
         if (OreDictHelper.doesItemMatch(event.getItem(), OreDictHelper.HUMAN_FLESH_RAW) || event.getItem().getItem() == Items.GOLDEN_APPLE) {
             CapabilityIncorporealHandler.getHandler(event.getEntityLiving()).ifPresent(handler -> {
                 EntityLivingBase possessed = handler.getPossessed();

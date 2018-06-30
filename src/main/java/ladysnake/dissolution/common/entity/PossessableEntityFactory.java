@@ -27,8 +27,8 @@ public class PossessableEntityFactory {
      * {@link EntityPossessableImpl} as a template
      */
     @SuppressWarnings("unchecked")
-    public static <T extends EntityLivingBase, P extends EntityLivingBase & IPossessable> Class<P> defineGenericPossessable(Class<T> baseEntityClass) {
-        return (Class<P>) POSSESSABLES.computeIfAbsent(baseEntityClass, base -> {
+    public static <T extends EntityLivingBase> Class<? extends T> defineGenericPossessable(Class<T> baseEntityClass) {
+        return (Class<? extends T>) POSSESSABLES.computeIfAbsent(baseEntityClass, base -> {
             try {
                 final byte[] possessableImplBytes = Launch.classLoader.getClassBytes(EntityPossessableImpl.class.getName().replace('.', '/'));
                 final ClassReader reader = new ClassReader(possessableImplBytes);
@@ -38,9 +38,7 @@ public class PossessableEntityFactory {
                 ClassVisitor adapter = new ChangeParentClassAdapter(Opcodes.ASM5, writer, name.replace('.', '/'), base.getName().replace('.', '/'));
                 reader.accept(adapter, 0);
 
-                Class ret = LOADER.define(name, writer.toByteArray());
-                POSSESSABLES.put(baseEntityClass, ret);
-                return ret;
+                return (Class) LOADER.define(name, writer.toByteArray());
             } catch (IOException e) {
                 e.printStackTrace();
             }

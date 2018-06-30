@@ -12,7 +12,8 @@ public class Reference {
                     "required-after:" + LadyLib.MOD_ID + "@" + LadyLib.VERSION + ";" +
 //            "required-after:"+DissolutionCore.MOD_ID+"@"+DissolutionCore.VERSION+";" + // need the exact version of the plugin
             "after:albedo;" +
-            "after:baubles;";
+            "after:baubles;" +
+            "after:thaumcraft;";
     public static final double CONFIG_VERSION = 3.1;
 
     static final String CLIENT_PROXY_CLASS = "ladysnake.dissolution.client.ClientProxy";
