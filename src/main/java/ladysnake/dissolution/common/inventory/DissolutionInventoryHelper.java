@@ -87,8 +87,11 @@ public final class DissolutionInventoryHelper {
 
     public static void transferEquipment(EntityLivingBase source, EntityLivingBase dest) {
         for (ItemStack stuff : source.getEquipmentAndArmor()) {
+            if (stuff.isEmpty()) {
+                continue;
+            }
             EntityEquipmentSlot slot = EntityLiving.getSlotForItemStack(stuff);
-            if (dest.getItemStackFromSlot(slot) != ItemStack.EMPTY) {
+            if (!dest.getItemStackFromSlot(slot).isEmpty()) {
                 dest.entityDropItem(stuff, 0.5f);
             } else {
                 dest.setItemStackToSlot(slot, stuff);

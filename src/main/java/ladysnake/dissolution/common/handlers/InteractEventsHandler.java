@@ -58,10 +58,10 @@ public class InteractEventsHandler {
                     && event.getTarget() instanceof EntityLivingBase && !event.getTarget().getIsInvulnerable()) {
                 EntityLivingBase host = PossessableEntityFactory.createMinion((EntityLivingBase) event.getTarget());
                 if (host != null && ((IPossessable)host).canBePossessedBy(event.getEntityPlayer())) {
-                    DissolutionInventoryHelper.transferEquipment((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
                     if (((EntityLivingBase) event.getTarget()).getHeldItemMainhand().getItem() instanceof ItemBow) {
                         event.getEntityPlayer().addItemStackToInventory(new ItemStack(Items.ARROW, host.world.rand.nextInt(10) + 2));
                     }
+                    DissolutionInventoryHelper.transferEquipment((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
                     if (host != event.getTarget()) {
                         event.getTarget().setPosition(0, -100, 0);
                         event.getTarget().world.spawnEntity(host);

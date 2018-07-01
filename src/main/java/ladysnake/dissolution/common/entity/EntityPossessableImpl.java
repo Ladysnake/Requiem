@@ -92,13 +92,13 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             return false;
         }
         this.setPossessingEntity(player.getUniqueID());
-        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
-            if (player.getItemStackFromSlot(slot).isEmpty()) {
-                player.setItemStackToSlot(slot, this.getItemStackFromSlot(slot));
-            } else {
-                player.addItemStackToInventory(this.getItemStackFromSlot(slot));
-            }
-        }
+//        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+//            if (player.getItemStackFromSlot(slot).isEmpty()) {
+//                player.setItemStackToSlot(slot, this.getItemStackFromSlot(slot));
+//            } else {
+//                player.addItemStackToInventory(this.getItemStackFromSlot(slot));
+//            }
+//        }
         player.startRiding(this);
         player.eyeHeight = this.getEyeHeight();
         this.aiDontDoShit.setShouldExecute(true);
