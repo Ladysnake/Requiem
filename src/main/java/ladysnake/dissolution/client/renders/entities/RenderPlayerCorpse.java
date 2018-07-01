@@ -6,7 +6,6 @@ import ladylib.client.shader.ShaderRegistryEvent;
 import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.entity.EntityPlayerShell;
-import ladysnake.dissolution.unused.client.models.entities.ModelMinionZombie;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -36,13 +35,7 @@ public class RenderPlayerCorpse extends RenderBiped<EntityPlayerShell> {
 
     public RenderPlayerCorpse(RenderManager renderManagerIn) {
         super(renderManagerIn, new ModelPlayer(0.0F, true), 0.5F);
-        LayerBipedArmor layerbipedarmor = new LayerBipedArmor(this) {
-            protected void initArmor() {
-                this.modelLeggings = new ModelMinionZombie(0.5F, true);
-                this.modelArmor = new ModelMinionZombie(1.0F, true);
-            }
-        };
-        this.addLayer(layerbipedarmor);
+        this.addLayer(new LayerBipedArmor(this));
     }
 
     @Override
