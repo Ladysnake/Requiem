@@ -1,4 +1,4 @@
-command.dissolution.usage=/dissolution <soul|dialogue|cmode> [args]
+command.dissolution.usage=/dissolution <setRemnant|dialogue|cmode> [args]
 commands.dissolution.corporeality_mode.no_such_status="%s" 不是一个可用的状态。有效的状态是:身体,灵魂,外质
 commands.dissolution.corporeality_mode.query.other=%1$s目前在%2$s状态
 commands.dissolution.corporeality_mode.query.self=你目前处于%2$s状态
@@ -54,11 +54,8 @@ dissolution.dialogues.first_contact.explicit.choice_0=是的，我知道所谓�
 dissolution.dialogues.first_contact.explicit.choice_1=不，我不希望这个模组以任何方式影响我，并且不涉及其他玩家。
 dissolution.dialogues.first_contact.header=一个源于苍穹的声音是你瑟瑟发抖。
 dissolution.dialogues.first_contact.header.explicit=这是溶尸MOD发起的对话。更多信息可以在https://minecraft.curseforge.com/projects/dissolution找到。
-dissolution.potion.purification.name=净化
 dissolution.soul_downgrade=You feel heavy all of a sudden.
 dissolution.soul_strength.changed=你的灵魂状态已经变为%s
-dissolution.soul_strength.strong=强灵
-dissolution.soul_strength.weak=虚弱
 dissolution.soul_upgrade=Despite the headache, you feel abnormally lightened.
 entity.wandering_soul.name=游离者灵魂
 itemGroup.dissolution=溶尸
