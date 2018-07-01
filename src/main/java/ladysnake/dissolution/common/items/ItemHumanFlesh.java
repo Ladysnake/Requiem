@@ -1,10 +1,13 @@
 package ladysnake.dissolution.common.items;
 
+import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
+import net.minecraft.stats.StatList;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -22,6 +25,23 @@ public class ItemHumanFlesh extends ItemFood {
     public ItemHumanFlesh(int amount, float saturation, boolean isWolfFood) {
         super(amount, saturation, isWolfFood);
         this.applyWarp = Loader.isModLoaded("thaumcraft");
+    }
+
+    @Nonnull
+    @Override
+    public ItemStack onItemUseFinish(ItemStack stack, @Nonnull World worldIn, EntityLivingBase entityLiving) {
+        if (entityLiving instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) entityLiving;
+            IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
+            // no food value when you are a zombie
+            if (handler.getPossessed() != null) {
+                stack.shrink(1);
+                onFoodEaten(stack, worldIn, player);
+                player.addStat(StatList.getObjectUseStats(this));
+                return stack;
+            }
+        }
+        return super.onItemUseFinish(stack, worldIn, entityLiving);
     }
 
     @Override
