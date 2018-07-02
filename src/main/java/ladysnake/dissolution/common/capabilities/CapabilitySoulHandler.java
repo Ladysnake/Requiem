@@ -1,10 +1,10 @@
 package ladysnake.dissolution.common.capabilities;
 
 import com.google.common.collect.ImmutableList;
-import ladysnake.dissolution.api.ISoulHandler;
-import ladysnake.dissolution.api.Soul;
-import ladysnake.dissolution.api.SoulTypes;
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.unused.api.ISoulHandler;
+import ladysnake.dissolution.unused.api.Soul;
+import ladysnake.dissolution.unused.api.SoulTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;

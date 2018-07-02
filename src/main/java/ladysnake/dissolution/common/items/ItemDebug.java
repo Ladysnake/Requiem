@@ -2,8 +2,8 @@ package ladysnake.dissolution.common.items;
 
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.client.renders.ShaderHelper;
-import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
+import ladysnake.dissolution.unused.common.entity.souls.EntityFleetingSoul;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;

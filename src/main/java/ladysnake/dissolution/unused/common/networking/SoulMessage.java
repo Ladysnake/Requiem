@@ -2,8 +2,8 @@ package ladysnake.dissolution.unused.common.networking;
 
 import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
-import ladysnake.dissolution.api.Soul;
-import ladysnake.dissolution.api.SoulTypes;
+import ladysnake.dissolution.unused.api.Soul;
+import ladysnake.dissolution.unused.api.SoulTypes;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 import java.util.ArrayList;

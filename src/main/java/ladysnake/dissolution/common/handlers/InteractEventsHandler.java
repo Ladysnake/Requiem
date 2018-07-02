@@ -1,14 +1,15 @@
 package ladysnake.dissolution.common.handlers;
 
+import ladysnake.dissolution.api.PossessionEvent;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.PossessableEntityFactory;
-import ladysnake.dissolution.common.entity.souls.AbstractSoul;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.registries.SoulStates;
+import ladysnake.dissolution.unused.common.entity.souls.AbstractSoul;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -18,6 +19,7 @@ import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -45,27 +47,37 @@ public class InteractEventsHandler {
      */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerEntityInteractSpecific(PlayerInteractEvent.EntityInteractSpecific event) {
-        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
+        EntityPlayer player = event.getEntityPlayer();
+        Entity target = event.getTarget();
+        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
         if (!(handler.getCorporealityStatus().isIncorporeal() && handler.getPossessed() == null
-                && !event.getEntityPlayer().isCreative())) {
+                && !player.isCreative())) {
             return;
         }
         event.setCanceled(true);
         if (handler.getCorporealityStatus().isIncorporeal()) {
-            if (event.getTarget() instanceof ISoulInteractable) {
-                event.setCancellationResult(((ISoulInteractable) event.getTarget()).applySoulInteraction(event.getEntityPlayer(), event.getLocalPos(), event.getHand()));
+            if (target instanceof ISoulInteractable) {
+                event.setCancellationResult(((ISoulInteractable) target).applySoulInteraction(player, event.getLocalPos(), event.getHand()));
             } else if (event.getSide().isServer()
-                    && event.getTarget() instanceof EntityLivingBase && !event.getTarget().getIsInvulnerable()) {
-                EntityLivingBase host = PossessableEntityFactory.createMinion((EntityLivingBase) event.getTarget());
-                if (host != null && ((IPossessable)host).canBePossessedBy(event.getEntityPlayer())) {
-                    if (((EntityLivingBase) event.getTarget()).getHeldItemMainhand().getItem() instanceof ItemBow) {
-                        event.getEntityPlayer().addItemStackToInventory(new ItemStack(Items.ARROW, host.world.rand.nextInt(10) + 2));
+                    && target instanceof EntityLivingBase && !target.getIsInvulnerable()) {
+                PossessionEvent.Setup setupEvent = new PossessionEvent.Setup(
+                        player,
+                        (EntityLivingBase) target,
+                        PossessableEntityFactory.createMinion((EntityLivingBase) target)
+                );
+                if (MinecraftForge.EVENT_BUS.post(setupEvent)) {
+                    return;
+                }
+                EntityLivingBase host = setupEvent.getPossessed();
+                if (host != null && ((IPossessable)host).canBePossessedBy(player)) {
+                    if (((EntityLivingBase) target).getHeldItemMainhand().getItem() instanceof ItemBow) {
+                        player.addItemStackToInventory(new ItemStack(Items.ARROW, host.world.rand.nextInt(10) + 2));
                     }
-                    DissolutionInventoryHelper.transferEquipment((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
-                    if (host != event.getTarget()) {
-                        event.getTarget().setPosition(0, -100, 0);
-                        event.getTarget().world.spawnEntity(host);
-                        event.getTarget().world.removeEntity(event.getTarget());
+                    DissolutionInventoryHelper.transferEquipment((EntityLivingBase) target, player);
+                    if (host != target) {
+                        target.setPosition(0, -100, 0);
+                        target.world.spawnEntity(host);
+                        target.world.removeEntity(target);
                     }
                     handler.setPossessed((EntityMob & IPossessable) host);
                     event.setCancellationResult(EnumActionResult.SUCCESS);

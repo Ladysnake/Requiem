@@ -1,11 +1,11 @@
 package ladysnake.dissolution.unused.common.tileentities;
 
-import ladysnake.dissolution.api.Soul;
-import ladysnake.dissolution.api.SoulTypes;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.entity.souls.AbstractSoul;
-import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
-import ladysnake.dissolution.common.entity.souls.EntitySoulSpawner;
+import ladysnake.dissolution.unused.api.Soul;
+import ladysnake.dissolution.unused.api.SoulTypes;
+import ladysnake.dissolution.unused.common.entity.souls.AbstractSoul;
+import ladysnake.dissolution.unused.common.entity.souls.EntityFleetingSoul;
+import ladysnake.dissolution.unused.common.entity.souls.EntitySoulSpawner;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;

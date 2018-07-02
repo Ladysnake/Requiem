@@ -2,6 +2,7 @@ package ladysnake.dissolution.common.capabilities;
 
 import ladysnake.dissolution.api.IDialogueStats;
 import ladysnake.dissolution.api.PlayerIncorporealEvent;
+import ladysnake.dissolution.api.PossessionEvent;
 import ladysnake.dissolution.api.SoulStrengthModifiedEvent;
 import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
 import ladysnake.dissolution.api.corporeality.IDeathStats;
@@ -14,6 +15,7 @@ import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PossessionMessage;
 import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -206,7 +208,7 @@ public class CapabilityIncorporealHandler {
         /**
          * Sets the entity possessed by this player
          * @param possessable the entity to possess. If null, will end existing possession
-         * @param force
+         * @param force if true, the operation cannot fail under normal circumstances
          * @return true if the operation succeeded
          */
         @Override
@@ -217,7 +219,9 @@ public class CapabilityIncorporealHandler {
             owner.clearActivePotions();
             if (possessable == null) {
                 IPossessable currentHost = getPossessed();
-                if (currentHost != null && !currentHost.onPossessionStop(owner, force || owner.isCreative())) {
+                // cancel the operation if a) the event is canceled or b) the possessed entity denies it
+                if (MinecraftForge.EVENT_BUS.post(new PossessionEvent.Stop(owner, (EntityLivingBase & IPossessable) currentHost, force)) ||
+                        currentHost != null && !currentHost.onPossessionStop(owner, force || owner.isCreative())) {
                     return false;
                 }
                 hostID = 0;
@@ -225,7 +229,9 @@ public class CapabilityIncorporealHandler {
                 owner.setInvisible(Dissolution.config.ghost.invisibleGhosts);
                 owner.dismountRidingEntity();
             } else {
-                if (!possessable.onEntityPossessed(owner)) {
+                // cancel the operation if a) the event is canceled or b) the possessed entity denies it
+                if (MinecraftForge.EVENT_BUS.post(new PossessionEvent.Start(owner, possessable, force)) ||
+                        !possessable.onEntityPossessed(owner)) {
                     return false;
                 }
                 hostID = possessable.getEntityId();

@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.entity.souls;
+package ladysnake.dissolution.unused.common.entity.souls;
 
 import ladysnake.dissolution.common.Dissolution;
 import net.minecraft.entity.Entity;

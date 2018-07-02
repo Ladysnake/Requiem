@@ -1,9 +1,9 @@
 package ladysnake.dissolution.common.entity;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.entity.souls.EntityFaerie;
-import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
-import ladysnake.dissolution.common.entity.souls.EntitySplinterSoul;
+import ladysnake.dissolution.unused.common.entity.souls.EntityFaerie;
+import ladysnake.dissolution.unused.common.entity.souls.EntityFleetingSoul;
+import ladysnake.dissolution.unused.common.entity.souls.EntitySplinterSoul;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;

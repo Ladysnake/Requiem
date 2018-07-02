@@ -1,6 +1,5 @@
 package ladysnake.dissolution.common;
 
-import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -21,14 +20,6 @@ public class OreDictHelper {
         // note: this mod's own items are registered to the ore dictionary using @AutoRegister.Ore
         registerOres(HUMAN_FLESH_RAW, "betterwithmods:mystery_meat");
         registerOres(HUMAN_FLESH_COOKED, "betterwithmods:cooked_mystery_meat");
-        OreDictionary.registerOre(HUMAN_FLESH_RAW, ModItems.HUMAN_FLESH_RAW);
-        OreDictionary.registerOre(HUMAN_FLESH_COOKED, ModItems.HUMAN_FLESH_COOKED);
-//        OreDictionary.registerOre(PESTLE, ModItems.PESTLE);
-//        IForgeRegistry<Item> items = RegistryManager.ACTIVE.getRegistry(Item.class);
-//        ResourceLocation loc = new ResourceLocation("roots:pestle");
-//        if (items.containsKey(loc)) {
-//            OreDictionary.registerOre(PESTLE, items.getValue(loc));
-//        }
     }
 
     private static void registerOres(String oreName, String... ids) {

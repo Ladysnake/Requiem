@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.entity.souls;
+package ladysnake.dissolution.unused.common.entity.souls;
 
 import elucent.albedo.lighting.Light;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;

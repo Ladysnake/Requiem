@@ -1,4 +1,4 @@
-package ladysnake.dissolution.api;
+package ladysnake.dissolution.unused.api;
 
 import net.minecraft.nbt.NBTTagCompound;
 

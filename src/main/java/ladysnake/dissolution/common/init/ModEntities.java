@@ -31,6 +31,8 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
@@ -43,13 +45,25 @@ public class ModEntities {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void registerPossessables(RegistryEvent.Register<EntityEntry> event) {
         for (EntityEntry entityEntry : event.getRegistry()) {
+            Class<?> entityClass = entityEntry.getEntityClass();
             // Only declare new implementations for mobs that can not already be possessed
-            if (EntityMob.class.isAssignableFrom(entityEntry.getEntityClass()) && !IPossessable.class.isAssignableFrom(entityEntry.getEntityClass())) {
+            if (EntityMob.class.isAssignableFrom(entityClass) && !IPossessable.class.isAssignableFrom(entityClass)) {
                 boolean defineImpl = false;
                 try {
                     // create an instance to check if it fulfills the criteria
                     Entity instance = newInstance(entityEntry);
                     defineImpl = instance != null && ((EntityMob)instance).isEntityUndead() && instance.isNonBoss();
+                    // the easy way for mods to choose
+                    try {
+                        Method m = ReflectionHelper.findMethod(entityClass, "dissolutionGeneratePossessedVersion", null);
+                        if (Modifier.isStatic(m.getModifiers()) && m.getReturnType() == boolean.class) {
+                            defineImpl = (boolean) m.invoke(null);
+                        }
+                    } catch (ReflectionHelper.UnableToFindMethodException ignored) {
+                        // ignored
+                    } catch (Exception e) {
+                        Dissolution.LOGGER.error("A check method has thrown an exception", e);
+                    }
                 } catch (Exception e) {
                     // countless mobs will probably fail due to the null world, no need to spam the log with the stacktrace
                     Dissolution.LOGGER.warn("Could not check whether to create a possessable version of {} ({})", entityEntry.getRegistryName(), e);

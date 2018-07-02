@@ -1,7 +1,7 @@
 package ladysnake.dissolution.client.renders.entities;
 
 import ladysnake.dissolution.common.entity.SoulType;
-import ladysnake.dissolution.common.entity.souls.EntityFaerie;
+import ladysnake.dissolution.unused.common.entity.souls.EntityFaerie;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
 

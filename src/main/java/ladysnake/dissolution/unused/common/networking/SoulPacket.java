@@ -1,7 +1,7 @@
 package ladysnake.dissolution.unused.common.networking;
 
-import ladysnake.dissolution.api.ISoulHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
+import ladysnake.dissolution.unused.api.ISoulHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;

@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.entity.souls;
+package ladysnake.dissolution.unused.common.entity.souls;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.math.AxisAlignedBB;

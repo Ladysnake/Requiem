@@ -1,8 +1,8 @@
 package ladysnake.dissolution.client.renders.entities;
 
 import ladysnake.dissolution.common.entity.SoulType;
-import ladysnake.dissolution.common.entity.souls.AbstractSoul;
-import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
+import ladysnake.dissolution.unused.common.entity.souls.AbstractSoul;
+import ladysnake.dissolution.unused.common.entity.souls.EntityFleetingSoul;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;

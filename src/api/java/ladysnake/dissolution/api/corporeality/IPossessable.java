@@ -34,10 +34,6 @@ public interface IPossessable {
      * @param player the player attempting to stop the possession
      * @return false if the action is denied
      */
-    default boolean onPossessionStop(EntityPlayer player) {
-        return onPossessionStop(player, false);
-    }
-
     boolean onPossessionStop(EntityPlayer player, boolean force);
 
     UUID getPossessingEntityId();

@@ -1,7 +1,7 @@
-package ladysnake.dissolution.common.entity.souls;
+package ladysnake.dissolution.unused.common.entity.souls;
 
-import ladysnake.dissolution.api.Soul;
-import ladysnake.dissolution.api.SoulTypes;
+import ladysnake.dissolution.unused.api.Soul;
+import ladysnake.dissolution.unused.api.SoulTypes;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;

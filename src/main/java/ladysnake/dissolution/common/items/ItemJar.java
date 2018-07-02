@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.items;
 
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
+import ladysnake.dissolution.unused.common.entity.souls.EntityFleetingSoul;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;

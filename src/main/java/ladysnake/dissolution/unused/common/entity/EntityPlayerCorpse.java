@@ -1,7 +1,6 @@
 package ladysnake.dissolution.unused.common.entity;
 
 import com.google.common.base.Optional;
-import ladysnake.dissolution.api.ISoulHandler;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
@@ -11,6 +10,7 @@ import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.inventory.InventoryPlayerCorpse;
 import ladysnake.dissolution.common.registries.SoulStates;
+import ladysnake.dissolution.unused.api.ISoulHandler;
 import ladysnake.dissolution.unused.common.entity.ai.EntityAIMinionAttack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
