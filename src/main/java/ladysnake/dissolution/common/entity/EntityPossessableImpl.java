@@ -11,11 +11,8 @@ import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -30,19 +27,13 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.vector.Vector2f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,18 +49,7 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             EntityDataManager.createKey(EntityPossessableImpl.class, DataSerializers.OPTIONAL_UNIQUE_ID);
     private static final DataParameter<Integer> PURIFIED_HEALTH =
             EntityDataManager.createKey(EntityPossessableImpl.class, DataSerializers.VARINT);
-    private static MethodHandle entityAINearestAttackableTarget$targetClass;
 
-    static {
-        try {
-            Field f = ReflectionHelper.findField(EntityAINearestAttackableTarget.class, "targetClass", "field_75307_b");
-            entityAINearestAttackableTarget$targetClass = MethodHandles.lookup().unreflectGetter(f);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private List<Entity> triggeredMobs = new LinkedList<>();
     private List<Class<? extends EntityLivingBase>> equivalents = new LinkedList<>();
     private EntityAIInert aiDontDoShit = new EntityAIInert(false);
 
@@ -210,41 +190,6 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     @Override
     public void onLivingUpdate() {
         super.onLivingUpdate();
-        if (this.rand.nextFloat() < 0.01f)
-            this.attractAttention();
-    }
-
-    private void attractAttention() {
-        List<EntityCreature> nearby = this.world.getEntitiesWithinAABB(EntityCreature.class,
-                new AxisAlignedBB(new BlockPos(this)).grow(30), this::isMobEligibleForAttention);
-        Collections.shuffle(nearby);
-        int max = Math.min(rand.nextInt() % 5, nearby.size());
-        for (int i = 0; i < max; i++) {
-            for (EntityAITasks.EntityAITaskEntry taskEntry : nearby.get(i).targetTasks.taskEntries) {
-                if (shouldBeTargetedBy(taskEntry)) {
-                    nearby.get(i).targetTasks.addTask(taskEntry.priority - 1,
-                            new EntityAINearestAttackableTarget<>(nearby.get(i), this.getClass(), true));
-                    this.triggeredMobs.add(nearby.get(i));
-                    break;
-                }
-            }
-        }
-    }
-
-    private boolean isMobEligibleForAttention(EntityCreature other) {
-        return !this.triggeredMobs.contains(other) && (!other.isEntityUndead() || !other.isNonBoss());
-    }
-
-    private boolean shouldBeTargetedBy(EntityAITasks.EntityAITaskEntry taskEntry) {
-        if (taskEntry.action instanceof EntityAINearestAttackableTarget) {
-            try {
-                @SuppressWarnings("unchecked") Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>) entityAINearestAttackableTarget$targetClass.invoke(taskEntry.action);
-                return this.equivalents.contains(clazz);
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        }
-        return false;
     }
 
     @Override
