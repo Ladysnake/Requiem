@@ -121,6 +121,15 @@ public class EventHandlerClient {
     }
 
     @SubscribeEvent
+    public static void onFMLNetworkClientDisconnectionFromServer(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+        GuiIngameForge.renderAir = true;
+        GuiIngameForge.renderArmor = true;
+        GuiIngameForge.renderFood = true;
+        GuiIngameForge.renderHealthMount = true;
+        GuiIngameForge.renderHotbar = true;
+    }
+
+    @SubscribeEvent
     public static void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
         EntityPlayer player = Minecraft.getMinecraft().player;
         IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
@@ -129,11 +138,11 @@ public class EventHandlerClient {
 
             boolean possessing = handler.getPossessed() != null;
             // Disables most gui renders
-            GuiIngameForge.renderFood = show;
-            GuiIngameForge.renderHotbar = show || player.isCreative() || possessing;
-            GuiIngameForge.renderHealthMount = show;
-            GuiIngameForge.renderArmor = show || possessing;
             GuiIngameForge.renderAir = show;
+            GuiIngameForge.renderArmor = show || possessing;
+            GuiIngameForge.renderFood = show;
+            GuiIngameForge.renderHealthMount = show;
+            GuiIngameForge.renderHotbar = show || player.isCreative() || possessing;
 
             // Prevents the display of the name of the selected ItemStack
             if (!show && !player.isCreative() && !possessing) {
