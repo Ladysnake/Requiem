@@ -5,13 +5,8 @@ import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.registries.SoulStates;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.FoodStats;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
@@ -61,8 +56,6 @@ public class PlayerTickHandler {
                     handleSoulFlight(event.player);
                 }
 
-                handlePossessingTick(event.player);
-
                 try {
                     foodTimer.invokeExact(event.player.getFoodStats(), 0);
                     foodExhaustionLevel.invokeExact(event.player.getFoodStats(), 0f);
@@ -75,7 +68,7 @@ public class PlayerTickHandler {
                 }
 
                 // Randomly removes experience from the player
-                if (playerCorp.getCorporealityStatus() == SoulStates.SOUL) {
+                if (playerCorp.getCorporealityStatus() == SoulStates.SOUL && playerCorp.getPossessed() == null) {
                     if (event.player.experience > 0 && rand.nextBoolean()) {
                         event.player.experience--;
                     } else if (rand.nextInt() % 300 == 0 && event.player.experienceLevel > 0) {
@@ -87,10 +80,6 @@ public class PlayerTickHandler {
         if (event.side.isServer()) {
             playerCorp.setSynced(true);
         }
-    }
-
-    protected boolean hasRoomForPlayer(World worldIn, BlockPos pos) {
-        return !worldIn.getBlockState(pos).getMaterial().isSolid() && !worldIn.getBlockState(pos.up()).getMaterial().isSolid();
     }
 
     /**
@@ -120,33 +109,6 @@ public class PlayerTickHandler {
                 Dissolution.LOGGER.error("an error occurred while handling soul flight", throwable);
             }
         }
-    }
-
-    /**
-     * Handles movement for the entity this player is possessing
-     */
-    private void handlePossessingTick(EntityPlayer player) {
-        Entity possessed = player.getRidingEntity();
-        if (possessed != null) {
-//            if (!player.world.isRemote) {
-//                possessed.rotationYaw = player.rotationYaw;
-//                possessed.prevRotationYaw = possessed.rotationYaw;
-//                possessed.setRotationYawHead(player.getRotationYawHead());
-//            }
-//            possessed.rotationPitch = player.rotationPitch;
-//            possessed.prevRotationPitch = possessed.rotationPitch;
-//            if (possessed instanceof EntityLiving) {
-//                ((EntityLiving) possessed).cameraPitch = player.cameraPitch;
-//                ((EntityLiving) possessed).randomYawVelocity = 0;
-//            }
-        }
-    }
-
-    private RayTraceResult rayTrace(EntityPlayer player) {
-        Vec3d vec3d = player.getPositionEyes(1.0f);
-        Vec3d vec3d1 = player.getLook(1.0f);
-        Vec3d vec3d2 = vec3d.addVector(vec3d1.x * 100, vec3d1.y * 100, vec3d1.z * 100);
-        return player.world.rayTraceBlocks(vec3d, vec3d2, false, false, true);
     }
 
 }
