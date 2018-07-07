@@ -1,0 +1,34 @@
+itemGroup.dissolution=Dissolution
+dissolution.jei.recipe.crystallizer=Cristalizando
+
+tile.ectoplasm_block.name=Bloque de Ectoplasma
+tile.ectoplasma_block.name=Bloque of Ectoplasma
+tile.crystallizer.name=Cristalizador
+tile.mercurius_waystone.name=La roca del camino de Mercurius
+tile.mercurius_waystone.cannotplace=Una fuerza profunda no te permite poner esto aquí.
+tile.soul_anchor.name=Ancla del alma
+tile.soul_extractor.name=Extraedor de almas
+tile.mercury_candle.name=Vela de Mercurio
+tile.sulfur_candle.name=Vela de Azufre
+
+item.cinnabar.name=Cinabrio.
+item.ectoplasm.name=Ectoplasma
+item.ectoplasma.name=Ectoplasma
+item.eye_of_the_undead.name=Ojo del Muerto Viviente
+item.eye_of_the_undead.nosoul=El cuerpo requiere un alma para ascender de nuevo...
+item.iron_scythe.name=Guadaña de hierro.
+item.grand_faux.name=Gran Artificio
+item.mercury.name=Mercurio
+item.soul_gem.name=Gema del alma
+item.soul_in_a_bottle.name=Alma en botella
+item.sulfur.name=Azufre
+item.sepulture.name=Entierro de piedra
+item.explosive_arrow.name=Flecha explosiva
+item.hamer.name=Martillo
+
+entity.wandering_soul.name=Alma Ambulante
+entity.minion.name=Esbirro
+entity.minion_zombie.name=Esbirro Zombieficado
+entity.minion_pig_zombie.name=Esbirro Hombre Cerdo
+entity.minion_skeleton.name=Esbirro Esqueletal
+entity.minion_stray.name=Esbirro Glacial
