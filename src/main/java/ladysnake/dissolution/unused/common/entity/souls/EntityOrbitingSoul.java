@@ -1,12 +1,9 @@
 package ladysnake.dissolution.unused.common.entity.souls;
 
-import ladysnake.dissolution.common.Dissolution;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityOrbitingSoul extends AbstractSoul {
     /**
@@ -75,18 +72,6 @@ public class EntityOrbitingSoul extends AbstractSoul {
         this.motionZ = (newPosZ + this.zTarget) - this.posZ;
 
         this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
-    }
-
-    @SideOnly(Side.CLIENT)
-    protected void spawnParticles() {
-        for (double i = 0; i < 9; i++) {
-            double coeff = i / 9.0;
-            Dissolution.proxy.spawnParticle(getEntityWorld(),
-                    (float) (prevPosX + (posX - prevPosX) * coeff), (float) (prevPosY + (posY - prevPosY) * coeff), (float) (prevPosZ + (posZ - prevPosZ) * coeff),    //position
-                    0.0125f * (rand.nextFloat() - 0.5f), 0.0125f * (rand.nextFloat() - 0.5f), 0.0125f * (rand.nextFloat() - 0.5f),    //motion
-                    255, 64, 16, 255,    //color
-                    2.0f, 24);
-        }
     }
 
 }

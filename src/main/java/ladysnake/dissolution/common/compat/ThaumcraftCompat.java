@@ -9,6 +9,7 @@ import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.internal.CommonInternals;
+import thaumcraft.api.items.ItemsTC;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +22,10 @@ public class ThaumcraftCompat {
                 .add(Aspect.LIFE, 5)
                 .add(Aspect.EARTH, 5)
         );
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.HUMAN_FLESH_COOKED), new AspectList()
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.HUMAN_BRAIN), new AspectList(new ItemStack(ItemsTC.brain))
                 .add(Aspect.MAN, 5)
-                .add(Aspect.LIFE, 5)
-                .add(Aspect.CRAFT, 1)
         );
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.AETHEREUS), new AspectList()
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.SANGUINE_POTION), new AspectList()
                 .add(Aspect.SOUL, 8)
                 .add(Aspect.ALCHEMY, 5)
                 .add(Aspect.MAN, 2)

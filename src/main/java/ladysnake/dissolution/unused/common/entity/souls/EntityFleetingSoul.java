@@ -2,7 +2,6 @@ package ladysnake.dissolution.unused.common.entity.souls;
 
 import elucent.albedo.lighting.ILightProvider;
 import elucent.albedo.lighting.Light;
-import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.entity.SoulType;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.items.ItemSoulInAJar;
@@ -18,8 +17,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
@@ -128,18 +125,6 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
 //                            this.targetEntity = items.get(0);
 //                    }
         return null;
-    }
-
-    @SideOnly(Side.CLIENT)
-    protected void spawnParticles() {
-        for (double i = 0; i < 9; i++) {
-            double coeff = i / 9.0;
-            Dissolution.proxy.spawnParticle(getEntityWorld(),
-                    (float) (prevPosX + (posX - prevPosX) * coeff), (float) (prevPosY + (posY - prevPosY) * coeff), (float) (prevPosZ + (posZ - prevPosZ) * coeff),    //position
-                    0.0125f * (rand.nextFloat() - 0.5f), 0.0125f * (rand.nextFloat() - 0.5f), 0.0125f * (rand.nextFloat() - 0.5f),    //motion
-                    255, 64, 16, 255,    //color
-                    2.0f, 24);
-        }
     }
 
     public boolean canBePickupBy(EntityLivingBase entity) {

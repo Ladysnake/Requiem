@@ -3,13 +3,31 @@ package ladysnake.dissolution.common;
 
 import ladylib.LLibContainer;
 import ladylib.LadyLib;
+import ladysnake.dissolution.client.ClientProxy;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.commands.CommandDissolutionTree;
 import ladysnake.dissolution.common.compat.ThaumcraftCompat;
 import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
+import ladysnake.dissolution.common.handlers.EventHandlerCommon;
+import ladysnake.dissolution.common.handlers.InteractEventsHandler;
+import ladysnake.dissolution.common.handlers.LivingDeathHandler;
+import ladysnake.dissolution.common.handlers.PlayerTickHandler;
 import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.inventory.DissolutionTab;
+import ladysnake.dissolution.common.inventory.GuiProxy;
+import ladysnake.dissolution.common.networking.PacketHandler;
+import ladysnake.dissolution.common.tileentities.TileEntitySepulture;
+import ladysnake.dissolution.common.tileentities.TileEntityWispInAJar;
+import ladysnake.dissolution.unused.common.capabilities.CapabilityDistillateHandler;
+import ladysnake.dissolution.unused.common.capabilities.CapabilityGenericInventoryProvider;
+import ladysnake.dissolution.unused.common.tileentities.TileEntityLamentStone;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.storage.loot.LootTableList;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -20,6 +38,8 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,19 +69,42 @@ public class Dissolution {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        proxy.preInit();
+        CapabilityIncorporealHandler.register();
+        CapabilitySoulHandler.register();
+        CapabilityDistillateHandler.register();
+        CapabilityGenericInventoryProvider.register();
+
         DissolutionConfigManager.init(event.getSuggestedConfigurationFile());
+
         lib.setCreativeTab(CREATIVE_TAB);
+        proxy.preInit();
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        proxy.init();
+        MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
+        MinecraftForge.EVENT_BUS.register(new LivingDeathHandler());
+        MinecraftForge.EVENT_BUS.register(new PlayerTickHandler());
+        MinecraftForge.EVENT_BUS.register(new InteractEventsHandler());
+
+        OreDictHelper.registerOres();
+
+        GameRegistry.registerTileEntity(TileEntitySepulture.class, Reference.MOD_ID + ":tileentitysepulture");
+        GameRegistry.registerTileEntity(TileEntityLamentStone.class, Reference.MOD_ID + ":tileentityancienttomb");
+        GameRegistry.registerTileEntity(TileEntityWispInAJar.class, Reference.MOD_ID + ":tileentitywispinajar");
+
+        LootTableList.register(new ResourceLocation(Reference.MOD_ID, "inject/human"));
+
+        NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
+        PacketHandler.initPackets();
+
+        if (FMLCommonHandler.instance().getSide().isClient()) {
+            ClientProxy.init();
+        }
     }
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        proxy.postInit();
         if (Loader.isModLoaded("thaumcraft")) {
             ThaumcraftCompat.assignAspects();
         }

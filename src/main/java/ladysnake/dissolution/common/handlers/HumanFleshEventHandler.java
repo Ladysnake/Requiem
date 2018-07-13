@@ -5,10 +5,8 @@ import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -39,15 +37,6 @@ public class HumanFleshEventHandler {
                         } else {
                             possessed.heal(4f);
                         }
-                    }
-                }
-            });
-        } else if (OreDictHelper.doesItemMatch(event.getItem(), OreDictHelper.HUMAN_FLESH_COOKED)) {
-            CapabilityIncorporealHandler.getHandler(event.getEntityLiving()).ifPresent(handler -> {
-                if (handler.isStrongSoul()) {
-                    handler.setStrongSoul(false);
-                    if (event.getEntityLiving() instanceof EntityPlayerMP) {
-                        ((EntityPlayerMP) event.getEntityLiving()).sendStatusMessage(new TextComponentTranslation("dissolution.soul_downgrade"), false);
                     }
                 }
             });

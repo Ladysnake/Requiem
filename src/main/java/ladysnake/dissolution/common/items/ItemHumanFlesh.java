@@ -3,6 +3,7 @@ package ladysnake.dissolution.common.items;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
@@ -48,11 +49,20 @@ public class ItemHumanFlesh extends ItemFood {
     protected void onFoodEaten(ItemStack stack, World world, @Nonnull EntityPlayer player) {
         super.onFoodEaten(stack, world, player);
         if (!world.isRemote && applyWarp && Dissolution.config.warpyFlesh) {
-            if (world.rand.nextFloat() < 0.05F) {
-                ThaumcraftApi.internalMethods.addWarpToPlayer(player, 1, IPlayerWarp.EnumWarpType.NORMAL);
-            } else if (world.rand.nextFloat() < 0.75) {
-                ThaumcraftApi.internalMethods.addWarpToPlayer(player, 1 + world.rand.nextInt(3), IPlayerWarp.EnumWarpType.TEMPORARY);
-            }
+            addWarp(world, player);
+        }
+    }
+
+    /**
+     * This method is called when thaumcraft is present to add warp to the given player
+     */
+    protected void addWarp(World world, @Nonnull EntityPlayer player) {
+        // regular human flesh has less impact than organs
+        if (this == ModItems.HUMAN_FLESH_RAW && world.rand.nextFloat() < 0.05F
+                || world.rand.nextFloat() < 0.1f) {
+            ThaumcraftApi.internalMethods.addWarpToPlayer(player, 1, IPlayerWarp.EnumWarpType.NORMAL);
+        } else if (this != ModItems.HUMAN_FLESH_RAW || world.rand.nextFloat() < 0.75) {
+            ThaumcraftApi.internalMethods.addWarpToPlayer(player, 1 + world.rand.nextInt(3), IPlayerWarp.EnumWarpType.TEMPORARY);
         }
     }
 
@@ -61,6 +71,7 @@ public class ItemHumanFlesh extends ItemFood {
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, @Nonnull EnumHand handIn) {
         ItemStack itemstack = playerIn.getHeldItem(handIn);
 
+        // allows players possessing an entity to always eat
         if (playerIn.canEat(false) || CapabilityIncorporealHandler.getHandler(playerIn).getPossessed() != null) {
             playerIn.setActiveHand(handIn);
             return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);

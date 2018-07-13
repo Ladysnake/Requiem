@@ -5,8 +5,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
@@ -46,9 +44,6 @@ public abstract class AbstractSoul extends Entity {
 //			spawnParticles();
 //		}
     }
-
-    @SideOnly(Side.CLIENT)
-    protected abstract void spawnParticles();
 
     public int getSoulAge() {
         return soulAge;

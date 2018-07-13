@@ -6,6 +6,7 @@ import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.config.GuiEditArrayEntries;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.lang.reflect.Field;
@@ -189,7 +190,7 @@ public class DissolutionConfigReader {
             type = Property.Type.BOOLEAN;
         }
         prop = config.get(category.getQualifiedName(), optionField.getName(), (String[]) optionField.get(categoryObject), null, type);
-        if (Dissolution.proxy.getSide() == Side.CLIENT) {
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
             prop.setArrayEntryClass(GuiEditArrayEntries.StringEntry.class);
         }
         switch (prop.getType()) {

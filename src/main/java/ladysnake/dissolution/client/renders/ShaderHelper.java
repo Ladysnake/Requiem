@@ -1,18 +1,28 @@
 package ladysnake.dissolution.client.renders;
 
 import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.shader.ShaderGroup;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.message.FormattedMessage;
 import org.lwjgl.opengl.ARBShaderObjects;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Helper class for shader creation and usage
@@ -20,6 +30,7 @@ import java.io.InputStreamReader;
  * @author Pyrofab
  */
 @SideOnly(Side.CLIENT)
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public final class ShaderHelper {
 
     /**
@@ -33,6 +44,10 @@ public final class ShaderHelper {
 
     private static int prevProgram = 0, currentProgram = 0;
     private static final String LOCATION_PREFIX = "/assets/dissolution/shaders/";
+    private static final Map<ResourceLocation, ShaderGroup> screenShaders = new HashMap<>();
+    private static boolean resetScreenShaders;
+    private static int oldDisplayWidth = Minecraft.getMinecraft().displayWidth;
+    private static int oldDisplayHeight = Minecraft.getMinecraft().displayHeight;
 
     static {
         initShaders();
@@ -135,7 +150,7 @@ public final class ShaderHelper {
      * Sets the value of a uniform from the current program
      *
      * @param uniformName
-     * @param values       one or more float values for this uniform
+     * @param values      one or more float values for this uniform
      */
     public static void setUniform(String uniformName, float... values) {
         if (!shouldUseShaders()) {
@@ -168,6 +183,52 @@ public final class ShaderHelper {
         useShader(prevProgram);
     }
 
+    public static void enableScreenShader(ResourceLocation id) {
+        if (shouldUseShaders() && !screenShaders.containsKey(id)) {
+            try {
+                Minecraft mc = Minecraft.getMinecraft();
+                resetScreenShaders = true;
+                screenShaders.put(id, new ShaderGroup(mc.getTextureManager(), mc.getResourceManager(), mc.getFramebuffer(), id));
+            } catch (IOException e) {
+                Dissolution.LOGGER.error(new FormattedMessage("Could not enable screen shader {}", id), e);
+            }
+        }
+    }
+
+    public static void disableScreenShader(ResourceLocation id) {
+        if (screenShaders.containsKey(id)) {
+            screenShaders.remove(id).deleteShaderGroup();
+        }
+    }
+
+    @SubscribeEvent
+    public static void renderScreenShaders(RenderGameOverlayEvent.Pre event) {
+        if (shouldUseShaders() && !screenShaders.isEmpty() && event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
+            resetScreenShaders();
+            GlStateManager.matrixMode(GL11.GL_TEXTURE);
+            GlStateManager.loadIdentity();
+            for (ShaderGroup shaderGroup : screenShaders.values()) {
+                GlStateManager.pushMatrix();
+                shaderGroup.render(event.getPartialTicks());
+                GlStateManager.popMatrix();
+            }
+            Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(true);
+        }
+    }
+
+    private static void resetScreenShaders() {
+        Minecraft mc = Minecraft.getMinecraft();
+        if (resetScreenShaders || mc.displayWidth != oldDisplayWidth || oldDisplayHeight != mc.displayHeight) {
+            for (ShaderGroup sg : screenShaders.values()) {
+                sg.createBindFramebuffers(mc.displayWidth, mc.displayHeight);
+            }
+
+            oldDisplayWidth = mc.displayWidth;
+            oldDisplayHeight = mc.displayHeight;
+            resetScreenShaders = false;
+        }
+    }
+
     /**
      * Reads a text file into a single String
      *
@@ -194,6 +255,7 @@ public final class ShaderHelper {
         return source.toString();
     }
 
-    private ShaderHelper() { }
+    private ShaderHelper() {
+    }
 
 }

@@ -2,6 +2,7 @@ package ladysnake.dissolution.common.items;
 
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.client.renders.ShaderHelper;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
 import ladysnake.dissolution.unused.common.entity.souls.EntityFleetingSoul;
 import net.minecraft.entity.Entity;
@@ -12,12 +13,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 public class ItemDebug extends Item implements ISoulInteractable {
@@ -43,13 +43,8 @@ public class ItemDebug extends Item implements ISoulInteractable {
         switch (debugWanted) {
             case 0:
                 if (worldIn.isRemote) {
-                    try {
-                        Method m = ShaderHelper.class.getDeclaredMethod("initShaders");
-                        m.setAccessible(true);
-                        m.invoke(null);
-                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
+                    ShaderHelper.disableScreenShader(new ResourceLocation(Reference.MOD_ID, "shaders/post/test.json"));
+                    ShaderHelper.enableScreenShader(new ResourceLocation(Reference.MOD_ID, "shaders/post/test.json"));
                 }
                 break;
             case 1:

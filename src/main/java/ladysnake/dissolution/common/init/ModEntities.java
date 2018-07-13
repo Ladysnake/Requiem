@@ -15,7 +15,9 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.loot.LootTableList;
+import net.minecraft.world.storage.loot.*;
+import net.minecraft.world.storage.loot.conditions.LootCondition;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -25,8 +27,6 @@ import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.lang.reflect.Field;
@@ -118,7 +118,16 @@ public class ModEntities {
     }
 
     @SubscribeEvent
-    public static void register(RegistryEvent.Register<EntityEntry> event) {
+    public static void lootLoad(LootTableLoadEvent event) {
+        if (event.getName().toString().equals("minecraft:entities/villager")) {
+            LootEntry entry = new LootEntryTable(new ResourceLocation("dissolution:inject/human"), 1, 1, new LootCondition[0], "dissolution_human");
+            LootPool pool = new LootPool(new LootEntry[] {entry}, new LootCondition[0], new RandomValueRange(1), new RandomValueRange(0), "dissolution_human");
+            event.getTable().addPool(pool);
+        }
+    }
+
+    @SubscribeEvent
+    public static void addEntities(RegistryEvent.Register<EntityEntry> event) {
         IForgeRegistry<EntityEntry> reg = event.getRegistry();
         // this entity is only there to allow debug features
         if (LadyLib.isDevEnv()) {
@@ -154,7 +163,6 @@ public class ModEntities {
                 .tracker(trackingRange, 1, sendsVelocityUpdates);
     }
 
-    @SideOnly(Side.CLIENT)
     public static void registerRenders() {
         RenderingRegistry.registerEntityRenderingHandler(EntityPlayerShell.class, RenderPlayerCorpse::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityPossessableImpl.class, renderManagerIn -> new RenderBiped<>(renderManagerIn, new ModelBiped(), 1f));

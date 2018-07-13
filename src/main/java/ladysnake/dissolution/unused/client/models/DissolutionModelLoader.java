@@ -21,10 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class is a stripped version of the game's model loading code, allowing
@@ -66,10 +63,9 @@ public class DissolutionModelLoader {
      * @param modelLocation the location of the model
      */
     public static void addModel(ResourceLocation modelLocation, ModelRotation... rotations) {
-        INSTANCE.modelsLocation.computeIfAbsent(modelLocation, rl -> new HashSet<>()).add(ModelRotation.X0_Y0);
-        for (ModelRotation rot : rotations) {
-            INSTANCE.modelsLocation.get(modelLocation).add(rot);
-        }
+        Set<ModelRotation> rotationSet = INSTANCE.modelsLocation.computeIfAbsent(modelLocation, rl -> new HashSet<>());
+        rotationSet.add(ModelRotation.X0_Y0);
+        rotationSet.addAll(Arrays.asList(rotations));
     }
 
     public static void addAllModels(ResourceLocation... locations) {

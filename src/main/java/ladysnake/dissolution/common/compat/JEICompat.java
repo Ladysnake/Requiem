@@ -1,6 +1,5 @@
 package ladysnake.dissolution.common.compat;
 
-import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
 import mezz.jei.api.*;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
@@ -51,7 +50,7 @@ public class JEICompat implements IModPlugin {
 
     @SideOnly(Side.CLIENT)
     private void addInformationTab(Item item) {
-        registry.addIngredientInfo(new ItemStack(item), ItemStack.class, I18n.format("jei.description.dissolution.%s", item.getUnlocalizedName()));
+        registry.addIngredientInfo(new ItemStack(item), ItemStack.class, I18n.format("jei.description.dissolution." + item.getUnlocalizedName()));
     }
 
     private void blacklistStuff() {

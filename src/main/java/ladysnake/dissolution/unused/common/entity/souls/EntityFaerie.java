@@ -3,9 +3,7 @@ package ladysnake.dissolution.unused.common.entity.souls;
 import elucent.albedo.lighting.Light;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.SoulType;
-import ladysnake.dissolution.common.init.ModPotions;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.network.datasync.DataParameter;
@@ -52,12 +50,7 @@ public class EntityFaerie extends EntityFleetingSoul {
     @Override
     public void onCollideWithPlayer(EntityPlayer entityIn) {
         if(!world.isRemote && !this.isTired()) {
-            EntityLivingBase possessed = CapabilityIncorporealHandler.getHandler(entityIn).getPossessed();
-            if (possessed != null) {
-                possessed.addPotionEffect(new PotionEffect(ModPotions.PURIFICATION, 200, 1));
-            } else {
-                entityIn.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 200));
-            }
+            entityIn.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 200));
             this.setTired(true);
         }
     }
