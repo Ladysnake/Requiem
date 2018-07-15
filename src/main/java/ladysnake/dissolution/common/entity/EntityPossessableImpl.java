@@ -356,12 +356,11 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             }
         }
     }
+
     @Override
     public void onDeath(@Nonnull DamageSource cause) {
         if (this.getControllingPassenger() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) this.getControllingPassenger();
-            for (EntityEquipmentSlot slot : EntityEquipmentSlot.values())
-                player.setItemStackToSlot(slot, ItemStack.EMPTY);
             if (!world.isRemote)
                 player.inventory.dropAllItems();
             CapabilityIncorporealHandler.getHandler(player).setPossessed(null);

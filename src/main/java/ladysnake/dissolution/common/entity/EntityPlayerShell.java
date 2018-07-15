@@ -88,11 +88,11 @@ public class EntityPlayerShell extends EntityLiving implements ISoulInteractable
         if (this.ticksExisted > 20) {
             player.setPositionAndRotation(posX, posY, posZ, rotationYaw, rotationPitch);
             if (!world.isRemote) {
-                DissolutionInventoryHelper.transferEquipment(this, player);
                 for (int i = 0; i < player.inventory.mainInventory.size(); i++) {
                     player.inventory.setInventorySlotContents(i, this.inventory.getStackInSlot(i));
                     this.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
                 }
+                DissolutionInventoryHelper.transferEquipment(this, player);
                 this.posY -= 500;
                 this.setDead();
                 CapabilityIncorporealHandler.getHandler(player).setCorporealityStatus(SoulStates.BODY);
