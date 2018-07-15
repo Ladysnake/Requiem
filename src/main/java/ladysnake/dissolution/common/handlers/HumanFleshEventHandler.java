@@ -3,6 +3,7 @@ package ladysnake.dissolution.common.handlers;
 import ladysnake.dissolution.common.OreDictHelper;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.items.ItemHumanFlesh;
 import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
@@ -21,7 +22,7 @@ public class HumanFleshEventHandler {
         if (event.getEntity().world.isRemote) {
             return;
         }
-        if (OreDictHelper.doesItemMatch(event.getItem(), OreDictHelper.HUMAN_FLESH_RAW) || event.getItem().getItem() == Items.GOLDEN_APPLE) {
+        if (OreDictHelper.doesItemMatch(event.getItem(), OreDictHelper.HUMAN_FLESH_RAW) || event.getItem().getItem() instanceof ItemHumanFlesh || event.getItem().getItem() == Items.GOLDEN_APPLE) {
             CapabilityIncorporealHandler.getHandler(event.getEntityLiving()).ifPresent(handler -> {
                 EntityLivingBase possessed = handler.getPossessed();
                 if (possessed != null) {
@@ -33,6 +34,7 @@ public class HumanFleshEventHandler {
                     } else {
                         if (possessed.world.rand.nextFloat() < ((possessed.getHealth() / possessed.getMaxHealth()) * 0.8)) {
                             handler.setCorporealityStatus(SoulStates.BODY);
+                            event.getEntityLiving().setHealth(possessed.getHealth());
                             possessed.world.removeEntity(possessed);
                         } else {
                             possessed.heal(4f);
