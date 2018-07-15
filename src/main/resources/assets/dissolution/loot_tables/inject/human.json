@@ -40,7 +40,7 @@
       "conditions": [
         {
           "condition": "random_chance_with_looting",
-          "chance": 0.1,
+          "chance": 0.3,
           "looting_multiplier": 0.1
         }
       ]
@@ -58,7 +58,7 @@
       "conditions": [
         {
           "condition": "random_chance_with_looting",
-          "chance": 0.05,
+          "chance": 0.2,
           "looting_multiplier": 0.075
         }
       ]
