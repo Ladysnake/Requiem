@@ -25,7 +25,9 @@ public class ItemSanguinePotion extends Item {
             if (handler.isStrongSoul()) {
                 handler.setStrongSoul(false);
                 if (entityLiving instanceof EntityPlayerMP) {
-                    ((EntityPlayerMP) entityLiving).sendStatusMessage(new TextComponentTranslation("dissolution.soul_downgrade"), false);
+                    TextComponentTranslation text = new TextComponentTranslation("dissolution.soul_downgrade");
+                    text.getStyle().setItalic(true);
+                    ((EntityPlayerMP)entityLiving).sendStatusMessage(text, false);
                 }
             }
         });

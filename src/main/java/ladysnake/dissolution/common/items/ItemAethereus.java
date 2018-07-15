@@ -72,7 +72,9 @@ public class ItemAethereus extends Item {
                     entityLiving.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 60 * 20));
                     handler.get().setStrongSoul(true);
                     if (player instanceof EntityPlayerMP) {
-                        player.sendStatusMessage(new TextComponentTranslation("dissolution.soul_upgrade"), false);
+                        TextComponentTranslation text = new TextComponentTranslation("dissolution.soul_upgrade");
+                        text.getStyle().setItalic(true);
+                        player.sendStatusMessage(text, false);
                     }
                 }
             }
