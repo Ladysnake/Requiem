@@ -4,7 +4,6 @@ import ladysnake.dissolution.api.PossessionEvent;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
-import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.PossessableEntityFactory;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
@@ -29,6 +28,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class InteractEventsHandler {
 
+    public static final double MAX_THICCNESS = 0.9;     // you are welcome
+
     /**
      * Make wisps and soul players go through thin walls
      */
@@ -38,7 +39,7 @@ public class InteractEventsHandler {
                 || ((event.getEntity() instanceof EntityPlayer)
                 && (CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity())
                 .getCorporealityStatus() == SoulStates.SOUL))) {
-            event.getCollisionBoxesList().removeIf(axisAlignedBB -> axisAlignedBB.getAverageEdgeLength() < Dissolution.config.ghost.maxThickness);
+            event.getCollisionBoxesList().removeIf(axisAlignedBB -> axisAlignedBB.getAverageEdgeLength() < MAX_THICCNESS);
         }
     }
 

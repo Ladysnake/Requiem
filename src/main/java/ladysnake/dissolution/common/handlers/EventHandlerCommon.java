@@ -64,7 +64,7 @@ public class EventHandlerCommon {
             final IIncorporealHandler corpse = CapabilityIncorporealHandler.getHandler(event.getOriginal());
             final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
             clone.setStrongSoul(corpse.isStrongSoul());
-            clone.setCorporealityStatus(Dissolution.config.respawn.respawnCorporealityStatus.status);
+            clone.setCorporealityStatus(SoulStates.SOUL);
             clone.getDeathStats().setLastDeathMessage(corpse.getDeathStats().getLastDeathMessage());
             clone.getDialogueStats().deserializeNBT(corpse.getDialogueStats().serializeNBT());
             clone.setSynced(false);

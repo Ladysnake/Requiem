@@ -98,7 +98,6 @@ public class LivingDeathHandler {
 //            if (!p.world.isRemote) {
 //                fakePlayerDeath((EntityPlayerMP) p, event.getSource());
 //            }
-//            corp.setCorporealityStatus(Dissolution.config.respawn.respawnCorporealityStatus.status);
 //            p.setHealth(20f);
 //            //noinspection ConstantConditions
 //            p.getBedLocation();

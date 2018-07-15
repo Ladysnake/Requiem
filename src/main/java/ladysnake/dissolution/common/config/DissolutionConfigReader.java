@@ -21,7 +21,6 @@ import java.util.regex.Pattern;
  * As most of the utility classes in forge are private, everything has been recoded from scratch as an exercise, more or less efficiently
  */
 public class DissolutionConfigReader {
-    private static final Class CONFIG_CLASS = DissolutionConfig.class;
     private static final String I18N_PREFIX = "config.dissolution";
 
     /**
@@ -30,21 +29,21 @@ public class DissolutionConfigReader {
      * @param config the configuration object to read and store values from
      */
     static void readAndInitializeConfig(Configuration config) {
-        Field[] configFields = Arrays.stream(CONFIG_CLASS.getFields())
+        Field[] configFields = Arrays.stream(Dissolution.config.getClass().getFields())
                 .filter(field -> !Modifier.isStatic(field.getModifiers())).toArray(Field[]::new);
-        handleCategory(config, new ConfigCategory(Configuration.CATEGORY_GENERAL), Dissolution.config, configFields);
+        handleCategory(config, new ConfigCategory(Configuration.CATEGORY_GENERAL), Dissolution.config, configFields, true);
     }
 
     /**
      * Recursively reads a config category and initializes every contained field
-     *
-     * @param config   a configuration object to read
+     *  @param config   a configuration object to read
      * @param category this category's name, preceded by all its parents'
      * @param instance if this category isn't a static field, an object instance of it
      * @param children an array of fields representing categories or properties that are children of this category
+     * @param isRoot
      */
-    private static void handleCategory(Configuration config, ConfigCategory category, Object instance, Field[] children) {
-        boolean isRoot = DissolutionConfig.class.equals(instance.getClass());
+    private static void handleCategory(Configuration config, ConfigCategory category, Object instance, Field[] children, boolean isRoot) {
+//        boolean isRoot = DissolutionConfig.class.equals(instance.getClass());
         category.setLanguageKey(I18N_PREFIX + "." + category.getQualifiedName());
         if (!category.isChild()) {
             DissolutionConfigManager.rootCategories.add(category);
@@ -54,8 +53,8 @@ public class DissolutionConfigReader {
                 if (instance.getClass().equals(child.getType().getDeclaringClass())) {        // The child is a nested category
                     ConfigCategory subCategory = new ConfigCategory(child.getName(), isRoot ? null : category);
                     Object subCategoryObject = child.get(instance);
-                    Field[] subChildren = child.getType().getFields();
-                    handleCategory(config, subCategory, subCategoryObject, subChildren);
+                    Field[] subChildren = subCategoryObject.getClass().getFields();
+                    handleCategory(config, subCategory, subCategoryObject, subChildren, false);
                 } else {                                                        // The child is a property of this category
                     readAndAssignProperty(config, category, instance, child);
                 }

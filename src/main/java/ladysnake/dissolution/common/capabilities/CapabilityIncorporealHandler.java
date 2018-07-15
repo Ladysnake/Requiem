@@ -226,7 +226,6 @@ public class CapabilityIncorporealHandler {
                 }
                 hostID = 0;
                 hostUUID = null;
-                owner.setInvisible(Dissolution.config.ghost.invisibleGhosts);
                 owner.dismountRidingEntity();
             } else {
                 // cancel the operation if a) the event is canceled or b) the possessed entity denies it
@@ -236,7 +235,6 @@ public class CapabilityIncorporealHandler {
                 }
                 hostID = possessable.getEntityId();
                 hostUUID = possessable.getUniqueID();
-                owner.setInvisible(true);
             }
             if (!owner.world.isRemote) {
                 ((EntityPlayerMP) owner).connection.sendPacket(new SPacketCamera(possessable == null ? owner : possessable));

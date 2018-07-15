@@ -80,7 +80,7 @@ public class IncorporealStatus extends CorporealityStatus {
     }
 
     protected boolean preventsInteraction(IBlockState blockState) {
-        return true;
+        return !DissolutionConfigManager.canEctoplasmInteractWith(blockState.getBlock());
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

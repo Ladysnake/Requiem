@@ -8,11 +8,8 @@ import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.networking.ConfigMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
-import ladysnake.dissolution.unused.common.entity.AbstractMinion;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.config.ConfigCategory;
@@ -34,8 +31,7 @@ import java.util.*;
 public final class DissolutionConfigManager {
 
     public static Configuration config;
-    private static ImmutableSet<Class<? extends EntityMob>> TARGET_BLACKLIST;
-    private static ImmutableSet<StringChecker> GHOST_HUNTER_WHITELIST;
+    private static final ImmutableSet<StringChecker> GHOST_HUNTER_WHITELIST = ImmutableSet.of();
     private static ImmutableSet<StringChecker> BLOCK_WHITELIST;
     static Set<ConfigCategory> rootCategories;
     public static Map<String, Property> syncedProps;
@@ -47,11 +43,7 @@ public final class DissolutionConfigManager {
     }
 
     public static boolean isFlightSetTo(FlightModes flightMode) {
-        return Dissolution.config.ghost.flightMode == flightMode;
-    }
-
-    public static boolean isEntityBlacklistedFromMinionAttacks(EntityMob EntityIn) {
-        return TARGET_BLACKLIST.contains(EntityIn.getClass());
+        return FlightModes.CUSTOM_FLIGHT == flightMode;
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -112,8 +104,6 @@ public final class DissolutionConfigManager {
      */
     public static void load() {
         DissolutionConfigReader.readAndInitializeConfig(config);
-        buildEctoplasmAttackWhitelist();
-        buildMinionAttackBlacklist();
         buildBlockWhitelist();
     }
 
@@ -186,23 +176,6 @@ public final class DissolutionConfigManager {
             load();
             config.save();
         }
-    }
-
-    private static void buildMinionAttackBlacklist() {
-        ImmutableSet.Builder<Class<? extends EntityMob>> builder = ImmutableSet.builder();
-        builder.add(AbstractMinion.class);
-        if (true/*!Dissolution.config.entities.minionsAttackCreepers*/) {
-            builder.add(EntityCreeper.class);
-        }
-        TARGET_BLACKLIST = builder.build();
-    }
-
-    private static void buildEctoplasmAttackWhitelist() {
-        ImmutableSet.Builder<StringChecker> builder = ImmutableSet.builder();
-        for (String entityName : Dissolution.config.ghost.authorizedEntities) {
-            builder.add(StringChecker.from(entityName));
-        }
-        GHOST_HUNTER_WHITELIST = builder.build();
     }
 
     private static void buildBlockWhitelist() {
