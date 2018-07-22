@@ -52,7 +52,6 @@ dissolution.dialogues.first_contact.choice_1=额，没那么强。我仍肯以�
 dissolution.dialogues.first_contact.explicit=似乎溶尸MOD已经安装在这个正在运行的《我的世界》。你想受其改造的死亡系统的影响吗？
 dissolution.dialogues.first_contact.explicit.choice_0=是的，我知道所谓的“死亡系统”意味着什么。我想受到它的影响。我不会责备于溶尸或他的创造者任何有意的行为。然而，我可能会提供反馈和报告问题，任何非模组机制的意外作用或行为，包括漏洞。
 dissolution.dialogues.first_contact.explicit.choice_1=不，我不希望这个模组以任何方式影响我，并且不涉及其他玩家。
-dissolution.dialogues.first_contact.header=一个源于苍穹的声音是你瑟瑟发抖。
 dissolution.dialogues.first_contact.header.explicit=这是溶尸MOD发起的对话。更多信息可以在https://minecraft.curseforge.com/projects/dissolution找到。
 dissolution.soul_downgrade=You feel heavy all of a sudden.
 dissolution.soul_strength.changed=你的灵魂状态已经变为%s

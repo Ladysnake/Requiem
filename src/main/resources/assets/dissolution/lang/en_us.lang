@@ -52,6 +52,7 @@ dissolution.dialogues.first_contact.choice_1=... a vacillating doubt, with the m
 dissolution.dialogues.first_contact.explicit=It looks like the Dissolution mod has been installed on this minecraft instance. Do you want to be affected by its revamped death system ?
 dissolution.dialogues.first_contact.explicit.choice_0=Yes, I know what the so-called "death system" implies and entails. I want to be affected by it and I won't blame Dissolution or its creators for any intended behaviour stemming from it. I may however provide feedback and report issues for any unintended side effect or behaviour.
 dissolution.dialogues.first_contact.explicit.choice_1=No, I don't want this mod to affect me in any way that doesn't involve other players.
+dissolution.dialogues.first_contact.header=
 dissolution.dialogues.first_contact.header.explicit=This is a dialogue prompted by the Dissolution mod. More information can be found at https://minecraft.curseforge.com/projects/dissolution.
 dissolution.soul_downgrade=You feel heavy all of a sudden.
 dissolution.soul_strength.changed=Your soul is now %s
