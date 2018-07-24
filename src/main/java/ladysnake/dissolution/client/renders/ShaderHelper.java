@@ -5,6 +5,7 @@ import ladysnake.dissolution.common.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.shader.Shader;
 import net.minecraft.client.shader.ShaderGroup;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -209,10 +210,17 @@ public final class ShaderHelper {
             GlStateManager.loadIdentity();
             for (ShaderGroup shaderGroup : screenShaders.values()) {
                 GlStateManager.pushMatrix();
+                setScreenUniform(shaderGroup);
                 shaderGroup.render(event.getPartialTicks());
                 GlStateManager.popMatrix();
             }
             Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(true);
+        }
+    }
+
+    public static void setScreenUniform(ShaderGroup shaderGroup) {
+        for (Shader shader : shaderGroup.listShaders) {
+            shader.getShaderManager().getShaderUniformOrDefault("SystemTime").set(System.currentTimeMillis());
         }
     }
 

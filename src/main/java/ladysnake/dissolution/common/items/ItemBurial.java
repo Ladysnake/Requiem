@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.items;
 
-import ladysnake.dissolution.common.blocks.BlockSepulchre;
+import ladysnake.dissolution.unused.common.blocks.BlockSepulchre;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;

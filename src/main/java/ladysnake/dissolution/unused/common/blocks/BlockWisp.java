@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.blocks;
+package ladysnake.dissolution.unused.common.blocks;
 
 import ladysnake.dissolution.common.tileentities.TileEntityWispInAJar;
 import net.minecraft.block.Block;

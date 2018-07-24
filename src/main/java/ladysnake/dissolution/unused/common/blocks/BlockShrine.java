@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.blocks;
+package ladysnake.dissolution.unused.common.blocks;
 
 import ladysnake.dissolution.api.IDialogueStats;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
