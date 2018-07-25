@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -34,6 +35,7 @@ public class BlockPurificationCauldron extends BlockCauldron {
 
     @GameRegistry.ItemStackHolder("thaumcraft:brain")
     public static final ItemStack TC_BRAIN = ItemStack.EMPTY;
+    private static final boolean INSPIRATIONS_LOADED = Loader.isModLoaded("inspirations");
 
     @SubscribeEvent
     public static void initRecipes(RegistryEvent.Register<IRecipe> event) {
@@ -45,7 +47,7 @@ public class BlockPurificationCauldron extends BlockCauldron {
 
     @SubscribeEvent
     public static void onPlayerInteractRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-        if (event.getItemStack().getItem() != Items.GHAST_TEAR) return;
+        if (event.getItemStack().getItem() != Items.GHAST_TEAR || INSPIRATIONS_LOADED) return;
         IBlockState state = event.getWorld().getBlockState(event.getPos());
         if (state.getBlock() == Blocks.CAULDRON && state.getValue(LEVEL) > 0) {
             event.getWorld().setBlockState(event.getPos(), ModBlocks.PURIFICATION_CAULDRON.getDefaultState().withProperty(LEVEL, state.getValue(LEVEL)));
@@ -76,7 +78,7 @@ public class BlockPurificationCauldron extends BlockCauldron {
     }
 
     @Override
-    public void setWaterLevel(World worldIn, BlockPos pos, IBlockState state, int level) {
+    public void setWaterLevel(World worldIn, @Nonnull BlockPos pos, IBlockState state, int level) {
         int currentLevel = state.getValue(LEVEL);
         // no you cannot simply refill this cauldron with water
         if (currentLevel > level) {

@@ -7,6 +7,7 @@ import ladysnake.dissolution.client.ClientProxy;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.commands.CommandDissolutionTree;
+import ladysnake.dissolution.common.compat.InspirationsCompat;
 import ladysnake.dissolution.common.compat.ThaumcraftCompat;
 import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
@@ -78,6 +79,10 @@ public class Dissolution {
 
         lib.setCreativeTab(CREATIVE_TAB);
         proxy.preInit();
+
+        if (Loader.isModLoaded("inspirations")) {
+            InspirationsCompat.preInit();
+        }
     }
 
     @EventHandler
@@ -107,6 +112,9 @@ public class Dissolution {
     public void postInit(FMLPostInitializationEvent event) {
         if (Loader.isModLoaded("thaumcraft")) {
             ThaumcraftCompat.assignAspects();
+        }
+        if (Loader.isModLoaded("inspirations")) {
+            InspirationsCompat.postInit();
         }
     }
 
