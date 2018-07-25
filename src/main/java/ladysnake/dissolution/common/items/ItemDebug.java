@@ -43,8 +43,8 @@ public class ItemDebug extends Item implements ISoulInteractable {
         switch (debugWanted) {
             case 0:
                 if (worldIn.isRemote) {
-                    ShaderHelper.disableScreenShader(new ResourceLocation(Reference.MOD_ID, "shaders/post/test.json"));
-                    ShaderHelper.enableScreenShader(new ResourceLocation(Reference.MOD_ID, "shaders/post/test.json"));
+                    ShaderHelper.disableScreenShader(new ResourceLocation(Reference.MOD_ID, "shaders/post/spectre.json"));
+                    ShaderHelper.enableScreenShader(new ResourceLocation(Reference.MOD_ID, "shaders/post/spectre.json"));
                 }
                 break;
             case 1:
