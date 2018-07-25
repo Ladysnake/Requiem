@@ -22,14 +22,29 @@ public class ThaumcraftCompat {
                 .add(Aspect.LIFE, 5)
                 .add(Aspect.EARTH, 5)
         );
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.HUMAN_BRAIN), new AspectList(new ItemStack(ItemsTC.brain))
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.HUMAN_HEART), new AspectList()
+                .add(Aspect.LIFE, 20)
                 .add(Aspect.MAN, 5)
+                .add(Aspect.EARTH, 5)
+                .add(Aspect.MOTION, 10)
+        );
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.HUMAN_BRAIN), new AspectList(new ItemStack(ItemsTC.brain))
+                .add(Aspect.MAN, 10)
+                .remove(Aspect.UNDEAD)
         );
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.SANGUINE_POTION), new AspectList()
-                .add(Aspect.SOUL, 8)
+                .add(Aspect.SOUL, 10)
                 .add(Aspect.ALCHEMY, 5)
                 .add(Aspect.MAN, 2)
                 .add(Aspect.WATER, 5)
+                .add(Aspect.LIFE, 3)
+        );
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.SANGUINE_POTION), new AspectList()
+                .add(Aspect.SOUL, 10)
+                .add(Aspect.ALCHEMY, 5)
+                .add(Aspect.MAN, 2)
+                .add(Aspect.WATER, 5)
+                .add(Aspect.DEATH, 3)
         );
         // Add aspects to every procedurally generated entity based on the original
         PossessableEntityFactory.getAllGeneratedPossessables().forEach(e -> {
