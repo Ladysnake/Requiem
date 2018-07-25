@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 @GameRegistry.ObjectHolder(Reference.MOD_ID)
 public final class ModBlocks {
 
+    @AutoRegister.NoItem
     public static final BlockPurificationCauldron PURIFICATION_CAULDRON = new BlockPurificationCauldron();
 
     private ModBlocks() {
