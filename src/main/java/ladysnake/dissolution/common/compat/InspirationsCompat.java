@@ -33,7 +33,7 @@ public class InspirationsCompat {
         eauDeMort.setUnlocalizedName(Reference.MOD_ID + ".eau_de_mort");
         FluidRegistry.registerFluid(eauDeMort);
         sanguine = new Fluid("sanguine_potion", new ResourceLocation(Inspirations.modID,"blocks/fluid_colorless"), new ResourceLocation(Inspirations.modID, "blocks/fluid_colorless_flow"), 0xFFBC0000);
-        sanguine.setUnlocalizedName(Reference.MOD_ID + ".sanguine");
+        sanguine.setUnlocalizedName(Reference.MOD_ID + ".sanguine_potion");
         FluidRegistry.registerFluid(sanguine);
     }
 

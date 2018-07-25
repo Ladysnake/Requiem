@@ -39,7 +39,7 @@ public class ThaumcraftCompat {
                 .add(Aspect.WATER, 5)
                 .add(Aspect.LIFE, 3)
         );
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.SANGUINE_POTION), new AspectList()
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.EAU_DE_MORT), new AspectList()
                 .add(Aspect.SOUL, 10)
                 .add(Aspect.ALCHEMY, 5)
                 .add(Aspect.MAN, 2)

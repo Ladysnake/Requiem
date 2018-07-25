@@ -30,40 +30,10 @@ public class OverlaysRenderer {
     void renderOverlays(RenderGameOverlayEvent.Post event) {
         EntityPlayer player = Minecraft.getMinecraft().player;
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
-//        if (playerCorp.getCorporealityStatus().isIncorporeal() && playerCorp.getPossessed() == null && !player.isCreative()) {
-//            drawIncorporealOverlay(event.getResolution());
-//        }
         EntityLivingBase possessed = playerCorp.getPossessed();
         if (possessed != null && possessed.isBurning()) {
             this.renderFireInFirstPerson(event.getResolution());
         }
-    }
-
-    /**
-     * Draws the blue overlay telling the player he's a ghost
-     */
-    private void drawIncorporealOverlay(ScaledResolution scaledRes) {
-        final float inc = 0.001F;
-        b += inc;
-
-        GlStateManager.pushAttrib();
-        GlStateManager.color((float) Math.cos(b), 1.0F, 1.0F, 0.5F);
-        GlStateManager.disableLighting();
-        GlStateManager.enableAlpha();
-        GlStateManager.enableBlend();
-
-        Minecraft.getMinecraft().getTextureManager().bindTexture(INCORPOREAL_PATH);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder vertexbuffer = tessellator.getBuffer();
-
-        vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        vertexbuffer.pos(0.0D, (double) scaledRes.getScaledHeight(), -90.0D).tex(0.0D, 1.0D).endVertex();
-        vertexbuffer.pos((double) scaledRes.getScaledWidth(), (double) scaledRes.getScaledHeight(), -90.0D).tex(1.0D, 1.0D).endVertex();
-        vertexbuffer.pos((double) scaledRes.getScaledWidth(), 0.0D, -90.0D).tex(1.0D, 0.0D).endVertex();
-        vertexbuffer.pos(0.0D, 0.0D, -90.0D).tex(0.0D, 0.0D).endVertex();
-        tessellator.draw();
-
-        GlStateManager.popAttrib();
     }
 
     private void renderFireInFirstPerson(ScaledResolution scaledRes)

@@ -155,7 +155,7 @@ jar {
                 'Timestamp'     : System.currentTimeMillis()
         ])
     }
-    archiveName = "${archivesBaseName}-${mc_version}-${mod_version}.jar"
+    archiveName = "${archivesBaseName}-${mc_version}-${mod_version}-${version_nickname}.jar"
 
     manifest {
         attributes 'FMLAT': 'dissolution_at.cfg'
