@@ -7,6 +7,8 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
+apply plugin: 'maven'
+apply plugin: 'signing'
 apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
@@ -140,6 +142,15 @@ task signJar(type: SignJar, dependsOn: reobfJar) {
         inputFile = jar.archivePath
         outputFile = jar.archivePath
     }
+}
+
+artifacts {
+    archives(signJar.outputFile) {
+        file signJar.outputFile
+        type 'jar'
+        builtBy signJar
+    }
+    archives sourceJar
 }
 
 boolean canJarBeSigned() {
