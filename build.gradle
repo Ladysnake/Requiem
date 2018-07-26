@@ -19,17 +19,6 @@ compileJava {
     sourceCompatibility = targetCompatibility = '1.8'
 }
 
-sourceSets {
-    core {
-        compileClasspath = main.compileClasspath
-        runtimeClasspath = main.runtimeClasspath
-    }
-//    main {
-//        compileClasspath += core.output
-//        runtimeClasspath += core.output
-//    }
-}
-
 configurations {
     contained
     contained.transitive = false
@@ -46,7 +35,6 @@ minecraft {
         replace '@FINGERPRINT@', signSHA1
     }
     replace '@VERSION@', mod_version
-    clientJvmArgs = serverJvmArgs = ['-Dfml.coreMods.load=ladysnake.dissolution.core.DissolutionLoadingPlugin']
     if (project.hasProperty('mc_uuid')) {
         clientRunArgs += ['--uuid', "${project.mc_uuid}"]
     }
@@ -106,47 +94,12 @@ processResources {
     rename '(.+_at.cfg)', 'META-INF/$1'
 }
 
-//Builds the coremod jar
-task coreJar(type: Jar) {
-    from(sourceSets.core.output)
-    manifest {
-        attributes([
-                'FMLCorePlugin' : 'ladysnake.dissolution.core.DissolutionLoadingPlugin',
-                'Maven-Artifact': "${project.group}:${project.archivesBaseName}-core:${project.core_version}",
-                'Timestamp'     : System.currentTimeMillis()
-        ])
-    }
-    archiveName = "${archivesBaseName}-${mc_version}-${core_version}.jar"
-    classifier = "core"
-}
-
-//Signs the coremod jar
-task signCoreJar(type: SignJar, dependsOn: coreJar) {
-    if (canJarBeSigned()) {
-        keyStore = project.keyStore
-        alias = project.keyStoreAlias
-        storePass = project.keyStorePass
-        keyPass = project.keyStoreKeyPass
-        inputFile = coreJar.archivePath
-        outputFile = coreJar.archivePath
-    }
-}
-
 //Builds the main jar
 jar {
-    dependsOn coreJar
-    if (canJarBeSigned()) {
-        dependsOn signCoreJar //Sign core jar *before* including!
-    }
-
     from(configurations.contained.files) {
         include '*'
         into 'META-INF/libraries'
     }
-
-//    from(coreJar.archivePath.absolutePath) {
-//        include '*' into
-//    }
 
     manifest {
         attributes([
@@ -180,10 +133,10 @@ task apiJar(type: Jar) {
 //Signs the main jar
 task signJar(type: SignJar, dependsOn: reobfJar) {
     if (canJarBeSigned()) {
-        keyStore = project.keyStore
-        alias = project.keyStoreAlias
-        storePass = project.keyStorePass
-        keyPass = project.keyStoreKeyPass
+        keyStore = project.findProperty("keyStore")
+        alias = project.findProperty("keyStoreAlias")
+        storePass = project.findProperty("keyStorePass")
+        keyPass = project.findProperty("keyStoreKeyPass")
         inputFile = jar.archivePath
         outputFile = jar.archivePath
     }
