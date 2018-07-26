@@ -1,10 +1,10 @@
 package ladysnake.dissolution.client.handlers;
 
-import ladysnake.dissolution.api.PlayerIncorporealEvent;
-import ladysnake.dissolution.api.PossessionEvent;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
+import ladysnake.dissolution.api.corporeality.PlayerIncorporealEvent;
+import ladysnake.dissolution.api.possession.PossessionEvent;
 import ladysnake.dissolution.client.particles.DissolutionParticleManager;
 import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.common.Dissolution;

@@ -1,9 +1,8 @@
-package ladysnake.dissolution.api;
+package ladysnake.dissolution.api.possession;
 
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -90,7 +89,7 @@ public class PossessionEvent extends PlayerEvent {
     /**
      * Start is fired when a player starts possessing an entity.<br>
      * This event is fired whenever a player starts possessing an entity in
-     * {@link IIncorporealHandler#setPossessed(EntityMob, boolean)}.<br>
+     * {@link IIncorporealHandler#setPossessed(EntityLivingBase, boolean)}.<br>
      * <br>
      * {@link #possessed} contains the entity being possessed. <br>
      * <br>
@@ -135,7 +134,7 @@ public class PossessionEvent extends PlayerEvent {
      * Stop is fired when a player stops possessing an entity.<br>
      * <p>
      * This event is fired whenever a player's possessed entity is set to null in
-     * {@link IIncorporealHandler#setPossessed(EntityMob, boolean)}.<br>
+     * {@link IIncorporealHandler#setPossessed(EntityLivingBase, boolean)}.<br>
      * <br>
      * {@link #possessed} contains the entity that was possessed. <br>
      * <br>

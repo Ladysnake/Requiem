@@ -15,7 +15,6 @@ import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
@@ -108,7 +107,7 @@ public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable
         if (allZombiesSleeping) {
             for (EntityPlayer entityplayer : playerEntities) {
                 if (!entityplayer.isSpectator()) {
-                    EntityMob possessed = CapabilityIncorporealHandler.getHandler(entityplayer).getPossessed();
+                    EntityLivingBase possessed = CapabilityIncorporealHandler.getHandler(entityplayer).getPossessed();
                     if (possessed == null || !possessed.isPlayerSleeping()) {
                         return false;
                     }

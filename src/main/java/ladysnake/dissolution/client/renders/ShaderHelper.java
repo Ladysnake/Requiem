@@ -12,7 +12,6 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.message.FormattedMessage;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.GL11;
@@ -30,8 +29,7 @@ import java.util.Map;
  *
  * @author Pyrofab
  */
-@SideOnly(Side.CLIENT)
-@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = Side.CLIENT)
 public final class ShaderHelper {
 
     /**
@@ -150,7 +148,7 @@ public final class ShaderHelper {
     /**
      * Sets the value of a uniform from the current program
      *
-     * @param uniformName
+     * @param uniformName the name of the uniform variable
      * @param values      one or more float values for this uniform
      */
     public static void setUniform(String uniformName, float... values) {

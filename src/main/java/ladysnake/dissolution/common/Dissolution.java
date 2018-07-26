@@ -3,7 +3,7 @@ package ladysnake.dissolution.common;
 
 import ladylib.LLibContainer;
 import ladylib.LadyLib;
-import ladysnake.dissolution.client.ClientProxy;
+import ladysnake.dissolution.client.gui.GuiIncorporealOverlay;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.commands.CommandDissolutionTree;
@@ -24,6 +24,7 @@ import ladysnake.dissolution.common.tileentities.TileEntityWispInAJar;
 import ladysnake.dissolution.unused.common.capabilities.CapabilityDistillateHandler;
 import ladysnake.dissolution.unused.common.capabilities.CapabilityGenericInventoryProvider;
 import ladysnake.dissolution.unused.common.tileentities.TileEntityLamentStone;
+import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.LootTableList;
@@ -104,7 +105,7 @@ public class Dissolution {
         PacketHandler.initPackets();
 
         if (FMLCommonHandler.instance().getSide().isClient()) {
-            ClientProxy.init();
+            MinecraftForge.EVENT_BUS.register(new GuiIncorporealOverlay(Minecraft.getMinecraft()));
         }
     }
 

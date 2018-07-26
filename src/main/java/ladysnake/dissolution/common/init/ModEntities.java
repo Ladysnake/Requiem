@@ -2,6 +2,7 @@ package ladysnake.dissolution.common.init;
 
 import ladylib.LadyLib;
 import ladysnake.dissolution.api.corporeality.IPossessable;
+import ladysnake.dissolution.api.possession.DissolutionPossessionApi;
 import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
@@ -27,6 +28,8 @@ import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.lang.reflect.Field;
@@ -45,7 +48,11 @@ public class ModEntities {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void registerPossessables(RegistryEvent.Register<EntityEntry> event) {
         for (EntityEntry entityEntry : event.getRegistry()) {
-            Class<?> entityClass = entityEntry.getEntityClass();
+            Class<? extends Entity> entityClass = entityEntry.getEntityClass();
+            // Nothing to do if the entity is already registered
+            if (DissolutionPossessionApi.isEntityRegistered(entityClass)) {
+                continue;
+            }
             // Only declare new implementations for mobs that can not already be possessed
             if (EntityMob.class.isAssignableFrom(entityClass) && !IPossessable.class.isAssignableFrom(entityClass)) {
                 boolean defineImpl = false;
@@ -135,17 +142,6 @@ public class ModEntities {
         }
         registerEntity(reg, EntityPlayerShell::new, "player_corpse", 64, true);
         LootTableList.register(EntityPlayerShell.LOOT);
-//        registerEntity(reg, EntityFleetingSoul::new, "ignis_faatus", 64, true);
-//        registerEntity(reg, EntityFaerie::new, "faerie", 64, true);
-//        reg.register(createEntry(EntitySoulSpawner::new, "soul_spawner", 64, true)
-//                .spawn(EnumCreatureType.AMBIENT, 50, 1, 1, BiomeDictionary.getBiomes(BiomeDictionary.Type.SWAMP))
-//                .spawn(EnumCreatureType.AMBIENT, 50, 1, 2, BiomeDictionary.getBiomes(BiomeDictionary.Type.MAGICAL))
-//                .build());
-//        reg.register(createEntry(EntityFaerieSpawner::new, "faerie_spawner", 64, true)
-//                .spawn(EnumCreatureType.AMBIENT, 50, 1, 1, BiomeDictionary.getBiomes(BiomeDictionary.Type.FOREST))
-//                .spawn(EnumCreatureType.AMBIENT, 50, 1, 2, BiomeDictionary.getBiomes(BiomeDictionary.Type.MAGICAL))
-//                .spawn(EnumCreatureType.AMBIENT, 75, 1, 3, Biomes.MUTATED_FOREST)
-//                .build());
     }
 
     private static void registerEntity(IForgeRegistry<EntityEntry> reg, Function<World, Entity> factory, String name, int trackingRange, boolean sendsVelocityUpdates) {
@@ -163,11 +159,10 @@ public class ModEntities {
                 .tracker(trackingRange, 1, sendsVelocityUpdates);
     }
 
+    @SideOnly(Side.CLIENT)
     public static void registerRenders() {
         RenderingRegistry.registerEntityRenderingHandler(EntityPlayerShell.class, RenderPlayerCorpse::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityPossessableImpl.class, renderManagerIn -> new RenderBiped<>(renderManagerIn, new ModelBiped(), 1f));
-//        RenderingRegistry.registerEntityRenderingHandler(EntityFleetingSoul.class, RenderWillOWisp::new);
-//        RenderingRegistry.registerEntityRenderingHandler(EntityFaerie.class, RenderFaerie::new);
     }
 
 }

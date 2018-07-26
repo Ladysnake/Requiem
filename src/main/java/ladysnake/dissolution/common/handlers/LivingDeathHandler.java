@@ -53,8 +53,6 @@ public class LivingDeathHandler {
             return;
         }
 
-        corp.getDeathStats().setLastDeathMessage(
-                p.getDisplayNameString() + event.getSource().getDeathMessage(p).getUnformattedComponentText());
         corp.getDeathStats().setDeathDimension(p.dimension);
 
         if (p.world instanceof WorldServer) {

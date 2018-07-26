@@ -1,13 +1,9 @@
 package ladysnake.dissolution.common.capabilities;
 
 import ladysnake.dissolution.api.IDialogueStats;
-import ladysnake.dissolution.api.PlayerIncorporealEvent;
-import ladysnake.dissolution.api.PossessionEvent;
 import ladysnake.dissolution.api.SoulStrengthModifiedEvent;
-import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
-import ladysnake.dissolution.api.corporeality.IDeathStats;
-import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
-import ladysnake.dissolution.api.corporeality.IPossessable;
+import ladysnake.dissolution.api.corporeality.*;
+import ladysnake.dissolution.api.possession.PossessionEvent;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
@@ -211,7 +207,7 @@ public class CapabilityIncorporealHandler {
          * @return true if the operation succeeded
          */
         @Override
-        public <T extends EntityMob & IPossessable> boolean setPossessed(@Nullable T possessable, boolean force) {
+        public <T extends EntityLivingBase & IPossessable> boolean setPossessed(@Nullable T possessable, boolean force) {
             if (!this.isStrongSoul()) {
                 return false;
             }
@@ -250,7 +246,7 @@ public class CapabilityIncorporealHandler {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <T extends EntityMob & IPossessable> T getPossessed() {
+        public <T extends EntityLivingBase & IPossessable> T getPossessed() {
             if (hostUUID == null || !this.isStrongSoul()) {
                 return null;
             }
@@ -374,7 +370,6 @@ public class CapabilityIncorporealHandler {
             final NBTTagCompound tag = new NBTTagCompound();
             tag.setBoolean("strongSoul", instance.isStrongSoul());
             tag.setString("corporealityStatus", Objects.requireNonNull(instance.getCorporealityStatus().getRegistryName()).toString());
-            tag.setString("lastDeath", instance.getDeathStats().getLastDeathMessage() == null || instance.getDeathStats().getLastDeathMessage().isEmpty() ? "This player has no recorded death" : instance.getDeathStats().getLastDeathMessage());
             Entity possessed = instance.getPossessed();
             if (possessed != null) {
                 tag.setUniqueId("possessedEntity", possessed.getUniqueID());

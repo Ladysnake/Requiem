@@ -27,6 +27,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 
 import javax.annotation.Nullable;
 
@@ -65,7 +66,6 @@ public class EventHandlerCommon {
             final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
             clone.setStrongSoul(corpse.isStrongSoul());
             clone.setCorporealityStatus(SoulStates.SOUL);
-            clone.getDeathStats().setLastDeathMessage(corpse.getDeathStats().getLastDeathMessage());
             clone.getDialogueStats().deserializeNBT(corpse.getDialogueStats().serializeNBT());
             clone.setSynced(false);
 
@@ -73,7 +73,6 @@ public class EventHandlerCommon {
                 event.getEntityPlayer().experienceLevel = event.getOriginal().experienceLevel;
                 clone.getDeathStats().setDeathDimension(corpse.getDeathStats().getDeathDimension());
                 clone.getDeathStats().setDeathLocation(new BlockPos(event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ));
-                clone.getDeathStats().setDead(true);
             }
             // avoid accumulation of tracked players and allow garbage collection
             corpse.getCorporealityStatus().resetState(event.getOriginal());
@@ -81,10 +80,10 @@ public class EventHandlerCommon {
     }
 
     @SubscribeEvent
-    public void onPlayerRespawn(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent event) {
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
         IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.player);
         // Teleports the player to wherever they should be if needed
-        if (playerCorp.getDeathStats().wasDead() && !event.player.world.isRemote) {
+        if (!event.isEndConquered() && !event.player.world.isRemote) {
             event.player.world.profiler.startSection("placing_respawned_player");
             // changes the player's dimension if required by the config or if they died there
             if (Dissolution.config.respawn.respawnInNether) {
@@ -106,7 +105,6 @@ public class EventHandlerCommon {
                 }
             }
             event.player.world.profiler.endSection();
-            playerCorp.getDeathStats().setDead(false);
         }
     }
 

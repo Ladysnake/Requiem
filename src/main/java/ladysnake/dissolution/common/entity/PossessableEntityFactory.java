@@ -1,6 +1,8 @@
 package ladysnake.dissolution.common.entity;
 
 import ladysnake.dissolution.api.corporeality.IPossessable;
+import ladysnake.dissolution.api.possession.DissolutionPossessionApi;
+import ladysnake.dissolution.common.Dissolution;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -20,54 +22,43 @@ import java.util.stream.Stream;
 public class PossessableEntityFactory {
     private static final ASMClassLoader LOADER = new ASMClassLoader();
     // A cache containing every entity type created by this factory
-    private static final Map<Class<? extends EntityLivingBase>, Class<? extends EntityLivingBase>> POSSESSABLES = new HashMap<>();
+    private static final Map<Class<? extends EntityLivingBase>, Class<? extends EntityLivingBase>> GENERATED_POSSESSABLES = new HashMap<>();
 
     /**
-     * Creates a new class of {@link IPossessable possessable} entity derived from the given base.
+     * Creates and registers a new class of {@link IPossessable possessable} entity derived from the given base.
+     * <p>
      * The new class will have the given base class as its superclass and implement {@link IPossessable}, using
-     * {@link EntityPossessableImpl} as a template
+     * {@link EntityPossessableImpl} as a template.
+     * @see DissolutionPossessionApi#registerPossessedVersion(Class, Class)
      */
     @SuppressWarnings("unchecked")
     public static <T extends EntityLivingBase> Class<? extends T> defineGenericPossessable(Class<T> baseEntityClass) {
-        return (Class<? extends T>) POSSESSABLES.computeIfAbsent(baseEntityClass, base -> {
+        return (Class<? extends T>) GENERATED_POSSESSABLES.computeIfAbsent(baseEntityClass, base -> {
             try {
                 final byte[] possessableImplBytes = Launch.classLoader.getClassBytes(EntityPossessableImpl.class.getName().replace('.', '/'));
                 final ClassReader reader = new ClassReader(possessableImplBytes);
                 final String name = getName(base);
                 ClassWriter writer = new ClassWriter(0);
-//                ClassVisitor traceVisitor = new TraceClassVisitor(writer, new PrintWriter(System.out));
                 ClassVisitor adapter = new ChangeParentClassAdapter(Opcodes.ASM5, writer, name.replace('.', '/'), base.getName().replace('.', '/'));
                 reader.accept(adapter, 0);
 
-                return (Class) LOADER.define(name, writer.toByteArray());
+                Class possessedEntityClass = LOADER.define(name, writer.toByteArray());
+                DissolutionPossessionApi.registerPossessedVersion(base, possessedEntityClass);
+                return possessedEntityClass;
             } catch (IOException e) {
-                e.printStackTrace();
+                Dissolution.LOGGER.warn("Could not define a possessed version of an entity class", e);
             }
             return null;
         });
     }
 
-    /**
-     * Gets the possessable type generated from the given <code>base</code> or <code>null</code> if it was never
-     * {@link #defineGenericPossessable(Class) defined}.
-     * @param base the base entity class
-     * @param <T> the type of <code>base</code>
-     * @param <P> the type of the generated class, having <code>T</code> as parent and implementing {@link IPossessable}
-     * @return the generated possessable entity type
-     */
-    @Nullable
-    @SuppressWarnings("unchecked")
-    public static <T extends EntityLivingBase, P extends EntityLivingBase & IPossessable> Class<P> getPossessable(Class<T> base) {
-        return (Class<P>) POSSESSABLES.get(base);
-    }
-
     public static Stream<Map.Entry<Class<? extends EntityLivingBase>, Class<? extends EntityLivingBase>>> getAllGeneratedPossessables() {
-        return POSSESSABLES.entrySet().stream();
+        return GENERATED_POSSESSABLES.entrySet().stream();
     }
 
     @SuppressWarnings("unchecked")
     @Nullable
-    public static <T extends EntityLivingBase & IPossessable> T createMinion(EntityLivingBase deadGuy) {
+    public static <T extends EntityLivingBase & IPossessable> T createPossessableEntityFrom(EntityLivingBase deadGuy) {
         if (deadGuy instanceof IPossessable) {
             return (T) deadGuy;
         }
@@ -78,7 +69,7 @@ public class PossessableEntityFactory {
         EntityLivingBase corpse = null;
 
         Class<? extends EntityLivingBase> clazz = deadGuy.getClass();
-        Class<? extends EntityLivingBase> possessableClass = getPossessable(clazz);
+        Class<? extends EntityLivingBase> possessableClass = DissolutionPossessionApi.getPossessable(clazz);
         if (possessableClass != null) {
             corpse = (EntityLivingBase) EntityList.newEntity(possessableClass, deadGuy.world);
         }

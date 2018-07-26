@@ -14,12 +14,10 @@ public class OreDictHelper {
     public static final String PESTLE = "pestle";
     public static final String PESTLE_AND_MORTAR = "pestleAndMortar";
     public static final String HUMAN_FLESH_RAW = "humanFlesh";
-    public static final String HUMAN_FLESH_COOKED = "cookedHumanFlesh";
 
     public static void registerOres() {
         // note: this mod's own items are registered to the ore dictionary using @AutoRegister.Ore
         registerOres(HUMAN_FLESH_RAW, "betterwithmods:mystery_meat");
-        registerOres(HUMAN_FLESH_COOKED, "betterwithmods:cooked_mystery_meat");
     }
 
     private static void registerOres(String oreName, String... ids) {

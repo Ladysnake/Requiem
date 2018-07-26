@@ -4,7 +4,7 @@ import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -23,7 +23,7 @@ public class PossessionPacket implements IMessageHandler<PossessionMessage, IMes
                 Entity possessed = mc.world.getEntityByID(message.possessedUuid);
                 EntityPlayer player = mc.world.getPlayerEntityByUUID(message.playerUuid);
                 if (player != null) {
-                    CapabilityIncorporealHandler.getHandler(player).setPossessed((EntityMob & IPossessable) possessed, true);
+                    CapabilityIncorporealHandler.getHandler(player).setPossessed((EntityLivingBase & IPossessable) possessed, true);
                 }
             });
         }

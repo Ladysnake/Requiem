@@ -6,15 +6,6 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 public interface IDeathStats extends INBTSerializable<NBTTagCompound> {
 
-    void setDead(boolean dead);
-
-    /**
-     * Used to tell if respawn-specific logic should be applied on the player
-     *
-     * @return true if the player is dead or respawned recently
-     */
-    boolean wasDead();
-
     BlockPos getDeathLocation();
 
     void setDeathLocation(BlockPos deathLocation);
@@ -23,7 +14,4 @@ public interface IDeathStats extends INBTSerializable<NBTTagCompound> {
 
     void setDeathDimension(int dimension);
 
-    String getLastDeathMessage();
-
-    void setLastDeathMessage(String lastDeath);
 }

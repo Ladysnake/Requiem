@@ -1,9 +1,9 @@
 package ladysnake.dissolution.common.handlers;
 
-import ladysnake.dissolution.api.PossessionEvent;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
+import ladysnake.dissolution.api.possession.PossessionEvent;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.PossessableEntityFactory;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
@@ -64,7 +64,7 @@ public class InteractEventsHandler {
                 PossessionEvent.Setup setupEvent = new PossessionEvent.Setup(
                         player,
                         (EntityLivingBase) target,
-                        PossessableEntityFactory.createMinion((EntityLivingBase) target)
+                        PossessableEntityFactory.createPossessableEntityFrom((EntityLivingBase) target)
                 );
                 if (MinecraftForge.EVENT_BUS.post(setupEvent)) {
                     return;
