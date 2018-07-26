@@ -1,7 +1,0 @@
-{
-    "parent": "dissolution:item/eye_of_the_undead",
-    "textures": {
-      "layer0": "dissolution:items/eye_of_the_undead/eye_of_the_undead_iris",
-      "layer1": "dissolution:items/eye_of_the_undead/eye_of_the_undead_opening_2"
-    }
-}

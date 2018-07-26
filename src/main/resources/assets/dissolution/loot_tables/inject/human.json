@@ -1,0 +1,67 @@
+{
+  "pools": [
+    {
+      "name": "flesh",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "name": "dissolution:human_flesh_raw",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 1,
+                "max": 3
+              }
+            },
+            {
+              "function": "looting_enchant",
+              "count": {
+                "min": 0,
+                "max": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "brain",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "name": "dissolution:human_brain",
+          "weight": 1
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "random_chance_with_looting",
+          "chance": 0.3,
+          "looting_multiplier": 0.1
+        }
+      ]
+    },
+    {
+      "name": "heart",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "name": "dissolution:human_heart",
+          "weight": 1
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "random_chance_with_looting",
+          "chance": 0.2,
+          "looting_multiplier": 0.075
+        }
+      ]
+    }
+  ]
+}

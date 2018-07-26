@@ -1,25 +1,35 @@
 package ladysnake.dissolution.client.renders;
 
 import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.shader.Shader;
+import net.minecraft.client.shader.ShaderGroup;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.message.FormattedMessage;
 import org.lwjgl.opengl.ARBShaderObjects;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Helper class for shader creation and usage
  *
  * @author Pyrofab
  */
-@SideOnly(Side.CLIENT)
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = Side.CLIENT)
 public final class ShaderHelper {
 
     /**
@@ -33,6 +43,10 @@ public final class ShaderHelper {
 
     private static int prevProgram = 0, currentProgram = 0;
     private static final String LOCATION_PREFIX = "/assets/dissolution/shaders/";
+    private static final Map<ResourceLocation, ShaderGroup> screenShaders = new HashMap<>();
+    private static boolean resetScreenShaders;
+    private static int oldDisplayWidth = Minecraft.getMinecraft().displayWidth;
+    private static int oldDisplayHeight = Minecraft.getMinecraft().displayHeight;
 
     static {
         initShaders();
@@ -46,10 +60,11 @@ public final class ShaderHelper {
      * Initializes all known shaders
      */
     private static void initShaders() {
-        if (!shouldUseShaders())
+        if (!shouldUseShaders()) {
             return;
-        dissolution = initShader("VertexBase.vsh", "corpsedissolution.fsh");
-        bloom = initShader("VertexBase.vsh", "bloom.fsh");
+        }
+        dissolution = initShader("vertex_base.vsh", "corpsedissolution.fsh");
+        bloom = initShader("vertex_base.vsh", "bloom.fsh");
     }
 
     /**
@@ -101,8 +116,9 @@ public final class ShaderHelper {
      * @param program the reference to the desired shader (0 to remove any current shader)
      */
     public static void useShader(int program) {
-        if (!shouldUseShaders())
+        if (!shouldUseShaders()) {
             return;
+        }
 
         prevProgram = GlStateManager.glGetInteger(GL20.GL_CURRENT_PROGRAM);
         OpenGlHelper.glUseProgram(program);
@@ -119,27 +135,44 @@ public final class ShaderHelper {
      * @param value       an int value for this uniform
      */
     public static void setUniform(String uniformName, int value) {
-        if (!shouldUseShaders() || currentProgram == 0)
+        if (!shouldUseShaders() || currentProgram == 0) {
             return;
+        }
 
         int uniform = GL20.glGetUniformLocation(currentProgram, uniformName);
-        if (uniform != -1)
+        if (uniform != -1) {
             GL20.glUniform1i(uniform, value);
+        }
     }
 
     /**
      * Sets the value of a uniform from the current program
      *
-     * @param uniformName
-     * @param value       a float value for this uniform
+     * @param uniformName the name of the uniform variable
+     * @param values      one or more float values for this uniform
      */
-    public static void setUniform(String uniformName, float value) {
-        if (!shouldUseShaders())
+    public static void setUniform(String uniformName, float... values) {
+        if (!shouldUseShaders()) {
             return;
+        }
 
         int uniform = GL20.glGetUniformLocation(currentProgram, uniformName);
-        if (uniform != -1)
-            GL20.glUniform1f(uniform, value);
+        if (uniform != -1) {
+            switch (values.length) {
+                case 1:
+                    GL20.glUniform1f(uniform, values[0]);
+                    break;
+                case 2:
+                    GL20.glUniform2f(uniform, values[0], values[1]);
+                    break;
+                case 3:
+                    GL20.glUniform3f(uniform, values[0], values[1], values[2]);
+                    break;
+                case 4:
+                    GL20.glUniform4f(uniform, values[0], values[1], values[2], values[3]);
+                    break;
+            }
+        }
     }
 
     /**
@@ -147,6 +180,59 @@ public final class ShaderHelper {
      */
     public static void revert() {
         useShader(prevProgram);
+    }
+
+    public static void enableScreenShader(ResourceLocation id) {
+        if (shouldUseShaders() && !screenShaders.containsKey(id)) {
+            try {
+                Minecraft mc = Minecraft.getMinecraft();
+                resetScreenShaders = true;
+                screenShaders.put(id, new ShaderGroup(mc.getTextureManager(), mc.getResourceManager(), mc.getFramebuffer(), id));
+            } catch (IOException e) {
+                Dissolution.LOGGER.error(new FormattedMessage("Could not enable screen shader {}", id), e);
+            }
+        }
+    }
+
+    public static void disableScreenShader(ResourceLocation id) {
+        if (screenShaders.containsKey(id)) {
+            screenShaders.remove(id).deleteShaderGroup();
+        }
+    }
+
+    @SubscribeEvent
+    public static void renderScreenShaders(RenderGameOverlayEvent.Pre event) {
+        if (shouldUseShaders() && !screenShaders.isEmpty() && event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
+            resetScreenShaders();
+            GlStateManager.matrixMode(GL11.GL_TEXTURE);
+            GlStateManager.loadIdentity();
+            for (ShaderGroup shaderGroup : screenShaders.values()) {
+                GlStateManager.pushMatrix();
+                setScreenUniform(shaderGroup);
+                shaderGroup.render(event.getPartialTicks());
+                GlStateManager.popMatrix();
+            }
+            Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(true);
+        }
+    }
+
+    public static void setScreenUniform(ShaderGroup shaderGroup) {
+        for (Shader shader : shaderGroup.listShaders) {
+            shader.getShaderManager().getShaderUniformOrDefault("SystemTime").set(System.currentTimeMillis());
+        }
+    }
+
+    private static void resetScreenShaders() {
+        Minecraft mc = Minecraft.getMinecraft();
+        if (resetScreenShaders || mc.displayWidth != oldDisplayWidth || oldDisplayHeight != mc.displayHeight) {
+            for (ShaderGroup sg : screenShaders.values()) {
+                sg.createBindFramebuffers(mc.displayWidth, mc.displayHeight);
+            }
+
+            oldDisplayWidth = mc.displayWidth;
+            oldDisplayHeight = mc.displayHeight;
+            resetScreenShaders = false;
+        }
     }
 
     /**
@@ -162,8 +248,9 @@ public final class ShaderHelper {
              BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"))) {
 
             String line;
-            while ((line = reader.readLine()) != null)
+            while ((line = reader.readLine()) != null) {
                 source.append(line).append('\n');
+            }
         } catch (IOException exc) {
             exc.printStackTrace();
         } catch (NullPointerException e) {
@@ -174,6 +261,7 @@ public final class ShaderHelper {
         return source.toString();
     }
 
-    private ShaderHelper() { }
+    private ShaderHelper() {
+    }
 
 }

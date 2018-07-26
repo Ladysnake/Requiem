@@ -1,12 +1,11 @@
 package ladysnake.dissolution.common;
 
-import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryManager;
 
 import java.util.Arrays;
 
@@ -14,13 +13,21 @@ public class OreDictHelper {
 
     public static final String PESTLE = "pestle";
     public static final String PESTLE_AND_MORTAR = "pestleAndMortar";
+    public static final String HUMAN_FLESH_RAW = "humanFlesh";
 
     public static void registerOres() {
-        OreDictionary.registerOre(PESTLE, ModItems.PESTLE);
-        IForgeRegistry<Item> items = RegistryManager.ACTIVE.getRegistry(Item.class);
-        ResourceLocation loc;
-        if (items.containsKey(loc = new ResourceLocation("roots:pestle")))
-            OreDictionary.registerOre(PESTLE, items.getValue(loc));
+        // note: this mod's own items are registered to the ore dictionary using @AutoRegister.Ore
+        registerOres(HUMAN_FLESH_RAW, "betterwithmods:mystery_meat");
+    }
+
+    private static void registerOres(String oreName, String... ids) {
+        for (String id : ids) {
+            IForgeRegistry<Item> items = ForgeRegistries.ITEMS;
+            ResourceLocation loc = new ResourceLocation(id);
+            if (items.containsKey(loc)) {
+                OreDictionary.registerOre(oreName, items.getValue(loc));
+            }
+        }
     }
 
     public static boolean doesItemMatch(ItemStack itemStack, String... ores) {

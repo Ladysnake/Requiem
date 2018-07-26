@@ -6,6 +6,7 @@ import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.config.GuiEditArrayEntries;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.lang.reflect.Field;
@@ -13,13 +14,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * A class that does mostly the same things as {@link net.minecraftforge.common.config.ConfigManager} but with a few tweaks
  * As most of the utility classes in forge are private, everything has been recoded from scratch as an exercise, more or less efficiently
  */
 public class DissolutionConfigReader {
-    private static final Class CONFIG_CLASS = DissolutionConfig.class;
     private static final String I18N_PREFIX = "config.dissolution";
 
     /**
@@ -28,31 +29,32 @@ public class DissolutionConfigReader {
      * @param config the configuration object to read and store values from
      */
     static void readAndInitializeConfig(Configuration config) {
-        Field[] configFields = Arrays.stream(CONFIG_CLASS.getFields())
+        Field[] configFields = Arrays.stream(Dissolution.config.getClass().getFields())
                 .filter(field -> !Modifier.isStatic(field.getModifiers())).toArray(Field[]::new);
-        handleCategory(config, new ConfigCategory(Configuration.CATEGORY_GENERAL), Dissolution.config, configFields);
+        handleCategory(config, new ConfigCategory(Configuration.CATEGORY_GENERAL), Dissolution.config, configFields, true);
     }
 
     /**
      * Recursively reads a config category and initializes every contained field
-     *
-     * @param config   a configuration object to read
+     *  @param config   a configuration object to read
      * @param category this category's name, preceded by all its parents'
      * @param instance if this category isn't a static field, an object instance of it
      * @param children an array of fields representing categories or properties that are children of this category
+     * @param isRoot
      */
-    private static void handleCategory(Configuration config, ConfigCategory category, Object instance, Field[] children) {
-        boolean isRoot = DissolutionConfig.class.equals(instance.getClass());
+    private static void handleCategory(Configuration config, ConfigCategory category, Object instance, Field[] children, boolean isRoot) {
+//        boolean isRoot = DissolutionConfig.class.equals(instance.getClass());
         category.setLanguageKey(I18N_PREFIX + "." + category.getQualifiedName());
-        if (!category.isChild())
+        if (!category.isChild()) {
             DissolutionConfigManager.rootCategories.add(category);
+        }
         for (Field child : children) {
             try {
                 if (instance.getClass().equals(child.getType().getDeclaringClass())) {        // The child is a nested category
                     ConfigCategory subCategory = new ConfigCategory(child.getName(), isRoot ? null : category);
                     Object subCategoryObject = child.get(instance);
-                    Field[] subChildren = child.getType().getFields();
-                    handleCategory(config, subCategory, subCategoryObject, subChildren);
+                    Field[] subChildren = subCategoryObject.getClass().getFields();
+                    handleCategory(config, subCategory, subCategoryObject, subChildren, false);
                 } else {                                                        // The child is a property of this category
                     readAndAssignProperty(config, category, instance, child);
                 }
@@ -76,23 +78,31 @@ public class DissolutionConfigReader {
         Property prop = null;
         try {
             String unlocalizedDesc = I18N_PREFIX + "." + category + "." + optionField.getName();
-            if (optionField.getType().isArray())
+            if (optionField.getType().isArray()) {
                 prop = handleArrayProperty(config, category, categoryObject, optionField);
-            else
+            } else {
                 prop = handleProperty(config, category, categoryObject, optionField);
+            }
             category.put(optionField.getName(), prop);
             Sync syncAnnotation = optionField.getAnnotation(Sync.class);
             if(syncAnnotation != null) {
                 DissolutionConfigManager.syncedProps.put(optionField.getName(), prop);
             }
+            RegExCheck regExCheck = optionField.getAnnotation(RegExCheck.class);
+            if (regExCheck != null) {
+                prop.setValidationPattern(Pattern.compile(regExCheck.value()));
+            }
             Config.Comment commentAnnotation = optionField.getAnnotation(Config.Comment.class);
-            if (commentAnnotation != null)
+            if (commentAnnotation != null) {
                 prop.setComment(commentAnnotation.value()[0]);
+            }
             prop.setLanguageKey(unlocalizedDesc);
-            if (optionField.getAnnotation(Config.RequiresWorldRestart.class) != null)
+            if (optionField.getAnnotation(Config.RequiresWorldRestart.class) != null) {
                 prop.setRequiresWorldRestart(true);
-            if (optionField.getAnnotation(Config.RequiresMcRestart.class) != null)
+            }
+            if (optionField.getAnnotation(Config.RequiresMcRestart.class) != null) {
                 prop.setRequiresMcRestart(true);
+            }
             Config.RangeInt rangeInt = optionField.getAnnotation(Config.RangeInt.class);
             if (rangeInt != null) {
                 prop.setMinValue(rangeInt.min());
@@ -106,8 +116,9 @@ public class DissolutionConfigReader {
         } catch (ReflectiveOperationException e) {
             Dissolution.LOGGER.error("Error while attempting to set a config property", e);
             try {
-                if (prop != null)
+                if (prop != null) {
                     prop.set(String.valueOf(optionField.get(categoryObject)));
+                }
             } catch (IllegalAccessException e1) {
                 Dissolution.LOGGER.error("Error while attempting to reset a config option", e1);
             }
@@ -122,12 +133,13 @@ public class DissolutionConfigReader {
     private static Property handleProperty(Configuration config, ConfigCategory category, Object categoryObject, Field optionField) throws ReflectiveOperationException {
         Property prop;
         Property.Type type = Property.Type.STRING;
-        if (int.class.equals(optionField.getType()))
+        if (int.class.equals(optionField.getType())) {
             type = Property.Type.INTEGER;
-        else if (double.class.equals(optionField.getType()))
+        } else if (double.class.equals(optionField.getType())) {
             type = Property.Type.DOUBLE;
-        else if (boolean.class.equals(optionField.getType()))
+        } else if (boolean.class.equals(optionField.getType())) {
             type = Property.Type.BOOLEAN;
+        }
         prop = config.get(category.getQualifiedName(), optionField.getName(), optionField.get(categoryObject).toString(),
                 null, type);
         switch (prop.getType()) {
@@ -141,16 +153,19 @@ public class DissolutionConfigReader {
                 optionField.set(categoryObject, prop.getDouble());
                 break;
             case STRING:
-                if (String.class.equals(optionField.getType()))
+                if (String.class.equals(optionField.getType())) {
                     optionField.set(categoryObject, prop.getString());
-                else if (Enum.class.equals(optionField.getType().getSuperclass())) {
+                } else if (Enum.class.equals(optionField.getType().getSuperclass())) {
                     Method valueOf = optionField.getType().getMethod("valueOf", String.class);
                     Method values = optionField.getType().getMethod("values");
-                    if (!prop.wasRead())
+                    if (!prop.wasRead()) {
                         prop.set(enumToString((Enum) optionField.get(categoryObject)));
+                    }
                     optionField.set(categoryObject, valueOf.invoke(null, stringToEnumName(prop.getString())));
                     prop.setValidValues(Arrays.stream((Enum[]) values.invoke(null)).map(DissolutionConfigReader::enumToString).toArray(String[]::new));
-                } else Dissolution.LOGGER.warn("Could not find type of field " + optionField.getName());
+                } else {
+                    Dissolution.LOGGER.warn("Could not find type of field " + optionField.getName());
+                }
                 break;
             default:
                 Dissolution.LOGGER.warn("Why is there a property of type " + prop.getType() + " in my config ?");
@@ -166,15 +181,17 @@ public class DissolutionConfigReader {
     private static Property handleArrayProperty(Configuration config, ConfigCategory category, Object categoryObject, Field optionField) throws IllegalAccessException {
         Property prop;
         Property.Type type = Property.Type.STRING;
-        if (int[].class.equals(optionField.getType()))
+        if (int[].class.equals(optionField.getType())) {
             type = Property.Type.INTEGER;
-        else if (double[].class.equals(optionField.getType()))
+        } else if (double[].class.equals(optionField.getType())) {
             type = Property.Type.DOUBLE;
-        else if (boolean[].class.equals(optionField.getType()))
+        } else if (boolean[].class.equals(optionField.getType())) {
             type = Property.Type.BOOLEAN;
+        }
         prop = config.get(category.getQualifiedName(), optionField.getName(), (String[]) optionField.get(categoryObject), null, type);
-        if (Dissolution.proxy.getSide() == Side.CLIENT)
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
             prop.setArrayEntryClass(GuiEditArrayEntries.StringEntry.class);
+        }
         switch (prop.getType()) {
             case BOOLEAN:
                 optionField.set(categoryObject, prop.getBooleanList());

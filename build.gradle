@@ -19,42 +19,63 @@ compileJava {
     sourceCompatibility = targetCompatibility = '1.8'
 }
 
+configurations {
+    contained
+    contained.transitive = false
+}
+
 minecraft {
     version = "${forge_version}"
     runDir = "run"
     // snapshot_YYYYMMDD   snapshot are built nightly.
     // stable_#            stables are built at the discretion of the MCP team.
-    mappings = "snapshot_20171010"
+    mappings = "snapshot_20180707"
+
+    if (canJarBeSigned()) {
+        replace '@FINGERPRINT@', signSHA1
+    }
     replace '@VERSION@', mod_version
+    if (project.hasProperty('mc_uuid')) {
+        clientRunArgs += ['--uuid', "${project.mc_uuid}"]
+    }
 }
 
 repositories {
-	maven {
-		// location of the maven that hosts JEI files
-		name = "Progwml6 maven"
+    maven {
+        // location of the maven that hosts JEI files
+        name = "Progwml6 maven"
         url = "http://dvs1.progwml6.com/files/maven"
-	}
-	maven {
-		// location of a maven mirror for JEI files, as a fallback
-		name = "ModMaven"
-		url = "modmaven.k-4u.nl"
-	}
-     maven {
-         name = "CurseForge"
-         url = "https://minecraft.curseforge.com/api/maven"
+    }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "modmaven.k-4u.nl"
+    }
+    maven {
+        name = "CurseForge"
+        url = "https://minecraft.curseforge.com/api/maven"
     }
     maven {
         name = "thiakil"
         url = "http://maven.thiakil.com"
     }
+    maven {
+        url 'https://jitpack.io'
+    }
 }
 
 dependencies {
+    compile 'org.jetbrains:annotations:15.0'
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    deobfCompile "albedo:albedo:0.1.3"
-    deobfCompile "com.azanor.baubles:Baubles:1.12-1.5.2"
-	deobfCompile "mezz.jei:jei_${mc_version}:${jei_version}:api"
-	runtime "mezz.jei:jei_${mc_version}:${jei_version}"
+    deobfCompile 'albedo:albedo:0.1.3'
+    deobfCompile 'com.azanor.baubles:Baubles:1.12-1.5.2'
+    deobfCompile 'com.github.Pyrofab:Ladylib:9482626485'
+    contained 'com.github.Pyrofab:Ladylib:9482626485'
+    deobfCompile 'thaumcraft:Thaumcraft:1.12.2:6.1.BETA13'
+    deobfCompile 'slimeknights.mantle:Mantle:1.12-1.3.1.+'
+    deobfCompile 'knightminer:Inspirations:1.12.2-0.2.1.44'
+//    deobfCompile "mezz.jei:jei_${mc_version}:${jei_version}:api"
+//    runtime "mezz.jei:jei_${mc_version}:${jei_version}"
 }
 
 processResources {
@@ -63,7 +84,7 @@ processResources {
 
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version': project.version, 'mcversion': project.minecraft.version
     }
 
     from(sourceSets.main.resources.srcDirs) {
@@ -73,8 +94,22 @@ processResources {
     rename '(.+_at.cfg)', 'META-INF/$1'
 }
 
+//Builds the main jar
 jar {
-    archiveName = "${archivesBaseName}-${mc_version}-${mod_version}.jar"
+    from(configurations.contained.files) {
+        include '*'
+        into 'META-INF/libraries'
+    }
+
+    manifest {
+        attributes([
+                'ContainedDeps': configurations.contained.files.collect { it.name }.join(" "),
+                'Maven-Artifact': "${project.group}:${project.archivesBaseName}:${project.version}",
+                'Timestamp'     : System.currentTimeMillis()
+        ])
+    }
+    archiveName = "${archivesBaseName}-${mc_version}-${mod_version}-${version_nickname}.jar"
+
     manifest {
         attributes 'FMLAT': 'dissolution_at.cfg'
     }
@@ -82,13 +117,34 @@ jar {
     from sourceSets.main.output
 }
 
+//Builds a source jar
 task sourcesJar(type: Jar) {
     from sourceSets.api.allSource
     from sourceSets.main.allSource
     classifier = 'sources'
 }
 
+//Builds an api jar
 task apiJar(type: Jar) {
     from sourceSets.api.output
     classifier = 'api'
 }
+
+//Signs the main jar
+task signJar(type: SignJar, dependsOn: reobfJar) {
+    if (canJarBeSigned()) {
+        keyStore = project.findProperty("keyStore")
+        alias = project.findProperty("keyStoreAlias")
+        storePass = project.findProperty("keyStorePass")
+        keyPass = project.findProperty("keyStoreKeyPass")
+        inputFile = jar.archivePath
+        outputFile = jar.archivePath
+    }
+}
+
+boolean canJarBeSigned() {
+    return project.hasProperty('keyStore')
+}
+
+// Runs this task automatically when build is ran.
+build.dependsOn signJar

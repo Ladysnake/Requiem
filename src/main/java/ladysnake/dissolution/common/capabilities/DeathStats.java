@@ -11,16 +11,6 @@ public class DeathStats implements IDeathStats {
     private String lastDeathMessage = "";
 
     @Override
-    public void setDead(boolean dead) {
-        wasDead = dead;
-    }
-
-    @Override
-    public boolean wasDead() {
-        return wasDead;
-    }
-
-    @Override
     public int getDeathDimension() {
         return deathDim;
     }
@@ -38,16 +28,6 @@ public class DeathStats implements IDeathStats {
     @Override
     public void setDeathLocation(BlockPos deathLoc) {
         this.deathLoc = deathLoc;
-    }
-
-    @Override
-    public String getLastDeathMessage() {
-        return this.lastDeathMessage;
-    }
-
-    @Override
-    public void setLastDeathMessage(String deathMessage) {
-        this.lastDeathMessage = deathMessage;
     }
 
     @Override

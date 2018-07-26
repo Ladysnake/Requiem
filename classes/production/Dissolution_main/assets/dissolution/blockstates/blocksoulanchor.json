@@ -1,7 +1,0 @@
-{
-    "forge_marker": 1,
-    "variants": {
-      "part=base": {"model": "dissolution:soul_anchor"},
-      "part=cap": {"model": "dissolution:pipe_end"}
-    }
-}

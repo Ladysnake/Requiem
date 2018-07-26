@@ -4,13 +4,12 @@ import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.entity.SoulType;
-import ladysnake.dissolution.common.init.ModFluids;
-import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.tileentities.TileEntityWispInAJar;
 import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,9 +19,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,7 +41,9 @@ public class ItemSoulInAJar extends ItemBlock {
     public EnumActionResult onItemUse(EntityPlayer player, World worldIn, @Nonnull BlockPos pos, @Nonnull EnumHand hand, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (player.isSneaking()) {
             SoulType soul = getSoul(player.getHeldItem(hand));
-            if (!worldIn.getBlockState(pos).getBlock().isReplaceable(worldIn, pos)) pos = pos.offset(facing);
+            if (!worldIn.getBlockState(pos).getBlock().isReplaceable(worldIn, pos)) {
+                pos = pos.offset(facing);
+            }
             EnumActionResult ret = super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
             TileEntity jar = worldIn.getTileEntity(pos);
             if (jar instanceof TileEntityWispInAJar) {
@@ -67,21 +65,24 @@ public class ItemSoulInAJar extends ItemBlock {
             return new ActionResult<>(EnumActionResult.PASS, stack);
         }
         BlockPos pos = raytraceresult.getBlockPos().offset(raytraceresult.sideHit);
-        if (!worldIn.isRemote)
-            soul.instantiate(worldIn, pos.getX(), pos.getY(), pos.getZ()).ifPresent(worldIn::spawnEntity);
+        if (!worldIn.isRemote) {
+            soul.instantiate(worldIn, pos.getX(), pos.getY(), pos.getZ(), playerIn).ifPresent(worldIn::spawnEntity);
+        }
         stack.shrink(1);
-        ItemStack emptyJar = new ItemStack(ModItems.GLASS_JAR);
-        if (stack.isEmpty())
+        ItemStack emptyJar = new ItemStack(Items.GLASS_BOTTLE/*ModItems.GLASS_JAR*/);
+        if (stack.isEmpty()) {
             stack = emptyJar;
-        else
+        } else {
             playerIn.addItemStackToInventory(emptyJar);
+        }
         return new ActionResult<>(EnumActionResult.SUCCESS, stack);
     }
 
     private SoulType getSoul(ItemStack stack) {
         try {
-            if (stack.getTagCompound() != null && stack.getTagCompound().hasKey("soultype"))
+            if (stack.getTagCompound() != null && stack.getTagCompound().hasKey("soultype")) {
                 return SoulType.valueOf(stack.getTagCompound().getString("soultype"));
+            }
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
@@ -95,7 +96,7 @@ public class ItemSoulInAJar extends ItemBlock {
     }
 
     public static ItemStack newTypedSoulBottle(SoulType soulType) {
-        ItemStack stack = new ItemStack(ModItems.SOUL_IN_A_JAR);
+        ItemStack stack = new ItemStack(Items.GLASS_BOTTLE);//ModItems.WISP_IN_A_JAR);
         NBTTagCompound nbt = new NBTTagCompound();
         nbt.setString("soultype", soulType.name());
         stack.setTagCompound(nbt);

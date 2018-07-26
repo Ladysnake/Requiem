@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.init;
 
+import ladylib.LadyLib;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.blocks.BlockFluidMercury;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelBakery;
@@ -24,16 +24,18 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.apache.logging.log4j.LogManager;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-//@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public enum ModFluids {
 
-    MERCURY("mercury", false,
-            fluid -> fluid.setLuminosity(5).setDensity(1600).setViscosity(1000),
-            BlockFluidMercury::new);
+//    MERCURY("mercury", false,
+//            fluid -> fluid.setLuminosity(5).setDensity(1600).setViscosity(1000),
+//            BlockFluidMercury::new);
     // just add new fluids here
+    ;
 
     /**
      * The forge fluid associated with this block
@@ -87,7 +89,7 @@ public enum ModFluids {
     private void registerFluidBlock(IForgeRegistry<Block> reg) {
         fluidBlock.setRegistryName(Reference.MOD_ID, "fluid." + fluid.getName());
         fluidBlock.setUnlocalizedName(Reference.MOD_ID + ":" + fluid.getUnlocalizedName());
-        ModBlocks.INSTANCE.registerBlock(reg, fluidBlock, false, ItemBlock::new);
+        LadyLib.instance.getBlockRegistrar().addBlock(fluidBlock, ItemBlock::new, false);
     }
 
     @SideOnly(Side.CLIENT)
@@ -105,8 +107,9 @@ public enum ModFluids {
         ModelLoader.setCustomMeshDefinition(item, stack -> modelResourceLocation);
 
         ModelLoader.setCustomStateMapper(fluidBlock, new StateMapperBase() {
+            @Nonnull
             @Override
-            protected ModelResourceLocation getModelResourceLocation(final IBlockState state) {
+            protected ModelResourceLocation getModelResourceLocation(@Nonnull final IBlockState state) {
                 return modelResourceLocation;
             }
         });
@@ -114,20 +117,22 @@ public enum ModFluids {
 
     @SubscribeEvent
     public static void onRegister(RegistryEvent.Register<Block> event) {
-        for (final ModFluids modFluid : ModFluids.values())
+        for (final ModFluids modFluid : ModFluids.values()) {
             modFluid.registerFluidBlock(event.getRegistry());
+        }
         registerFluidContainers();
     }
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public static void registerAllModels(final ModelRegistryEvent event) {
-        for (ModFluids mf : ModFluids.values())
+        for (ModFluids mf : ModFluids.values()) {
             mf.registerFluidModel();
+        }
     }
 
     private static void registerFluidContainers() {
-        FluidRegistry.addBucketForFluid(MERCURY.fluid); //Actually we don't because mercury is too heavy, obviously
+//        FluidRegistry.addBucketForFluid(MERCURY.fluid);
     }
 
 }

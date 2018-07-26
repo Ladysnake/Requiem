@@ -5,14 +5,11 @@ import com.google.common.io.Files;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.entity.minion.AbstractMinion;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.networking.ConfigMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.config.ConfigCategory;
@@ -34,8 +31,7 @@ import java.util.*;
 public final class DissolutionConfigManager {
 
     public static Configuration config;
-    private static ImmutableSet<Class<? extends EntityMob>> TARGET_BLACKLIST;
-    private static ImmutableSet<StringChecker> GHOST_HUNTER_WHITELIST;
+    private static final ImmutableSet<StringChecker> GHOST_HUNTER_WHITELIST = ImmutableSet.of();
     private static ImmutableSet<StringChecker> BLOCK_WHITELIST;
     static Set<ConfigCategory> rootCategories;
     public static Map<String, Property> syncedProps;
@@ -47,35 +43,41 @@ public final class DissolutionConfigManager {
     }
 
     public static boolean isFlightSetTo(FlightModes flightMode) {
-        return Dissolution.config.ghost.flightMode == flightMode;
-    }
-
-    public static boolean isEntityBlacklistedFromMinionAttacks(EntityMob EntityIn) {
-        return TARGET_BLACKLIST.contains(EntityIn.getClass());
+        return FlightModes.CUSTOM_FLIGHT == flightMode;
     }
 
     @SuppressWarnings("ConstantConditions")
     public static boolean canEctoplasmInteractWith(Block block) {
-        if (block instanceof ISoulInteractable)
+        if (block instanceof ISoulInteractable) {
             return true;
+        }
         String name = block.getRegistryName().toString();
-        for (StringChecker checker : BLOCK_WHITELIST)
-            if (checker.matches(name))
+        for (StringChecker checker : BLOCK_WHITELIST) {
+            if (checker.matches(name)) {
                 return true;
+            }
+        }
         return false;
     }
 
-    public static boolean canEctoplasmBeAttackedBy(Entity entity) {
-        if (entity instanceof ISoulInteractable)
+    public static boolean isEctoplasmImmuneTo(Entity entity) {
+        if (entity instanceof ISoulInteractable) {
+            return false;
+        }
+        if (GHOST_HUNTER_WHITELIST.isEmpty()) {
             return true;
-        if (GHOST_HUNTER_WHITELIST.isEmpty()) return false;
+        }
         Class<? extends Entity> entityClass = entity.getClass();
         EntityEntry entityEntry = EntityRegistry.getEntry(entityClass);
-        if(entityEntry == null || entityEntry.getRegistryName() == null) return false;
-        for(StringChecker checker : GHOST_HUNTER_WHITELIST)
-            if(checker.matches(entityEntry.getRegistryName().toString()))
-                return true;
-        return false;
+        if(entityEntry == null || entityEntry.getRegistryName() == null) {
+            return true;
+        }
+        for(StringChecker checker : GHOST_HUNTER_WHITELIST) {
+            if(checker.matches(entityEntry.getRegistryName().toString())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static boolean canEctoplasmInteractWith(Item item) {
@@ -102,8 +104,6 @@ public final class DissolutionConfigManager {
      */
     public static void load() {
         DissolutionConfigReader.readAndInitializeConfig(config);
-        buildEctoplasmAttackWhitelist();
-        buildMinionAttackBlacklist();
         buildBlockWhitelist();
     }
 
@@ -152,10 +152,13 @@ public final class DissolutionConfigManager {
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         EntityPlayerMP playerMP = (EntityPlayerMP) event.player;
-        if(playerMP.mcServer.isSinglePlayer()) return;      // don't sync with yourself, silly
+        if(playerMP.mcServer.isSinglePlayer()) {
+            return;      // don't sync with yourself, silly
+        }
         Map<String, String> values = new HashMap<>();
-        for (Map.Entry<String, Property> entry : syncedProps.entrySet())
+        for (Map.Entry<String, Property> entry : syncedProps.entrySet()) {
             values.put(entry.getKey(), entry.getValue().getString());
+        }
         PacketHandler.NET.sendTo(new ConfigMessage(values), playerMP);
     }
 
@@ -175,25 +178,11 @@ public final class DissolutionConfigManager {
         }
     }
 
-    private static void buildMinionAttackBlacklist() {
-        ImmutableSet.Builder<Class<? extends EntityMob>> builder = ImmutableSet.builder();
-        builder.add(AbstractMinion.class);
-        if (!Dissolution.config.entities.minionsAttackCreepers)
-            builder.add(EntityCreeper.class);
-        TARGET_BLACKLIST = builder.build();
-    }
-
-    private static void buildEctoplasmAttackWhitelist() {
-        ImmutableSet.Builder<StringChecker> builder = ImmutableSet.builder();
-        for (String entityName : Dissolution.config.ghost.authorizedEntities)
-            builder.add(StringChecker.from(entityName));
-        GHOST_HUNTER_WHITELIST = builder.build();
-    }
-
     private static void buildBlockWhitelist() {
         ImmutableSet.Builder<StringChecker> builder = ImmutableSet.builder();
-        for (String blockName : Dissolution.config.ghost.authorizedBlocks)
+        for (String blockName : Dissolution.config.ghost.authorizedBlocks) {
             builder.add(StringChecker.from(blockName));
+        }
         BLOCK_WHITELIST = builder.build();
     }
 
@@ -205,10 +194,10 @@ public final class DissolutionConfigManager {
     }
 
     public enum EnforcedSoulStrength {
-        NONE, STRONG, WEAK;
+        DEFAULT, TRUE, FALSE;
 
         public boolean getValue(boolean defaultStrength) {
-            return (defaultStrength && (this == NONE)) || (this == STRONG);
+            return (defaultStrength && (this == DEFAULT)) || (this == TRUE);
         }
     }
 }

@@ -1,0 +1,24 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "water": "dissolution:blocks/ghast_water"
+    },
+    "model": "cauldron_empty",
+    "uvlock": true
+  },
+  "variants": {
+    "level": {
+      "0": {},
+      "1": {
+        "model": "cauldron_level1"
+      },
+      "2": {
+        "model": "cauldron_level2"
+      },
+      "3": {
+        "model": "cauldron_level3"
+      }
+    }
+  }
+}

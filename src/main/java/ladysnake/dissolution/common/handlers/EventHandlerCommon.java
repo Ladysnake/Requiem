@@ -2,6 +2,7 @@ package ladysnake.dissolution.common.handlers;
 
 import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
@@ -26,6 +27,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 
 import javax.annotation.Nullable;
 
@@ -63,16 +65,14 @@ public class EventHandlerCommon {
             final IIncorporealHandler corpse = CapabilityIncorporealHandler.getHandler(event.getOriginal());
             final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
             clone.setStrongSoul(corpse.isStrongSoul());
-            clone.setCorporealityStatus(Dissolution.config.respawn.respawnCorporealityStatus.status);
-            clone.getDeathStats().setLastDeathMessage(corpse.getDeathStats().getLastDeathMessage());
+            clone.setCorporealityStatus(SoulStates.SOUL);
             clone.getDialogueStats().deserializeNBT(corpse.getDialogueStats().serializeNBT());
             clone.setSynced(false);
 
-            if (clone.isStrongSoul() && !Dissolution.config.respawn.wowLikeRespawn) {
+            if (clone.isStrongSoul()) {
                 event.getEntityPlayer().experienceLevel = event.getOriginal().experienceLevel;
                 clone.getDeathStats().setDeathDimension(corpse.getDeathStats().getDeathDimension());
                 clone.getDeathStats().setDeathLocation(new BlockPos(event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ));
-                clone.getDeathStats().setDead(true);
             }
             // avoid accumulation of tracked players and allow garbage collection
             corpse.getCorporealityStatus().resetState(event.getOriginal());
@@ -80,32 +80,31 @@ public class EventHandlerCommon {
     }
 
     @SubscribeEvent
-    public void onPlayerRespawn(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent event) {
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
         IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.player);
         // Teleports the player to wherever they should be if needed
-        if (playerCorp.getDeathStats().wasDead() && !event.player.world.isRemote) {
+        if (!event.isEndConquered() && !event.player.world.isRemote) {
             event.player.world.profiler.startSection("placing_respawned_player");
             // changes the player's dimension if required by the config or if they died there
-            if (Dissolution.config.respawn.respawnInNether)
+            if (Dissolution.config.respawn.respawnInNether) {
                 CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, Dissolution.config.respawn.respawnDimension);
-            else if (!Dissolution.config.respawn.wowLikeRespawn && event.player.dimension != playerCorp.getDeathStats().getDeathDimension())
+            } else if (event.player.dimension != playerCorp.getDeathStats().getDeathDimension()) {
                 CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, playerCorp.getDeathStats().getDeathDimension());
+            }
 
             // changes the player's position to where they died
-            if (!Dissolution.config.respawn.wowLikeRespawn) {
-                BlockPos deathPos = playerCorp.getDeathStats().getDeathLocation();
-                if (!event.player.world.isOutsideBuildHeight(deathPos) && event.player.world.isAirBlock(deathPos))
-                    ((EntityPlayerMP) event.player).connection.setPlayerLocation(deathPos.getX(), deathPos.getY(), deathPos.getZ(),
-                            event.player.rotationYaw, event.player.rotationPitch);
-                else if (!event.player.world.isOutsideBuildHeight(deathPos)) {
-                    deathPos = getSafeSpawnLocation(event.player.world, deathPos);
-                    if (deathPos != null)
-                        ((EntityPlayerMP) event.player).connection.setPlayerLocation(deathPos.getX(), deathPos.getY(),
-                                deathPos.getZ(), event.player.rotationYaw, event.player.rotationPitch);
+            BlockPos deathPos = playerCorp.getDeathStats().getDeathLocation();
+            if (!event.player.world.isOutsideBuildHeight(deathPos) && event.player.world.isAirBlock(deathPos)) {
+                ((EntityPlayerMP) event.player).connection.setPlayerLocation(deathPos.getX(), deathPos.getY(), deathPos.getZ(),
+                        event.player.rotationYaw, event.player.rotationPitch);
+            } else if (!event.player.world.isOutsideBuildHeight(deathPos)) {
+                deathPos = getSafeSpawnLocation(event.player.world, deathPos);
+                if (deathPos != null) {
+                    ((EntityPlayerMP) event.player).connection.setPlayerLocation(deathPos.getX(), deathPos.getY(),
+                            deathPos.getZ(), event.player.rotationYaw, event.player.rotationPitch);
                 }
             }
             event.player.world.profiler.endSection();
-            playerCorp.getDeathStats().setDead(false);
         }
     }
 
@@ -144,8 +143,9 @@ public class EventHandlerCommon {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onVisibilityPlayer(PlayerEvent.Visibility event) {
         final ICorporealityStatus playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer()).getCorporealityStatus();
-        if (playerCorp.isIncorporeal())
+        if (playerCorp.isIncorporeal()) {
             event.modifyVisibility(0D);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -153,14 +153,19 @@ public class EventHandlerCommon {
         if (event.getEntity() instanceof EntityPlayer && !event.getSource().canHarmInCreative()) {
             ICorporealityStatus status = CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity()).getCorporealityStatus();
             if (status.allowsInvulnerability()) {
-                if (event.getSource().getTrueSource() == null || !DissolutionConfigManager.canEctoplasmBeAttackedBy(event.getSource().getTrueSource()))
+                if (event.getSource().getTrueSource() == null || DissolutionConfigManager.isEctoplasmImmuneTo(event.getSource().getTrueSource())) {
                     event.setCanceled(!event.getSource().canHarmInCreative());
+                }
             }
         } else {
-            IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getSource().getTrueSource());
-            if (handler != null && handler.getPossessed() != null)
-                if (handler.getPossessed().proxyAttack(event.getEntityLiving(), event.getSource(), event.getAmount()))
-                    event.setCanceled(true);
+            CapabilityIncorporealHandler.getHandler(event.getSource().getTrueSource()).ifPresent(handler -> {
+                IPossessable possessed = handler.getPossessed();
+                if (possessed != null) {
+                    if (possessed.proxyAttack(event.getEntityLiving(), event.getSource(), event.getAmount())) {
+                        event.setCanceled(true);
+                    }
+                }
+            });
         }
     }
 
@@ -168,33 +173,38 @@ public class EventHandlerCommon {
     public void onPlayerAttackEntity(AttackEntityEvent event) {
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
         if (playerCorp.getCorporealityStatus().isIncorporeal() && !event.getEntityPlayer().isCreative()) {
-            if (playerCorp.getPossessed() instanceof EntityLiving && !((EntityLiving) playerCorp.getPossessed()).isDead) {
-                if (event.getTarget() instanceof EntityLivingBase)
+            final EntityLivingBase possessed = playerCorp.getPossessed();
+            if (possessed != null && !possessed.isDead) {
+                if (event.getTarget() instanceof EntityLivingBase) {
                     event.getEntityPlayer().getHeldItemMainhand().hitEntity((EntityLivingBase) event.getTarget(), event.getEntityPlayer());
-                ((EntityLiving) playerCorp.getPossessed()).attackEntityAsMob(event.getTarget());
+                }
+                possessed.attackEntityAsMob(event.getTarget());
                 return;
             }
         }
         if (event.getTarget() instanceof EntityPlayer) {
             final IIncorporealHandler targetCorp = CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getTarget());
-            if (targetCorp.getCorporealityStatus().isIncorporeal() && !event.getEntityPlayer().isCreative())
+            if (targetCorp.getCorporealityStatus().isIncorporeal() && !event.getEntityPlayer().isCreative()) {
                 event.setCanceled(true);
+            }
         }
     }
 
     @SubscribeEvent
     public void onLivingSetAttackTarget(LivingSetAttackTargetEvent event) {
-        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(event.getTarget());
-        if (handler != null && event.getEntity() instanceof EntityLiving && handler.getCorporealityStatus().isIncorporeal()
-                && !DissolutionConfigManager.canEctoplasmBeAttackedBy(event.getEntity()))
-            ((EntityLiving) event.getEntity()).setAttackTarget(null);
+        CapabilityIncorporealHandler.getHandler(event.getTarget()).ifPresent(handler -> {
+            if (event.getEntity() instanceof EntityLiving && handler.getCorporealityStatus().isIncorporeal() && DissolutionConfigManager.isEctoplasmImmuneTo(event.getEntity())) {
+                ((EntityLiving) event.getEntity()).setAttackTarget(null);
+            }
+        });
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onEntityItemPickup(EntityItemPickupEvent event) {
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
-        if (playerCorp.getCorporealityStatus().isIncorporeal() && playerCorp.getPossessed() == null && !event.getEntityPlayer().isCreative())
+        if (playerCorp.getCorporealityStatus().isIncorporeal() && playerCorp.getPossessed() == null && !event.getEntityPlayer().isCreative()) {
             event.setCanceled(true);
+        }
     }
 
     /**

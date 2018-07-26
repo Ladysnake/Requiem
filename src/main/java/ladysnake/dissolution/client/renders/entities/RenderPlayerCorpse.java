@@ -1,67 +1,85 @@
 package ladysnake.dissolution.client.renders.entities;
 
 import com.mojang.authlib.GameProfile;
-import ladysnake.dissolution.client.models.entities.ModelMinionZombie;
-import ladysnake.dissolution.client.models.entities.ModelPlayerCorpse;
+import com.mojang.authlib.minecraft.MinecraftProfileTexture;
+import ladylib.client.shader.ShaderRegistryEvent;
 import ladysnake.dissolution.client.renders.ShaderHelper;
-import ladysnake.dissolution.common.entity.EntityPlayerCorpse;
-import net.minecraft.client.entity.EntityOtherPlayerMP;
+import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.entity.EntityPlayerShell;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.client.resources.DefaultPlayerSkin;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.EnumSkyBlock;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nonnull;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = Side.CLIENT)
+public class RenderPlayerCorpse extends RenderBiped<EntityPlayerShell> {
 
-    private Map<UUID, ResourceLocation> texture = new HashMap<>();
     private boolean shouldRenderName = false;
+    private static final ResourceLocation CORPSE_SHADER = new ResourceLocation(Reference.MOD_ID, "corpse");
 
-    public RenderPlayerCorpse(RenderManager rendermanagerIn) {
-        super(rendermanagerIn, new ModelPlayerCorpse(0.0F, true), 0.5F);
-        LayerBipedArmor layerbipedarmor = new LayerBipedArmor(this) {
-            protected void initArmor() {
-                this.modelLeggings = new ModelMinionZombie(0.5F, true);
-                this.modelArmor = new ModelMinionZombie(1.0F, true);
+    @SubscribeEvent
+    public static void onShaderRegistry(ShaderRegistryEvent event) {
+        event.registerShader(CORPSE_SHADER, new ResourceLocation(Reference.MOD_ID, "shaders/vertex_base.vsh"), new ResourceLocation(Reference.MOD_ID, "shaders/corpsedissolution.fsh"));
+    }
+
+    public RenderPlayerCorpse(RenderManager renderManagerIn) {
+        super(renderManagerIn, new ModelPlayer(0.0F, true), 0.5F);
+        this.addLayer(new LayerBipedArmor(this));
+    }
+
+    @Override
+    protected ResourceLocation getEntityTexture(@Nonnull EntityPlayerShell entity) {
+        ResourceLocation resourcelocation = DefaultPlayerSkin.getDefaultSkinLegacy();
+
+        GameProfile profile = entity.getProfile();
+        if (profile != null)
+        {
+            Minecraft minecraft = Minecraft.getMinecraft();
+            Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = minecraft.getSkinManager().loadSkinFromCache(profile);
+
+            if (map.containsKey(MinecraftProfileTexture.Type.SKIN))
+            {
+                resourcelocation = minecraft.getSkinManager().loadSkin(map.get(MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN);
             }
-        };
-        this.addLayer(layerbipedarmor);
-    }
-
-    @Override
-    protected ResourceLocation getEntityTexture(@Nonnull EntityPlayerCorpse entity) {
-        try {
-            return texture.computeIfAbsent(entity.getPlayer(),
-                    uuid -> new EntityOtherPlayerMP(entity.world, new GameProfile(uuid, "")).getLocationSkin());
-        } catch (IllegalArgumentException e) {
-            return DefaultPlayerSkin.getDefaultSkinLegacy();
+            else
+            {
+                UUID uuid = EntityPlayer.getUUID(profile);
+                resourcelocation = DefaultPlayerSkin.getDefaultSkin(uuid);
+            }
         }
+        return resourcelocation;
     }
 
     @Override
-    protected void preRenderCallback(EntityPlayerCorpse entitylivingbaseIn, float partialTickTime) {
+    protected void preRenderCallback(EntityPlayerShell entitylivingbaseIn, float partialTickTime) {
+        float f = 0.9375F;
+        GlStateManager.scale(f, f, f);
     }
 
     @Override
-    public void doRender(@Nonnull EntityPlayerCorpse entity, double x, double y, double z, float entityYaw, float partialTicks) {
+    public void doRender(@Nonnull EntityPlayerShell entity, double x, double y, double z, float entityYaw, float partialTicks) {
         GlStateManager.pushMatrix();
         ShaderHelper.useShader(ShaderHelper.dissolution);
         ShaderHelper.setUniform("texture", 0);
         ShaderHelper.setUniform("lightmap", 1);
-        //System.out.println(Math.abs(entity.getRemainingTicks() / (float) entity.getMaxTimeRemaining()));
-        ShaderHelper.setUniform("animationProgress", entity.isDecaying() ? 1 - (entity.getRemainingTicks() / (float) entity.getMaxTimeRemaining()) : 0);
+        int light = entity.getBrightnessForRender();
+        int lightX = light % 65536;
+        int lightY = light / 65536;
+        ShaderHelper.setUniform("lightmapCoords", lightX, lightY);
         GlStateManager.enableBlend();
         GlStateManager.enableAlpha();
-        float light = Math.max(entity.world.getLightFor(EnumSkyBlock.SKY, entity.getPosition()) * entity.world.getSunBrightnessFactor(1.0f),
-                entity.world.getLightFor(EnumSkyBlock.BLOCK, entity.getPosition()));
-        ShaderHelper.setUniform("lighting", light);
         this.shouldRenderName = false;
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
         ShaderHelper.revert();
@@ -71,7 +89,12 @@ public class RenderPlayerCorpse extends RenderBiped<EntityPlayerCorpse> {
     }
 
     @Override
-    protected boolean canRenderName(EntityPlayerCorpse entity) {
+    protected float handleRotationFloat(EntityPlayerShell livingBase, float partialTicks) {
+        return 20;
+    }
+
+    @Override
+    protected boolean canRenderName(EntityPlayerShell entity) {
         return super.canRenderName(entity) && this.shouldRenderName;
     }
 

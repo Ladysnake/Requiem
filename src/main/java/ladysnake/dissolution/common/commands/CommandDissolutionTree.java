@@ -49,10 +49,11 @@ public class CommandDissolutionTree extends CommandDissolutionTreeBase {
 
             if (cmd == null) {
                 Optional<ICommand> command = getSubCommands().stream().filter(iCommand -> iCommand.getAliases().contains(args[0])).findAny();
-                if (command.isPresent())
+                if (command.isPresent()) {
                     cmd = command.get();
-                else
+                } else {
                     throw new CommandException("commands.tree_base.invalid_cmd", args[0]);
+                }
             }
             if (!cmd.checkPermission(server, sender)) {
                 throw new CommandException("commands.generic.permission");

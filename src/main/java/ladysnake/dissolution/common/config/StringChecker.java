@@ -20,8 +20,9 @@ public class StringChecker {
 
     private StringChecker(String model, boolean isRegex) {
         this.model = model;
-        if (isRegex)
+        if (isRegex) {
             regex = Pattern.compile(model);
+        }
     }
 
     public boolean matches(String tested) {

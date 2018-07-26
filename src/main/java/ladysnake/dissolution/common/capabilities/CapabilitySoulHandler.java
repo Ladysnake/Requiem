@@ -1,10 +1,10 @@
 package ladysnake.dissolution.common.capabilities;
 
 import com.google.common.collect.ImmutableList;
-import ladysnake.dissolution.api.ISoulHandler;
-import ladysnake.dissolution.api.Soul;
-import ladysnake.dissolution.api.SoulTypes;
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.unused.api.ISoulHandler;
+import ladysnake.dissolution.unused.api.Soul;
+import ladysnake.dissolution.unused.api.SoulTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
@@ -41,22 +41,25 @@ public class CapabilitySoulHandler {
     public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
 
         Entity entity = event.getObject();
-        if (entity instanceof EntityPlayer)
-            event.addCapability(new ResourceLocation(Reference.MOD_ID, "soul_inventory"), new CapabilitySoulHandler.Provider());
+        if (entity instanceof EntityPlayer) {
+            event.addCapability(new ResourceLocation(Reference.MOD_ID, "soul_inventory"), new Provider());
+        }
     }
 
     public static ISoulHandler getHandler(Entity entity) {
 
-        if (entity.hasCapability(CAPABILITY_SOUL_INVENTORY, EnumFacing.DOWN))
+        if (entity.hasCapability(CAPABILITY_SOUL_INVENTORY, EnumFacing.DOWN)) {
             return entity.getCapability(CAPABILITY_SOUL_INVENTORY, EnumFacing.DOWN);
+        }
 
         return null;
     }
 
     public static ISoulHandler getHandler(TileEntity te) {
 
-        if (te.hasCapability(CAPABILITY_SOUL_INVENTORY, EnumFacing.DOWN))
+        if (te.hasCapability(CAPABILITY_SOUL_INVENTORY, EnumFacing.DOWN)) {
             return te.getCapability(CAPABILITY_SOUL_INVENTORY, EnumFacing.DOWN);
+        }
 
         return null;
     }
@@ -76,8 +79,9 @@ public class CapabilitySoulHandler {
 
         @Override
         public boolean addSoul(Soul soul) {
-            if (soulInventory.size() >= size)
+            if (soulInventory.size() >= size) {
                 return false;
+            }
             this.soulInventory.add(soul);
             return true;
         }
@@ -104,9 +108,11 @@ public class CapabilitySoulHandler {
         @Override
         public List<Soul> setSize(int size) {
             List<Soul> ret = new ArrayList<>();
-            if (size < this.soulInventory.size())
-                for (int i = size; i < this.soulInventory.size(); i++)
+            if (size < this.soulInventory.size()) {
+                for (int i = size; i < this.soulInventory.size(); i++) {
                     ret.add(this.soulInventory.remove(i));
+                }
+            }
             this.size = size;
             return ret;
         }

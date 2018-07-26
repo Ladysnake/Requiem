@@ -14,7 +14,7 @@ public class SoulStates {
 
     public static final ICorporealityStatus BODY = new CorporealityStatus(true, false)
             .setRegistryName(Reference.MOD_ID, "body");
-    public static final ICorporealityStatus ECTOPLASM = new EctoplasmCorporealityStatus()
+    public static final ICorporealityStatus ECTOPLASM = new IncorporealStatus()
             .setRegistryName(Reference.MOD_ID, "ectoplasm");
     public static final ICorporealityStatus SOUL = new SoulCorporealityStatus()
             .setRegistryName(Reference.MOD_ID, "soul");

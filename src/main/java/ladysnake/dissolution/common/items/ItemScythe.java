@@ -1,11 +1,15 @@
 package ladysnake.dissolution.common.items;
 
 import com.google.common.collect.Multimap;
+import ladylib.client.ICustomLocation;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -59,8 +63,12 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
 
     @Override
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity target) {
-        if (!player.getHeldItemOffhand().isEmpty()) return true;
-        if (alreadyRunningAOE) return false;
+        if (!player.getHeldItemOffhand().isEmpty()) {
+            return true;
+        }
+        if (alreadyRunningAOE) {
+            return false;
+        }
         Integer initialCooldown = 100;
         player.spawnSweepParticles();
         int initialDamage = stack.getItemDamage();
@@ -72,7 +80,7 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
         alreadyRunningAOE = true;
         AxisAlignedBB aoe = new AxisAlignedBB(target.posX - attackRadius, target.posY - 1, target.posZ - attackRadius, target.posX + attackRadius, target.posY + 1, target.posZ + attackRadius);
         List<EntityLiving> targets = target.world.getEntitiesWithinAABB(EntityLiving.class, aoe);
-        if (!targets.isEmpty())
+        if (!targets.isEmpty()) {
             for (EntityLiving entity : targets) {
                 try {
                     ObfuscationReflectionHelper.setPrivateValue(EntityLivingBase.class, player, initialCooldown, "ticksSinceLastSwing", "field_184617_aD");
@@ -81,6 +89,7 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
                 }
                 player.attackTargetEntityWithCurrentItem(entity);
             }
+        }
         alreadyRunningAOE = false;
         stack.setItemDamage(--initialDamage);
         return true;
@@ -110,9 +119,13 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
                     BlockPos pos1 = pos.add(i, 0, j);
-                    if (pos.equals(pos1)) continue;
+                    if (pos.equals(pos1)) {
+                        continue;
+                    }
                     IBlockState crops = worldIn.getBlockState(pos1);
-                    if (!isSuitedFor(worldIn, pos1, crops)) continue;
+                    if (!isSuitedFor(worldIn, pos1, crops)) {
+                        continue;
+                    }
                     TileEntity te = worldIn.getTileEntity(pos1);
                     if (crops.getBlock().removedByPlayer(crops, worldIn, pos1, (EntityPlayer) entityLiving, false)) {
                         crops.getBlock().onBlockDestroyedByPlayer(worldIn, pos1, crops);
@@ -145,6 +158,13 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
         }
 
         return multimap;
+    }
+
+    @Nonnull
+    @Override
+    public ItemScythe setMaxDamage(int maxDamageIn) {
+        super.setMaxDamage(maxDamageIn);
+        return this;
     }
 
     @Override

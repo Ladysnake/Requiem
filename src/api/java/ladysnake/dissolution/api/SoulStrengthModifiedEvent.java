@@ -13,10 +13,7 @@ public class SoulStrengthModifiedEvent extends PlayerEvent {
         this.strongSoul = strongSoul;
     }
 
-    /**
-     * @return true if
-     */
-    public boolean isChangedToStrong() {
+    public boolean isPlayerBecomingRemnant() {
         return this.strongSoul;
     }
 

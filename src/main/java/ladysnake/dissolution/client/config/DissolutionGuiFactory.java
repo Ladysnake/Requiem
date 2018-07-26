@@ -31,8 +31,9 @@ public class DissolutionGuiFactory implements IModGuiFactory {
         List<IConfigElement> elements = new ArrayList<>();
         Set<ConfigCategory> catNames = DissolutionConfigManager.getRootCategories();
         for (ConfigCategory category : catNames) {
-            if (category.isEmpty())
+            if (category.isEmpty()) {
                 continue;
+            }
             DummyConfigElement.DummyCategoryElement element = new DummyConfigElement.DummyCategoryElement(category.getName(), category.getLanguagekey(), new ConfigElement(category).getChildElements());
             element.setRequiresMcRestart(category.requiresMcRestart());
             element.setRequiresWorldRestart(category.requiresWorldRestart());

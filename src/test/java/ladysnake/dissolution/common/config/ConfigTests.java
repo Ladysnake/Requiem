@@ -1,11 +1,13 @@
 package ladysnake.dissolution.common.config;
 
-import ladysnake.dissolution.client.proxy.ClientProxy;
+import ladysnake.dissolution.client.ClientProxy;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.networking.ConfigMessage;
 import ladysnake.dissolution.common.networking.ConfigPacket;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.FMLInjectionData;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Logger;
@@ -14,12 +16,10 @@ import org.junit.Test;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class ConfigTests {
@@ -30,7 +30,11 @@ public class ConfigTests {
             Field minecraftHome = FMLInjectionData.class.getDeclaredField("minecraftHome");
             minecraftHome.setAccessible(true);
             minecraftHome.set(null, new File("run"));
+            Field sidedDelegate = FMLCommonHandler.class.getDeclaredField("sidedDelegate");
+            sidedDelegate.setAccessible(true);
+            sidedDelegate.set(FMLCommonHandler.instance(), new FMLClientHandler());
             Dissolution.proxy = new ClientProxy();
+            Dissolution.config.ghost = new DissolutionConfig.TestGhost();
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -53,12 +57,12 @@ public class ConfigTests {
     @Test
     public void testConfigPacket() {
         DissolutionConfigManager.init(new File("run/config/dissolution.cfg"));
-        assertEquals(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT, Dissolution.config.ghost.flightMode);
+        assertEquals(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT, ((DissolutionConfig.TestGhost) Dissolution.config.ghost).flightMode);
         ConfigMessage message = new ConfigMessage(DissolutionConfigManager.syncedProps.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e-> e.getValue().getString())));
         DissolutionConfigManager.init(new File("run/config/dissolutiontest.cfg"));
-        assertEquals(DissolutionConfigManager.FlightModes.CREATIVE_FLIGHT, Dissolution.config.ghost.flightMode);
+        assertEquals(DissolutionConfigManager.FlightModes.CREATIVE_FLIGHT, ((DissolutionConfig.TestGhost) Dissolution.config.ghost).flightMode);
         new ConfigPacket().syncConfig(message);
-        assertEquals(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT, Dissolution.config.ghost.flightMode);
+        assertEquals(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT, ((DissolutionConfig.TestGhost) Dissolution.config.ghost).flightMode);
     }
 
     @Test
@@ -68,7 +72,7 @@ public class ConfigTests {
         DissolutionConfigManager.init(new File("run/config/dissolutiontest.cfg"));
         new ConfigPacket().syncConfig(message);
         DissolutionConfigManager.onClientDisconnect(null);
-        assertEquals(DissolutionConfigManager.FlightModes.CREATIVE_FLIGHT, Dissolution.config.ghost.flightMode);
+        assertEquals(DissolutionConfigManager.FlightModes.CREATIVE_FLIGHT, ((DissolutionConfig.TestGhost) Dissolution.config.ghost).flightMode);
     }
 
     private String convert(ConfigCategory cat) {
@@ -79,8 +83,9 @@ public class ConfigTests {
         }
         cat.forEach((key, value) -> {
             ret.append(convert(value));
-            if (DissolutionConfigManager.syncedProps.containsKey(key))
+            if (DissolutionConfigManager.syncedProps.containsKey(key)) {
                 ret.append(" [synced]");
+            }
             ret.append("\n");
         });
         ret.append("}");

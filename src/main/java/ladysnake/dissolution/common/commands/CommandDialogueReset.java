@@ -19,7 +19,7 @@ public class CommandDialogueReset extends CommandBase {
 
     @Nonnull
     @Override
-    public String getUsage(ICommandSender sender) {
+    public String getUsage(@Nonnull ICommandSender sender) {
         return "commands.dissolution.dialogue.reset.usage";
     }
 

@@ -11,7 +11,7 @@ import java.util.UUID;
 /**
  * Indicates that an entity is able to be possessed by a soul
  */
-public interface IPossessable extends ISoulInteractable {
+public interface IPossessable {
 
     /**
      * Checks if this entity is ready to be possessed by the given player
@@ -34,13 +34,11 @@ public interface IPossessable extends ISoulInteractable {
      * @param player the player attempting to stop the possession
      * @return false if the action is denied
      */
-    default boolean onPossessionStop(EntityPlayer player) {
-        return onPossessionStop(player, false);
-    }
-
     boolean onPossessionStop(EntityPlayer player, boolean force);
 
-    UUID getPossessingEntity();
+    UUID getPossessingEntityId();
+
+    void setSleeping(boolean sleeping);
 
     /**
      * Called when an entity is attacked by the player possessing this entity
@@ -49,20 +47,6 @@ public interface IPossessable extends ISoulInteractable {
      * @return true to cancel the original damage
      */
     boolean proxyAttack(EntityLivingBase victim, DamageSource source, float amount);
-
-    /**
-     * Called when the player possessing this entity fires an arrow
-     *
-     * @param charge the time the bow was used (in ticks)
-     * @return true if no further processing is required from the player
-     */
-    boolean proxyRangedAttack(int charge);
-
-    int getPurifiedHealth();
-
-    void purifyHealth(int purified);
-
-    void setPurifiedHealth(int health);
 
     @SideOnly(Side.CLIENT)
     void possessTickClient();

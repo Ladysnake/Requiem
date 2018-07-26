@@ -1,6 +1,5 @@
 package ladysnake.dissolution.client.renders.tileentities;
 
-import ladysnake.dissolution.client.renders.entities.RenderWillOWisp;
 import ladysnake.dissolution.common.entity.SoulType;
 import ladysnake.dissolution.common.tileentities.TileEntityWispInAJar;
 import net.minecraft.client.Minecraft;
@@ -17,7 +16,9 @@ public class RenderWispInAJar extends TileEntitySpecialRenderer<TileEntityWispIn
     @Override
     public void render(TileEntityWispInAJar te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         SoulType containedSoul = te.getContainedSoul();
-        if (containedSoul == SoulType.NONE) return;
+        if (containedSoul == SoulType.NONE) {
+            return;
+        }
         GlStateManager.pushMatrix();
 
         int time = (int) Minecraft.getMinecraft().player.world.getWorldTime() % 34;

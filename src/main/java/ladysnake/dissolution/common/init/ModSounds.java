@@ -12,7 +12,7 @@ import java.util.Locale;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public enum ModSounds {
-    wisp_ambiance_1, wisp_ambiance_2, wisp_ambiance_3;
+    ;
 
     private final SoundEvent sound;
 
@@ -29,8 +29,9 @@ public enum ModSounds {
     @SubscribeEvent
     public static void onRegister(RegistryEvent.Register<SoundEvent> event) {
         IForgeRegistry<SoundEvent> reg = event.getRegistry();
-        for (ModSounds s : ModSounds.values())
+        for (ModSounds s : ModSounds.values()) {
             reg.register(s.sound);
+        }
     }
 
     @Override

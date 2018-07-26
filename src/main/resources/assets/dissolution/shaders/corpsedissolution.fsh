@@ -3,12 +3,12 @@
 
 // varying variables are given by the vertex shader. See VertexBase.vsh
 varying vec2 texcoord;        // the texture coordinate of the current pixel
-varying vec4 vPosition;       // the screen position of the current pixel
+varying vec3 normal;
 
 // uniform variables are given in the java code
 uniform sampler2D texture;    // represents what's currently displayed on the screen
 uniform sampler2D lightmap;   // Minecraft's world lightmap
-uniform float lighting;       // a value representing the light because I don't know how to get the lightmap lol
+uniform vec2 lightmapCoords;
 uniform int time;             // the system time, for animations (not used here)
 uniform float animationProgress;  // the progress of the corpse's decay [0, 1]
 
@@ -22,19 +22,15 @@ float rand(vec2 co) {
 
 void main() {
     vec4 color = texture2D(texture, texcoord);    // gets the color of the current pixel
-    vec4 light = texture2D(lightmap, texcoord);   // supposed to get the light of the current pixel
+    vec4 light = texture2D(lightmap, lightmapCoords);   // gets the light of the entity
+    // vec4 light = vec4((normal.y / 2 + 0.5) / 2 + 0.5);
+
+    color *= vec4(light.rgb, 1.0);
 
     float gs = (color.r + color.g + color.b);     // greyscale
 
-    float lightRatio = max(lighting, 1) / 17.0;   // the light ratio, definitely not supposed to work like that
+    color = mix(color, vec4(gs, gs, gs, color.a), 0.5);
 
-    float alpha = 0;
-    if(animationProgress * gs < 0.5)
-      alpha = color.a;
-    else if(animationProgress * gs < 0.8)         // lighter pixels get transparent first
-      alpha = sin((texcoord.x + texcoord.y)/20.0);
-    if(animationProgress > 0.8)
-      alpha *= animationProgress / 0.2;
     // gl_FragColor is a variable given by the graphic card. It's what you're supposed to alter in the end.
-    gl_FragColor = vec4(color.r * lightRatio, color.g * lightRatio, color.b * lightRatio, alpha);
+    gl_FragColor = color;
 }

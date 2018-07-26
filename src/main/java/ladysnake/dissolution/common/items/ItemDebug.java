@@ -1,12 +1,10 @@
 package ladysnake.dissolution.common.items;
 
-import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
-import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.entity.minion.AbstractMinion;
-import ladysnake.dissolution.common.entity.souls.EntityFleetingSoul;
+import ladysnake.dissolution.client.renders.ShaderHelper;
+import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
-import ladysnake.dissolution.common.registries.SoulStates;
+import ladysnake.dissolution.unused.common.entity.souls.EntityFleetingSoul;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -15,7 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
@@ -44,16 +42,20 @@ public class ItemDebug extends Item implements ISoulInteractable {
         }
         switch (debugWanted) {
             case 0:
-                IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(playerIn);
-                int current = SoulStates.REGISTRY.getValues().indexOf(handler.getCorporealityStatus());
-                handler.setCorporealityStatus(SoulStates.REGISTRY.getValues().get((current + 1) % 3));
+                if (worldIn.isRemote) {
+                    ShaderHelper.disableScreenShader(new ResourceLocation(Reference.MOD_ID, "shaders/post/spectre.json"));
+                    ShaderHelper.enableScreenShader(new ResourceLocation(Reference.MOD_ID, "shaders/post/spectre.json"));
+                }
                 break;
             case 1:
-                if (!worldIn.isRemote) worldIn.getWorldInfo().setAllowCommands(true);
+                if (!worldIn.isRemote) {
+                    worldIn.getWorldInfo().setAllowCommands(true);
+                }
                 break;
             case 2:
-                if (!playerIn.world.isRemote)
+                if (!playerIn.world.isRemote) {
                     CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) playerIn, playerIn.dimension == -1 ? 0 : -1);
+                }
                 break;
             case 3:
                 if (!playerIn.world.isRemote) {
@@ -69,12 +71,6 @@ public class ItemDebug extends Item implements ISoulInteractable {
                     fires.forEach(System.out::println);
                 }
                 break;
-            case 5: {
-                AbstractMinion minion =
-                        playerIn.world.findNearestEntityWithinAABB(AbstractMinion.class, new AxisAlignedBB(playerIn.getPosition()), null);
-                if (minion != null) minion.onEntityPossessed(playerIn);
-                break;
-            }
             default:
                 break;
         }

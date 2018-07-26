@@ -1,6 +1,7 @@
 package ladysnake.dissolution.api.corporeality;
 
-import ladysnake.dissolution.api.*;
+import ladysnake.dissolution.api.IDialogueStats;
+import net.minecraft.entity.EntityLivingBase;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
@@ -41,10 +42,24 @@ public interface IIncorporealHandler {
      * @return false if the change could not occur
      * @throws IllegalArgumentException if the possessable argument is not an entity
      */
-    boolean setPossessed(IPossessable possessable);
+    default <T extends EntityLivingBase & IPossessable> boolean setPossessed(T possessable) {
+        return setPossessed(possessable, false);
+    }
 
-    IPossessable getPossessed();
+    /**
+     * @param possessable the entity to possess
+     * @return false if the change could not occur
+     * @throws IllegalArgumentException if the possessable argument is not an entity
+     */
+    <T extends EntityLivingBase & IPossessable> boolean setPossessed(T possessable, boolean force);
 
+    <T extends EntityLivingBase & IPossessable> T getPossessed();
+
+    UUID getPossessedUUID();
+
+    /**
+     * Used for the dialogue when first entering a world
+     */
     @Nonnull
     IDialogueStats getDialogueStats();
 

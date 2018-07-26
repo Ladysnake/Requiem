@@ -1,21 +1,19 @@
 package ladysnake.dissolution.common.init;
 
+import ladylib.registration.AutoRegister;
 import ladysnake.dissolution.common.Reference;
-import ladysnake.dissolution.common.potion.PotionPurification;
-import net.minecraft.potion.Potion;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraft.potion.PotionType;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @Mod.EventBusSubscriber
+@AutoRegister(Reference.MOD_ID)
+@GameRegistry.ObjectHolder(Reference.MOD_ID)
 public class ModPotions {
 
-    public static final Potion PURIFICATION = new PotionPurification()
-            .setPotionName("dissolution.potion.purification.name")
-            .setRegistryName(Reference.MOD_ID, "purification");
+//    public static final Potion PURIFICATION = new PotionPurification()
+//            .setPotionName("dissolution.potion.purification.name")
+//            .setRegistryName(Reference.MOD_ID, "purification");
 
-    @SubscribeEvent
-    public static void onRegistryRegister(RegistryEvent.Register<Potion> event) {
-        event.getRegistry().register(PURIFICATION);
-    }
+    public static final PotionType OBNOXIOUS = new PotionType("dissolution.obnoxious");
 }

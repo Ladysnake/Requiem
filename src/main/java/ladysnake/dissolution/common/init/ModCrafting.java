@@ -1,11 +1,15 @@
 package ladysnake.dissolution.common.init;
 
+
+import ladysnake.dissolution.common.Reference;
+import net.minecraftforge.fml.common.Mod;
+
 /**
  * Class previously used to register recipes
  *
  * @author Pyrofab
  */
-@Deprecated
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class ModCrafting {
 
     public static void register() {
@@ -21,8 +25,8 @@ public class ModCrafting {
 		RecipeToJsonConverter.addShapedRecipe(new ItemStack(ModBlocks.MERCURIUS_WAYSTONE), "W", "G", "C", 'W', Blocks.COBBLESTONE_WALL, 'G', ModItems.SOUL_GEM, 'C', Blocks.COBBLESTONE);
 		RecipeToJsonConverter.addShapedRecipe(new ItemStack(ModItems.STONE_BURIAL), "CCC", "QGS", 'C', new ItemStack(Blocks.STONE_SLAB, 1, 0), 'Q', Items.QUARTZ, 'G', ModItems.SOUL_GEM, 'S', new ItemStack(Items.SKULL, 1, 1));
 		RecipeToJsonConverter.addShapedRecipe(new ItemStack(ModBlocks.SOUL_EXTRACTOR), "SSD", "GIG", "QRS", 'S', Blocks.COBBLESTONE, 'D', Items.DIAMOND, 'G', Blocks.GLASS, 'I', Items.IRON_INGOT, 'Q', Items.QUARTZ, 'R', Items.REDSTONE);
-		RecipeToJsonConverter.addShapedRecipe(new ItemStack(Blocks.SOUL_SAND, 8), "SSS", "SBS", "SSS", 'S', Blocks.SAND, 'B', ModItems.SOUL_IN_A_JAR);
-		RecipeToJsonConverter.addShapelessRecipe(new ItemStack(ModItems.SOUL_GEM), ItemBaseResource.resourceFromName("ectoplasm"), ModItems.SOUL_IN_A_JAR);
+		RecipeToJsonConverter.addShapedRecipe(new ItemStack(Blocks.SOUL_SAND, 8), "SSS", "SBS", "SSS", 'S', Blocks.SAND, 'B', ModItems.WISP_IN_A_JAR);
+		RecipeToJsonConverter.addShapelessRecipe(new ItemStack(ModItems.SOUL_GEM), ItemBaseResource.resourceFromName("ectoplasm"), ModItems.WISP_IN_A_JAR);
 		*/
     }
 }
