@@ -1,6 +1,5 @@
 package ladysnake.dissolution.common.compat;
 
-import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
@@ -13,8 +12,11 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import slimeknights.mantle.util.RecipeMatch;
 
 import java.util.Collections;
@@ -25,16 +27,26 @@ public class InspirationsCompat {
     public static Fluid eauDeMort;
     public static Fluid sanguine;
 
+    private static final ResourceLocation EAU_DE_MORT_FLUID_TEXTURE = new ResourceLocation(Reference.MOD_ID,"blocks/eau_de_mort_fluid");
+    private static final ResourceLocation SANGUINE_POTION_FLUID_TEXTURE = new ResourceLocation(Reference.MOD_ID,"blocks/sanguine_fluid");
+
+    @SubscribeEvent
+    public void onTextureStitch(TextureStitchEvent event) {
+        event.getMap().registerSprite(EAU_DE_MORT_FLUID_TEXTURE);
+        event.getMap().registerSprite(SANGUINE_POTION_FLUID_TEXTURE);
+    }
+
     public static void preInit() {
         ghastWater = new Fluid("ghast_water", new ResourceLocation(Reference.MOD_ID,"blocks/ghast_water"), new ResourceLocation(Reference.MOD_ID, "blocks/ghast_water"));
         ghastWater.setUnlocalizedName(Reference.MOD_ID + ".ghast_water");
         FluidRegistry.registerFluid(ghastWater);
-        eauDeMort = new Fluid("eau_de_mort", new ResourceLocation(Inspirations.modID,"blocks/fluid_colorless"), new ResourceLocation(Inspirations.modID, "blocks/fluid_colorless_flow"), 0xFF111111);
+        eauDeMort = new Fluid("eau_de_mort", EAU_DE_MORT_FLUID_TEXTURE, EAU_DE_MORT_FLUID_TEXTURE);
         eauDeMort.setUnlocalizedName(Reference.MOD_ID + ".eau_de_mort");
         FluidRegistry.registerFluid(eauDeMort);
-        sanguine = new Fluid("sanguine_potion", new ResourceLocation(Inspirations.modID,"blocks/fluid_colorless"), new ResourceLocation(Inspirations.modID, "blocks/fluid_colorless_flow"), 0xFFBC0000);
+        sanguine = new Fluid("sanguine_potion", SANGUINE_POTION_FLUID_TEXTURE, SANGUINE_POTION_FLUID_TEXTURE);
         sanguine.setUnlocalizedName(Reference.MOD_ID + ".sanguine_potion");
         FluidRegistry.registerFluid(sanguine);
+        MinecraftForge.EVENT_BUS.register(new InspirationsCompat());
     }
 
     public static void postInit() {
