@@ -6,8 +6,8 @@ import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIInert;
-import ladysnake.dissolution.common.registries.SoulStates;
 import ladysnake.dissolution.unused.common.blocks.BlockSepulchre;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
@@ -16,6 +16,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,7 +28,9 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ITeleporter;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.vector.Vector2f;
@@ -72,13 +75,6 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             return false;
         }
         this.setPossessingEntity(player.getUniqueID());
-//        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
-//            if (player.getItemStackFromSlot(slot).isEmpty()) {
-//                player.setItemStackToSlot(slot, this.getItemStackFromSlot(slot));
-//            } else {
-//                player.addItemStackToInventory(this.getItemStackFromSlot(slot));
-//            }
-//        }
         player.startRiding(this);
         player.eyeHeight = this.getEyeHeight();
         this.aiDontDoShit.setShouldExecute(true);
@@ -116,39 +112,12 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     }
 
     @Override
-    public boolean proxyRangedAttack(int charge) {
-        return true;
-    }
-
-    @Override
     public boolean isEntityInvulnerable(@Nonnull DamageSource source) {
         EntityPlayer possessing = getPossessingEntity();
         if (possessing != null && possessing.isCreative()) {
             return true;
         }
         return super.isEntityInvulnerable(source);
-    }
-
-    @Override
-    public int getPurifiedHealth() {
-        return getDataManager().get(PURIFIED_HEALTH);
-    }
-
-    @Override
-    public void purifyHealth(int purified) {
-        this.setPurifiedHealth(getPurifiedHealth()+1);
-    }
-
-    @Override
-    public void setPurifiedHealth(int health) {
-        if(health >= this.getHealth() && !this.world.isRemote) {
-            Entity passenger = this.getControllingPassenger();
-            if (passenger instanceof EntityPlayer && passenger.getUniqueID().equals(getPossessingEntityId())) {
-                EntityPlayer soul = (EntityPlayer) passenger;
-                CapabilityIncorporealHandler.getHandler(soul).setCorporealityStatus(SoulStates.BODY);
-                this.world.removeEntity(this);
-            }
-        } else this.getDataManager().set(PURIFIED_HEALTH, health);
     }
 
     @Override
@@ -188,8 +157,36 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     }
 
     @Override
-    public void onLivingUpdate() {
-        super.onLivingUpdate();
+    protected void onInsideBlock(IBlockState block) {
+        super.onInsideBlock(block);
+        if (block.getBlock() == Blocks.PORTAL && !this.isRiding() && this.isBeingRidden() && this.getPossessingEntity() != null) {
+            this.setPortal(new BlockPos(this));
+        }
+    }
+
+    @Override
+    public void setPortal(@Nonnull BlockPos pos) {
+        super.setPortal(pos);
+        EntityPlayer passenger = getPossessingEntity();
+        if (passenger != null) {
+            passenger.setPortal(pos);
+        }
+    }
+
+    @Nullable
+    @Override
+    public Entity changeDimension(int dimensionIn, @Nonnull ITeleporter teleporter) {
+        EntityPlayer passenger = this.getPossessingEntity();
+        if (passenger != null && !world.isRemote) {
+            CapabilityIncorporealHandler.getHandler(passenger).setPossessed(null, true);
+            passenger.setPosition(posX, posY, posZ);
+            passenger.changeDimension(dimensionIn, teleporter);
+        }
+        Entity clone = super.changeDimension(dimensionIn, teleporter);
+        if (passenger != null && clone != null && !world.isRemote) {
+            CapabilityIncorporealHandler.getHandler(passenger).setPossessed((EntityLivingBase & IPossessable) clone, true);
+        }
+        return clone;
     }
 
     @Override
@@ -282,7 +279,6 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
-        compound.setInteger("purifiedHealth", getPurifiedHealth());
         if (this.getPossessingEntityId() != null)
             compound.setUniqueId("possessingEntity", this.getPossessingEntityId());
         return compound;
@@ -291,7 +287,6 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        this.setPurifiedHealth(compound.getInteger("purifiedHealth"));
         this.setPossessingEntity(compound.getUniqueId("possessingEntity"));
     }
 
@@ -331,6 +326,7 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             super.travel(strafe, vertical, forward);
         }
     }
+
     @Nullable
     public Entity getControllingPassenger() {
         return this.getPassengers().stream().filter(e -> e.getUniqueID().equals(getPossessingEntityId())).findAny().orElse(null);
@@ -359,10 +355,11 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
 
     @Override
     public void onDeath(@Nonnull DamageSource cause) {
-        if (this.getControllingPassenger() instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) this.getControllingPassenger();
-            if (!world.isRemote)
+        if (this.getPossessingEntity() != null) {
+            EntityPlayer player = this.getPossessingEntity();
+            if (!world.isRemote) {
                 player.inventory.dropAllItems();
+            }
             CapabilityIncorporealHandler.getHandler(player).setPossessed(null);
         }
         super.onDeath(cause);
