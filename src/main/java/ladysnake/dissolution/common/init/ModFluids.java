@@ -88,7 +88,7 @@ public enum ModFluids {
 
     private void registerFluidBlock(IForgeRegistry<Block> reg) {
         fluidBlock.setRegistryName(Reference.MOD_ID, "fluid." + fluid.getName());
-        fluidBlock.setUnlocalizedName(Reference.MOD_ID + ":" + fluid.getUnlocalizedName());
+        fluidBlock.setTranslationKey(Reference.MOD_ID + ":" + fluid.getUnlocalizedName());
         LadyLib.instance.getBlockRegistrar().addBlock(fluidBlock, ItemBlock::new, false);
     }
 

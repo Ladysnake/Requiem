@@ -55,7 +55,7 @@ public class BlockFluidMercury extends BlockFluidClassic {
     }
 
     @Override
-    public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entityIn) {
+    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entityIn) {
         if (state.getBlock() != this) {
             return;
         }
@@ -106,7 +106,7 @@ public class BlockFluidMercury extends BlockFluidClassic {
         }
 
 
-        super.onEntityCollidedWithBlock(world, pos, state, entityIn);
+        super.onEntityCollision(world, pos, state, entityIn);
     }
 
     private void handleMercuryJump(Entity entityIn) {

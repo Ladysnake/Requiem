@@ -59,7 +59,7 @@ public class ItemBurial extends Item {
             }
 
             int i = MathHelper.floor((player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
-            EnumFacing enumfacing = EnumFacing.getHorizontal(i);
+            EnumFacing enumfacing = EnumFacing.byHorizontalIndex(i);
 
             IBlockState baseState = burial.getDefaultState()
                     .withProperty(BlockSepulchre.FACING, enumfacing)

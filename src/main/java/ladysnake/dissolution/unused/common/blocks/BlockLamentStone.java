@@ -79,7 +79,7 @@ public class BlockLamentStone extends Block {
     @Override
     @Deprecated
     public IBlockState getStateFromMeta(int meta) {
-        return super.getStateFromMeta(meta).withProperty(FACING, EnumFacing.getHorizontal(meta));
+        return super.getStateFromMeta(meta).withProperty(FACING, EnumFacing.byHorizontalIndex(meta));
     }
 
     @Override

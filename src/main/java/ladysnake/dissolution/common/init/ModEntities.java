@@ -83,7 +83,7 @@ public class ModEntities {
                     boolean sendVelocityUpdates;
                     if (info == null) {
                         // vanilla entities never have associated registration information
-                        if (!entityEntry.getRegistryName().getResourceDomain().equals("minecraft")) {
+                        if (!entityEntry.getRegistryName().getNamespace().equals("minecraft")) {
                             Dissolution.LOGGER.info("No entity registration found for {}, using default values", entityEntry.getRegistryName());
                         }
                         trackingRange = 64;
@@ -98,7 +98,7 @@ public class ModEntities {
                     event.getRegistry().register(
                             EntityEntryBuilder.create()
                                     .entity(possessableClass)
-                                    .id(new ResourceLocation(Reference.MOD_ID, entityEntry.getRegistryName().getResourcePath() + "_possessable"), id++)
+                                    .id(new ResourceLocation(Reference.MOD_ID, entityEntry.getRegistryName().getPath() + "_possessable"), id++)
                                     .name(entityEntry.getName())
                                     .tracker(trackingRange, updateFrequency, sendVelocityUpdates)
                                     .build()

@@ -26,13 +26,13 @@ public class BakedModelLoader implements ICustomModelLoader {
 
     @Override
     public boolean accepts(@Nonnull ResourceLocation modelLocation) {
-        return modelLocation.getResourceDomain().equals(Reference.MOD_ID) && models.containsKey(modelLocation.getResourcePath());
+        return modelLocation.getNamespace().equals(Reference.MOD_ID) && models.containsKey(modelLocation.getPath());
     }
 
     @Nonnull
     @Override
     public IModel loadModel(@Nonnull ResourceLocation modelLocation) {
-        return models.get(modelLocation.getResourcePath());
+        return models.get(modelLocation.getPath());
     }
 
     @Override

@@ -152,7 +152,7 @@ public final class DissolutionConfigManager {
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         EntityPlayerMP playerMP = (EntityPlayerMP) event.player;
-        if(playerMP.mcServer.isSinglePlayer()) {
+        if(playerMP.server.isSinglePlayer()) {
             return;      // don't sync with yourself, silly
         }
         Map<String, String> values = new HashMap<>();

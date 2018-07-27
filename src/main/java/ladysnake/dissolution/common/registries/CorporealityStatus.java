@@ -1,13 +1,8 @@
 package ladysnake.dissolution.common.registries;
 
 import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistryEntry;
-import net.minecraftforge.registries.RegistryBuilder;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -29,8 +24,8 @@ public class CorporealityStatus extends IForgeRegistryEntry.Impl<ICorporealitySt
         return !this.corporeal;
     }
 
-    public String getUnlocalizedName() {
-        return "dissolution.corporealitystatus." + Objects.requireNonNull(this.getRegistryName()).getResourcePath();
+    public String getTranslationKey() {
+        return "dissolution.corporealitystatus." + Objects.requireNonNull(this.getRegistryName()).getPath();
     }
 
     @Override

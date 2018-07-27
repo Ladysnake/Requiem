@@ -50,7 +50,7 @@ public class JEICompat implements IModPlugin {
 
     @SideOnly(Side.CLIENT)
     private void addInformationTab(Item item) {
-        registry.addIngredientInfo(new ItemStack(item), ItemStack.class, I18n.format("jei.description.dissolution." + item.getUnlocalizedName()));
+        registry.addIngredientInfo(new ItemStack(item), ItemStack.class, I18n.format("jei.description.dissolution." + item.getTranslationKey()));
     }
 
     private void blacklistStuff() {

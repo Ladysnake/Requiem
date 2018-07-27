@@ -117,7 +117,7 @@ public abstract class PowderContainer extends TileEntity {
     public void markDirty() {
         super.markDirty();
         if (!world.isRemote) {
-            ChunkPos cp = this.world.getChunkFromBlockCoords(getPos()).getPos();
+            ChunkPos cp = this.world.getChunk(getPos()).getPos();
             PlayerChunkMapEntry entry = ((WorldServer) this.world).getPlayerChunkMap().getEntry(cp.x, cp.z);
             if (entry != null) {
                 entry.sendPacket(this.getUpdatePacket());

@@ -1,9 +1,9 @@
 package ladysnake.dissolution.unused.api;
 
-import jline.internal.Nullable;
 import net.minecraft.util.NonNullList;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;

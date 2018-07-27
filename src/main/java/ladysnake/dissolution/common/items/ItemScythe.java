@@ -128,7 +128,7 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
                     }
                     TileEntity te = worldIn.getTileEntity(pos1);
                     if (crops.getBlock().removedByPlayer(crops, worldIn, pos1, (EntityPlayer) entityLiving, false)) {
-                        crops.getBlock().onBlockDestroyedByPlayer(worldIn, pos1, crops);
+                        crops.getBlock().onPlayerDestroy(worldIn, pos1, crops);
                         stack.damageItem((worldIn.rand.nextInt(5) == 0) ? 1 : 0, entityLiving);
                         crops.getBlock().harvestBlock(worldIn, (EntityPlayer) entityLiving, pos1, crops, te, stack);
                     }
@@ -170,7 +170,7 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
     @Override
     public ModelResourceLocation getModelLocation() {
         //noinspection ConstantConditions
-        return new ModelResourceLocation(this.getRegistryName().getResourceDomain() + ":scythes/" + this.getRegistryName().getResourcePath());
+        return new ModelResourceLocation(this.getRegistryName().getNamespace() + ":scythes/" + this.getRegistryName().getPath());
     }
 
 }

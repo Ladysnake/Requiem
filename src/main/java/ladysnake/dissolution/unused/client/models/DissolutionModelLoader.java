@@ -162,7 +162,7 @@ public class DissolutionModelLoader {
     }
 
     private ResourceLocation getModelLocation(ResourceLocation location) {
-        return new ResourceLocation(location.getResourceDomain(), "models/" + location.getResourcePath() + ".json");
+        return new ResourceLocation(location.getNamespace(), "models/" + location.getPath() + ".json");
     }
 
     private IBakedModel bakeModel(ModelBlock modelBlockIn, ModelRotation modelRotationIn) {

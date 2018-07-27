@@ -58,7 +58,7 @@ public class BlockShrine extends Block {
     @Deprecated
     public IBlockState getStateFromMeta(int meta) {
         return super.getStateFromMeta(meta)
-                .withProperty(FACING, EnumFacing.getHorizontal(meta & 0b0111));
+                .withProperty(FACING, EnumFacing.byHorizontalIndex(meta & 0b0111));
     }
 
     @Override
