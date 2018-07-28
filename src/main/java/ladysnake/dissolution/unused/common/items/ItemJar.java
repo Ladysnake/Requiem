@@ -1,6 +1,7 @@
-package ladysnake.dissolution.common.items;
+package ladysnake.dissolution.unused.common.items;
 
 import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.items.ItemSoulInAJar;
 import ladysnake.dissolution.unused.common.entity.souls.EntityFleetingSoul;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -71,14 +72,14 @@ public class ItemJar extends Item {
 
     @Nonnull
     @Override
-    public String getUnlocalizedName(ItemStack stack) {
+    public String getTranslationKey(ItemStack stack) {
         FluidStack fluid = FluidUtil.getFluidContained(stack);
         if (fluid != null) {
             if (fluid.getFluid().equals(FluidRegistry.WATER)) {
                 return "item.water_jar.name";
             }
         }
-        return super.getUnlocalizedName(stack);
+        return super.getTranslationKey(stack);
     }
 
     @Nullable

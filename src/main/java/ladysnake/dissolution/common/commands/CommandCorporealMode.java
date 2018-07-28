@@ -50,7 +50,7 @@ public class CommandCorporealMode extends CommandBase {
         if (args.length == 1) {
             possibilities = Arrays.asList("query", "set");
         } else if (args.length == 2 && "set".equals(args[0])) {
-            possibilities = SoulStates.REGISTRY.getValues().stream().map(status -> status.getRegistryName().getResourcePath()).collect(Collectors.toList());
+            possibilities = SoulStates.REGISTRY.getValuesCollection().stream().map(status -> status.getRegistryName().getPath()).collect(Collectors.toList());
         } else if (args.length > 1) {
             possibilities = Arrays.asList(server.getOnlinePlayerNames());
         }
@@ -70,7 +70,7 @@ public class CommandCorporealMode extends CommandBase {
             IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
             notifyCommandListener(sender, this,
                     "commands.dissolution.corporeality_mode.query." + (player == sender ? "self" : "other"),     // different feedback
-                    player.getName(), new TextComponentTranslation(handler.getCorporealityStatus().getUnlocalizedName()));
+                    player.getName(), new TextComponentTranslation(handler.getCorporealityStatus().getTranslationKey()));
         } else if ("set".equals(args[0])) {          // dissolution cmode set -> sets the player's status
             if (args.length == 1) {
                 throw new WrongUsageException("commands.dissolution.corporeality_mode.set.usage");       // have a more precise usage
@@ -86,7 +86,7 @@ public class CommandCorporealMode extends CommandBase {
                     throw new CommandException("commands.dissolution.corporeality_mode.set.weak_soul", player.getName());
                 }
                 handler.setCorporealityStatus(newStatus);
-                ITextComponent iTextComponent = new TextComponentTranslation(newStatus.getUnlocalizedName());
+                ITextComponent iTextComponent = new TextComponentTranslation(newStatus.getTranslationKey());
                 if (sender.getEntityWorld().getGameRules().getBoolean("sendCommandFeedback")) {
                     player.sendMessage(new TextComponentTranslation("dissolution.corporeality_mode.changed", iTextComponent));
                 }

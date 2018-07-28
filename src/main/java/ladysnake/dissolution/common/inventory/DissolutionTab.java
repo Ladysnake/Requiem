@@ -15,7 +15,7 @@ public class DissolutionTab extends CreativeTabs {
 
     @Nonnull
     @Override
-    public ItemStack getTabIconItem() {
+    public ItemStack createIcon() {
         return new ItemStack(ModItems.LOGO);
     }
 

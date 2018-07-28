@@ -30,7 +30,7 @@ public class BlockWisp extends Block {
 
     @Nonnull
     @Override
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 

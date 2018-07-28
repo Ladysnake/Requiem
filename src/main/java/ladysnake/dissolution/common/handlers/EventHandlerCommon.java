@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.handlers;
 
+import ladylib.misc.ReflectionUtil;
 import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
@@ -10,14 +11,17 @@ import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.AbstractSkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.*;
 import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraftforge.event.LootTableLoadEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
@@ -30,6 +34,7 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 
 import javax.annotation.Nullable;
+import java.lang.invoke.MethodHandle;
 
 
 /**
@@ -38,6 +43,8 @@ import javax.annotation.Nullable;
  * @author Pyrofab
  */
 public class EventHandlerCommon {
+
+    private static final MethodHandle abstractSkeleton$getArrow = ReflectionUtil.findMethodHandleFromObfName(AbstractSkeleton.class, "func_190726_a", EntityArrow.class, float.class);
 
     public EventHandlerCommon() {
         LootTableList.register(new ResourceLocation(Reference.MOD_ID, "inject/nether_bridge"));
@@ -145,6 +152,30 @@ public class EventHandlerCommon {
         final ICorporealityStatus playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer()).getCorporealityStatus();
         if (playerCorp.isIncorporeal()) {
             event.modifyVisibility(0D);
+        }
+    }
+
+    @SubscribeEvent
+    public void onEntityJoinWorld(EntityJoinWorldEvent event) {
+        if (event.getEntity() instanceof EntityArrow && !event.getWorld().isRemote) {
+            EntityArrow arrow = (EntityArrow) event.getEntity();
+            CapabilityIncorporealHandler.getHandler(arrow.shootingEntity).ifPresent(handler -> {
+                EntityLivingBase possessed = handler.getPossessed();
+                if (possessed instanceof AbstractSkeleton) {
+                    try {
+                        EntityArrow mobArrow = (EntityArrow) abstractSkeleton$getArrow.invoke(possessed, 0);
+                        mobArrow.setDamage(arrow.getDamage());
+                        mobArrow.copyLocationAndAnglesFrom(arrow);
+                        mobArrow.motionX = arrow.motionX;
+                        mobArrow.motionY = arrow.motionY;
+                        mobArrow.motionZ = arrow.motionZ;
+                        arrow.world.spawnEntity(mobArrow);
+                        event.setCanceled(true);
+                    } catch (Throwable throwable) {
+                        Dissolution.LOGGER.warn("Failed to get an arrow from a skeleton", throwable);
+                    }
+                }
+            });
         }
     }
 

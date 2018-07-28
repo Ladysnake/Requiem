@@ -275,6 +275,14 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
         }
     }
 
+    @Override
+    protected void updateFallState(double y, boolean onGroundIn, @Nonnull IBlockState state, @Nonnull BlockPos pos) {
+        if (this.isOnLadder() && this.getPossessingEntity() != null) {
+            this.fallDistance = 0;
+        }
+        super.updateFallState(y, onGroundIn, state, pos);
+    }
+
     @Nonnull
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {

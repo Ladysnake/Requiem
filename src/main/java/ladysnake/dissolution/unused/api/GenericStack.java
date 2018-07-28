@@ -1,8 +1,8 @@
 package ladysnake.dissolution.unused.api;
 
-import jline.internal.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 
+import javax.annotation.Nullable;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 

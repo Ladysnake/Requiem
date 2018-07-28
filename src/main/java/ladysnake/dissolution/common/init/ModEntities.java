@@ -83,7 +83,7 @@ public class ModEntities {
                     boolean sendVelocityUpdates;
                     if (info == null) {
                         // vanilla entities never have associated registration information
-                        if (!entityEntry.getRegistryName().getResourceDomain().equals("minecraft")) {
+                        if (!entityEntry.getRegistryName().getNamespace().equals("minecraft")) {
                             Dissolution.LOGGER.info("No entity registration found for {}, using default values", entityEntry.getRegistryName());
                         }
                         trackingRange = 64;
@@ -98,7 +98,7 @@ public class ModEntities {
                     event.getRegistry().register(
                             EntityEntryBuilder.create()
                                     .entity(possessableClass)
-                                    .id(new ResourceLocation(Reference.MOD_ID, entityEntry.getRegistryName().getResourcePath() + "_possessable"), id++)
+                                    .id(new ResourceLocation(Reference.MOD_ID, entityEntry.getRegistryName().getPath() + "_possessable"), id++)
                                     .name(entityEntry.getName())
                                     .tracker(trackingRange, updateFrequency, sendVelocityUpdates)
                                     .build()
@@ -126,8 +126,13 @@ public class ModEntities {
 
     @SubscribeEvent
     public static void lootLoad(LootTableLoadEvent event) {
-        if (event.getName().toString().equals("minecraft:entities/villager")) {
+        if (event.getName().toString().equals("minecraft:entities/villager") || event.getName().toString().equals("minecraft:entities/evocation_illager") || event.getName().toString().equals("minecraft:entities/vindication_illager")) {
             LootEntry entry = new LootEntryTable(new ResourceLocation("dissolution:inject/human"), 1, 1, new LootCondition[0], "dissolution_human");
+            LootPool pool = new LootPool(new LootEntry[] {entry}, new LootCondition[0], new RandomValueRange(1), new RandomValueRange(0), "dissolution_human");
+            event.getTable().addPool(pool);
+        }
+        if (event.getName().toString().equals("minecraft:entities/witch")) {
+            LootEntry entry = new LootEntryTable(new ResourceLocation("dissolution:inject/witch"), 1, 1, new LootCondition[0], "dissolution_human");
             LootPool pool = new LootPool(new LootEntry[] {entry}, new LootCondition[0], new RandomValueRange(1), new RandomValueRange(0), "dissolution_human");
             event.getTable().addPool(pool);
         }

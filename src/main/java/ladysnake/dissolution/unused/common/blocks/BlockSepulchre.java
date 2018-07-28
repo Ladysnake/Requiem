@@ -243,7 +243,7 @@ public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable
     @Nonnull
     @Override
     @Deprecated
-    public EnumPushReaction getMobilityFlag(IBlockState state) {
+    public EnumPushReaction getPushReaction(IBlockState state) {
         return EnumPushReaction.DESTROY;
     }
 
@@ -274,7 +274,7 @@ public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable
     @Nonnull
     @Deprecated
     public IBlockState getStateFromMeta(int meta) {
-        EnumFacing enumfacing = EnumFacing.getHorizontal(meta);
+        EnumFacing enumfacing = EnumFacing.byHorizontalIndex(meta);
         return (meta & 8) > 0
                 ? this.getDefaultState().withProperty(PART, BlockSepulchre.EnumPartType.SIDE).withProperty(FACING,
                 enumfacing)

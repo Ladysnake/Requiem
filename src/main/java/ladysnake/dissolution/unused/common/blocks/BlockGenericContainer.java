@@ -166,7 +166,7 @@ public abstract class BlockGenericContainer extends Block {
         if (itemHandler != null) {
             ItemStack itemStack = itemHandler.getStackInSlot(0);
             if (!itemStack.isEmpty()) {
-                tooltip.add(I18n.format(itemStack.getItem().getUnlocalizedName()) + " : " + itemStack.getCount());
+                tooltip.add(I18n.format(itemStack.getItem().getTranslationKey()) + " : " + itemStack.getCount());
             } else if (advanced.isAdvanced()) {
                 tooltip.add("No residue left");
             }
@@ -180,7 +180,7 @@ public abstract class BlockGenericContainer extends Block {
         TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof PowderContainer) {
             NBTTagCompound nbttagcompound = ((PowderContainer) tileEntity).saveToNbt(new NBTTagCompound());
-            if (!nbttagcompound.hasNoTags()) {
+            if (!nbttagcompound.isEmpty()) {
                 itemstack.setTagInfo("BlockEntityTag", nbttagcompound);
             }
         }

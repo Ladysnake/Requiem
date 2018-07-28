@@ -71,7 +71,7 @@ public class RenderBrimstoneFire extends RenderEntity {
         Vec3d vec3d = new Vec3d(targetPos);
         Vec3d vec3d1 = this.getPosition((EntityBrimstoneFire) entity, (double) f4, partialTicks);
         Vec3d vec3d2 = vec3d.subtract(vec3d1);
-        double d0 = vec3d2.lengthVector() + 1.0D;
+        double d0 = vec3d2.length() + 1.0D;
         vec3d2 = vec3d2.normalize();
         float f5 = (float) Math.acos(vec3d2.y);
         float f6 = (float) Math.atan2(vec3d2.z, vec3d2.x);

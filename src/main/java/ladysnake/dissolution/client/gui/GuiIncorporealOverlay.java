@@ -97,7 +97,7 @@ public class GuiIncorporealOverlay extends GuiIngame {
 
     protected void renderAir(RenderGameOverlayEvent parent, int width, int height, EntityLivingBase entity) {
         if (MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Pre(parent, AIR))) return;
-        mc.mcProfiler.startSection("air");
+        mc.profiler.startSection("air");
         GlStateManager.enableBlend();
         int left = width / 2 + 91;
         int top = height - GuiIngameForge.right_height;
@@ -116,7 +116,7 @@ public class GuiIncorporealOverlay extends GuiIngame {
         }
 
         GlStateManager.disableBlend();
-        mc.mcProfiler.endSection();
+        mc.profiler.endSection();
         MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Post(parent, AIR));
     }
 

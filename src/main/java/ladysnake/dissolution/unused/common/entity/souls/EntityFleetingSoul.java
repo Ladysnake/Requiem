@@ -82,7 +82,7 @@ public class EntityFleetingSoul extends AbstractSoul implements ILightProvider {
             double targetY = this.targetEntity != null ? targetEntity.posY : this.yTarget;
             double targetZ = this.targetEntity != null ? targetEntity.posZ : this.zTarget;
             Vec3d targetVector = new Vec3d(targetX - posX, targetY - posY, targetZ - posZ);
-            double length = targetVector.lengthVector();
+            double length = targetVector.length();
             targetVector = targetVector.scale(0.1 / length);
             double weight = 0;
             // the range at which the wisp will start orbiting

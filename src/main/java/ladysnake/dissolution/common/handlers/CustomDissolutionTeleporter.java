@@ -16,20 +16,20 @@ public class CustomDissolutionTeleporter {
 
     public static void transferPlayerToDimension(EntityPlayerMP player, int dimensionIn) {
         int i = player.dimension;
-        WorldServer oldWorld = player.mcServer.getWorld(player.dimension);
+        WorldServer oldWorld = player.server.getWorld(player.dimension);
         player.dimension = dimensionIn;
-        WorldServer newWorld = player.mcServer.getWorld(player.dimension);
+        WorldServer newWorld = player.server.getWorld(player.dimension);
         player.connection.sendPacket(new SPacketRespawn(player.dimension, newWorld.getDifficulty(), newWorld.getWorldInfo().getTerrainType(), player.interactionManager.getGameType()));
-        player.mcServer.getPlayerList().updatePermissionLevel(player);
+        player.server.getPlayerList().updatePermissionLevel(player);
         oldWorld.removeEntityDangerously(player);
         player.isDead = false;
         transferEntityToWorld(player, i, oldWorld, newWorld);
-        player.mcServer.getPlayerList().preparePlayer(player, oldWorld);
+        player.server.getPlayerList().preparePlayer(player, oldWorld);
         player.connection.setPlayerLocation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
         player.interactionManager.setWorld(newWorld);
         player.connection.sendPacket(new SPacketPlayerAbilities(player.capabilities));
-        player.mcServer.getPlayerList().updateTimeAndWeatherForPlayer(player, newWorld);
-        player.mcServer.getPlayerList().syncPlayerInventory(player);
+        player.server.getPlayerList().updateTimeAndWeatherForPlayer(player, newWorld);
+        player.server.getPlayerList().syncPlayerInventory(player);
 
         for (PotionEffect potioneffect : player.getActivePotionEffects()) {
             player.connection.sendPacket(new SPacketEntityEffect(player.getEntityId(), potioneffect));

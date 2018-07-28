@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.handlers;
 
+import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
@@ -88,10 +89,25 @@ public class InteractEventsHandler {
     }
 
     /**
+     * Make projectiles go through ghost players
+     */
+    @SubscribeEvent
+    public void onProjectileImpact(ProjectileImpactEvent event) {
+        if (
+                event.getRayTraceResult().typeOfHit == RayTraceResult.Type.ENTITY &&
+                        CapabilityIncorporealHandler.getHandler(event.getRayTraceResult().entityHit)
+                                .map(IIncorporealHandler::getCorporealityStatus)
+                                .map(ICorporealityStatus::isIncorporeal).orElse(false)
+        ) {
+            event.setCanceled(true);
+        }
+    }
+
+    /**
      * Prevent possessed mobs from shooting themselves
      */
     @SubscribeEvent
-    public void onProjectileImpact(ProjectileImpactEvent.Arrow event) {
+    public void onArrowImpact(ProjectileImpactEvent.Arrow event) {
         if (event.getRayTraceResult().typeOfHit == RayTraceResult.Type.ENTITY &&
                         CapabilityIncorporealHandler.getHandler(event.getArrow().shootingEntity)
                                 .map(IIncorporealHandler::getPossessed)

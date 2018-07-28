@@ -7,7 +7,7 @@ public interface ICorporealityStatus extends IForgeRegistryEntry<ICorporealitySt
 
     boolean isIncorporeal();
 
-    String getUnlocalizedName();
+    String getTranslationKey();
 
     boolean allowsInvulnerability();
 
