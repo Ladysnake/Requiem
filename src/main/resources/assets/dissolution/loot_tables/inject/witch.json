@@ -1,0 +1,22 @@
+{
+  "pools": [
+    {
+      "name": "flesh",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "name": "dissolution:human_flesh_raw",
+          "weight": 1
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "random_chance_with_looting",
+          "chance": 0.075,
+          "looting_multiplier": 0.075
+        }
+      ]
+    }
+  ]
+}

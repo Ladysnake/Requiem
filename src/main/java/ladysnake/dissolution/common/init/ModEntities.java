@@ -126,8 +126,13 @@ public class ModEntities {
 
     @SubscribeEvent
     public static void lootLoad(LootTableLoadEvent event) {
-        if (event.getName().toString().equals("minecraft:entities/villager")) {
+        if (event.getName().toString().equals("minecraft:entities/villager") || event.getName().toString().equals("minecraft:entities/evocation_illager") || event.getName().toString().equals("minecraft:entities/vindication_illager")) {
             LootEntry entry = new LootEntryTable(new ResourceLocation("dissolution:inject/human"), 1, 1, new LootCondition[0], "dissolution_human");
+            LootPool pool = new LootPool(new LootEntry[] {entry}, new LootCondition[0], new RandomValueRange(1), new RandomValueRange(0), "dissolution_human");
+            event.getTable().addPool(pool);
+        }
+        if (event.getName().toString().equals("minecraft:entities/witch")) {
+            LootEntry entry = new LootEntryTable(new ResourceLocation("dissolution:inject/witch"), 1, 1, new LootCondition[0], "dissolution_human");
             LootPool pool = new LootPool(new LootEntry[] {entry}, new LootCondition[0], new RandomValueRange(1), new RandomValueRange(0), "dissolution_human");
             event.getTable().addPool(pool);
         }
