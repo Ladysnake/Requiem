@@ -18,6 +18,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
@@ -56,6 +57,7 @@ public class ItemAethereus extends Item {
                         shell.setPositionAndRotation(entityLiving.posX, entityLiving.posY, entityLiving.posZ, entityLiving.rotationYaw, entityLiving.rotationPitch);
                         shell.setPlayer(entityLiving.getUniqueID());
                         shell.setCustomNameTag(entityLiving.getName());
+                        shell.setLeftHanded(entityLiving.getPrimaryHand() == EnumHandSide.LEFT);
                         DissolutionInventoryHelper.transferEquipment(entityLiving, shell);
                         if (player != null) {
                             for (int i = 0; i < player.inventory.mainInventory.size(); i++) {

@@ -37,14 +37,11 @@ import org.lwjgl.util.vector.Vector2f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 
 /**
  * The template class for possessable entities. <br>
- * Used in {@link PossessableEntityFactory} to generate possessable versions of any mob.
+ * Used in {@link PossessableEntityFactory} to generate possessable versions of any mob. <br>
  * Note: do <b>NOT</b> check whether entities are instances of this class, it will always return false.
  */
 public class EntityPossessableImpl extends EntityMob implements IPossessable {
@@ -53,14 +50,12 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     private static final DataParameter<Integer> PURIFIED_HEALTH =
             EntityDataManager.createKey(EntityPossessableImpl.class, DataSerializers.VARINT);
 
-    private List<Class<? extends EntityLivingBase>> equivalents = new LinkedList<>();
     private EntityAIInert aiDontDoShit = new EntityAIInert(false);
 
     private boolean sleeping;
 
     public EntityPossessableImpl(World worldIn) {
         super(worldIn);
-        Collections.addAll(this.equivalents, EntityPlayer.class, EntityPlayerMP.class);
         if (worldIn != null && !worldIn.isRemote) {
             this.tasks.addTask(99, aiDontDoShit);
         }

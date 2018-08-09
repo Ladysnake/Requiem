@@ -201,6 +201,11 @@ public class EntityPlayerShell extends EntityLiving implements ISoulInteractable
         return inventory;
     }
 
+    @Override
+    protected boolean canDespawn() {
+        return false;
+    }
+
     @Nullable
     @Override
     protected ResourceLocation getLootTable() {
