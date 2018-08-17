@@ -7,93 +7,94 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
-apply plugin: 'maven'
-apply plugin: 'signing'
-apply plugin: 'net.minecraftforge.gradle.forge'
-//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
-version = "${mod_version}"
-group = "es.esy.ladysnake.dissolution" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "dissolution"
-
-sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
-compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
+plugins {
+    id "org.sonarqube" version "2.6"
 }
+
+allprojects {
+
+    group = mod_group
+    version = project.findProperty("${project.name.toLowerCase(Locale.ENGLISH)}_version")
+
+    apply plugin: "net.minecraftforge.gradle.forge"
+    apply plugin: 'signing'
+
+    sourceCompatibility = targetCompatibility = '1.8'
+
+
+    minecraft {
+        version = project.forge_version
+        runDir = "run"
+        replace '@VERSION@', project.version
+        if (project.hasProperty('keyStore')) {
+            replace '@FINGERPRINT@', project.findProperty('signSHA1')
+        }
+
+        mappings = project.mcp_version
+        makeObfSourceJar = false // Disable Srg named sources jar
+    }
+
+    apply from: new File(rootProject.projectDir, 'dependencies.gradle')
+    apply from: new File(rootProject.projectDir, 'update_json.gradle')
+
+    build.finalizedBy updateJson
+
+    jar {
+        from sourceSets.api.output
+        from sourceSets.main.output
+        manifest {
+            attributes([
+                    'Maven-Artifact': "${project.group}:${archivesBaseName}:${project.version}",
+                    'Timestamp'     : System.currentTimeMillis()
+            ])
+        }
+    }
+
+    processResources {
+        // this will ensure that this task is redone when the versions change.
+        inputs.property "version", project.version
+        inputs.property "mcversion", project.minecraft.version
+
+        // replace stuff in mcmod.info, nothing else
+        from(sourceSets.main.resources.srcDirs) {
+            include "mcmod.info"
+
+            // replace version and mcversion
+            expand "version": project.version, "mcversion": project.minecraft.version
+        }
+
+        // copy everything else, that's not the mcmod.info
+        from(sourceSets.main.resources.srcDirs) {
+            exclude "mcmod.info"
+        }
+
+        rename '(.+_at.cfg)', 'META-INF/$1'
+    }
+
+    task signJar(type: SignJar, dependsOn: reobfJar) {
+        onlyIf {
+            project.hasProperty('keyStore')
+        }
+
+        keyStore = project.properties.keyStore
+        alias = project.properties.keyStoreAlias
+        storePass = project.properties.keyStorePass
+        keyPass = project.properties.keyStoreKeyPass
+    }
+
+    build.dependsOn signJar
+}
+
+apply plugin: 'maven'
 
 configurations {
     contained
     contained.transitive = false
 }
 
-minecraft {
-    version = "${forge_version}"
-    runDir = "run"
-    // snapshot_YYYYMMDD   snapshot are built nightly.
-    // stable_#            stables are built at the discretion of the MCP team.
-    mappings = "${mcp_version}"
-
-    if (canJarBeSigned()) {
-        replace '@FINGERPRINT@', project.findProperty('signSHA1')
-    }
-    replace '@VERSION@', mod_version
-    if (project.hasProperty('mc_uuid')) {
-        clientRunArgs += ['--uuid', "${project.mc_uuid}"]
-    }
-}
-
-repositories {
-    maven {
-        // location of the maven that hosts JEI files
-        name = "Progwml6 maven"
-        url = "http://dvs1.progwml6.com/files/maven"
-    }
-    maven {
-        // location of a maven mirror for JEI files, as a fallback
-        name = "ModMaven"
-        url = "modmaven.k-4u.nl"
-    }
-    maven {
-        name = "CurseForge"
-        url = "https://minecraft.curseforge.com/api/maven"
-    }
-    maven {
-        name = "thiakil"
-        url = "http://maven.thiakil.com"
-    }
-    maven {
-        url 'https://jitpack.io'
-    }
-}
-
 dependencies {
-    compile         'org.jetbrains:annotations:15.0'
-    testCompile     'junit:junit:4.12'
-    deobfProvided   'albedo:albedo:0.1.3'
-    deobfProvided   "com.azanor.baubles:Baubles:${baubles_version}"
-    deobfCompile    "com.github.Pyrofab:Ladylib:${ladylib_version}"
-    contained       "com.github.Pyrofab:Ladylib:${ladylib_version}"
-    deobfProvided   "thaumcraft:Thaumcraft:${mc_version}:${thaumcraft_version}"
-    deobfProvided   "slimeknights.mantle:Mantle:${mantle_version}"
-    deobfProvided   "knightminer:Inspirations:${mc_version}-${inspirations_version}"
-    deobfProvided   "mezz.jei:jei_${mc_version}:${jei_version}:api"
-    runtimeOnly     "mezz.jei:jei_${mc_version}:${jei_version}"
-}
-
-processResources {
-    inputs.property "modVersion", project.version
-    inputs.property "mcVersion", project.minecraft.version
-
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-        expand 'version': project.version, 'mcversion': project.minecraft.version
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
-
-    rename '(.+_at.cfg)', 'META-INF/$1'
+    contained  "com.github.Pyrofab:Ladylib:${ladylib_version}"
 }
 
 //Builds the main jar
@@ -105,18 +106,14 @@ jar {
 
     manifest {
         attributes([
-                'ContainedDeps': configurations.contained.files.collect { it.name }.join(" "),
-                'Maven-Artifact': "${project.group}:${project.archivesBaseName}:${project.version}",
-                'Timestamp'     : System.currentTimeMillis()
+                'ContainedDeps': configurations.contained.files.collect { it.name }.join(" ")
         ])
     }
-    archiveName = "${archivesBaseName}-${mc_version}-${mod_version}-${version_nickname}.jar"
+    archiveName = "${archivesBaseName}-${mc_version}-${dissolution_version}-${version_nickname}.jar"
 
     manifest {
         attributes 'FMLAT': 'dissolution_at.cfg'
     }
-    from sourceSets.api.output
-    from sourceSets.main.output
 }
 
 //Builds a source jar
@@ -132,40 +129,22 @@ task apiJar(type: Jar) {
     classifier = 'api'
 }
 
-//Signs the main jar
-task signJar(type: SignJar, dependsOn: reobfJar) {
-    onlyIf {
-        canJarBeSigned()
-    }
-    keyStore = project.findProperty("keyStore")
-    alias = project.findProperty("keyStoreAlias")
-    storePass = project.findProperty("keyStorePass")
-    keyPass = project.findProperty("keyStoreKeyPass")
+updateJson {
+    beta = true
+    curseforgeURL = "https://minecraft.curseforge.com/projects/dissolution"
+}
+
+signJar {
     inputFile = jar.archivePath
     outputFile = jar.archivePath
 }
 
 artifacts {
-    archives(signJar.outputFile) {
-        file signJar.outputFile
+    archives(apiJar) {
         type 'jar'
-        builtBy signJar
+        builtBy apiJar
+        classifier 'api'
     }
     archives sourceJar
 }
-
-artifacts {
-    archives(signJar.outputFile) {
-        file signJar.outputFile
-        type 'jar'
-        builtBy signJar
-    }
-    archives sourceJar
-}
-
-boolean canJarBeSigned() {
-    return project.hasProperty('keyStore')
-}
-
-// Runs this task automatically when build is ran.
-build.dependsOn signJar
+install.dependsOn(signJar)

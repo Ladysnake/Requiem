@@ -1,0 +1,62 @@
+#####Version 1.12.2-0.1.2
+Bugfixes:
+- Fixed player bodies despawning
+
+#####Version 1.12.2-0.1.1 - BUILT
+
+Changes:
+- Possessed Skeletons fire arrows with the appropriate effects
+- Illagers and witches drop human flesh
+
+Bugfixes:
+- Fixed purification cauldron connecting to fences (game-breaking bug)
+- Fixed possessed entities taking fall damage on ladders
+
+API:
+- Dissolution's optional dependencies are not transitive anymore
+- Update LadyLib
+
+
+#####Version 1.12.2-0.1 - BUILT
+- Strong / weak soul, now Remnant / Vanilla soul: when joining a world for the first time, the player will be granted the choice between the mod’s death system or the vanilla death system.
+- Soul player state: if the player is a Remnant, upon death, his soul leaves his body, allowing a free roaming of the world in order to select a new body to inhabit.
+- Undead possession: completely re-written to be the most enjoyable possible, the undead possession system is here to stay. When in soul mode, you will be able to enter any undead monster’s body and control them. This will give you access to their inventories, advantages but also inconveniences. In a more detailed way:
+  - Fixed latency when moving around while possessing something
+  - Fixed offhand items rendering
+  - Fixed bow usage when possessing entities
+  - Fixed possessed mobs being unable to mount or dismount other things
+  - Fixed possession removal in creative
+  - Allowed undead players to go through portals when using possession
+  - Allowed possession to work with any undead mob from any mod
+
+New Items
+
+- Human flesh:
+  - Can be eaten by a human to restore food
+  - Can be eaten by an undead player to regain life and eventually his humanity
+  - Can be obtained from:
+    - Killing humans (such as human players, villagers, witches and illagers)
+    - Crafting via one rotten flesh piece and one ghast tear
+    - Putting a ghast tear in a water filled cauldron, and purifying rotten flesh by interacting with it
+- Human organs (heart, brain): serving the same use as the human flesh, they are mainly useful for brewing the mod’s potions.
+- Obnoxious potion: obtained when brewing human flesh in water bottles, it’s ineffective and acts as a, intermediary potion.
+- Eau de mort: obtained when brewing a human brain in obnoxious potions, it can expel Remnant souls out of their body, without destroying it, and alter vanilla souls to make them Remnant.
+- Sanguine potions: obtained when brewing a human heart in obnoxious potions, it has no effect for souls other than Remnant, altering them to become vanilla.
+
+Various changes
+
+- API changes : new Forge events for possession
+- The air bar is now rendered when possessing something
+- Possessed mobs now render arms in first person and full body in the inventory
+- Players possessing entities stop losing their experience
+- Possessed entities don’t get artificially targeted by mobs normally targetting players anymore
+- Added baby zombies immunity to sunlight back by default
+
+Cross-mod interactions
+
+- Added Thaumcraft aspects for every entity and item
+- Added Thaumcraft brain to human brain recipe
+- Added Inspirations recipe for purified flesh
+- Added Inspirations recipes for the mod’s potions
+
+#####Version history end
