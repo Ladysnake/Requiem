@@ -1,9 +1,12 @@
 package ladysnake.dissolution.common.compat;
 
+import knightminer.inspirations.Inspirations;
 import knightminer.inspirations.library.InspirationsRegistry;
 import knightminer.inspirations.library.recipe.cauldron.CauldronFluidRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ISimpleCauldronRecipe;
+import ladylib.compat.EnhancedBusSubscriber;
+import ladylib.compat.StateEventReceiver;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.blocks.BlockPurificationCauldron;
 import ladysnake.dissolution.common.init.ModItems;
@@ -13,16 +16,21 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import slimeknights.mantle.util.RecipeMatch;
 
 import java.util.Collections;
 import java.util.List;
 
-public class InspirationsCompat {
+/**
+ * Inspirations compatibility: add custom fluids and recipes for every potion
+ */
+@EnhancedBusSubscriber(Inspirations.modID)
+public class InspirationsCompat implements StateEventReceiver {
     public static Fluid ghastWater;
     public static Fluid eauDeMort;
     public static Fluid sanguine;
@@ -36,7 +44,7 @@ public class InspirationsCompat {
         event.getMap().registerSprite(SANGUINE_POTION_FLUID_TEXTURE);
     }
 
-    public static void preInit() {
+    public void preInit(FMLPreInitializationEvent event) {
         ghastWater = new Fluid("ghast_water", new ResourceLocation(Reference.MOD_ID,"blocks/ghast_water"), new ResourceLocation(Reference.MOD_ID, "blocks/ghast_water"));
         ghastWater.setUnlocalizedName(Reference.MOD_ID + ".ghast_water");
         FluidRegistry.registerFluid(ghastWater);
@@ -46,10 +54,9 @@ public class InspirationsCompat {
         sanguine = new Fluid("sanguine_potion", SANGUINE_POTION_FLUID_TEXTURE, SANGUINE_POTION_FLUID_TEXTURE);
         sanguine.setUnlocalizedName(Reference.MOD_ID + ".sanguine_potion");
         FluidRegistry.registerFluid(sanguine);
-        MinecraftForge.EVENT_BUS.register(new InspirationsCompat());
     }
 
-    public static void postInit() {
+    public void postInit(FMLPostInitializationEvent event) {
         InspirationsRegistry.addCauldronRecipe(new LiquidConversionRecipe(Items.GHAST_TEAR, ICauldronRecipe.CauldronState.WATER, ICauldronRecipe.CauldronState.fluid(ghastWater)));
         InspirationsRegistry.addCauldronRecipe(new LiquidConversionRecipe(ModItems.HUMAN_BRAIN, ICauldronRecipe.CauldronState.potion(ModPotions.OBNOXIOUS), ICauldronRecipe.CauldronState.fluid(eauDeMort)));
         InspirationsRegistry.addCauldronRecipe(new LiquidConversionRecipe(ModItems.HUMAN_HEART, ICauldronRecipe.CauldronState.potion(ModPotions.OBNOXIOUS), ICauldronRecipe.CauldronState.fluid(sanguine)));

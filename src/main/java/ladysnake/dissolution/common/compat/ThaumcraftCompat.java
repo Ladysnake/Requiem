@@ -1,10 +1,14 @@
 package ladysnake.dissolution.common.compat;
 
+import ladylib.compat.EnhancedBusSubscriber;
+import ladylib.compat.StateEventReceiver;
 import ladysnake.dissolution.common.entity.EntityPlayerShell;
 import ladysnake.dissolution.common.entity.PossessableEntityFactory;
 import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import thaumcraft.Thaumcraft;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -14,9 +18,15 @@ import thaumcraft.api.items.ItemsTC;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ThaumcraftCompat {
+@EnhancedBusSubscriber(Thaumcraft.MODID)
+public class ThaumcraftCompat implements StateEventReceiver {
 
-    public static void assignAspects() {
+    @Override
+    public void postInit(FMLPostInitializationEvent event) {
+        assignAspects();
+    }
+
+    private static void assignAspects() {
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.HUMAN_FLESH_RAW), new AspectList()
                 .add(Aspect.MAN, 5)
                 .add(Aspect.LIFE, 5)

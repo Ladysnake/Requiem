@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -245,7 +246,7 @@ public final class ShaderHelper {
         StringBuilder source = new StringBuilder();
 
         try (InputStream in = ShaderHelper.class.getResourceAsStream(filename);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"))) {
+             BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
 
             String line;
             while ((line = reader.readLine()) != null) {

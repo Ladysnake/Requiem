@@ -7,8 +7,6 @@ import ladysnake.dissolution.client.gui.GuiIncorporealOverlay;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.commands.CommandDissolutionTree;
-import ladysnake.dissolution.common.compat.InspirationsCompat;
-import ladysnake.dissolution.common.compat.ThaumcraftCompat;
 import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.handlers.EventHandlerCommon;
@@ -19,29 +17,23 @@ import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.inventory.DissolutionTab;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.networking.PacketHandler;
-import ladysnake.dissolution.common.tileentities.TileEntitySepulture;
-import ladysnake.dissolution.common.tileentities.TileEntityWispInAJar;
 import ladysnake.dissolution.unused.common.capabilities.CapabilityDistillateHandler;
 import ladysnake.dissolution.unused.common.capabilities.CapabilityGenericInventoryProvider;
-import ladysnake.dissolution.unused.common.tileentities.TileEntityLamentStone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -80,10 +72,6 @@ public class Dissolution {
 
         lib.setCreativeTab(CREATIVE_TAB);
         proxy.preInit();
-
-        if (Loader.isModLoaded("inspirations")) {
-            InspirationsCompat.preInit();
-        }
     }
 
     @EventHandler
@@ -95,10 +83,6 @@ public class Dissolution {
 
         OreDictHelper.registerOres();
 
-        GameRegistry.registerTileEntity(TileEntitySepulture.class, Reference.MOD_ID + ":tileentitysepulture");
-        GameRegistry.registerTileEntity(TileEntityLamentStone.class, Reference.MOD_ID + ":tileentityancienttomb");
-        GameRegistry.registerTileEntity(TileEntityWispInAJar.class, Reference.MOD_ID + ":tileentitywispinajar");
-
         LootTableList.register(new ResourceLocation(Reference.MOD_ID, "inject/human"));
 
         NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
@@ -106,16 +90,6 @@ public class Dissolution {
 
         if (FMLCommonHandler.instance().getSide().isClient()) {
             MinecraftForge.EVENT_BUS.register(new GuiIncorporealOverlay(Minecraft.getMinecraft()));
-        }
-    }
-
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
-        if (Loader.isModLoaded("thaumcraft")) {
-            ThaumcraftCompat.assignAspects();
-        }
-        if (Loader.isModLoaded("inspirations")) {
-            InspirationsCompat.postInit();
         }
     }
 

@@ -1,8 +1,6 @@
 package ladysnake.dissolution.common.compat;
 
-import ladysnake.dissolution.common.init.ModItems;
 import mezz.jei.api.*;
-import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import net.minecraft.block.Block;
@@ -34,7 +32,6 @@ public class JEICompat implements IModPlugin {
     @SideOnly(Side.CLIENT)
     public void register(IModRegistry registry) {
         this.registry = registry;
-        blacklistStuff();
         addInformationTabs();
     }
 
@@ -51,12 +48,6 @@ public class JEICompat implements IModPlugin {
     @SideOnly(Side.CLIENT)
     private void addInformationTab(Item item) {
         registry.addIngredientInfo(new ItemStack(item), ItemStack.class, I18n.format("jei.description.dissolution." + item.getTranslationKey()));
-    }
-
-    private void blacklistStuff() {
-        IIngredientBlacklist blacklist = registry.getJeiHelpers().getIngredientBlacklist();
-        blacklist.addIngredientToBlacklist(new ItemStack(ModItems.DEBUG_ITEM));
-        blacklist.addIngredientToBlacklist(new ItemStack(ModItems.LOGO));
     }
 
     @Override

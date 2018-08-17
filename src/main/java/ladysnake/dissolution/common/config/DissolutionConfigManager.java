@@ -2,6 +2,7 @@ package ladysnake.dissolution.common.config;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Files;
+import ladylib.config.ConfigUtil;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Reference;
@@ -26,13 +27,14 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public final class DissolutionConfigManager {
 
     public static Configuration config;
-    private static final ImmutableSet<StringChecker> GHOST_HUNTER_WHITELIST = ImmutableSet.of();
-    private static ImmutableSet<StringChecker> BLOCK_WHITELIST;
+    private static final ImmutableSet<Pattern> GHOST_HUNTER_WHITELIST = ImmutableSet.of();
+    private static ImmutableSet<Pattern> BLOCK_WHITELIST;
     static Set<ConfigCategory> rootCategories;
     public static Map<String, Property> syncedProps;
     /** Saves local config values */
@@ -52,8 +54,8 @@ public final class DissolutionConfigManager {
             return true;
         }
         String name = block.getRegistryName().toString();
-        for (StringChecker checker : BLOCK_WHITELIST) {
-            if (checker.matches(name)) {
+        for (Pattern checker : BLOCK_WHITELIST) {
+            if (checker.matcher(name).matches()) {
                 return true;
             }
         }
@@ -72,8 +74,8 @@ public final class DissolutionConfigManager {
         if(entityEntry == null || entityEntry.getRegistryName() == null) {
             return true;
         }
-        for(StringChecker checker : GHOST_HUNTER_WHITELIST) {
-            if(checker.matches(entityEntry.getRegistryName().toString())) {
+        for(Pattern checker : GHOST_HUNTER_WHITELIST) {
+            if(checker.matcher(entityEntry.getRegistryName().toString()).matches()) {
                 return false;
             }
         }
@@ -179,9 +181,9 @@ public final class DissolutionConfigManager {
     }
 
     private static void buildBlockWhitelist() {
-        ImmutableSet.Builder<StringChecker> builder = ImmutableSet.builder();
+        ImmutableSet.Builder<Pattern> builder = ImmutableSet.builder();
         for (String blockName : Dissolution.config.ghost.authorizedBlocks) {
-            builder.add(StringChecker.from(blockName));
+            builder.add(ConfigUtil.wildcardToRegex(blockName));
         }
         BLOCK_WHITELIST = builder.build();
     }

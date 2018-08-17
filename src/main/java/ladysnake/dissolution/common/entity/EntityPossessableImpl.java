@@ -109,7 +109,7 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     @Override
     public boolean isEntityInvulnerable(@Nonnull DamageSource source) {
         EntityPlayer possessing = getPossessingEntity();
-        if (possessing != null && possessing.isCreative()) {
+        if (possessing != null && possessing.isCreative() || possessing == source.getTrueSource()) {
             return true;
         }
         return super.isEntityInvulnerable(source);
