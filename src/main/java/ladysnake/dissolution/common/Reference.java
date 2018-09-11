@@ -10,7 +10,6 @@ public class Reference {
     static final String DEPENDENCIES =
             "required-after:forge@[14.23.3.2665,);" +
                     "required-after:" + LadyLib.MOD_ID + "@" + LadyLib.VERSION + ";" +
-//            "required-after:"+DissolutionCore.MOD_ID+"@"+DissolutionCore.VERSION+";" + // need the exact version of the plugin
             "after:albedo;" +
             "after:baubles;" +
             "after:thaumcraft;";

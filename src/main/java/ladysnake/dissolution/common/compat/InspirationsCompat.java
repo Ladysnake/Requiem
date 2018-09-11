@@ -21,6 +21,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
 import slimeknights.mantle.util.RecipeMatch;
 
 import java.util.Collections;
@@ -38,12 +39,6 @@ public class InspirationsCompat implements StateEventReceiver {
     private static final ResourceLocation EAU_DE_MORT_FLUID_TEXTURE = new ResourceLocation(Reference.MOD_ID,"blocks/eau_de_mort_fluid");
     private static final ResourceLocation SANGUINE_POTION_FLUID_TEXTURE = new ResourceLocation(Reference.MOD_ID,"blocks/sanguine_fluid");
 
-    @SubscribeEvent
-    public void onTextureStitch(TextureStitchEvent event) {
-        event.getMap().registerSprite(EAU_DE_MORT_FLUID_TEXTURE);
-        event.getMap().registerSprite(SANGUINE_POTION_FLUID_TEXTURE);
-    }
-
     public void preInit(FMLPreInitializationEvent event) {
         ghastWater = new Fluid("ghast_water", new ResourceLocation(Reference.MOD_ID,"blocks/ghast_water"), new ResourceLocation(Reference.MOD_ID, "blocks/ghast_water"));
         ghastWater.setUnlocalizedName(Reference.MOD_ID + ".ghast_water");
@@ -54,6 +49,15 @@ public class InspirationsCompat implements StateEventReceiver {
         sanguine = new Fluid("sanguine_potion", SANGUINE_POTION_FLUID_TEXTURE, SANGUINE_POTION_FLUID_TEXTURE);
         sanguine.setUnlocalizedName(Reference.MOD_ID + ".sanguine_potion");
         FluidRegistry.registerFluid(sanguine);
+    }
+
+    @EnhancedBusSubscriber(value = Inspirations.modID, side = Side.CLIENT)
+    public static class ClientHandler {
+        @SubscribeEvent
+        public void onTextureStitch(TextureStitchEvent event) {
+            event.getMap().registerSprite(EAU_DE_MORT_FLUID_TEXTURE);
+            event.getMap().registerSprite(SANGUINE_POTION_FLUID_TEXTURE);
+        }
     }
 
     public void postInit(FMLPostInitializationEvent event) {

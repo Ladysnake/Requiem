@@ -13,15 +13,18 @@ plugins {
 }
 
 allprojects {
-
     group = mod_group
-    version = project.findProperty("${project.name.toLowerCase(Locale.ENGLISH)}_version")
 
     apply plugin: "net.minecraftforge.gradle.forge"
     apply plugin: 'signing'
 
     sourceCompatibility = targetCompatibility = '1.8'
+}
 
+version = dissolution_version
+archivesBaseName = "Dissolution"
+
+allprojects {
 
     minecraft {
         version = project.forge_version

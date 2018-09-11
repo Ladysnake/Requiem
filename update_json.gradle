@@ -60,7 +60,9 @@ class GenerateUpdateJSON extends DefaultTask {
                         String mainVer = split[1]
                         String modVersion = String.format(versionScheme, mcVer, mainVer)
                         if (!changelogForVersions.containsKey(mcVer)) {
-                            promos.put(mcVer+RECOMMENDED, modVersion)
+                            if (!beta) {
+                                promos.put(mcVer+RECOMMENDED, modVersion)
+                            }
                             promos.put(mcVer+LATEST, modVersion)
                             changelogForVersions[mcVer] = new TreeMap<>({String s1, String s2-> compareVersions(s1, s2)})
                         }
