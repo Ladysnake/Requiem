@@ -3,6 +3,7 @@ package ladysnake.dissolution.common.entity;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.api.possession.DissolutionPossessionApi;
 import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -59,6 +60,9 @@ public class PossessableEntityFactory {
     @SuppressWarnings("unchecked")
     @Nullable
     public static <T extends EntityLivingBase & IPossessable> T createPossessableEntityFrom(EntityLivingBase deadGuy) {
+        if (DissolutionConfigManager.isEntityBlacklisted(deadGuy)) {
+            return null;
+        }
         if (deadGuy instanceof IPossessable) {
             return (T) deadGuy;
         }

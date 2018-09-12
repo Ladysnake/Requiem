@@ -47,11 +47,19 @@ public class DissolutionConfig {
 //        @Config.Comment("Any blocks having an average edge length below that value will let souls pass through")
 //        public double maxThickness = 0.9;
 
-        @RegExCheck("^/.+/$|^\\w+:\\w+$")
+        @RegExCheck("^/.+/$|^[\\w*]+:\\w+$")
         @Config.Comment("A list of block IDs that ectoplasm can interact with. " +
                 "If the name begins and ends with a \'/\', it will be interpreted as a regular expression.")
         public String[] authorizedBlocks = new String[]{"minecraft:lever", "/minecraft:.*door/",
                 "minecraft:wooden_button"};
+
+        @RegExCheck("^/.+/$|^[\\w*]+:\\w+$")
+        @Config.Comment({
+                "A list of entities that souls cannot possess. ",
+                "This will only prevent future possession attempts, not cancel current ones",
+                "If the name begins and ends with a \'/\', it will be interpreted as a regular expression."
+        })
+        public String[] possessionBlacklist = new String[0];
 
         @Config.Comment("If set to false, incorporeal players won't be able to use the /dissolution stuck command to get back to their spawnpoint")
         public boolean allowStuckCommand = true;

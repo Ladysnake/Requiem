@@ -1,7 +1,6 @@
 package ladysnake.dissolution.common.config;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.io.Files;
 import ladylib.config.ConfigUtil;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
@@ -11,6 +10,7 @@ import ladysnake.dissolution.common.networking.ConfigMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.config.ConfigCategory;
@@ -26,6 +26,8 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -35,6 +37,7 @@ public final class DissolutionConfigManager {
     public static Configuration config;
     private static final ImmutableSet<Pattern> GHOST_HUNTER_WHITELIST = ImmutableSet.of();
     private static ImmutableSet<Pattern> BLOCK_WHITELIST;
+    private static ImmutableSet<Pattern> POSSESSION_BLACKLIST;
     static Set<ConfigCategory> rootCategories;
     public static Map<String, Property> syncedProps;
     /** Saves local config values */
@@ -48,13 +51,22 @@ public final class DissolutionConfigManager {
         return FlightModes.CUSTOM_FLIGHT == flightMode;
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static boolean canEctoplasmInteractWith(Block block) {
         if (block instanceof ISoulInteractable) {
             return true;
         }
-        String name = block.getRegistryName().toString();
+        String name = String.valueOf(block.getRegistryName());
         for (Pattern checker : BLOCK_WHITELIST) {
+            if (checker.matcher(name).matches()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isEntityBlacklisted(Entity entity) {
+        String name = String.valueOf(EntityList.getKey(entity));
+        for (Pattern checker : POSSESSION_BLACKLIST) {
             if (checker.matcher(name).matches()) {
                 return true;
             }
@@ -106,7 +118,8 @@ public final class DissolutionConfigManager {
      */
     public static void load() {
         DissolutionConfigReader.readAndInitializeConfig(config);
-        buildBlockWhitelist();
+        BLOCK_WHITELIST = buildConfigList(Dissolution.config.ghost.authorizedBlocks);
+        POSSESSION_BLACKLIST = buildConfigList(Dissolution.config.ghost.possessionBlacklist);
     }
 
     /**
@@ -139,7 +152,7 @@ public final class DissolutionConfigManager {
 
     private static void resetConfig(File configFile) {
         try {
-            Files.copy(configFile, new File(configFile.getParent(), Reference.MOD_NAME + "_backup.txt"));
+            Files.copy(configFile.toPath(), Paths.get(configFile.getParent(), Reference.MOD_NAME + "_backup.txt"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -180,12 +193,12 @@ public final class DissolutionConfigManager {
         }
     }
 
-    private static void buildBlockWhitelist() {
+    private static ImmutableSet<Pattern> buildConfigList(String[] entries) {
         ImmutableSet.Builder<Pattern> builder = ImmutableSet.builder();
-        for (String blockName : Dissolution.config.ghost.authorizedBlocks) {
-            builder.add(ConfigUtil.wildcardToRegex(blockName));
+        for (String entry : entries) {
+            builder.add(ConfigUtil.wildcardToRegex(entry));
         }
-        BLOCK_WHITELIST = builder.build();
+        return builder.build();
     }
 
     public enum FlightModes {
