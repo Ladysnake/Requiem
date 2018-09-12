@@ -4,8 +4,8 @@ import ladylib.compat.EnhancedBusSubscriber;
 import ladylib.compat.StateEventReceiver;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 
 import java.util.function.Function;
 
@@ -16,7 +16,7 @@ import java.util.function.Function;
 public class STGCompat implements StateEventReceiver, Function<EntityLivingBase, Boolean> {
 
     @Override
-    public void postInit(FMLPostInitializationEvent event) {
+    public void init(FMLInitializationEvent event) {
         FMLInterModComms.sendFunctionMessage("stg", "", STGCompat.class.getName());
     }
 

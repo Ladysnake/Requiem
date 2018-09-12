@@ -1,6 +1,8 @@
 #####Version 1.12.2-0.1.2
 Bugfixes:
 - Fixed player bodies despawning
+- Fixed possessed entities hitting themselves with Swing Through Grass
+- Fixed server crash with Inspirations
 
 #####Version 1.12.2-0.1.1 - BUILT
 
