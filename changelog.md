@@ -1,4 +1,6 @@
 #####Version 1.12.2-0.1.2
+Changes:
+- Added a blacklist for entities that can be possessed
 Bugfixes:
 - Fixed player bodies despawning
 - Fixed possessed entities hitting themselves with Swing Through Grass
