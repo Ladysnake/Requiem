@@ -44,7 +44,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
 import net.minecraftforge.fml.relauncher.Side;
@@ -90,9 +89,7 @@ public class EventHandlerClient {
 
         // Sends a request to the server
         if (!playerCorp.isSynced() && refreshTimer++ % 100 == 0) {
-            IMessage msg = new PingMessage(player.getUniqueID().getMostSignificantBits(),
-                    player.getUniqueID().getLeastSignificantBits());
-            PacketHandler.NET.sendToServer(msg);
+            PacketHandler.NET.sendToServer(new PingMessage());
         } else if (playerCorp.isSynced()) {
             refreshTimer = 0;
         }

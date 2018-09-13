@@ -19,8 +19,7 @@ public class PingPacket implements IMessageHandler<PingMessage, IMessage> {
             FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> {
                 EntityPlayerMP thePlayer = ctx.getServerHandler().player;
                 final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(thePlayer);
-                PacketHandler.NET.sendToAll(new IncorporealMessage(message.uuidMost, message.uuidLeast, clone.isStrongSoul(), clone.getCorporealityStatus()));
-//			  PacketHandler.NET.sendTo(new SoulMessage(SoulMessage.FULL_UPDATE, CapabilitySoulHandler.getHandler(thePlayer).getSoulList()), thePlayer);
+                PacketHandler.NET.sendTo(new IncorporealMessage(thePlayer.getEntityId(), clone.isStrongSoul(), clone.getCorporealityStatus()), thePlayer);
                 Entity possessed = clone.getPossessed();
                 if (possessed != null) {
                     PacketHandler.NET.sendTo(new PossessionMessage(thePlayer.getUniqueID(), possessed.getEntityId()), thePlayer);

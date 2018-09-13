@@ -1,16 +1,13 @@
 package ladysnake.dissolution.common.networking;
 
-import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.UUID;
 
 public class IncorporealPacket implements IMessageHandler<IncorporealMessage, IMessage> {
 
@@ -20,14 +17,11 @@ public class IncorporealPacket implements IMessageHandler<IncorporealMessage, IM
         // just to make sure that the side is correct
         if (ctx.side.isClient()) {
             Minecraft.getMinecraft().addScheduledTask(() -> {
-                try {
-                    final EntityPlayer player = Minecraft.getMinecraft().player.world
-                            .getPlayerEntityByUUID(new UUID(message.playerUUIDMost, message.playerUUIDLeast));
-                    final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
+                final Entity player = Minecraft.getMinecraft().player.world.getEntityByID(message.playerId);
+                CapabilityIncorporealHandler.getHandler(player).ifPresent(playerCorp -> {
                     playerCorp.setStrongSoul(message.strongSoul);
                     playerCorp.setCorporealityStatus(message.corporealityStatus);
-                } catch (NullPointerException ignored) {
-                }
+                });
             });
         }
         return null;

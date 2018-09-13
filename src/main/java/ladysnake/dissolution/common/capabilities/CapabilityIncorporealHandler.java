@@ -27,6 +27,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -116,6 +117,18 @@ public class CapabilityIncorporealHandler {
     }
 
     /**
+     * Synchronizes the corporeal status of newly tracked players
+     */
+    @SubscribeEvent
+    public static void onPlayerStartTracking(PlayerEvent.StartTracking event) {
+        if (event.getTarget() instanceof EntityPlayerMP) {
+            EntityPlayerMP target = (EntityPlayerMP) event.getTarget();
+            IIncorporealHandler handler = getHandler(target);
+            PacketHandler.NET.sendTo(new IncorporealMessage(target.getEntityId(), handler.isStrongSoul(), handler.getCorporealityStatus()), (EntityPlayerMP) event.getEntityPlayer());
+        }
+    }
+
+    /**
      * This is the class that does most of the work, and the one other classes interact with
      *
      * @author Pyrofab
@@ -160,9 +173,10 @@ public class CapabilityIncorporealHandler {
                 this.setCorporealityStatus0(SoulStates.BODY);
             }
             this.strongSoul = strongSoul;
-            if (!owner.world.isRemote) {
-                PacketHandler.NET.sendToAll(new IncorporealMessage(owner.getUniqueID().getMostSignificantBits(),
-                        owner.getUniqueID().getLeastSignificantBits(), strongSoul, this.corporealityStatus));
+            if (owner instanceof EntityPlayerMP && ((EntityPlayerMP) owner).connection != null) {
+                IncorporealMessage message = new IncorporealMessage(owner.getEntityId(), strongSoul, this.corporealityStatus);
+                PacketHandler.NET.sendTo(message, (EntityPlayerMP) owner);
+                PacketHandler.NET.sendToAllTracking(message, owner);
             }
         }
 
@@ -181,9 +195,10 @@ public class CapabilityIncorporealHandler {
 
             setCorporealityStatus0(newStatus);
 
-            if (!owner.world.isRemote) {
-                PacketHandler.NET.sendToAll(new IncorporealMessage(owner.getUniqueID().getMostSignificantBits(),
-                        owner.getUniqueID().getLeastSignificantBits(), strongSoul, newStatus));
+            if (owner instanceof EntityPlayerMP && ((EntityPlayerMP) owner).connection != null) {
+                IncorporealMessage message = new IncorporealMessage(owner.getEntityId(), strongSoul, newStatus);
+                PacketHandler.NET.sendTo(message, (EntityPlayerMP) owner);
+                PacketHandler.NET.sendToAllTracking(message, owner);
             }
             setSynced(true);
         }
@@ -239,9 +254,11 @@ public class CapabilityIncorporealHandler {
                 hostUUID = possessable.getUniqueID();
                 owner.setInvisible(true);   // prevent the soul from being seen at all
             }
-            if (!owner.world.isRemote) {
+            if (owner instanceof EntityPlayerMP && ((EntityPlayerMP) owner).connection != null) {
                 ((EntityPlayerMP) owner).connection.sendPacket(new SPacketCamera(possessable == null ? owner : possessable));
-                PacketHandler.NET.sendToAllTracking(new PossessionMessage(owner.getUniqueID(), hostID), owner);
+                PossessionMessage message = new PossessionMessage(owner.getUniqueID(), hostID);
+                PacketHandler.NET.sendTo(message, (EntityPlayerMP) owner);
+                PacketHandler.NET.sendToAllTracking(message, owner);
             }
             return true;
         }
