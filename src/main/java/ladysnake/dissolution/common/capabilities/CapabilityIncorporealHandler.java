@@ -32,7 +32,6 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
 import org.apache.logging.log4j.LogManager;
@@ -219,7 +218,7 @@ public class CapabilityIncorporealHandler {
                 return false;
             }
             owner.clearActivePotions();
-            if (possessable == null) {
+            if (possessable == null) {          // stop the current possession
                 IPossessable currentHost = getPossessed();
                 // cancel the operation if a) the event is canceled or b) the possessed entity denies it
                 if (MinecraftForge.EVENT_BUS.post(new PossessionEvent.Stop(owner, (EntityLivingBase & IPossessable) currentHost, force)) ||
@@ -229,7 +228,8 @@ public class CapabilityIncorporealHandler {
                 hostID = 0;
                 hostUUID = null;
                 owner.dismountRidingEntity();
-            } else {
+                owner.setInvisible(Dissolution.config.ghost.invisibleGhosts);   // restore previous visibility
+            } else {                            // start possessing an entity
                 // cancel the operation if a) the event is canceled or b) the possessed entity denies it
                 if (MinecraftForge.EVENT_BUS.post(new PossessionEvent.Start(owner, possessable, force)) ||
                         !possessable.onEntityPossessed(owner)) {
@@ -237,11 +237,11 @@ public class CapabilityIncorporealHandler {
                 }
                 hostID = possessable.getEntityId();
                 hostUUID = possessable.getUniqueID();
+                owner.setInvisible(true);   // prevent the soul from being seen at all
             }
             if (!owner.world.isRemote) {
                 ((EntityPlayerMP) owner).connection.sendPacket(new SPacketCamera(possessable == null ? owner : possessable));
-                PacketHandler.NET.sendToAllAround(new PossessionMessage(owner.getUniqueID(), hostID),
-                        new NetworkRegistry.TargetPoint(owner.dimension, owner.posX, owner.posY, owner.posZ, 100));
+                PacketHandler.NET.sendToAllTracking(new PossessionMessage(owner.getUniqueID(), hostID), owner);
             }
             return true;
         }

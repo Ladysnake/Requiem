@@ -78,11 +78,6 @@ public class EventHandlerClient {
     }
 
     @SubscribeEvent
-    public static void onTextureStitch(TextureStitchEvent.Pre event) {
-//		event.getMap().registerSprite(AdditiveParticle.STAR_PARTICLE_TEXTURE);
-    }
-
-    @SubscribeEvent
     public static void onGameTick(TickEvent.ClientTickEvent event) {
         final EntityPlayer player = Minecraft.getMinecraft().player;
         if (player == null || noServerInstall) {
