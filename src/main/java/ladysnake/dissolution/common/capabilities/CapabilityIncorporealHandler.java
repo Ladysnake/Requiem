@@ -157,10 +157,13 @@ public class CapabilityIncorporealHandler {
             if (owner == null || MinecraftForge.EVENT_BUS.post(new SoulStrengthModifiedEvent(owner, strongSoul))) {
                 return;
             }
+            if (!strongSoul && this.getCorporealityStatus().isIncorporeal()) {
+                this.setCorporealityStatus0(SoulStates.BODY);
+            }
             this.strongSoul = strongSoul;
             if (!owner.world.isRemote) {
                 PacketHandler.NET.sendToAll(new IncorporealMessage(owner.getUniqueID().getMostSignificantBits(),
-                        owner.getUniqueID().getLeastSignificantBits(), strongSoul, corporealityStatus));
+                        owner.getUniqueID().getLeastSignificantBits(), strongSoul, this.corporealityStatus));
             }
         }
 
@@ -177,6 +180,16 @@ public class CapabilityIncorporealHandler {
                 newStatus = SoulStates.BODY;
             }
 
+            setCorporealityStatus0(newStatus);
+
+            if (!owner.world.isRemote) {
+                PacketHandler.NET.sendToAll(new IncorporealMessage(owner.getUniqueID().getMostSignificantBits(),
+                        owner.getUniqueID().getLeastSignificantBits(), strongSoul, newStatus));
+            }
+            setSynced(true);
+        }
+
+        private void setCorporealityStatus0(ICorporealityStatus newStatus) {
             corporealityStatus.resetState(owner);
 
             corporealityStatus = newStatus;
@@ -186,18 +199,12 @@ public class CapabilityIncorporealHandler {
             if (!newStatus.isIncorporeal() && this.getPossessed() != null) {
                 this.setPossessed(null);
             }
-
-            if (!owner.world.isRemote) {
-                PacketHandler.NET.sendToAll(new IncorporealMessage(owner.getUniqueID().getMostSignificantBits(),
-                        owner.getUniqueID().getLeastSignificantBits(), strongSoul, newStatus));
-            }
-            setSynced(true);
         }
 
         @Nonnull
         @Override
         public ICorporealityStatus getCorporealityStatus() {
-            return this.isStrongSoul() ? this.corporealityStatus : SoulStates.BODY;
+            return this.corporealityStatus;
         }
 
         /**
