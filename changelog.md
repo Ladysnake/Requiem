@@ -1,3 +1,12 @@
+#####Version 1.12.2-0.1.3 - BUILT
+
+Bugfixes:
+- Fixed a bug with using `/setRemnant player false` on a soul
+- Remnant players are now properly invisible during possession
+- Theoretically fixed a good chunk of synchronization issues
+- Fixed possession setting incorporeal effect on all clients
+- Fixed possessed entities' loot getting in the soul's inventory
+
 #####Version 1.12.2-0.1.2 - BUILT
 
 Changes:
