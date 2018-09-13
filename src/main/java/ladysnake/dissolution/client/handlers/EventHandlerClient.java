@@ -123,14 +123,14 @@ public class EventHandlerClient {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onPossession(PossessionEvent.Start event) {
-        if (event.getEntity().world.isRemote) {
+        if (event.getEntity().world.isRemote && event.getEntityPlayer() == Minecraft.getMinecraft().player) {
             ShaderHelper.disableScreenShader(SPECTRE_SHADER);
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onPossession(PossessionEvent.Stop event) {
-        if (event.getEntity().world.isRemote) {
+        if (event.getEntity().world.isRemote && event.getEntityPlayer() == Minecraft.getMinecraft().player) {
             ShaderHelper.enableScreenShader(SPECTRE_SHADER);
         }
     }
