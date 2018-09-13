@@ -1,4 +1,5 @@
-#####Version 1.12.2-0.1.2
+#####Version 1.12.2-0.1.2 - BUILT
+
 Changes:
 - Added a blacklist for entities that can be possessed
 Bugfixes:
