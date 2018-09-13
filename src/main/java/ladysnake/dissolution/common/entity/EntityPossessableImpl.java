@@ -82,7 +82,7 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             return true;
         }
         IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
-        if (!handler.getCorporealityStatus().isIncorporeal() || this.isDead || force) {
+        if (!handler.getCorporealityStatus().isIncorporeal() || this.dead || force) {
             this.setPossessingEntity(null);
             player.eyeHeight = player.getDefaultEyeHeight();
             this.aiDontDoShit.setShouldExecute(false);
@@ -358,6 +358,7 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
 
     @Override
     public void onDeath(@Nonnull DamageSource cause) {
+        super.onDeath(cause);
         if (this.getPossessingEntity() != null) {
             EntityPlayer player = this.getPossessingEntity();
             if (!world.isRemote) {
@@ -365,7 +366,6 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             }
             CapabilityIncorporealHandler.getHandler(player).setPossessed(null);
         }
-        super.onDeath(cause);
     }
 
     @Override
