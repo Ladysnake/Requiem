@@ -361,10 +361,13 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
         super.onDeath(cause);
         if (this.getPossessingEntity() != null) {
             EntityPlayer player = this.getPossessingEntity();
+            CapabilityIncorporealHandler.getHandler(player).setPossessed(null);
             if (!world.isRemote) {
                 player.inventory.dropAllItems();
+                if (world.getMinecraftServer().isHardcore()) {
+                    player.setDead();
+                }
             }
-            CapabilityIncorporealHandler.getHandler(player).setPossessed(null);
         }
     }
 
