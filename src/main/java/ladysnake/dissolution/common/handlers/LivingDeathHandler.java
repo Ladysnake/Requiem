@@ -5,8 +5,8 @@ import ladylib.misc.ReflectionUtil;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.networking.FlashTransitionMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
-import ladysnake.dissolution.common.networking.RemnantRespawnMessage;
 import ladysnake.dissolution.common.networking.RemnantRespawnPacket;
 import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.Entity;
@@ -106,7 +106,7 @@ public class LivingDeathHandler {
             if (!p.world.isRemote) {
                 EntityPlayerMP playerMP = (EntityPlayerMP) p;
                 fakePlayerDeath(playerMP, event.getSource());
-                PacketHandler.NET.sendTo(new RemnantRespawnMessage(), playerMP);
+                PacketHandler.NET.sendTo(new FlashTransitionMessage(), playerMP);
                 RemnantRespawnPacket.fakeRespawn(playerMP);
             }
             event.setCanceled(true);

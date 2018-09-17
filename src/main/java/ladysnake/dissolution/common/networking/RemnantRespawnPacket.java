@@ -142,6 +142,6 @@ public class RemnantRespawnPacket implements IMessageHandler<RemnantRespawnMessa
         net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerRespawnEvent(entityplayermp, false);
         player.connection.player = entityplayermp;
         PacketHandler.NET.sendTo(new IncorporealMessage(entityplayermp.getEntityId(), true, SoulStates.SOUL), entityplayermp);
-        PacketHandler.NET.sendTo(new FlashTransitionMessage(false), entityplayermp);
+        PacketHandler.NET.sendTo(new FlashTransitionMessage(), entityplayermp);
     }
 }
