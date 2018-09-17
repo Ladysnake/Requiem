@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.handlers;
 
+import ladylib.LadyLib;
 import ladylib.misc.ReflectionUtil;
 import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
@@ -88,6 +89,7 @@ public class EventHandlerCommon {
 
     @SubscribeEvent
     public void onPlayerRespawn(PlayerRespawnEvent event) {
+        if (LadyLib.isDevEnv()) return;
         IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.player);
         // Teleports the player to wherever they should be if needed
         if (!event.isEndConquered() && !event.player.world.isRemote) {
