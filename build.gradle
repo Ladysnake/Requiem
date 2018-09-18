@@ -85,6 +85,10 @@ allprojects {
         storePass = project.properties.keyStorePass
         keyPass = project.properties.keyStoreKeyPass
     }
+	
+	compileJava {
+		options.encoding = 'UTF-8'
+	}
 
     build.dependsOn signJar
 }
