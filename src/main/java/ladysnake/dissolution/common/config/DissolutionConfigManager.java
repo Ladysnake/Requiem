@@ -27,6 +27,7 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -158,12 +159,16 @@ public final class DissolutionConfigManager {
 
     private static void resetConfig(File configFile) {
         try {
-            Files.copy(configFile.toPath(), Paths.get(configFile.getParent(), Reference.MOD_NAME + "_backup.txt"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (configFile.delete()) {
+            Path configPath = configFile.toPath();
+            Path backup = Paths.get(configFile.getParent(), Reference.MOD_NAME + "_backup.txt");
+            for (int i = 0; Files.exists(backup); i++) {
+                backup = backup.resolveSibling(Reference.MOD_NAME + "_backup" + i + ".txt");
+            }
+            Files.copy(configPath, backup);
+            Files.delete(configPath);
             config = new Configuration(configFile, String.valueOf(Reference.CONFIG_VERSION));
+        } catch (IOException e) {
+            Dissolution.LOGGER.error("Could not reset config !", e);
         }
     }
 
