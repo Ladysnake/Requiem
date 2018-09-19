@@ -33,6 +33,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.GuiIngameForge;
@@ -228,8 +229,9 @@ public class EventHandlerClient {
                     player.motionY = SOUL_VERTICAL_SPEED;
                     player.velocityChanged = true;
                 } else if (player.motionY <= 0 && player.getRidingEntity() == null) {
-                    if (player.world.getBlockState(player.getPosition()).getMaterial().isLiquid() ||
-                            player.world.getBlockState(player.getPosition().down()).getMaterial().isLiquid()) {
+                    BlockPos playerPos = new BlockPos(player);
+                    if (player.world.getBlockState(playerPos).getMaterial().isLiquid() ||
+                            player.world.getBlockState(playerPos.down()).getMaterial().isLiquid()) {
                         player.velocityChanged = true;
                     } else {
                         player.motionY = -0.8f * SOUL_VERTICAL_SPEED;

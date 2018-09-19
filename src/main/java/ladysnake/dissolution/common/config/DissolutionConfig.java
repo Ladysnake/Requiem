@@ -86,7 +86,7 @@ public class DissolutionConfig {
         public int respawnDimension = -1;
 
         @Config.Comment("Whether players should respawn instantly as souls without showing death screen (could mess with other mods)")
-        public boolean skipDeathScreen = false;
+        public boolean skipDeathScreen = true;
 
     }
 

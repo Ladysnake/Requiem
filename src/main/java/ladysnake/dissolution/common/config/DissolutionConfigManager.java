@@ -126,16 +126,22 @@ public final class DissolutionConfigManager {
      * If this config's last version is outdated, attempts to update defaults
      */
     private static void updateConfig() {
-        // Updating configuration file to v3.0 (dissolution v0.5.2)
+        // Updating configuration file to v3.0 (dissolution indev 5.2)
         if (config.hasKey("don't touch that", "version")) {
             Dissolution.LOGGER.warn("Config file is out of date. Replacing with new format. A backup will be created.");
             resetConfig(config.getConfigFile());
         }
 
-        // Updating configuration file to v3.1 (dissolution v0.5.3)
+        // Updating configuration file to v3.1 (dissolution indev 5.3)
         if (isBehind(config.getLoadedConfigVersion(), 3.1)) {
             Dissolution.LOGGER.info("Updating config from " + config.getLoadedConfigVersion() + " to v3.1");
             config.getCategory("client").remove("showLamentStones");
+        }
+
+        // Updating configuration file to v4.0 (dissolution 0.1.3)
+        if (isBehind(config.getLoadedConfigVersion(), 4.0)) {
+            Dissolution.LOGGER.info("Updating config from {} to v4.0", config.getLoadedConfigVersion());
+            resetConfig(config.getConfigFile());
         }
 
         config.save();
