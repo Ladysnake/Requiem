@@ -13,7 +13,7 @@ public class Reference {
             "after:albedo;" +
             "after:baubles;" +
             "after:thaumcraft;";
-    public static final double CONFIG_VERSION = 3.1;
+    public static final double CONFIG_VERSION = 4.0;
 
     static final String CLIENT_PROXY_CLASS = "ladysnake.dissolution.client.ClientProxy";
     static final String SERVER_PROXY_CLASS = "ladysnake.dissolution.common.init.CommonProxy";

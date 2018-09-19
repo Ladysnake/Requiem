@@ -16,7 +16,7 @@ public class SoulCorporealityStatus extends IncorporealStatus {
 
     public void resetState(EntityPlayer owner) {
         super.resetState(owner);
-        owner.setEntityInvulnerable(owner.isCreative());
+        owner.setEntityInvulnerable(false);
         owner.capabilities.disableDamage = owner.isCreative();
     }
 }

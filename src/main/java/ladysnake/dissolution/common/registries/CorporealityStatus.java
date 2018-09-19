@@ -4,14 +4,10 @@ import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 public class CorporealityStatus extends IForgeRegistryEntry.Impl<ICorporealityStatus> implements ICorporealityStatus {
 
-
-    protected final Set<EntityPlayer> subscribedPlayers = new HashSet<>();
     private final boolean corporeal;
     protected final boolean preventsEntityInteract;
 
@@ -35,12 +31,12 @@ public class CorporealityStatus extends IForgeRegistryEntry.Impl<ICorporealitySt
 
     @Override
     public void initState(EntityPlayer player) {
-        this.subscribedPlayers.add(player);
+
     }
 
     @Override
     public void resetState(EntityPlayer player) {
-        this.subscribedPlayers.remove(player);
+
     }
 
     @Override

@@ -21,7 +21,7 @@ public class ConfigPacket implements IMessageHandler<ConfigMessage, IMessage> {
             if (DissolutionConfigManager.syncedProps.containsKey(key)) {
                 Property prop = DissolutionConfigManager.syncedProps.get(key);
                 DissolutionConfigManager.backupProps.put(prop, prop.getString());
-                Dissolution.LOGGER.info(prop.getString() + " -> " + value);
+                Dissolution.LOGGER.info("{}: {} -> {}", prop.getName(), prop.getString(), value);
                 prop.set(value);
                 prop.setRequiresWorldRestart(true);
             }

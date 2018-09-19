@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.config;
+package ladysnake.dissolution.unused.common.config;
 
 import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
 import ladysnake.dissolution.common.registries.SoulStates;

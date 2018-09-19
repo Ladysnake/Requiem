@@ -14,6 +14,7 @@ public class DissolutionConfig {
     @Config.Comment("If set to anything other than \"default\", will force players' remnant status and prevent the dialogue from appearing")
     public DissolutionConfigManager.EnforcedSoulStrength forceRemnant = DissolutionConfigManager.EnforcedSoulStrength.DEFAULT;
 
+    @Sync
     @Config.Comment("Because some people need dialogue to be explicit")
     public boolean technicianDialogue = false;
 
@@ -26,16 +27,6 @@ public class DissolutionConfig {
         public boolean useShaders = true;
 
     }
-
-//    public class Dialogues {
-//        @Config.LangKey("config.dissolution.dialogues.broadcastPlayerDialogue")
-//		@Config.Comment("If set to true, every dialogue choice made by the player will be broadcasted to all other players")
-//		public boolean broadcastPlayerDialogue = false;
-//
-//		@Config.LangKey("config.dissolution.dialogues.broadcastMajorNPCDialogue")
-//		@Config.Comment("If set to true, dialogues emitted by global entities (gods) will be broadcasted to all players")
-//		public boolean broadcastMajorNPCDialogue = false;
-//    }
 
     public static class Ghost {
 
@@ -69,7 +60,7 @@ public class DissolutionConfig {
     /**
      * Only there to be used by unit tests
      */
-    public static class TestGhost extends Ghost {
+    static class TestGhost extends Ghost {
 
         @Sync
         @Config.Comment("Changes the way players fly as souls")

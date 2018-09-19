@@ -15,8 +15,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -27,9 +25,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 
-import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandle;
 
 
@@ -43,11 +39,6 @@ public class EventHandlerCommon {
     private static final MethodHandle abstractSkeleton$getArrow = ReflectionUtil.findMethodHandleFromObfName(AbstractSkeleton.class, "func_190726_a", EntityArrow.class, float.class);
 
     public EventHandlerCommon() {
-
-    }
-
-    @SubscribeEvent
-    public void onLootTableLoad(LootTableLoadEvent event) {
 
     }
 
@@ -74,64 +65,6 @@ public class EventHandlerCommon {
             // avoid accumulation of tracked players and allow garbage collection
             corpse.getCorporealityStatus().resetState(event.getOriginal());
         }
-    }
-
-    @SubscribeEvent
-    public void onPlayerRespawn(PlayerRespawnEvent event) {
-        IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.player);
-        // Teleports the player to wherever they should be if needed
-        if (!event.isEndConquered() && !event.player.world.isRemote) {
-            event.player.world.profiler.startSection("placing_respawned_player");
-            // changes the player's dimension if required by the config or if they died there
-            if (Dissolution.config.respawn.respawnInNether) {
-                CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, Dissolution.config.respawn.respawnDimension);
-            } else if (event.player.dimension != playerCorp.getDeathStats().getDeathDimension()) {
-                CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, playerCorp.getDeathStats().getDeathDimension());
-            }
-
-            // changes the player's position to where they died
-            BlockPos deathPos = playerCorp.getDeathStats().getDeathLocation();
-            if (!event.player.world.isOutsideBuildHeight(deathPos) && event.player.world.isAirBlock(deathPos)) {
-                ((EntityPlayerMP) event.player).connection.setPlayerLocation(deathPos.getX(), deathPos.getY(), deathPos.getZ(),
-                        event.player.rotationYaw, event.player.rotationPitch);
-            } else if (!event.player.world.isOutsideBuildHeight(deathPos)) {
-                deathPos = getSafeSpawnLocation(event.player.world, deathPos);
-                if (deathPos != null) {
-                    ((EntityPlayerMP) event.player).connection.setPlayerLocation(deathPos.getX(), deathPos.getY(),
-                            deathPos.getZ(), event.player.rotationYaw, event.player.rotationPitch);
-                }
-            }
-            event.player.world.profiler.endSection();
-        }
-    }
-
-    @Nullable
-    private BlockPos getSafeSpawnLocation(World worldIn, BlockPos pos) {
-        int i = pos.getX();
-        int j = pos.getY();
-        int k = pos.getZ();
-
-        for (int l = 0; l <= 1; ++l) {
-            int i1 = i - 1;
-            int j1 = k - 1;
-            int k1 = i1 + 2;
-            int l1 = j1 + 2;
-
-            for (int i2 = i1; i2 <= k1; ++i2) {
-                for (int j2 = j1; j2 <= l1; ++j2) {
-                    BlockPos blockpos = new BlockPos(i2, j, j2);
-
-                    if (hasRoomForPlayer(worldIn, blockpos)) {
-                        return blockpos;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    protected boolean hasRoomForPlayer(World worldIn, BlockPos pos) {
-        return !worldIn.getBlockState(pos).getMaterial().isSolid() && !worldIn.getBlockState(pos.up()).getMaterial().isSolid();
     }
 
     /**

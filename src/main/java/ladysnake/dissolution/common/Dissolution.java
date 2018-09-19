@@ -11,7 +11,7 @@ import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.handlers.EventHandlerCommon;
 import ladysnake.dissolution.common.handlers.InteractEventsHandler;
-import ladysnake.dissolution.common.handlers.LivingDeathHandler;
+import ladysnake.dissolution.common.handlers.PlayerRespawnHandler;
 import ladysnake.dissolution.common.handlers.PlayerTickHandler;
 import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.inventory.DissolutionTab;
@@ -77,7 +77,7 @@ public class Dissolution {
     @EventHandler
     public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
-        MinecraftForge.EVENT_BUS.register(new LivingDeathHandler());
+        MinecraftForge.EVENT_BUS.register(new PlayerRespawnHandler());
         MinecraftForge.EVENT_BUS.register(new PlayerTickHandler());
         MinecraftForge.EVENT_BUS.register(new InteractEventsHandler());
 

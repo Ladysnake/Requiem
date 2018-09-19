@@ -3,7 +3,6 @@ package ladysnake.dissolution.client.gui;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -58,9 +57,7 @@ public class GuiIncorporealOverlay extends GuiIngame {
 //            }
             ScaledResolution res = event.getResolution();
 
-            if (this.mc.playerController.shouldDrawHUD() && this.mc.getRenderViewEntity() instanceof EntityPlayer && pl.getCorporealityStatus() == SoulStates.ECTOPLASM) {
-                this.drawCustomHealthBar(this.mc.player, res, 0);
-            } else if (this.mc.playerController.shouldDrawHUD()) {
+            if (this.mc.playerController.shouldDrawHUD()) {
                 EntityLivingBase possessed = pl.getPossessed();
                 if (possessed != null && possessed.getHealth() > 0) {
                     int textureRow = 0;
