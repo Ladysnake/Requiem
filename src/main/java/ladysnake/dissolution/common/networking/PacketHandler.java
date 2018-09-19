@@ -16,8 +16,6 @@ public class PacketHandler {
         NET.registerMessage(DisplayItemPacket.class, DisplayItemMessage.class, nextPacketId++, Side.CLIENT);
         NET.registerMessage(PossessionPacket.class, PossessionMessage.class, nextPacketId++, Side.CLIENT);
         NET.registerMessage(ConfigPacket.class, ConfigMessage.class, nextPacketId++, Side.CLIENT);
-        NET.registerMessage(RemnantRespawnPacket.class, RemnantRespawnMessage.class, nextPacketId++, Side.CLIENT);
-        NET.registerMessage(RemnantRespawnPacket.class, RemnantRespawnMessage.class, nextPacketId++, Side.SERVER);
         NET.registerMessage(FlashTransitionPacket.class, FlashTransitionMessage.class, nextPacketId++, Side.CLIENT);
     }
 }

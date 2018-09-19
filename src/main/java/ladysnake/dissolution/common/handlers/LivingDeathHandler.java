@@ -6,8 +6,8 @@ import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.networking.FlashTransitionMessage;
+import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
-import ladysnake.dissolution.common.networking.RemnantRespawnPacket;
 import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -15,13 +15,20 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.client.CPacketClientStatus;
 import net.minecraft.scoreboard.IScoreCriteria;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.DemoPlayerInteractionManager;
+import net.minecraft.server.management.PlayerInteractionManager;
+import net.minecraft.server.management.PlayerList;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootTable;
@@ -31,22 +38,24 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.lang.invoke.MethodHandle;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class LivingDeathHandler {
 
     private static MethodHandle destroyVanishingCursedItems = ReflectionUtil.findMethodHandleFromObfName(EntityPlayer.class, "func_190776_cN", void.class);
+    private static MethodHandle entity$setFlag = ReflectionUtil.findMethodHandleFromObfName(Entity.class, "func_70052_a", void.class, int.class, boolean.class);
+    private static MethodHandle playerList$uuidToPlayerMap = ReflectionUtil.findGetterFromObfName(PlayerList.class, "field_177454_f", Map.class);
+    private static MethodHandle playerList$setPlayerGameTypeBasedOnOther = ReflectionUtil.findMethodHandleFromObfName(PlayerList.class, "func_72381_a", void.class, EntityPlayerMP.class, EntityPlayerMP.class, World.class);
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onLivingDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof EntityPlayer) {
             this.handlePlayerDeath(event);
         }
-
-//        if (event.getSource().getTrueSource() instanceof EntityPlayer)
-//            this.handlePlayerKill((EntityPlayer) event.getSource().getTrueSource(), event.getEntityLiving());
     }
 
-    protected void handlePlayerDeath(LivingDeathEvent event) {
+    private void handlePlayerDeath(LivingDeathEvent event) {
         final EntityPlayer p = (EntityPlayer) event.getEntity();
         final IIncorporealHandler corp = CapabilityIncorporealHandler.getHandler(p);
         if (corp.getCorporealityStatus().isIncorporeal() && corp.getPossessed() != null) {
@@ -107,7 +116,7 @@ public class LivingDeathHandler {
                 EntityPlayerMP playerMP = (EntityPlayerMP) p;
                 fakePlayerDeath(playerMP, event.getSource());
                 PacketHandler.NET.sendTo(new FlashTransitionMessage(), playerMP);
-                RemnantRespawnPacket.fakeRespawn(playerMP);
+                fakeRespawn(playerMP);
             }
             event.setCanceled(true);
         }
@@ -168,8 +177,113 @@ public class LivingDeathHandler {
         player.addStat(StatList.DEATHS);
         player.takeStat(StatList.TIME_SINCE_DEATH);
         player.extinguish();
-        //player.setFlag(0, false);
+        try {
+            entity$setFlag.invoke(player, 0, false);
+        } catch (Throwable throwable) {
+            Dissolution.LOGGER.error("Could not set death flag", throwable);
+        }
         player.getCombatTracker().reset();
+    }
+
+    private void fakeRespawn(EntityPlayerMP player) {
+        IIncorporealHandler corp = CapabilityIncorporealHandler.getHandler(player);
+        MinecraftServer server = player.server;
+        int dimension = player.dimension;
+        PlayerList list = server.getPlayerList();
+        // Just in case
+        if (!corp.isStrongSoul()) {
+            player.connection.processClientStatus(new CPacketClientStatus(CPacketClientStatus.State.PERFORM_RESPAWN));
+            return;
+        }
+
+        if (player.getHealth() > 0.0F) {
+            return;
+        }
+
+        World world = server.getWorld(dimension);
+        if (world == null) {
+            dimension = player.getSpawnDimension();
+        }
+        if (server.getWorld(dimension) == null) dimension = 0;
+
+        player.getServerWorld().getEntityTracker().removePlayerFromTrackers(player);
+        player.getServerWorld().getEntityTracker().untrack(player);
+        player.getServerWorld().getPlayerChunkMap().removePlayer(player);
+        list.getPlayers().remove(player);
+        server.getWorld(player.dimension).removeEntityDangerously(player);
+        BlockPos blockpos = player.getBedLocation(dimension);
+        boolean flag = player.isSpawnForced(dimension);
+        player.dimension = dimension;
+        PlayerInteractionManager playerinteractionmanager;
+
+        if (server.isDemo()) {
+            playerinteractionmanager = new DemoPlayerInteractionManager(server.getWorld(player.dimension));
+        } else {
+            playerinteractionmanager = new PlayerInteractionManager(server.getWorld(player.dimension));
+        }
+
+        EntityPlayerMP entityplayermp = new EntityPlayerMP(server, server.getWorld(player.dimension), player.getGameProfile(), playerinteractionmanager);
+        entityplayermp.connection = player.connection;
+        entityplayermp.copyFrom(player, false);
+        entityplayermp.dimension = dimension;
+        entityplayermp.setEntityId(player.getEntityId());
+        entityplayermp.setCommandStats(player);
+        entityplayermp.setPrimaryHand(player.getPrimaryHand());
+        // CHANGE: respawned remnants spawn directly at the location of the old one
+        entityplayermp.setLocationAndAngles(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
+
+        for (String s : player.getTags()) {
+            entityplayermp.addTag(s);
+        }
+
+        WorldServer worldserver = server.getWorld(player.dimension);
+        try {
+            playerList$setPlayerGameTypeBasedOnOther.invoke(list, entityplayermp, player, worldserver);
+        } catch (Throwable throwable) {
+            LadyLib.LOGGER.error("Could not set respawned player's gamemode", throwable);
+        }
+
+        if (blockpos != null) {
+            BlockPos blockpos1 = EntityPlayer.getBedSpawnLocation(server.getWorld(player.dimension), blockpos, flag);
+
+            if (blockpos1 != null) {
+/*
+                entityplayermp.setLocationAndAngles((double) ((float) blockpos1.getX() + 0.5F), (double) ((float) blockpos1.getY() + 0.1F), (double) ((float) blockpos1.getZ() + 0.5F), 0.0F, 0.0F);
+*/
+                entityplayermp.setSpawnPoint(blockpos, flag);
+            }/* else {
+                entityplayermp.connection.sendPacket(new SPacketChangeGameState(0, 0.0F));
+            }*/
+        }
+
+        worldserver.getChunkProvider().provideChunk((int) entityplayermp.posX >> 4, (int) entityplayermp.posZ >> 4);
+
+        while (!worldserver.getCollisionBoxes(entityplayermp, entityplayermp.getEntityBoundingBox()).isEmpty() && entityplayermp.posY < 256.0D) {
+            entityplayermp.setPosition(entityplayermp.posX, entityplayermp.posY + 1.0D, entityplayermp.posZ);
+        }
+
+//            entityplayermp.connection.sendPacket(new SPacketRespawn(entityplayermp.dimension, entityplayermp.world.getDifficulty(), entityplayermp.world.getWorldInfo().getTerrainType(), entityplayermp.interactionManager.getGameType()));
+//            BlockPos blockpos2 = worldserver.getSpawnPoint();
+//            entityplayermp.connection.setPlayerLocation(entityplayermp.posX, entityplayermp.posY, entityplayermp.posZ, entityplayermp.rotationYaw, entityplayermp.rotationPitch);
+//            entityplayermp.connection.sendPacket(new SPacketSpawnPosition(blockpos2));
+//            entityplayermp.connection.sendPacket(new SPacketSetExperience(entityplayermp.experience, entityplayermp.experienceTotal, entityplayermp.experienceLevel));
+        list.updateTimeAndWeatherForPlayer(entityplayermp, worldserver);
+        list.updatePermissionLevel(entityplayermp);
+        worldserver.getPlayerChunkMap().addPlayer(entityplayermp);
+        worldserver.spawnEntity(entityplayermp);
+        list.getPlayers().add(entityplayermp);
+        try {
+            @SuppressWarnings("unchecked") Map<UUID, EntityPlayerMP> uuidToPlayerMap = (Map<UUID, EntityPlayerMP>) playerList$uuidToPlayerMap.invoke(list);
+            uuidToPlayerMap.put(entityplayermp.getUniqueID(), entityplayermp);
+        } catch (Throwable throwable) {
+            LadyLib.LOGGER.error("Could not access UUID to EntityPlayerMP map in PlayerList", throwable);
+        }
+        entityplayermp.addSelfToInternalCraftingInventory();
+        entityplayermp.setHealth(entityplayermp.getHealth());
+        net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerRespawnEvent(entityplayermp, false);
+        player.connection.player = entityplayermp;
+        PacketHandler.NET.sendTo(new IncorporealMessage(entityplayermp.getEntityId(), true, SoulStates.SOUL), entityplayermp);
+        PacketHandler.NET.sendTo(new FlashTransitionMessage(), entityplayermp);
     }
 
 }
