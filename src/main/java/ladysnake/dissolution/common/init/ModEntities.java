@@ -73,7 +73,7 @@ public class ModEntities {
                     }
                 } catch (Exception e) {
                     // countless mobs will probably fail due to the null world, no need to spam the log with the stacktrace
-                    Dissolution.LOGGER.warn("Could not check whether to create a possessable version of {} ({})", entityEntry.getRegistryName(), e);
+                    Dissolution.LOGGER.warn("Could not check whether to create a possessable version of {} ({})", entityEntry.getRegistryName(), e.getCause());
                 }
                 if (defineImpl) {
                     @SuppressWarnings("unchecked") Class<? extends EntityLivingBase> possessableClass =

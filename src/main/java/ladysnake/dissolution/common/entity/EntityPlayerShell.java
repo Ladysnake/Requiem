@@ -35,7 +35,7 @@ import java.util.UUID;
 @SuppressWarnings("Guava")
 public class EntityPlayerShell extends EntityLiving implements ISoulInteractable {
 
-    public static final ResourceLocation LOOT = new ResourceLocation(Reference.MOD_ID, "entities/player_shell");
+    public static final ResourceLocation LOOT = new ResourceLocation(Reference.MOD_ID, "inject/human.json");
 
     protected static final float SIZE_X = 0.6F, SIZE_Y = 1.95F;
 
