@@ -138,6 +138,7 @@ public class PlayerRespawnHandler {
         }
 
         corp.getDeathStats().setDeathDimension(p.dimension);
+        corp.setCorporealityStatus(SoulStates.SOUL);
 
         if (p.world instanceof WorldServer) {
             Entity killer = event.getSource().getTrueSource();
