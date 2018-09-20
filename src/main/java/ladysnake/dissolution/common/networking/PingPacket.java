@@ -20,9 +20,11 @@ public class PingPacket implements IMessageHandler<PingMessage, IMessage> {
                 EntityPlayerMP thePlayer = ctx.getServerHandler().player;
                 final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(thePlayer);
                 PacketHandler.NET.sendTo(new IncorporealMessage(thePlayer.getEntityId(), clone.isStrongSoul(), clone.getCorporealityStatus()), thePlayer);
+                PacketHandler.NET.sendToAllTracking(new IncorporealMessage(thePlayer.getEntityId(), clone.isStrongSoul(), clone.getCorporealityStatus()), thePlayer);
                 Entity possessed = clone.getPossessed();
                 if (possessed != null) {
                     PacketHandler.NET.sendTo(new PossessionMessage(thePlayer.getUniqueID(), possessed.getEntityId()), thePlayer);
+                    PacketHandler.NET.sendToAllTracking(new PossessionMessage(thePlayer.getUniqueID(), possessed.getEntityId()), thePlayer);
                     thePlayer.connection.sendPacket(new SPacketCamera(possessed));
                 }
                 clone.getDialogueStats().checkFirstConnection();
