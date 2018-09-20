@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -46,34 +46,24 @@ public class FlashTransitionEffect {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    void onRenderWorldLast(RenderWorldLastEvent event) {
-        if (ticks <= 0) return;
+    void onRenderWorldLast(RenderGameOverlayEvent.Pre event) {
+        if (ticks <= 0 || event.getType() != RenderGameOverlayEvent.ElementType.ALL) {
+            // no transition currently occurring, or wrong event type
+            return;
+        }
 
         Minecraft mc = Minecraft.getMinecraft();
         Entity camera = mc.getRenderViewEntity();
         if (camera == null) return;
 
         float partialTicks = event.getPartialTicks();
+        ScaledResolution scaledRes = event.getResolution();
 
         setActiveTexture(defaultTexUnit);
         mc.getTextureManager().bindTexture(TRANSITION_TEXTURE);
-        // Ignore depth when rendering lights
-        disableDepth();
-
-        pushMatrix();
         color(0.0F, 0.0F, 0.0F, (ticks + partialTicks) / (float) transitionTime);
-        scale(1F, 1F, 1F);
         enableBlend();
         disableAlpha();     // enable transparency
-
-        // Setup overlay rendering
-        ScaledResolution scaledRes = new ScaledResolution(mc);
-        matrixMode(GL_PROJECTION);
-        loadIdentity();
-        ortho(0.0D, scaledRes.getScaledWidth_double(), scaledRes.getScaledHeight_double(), 0.0D, 1000.0D, 3000.0D);
-        matrixMode(GL_MODELVIEW);
-        loadIdentity();
-        translate(0.0F, 0.0F, -2000.0F);
 
         // Draw quad over the screen
         Tessellator tessellator = Tessellator.getInstance();
@@ -86,10 +76,9 @@ public class FlashTransitionEffect {
         tessellator.draw();
 
         // restore old values
-        popMatrix();
+        color(1, 1, 1, 1f);
         disableBlend();
         enableAlpha();
         blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // restore blending
-        enableDepth();
     }
 }
