@@ -60,35 +60,39 @@ public class PlayerRespawnHandler {
 
     @SubscribeEvent
     public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-        if (Dissolution.config.respawn.skipDeathScreen) {
-            // Placement has already been taken care of in PlayerRespawnHandler#fakeRespawn
-            return;
-        }
         IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.player);
         // Teleports the player to wherever they should be if needed
         if (!event.isEndConquered() && !event.player.world.isRemote) {
-            event.player.world.profiler.startSection("placing_respawned_player");
-            // changes the player's dimension if required by the config or if they died there
-            if (Dissolution.config.respawn.respawnInNether) {
-                CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, Dissolution.config.respawn.respawnDimension);
-            } else if (event.player.dimension != playerCorp.getDeathStats().getDeathDimension()) {
-                CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, playerCorp.getDeathStats().getDeathDimension());
+            playerCorp.setCorporealityStatus(SoulStates.SOUL);
+            // Don't bother if placement has already been taken care of in PlayerRespawnHandler#fakeRespawn
+            if (!Dissolution.config.respawn.skipDeathScreen) {
+                placeRespawnedPlayer(event, playerCorp);
             }
-
-            // changes the player's position to where they died
-            BlockPos deathPos = playerCorp.getDeathStats().getDeathLocation();
-            if (!event.player.world.isOutsideBuildHeight(deathPos) && event.player.world.isAirBlock(deathPos)) {
-                ((EntityPlayerMP) event.player).connection.setPlayerLocation(deathPos.getX(), deathPos.getY(), deathPos.getZ(),
-                        event.player.rotationYaw, event.player.rotationPitch);
-            } else if (!event.player.world.isOutsideBuildHeight(deathPos)) {
-                deathPos = getSafeSpawnLocation(event.player.world, deathPos);
-                if (deathPos != null) {
-                    ((EntityPlayerMP) event.player).connection.setPlayerLocation(deathPos.getX(), deathPos.getY(),
-                            deathPos.getZ(), event.player.rotationYaw, event.player.rotationPitch);
-                }
-            }
-            event.player.world.profiler.endSection();
         }
+    }
+
+    private void placeRespawnedPlayer(PlayerEvent.PlayerRespawnEvent event, IIncorporealHandler playerCorp) {
+        event.player.world.profiler.startSection("placing_respawned_player");
+        // changes the player's dimension if required by the config or if they died there
+        if (Dissolution.config.respawn.respawnInNether) {
+            CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, Dissolution.config.respawn.respawnDimension);
+        } else if (event.player.dimension != playerCorp.getDeathStats().getDeathDimension()) {
+            CustomDissolutionTeleporter.transferPlayerToDimension((EntityPlayerMP) event.player, playerCorp.getDeathStats().getDeathDimension());
+        }
+
+        // changes the player's position to where they died
+        BlockPos deathPos = playerCorp.getDeathStats().getDeathLocation();
+        if (!event.player.world.isOutsideBuildHeight(deathPos) && event.player.world.isAirBlock(deathPos)) {
+            ((EntityPlayerMP) event.player).connection.setPlayerLocation(deathPos.getX(), deathPos.getY(), deathPos.getZ(),
+                    event.player.rotationYaw, event.player.rotationPitch);
+        } else if (!event.player.world.isOutsideBuildHeight(deathPos)) {
+            deathPos = getSafeSpawnLocation(event.player.world, deathPos);
+            if (deathPos != null) {
+                ((EntityPlayerMP) event.player).connection.setPlayerLocation(deathPos.getX(), deathPos.getY(),
+                        deathPos.getZ(), event.player.rotationYaw, event.player.rotationPitch);
+            }
+        }
+        event.player.world.profiler.endSection();
     }
 
     @Nullable
@@ -138,7 +142,6 @@ public class PlayerRespawnHandler {
         }
 
         corp.getDeathStats().setDeathDimension(p.dimension);
-        corp.setCorporealityStatus(SoulStates.SOUL);
 
         if (p.world instanceof WorldServer) {
             Entity killer = event.getSource().getTrueSource();

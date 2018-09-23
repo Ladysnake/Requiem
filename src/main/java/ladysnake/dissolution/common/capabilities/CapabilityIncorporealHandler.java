@@ -170,6 +170,7 @@ public class CapabilityIncorporealHandler {
                 return;
             }
             if (!strongSoul && this.getCorporealityStatus().isIncorporeal()) {
+                MinecraftForge.EVENT_BUS.post(new PlayerIncorporealEvent(owner, SoulStates.BODY, true));
                 this.setCorporealityStatus0(SoulStates.BODY);
             }
             this.strongSoul = strongSoul;
@@ -178,6 +179,7 @@ public class CapabilityIncorporealHandler {
                 PacketHandler.NET.sendTo(message, (EntityPlayerMP) owner);
                 PacketHandler.NET.sendToAllTracking(message, owner);
             }
+            setSynced(true);
         }
 
         @Override
@@ -185,7 +187,7 @@ public class CapabilityIncorporealHandler {
             if (!this.isStrongSoul() || newStatus == corporealityStatus) {
                 return;
             }
-            if (owner == null || MinecraftForge.EVENT_BUS.post(new PlayerIncorporealEvent(owner, newStatus))) {
+            if (owner == null || MinecraftForge.EVENT_BUS.post(new PlayerIncorporealEvent(owner, newStatus, false))) {
                 return;
             }
 
@@ -200,7 +202,6 @@ public class CapabilityIncorporealHandler {
                 PacketHandler.NET.sendTo(message, (EntityPlayerMP) owner);
                 PacketHandler.NET.sendToAllTracking(message, owner);
             }
-            setSynced(true);
         }
 
         private void setCorporealityStatus0(ICorporealityStatus newStatus) {
