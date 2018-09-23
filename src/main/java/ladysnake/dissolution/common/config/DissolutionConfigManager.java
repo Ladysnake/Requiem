@@ -142,7 +142,7 @@ public final class DissolutionConfigManager {
         // Updating configuration file to v4.0 (dissolution 0.1.3)
         if (isBehind(config.getLoadedConfigVersion(), 4.0)) {
             Dissolution.LOGGER.info("Updating config from {} to v4.0", config.getLoadedConfigVersion());
-            resetConfig(config.getConfigFile());
+            config.get("respawn", "skipDeathScreen", true).set(true);
         }
 
         config.save();
