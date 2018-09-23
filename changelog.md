@@ -1,3 +1,17 @@
+#####Version 1.12.2-0.1.4 - BUILT
+Features:
+- `skipDeathScreen` is now enabled by default
+- Added a neat fade effect when you die, to replace the game over screen (only for remnants)
+
+Hardcore tweaks:
+- Dying while you are possessing something makes you die for good
+- Bodies cannot be purified
+- Basically dissolution only works as a 1-UP in hardcore (although in theory other players can give you their bodies)
+
+Bugfixes:
+- Fixed compatibility issue with Sync where newly created shells would have the soul status
+- Fixed russian lang file encoding
+
 #####Version 1.12.2-0.1.3 - BUILT
 
 Bugfixes:

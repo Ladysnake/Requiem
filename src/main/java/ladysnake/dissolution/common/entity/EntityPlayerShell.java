@@ -238,7 +238,7 @@ public class EntityPlayerShell extends EntityLiving implements ISoulInteractable
     @Override
     public void notifyDataManagerChange(@Nonnull DataParameter<?> key) {
         if (PLAYER.equals(key)) {
-            this.profile = TileEntitySkull.updateGameprofile(new GameProfile(getPlayer(), getName()));
+            this.profile = TileEntitySkull.updateGameProfile(new GameProfile(getPlayer(), getName()));
         }
         super.notifyDataManagerChange(key);
     }
