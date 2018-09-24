@@ -1,3 +1,6 @@
+#####Version 1.12.2-0.1.5
+Make Dissolution's API a contained dependency (potentially means other mods can use it more easily)
+
 #####Version 1.12.2-0.1.4 - BUILT
 Features:
 - `skipDeathScreen` is now enabled by default

@@ -44,7 +44,6 @@ allprojects {
     build.finalizedBy updateJson
 
     jar {
-        from sourceSets.api.output
         from sourceSets.main.output
         manifest {
             attributes([
@@ -95,6 +94,14 @@ allprojects {
 
 apply plugin: 'maven'
 
+// Define additional jar creating tasks to be used as dependencies
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+}
+task apiJar(type: Jar) {
+    classifier = 'api'
+}
+
 configurations {
     contained
     contained.transitive = false
@@ -102,6 +109,9 @@ configurations {
 
 dependencies {
     contained  "com.github.Pyrofab:Ladylib:${ladylib_version}"
+    contained files(apiJar.archivePath) {
+        builtBy apiJar
+    }
 }
 
 //Builds the main jar
@@ -123,17 +133,22 @@ jar {
     }
 }
 
-//Builds a source jar
-task sourcesJar(type: Jar) {
-    from sourceSets.api.allSource
-    from sourceSets.main.allSource
-    classifier = 'sources'
+//Builds an api jar
+apiJar {
+    from sourceSets.api.output
+    from sourceSets.api.allJava
+    manifest {
+        attributes([
+                'Maven-Artifact': "${project.group}:${archivesBaseName}:${classifier}:${project.version}",
+                'Timestamp'     : System.currentTimeMillis()
+        ])
+    }
 }
 
-//Builds an api jar
-task apiJar(type: Jar) {
-    from sourceSets.api.output
-    classifier = 'api'
+//Builds a source jar
+sourcesJar {
+    from sourceSets.api.allSource
+    from sourceSets.main.allSource
 }
 
 updateJson {
