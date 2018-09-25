@@ -6,7 +6,7 @@ import groovy.json.JsonOutput
  * @author BluSunrize
  */
 class GenerateUpdateJSON extends DefaultTask {
-    static def VERSION_PREFIX = "#####Version "
+    static def VERSION_PREFIX = "##### Version "
     static def BUILT_SUFFIX = " - BUILT"
     static def RECOMMENDED = "-recommended"
     static def LATEST = "-latest"

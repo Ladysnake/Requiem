@@ -8,8 +8,8 @@ public class Reference {
     static final String VERSION = "@VERSION@";
     static final String MCVERSION = "[1.12.2]";
     static final String DEPENDENCIES =
-            "required-after:forge@[14.23.3.2665,);" +
-                    "required-after:" + LadyLib.MOD_ID + "@" + LadyLib.VERSION + ";" +
+            "required-after:forge@[14.23.3.2669,);" +
+                    "required-after:" + LadyLib.MOD_ID + "@[" + LadyLib.VERSION + ",);" +
             "after:albedo;" +
             "after:baubles;" +
             "after:thaumcraft;";

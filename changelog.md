@@ -1,7 +1,11 @@
-#####Version 1.12.2-0.1.5
-Make Dissolution's API a contained dependency (potentially means other mods can use it more easily)
+##### Version 1.12.2-0.1.5 - BUILT
+Dissolution's API is distributed as a contained dependency now (potentially means other mods can use it more easily)
 
-#####Version 1.12.2-0.1.4 - BUILT
+Bugfixes:
+- Fixed crash when two mods registered entities with the same name
+- Probably display an error screen instead of crashing when forge is too old
+
+##### Version 1.12.2-0.1.4 - BUILT
 Features:
 - `skipDeathScreen` is now enabled by default
 - Added a neat fade effect when you die, to replace the game over screen (only for remnants)
@@ -15,7 +19,7 @@ Bugfixes:
 - Fixed compatibility issue with Sync where newly created shells would have the soul status
 - Fixed russian lang file encoding
 
-#####Version 1.12.2-0.1.3 - BUILT
+##### Version 1.12.2-0.1.3 - BUILT
 
 Bugfixes:
 - Fixed a bug with using `/setRemnant player false` on a soul
@@ -24,7 +28,7 @@ Bugfixes:
 - Fixed possession setting incorporeal effect on all clients
 - Fixed possessed entities' loot getting in the soul's inventory
 
-#####Version 1.12.2-0.1.2 - BUILT
+##### Version 1.12.2-0.1.2 - BUILT
 
 Changes:
 - Added a blacklist for entities that can be possessed
@@ -33,7 +37,7 @@ Bugfixes:
 - Fixed possessed entities hitting themselves with Swing Through Grass
 - Fixed server crash with Inspirations
 
-#####Version 1.12.2-0.1.1 - BUILT
+##### Version 1.12.2-0.1.1 - BUILT
 
 Changes:
 - Possessed Skeletons fire arrows with the appropriate effects
@@ -48,7 +52,7 @@ API:
 - Update LadyLib
 
 
-#####Version 1.12.2-0.1 - BUILT
+##### Version 1.12.2-0.1 - BUILT
 - Strong / weak soul, now Remnant / Vanilla soul: when joining a world for the first time, the player will be granted the choice between the mod’s death system or the vanilla death system.
 - Soul player state: if the player is a Remnant, upon death, his soul leaves his body, allowing a free roaming of the world in order to select a new body to inhabit.
 - Undead possession: completely re-written to be the most enjoyable possible, the undead possession system is here to stay. When in soul mode, you will be able to enter any undead monster’s body and control them. This will give you access to their inventories, advantages but also inconveniences. In a more detailed way:
@@ -90,4 +94,4 @@ Cross-mod interactions
 - Added Inspirations recipe for purified flesh
 - Added Inspirations recipes for the mod’s potions
 
-#####Version history end
+##### Version history end
