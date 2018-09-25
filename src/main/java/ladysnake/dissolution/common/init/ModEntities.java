@@ -98,7 +98,7 @@ public class ModEntities {
                     event.getRegistry().register(
                             EntityEntryBuilder.create()
                                     .entity(possessableClass)
-                                    .id(new ResourceLocation(Reference.MOD_ID, entityEntry.getRegistryName().getPath() + "_possessable"), id++)
+                                    .id(new ResourceLocation(Reference.MOD_ID, String.valueOf(entityEntry.getRegistryName()).replace(':', '_') + "_possessable"), id++)
                                     .name(entityEntry.getName())
                                     .tracker(trackingRange, updateFrequency, sendVelocityUpdates)
                                     .build()
