@@ -1,8 +1,12 @@
+##### Version 1.12.2-0.1.6 - BUILT
+Convert old possessed entities to new format from 0.1.5
+
 ##### Version 1.12.2-0.1.5 - BUILT
 Dissolution's API is distributed as a contained dependency now (potentially means other mods can use it more easily)
 
 Bugfixes:
 - Fixed crash when two mods registered entities with the same name
+    - Warning: may break old worlds. Skip to 0.1.6 if you can.
 - Probably display an error screen instead of crashing when forge is too old
 
 ##### Version 1.12.2-0.1.4 - BUILT

@@ -27,6 +27,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -104,6 +105,24 @@ public class ModEntities {
                                     .build()
                     );
                 }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRegistryMissingMappings(RegistryEvent.MissingMappings<EntityEntry> event) {
+        for (RegistryEvent.MissingMappings.Mapping<EntityEntry> mapping : event.getMappings()) {
+            if (mapping.key.getNamespace().equals(Reference.MOD_ID) && mapping.key.getPath().endsWith("possessable")) {
+                ForgeRegistries.ENTITIES.getKeys().stream()
+                        // Mobs from dissolution
+                        .filter(rl -> rl.getNamespace().equals(Reference.MOD_ID))
+                        // Find the new name of the missing entry
+                        .filter(s -> s.getPath().endsWith(mapping.key.getPath()))
+                        .findAny()
+                        // Get the corresponding EntityEntry
+                        .map(ForgeRegistries.ENTITIES::getValue)
+                        // Remap to that
+                        .ifPresent(mapping::remap);
             }
         }
     }
