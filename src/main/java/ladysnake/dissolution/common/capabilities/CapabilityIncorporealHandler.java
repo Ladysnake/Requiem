@@ -287,7 +287,7 @@ public class CapabilityIncorporealHandler {
                 }
             }
             if (!(host instanceof EntityMob && host instanceof IPossessable)) {
-                Dissolution.LOGGER.error("{}'s possessed entity is supposed to be \"{}\" but it cannot be possessed", owner, host);
+                Dissolution.LOGGER.warn("{}'s possessed entity is supposed to be \"{}\" but it cannot be possessed", owner, host);
                 host = null;
                 hostID = 0;
                 hostUUID = null;
