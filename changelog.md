@@ -1,3 +1,9 @@
+##### Version 1.12.2-0.2.0
+Rewritten mob possession, hopefully fixing quite a few bugs
+
+Mod compatibility:
+- Made evilcraft and cannibalism fleshes fit for undead consumption
+
 ##### Version 1.12.2-0.1.6 - BUILT
 Convert old possessed entities to new format from 0.1.5
 
