@@ -17,7 +17,12 @@ public class OreDictHelper {
 
     public static void registerOres() {
         // note: this mod's own items are registered to the ore dictionary using @AutoRegister.Ore
-        registerOres(HUMAN_FLESH_RAW, "betterwithmods:mystery_meat");
+        registerOres(HUMAN_FLESH_RAW,
+                "betterwithmods:mystery_meat",
+                "evilcraft:werewolf_flesh",
+                "cannibalism:playerflesh",
+                "cannibalism:villagerflesh",
+                "cannibalism:witchflesh");
     }
 
     private static void registerOres(String oreName, String... ids) {
