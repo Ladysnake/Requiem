@@ -1,7 +1,7 @@
 package ladysnake.dissolution.client.renders;
 
 import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -30,7 +30,7 @@ import java.util.Map;
  *
  * @author Pyrofab
  */
-@Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = Side.CLIENT)
+@Mod.EventBusSubscriber(modid = Ref.MOD_ID, value = Side.CLIENT)
 public final class ShaderHelper {
 
     /**

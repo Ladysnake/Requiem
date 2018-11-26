@@ -1,11 +1,13 @@
 package ladysnake.dissolution.common.capabilities;
 
+import ladylib.reflection.LLMethodHandle;
+import ladylib.reflection.LLReflectionHelper;
 import ladysnake.dissolution.api.IDialogueStats;
 import ladysnake.dissolution.api.SoulStrengthModifiedEvent;
 import ladysnake.dissolution.api.corporeality.*;
 import ladysnake.dissolution.api.possession.PossessionEvent;
 import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PossessionMessage;
@@ -33,15 +35,10 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
 import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -53,21 +50,13 @@ import java.util.UUID;
  *
  * @author Pyrofab
  */
-@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+@Mod.EventBusSubscriber(modid = Ref.MOD_ID)
 public class CapabilityIncorporealHandler {
 
     @CapabilityInject(IIncorporealHandler.class)
     private static Capability<IIncorporealHandler> CAPABILITY_INCORPOREAL;
-    private static MethodHandle entity$setSize;
-
-    static {
-        try {
-            Method m = ReflectionHelper.findMethod(Entity.class, "setSize", "func_70105_a", float.class, float.class);
-            entity$setSize = MethodHandles.lookup().unreflect(m);
-        } catch (UnableToFindFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
+    private static LLMethodHandle.LLMethodHandle2<Entity, Float, Float, Void> entity$setSize =
+            LLReflectionHelper.findMethod(Entity.class, "func_70105_a", void.class, float.class, float.class);
 
     public static void register() {
         CapabilityManager.INSTANCE.register(IIncorporealHandler.class, new Storage(), DefaultIncorporealHandler::new);
@@ -80,7 +69,7 @@ public class CapabilityIncorporealHandler {
     public static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
         if ((event.getObject() instanceof EntityPlayer)) {
             Provider provider = new Provider((EntityPlayer) event.getObject());
-            event.addCapability(new ResourceLocation(Reference.MOD_ID, "incorporeal"), provider);
+            event.addCapability(new ResourceLocation(Ref.MOD_ID, "incorporeal"), provider);
         }
     }
 
@@ -141,12 +130,9 @@ public class CapabilityIncorporealHandler {
         private IDeathStats deathStats = new DeathStats();
         private int lastFood = -1;
         private boolean synced = false;
-        /**
-         * Not used currently, allows the player to wear a different skin
-         */
-        private UUID disguise = null;
         private UUID hostUUID;
         private int hostID;
+        private NBTTagCompound serializedPossessedEntity;
 
         private EntityPlayer owner;
 
@@ -275,26 +261,34 @@ public class CapabilityIncorporealHandler {
             if (hostUUID == null || !this.isStrongSoul()) {
                 return null;
             }
-            Entity host = this.owner.world.getEntityByID(hostID);
-            if (host == null) {
-                if (owner.world instanceof WorldServer) {
-                    host = ((WorldServer) owner.world).getEntityFromUuid(hostUUID);
-                }
-                if (host == null) {
-                    Dissolution.LOGGER.debug("{}: this player's possessed entity is nowhere to be found", owner);
-                } else if (host instanceof EntityMob && host instanceof IPossessable) {
-                    this.setPossessed((EntityMob & IPossessable) host);
-                }
-            }
+            Entity host = tryFindPossessedEntity();
             if (!(host instanceof EntityMob && host instanceof IPossessable)) {
-                Dissolution.LOGGER.warn("{}'s possessed entity is supposed to be \"{}\" but it cannot be possessed", owner, host);
+                if (host != null) {
+                    Dissolution.LOGGER.warn("{}'s possessed entity is supposed to be \"{}\" but it cannot be possessed", owner, host);
+                }
                 host = null;
                 hostID = 0;
                 hostUUID = null;
                 owner.setInvisible(Dissolution.config.ghost.invisibleGhosts);
-                owner.dismountRidingEntity();
             }
             return (T) host;
+        }
+
+        public Entity tryFindPossessedEntity() {
+            // First attempt: use the network id (client & server)
+            Entity host = this.owner.world.getEntityByID(hostID);
+            if (host == null) {
+                if (owner.world instanceof WorldServer) {
+                    // Second attempt: use the UUID (server)
+                    host = ((WorldServer) owner.world).getEntityFromUuid(hostUUID);
+                }
+                if (host == null) {
+                    Dissolution.LOGGER.warn("{}: this player's possessed entity is nowhere to be found", owner);
+                } else if (host instanceof EntityLivingBase && host instanceof IPossessable) {
+                    this.setPossessed((EntityLivingBase & IPossessable) host);
+                }
+            }
+            return host;
         }
 
         @Nonnull
@@ -318,6 +312,14 @@ public class CapabilityIncorporealHandler {
             return this.synced;
         }
 
+        public NBTTagCompound getSerializedPossessedEntity() {
+            return serializedPossessedEntity;
+        }
+
+        public void setSerializedPossessedEntity(NBTTagCompound serializedPossessedEntity) {
+            this.serializedPossessedEntity = serializedPossessedEntity;
+        }
+
         @Override
         public void tick() {
             if (getCorporealityStatus().isIncorporeal()) {
@@ -328,20 +330,11 @@ public class CapabilityIncorporealHandler {
                 }
                 IPossessable possessed = getPossessed();
                 if (possessed != null) {
-                    try {
-                        entity$setSize.invoke(owner, 0.0f, owner.height);
-                    } catch (Throwable throwable) {
-                        throwable.printStackTrace();
-                    }
+                    entity$setSize.invoke(owner, 0.0f, owner.height);
                 }
             } else {
                 lastFood = -1;
             }
-        }
-
-        @Override
-        public Optional<UUID> getDisguise() {
-            return Optional.ofNullable(disguise);
         }
 
         public EntityPlayer getOwner() {
@@ -401,6 +394,13 @@ public class CapabilityIncorporealHandler {
             }
             tag.setTag("dialogueStats", instance.getDialogueStats().serializeNBT());
             tag.setTag("deathStats", instance.getDeathStats().serializeNBT());
+            if (instance instanceof DefaultIncorporealHandler) {
+                DefaultIncorporealHandler defaultInstance = (DefaultIncorporealHandler) instance;
+                NBTTagCompound serializedPossessedEntity = defaultInstance.getSerializedPossessedEntity();
+                if (serializedPossessedEntity != null) {
+                    tag.setTag("serializedPossessedEntity", serializedPossessedEntity);
+                }
+            }
             return tag;
         }
 
@@ -410,8 +410,13 @@ public class CapabilityIncorporealHandler {
             instance.setStrongSoul(((NBTTagCompound) nbt).getBoolean("strongSoul"));
             instance.setCorporealityStatus(SoulStates.REGISTRY.getValue(new ResourceLocation(tag.getString("corporealityStatus"))));
             if (instance instanceof DefaultIncorporealHandler) {
-                UUID hostUUID = tag.getUniqueId("possessedEntity");
-                ((DefaultIncorporealHandler) instance).hostUUID = hostUUID == new UUID(0, 0) ? null : hostUUID;
+                DefaultIncorporealHandler defaultInstance = (DefaultIncorporealHandler) instance;
+                if (tag.hasKey("possessedEntity")) {
+                    defaultInstance.hostUUID = tag.getUniqueId("possessedEntity");
+                }
+                if (tag.hasKey("serializedPossessedEntity")) {
+                    defaultInstance.setSerializedPossessedEntity(tag.getCompoundTag("serializedPossessedEntity"));
+                }
             }
             instance.getDialogueStats().deserializeNBT(tag.getCompoundTag("dialogueStats"));
             instance.getDeathStats().deserializeNBT(tag.getCompoundTag("deathStats"));

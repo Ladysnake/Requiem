@@ -1,6 +1,6 @@
 package ladysnake.dissolution.client.particles;
 
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -13,7 +13,7 @@ import java.awt.*;
 
 public class AdditiveParticle extends Particle implements IDissolutionParticle {
 
-    public static final ResourceLocation STAR_PARTICLE_TEXTURE = new ResourceLocation(Reference.MOD_ID, "entity/aura");
+    public static final ResourceLocation STAR_PARTICLE_TEXTURE = new ResourceLocation(Ref.MOD_ID, "entity/aura");
 
     protected boolean additive;
     protected Color color = Color.WHITE;

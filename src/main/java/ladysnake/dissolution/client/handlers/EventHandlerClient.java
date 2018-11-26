@@ -1,14 +1,15 @@
 package ladysnake.dissolution.client.handlers;
 
+import ladylib.reflection.LLReflectionHelper;
+import ladylib.reflection.Setter;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
-import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.api.corporeality.PlayerIncorporealEvent;
 import ladysnake.dissolution.api.possession.PossessionEvent;
 import ladysnake.dissolution.client.particles.DissolutionParticleManager;
 import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.networking.PacketHandler;
@@ -44,37 +45,22 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
-
 @SideOnly(Side.CLIENT)
-@Mod.EventBusSubscriber(value = Side.CLIENT, modid = Reference.MOD_ID)
+@Mod.EventBusSubscriber(value = Side.CLIENT, modid = Ref.MOD_ID)
 public class EventHandlerClient {
 
-    private static final ResourceLocation SPECTRE_SHADER = new ResourceLocation(Reference.MOD_ID, "shaders/post/spectre.json");
+    private static final ResourceLocation SPECTRE_SHADER = new ResourceLocation(Ref.MOD_ID, "shaders/post/spectre.json");
 
     /**True if this client is connected to a server without the mod*/
     private static boolean noServerInstall;
-    private static int cameraAnimation = 0;
 
     private static final float SOUL_VERTICAL_SPEED = 0.1f;
-    private static MethodHandle highlightingItemStack;
+    private static final Setter<GuiIngame, ItemStack> highlightingItemStack =
+            LLReflectionHelper.findSetter(GuiIngame.class, "field_92016_l", ItemStack.class);
     private static int refreshTimer = 0;
-
-    static {
-        try {
-            Field f = ReflectionHelper.findField(GuiIngame.class, "highlightingItemStack", "field_92016_l");
-            highlightingItemStack = MethodHandles.lookup().unreflectSetter(f);
-        } catch (UnableToFindFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
 
     @SubscribeEvent
     public static void onGameTick(TickEvent.ClientTickEvent event) {
@@ -161,11 +147,7 @@ public class EventHandlerClient {
 
             // Prevents the display of the name of the selected ItemStack
             if (!show && !player.isCreative() && !possessing) {
-                try {
-                    highlightingItemStack.invoke(Minecraft.getMinecraft().ingameGUI, ItemStack.EMPTY);
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
+                highlightingItemStack.set(Minecraft.getMinecraft().ingameGUI, ItemStack.EMPTY);
             }
         }
     }
@@ -209,10 +191,6 @@ public class EventHandlerClient {
 
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
 
-        if (cameraAnimation-- > 0 && event.player.eyeHeight < 1.8f) {
-            player.eyeHeight += player.getDefaultEyeHeight() / 20f;
-        }
-
         if (player.world.isMaterialInBB(player.getEntityBoundingBox()
                 .grow(-0.1D, -0.4D, -0.1D), BlockFluidMercury.MATERIAL_MERCURY)) {
             playerSP.motionX *= 0.4f;
@@ -220,7 +198,9 @@ public class EventHandlerClient {
         }
 
         if (!event.player.isCreative() &&
-                playerCorp.getCorporealityStatus() == SoulStates.SOUL && event.phase == TickEvent.Phase.START) {
+                playerCorp.getCorporealityStatus() == SoulStates.SOUL && event.phase == TickEvent.Phase.START /*&&
+                !playerCorp.isPossessionActive()*/) {
+            // TODO figure out why this is required for possession movement
 
             if (DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT)) {
                 player.capabilities.setFlySpeed(0.025f);
@@ -240,10 +220,6 @@ public class EventHandlerClient {
                     }
                 }
             }
-        }
-        IPossessable possessed = playerCorp.getPossessed();
-        if (possessed != null) {
-            possessed.possessTickClient();
         }
     }
 

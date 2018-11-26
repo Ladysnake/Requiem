@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.items;
 
 import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.entity.SoulType;
 import ladysnake.dissolution.common.tileentities.TileEntityWispInAJar;
@@ -31,7 +31,7 @@ public class ItemSoulInAJar extends ItemBlock {
         this.setMaxStackSize(1);
         this.setHasSubtypes(true);
         this.addPropertyOverride(
-                new ResourceLocation(Reference.MOD_ID, "soul"),
+                new ResourceLocation(Ref.MOD_ID, "soul"),
                 (stack, worldIn, entityIn) -> getSoul(stack).ordinal()
         );
     }

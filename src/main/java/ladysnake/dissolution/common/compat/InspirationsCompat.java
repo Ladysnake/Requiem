@@ -7,7 +7,7 @@ import knightminer.inspirations.library.recipe.cauldron.ICauldronRecipe;
 import knightminer.inspirations.library.recipe.cauldron.ISimpleCauldronRecipe;
 import ladylib.compat.EnhancedBusSubscriber;
 import ladylib.compat.StateEventReceiver;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.blocks.BlockPurificationCauldron;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.init.ModPotions;
@@ -30,28 +30,28 @@ import java.util.List;
 /**
  * Inspirations compatibility: add custom fluids and recipes for every potion
  */
-@EnhancedBusSubscriber(Inspirations.modID)
+@EnhancedBusSubscriber(value = Ref.MOD_ID, dependencies = Inspirations.modID)
 public class InspirationsCompat implements StateEventReceiver {
     public static Fluid ghastWater;
     public static Fluid eauDeMort;
     public static Fluid sanguine;
 
-    private static final ResourceLocation EAU_DE_MORT_FLUID_TEXTURE = new ResourceLocation(Reference.MOD_ID,"blocks/eau_de_mort_fluid");
-    private static final ResourceLocation SANGUINE_POTION_FLUID_TEXTURE = new ResourceLocation(Reference.MOD_ID,"blocks/sanguine_fluid");
+    private static final ResourceLocation EAU_DE_MORT_FLUID_TEXTURE = new ResourceLocation(Ref.MOD_ID,"blocks/eau_de_mort_fluid");
+    private static final ResourceLocation SANGUINE_POTION_FLUID_TEXTURE = new ResourceLocation(Ref.MOD_ID,"blocks/sanguine_fluid");
 
     public void preInit(FMLPreInitializationEvent event) {
-        ghastWater = new Fluid("ghast_water", new ResourceLocation(Reference.MOD_ID,"blocks/ghast_water"), new ResourceLocation(Reference.MOD_ID, "blocks/ghast_water"));
-        ghastWater.setUnlocalizedName(Reference.MOD_ID + ".ghast_water");
+        ghastWater = new Fluid("ghast_water", new ResourceLocation(Ref.MOD_ID,"blocks/ghast_water"), new ResourceLocation(Ref.MOD_ID, "blocks/ghast_water"));
+        ghastWater.setUnlocalizedName(Ref.MOD_ID + ".ghast_water");
         FluidRegistry.registerFluid(ghastWater);
         eauDeMort = new Fluid("eau_de_mort", EAU_DE_MORT_FLUID_TEXTURE, EAU_DE_MORT_FLUID_TEXTURE);
-        eauDeMort.setUnlocalizedName(Reference.MOD_ID + ".eau_de_mort");
+        eauDeMort.setUnlocalizedName(Ref.MOD_ID + ".eau_de_mort");
         FluidRegistry.registerFluid(eauDeMort);
         sanguine = new Fluid("sanguine_potion", SANGUINE_POTION_FLUID_TEXTURE, SANGUINE_POTION_FLUID_TEXTURE);
-        sanguine.setUnlocalizedName(Reference.MOD_ID + ".sanguine_potion");
+        sanguine.setUnlocalizedName(Ref.MOD_ID + ".sanguine_potion");
         FluidRegistry.registerFluid(sanguine);
     }
 
-    @EnhancedBusSubscriber(value = Inspirations.modID, side = Side.CLIENT)
+    @EnhancedBusSubscriber(value = Ref.MOD_ID, dependencies = Inspirations.modID, side = Side.CLIENT)
     public static class ClientHandler {
         @SubscribeEvent
         public void onTextureStitch(TextureStitchEvent event) {

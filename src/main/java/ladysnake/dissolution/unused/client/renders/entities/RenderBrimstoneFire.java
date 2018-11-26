@@ -1,6 +1,6 @@
 package ladysnake.dissolution.unused.client.renders.entities;
 
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.unused.common.entity.boss.EntityBrimstoneFire;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -16,7 +16,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class RenderBrimstoneFire extends RenderEntity {
 
-    private static final ResourceLocation BEAM_TEXTURE = new ResourceLocation(Reference.MOD_ID + ":textures/entity/projectiles/brimstone_beam.png");
+    private static final ResourceLocation BEAM_TEXTURE = new ResourceLocation(Ref.MOD_ID + ":textures/entity/projectiles/brimstone_beam.png");
 
     public RenderBrimstoneFire(RenderManager renderManagerIn) {
         super(renderManagerIn);

@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.entity;
 
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.unused.common.entity.souls.EntityFaerie;
 import ladysnake.dissolution.unused.common.entity.souls.EntityFleetingSoul;
 import ladysnake.dissolution.unused.common.entity.souls.EntitySplinterSoul;
@@ -27,7 +27,7 @@ public enum SoulType {
     private Function<World, EntityFleetingSoul> factory;
 
     SoulType(String texture, Function<World, EntityFleetingSoul> factory) {
-        this.texture = new ResourceLocation(Reference.MOD_ID, texture);
+        this.texture = new ResourceLocation(Ref.MOD_ID, texture);
         this.factory = factory;
     }
 

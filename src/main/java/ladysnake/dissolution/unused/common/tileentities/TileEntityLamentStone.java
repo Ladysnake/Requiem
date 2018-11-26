@@ -1,6 +1,6 @@
 package ladysnake.dissolution.unused.common.tileentities;
 
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.unused.api.Soul;
 import ladysnake.dissolution.unused.api.SoulTypes;
 import ladysnake.dissolution.unused.common.entity.souls.AbstractSoul;
@@ -32,7 +32,7 @@ public class TileEntityLamentStone extends TileEntityLockableLoot implements ITi
     public TileEntityLamentStone() {
         this.rand = new Random();
         this.timeUntilSpawn = rand.nextInt(2400);
-        this.setLootTable(new ResourceLocation(Reference.MOD_ID, "lament_stone"), rand.nextLong());
+        this.setLootTable(new ResourceLocation(Ref.MOD_ID, "lament_stone"), rand.nextLong());
     }
 
     @Override

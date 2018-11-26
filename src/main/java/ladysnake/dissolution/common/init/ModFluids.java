@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.init;
 
 import ladylib.LadyLib;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelBakery;
@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+@Mod.EventBusSubscriber(modid = Ref.MOD_ID)
 public enum ModFluids {
 
 //    MERCURY("mercury", false,
@@ -49,7 +49,7 @@ public enum ModFluids {
     /**
      * The path to the fluid blockstate
      */
-    private static final String FLUID_MODEL_PATH = Reference.MOD_ID + ":" + "fluid";
+    private static final String FLUID_MODEL_PATH = Ref.MOD_ID + ":" + "fluid";
 
     /**
      * Creates a fluid
@@ -60,7 +60,7 @@ public enum ModFluids {
      * @param blockFactory         the constructor of the fluid block
      */
     ModFluids(final String name, final boolean hasFlowIcon, final Consumer<Fluid> fluidPropertyApplier, final Function<Fluid, BlockFluidBase> blockFactory) {
-        final String texturePrefix = Reference.MOD_ID + ":" + "blocks/fluid_";
+        final String texturePrefix = Ref.MOD_ID + ":" + "blocks/fluid_";
 
         final ResourceLocation still = new ResourceLocation(texturePrefix + name + "_still");
         final ResourceLocation flowing = hasFlowIcon ? new ResourceLocation(texturePrefix + name + "_flow") : still;
@@ -87,16 +87,16 @@ public enum ModFluids {
     }
 
     private void registerFluidBlock(IForgeRegistry<Block> reg) {
-        fluidBlock.setRegistryName(Reference.MOD_ID, "fluid." + fluid.getName());
-        fluidBlock.setTranslationKey(Reference.MOD_ID + ":" + fluid.getUnlocalizedName());
-        LadyLib.instance.getBlockRegistrar().addBlock(fluidBlock, ItemBlock::new, false);
+        fluidBlock.setRegistryName(Ref.MOD_ID, "fluid." + fluid.getName());
+        fluidBlock.setTranslationKey(Ref.MOD_ID + ":" + fluid.getUnlocalizedName());
+        LadyLib.INSTANCE.getBlockRegistrar().addBlock(fluidBlock, ItemBlock::new, false);
     }
 
     @SideOnly(Side.CLIENT)
     private void registerFluidModel() {
         final Item item = Item.getItemFromBlock(fluidBlock);
         if (item == Items.AIR) {
-            LogManager.getLogger(Reference.MOD_ID).error(fluidBlock.getRegistryName() + " : the passed in fluid block has no associated item");
+            LogManager.getLogger(Ref.MOD_ID).error(fluidBlock.getRegistryName() + " : the passed in fluid block has no associated item");
             return;
         }
 

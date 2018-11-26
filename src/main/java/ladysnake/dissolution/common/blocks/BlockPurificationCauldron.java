@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.blocks;
 
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.init.ModBlocks;
 import ladysnake.dissolution.common.init.ModItems;
 import net.minecraft.block.BlockCauldron;
@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
-@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+@Mod.EventBusSubscriber(modid = Ref.MOD_ID)
 public class BlockPurificationCauldron extends BlockCauldron {
 
     private static final Map<ItemStack, ItemStack> RECIPES = new HashMap<>();

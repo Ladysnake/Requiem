@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.init;
 
 
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import net.minecraftforge.fml.common.Mod;
 
 /**
@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.Mod;
  *
  * @author Pyrofab
  */
-@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+@Mod.EventBusSubscriber(modid = Ref.MOD_ID)
 public class ModCrafting {
 
     public static void register() {

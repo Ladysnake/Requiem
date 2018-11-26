@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.init;
 
 import ladylib.registration.AutoRegister;
 import ladysnake.dissolution.common.OreDictHelper;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.items.*;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
@@ -21,9 +21,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreIngredient;
 
-@SuppressWarnings({"WeakerAccess", "unused"})
-@AutoRegister(Reference.MOD_ID)
-@GameRegistry.ObjectHolder(Reference.MOD_ID)
+@SuppressWarnings({"unused"})
+@AutoRegister(Ref.MOD_ID)
+@GameRegistry.ObjectHolder(Ref.MOD_ID)
 public final class ModItems {
 
     /**

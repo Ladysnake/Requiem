@@ -27,7 +27,7 @@ import java.util.*;
  * This class is a stripped version of the game's model loading code, allowing
  * to load arbitrary models
  */
-//@Mod.EventBusSubscriber(value = Side.CLIENT, modid = Reference.MOD_ID)
+//@Mod.EventBusSubscriber(value = Side.CLIENT, modid = Ref.MOD_ID)
 @SideOnly(Side.CLIENT)
 public class DissolutionModelLoader {
 

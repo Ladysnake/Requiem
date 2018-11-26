@@ -73,7 +73,7 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
         player.spawnSweepParticles();
         int initialDamage = stack.getItemDamage();
         try {
-            initialCooldown = ObfuscationReflectionHelper.getPrivateValue(EntityLivingBase.class, player, new String[]{"ticksSinceLastSwing", "field_184617_aD"});
+            initialCooldown = ObfuscationReflectionHelper.getPrivateValue(EntityLivingBase.class, player, "field_184617_aD");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,7 +83,7 @@ public class ItemScythe extends ItemSword implements ICustomLocation {
         if (!targets.isEmpty()) {
             for (EntityLiving entity : targets) {
                 try {
-                    ObfuscationReflectionHelper.setPrivateValue(EntityLivingBase.class, player, initialCooldown, "ticksSinceLastSwing", "field_184617_aD");
+                    ObfuscationReflectionHelper.setPrivateValue(EntityLivingBase.class, player, initialCooldown, "field_184617_aD");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

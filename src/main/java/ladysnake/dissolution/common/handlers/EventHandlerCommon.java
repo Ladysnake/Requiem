@@ -1,6 +1,7 @@
 package ladysnake.dissolution.common.handlers;
 
-import ladylib.misc.ReflectionUtil;
+import ladylib.reflection.LLMethodHandle;
+import ladylib.reflection.LLReflectionHelper;
 import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
@@ -26,8 +27,6 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
-import java.lang.invoke.MethodHandle;
-
 
 /**
  * This class handles basic events-related logic
@@ -36,7 +35,7 @@ import java.lang.invoke.MethodHandle;
  */
 public class EventHandlerCommon {
 
-    private static final MethodHandle abstractSkeleton$getArrow = ReflectionUtil.findMethodHandleFromObfName(AbstractSkeleton.class, "func_190726_a", EntityArrow.class, float.class);
+    private static final LLMethodHandle.LLMethodHandle1<AbstractSkeleton, Float, EntityArrow> abstractSkeleton$getArrow = LLReflectionHelper.findMethod(AbstractSkeleton.class, "func_190726_a", EntityArrow.class, float.class);
 
     public EventHandlerCommon() {
 
@@ -86,7 +85,7 @@ public class EventHandlerCommon {
                 EntityLivingBase possessed = handler.getPossessed();
                 if (possessed instanceof AbstractSkeleton) {
                     try {
-                        EntityArrow mobArrow = (EntityArrow) abstractSkeleton$getArrow.invoke(possessed, 0);
+                        EntityArrow mobArrow = abstractSkeleton$getArrow.invoke((AbstractSkeleton) possessed, 0f);
                         mobArrow.setDamage(arrow.getDamage());
                         mobArrow.copyLocationAndAnglesFrom(arrow);
                         mobArrow.motionX = arrow.motionX;

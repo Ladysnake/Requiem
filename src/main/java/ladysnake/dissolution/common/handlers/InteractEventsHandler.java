@@ -124,33 +124,33 @@ public class InteractEventsHandler {
      */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onEntityMount(EntityMountEvent event) {
-        if (event.getEntityMounting().world.isRemote) {
-            return;
-        }
-        CapabilityIncorporealHandler.getHandler(event.getEntity()).ifPresent(handler -> {
-            if (handler.getCorporealityStatus().isIncorporeal()) {
-                Entity beingMounted = event.getEntityBeingMounted();
-                if (event.isMounting()) {
-                    if (!beingMounted.getUniqueID().equals(handler.getPossessedUUID()) && handler.getPossessed() != null) {
-                        handler.getPossessed().startRiding(beingMounted);
-                        event.setCanceled(true);
-                    }
-                } else {
-                    EntityLivingBase possessed = handler.getPossessed();
-                    if (possessed != null && event.getEntity() instanceof EntityPlayer && ((EntityPlayer) event.getEntity()).isCreative()) {
-                        handler.setPossessed(null);
-                    } else {
-                        if (beingMounted == possessed && !(handler.setPossessed(null))) {
-                            if (possessed != null && possessed.isRiding()) {
-                                possessed.dismountRidingEntity();
-                            } else if (event.getEntity().isSneaking() && event.getEntity() instanceof EntityPlayer) {
-                                PlayerTickHandler.sneakingPossessingPlayers.add((EntityPlayer) event.getEntity());
-                            }
-                            event.setCanceled(true);
-                        }
-                    }
-                }
-            }
-        });
+//        if (event.getEntityMounting().world.isRemote) {
+//            return;
+//        }
+//        CapabilityIncorporealHandler.getHandler(event.getEntity()).ifPresent(handler -> {
+//            if (handler.getCorporealityStatus().isIncorporeal()) {
+//                Entity beingMounted = event.getEntityBeingMounted();
+//                if (event.isMounting()) {
+//                    if (!beingMounted.getUniqueID().equals(handler.getPossessedUUID()) && handler.getPossessed() != null) {
+//                        handler.getPossessed().startRiding(beingMounted);
+//                        event.setCanceled(true);
+//                    }
+//                } else {
+//                    EntityLivingBase possessed = handler.getPossessed();
+//                    if (possessed != null && event.getEntity() instanceof EntityPlayer && ((EntityPlayer) event.getEntity()).isCreative()) {
+//                        handler.setPossessed(null);
+//                    } else {
+//                        if (beingMounted == possessed && !(handler.setPossessed(null))) {
+//                            if (possessed != null && possessed.isRiding()) {
+//                                possessed.dismountRidingEntity();
+//                            } else if (event.getEntity().isSneaking() && event.getEntity() instanceof EntityPlayer) {
+//                                PlayerTickHandler.sneakingPossessingPlayers.add((EntityPlayer) event.getEntity());
+//                            }
+//                            event.setCanceled(true);
+//                        }
+//                    }
+//                }
+//            }
+//        });
     }
 }

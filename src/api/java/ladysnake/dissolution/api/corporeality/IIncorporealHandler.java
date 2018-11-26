@@ -4,7 +4,6 @@ import ladysnake.dissolution.api.IDialogueStats;
 import net.minecraft.entity.EntityLivingBase;
 
 import javax.annotation.Nonnull;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -57,6 +56,10 @@ public interface IIncorporealHandler {
 
     UUID getPossessedUUID();
 
+    default boolean isPossessionActive() {
+        return getPossessedUUID() != null;
+    }
+
     /**
      * Used for the dialogue when first entering a world
      */
@@ -80,7 +83,5 @@ public interface IIncorporealHandler {
     boolean isSynced();
 
     void tick();
-
-    Optional<UUID> getDisguise();
 
 }

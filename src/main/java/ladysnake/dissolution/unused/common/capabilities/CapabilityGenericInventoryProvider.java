@@ -1,6 +1,6 @@
 package ladysnake.dissolution.unused.common.capabilities;
 
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.unused.api.GenericStackInventory;
 import ladysnake.dissolution.unused.api.IGenericInventoryProvider;
 import net.minecraft.nbt.NBTBase;
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+@Mod.EventBusSubscriber(modid = Ref.MOD_ID)
 public class CapabilityGenericInventoryProvider {
 
     @CapabilityInject(IGenericInventoryProvider.class)
@@ -29,7 +29,6 @@ public class CapabilityGenericInventoryProvider {
         CapabilityManager.INSTANCE.register(IGenericInventoryProvider.class, new Storage(), DefaultGenericInventoryProvider::new);
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> GenericStackInventory<T> getInventory(ICapabilitySerializable capabilitySerializable, Class<T> tClass) {
         if (capabilitySerializable.hasCapability(CAPABILITY_GENERIC, null)) {
             IGenericInventoryProvider handler = capabilitySerializable.getCapability(CAPABILITY_GENERIC, null);

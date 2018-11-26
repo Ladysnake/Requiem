@@ -1,10 +1,8 @@
 package ladysnake.dissolution.unused.client.renders.entities;
 
 import com.mojang.authlib.GameProfile;
-import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.model.ModelPlayer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,6 +33,7 @@ public class LayerDisguise implements LayerRenderer<EntityPlayer> {
     @Override
     public void doRenderLayer(@Nonnull EntityPlayer playerIn, float limbSwing, float limbSwingAmount,
                               float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+/*
         CapabilityIncorporealHandler.getHandler(playerIn).getDisguise().ifPresent(uuid -> {
             this.layerModel.setModelAttributes(this.renderer.getMainModel());
             this.layerModel.setLivingAnimations(playerIn, limbSwing, limbSwingAmount, partialTicks);
@@ -42,6 +41,7 @@ public class LayerDisguise implements LayerRenderer<EntityPlayer> {
             this.renderer.bindTexture(getSkin(playerIn.world, uuid));
             this.layerModel.render(playerIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
         });
+*/
     }
 
     private ResourceLocation getSkin(World worldIn, UUID usurpedPlayer) {

@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.capabilities;
 
 import com.google.common.collect.ImmutableList;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.unused.api.ISoulHandler;
 import ladysnake.dissolution.unused.api.Soul;
 import ladysnake.dissolution.unused.api.SoulTypes;
@@ -42,7 +42,7 @@ public class CapabilitySoulHandler {
 
         Entity entity = event.getObject();
         if (entity instanceof EntityPlayer) {
-            event.addCapability(new ResourceLocation(Reference.MOD_ID, "soul_inventory"), new Provider());
+            event.addCapability(new ResourceLocation(Ref.MOD_ID, "soul_inventory"), new Provider());
         }
     }
 

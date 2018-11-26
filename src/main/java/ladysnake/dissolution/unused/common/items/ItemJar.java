@@ -1,6 +1,6 @@
 package ladysnake.dissolution.unused.common.items;
 
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.items.ItemSoulInAJar;
 import ladysnake.dissolution.unused.common.entity.souls.EntityFleetingSoul;
 import net.minecraft.entity.Entity;
@@ -33,7 +33,7 @@ public class ItemJar extends Item {
         this.setMaxStackSize(1);
         this.setHasSubtypes(true);
         this.addPropertyOverride(
-                new ResourceLocation(Reference.MOD_ID, "fluid"),
+                new ResourceLocation(Ref.MOD_ID, "fluid"),
                 (stack, worldIn, entityIn) -> {
                     FluidStack fluidStack = FluidUtil.getFluidContained(stack);
                     if (fluidStack == null) {

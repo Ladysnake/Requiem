@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.items;
 
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.client.renders.ShaderHelper;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
 import ladysnake.dissolution.unused.common.entity.souls.EntityFleetingSoul;
 import net.minecraft.entity.Entity;
@@ -43,8 +43,8 @@ public class ItemDebug extends Item implements ISoulInteractable {
         switch (debugWanted) {
             case 0:
                 if (worldIn.isRemote) {
-                    ShaderHelper.disableScreenShader(new ResourceLocation(Reference.MOD_ID, "shaders/post/spectre.json"));
-                    ShaderHelper.enableScreenShader(new ResourceLocation(Reference.MOD_ID, "shaders/post/spectre.json"));
+                    ShaderHelper.disableScreenShader(new ResourceLocation(Ref.MOD_ID, "shaders/post/spectre.json"));
+                    ShaderHelper.enableScreenShader(new ResourceLocation(Ref.MOD_ID, "shaders/post/spectre.json"));
                 }
                 break;
             case 1:

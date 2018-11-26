@@ -1,12 +1,12 @@
 package ladysnake.dissolution.common.init;
 
 import ladylib.registration.AutoRegister;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.blocks.BlockPurificationCauldron;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-@AutoRegister(Reference.MOD_ID)
-@GameRegistry.ObjectHolder(Reference.MOD_ID)
+@AutoRegister(Ref.MOD_ID)
+@GameRegistry.ObjectHolder(Ref.MOD_ID)
 public final class ModBlocks {
 
     @AutoRegister.NoItem

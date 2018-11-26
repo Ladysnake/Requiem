@@ -1,6 +1,6 @@
 package ladysnake.dissolution.client.config;
 
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -40,8 +40,8 @@ public class DissolutionGuiFactory implements IModGuiFactory {
             elements.add(element);
         }
         elements.addAll(new ConfigElement(DissolutionConfigManager.config.getCategory(Configuration.CATEGORY_GENERAL)).getChildElements());
-        return new GuiDissolutionConfig(parentScreen, elements, Reference.MOD_NAME);
-//        return new GuiConfig(parentScreen, Reference.MOD_ID, Reference.MOD_NAME);
+        return new GuiDissolutionConfig(parentScreen, elements, Ref.MOD_NAME);
+//        return new GuiConfig(parentScreen, Ref.MOD_ID, Ref.MOD_NAME);
     }
 
     @Override

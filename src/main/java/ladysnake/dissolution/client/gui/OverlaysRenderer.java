@@ -1,7 +1,6 @@
 package ladysnake.dissolution.client.gui;
 
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
-import ladysnake.dissolution.common.Reference;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -13,7 +12,6 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -22,10 +20,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class OverlaysRenderer {
 
     public static final OverlaysRenderer INSTANCE = new OverlaysRenderer();
-
-    private static final ResourceLocation INCORPOREAL_PATH = new ResourceLocation(Reference.MOD_ID, "textures/gui/soul_overlay.png");
-
-    private float b = 0.0F;
 
     void renderOverlays(RenderGameOverlayEvent.Post event) {
         EntityPlayer player = Minecraft.getMinecraft().player;

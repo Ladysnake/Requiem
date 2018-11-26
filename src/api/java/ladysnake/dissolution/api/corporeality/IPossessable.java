@@ -3,8 +3,6 @@ package ladysnake.dissolution.api.corporeality;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.UUID;
 
@@ -48,6 +46,7 @@ public interface IPossessable {
      */
     boolean proxyAttack(EntityLivingBase victim, DamageSource source, float amount);
 
-    @SideOnly(Side.CLIENT)
-    void possessTickClient();
+    default void possessTickClient() {}
+
+    default void updatePossessing() {}
 }

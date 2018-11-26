@@ -1,12 +1,16 @@
 package ladysnake.dissolution.common.registries;
 
-import ladylib.misc.ReflectionUtil;
+import ladylib.reflection.Getter;
+import ladylib.reflection.LLReflectionHelper;
+import ladylib.reflection.Setter;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
+import ladysnake.dissolution.common.entity.ai.attribute.DelegatingAttribute;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ai.attributes.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -17,10 +21,22 @@ import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.lang.invoke.MethodHandle;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 public class IncorporealStatus extends CorporealityStatus {
-    private static final MethodHandle isImmuneToFireMH = ReflectionUtil.findSetterFromObfName(Entity.class, "field_70178_ae", boolean.class);
+    private static final Setter<Entity, Boolean> isImmuneToFireMH =
+            LLReflectionHelper.findSetter(Entity.class, "field_70178_ae", boolean.class);
+    /** All player entities who already got their attributes swapped out*/
+    private Set<EntityPlayer> attributeUpdated = Collections.newSetFromMap(new WeakHashMap<>());
+    private static Getter<AbstractAttributeMap, Map> abstractAttributeMap$attributes =
+            LLReflectionHelper.findGetter(AbstractAttributeMap.class, "field_111154_a", Map.class);
+    private static Getter<AbstractAttributeMap, Map> abstractAttributeMap$attributesByName =
+            LLReflectionHelper.findGetter(AbstractAttributeMap.class, "field_111153_b", Map.class);
+    private static Getter<AttributeMap, Map> attributeMap$instancesByName =
+            LLReflectionHelper.findGetter(AttributeMap.class, "field_111163_c", Map.class);
 
     public IncorporealStatus() {
         super(false, true);
@@ -115,6 +131,37 @@ public class IncorporealStatus extends CorporealityStatus {
         super.initState(owner);
         changeState(owner, true);
         owner.setInvisible(Dissolution.config.ghost.invisibleGhosts);
+        if (!attributeUpdated.contains(owner)) {
+            swapAttributes(owner);
+            attributeUpdated.add(owner);
+        }
+    }
+
+    private void swapAttributes(EntityPlayer player) {
+        AbstractAttributeMap attributeMap = player.getAttributeMap();
+        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
+        @SuppressWarnings("unchecked")
+        final Map<IAttribute, IAttributeInstance> attributes = abstractAttributeMap$attributes.invoke(attributeMap);
+        @SuppressWarnings("unchecked")
+        final Map<String, IAttributeInstance> attributesByName = abstractAttributeMap$attributesByName.invoke(attributeMap);
+        @SuppressWarnings("unchecked")
+        final Map<String, IAttributeInstance> instancesByName = (attributeMap instanceof AttributeMap)
+                    ? attributeMap$instancesByName.invoke((AttributeMap) attributeMap)
+                    : null;
+        // Replace every registered attribute
+        for (String name : attributesByName.keySet()) {
+            IAttributeInstance current = attributeMap.getAttributeInstanceByName(name);
+            if (current == null) {
+                continue;
+            }
+            IAttributeInstance replacement = new DelegatingAttribute(attributeMap, current, handler);
+            IAttribute attribute = current.getAttribute();
+            attributes.put(attribute, replacement);
+            attributesByName.put(name, replacement);
+            if (instancesByName != null  && instancesByName.containsValue(current)) {
+                instancesByName.put(((RangedAttribute)attribute).getDescription(), replacement);
+            }
+        }
     }
 
     @Override
@@ -130,11 +177,7 @@ public class IncorporealStatus extends CorporealityStatus {
     }
 
     protected void changeState(EntityPlayer owner, boolean init) {
-        try {
-            isImmuneToFireMH.invoke(owner, init);
-        } catch (Throwable throwable) {
-            Dissolution.LOGGER.error("Could not set player immunity to fire", throwable);
-        }
+        isImmuneToFireMH.set(owner, init);
     }
 
     protected boolean isAffected(IIncorporealHandler player) {

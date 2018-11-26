@@ -1,6 +1,6 @@
 package ladysnake.dissolution.unused.client.models.blocks;
 
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ICustomModelLoader;
@@ -26,7 +26,7 @@ public class BakedModelLoader implements ICustomModelLoader {
 
     @Override
     public boolean accepts(@Nonnull ResourceLocation modelLocation) {
-        return modelLocation.getNamespace().equals(Reference.MOD_ID) && models.containsKey(modelLocation.getPath());
+        return modelLocation.getNamespace().equals(Ref.MOD_ID) && models.containsKey(modelLocation.getPath());
     }
 
     @Nonnull

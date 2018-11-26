@@ -1,7 +1,7 @@
 package ladysnake.dissolution.client.gui;
 
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -37,7 +37,7 @@ import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType
 public class GuiIncorporealOverlay extends GuiIngame {
 
     private static final ResourceLocation WIDGETS_TEX_PATH = new ResourceLocation("textures/gui/widgets.png");
-    private static final ResourceLocation ECTOPLASM_ICONS = new ResourceLocation(Reference.MOD_ID, "textures/gui/icons.png");
+    private static final ResourceLocation ECTOPLASM_ICONS = new ResourceLocation(Ref.MOD_ID, "textures/gui/icons.png");
     private final Random rand = new Random();
 
     public GuiIncorporealOverlay(Minecraft mc) {
