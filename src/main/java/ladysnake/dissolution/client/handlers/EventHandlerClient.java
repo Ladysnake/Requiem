@@ -17,6 +17,7 @@ import ladysnake.dissolution.common.networking.PingMessage;
 import ladysnake.dissolution.common.registries.SoulStates;
 import ladysnake.dissolution.unused.common.blocks.BlockFluidMercury;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
@@ -24,6 +25,7 @@ import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.Render;
@@ -37,6 +39,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.GameType;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.fml.common.Mod;
@@ -173,6 +176,24 @@ public class EventHandlerClient {
             if (possessed != null) {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 GuiInventory.drawEntityOnScreen(guiLeft + 51, guiTop + 75, 30, guiLeft + 51 - inv.oldMouseX, guiTop + 75 - 50 - inv.oldMouseY, possessed);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEntityViewRenderRenderFog(EntityViewRenderEvent.RenderFogEvent event) {
+        // Prevents players from targeting souls
+        // Why fog ? Because it is the first event fired after setting EntityRenderer#objectMouseOver
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.pointedEntity instanceof AbstractClientPlayer) {
+            AbstractClientPlayer player = (AbstractClientPlayer) mc.pointedEntity;
+            if (CapabilityIncorporealHandler.getHandler(player).getCorporealityStatus().isIncorporeal()) {
+                NetworkPlayerInfo info = mc.getConnection().getPlayerInfo(player.getGameProfile().getId());
+                GameType currentGm = info.getGameType();
+                // spectators cannot be targeted
+                info.setGameType(GameType.SPECTATOR);
+                mc.entityRenderer.getMouseOver((float) event.getRenderPartialTicks());
+                info.setGameType(currentGm);
             }
         }
     }
