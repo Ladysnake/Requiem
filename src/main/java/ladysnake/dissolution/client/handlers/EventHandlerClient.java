@@ -1,5 +1,6 @@
 package ladysnake.dissolution.client.handlers;
 
+import com.jamieswhiteshirt.clothesline.hooks.api.GetMouseOverEvent;
 import ladylib.reflection.LLReflectionHelper;
 import ladylib.reflection.Setter;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
@@ -17,7 +18,6 @@ import ladysnake.dissolution.common.networking.PingMessage;
 import ladysnake.dissolution.common.registries.SoulStates;
 import ladysnake.dissolution.unused.common.blocks.BlockFluidMercury;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
@@ -181,18 +181,17 @@ public class EventHandlerClient {
     }
 
     @SubscribeEvent
-    public static void onEntityViewRenderRenderFog(EntityViewRenderEvent.RenderFogEvent event) {
+    public static void onEntityViewRenderRenderFog(GetMouseOverEvent event) {
         // Prevents players from targeting souls
-        // Why fog ? Because it is the first event fired after setting EntityRenderer#objectMouseOver
         Minecraft mc = Minecraft.getMinecraft();
-        if (mc.pointedEntity instanceof AbstractClientPlayer) {
-            AbstractClientPlayer player = (AbstractClientPlayer) mc.pointedEntity;
+        if (mc.pointedEntity instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) mc.pointedEntity;
             if (CapabilityIncorporealHandler.getHandler(player).getCorporealityStatus().isIncorporeal()) {
                 NetworkPlayerInfo info = mc.getConnection().getPlayerInfo(player.getGameProfile().getId());
                 GameType currentGm = info.getGameType();
                 // spectators cannot be targeted
                 info.setGameType(GameType.SPECTATOR);
-                mc.entityRenderer.getMouseOver((float) event.getRenderPartialTicks());
+                mc.entityRenderer.getMouseOver(event.getPartialTicks());
                 info.setGameType(currentGm);
             }
         }
