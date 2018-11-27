@@ -109,6 +109,7 @@ configurations {
 
 dependencies {
     contained  "com.github.Pyrofab:Ladylib:${ladylib_version}"
+    contained  "com.jamieswhiteshirt:clothesline-hooks:${mc_version}-${clothesline_hook_version}"
     contained files(apiJar.archivePath) {
         builtBy apiJar
     }

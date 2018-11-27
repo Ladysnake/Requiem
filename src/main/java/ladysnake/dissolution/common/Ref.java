@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common;
 
+import com.jamieswhiteshirt.clothesline.hooks.ClotheslineHooks;
 import ladylib.LadyLib;
 
 public class Ref {
@@ -10,6 +11,7 @@ public class Ref {
     static final String DEPENDENCIES =
             "required-after:forge@[14.23.3.2669,);" +
                     "required-after:" + LadyLib.MOD_ID + "@[" + LadyLib.VERSION + ",);" +
+                    "required-after:" + ClotheslineHooks.MODID + "@[1.12.2-0.0.1.0,1.12.2-0.0.2.0);" +
             "after:albedo;" +
             "after:baubles;" +
             "after:thaumcraft;";

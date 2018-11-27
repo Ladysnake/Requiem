@@ -20,6 +20,10 @@ repositories {
     maven {
         url 'https://jitpack.io'
     }
+
+    maven {
+        url 'http://maven.jamieswhiteshirt.com/libs-release/'
+    }
 }
 
 dependencies {
@@ -32,6 +36,7 @@ dependencies {
     deobfProvided   "thaumcraft:Thaumcraft:${mc_version}:${thaumcraft_version}"
     deobfProvided   "slimeknights.mantle:Mantle:${mantle_version}"
     deobfProvided   "knightminer:Inspirations:${mc_version}-${inspirations_version}"
+    deobfCompile    "com.jamieswhiteshirt:clothesline-hooks:1.12.2-0.0.1.0"
     compileOnly     "ichunutil:iChunUtil:${mc_version}:${ichunutil_version}"
     compileOnly     "sync:Sync:${mc_version}:${sync_version}"
     compileOnly     "angry-pixel-the-betweenlands-mod:TheBetweenlands:3.3.11:universal"
