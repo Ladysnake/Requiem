@@ -20,7 +20,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.GetCollisionBoxesEvent;
@@ -97,60 +96,37 @@ public class InteractEventsHandler {
                 event.getRayTraceResult().typeOfHit == RayTraceResult.Type.ENTITY &&
                         CapabilityIncorporealHandler.getHandler(event.getRayTraceResult().entityHit)
                                 .map(IIncorporealHandler::getCorporealityStatus)
-                                .map(ICorporealityStatus::isIncorporeal).orElse(false)
+                                .filter(ICorporealityStatus::isIncorporeal).isPresent()
         ) {
             event.setCanceled(true);
         }
     }
 
     /**
-     * Prevent possessed mobs from shooting themselves
+     * Prevent possessed mobs from shooting themselves with standard projectiles
+     */
+    @SubscribeEvent
+    public void onThrowableImpact(ProjectileImpactEvent.Throwable event) {
+        if (event.getRayTraceResult().typeOfHit == RayTraceResult.Type.ENTITY &&
+                CapabilityIncorporealHandler.getHandler(event.getThrowable().getThrower())
+                        .map(IIncorporealHandler::getPossessed)
+                        .filter(event.getRayTraceResult().entityHit::equals)
+                        .isPresent()) {
+            event.setCanceled(true);
+        }
+    }
+
+    /**
+     * Prevent possessed mobs from shooting themselves with arrows
      */
     @SubscribeEvent
     public void onArrowImpact(ProjectileImpactEvent.Arrow event) {
         if (event.getRayTraceResult().typeOfHit == RayTraceResult.Type.ENTITY &&
                         CapabilityIncorporealHandler.getHandler(event.getArrow().shootingEntity)
                                 .map(IIncorporealHandler::getPossessed)
-                                .map(event.getRayTraceResult().entityHit::equals)
-                                .orElse(false)) {
+                                .filter(event.getRayTraceResult().entityHit::equals)
+                                .isPresent()) {
             event.setCanceled(true);
         }
-    }
-
-
-
-    /**
-     * Prevents a player from ending possession prematurely
-     */
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onEntityMount(EntityMountEvent event) {
-//        if (event.getEntityMounting().world.isRemote) {
-//            return;
-//        }
-//        CapabilityIncorporealHandler.getHandler(event.getEntity()).ifPresent(handler -> {
-//            if (handler.getCorporealityStatus().isIncorporeal()) {
-//                Entity beingMounted = event.getEntityBeingMounted();
-//                if (event.isMounting()) {
-//                    if (!beingMounted.getUniqueID().equals(handler.getPossessedUUID()) && handler.getPossessed() != null) {
-//                        handler.getPossessed().startRiding(beingMounted);
-//                        event.setCanceled(true);
-//                    }
-//                } else {
-//                    EntityLivingBase possessed = handler.getPossessed();
-//                    if (possessed != null && event.getEntity() instanceof EntityPlayer && ((EntityPlayer) event.getEntity()).isCreative()) {
-//                        handler.setPossessed(null);
-//                    } else {
-//                        if (beingMounted == possessed && !(handler.setPossessed(null))) {
-//                            if (possessed != null && possessed.isRiding()) {
-//                                possessed.dismountRidingEntity();
-//                            } else if (event.getEntity().isSneaking() && event.getEntity() instanceof EntityPlayer) {
-//                                PlayerTickHandler.sneakingPossessingPlayers.add((EntityPlayer) event.getEntity());
-//                            }
-//                            event.setCanceled(true);
-//                        }
-//                    }
-//                }
-//            }
-//        });
     }
 }
