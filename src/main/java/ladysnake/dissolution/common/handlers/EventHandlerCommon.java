@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.handlers;
 
+import ladylib.misc.ReflectionFailedException;
 import ladylib.reflection.LLMethodHandle;
 import ladylib.reflection.LLReflectionHelper;
 import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
@@ -93,8 +94,8 @@ public class EventHandlerCommon {
                         mobArrow.motionZ = arrow.motionZ;
                         arrow.world.spawnEntity(mobArrow);
                         event.setCanceled(true);
-                    } catch (Throwable throwable) {
-                        Dissolution.LOGGER.warn("Failed to get an arrow from a skeleton", throwable);
+                    } catch (ReflectionFailedException e) {
+                        Dissolution.LOGGER.warn("Failed to get an arrow from a skeleton", e);
                     }
                 }
             });

@@ -36,8 +36,8 @@ public class PlayerTickHandler {
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.player);
         if (playerCorp.isStrongSoul()) {
             if (playerCorp.getCorporealityStatus().isIncorporeal()) {
-                if (!event.player.isCreative() && playerCorp.getCorporealityStatus() == SoulStates.SOUL/* &&
-                        !playerCorp.isPossessionActive()*/) {
+                if (!event.player.isCreative() && playerCorp.getCorporealityStatus() == SoulStates.SOUL &&
+                        !playerCorp.isPossessionActive()) {
                     // TODO why is this required to move during possession ?
                     handleSoulFlight(event.player);
                 }

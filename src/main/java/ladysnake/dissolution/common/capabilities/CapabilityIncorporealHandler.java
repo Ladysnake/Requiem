@@ -328,10 +328,10 @@ public class CapabilityIncorporealHandler {
                 } else {
                     owner.getFoodStats().setFoodLevel(lastFood);
                 }
-                IPossessable possessed = getPossessed();
-                if (possessed != null) {
-                    entity$setSize.invoke(owner, 0.0f, owner.height);
-                }
+//                IPossessable possessed = getPossessed();
+//                if (possessed != null) {
+//                    entity$setSize.invoke(owner, 0.0f, owner.height);
+//                }
             } else {
                 lastFood = -1;
             }

@@ -103,7 +103,7 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
 //        move.scale((float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
         playerSP.moveStrafing = move.x;
         playerSP.moveForward = move.y;
-        this.setJumping(playerSP.movementInput.jump);
+        playerSP.setJumping(playerSP.movementInput.jump);
     }
 
     @Nullable

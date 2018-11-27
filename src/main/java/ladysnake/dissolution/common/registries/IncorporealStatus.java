@@ -131,10 +131,10 @@ public class IncorporealStatus extends CorporealityStatus {
         super.initState(owner);
         changeState(owner, true);
         owner.setInvisible(Dissolution.config.ghost.invisibleGhosts);
-        if (!attributeUpdated.contains(owner)) {
-            swapAttributes(owner);
-            attributeUpdated.add(owner);
-        }
+//        if (!attributeUpdated.contains(owner)) {
+//            swapAttributes(owner);
+//            attributeUpdated.add(owner);
+//        }
     }
 
     private void swapAttributes(EntityPlayer player) {

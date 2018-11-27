@@ -218,8 +218,8 @@ public class EventHandlerClient {
         }
 
         if (!event.player.isCreative() &&
-                playerCorp.getCorporealityStatus() == SoulStates.SOUL && event.phase == TickEvent.Phase.START /*&&
-                !playerCorp.isPossessionActive()*/) {
+                playerCorp.getCorporealityStatus() == SoulStates.SOUL && event.phase == TickEvent.Phase.START &&
+                !playerCorp.isPossessionActive()) {
             // TODO figure out why this is required for possession movement
 
             if (DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT)) {
