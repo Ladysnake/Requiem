@@ -7,6 +7,7 @@ import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIInert;
+import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthModifier;
 import ladysnake.dissolution.unused.common.blocks.BlockSepulchre;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -72,8 +73,8 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
         player.capabilities.isFlying = false;
         player.capabilities.allowFlying = false;
         player.eyeHeight = this.getEyeHeight();
-        player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.getAIMoveSpeed());
         this.aiDontDoShit.setShouldExecute(true);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).applyModifier(new CooldownStrengthModifier("cooldown_strength", player, 2));
         return true;
     }
 
