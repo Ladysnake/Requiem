@@ -262,7 +262,9 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        this.setPossessingEntity(compound.getUniqueId("possessingEntity"));
+        if (compound.hasKey("possessingEntity")) {
+            this.setPossessingEntity(compound.getUniqueId("possessingEntity"));
+        }
     }
 
     @Override
