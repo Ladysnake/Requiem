@@ -85,8 +85,11 @@ public class CommandCorporealMode extends CommandBase {
                 if (!handler.isStrongSoul()) {
                     throw new CommandException("commands.dissolution.corporeality_mode.set.weak_soul", player.getName());
                 }
-                handler.setCorporealityStatus(newStatus);
+                if (newStatus == null) {
+                    throw new CommandException("commands.dissolution.corporeality_mode.set.invalid", regName);
+                }
                 ITextComponent iTextComponent = new TextComponentTranslation(newStatus.getTranslationKey());
+                handler.setCorporealityStatus(newStatus);
                 if (sender.getEntityWorld().getGameRules().getBoolean("sendCommandFeedback")) {
                     player.sendMessage(new TextComponentTranslation("dissolution.corporeality_mode.changed", iTextComponent));
                 }

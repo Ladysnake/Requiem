@@ -58,3 +58,5 @@ dissolution.soul_strength.changed=你的灵魂状态已经变为%s
 dissolution.soul_upgrade=Despite the headache, you feel abnormally lightened.
 entity.wandering_soul.name=游离者灵魂
 itemGroup.dissolution=溶尸
+
+commands.dissolution.corporeality_mode.set.invalid=%s is not a valid soul state
