@@ -146,8 +146,8 @@ public class IncorporealStatus extends CorporealityStatus {
         super.resetState(owner);
 
         changeState(owner, false);
-        owner.capabilities.allowFlying = false;
-        owner.capabilities.isFlying = false;
+        owner.capabilities.allowFlying = owner.isCreative();
+        owner.capabilities.isFlying = owner.isCreative() && owner.capabilities.isFlying;
         if (Dissolution.config.ghost.invisibleGhosts) {
             owner.setInvisible(false);
         }
