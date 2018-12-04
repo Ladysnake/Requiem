@@ -1,11 +1,14 @@
 package ladysnake.dissolution.common.handlers;
 
 import ladylib.compat.EnhancedBusSubscriber;
+import ladylib.misc.ReflectionFailedException;
 import ladylib.reflection.Getter;
+import ladylib.reflection.LLMethodHandle;
 import ladylib.reflection.LLReflectionHelper;
 import ladylib.reflection.Setter;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.client.Minecraft;
@@ -13,6 +16,8 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.AbstractSkeleton;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -24,6 +29,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 @EnhancedBusSubscriber(Ref.MOD_ID)
 public class PossessionEventHandler {
+    private static final LLMethodHandle.LLMethodHandle1<AbstractSkeleton, Float, EntityArrow> abstractSkeleton$getArrow =
+            LLReflectionHelper.findMethod(AbstractSkeleton.class, "func_190726_a", EntityArrow.class, float.class);
     private static final Getter<EntityPlayerSP, Double> getLastReportedPosX =
             LLReflectionHelper.findGetter(EntityPlayerSP.class, "field_175172_bI", double.class);
     private static final Setter<EntityPlayerSP, Double> setLastReportedPosX =
@@ -71,6 +78,30 @@ public class PossessionEventHandler {
     }
 
     @SubscribeEvent
+    public void onSkeletonFires(EntityJoinWorldEvent event) {
+        if (event.getEntity() instanceof EntityArrow && !event.getWorld().isRemote) {
+            EntityArrow arrow = (EntityArrow) event.getEntity();
+            CapabilityIncorporealHandler.getHandler(arrow.shootingEntity).ifPresent(handler -> {
+                EntityLivingBase possessed = handler.getPossessed();
+                if (possessed instanceof AbstractSkeleton) {
+                    try {
+                        EntityArrow mobArrow = abstractSkeleton$getArrow.invoke((AbstractSkeleton) possessed, 0f);
+                        mobArrow.setDamage(arrow.getDamage());
+                        mobArrow.copyLocationAndAnglesFrom(arrow);
+                        mobArrow.motionX = arrow.motionX;
+                        mobArrow.motionY = arrow.motionY;
+                        mobArrow.motionZ = arrow.motionZ;
+                        arrow.world.spawnEntity(mobArrow);
+                        event.setCanceled(true);
+                    } catch (ReflectionFailedException e) {
+                        Dissolution.LOGGER.warn("Failed to get an arrow from a skeleton", e);
+                    }
+                }
+            });
+        }
+    }
+
+    @SubscribeEvent
     public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
         // Saves the player's possessed entity and removes it, so that it doesn't wander around
         IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.player);
@@ -86,14 +117,17 @@ public class PossessionEventHandler {
 
     @SubscribeEvent
     public void onEntityJoinWorld(EntityJoinWorldEvent event) {
-        CapabilityIncorporealHandler.getHandler(event.getEntity()).ifPresent(handler -> {
+        Entity player = event.getEntity();
+        CapabilityIncorporealHandler.getHandler(player).ifPresent(handler -> {
             if (handler instanceof CapabilityIncorporealHandler.DefaultIncorporealHandler) {
                 NBTTagCompound serializedPossessedEntity = ((CapabilityIncorporealHandler.DefaultIncorporealHandler) handler).getSerializedPossessedEntity();
                 if (serializedPossessedEntity != null) {
                     Entity host = EntityList.createEntityFromNBT(serializedPossessedEntity, event.getWorld());
-                    event.getWorld().spawnEntity(host);
                     if (host instanceof EntityLivingBase && host instanceof IPossessable) {
+                        event.getWorld().spawnEntity(host);
                         handler.setPossessed((EntityLivingBase & IPossessable) host);
+                    } else {
+                        Dissolution.LOGGER.warn("{}'s possessed entity could not be deserialized", player);
                     }
                 }
             }

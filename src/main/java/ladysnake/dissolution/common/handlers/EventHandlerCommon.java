@@ -1,23 +1,19 @@
 package ladysnake.dissolution.common.handlers;
 
-import ladylib.misc.ReflectionFailedException;
-import ladylib.reflection.LLMethodHandle;
-import ladylib.reflection.LLReflectionHelper;
 import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
-import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
+import ladysnake.dissolution.common.networking.IncorporealMessage;
+import ladysnake.dissolution.common.networking.PacketHandler;
+import ladysnake.dissolution.common.networking.PossessionMessage;
 import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.AbstractSkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
@@ -36,15 +32,22 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
  */
 public class EventHandlerCommon {
 
-    private static final LLMethodHandle.LLMethodHandle1<AbstractSkeleton, Float, EntityArrow> abstractSkeleton$getArrow = LLReflectionHelper.findMethod(AbstractSkeleton.class, "func_190726_a", EntityArrow.class, float.class);
-
-    public EventHandlerCommon() {
-
-    }
-
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerLoggedInEvent event) {
         event.player.inventoryContainer.addListener(new PlayerInventoryListener((EntityPlayerMP) event.player));
+    }
+
+    @SubscribeEvent
+    public void onPlayerStartTracking(PlayerEvent.StartTracking event) {
+        if (event.getEntityPlayer() instanceof EntityPlayerMP && event.getTarget() instanceof EntityPlayer) {
+            EntityPlayerMP thePlayer = (EntityPlayerMP) event.getEntityPlayer();
+            EntityPlayer target = (EntityPlayer) event.getTarget();
+            IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(target);
+            PacketHandler.NET.sendTo(new IncorporealMessage(target.getEntityId(), handler.isStrongSoul(), handler.getCorporealityStatus()), thePlayer);
+            if (handler.isPossessionActive()) {
+                PacketHandler.NET.sendTo(new PossessionMessage(target.getUniqueID(), handler.getPossessed().getEntityId()), thePlayer);
+            }
+        }
     }
 
     @SubscribeEvent
@@ -78,32 +81,9 @@ public class EventHandlerCommon {
         }
     }
 
-    @SubscribeEvent
-    public void onEntityJoinWorld(EntityJoinWorldEvent event) {
-        if (event.getEntity() instanceof EntityArrow && !event.getWorld().isRemote) {
-            EntityArrow arrow = (EntityArrow) event.getEntity();
-            CapabilityIncorporealHandler.getHandler(arrow.shootingEntity).ifPresent(handler -> {
-                EntityLivingBase possessed = handler.getPossessed();
-                if (possessed instanceof AbstractSkeleton) {
-                    try {
-                        EntityArrow mobArrow = abstractSkeleton$getArrow.invoke((AbstractSkeleton) possessed, 0f);
-                        mobArrow.setDamage(arrow.getDamage());
-                        mobArrow.copyLocationAndAnglesFrom(arrow);
-                        mobArrow.motionX = arrow.motionX;
-                        mobArrow.motionY = arrow.motionY;
-                        mobArrow.motionZ = arrow.motionZ;
-                        arrow.world.spawnEntity(mobArrow);
-                        event.setCanceled(true);
-                    } catch (ReflectionFailedException e) {
-                        Dissolution.LOGGER.warn("Failed to get an arrow from a skeleton", e);
-                    }
-                }
-            });
-        }
-    }
-
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onLivingAttack(LivingAttackEvent event) {
+        // Prevents souls from being harmed by anything TODO check if this is useful
         if (event.getEntity() instanceof EntityPlayer && !event.getSource().canHarmInCreative()) {
             ICorporealityStatus status = CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity()).getCorporealityStatus();
             if (status.allowsInvulnerability()) {
@@ -112,6 +92,7 @@ public class EventHandlerCommon {
                 }
             }
         } else {
+            // Makes the possessed mob proxy the attack
             CapabilityIncorporealHandler.getHandler(event.getSource().getTrueSource()).ifPresent(handler -> {
                 IPossessable possessed = handler.getPossessed();
                 if (possessed != null) {
