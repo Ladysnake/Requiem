@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.capabilities;
 
-import ladylib.reflection.LLMethodHandle;
-import ladylib.reflection.LLReflectionHelper;
+import ladylib.reflection.TypedReflection;
+import ladylib.reflection.typed.TypedMethod2;
 import ladysnake.dissolution.api.IDialogueStats;
 import ladysnake.dissolution.api.SoulStrengthModifiedEvent;
 import ladysnake.dissolution.api.corporeality.*;
@@ -55,8 +55,8 @@ public class CapabilityIncorporealHandler {
 
     @CapabilityInject(IIncorporealHandler.class)
     private static Capability<IIncorporealHandler> CAPABILITY_INCORPOREAL;
-    private static LLMethodHandle.LLMethodHandle2<Entity, Float, Float, Void> entity$setSize =
-            LLReflectionHelper.findMethod(Entity.class, "func_70105_a", void.class, float.class, float.class);
+    private static TypedMethod2<Entity, Float, Float, Void> entity$setSize =
+            TypedReflection.findMethod(Entity.class, "func_70105_a", void.class, float.class, float.class);
 
     public static void register() {
         CapabilityManager.INSTANCE.register(IIncorporealHandler.class, new Storage(), DefaultIncorporealHandler::new);

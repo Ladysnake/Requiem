@@ -1,19 +1,19 @@
 package ladysnake.dissolution.common.entity.ai.attribute;
 
-import ladylib.reflection.Getter;
-import ladylib.reflection.LLReflectionHelper;
+import ladylib.reflection.TypedReflection;
+import ladylib.reflection.typed.TypedGetter;
 import net.minecraft.entity.ai.attributes.*;
 
 import java.util.Map;
 
 public final class AttributeHelper {
     private AttributeHelper() { throw new AssertionError(); }
-    private static Getter<AbstractAttributeMap, Map> abstractAttributeMap$attributes =
-            LLReflectionHelper.findGetter(AbstractAttributeMap.class, "field_111154_a", Map.class);
-    private static Getter<AbstractAttributeMap, Map> abstractAttributeMap$attributesByName =
-            LLReflectionHelper.findGetter(AbstractAttributeMap.class, "field_111153_b", Map.class);
-    private static Getter<AttributeMap, Map> attributeMap$instancesByName =
-            LLReflectionHelper.findGetter(AttributeMap.class, "field_111163_c", Map.class);
+    private static TypedGetter<AbstractAttributeMap, Map> abstractAttributeMap$attributes =
+            TypedReflection.findGetter(AbstractAttributeMap.class, "field_111154_a", Map.class);
+    private static TypedGetter<AbstractAttributeMap, Map> abstractAttributeMap$attributesByName =
+            TypedReflection.findGetter(AbstractAttributeMap.class, "field_111153_b", Map.class);
+    private static TypedGetter<AttributeMap, Map> attributeMap$instancesByName =
+            TypedReflection.findGetter(AttributeMap.class, "field_111163_c", Map.class);
 
     public static void substituteAttributeInstance(AbstractAttributeMap attributeMap, IAttributeInstance replacement) {
         @SuppressWarnings("unchecked")

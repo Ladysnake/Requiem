@@ -1,8 +1,8 @@
 package ladysnake.dissolution.client.handlers;
 
 import com.jamieswhiteshirt.clothesline.hooks.api.GetMouseOverEvent;
-import ladylib.reflection.LLReflectionHelper;
-import ladylib.reflection.Setter;
+import ladylib.reflection.TypedReflection;
+import ladylib.reflection.typed.TypedSetter;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.api.corporeality.PlayerIncorporealEvent;
@@ -61,8 +61,8 @@ public class EventHandlerClient {
     private static boolean noServerInstall;
 
     private static final float SOUL_VERTICAL_SPEED = 0.1f;
-    private static final Setter<GuiIngame, ItemStack> highlightingItemStack =
-            LLReflectionHelper.findSetter(GuiIngame.class, "field_92016_l", ItemStack.class);
+    private static final TypedSetter<GuiIngame, ItemStack> highlightingItemStack =
+            TypedReflection.findSetter(GuiIngame.class, "field_92016_l", ItemStack.class);
     private static int refreshTimer = 0;
 
     @SubscribeEvent
@@ -220,7 +220,6 @@ public class EventHandlerClient {
         if (!event.player.isCreative() &&
                 playerCorp.getCorporealityStatus() == SoulStates.SOUL && event.phase == TickEvent.Phase.START &&
                 !playerCorp.isPossessionActive()) {
-            // TODO figure out why this is required for possession movement
 
             if (DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT)) {
                 player.capabilities.setFlySpeed(0.025f);

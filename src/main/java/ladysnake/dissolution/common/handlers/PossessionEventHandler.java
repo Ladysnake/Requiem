@@ -2,10 +2,10 @@ package ladysnake.dissolution.common.handlers;
 
 import ladylib.compat.EnhancedBusSubscriber;
 import ladylib.misc.ReflectionFailedException;
-import ladylib.reflection.Getter;
-import ladylib.reflection.LLMethodHandle;
-import ladylib.reflection.LLReflectionHelper;
-import ladylib.reflection.Setter;
+import ladylib.reflection.TypedReflection;
+import ladylib.reflection.typed.RWTypedField;
+import ladylib.reflection.typed.TypedMethod1;
+import ladylib.reflection.typed.TypedSetter;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
@@ -30,38 +30,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 @EnhancedBusSubscriber(Ref.MOD_ID)
 public class PossessionEventHandler {
-    private static final LLMethodHandle.LLMethodHandle1<AbstractSkeleton, Float, EntityArrow> abstractSkeleton$getArrow =
-            LLReflectionHelper.findMethod(AbstractSkeleton.class, "func_190726_a", EntityArrow.class, float.class);
-    private static final Getter<EntityPlayerSP, Double> getLastReportedPosX =
-            LLReflectionHelper.findGetter(EntityPlayerSP.class, "field_175172_bI", double.class);
-    private static final Setter<EntityPlayerSP, Double> setLastReportedPosX =
-            LLReflectionHelper.findSetter(EntityPlayerSP.class, "field_175172_bI", double.class);
-    private static final Getter<EntityPlayerSP, Double> getLastReportedPosY =
-            LLReflectionHelper.findGetter(EntityPlayerSP.class, "field_175166_bJ", double.class);
-    private static final Setter<EntityPlayerSP, Double> setLastReportedPosY =
-            LLReflectionHelper.findSetter(EntityPlayerSP.class, "field_175166_bJ", double.class);
-    private static final Getter<EntityPlayerSP, Double> getLastReportedPosZ =
-            LLReflectionHelper.findGetter(EntityPlayerSP.class, "field_175167_bK", double.class);
-    private static final Setter<EntityPlayerSP, Double> setLastReportedPosZ =
-            LLReflectionHelper.findSetter(EntityPlayerSP.class, "field_175167_bK", double.class);
-    private static final Getter<EntityPlayerSP, Float> getLastReportedYaw =
-            LLReflectionHelper.findGetter(EntityPlayerSP.class, "field_175164_bL", float.class);
-    private static final Setter<EntityPlayerSP, Float> setLastReportedYaw =
-            LLReflectionHelper.findSetter(EntityPlayerSP.class, "field_175164_bL", float.class);
-    private static final Getter<EntityPlayerSP, Float> getLastReportedPitch =
-            LLReflectionHelper.findGetter(EntityPlayerSP.class, "field_175165_bM", float.class);
-    private static final Setter<EntityPlayerSP, Float> setLastReportedPitch =
-            LLReflectionHelper.findSetter(EntityPlayerSP.class, "field_175165_bM", float.class);
-    private static final Getter<EntityPlayerSP, Integer> getPositionUpdateTicks =
-            LLReflectionHelper.findGetter(EntityPlayerSP.class, "field_175168_bP", int.class);
-    private static final Setter<EntityPlayerSP, Integer> setPositionUpdateTicks =
-            LLReflectionHelper.findSetter(EntityPlayerSP.class, "field_175168_bP", int.class);
-    private static final Getter<EntityPlayerSP, Boolean> getPrevOnGround =
-            LLReflectionHelper.findGetter(EntityPlayerSP.class, "field_184841_cd", boolean.class);
-    private static final Setter<EntityPlayerSP, Boolean> setPrevOnGround =
-            LLReflectionHelper.findSetter(EntityPlayerSP.class, "field_184841_cd", boolean.class);
-    private static final Setter<EntityPlayerSP, Boolean> autoJumpEnabled =
-            LLReflectionHelper.findSetter(EntityPlayerSP.class, "field_189811_cr", boolean.class);
+    private static final TypedMethod1<AbstractSkeleton, Float, EntityArrow> abstractSkeleton$getArrow =
+            TypedReflection.findMethod(AbstractSkeleton.class, "func_190726_a", EntityArrow.class, float.class);
 
     @SubscribeEvent
     public void onTickPlayerTick(TickEvent.PlayerTickEvent event) {
@@ -111,13 +81,10 @@ public class PossessionEventHandler {
     public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
         // Saves the player's possessed entity and removes it, so that it doesn't wander around
         IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.player);
-        Entity possessed = playerCorp.getPossessed();
+        IPossessable possessed = playerCorp.getPossessed();
         World world = event.player.world;
         if (possessed != null && !world.isRemote) {
-            if (playerCorp instanceof CapabilityIncorporealHandler.DefaultIncorporealHandler) {
-                ((CapabilityIncorporealHandler.DefaultIncorporealHandler) playerCorp).setSerializedPossessedEntity(possessed.serializeNBT());
-                world.removeEntity(possessed);
-            }
+            possessed.markForLogOut();
         }
     }
 
@@ -146,14 +113,14 @@ public class PossessionEventHandler {
             // Manually send position information
             EntityPlayerSP self = (EntityPlayerSP) event.player;
             AxisAlignedBB axisalignedbb = self.getEntityBoundingBox();
-            double d0 = self.posX - getLastReportedPosX.invoke(self);
-            double d1 = axisalignedbb.minY - getLastReportedPosY.invoke(self);
-            double d2 = self.posZ - getLastReportedPosZ.invoke(self);
-            double d3 = (double) (self.rotationYaw - getLastReportedYaw.invoke(self));
-            double d4 = (double) (self.rotationPitch - getLastReportedPitch.invoke(self));
+            double d0 = self.posX - PlayerSPMethodHolder.lastReportedPosX.get(self);
+            double d1 = axisalignedbb.minY - PlayerSPMethodHolder.lastReportedPosY.get(self);
+            double d2 = self.posZ - PlayerSPMethodHolder.lastReportedPosZ.get(self);
+            double d3 = (double) (self.rotationYaw - PlayerSPMethodHolder.lastReportedYaw.get(self));
+            double d4 = (double) (self.rotationPitch - PlayerSPMethodHolder.lastReportedPitch.get(self));
             // ++positionUpdateTicks
-            setPositionUpdateTicks.invoke(self, getPositionUpdateTicks.invoke(self) + 1);
-            boolean flag2 = d0 * d0 + d1 * d1 + d2 * d2 > 9.0E-4D || getPositionUpdateTicks.invoke(self) >= 20;
+            PlayerSPMethodHolder.positionUpdateTicks.set(self, PlayerSPMethodHolder.positionUpdateTicks.get(self) + 1);
+            boolean flag2 = d0 * d0 + d1 * d1 + d2 * d2 > 9.0E-4D || PlayerSPMethodHolder.positionUpdateTicks.get(self) >= 20;
             boolean flag3 = d3 != 0.0D || d4 != 0.0D;
 
             if (self.isRiding()) {
@@ -165,24 +132,44 @@ public class PossessionEventHandler {
                 self.connection.sendPacket(new CPacketPlayer.Position(self.posX, axisalignedbb.minY, self.posZ, self.onGround));
             } else if (flag3) {
                 self.connection.sendPacket(new CPacketPlayer.Rotation(self.rotationYaw, self.rotationPitch, self.onGround));
-            } else if (getPrevOnGround.invoke(self) != self.onGround) {
+            } else if (PlayerSPMethodHolder.prevOnGround.get(self) != self.onGround) {
                 self.connection.sendPacket(new CPacketPlayer(self.onGround));
             }
 
             if (flag2) {
-                setLastReportedPosX.invoke(self, self.posX);
-                setLastReportedPosY.invoke(self, self.posY);
-                setLastReportedPosZ.invoke(self, self.posZ);
-                setPositionUpdateTicks.invoke(self, 0);
+                PlayerSPMethodHolder.lastReportedPosX.set(self, self.posX);
+                PlayerSPMethodHolder.lastReportedPosY.set(self, self.posY);
+                PlayerSPMethodHolder.lastReportedPosZ.set(self, self.posZ);
+                PlayerSPMethodHolder.positionUpdateTicks.set(self, 0);
             }
 
             if (flag3) {
-                setLastReportedYaw.invoke(self, self.rotationYaw);
-                setLastReportedPitch.invoke(self, self.rotationPitch);
+                PlayerSPMethodHolder.lastReportedYaw.set(self, self.rotationYaw);
+                PlayerSPMethodHolder.lastReportedPitch.set(self, self.rotationPitch);
             }
 
-            setPrevOnGround.invoke(self, self.onGround);
-            autoJumpEnabled.set(self, Minecraft.getMinecraft().gameSettings.autoJump);
+            PlayerSPMethodHolder.prevOnGround.set(self, self.onGround);
+            PlayerSPMethodHolder.autoJumpEnabled.set(self, Minecraft.getMinecraft().gameSettings.autoJump);
         }
+    }
+
+    private static class PlayerSPMethodHolder {
+
+        private static final RWTypedField<EntityPlayerSP, Double> lastReportedPosX =
+                TypedReflection.createFieldRef(EntityPlayerSP.class, "field_175172_bI", double.class);
+        private static final RWTypedField<EntityPlayerSP, Double> lastReportedPosY =
+                TypedReflection.createFieldRef(EntityPlayerSP.class, "field_175166_bJ", double.class);
+        private static final RWTypedField<EntityPlayerSP, Double> lastReportedPosZ =
+                TypedReflection.createFieldRef(EntityPlayerSP.class, "field_175167_bK", double.class);
+        private static final RWTypedField<EntityPlayerSP, Float> lastReportedYaw =
+                TypedReflection.createFieldRef(EntityPlayerSP.class, "field_175164_bL", float.class);
+        private static final RWTypedField<EntityPlayerSP, Float> lastReportedPitch =
+                TypedReflection.createFieldRef(EntityPlayerSP.class, "field_175165_bM", float.class);
+        private static final RWTypedField<EntityPlayerSP, Integer> positionUpdateTicks =
+                TypedReflection.createFieldRef(EntityPlayerSP.class, "field_175168_bP", int.class);
+        private static final RWTypedField<EntityPlayerSP, Boolean> prevOnGround =
+                TypedReflection.createFieldRef(EntityPlayerSP.class, "field_184841_cd", boolean.class);
+        private static final TypedSetter<EntityPlayerSP, Boolean> autoJumpEnabled =
+                TypedReflection.findSetter(EntityPlayerSP.class, "field_189811_cr", boolean.class);
     }
 }

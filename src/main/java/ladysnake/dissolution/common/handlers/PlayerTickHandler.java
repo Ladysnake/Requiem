@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.handlers;
 
-import ladylib.reflection.LLReflectionHelper;
-import ladylib.reflection.Setter;
+import ladylib.reflection.TypedReflection;
+import ladylib.reflection.typed.TypedSetter;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
@@ -21,9 +21,9 @@ public class PlayerTickHandler {
     static Set<EntityPlayer> sneakingPossessingPlayers = new HashSet<>();
 
     protected static final Random rand = new Random();
-    private static Setter<FoodStats, Integer> foodTimer = LLReflectionHelper.findSetter(FoodStats.class, "field_75123_d", int.class);
-    private static Setter<FoodStats, Float> foodExhaustionLevel = LLReflectionHelper.findSetter(FoodStats.class, "field_75126_c", float.class);
-    private static Setter<EntityPlayer, Integer> flyToggleTimer = LLReflectionHelper.findSetter(EntityPlayer.class, "field_71101_bC", int.class);
+    private static TypedSetter<FoodStats, Integer> foodTimer = TypedReflection.findSetter(FoodStats.class, "field_75123_d", int.class);
+    private static TypedSetter<FoodStats, Float> foodExhaustionLevel = TypedReflection.findSetter(FoodStats.class, "field_75126_c", float.class);
+    private static TypedSetter<EntityPlayer, Integer> flyToggleTimer = TypedReflection.findSetter(EntityPlayer.class, "field_71101_bC", int.class);
 
     @SubscribeEvent
     public void onPlayerTick(PlayerTickEvent event) {
@@ -38,7 +38,6 @@ public class PlayerTickHandler {
             if (playerCorp.getCorporealityStatus().isIncorporeal()) {
                 if (!event.player.isCreative() && playerCorp.getCorporealityStatus() == SoulStates.SOUL &&
                         !playerCorp.isPossessionActive()) {
-                    // TODO why is this required to move during possession ?
                     handleSoulFlight(event.player);
                 }
 

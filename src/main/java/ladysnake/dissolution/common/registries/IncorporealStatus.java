@@ -1,8 +1,8 @@
 package ladysnake.dissolution.common.registries;
 
 import com.google.common.collect.MapMaker;
-import ladylib.reflection.LLReflectionHelper;
-import ladylib.reflection.Setter;
+import ladylib.reflection.TypedReflection;
+import ladylib.reflection.typed.TypedSetter;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
@@ -27,8 +27,8 @@ import java.util.Collections;
 import java.util.Set;
 
 public class IncorporealStatus extends CorporealityStatus {
-    private static final Setter<Entity, Boolean> isImmuneToFireMH =
-            LLReflectionHelper.findSetter(Entity.class, "field_70178_ae", boolean.class);
+    private static final TypedSetter<Entity, Boolean> isImmuneToFireMH =
+            TypedReflection.findSetter(Entity.class, "field_70178_ae", boolean.class);
     /** All player entities who already got their attributes swapped out*/
     private Set<EntityPlayer> attributeUpdated = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
 
