@@ -23,6 +23,7 @@ import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -99,6 +100,11 @@ public class PossessionEventHandler {
                 }
             });
         }
+    }
+
+    @SubscribeEvent
+    public void onLivingFall(LivingFallEvent event) {
+        CapabilityIncorporealHandler.getHandler(event.getEntity()).map(IIncorporealHandler::getPossessed).ifPresent(p -> ((EntityLivingBase) p).fall(event.getDistance(), event.getDamageMultiplier()));
     }
 
     @SubscribeEvent
