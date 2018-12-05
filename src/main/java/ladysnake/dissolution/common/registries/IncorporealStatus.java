@@ -8,7 +8,7 @@ import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
-import ladysnake.dissolution.common.entity.ai.attribute.DelegatingAttribute;
+import ladysnake.dissolution.common.entity.ai.attribute.PossessionDelegatingAttribute;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
@@ -136,7 +136,7 @@ public class IncorporealStatus extends CorporealityStatus {
         IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
         // Replace every registered attribute
         for (IAttributeInstance current: attributeMap.getAllAttributes()) {
-            IAttributeInstance replacement = new DelegatingAttribute(attributeMap, current, handler);
+            IAttributeInstance replacement = new PossessionDelegatingAttribute(attributeMap, current, handler);
             AttributeHelper.substituteAttributeInstance(attributeMap, replacement);
         }
     }

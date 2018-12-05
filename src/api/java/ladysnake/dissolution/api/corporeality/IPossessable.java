@@ -36,6 +36,8 @@ public interface IPossessable {
 
     UUID getPossessingEntityId();
 
+    EntityPlayer getPossessingEntity();
+
     void setSleeping(boolean sleeping);
 
     /**
@@ -49,4 +51,14 @@ public interface IPossessable {
     default void possessTickClient() {}
 
     default void updatePossessing() {}
+
+    default boolean isBeingPossessed() {
+        return this.getPossessingEntityId() != null;
+    }
+
+    /**
+     * Signals to this entity that the possessing player has logged out,
+     * and that the entity should disappear in the next tick
+     */
+    void markForLogOut();
 }

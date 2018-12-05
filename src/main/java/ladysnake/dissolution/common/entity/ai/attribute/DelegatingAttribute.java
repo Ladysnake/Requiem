@@ -1,6 +1,5 @@
 package ladysnake.dissolution.common.entity.ai.attribute;
 
-import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import net.minecraft.entity.ai.attributes.*;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -10,27 +9,14 @@ import java.util.Collection;
 import java.util.UUID;
 
 public class DelegatingAttribute extends ModifiableAttributeInstance {
-    private IAttributeInstance original;
-    private IIncorporealHandler handler;
+    protected IAttributeInstance original;
 
-    public DelegatingAttribute(AbstractAttributeMap map, IAttributeInstance original, IIncorporealHandler handler) {
+    public DelegatingAttribute(AbstractAttributeMap map, IAttributeInstance original) {
         super(map, original.getAttribute());
         this.original = original;
-        this.handler = handler;
     }
 
-    /**
-     * @return the attribute instance to which calls should be delegated
-     */
-    private IAttributeInstance getDelegateAttributeInstance() {
-        if (handler.isPossessionActive()) {
-            IAttributeInstance ret = handler.getPossessed().getEntityAttribute(this.getAttribute());
-            // the attribute can be null if it is not registered in the possessed entity
-            //noinspection ConstantConditions
-            if (ret != null) {
-                return ret;
-            }
-        }
+    protected IAttributeInstance getDelegateAttributeInstance() {
         return this.original;
     }
 

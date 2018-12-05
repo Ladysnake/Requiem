@@ -28,8 +28,11 @@ public final class AttributeHelper {
         String name = attribute.getName();
         attributes.put(attribute, replacement);
         attributesByName.put(name, replacement);
-        if (instancesByName != null  && instancesByName.containsKey(((RangedAttribute) attribute).getDescription())) {
-            instancesByName.put(((RangedAttribute)attribute).getDescription(), replacement);
+        if (instancesByName != null) {
+            String description = ((RangedAttribute) attribute).getDescription();
+            if (description != null && instancesByName.containsKey(description)) {
+                instancesByName.put(description, replacement);
+            }
         }
     }
 }

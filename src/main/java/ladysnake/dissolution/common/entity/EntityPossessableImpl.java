@@ -113,7 +113,8 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     }
 
     @Nullable
-    private EntityPlayer getPossessingEntity() {
+    @Override
+    public EntityPlayer getPossessingEntity() {
         UUID possessingId = getPossessingEntityId();
         return possessingId == null ? null : world.getPlayerEntityByUUID(possessingId);
     }
@@ -191,6 +192,12 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     protected void entityInit() {
         super.entityInit();
         this.getDataManager().register(POSSESSING_ENTITY_ID, Optional.absent());
+    }
+
+    @Override
+    protected void applyEntityAttributes() {
+        super.applyEntityAttributes();
+        AttributeHelper.substituteAttributeInstance(this.getAttributeMap(), new CooldownStrengthAttribute(this));
     }
 
     @Override
