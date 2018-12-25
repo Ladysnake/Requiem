@@ -6,9 +6,7 @@ import ladylib.reflection.typed.TypedSetter;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.api.corporeality.PlayerIncorporealEvent;
-import ladysnake.dissolution.api.possession.PossessionEvent;
 import ladysnake.dissolution.client.particles.DissolutionParticleManager;
-import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
@@ -35,7 +33,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumHandSide;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
@@ -43,7 +40,6 @@ import net.minecraft.world.GameType;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
@@ -54,8 +50,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber(value = Side.CLIENT, modid = Ref.MOD_ID)
 public class EventHandlerClient {
-
-    private static final ResourceLocation SPECTRE_SHADER = new ResourceLocation(Ref.MOD_ID, "shaders/post/spectre.json");
 
     /**True if this client is connected to a server without the mod*/
     private static boolean noServerInstall;
@@ -98,29 +92,12 @@ public class EventHandlerClient {
             if (DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT)) {
                 player.capabilities.setFlySpeed(event.getNewStatus().isIncorporeal() ? 0.025f : 0.05f);
             }
-            if (event.getNewStatus().isIncorporeal()) {
-                ShaderHelper.enableScreenShader(SPECTRE_SHADER);
-            } else {
-                ShaderHelper.disableScreenShader(SPECTRE_SHADER);
+            if (!event.getNewStatus().isIncorporeal()) {
                 GuiIngameForge.renderHotbar = true;
                 GuiIngameForge.renderFood = true;
                 GuiIngameForge.renderArmor = true;
                 GuiIngameForge.renderAir = true;
             }
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onPossession(PossessionEvent.Start event) {
-        if (event.getEntity().world.isRemote && event.getEntityPlayer() == Minecraft.getMinecraft().player) {
-            ShaderHelper.disableScreenShader(SPECTRE_SHADER);
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onPossession(PossessionEvent.Stop event) {
-        if (event.getEntity().world.isRemote && event.getEntityPlayer() == Minecraft.getMinecraft().player) {
-            ShaderHelper.enableScreenShader(SPECTRE_SHADER);
         }
     }
 
@@ -153,15 +130,6 @@ public class EventHandlerClient {
                 highlightingItemStack.set(Minecraft.getMinecraft().ingameGUI, ItemStack.EMPTY);
             }
         }
-    }
-
-    @SubscribeEvent
-    public static void onGuiScreenInitGui(GuiScreenEvent.InitGuiEvent.Pre event) {
-//        if (event.getGui() instanceof GuiGameOver && Dissolution.config.respawn.skipDeathScreen) {
-//            event.setCanceled(true);
-////            Minecraft.getMinecraft().player.respawnPlayer();
-//            PacketHandler.NET.sendToServer(new RemnantRespawnMessage());
-//        }
     }
 
     @SubscribeEvent
