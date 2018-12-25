@@ -232,6 +232,7 @@ public class CapabilityIncorporealHandler {
                 serializedPossessedEntity = null;
                 owner.dismountRidingEntity();
                 owner.setInvisible(Dissolution.config.ghost.invisibleGhosts);   // restore previous visibility
+                owner.capabilities.allowFlying = true;
             } else {                            // start possessing an entity
                 // cancel the operation if a) the event is canceled or b) the possessed entity denies it
                 if (MinecraftForge.EVENT_BUS.post(new PossessionEvent.Start(owner, possessable, force)) ||
@@ -241,6 +242,8 @@ public class CapabilityIncorporealHandler {
                 hostID = possessable.getEntityId();
                 hostUUID = possessable.getUniqueID();
                 owner.setInvisible(true);   // prevent the soul from being seen at all
+                owner.capabilities.allowFlying = false;
+                owner.capabilities.isFlying = false;
             }
             if (owner instanceof EntityPlayerMP && ((EntityPlayerMP) owner).connection != null) {
                 ((EntityPlayerMP) owner).connection.sendPacket(new SPacketCamera(possessable == null ? owner : possessable));

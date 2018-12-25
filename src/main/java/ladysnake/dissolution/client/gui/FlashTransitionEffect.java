@@ -46,7 +46,7 @@ public class FlashTransitionEffect {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    void onRenderWorldLast(RenderGameOverlayEvent.Pre event) {
+    public void onRenderWorldLast(RenderGameOverlayEvent.Pre event) {
         if (ticks <= 0 || event.getType() != RenderGameOverlayEvent.ElementType.ALL) {
             // no transition currently occurring, or wrong event type
             return;

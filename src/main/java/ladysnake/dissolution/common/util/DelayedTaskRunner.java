@@ -6,9 +6,12 @@ import ladylib.compat.EnhancedBusSubscriber;
 import ladysnake.dissolution.common.Ref;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.apiguardian.api.API;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 public class DelayedTaskRunner {
     @EnhancedBusSubscriber(Ref.MOD_ID)
@@ -26,6 +29,7 @@ public class DelayedTaskRunner {
         }
     }
 
+    @API(status = EXPERIMENTAL, since = "0.2.0")
     public void addDelayedTask(int dimension, int delay, Runnable action) {
         List<DelayedTask> tasksForDimension = dimensionsDelayedTasks.get(dimension);
         if (tasksForDimension == null) {
