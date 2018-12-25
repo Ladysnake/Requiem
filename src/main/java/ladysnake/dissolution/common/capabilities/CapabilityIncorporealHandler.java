@@ -334,7 +334,12 @@ public class CapabilityIncorporealHandler {
                 }
                 Entity possessed = getPossessed();
                 if (possessed != null) {
-                    entity$setSize.invoke(owner, possessed.width, possessed.height);
+                    float width = possessed.width;
+                    float height = possessed.height;
+                    if (width < owner.width || height < owner.height) {
+                        // TODO set the size for bigger entities without making them slide
+                        entity$setSize.invoke(owner, width, height);
+                    }
                 }
             } else {
                 lastFood = -1;
