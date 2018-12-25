@@ -25,7 +25,6 @@ config.dissolution.dialogues.tooltip=Options liées au système de dialogue de D
 config.dissolution.entities.tooltip=Options liées aux entités ajoutées par Dissolution
 config.dissolution.general.enforcedSoulStrength=Force d'âme imposée
 config.dissolution.ghost.allowStuckCommand=Autoriser la commande stuck
-config.dissolution.ghost.authorizedBlocks=Blocs autorisés pour les ectoplasmes
 config.dissolution.ghost.authorizedEntities=Entités autorisées
 config.dissolution.ghost.flightMode=Mode de vol
 config.dissolution.ghost.invisibleGhosts=Invisibilité complète
@@ -71,5 +70,4 @@ itemGroup.dissolution=Dissolution
 lingering_potion.effect.dissolution.obnoxious=Potion odieuse persistante
 potion.effect.dissolution.obnoxious=Potion odieuse
 splash_potion.effect.dissolution.obnoxious=Potion odieuse jetable
-
 commands.dissolution.corporeality_mode.set.invalid=%s is not a valid soul state

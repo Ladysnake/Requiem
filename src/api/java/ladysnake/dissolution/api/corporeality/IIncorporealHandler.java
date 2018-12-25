@@ -36,6 +36,10 @@ public interface IIncorporealHandler {
     @Nonnull
     ICorporealityStatus getCorporealityStatus();
 
+    default boolean isIncorporeal() {
+        return getCorporealityStatus().isIncorporeal() && !isPossessionActive();
+    }
+
     /**
      * @param possessable the entity to possess
      * @return false if the change could not occur

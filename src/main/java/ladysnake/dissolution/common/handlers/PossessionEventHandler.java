@@ -11,6 +11,7 @@ import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
+import ladysnake.dissolution.common.util.DelayedTaskRunner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
@@ -23,10 +24,14 @@ import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+
+import java.util.Optional;
 
 @EnhancedBusSubscriber(Ref.MOD_ID)
 public class PossessionEventHandler {
@@ -77,6 +82,26 @@ public class PossessionEventHandler {
         CapabilityIncorporealHandler.getHandler(event.getEntity()).map(IIncorporealHandler::getPossessed).ifPresent(p -> ((EntityLivingBase) p).fall(event.getDistance(), event.getDamageMultiplier()));
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onLivingAttack(LivingAttackEvent event) {
+        // Properly delegate attacks from/to players during possession
+        Optional<EntityLivingBase> targetPossessed = CapabilityIncorporealHandler.getHandler(event.getEntity()).map(IIncorporealHandler::getPossessed);
+        if (targetPossessed.isPresent()) {
+            // Set the target to the possessed entity, not the soul controlling it
+            targetPossessed.get().attackEntityFrom(event.getSource(), event.getAmount());
+            event.setCanceled(true);
+        } else {
+            // Attack from the possessed entity, not the soul controlling it
+            // This branch will be indirectly/recursively called from the first through `attackEntityFrom`, no need for fancy handling
+            Optional<IPossessable> attackerPossessed = CapabilityIncorporealHandler.getHandler(event.getSource().getTrueSource()).map(IIncorporealHandler::getPossessed);
+            if (attackerPossessed.isPresent()) {
+                if (attackerPossessed.get().proxyAttack(event.getEntityLiving(), event.getSource(), event.getAmount())) {
+                    event.setCanceled(true);
+                }
+            }
+        }
+    }
+
     @SubscribeEvent
     public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
         // Saves the player's possessed entity and removes it, so that it doesn't wander around
@@ -91,17 +116,22 @@ public class PossessionEventHandler {
     @SubscribeEvent
     public void onEntityJoinWorld(EntityJoinWorldEvent event) {
         Entity player = event.getEntity();
+        if (player.world.isRemote) {
+            return;
+        }
         CapabilityIncorporealHandler.getHandler(player).ifPresent(handler -> {
             if (handler instanceof CapabilityIncorporealHandler.DefaultIncorporealHandler) {
-                NBTTagCompound serializedPossessedEntity = ((CapabilityIncorporealHandler.DefaultIncorporealHandler) handler).getSerializedPossessedEntity();
+                final NBTTagCompound serializedPossessedEntity = ((CapabilityIncorporealHandler.DefaultIncorporealHandler) handler).getSerializedPossessedEntity();
                 if (serializedPossessedEntity != null) {
-                    Entity host = EntityList.createEntityFromNBT(serializedPossessedEntity, event.getWorld());
-                    if (host instanceof EntityLivingBase && host instanceof IPossessable) {
-                        event.getWorld().spawnEntity(host);
-                        handler.setPossessed((EntityLivingBase & IPossessable) host);
-                    } else {
-                        Dissolution.LOGGER.warn("{}'s possessed entity could not be deserialized", player);
-                    }
+                    DelayedTaskRunner.INSTANCE.addDelayedTask(player.dimension, 1, () -> {
+                        Entity host = EntityList.createEntityFromNBT(serializedPossessedEntity, event.getWorld());
+                        if (host instanceof EntityLivingBase && host instanceof IPossessable) {
+                            event.getWorld().spawnEntity(host);
+                            handler.setPossessed((EntityLivingBase & IPossessable) host);
+                        } else {
+                            Dissolution.LOGGER.warn("{}'s possessed entity could not be deserialized", player);
+                        }
+                    });
                 }
             }
         });

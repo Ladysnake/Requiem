@@ -147,7 +147,7 @@ public class CapabilityIncorporealHandler {
 
         @Override
         public boolean isStrongSoul() {
-            return /*owner.world.getDifficulty() != EnumDifficulty.PEACEFUL &&*/ Dissolution.config.forceRemnant.getValue(strongSoul);
+            return Dissolution.config.forceRemnant.getValue(strongSoul);
         }
 
         @Override
@@ -229,6 +229,7 @@ public class CapabilityIncorporealHandler {
                 }
                 hostID = 0;
                 hostUUID = null;
+                serializedPossessedEntity = null;
                 owner.dismountRidingEntity();
                 owner.setInvisible(Dissolution.config.ghost.invisibleGhosts);   // restore previous visibility
             } else {                            // start possessing an entity
@@ -328,10 +329,10 @@ public class CapabilityIncorporealHandler {
                 } else {
                     owner.getFoodStats().setFoodLevel(lastFood);
                 }
-//                IPossessable possessed = getPossessed();
-//                if (possessed != null) {
-//                    entity$setSize.invoke(owner, 0.0f, owner.height);
-//                }
+                Entity possessed = getPossessed();
+                if (possessed != null) {
+                    entity$setSize.invoke(owner, possessed.width, possessed.height);
+                }
             } else {
                 lastFood = -1;
             }
@@ -391,16 +392,10 @@ public class CapabilityIncorporealHandler {
             Entity possessed = instance.getPossessed();
             if (possessed != null) {
                 tag.setUniqueId("possessedEntity", possessed.getUniqueID());
+                tag.setTag("serializedPossessedEntity", possessed.serializeNBT());
             }
             tag.setTag("dialogueStats", instance.getDialogueStats().serializeNBT());
             tag.setTag("deathStats", instance.getDeathStats().serializeNBT());
-            if (instance instanceof DefaultIncorporealHandler) {
-                DefaultIncorporealHandler defaultInstance = (DefaultIncorporealHandler) instance;
-                NBTTagCompound serializedPossessedEntity = defaultInstance.getSerializedPossessedEntity();
-                if (serializedPossessedEntity != null) {
-                    tag.setTag("serializedPossessedEntity", serializedPossessedEntity);
-                }
-            }
             return tag;
         }
 

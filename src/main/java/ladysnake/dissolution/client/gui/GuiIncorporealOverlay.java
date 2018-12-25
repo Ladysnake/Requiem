@@ -48,7 +48,7 @@ public class GuiIncorporealOverlay extends GuiIngame {
     public void onRenderExperienceBar(RenderGameOverlayEvent.Post event) {
         final IIncorporealHandler pl = CapabilityIncorporealHandler.getHandler(this.mc.player);
         if (event.getType() == ElementType.ALL) {
-            OverlaysRenderer.INSTANCE.renderOverlays(event);
+            OverlaysRenderer.INSTANCE.renderOverlays(event.getPartialTicks());
 
             /* Draw Incorporeal Ingame Gui */
 //            if (pl.getCorporealityStatus().isIncorporeal() && pl.getPossessed() == null) {

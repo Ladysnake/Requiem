@@ -46,7 +46,7 @@ public class ConfigTests {
         assertEquals(new File("run"), FMLInjectionData.data()[6]);
     }
 
-    @Test
+//    @Test
     public void testConfig() {
         DissolutionConfigManager.init(new File("run/config/dissolution.cfg"));
         assertNotNull(DissolutionConfigManager.config);
@@ -54,7 +54,7 @@ public class ConfigTests {
         DissolutionConfigManager.syncedProps.forEach((s, p) -> System.out.println(s + "=" + convert(p)));
     }
 
-    @Test
+//    @Test
     public void testConfigPacket() {
         DissolutionConfigManager.init(new File("run/config/dissolution.cfg"));
         assertEquals(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT, ((DissolutionConfig.TestGhost) Dissolution.config.ghost).flightMode);
@@ -65,7 +65,7 @@ public class ConfigTests {
         assertEquals(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT, ((DissolutionConfig.TestGhost) Dissolution.config.ghost).flightMode);
     }
 
-    @Test
+//    @Test
     public void testRestore() {
         DissolutionConfigManager.init(new File("run/config/dissolution.cfg"));
         ConfigMessage message = new ConfigMessage(DissolutionConfigManager.syncedProps.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e-> e.getValue().getString())));

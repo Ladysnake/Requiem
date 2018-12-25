@@ -1,6 +1,7 @@
 package ladysnake.dissolution.common.entity.ai.attribute;
 
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 
@@ -18,11 +19,14 @@ public class PossessionDelegatingAttribute extends DelegatingAttribute {
     @Override
     protected IAttributeInstance getDelegateAttributeInstance() {
         if (handler.isPossessionActive()) {
-            IAttributeInstance ret = handler.getPossessed().getEntityAttribute(this.getAttribute());
-            // the attribute can be null if it is not registered in the possessed entity
-            //noinspection ConstantConditions
-            if (ret != null) {
-                return ret;
+            EntityLivingBase possessed = handler.getPossessed();
+            if (possessed != null) {
+                IAttributeInstance ret = possessed.getEntityAttribute(this.getAttribute());
+                // the attribute can be null if it is not registered in the possessed entity
+                //noinspection ConstantConditions
+                if (ret != null) {
+                    return ret;
+                }
             }
         }
         return super.getDelegateAttributeInstance();

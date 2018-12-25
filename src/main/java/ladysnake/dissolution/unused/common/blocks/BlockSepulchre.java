@@ -3,7 +3,6 @@ package ladysnake.dissolution.unused.common.blocks;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
-import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.items.ItemBurial;
 import net.minecraft.block.Block;
@@ -27,7 +26,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -40,7 +38,6 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.function.Supplier;
 
-@Mod.EventBusSubscriber(modid = Ref.MOD_ID)
 public class BlockSepulchre extends BlockHorizontal implements ISoulInteractable {
 
     public static final PropertyEnum<BlockSepulchre.EnumPartType> PART = PropertyEnum.create("part",

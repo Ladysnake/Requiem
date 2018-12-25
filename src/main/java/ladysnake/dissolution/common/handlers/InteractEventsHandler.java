@@ -1,6 +1,5 @@
 package ladysnake.dissolution.common.handlers;
 
-import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
@@ -8,12 +7,13 @@ import ladysnake.dissolution.api.possession.PossessionEvent;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.PossessableEntityFactory;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
-import ladysnake.dissolution.common.registries.SoulStates;
 import ladysnake.dissolution.unused.common.entity.souls.AbstractSoul;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
@@ -35,10 +35,12 @@ public class InteractEventsHandler {
      */
     @SubscribeEvent
     public void onGetCollisionBoxes(GetCollisionBoxesEvent event) {
-        if ((event.getEntity() instanceof AbstractSoul)
-                || ((event.getEntity() instanceof EntityPlayer)
-                && (CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity())
-                .getCorporealityStatus() == SoulStates.SOUL))) {
+        if (event.getEntity() instanceof EntityPlayer) {
+            IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity());
+            if (handler.isIncorporeal()) {
+                event.getCollisionBoxesList().removeIf(axisAlignedBB -> axisAlignedBB.getAverageEdgeLength() < MAX_THICCNESS);
+            }
+        } else if (event.getEntity() instanceof AbstractSoul) {
             event.getCollisionBoxesList().removeIf(axisAlignedBB -> axisAlignedBB.getAverageEdgeLength() < MAX_THICCNESS);
         }
     }
@@ -92,13 +94,28 @@ public class InteractEventsHandler {
      */
     @SubscribeEvent
     public void onProjectileImpact(ProjectileImpactEvent event) {
-        if (
-                event.getRayTraceResult().typeOfHit == RayTraceResult.Type.ENTITY &&
-                        CapabilityIncorporealHandler.getHandler(event.getRayTraceResult().entityHit)
-                                .map(IIncorporealHandler::getCorporealityStatus)
-                                .filter(ICorporealityStatus::isIncorporeal).isPresent()
-        ) {
-            event.setCanceled(true);
+        Entity entityHit = event.getRayTraceResult().entityHit;
+        if (event.getRayTraceResult().typeOfHit == RayTraceResult.Type.ENTITY && entityHit instanceof EntityPlayer) {
+            IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler((EntityPlayer) entityHit);
+            if (handler.getCorporealityStatus().isIncorporeal()) {
+                if (handler.isPossessionActive()) {
+                    Entity possessed = handler.getPossessed();
+                    Entity projectile = event.getEntity();
+                    Entity shooter = null;
+                    if (projectile instanceof EntityArrow) {
+                        shooter = ((EntityArrow) projectile).shootingEntity;
+                    } else if (projectile instanceof EntityThrowable) {
+                        shooter = ((EntityThrowable) projectile).getThrower();
+                    }
+                    if (shooter != possessed && shooter != entityHit) {
+                        // Make the projectile impact the possessed entity
+                        event.getRayTraceResult().entityHit = handler.getPossessed();
+                        return;
+                    }
+                }
+                // Make the projectile not hit the spirit / the shooter
+                event.setCanceled(true);
+            }
         }
     }
 

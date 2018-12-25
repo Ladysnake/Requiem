@@ -2,7 +2,6 @@ package ladysnake.dissolution.common.handlers;
 
 import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
-import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.networking.IncorporealMessage;
@@ -15,7 +14,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
@@ -78,29 +76,6 @@ public class EventHandlerCommon {
         final ICorporealityStatus playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer()).getCorporealityStatus();
         if (playerCorp.isIncorporeal()) {
             event.modifyVisibility(0D);
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onLivingAttack(LivingAttackEvent event) {
-        // Prevents souls from being harmed by anything TODO check if this is useful
-        if (event.getEntity() instanceof EntityPlayer && !event.getSource().canHarmInCreative()) {
-            ICorporealityStatus status = CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity()).getCorporealityStatus();
-            if (status.allowsInvulnerability()) {
-                if (event.getSource().getTrueSource() == null || DissolutionConfigManager.isEctoplasmImmuneTo(event.getSource().getTrueSource())) {
-                    event.setCanceled(!event.getSource().canHarmInCreative());
-                }
-            }
-        } else {
-            // Makes the possessed mob proxy the attack
-            CapabilityIncorporealHandler.getHandler(event.getSource().getTrueSource()).ifPresent(handler -> {
-                IPossessable possessed = handler.getPossessed();
-                if (possessed != null) {
-                    if (possessed.proxyAttack(event.getEntityLiving(), event.getSource(), event.getAmount())) {
-                        event.setCanceled(true);
-                    }
-                }
-            });
         }
     }
 

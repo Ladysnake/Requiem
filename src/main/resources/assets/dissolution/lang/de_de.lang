@@ -25,7 +25,6 @@ config.dissolution.dialogues.tooltip=Dialogeinstellungen
 config.dissolution.entities.tooltip=Einstellungen im Bezug auf Entitäten die von Dissolution hinzugefügt wurden
 config.dissolution.general.enforcedSoulStrength=Erzwungene Seelenstärke
 config.dissolution.ghost.allowStuckCommand=Erlaube /stuck Befehl
-config.dissolution.ghost.authorizedBlocks=Blöcke, die Ektoplasma berühren können
 config.dissolution.ghost.authorizedEntities=Erlaubte Entitäten
 config.dissolution.ghost.flightMode=Flugmodus
 config.dissolution.ghost.invisibleGhosts=Vollkommene Unsichtbarkeit
@@ -71,5 +70,4 @@ itemGroup.dissolution=Dissolution
 lingering_potion.effect.dissolution.obnoxious=unerträglicher Verweiltrank
 potion.effect.dissolution.obnoxious=unerträglicher Trank
 splash_potion.effect.dissolution.obnoxious=unerträglicher Wurftrank
-
 commands.dissolution.corporeality_mode.set.invalid=%s is not a valid soul state

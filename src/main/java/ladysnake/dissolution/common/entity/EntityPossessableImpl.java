@@ -7,23 +7,25 @@ import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIInert;
-import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthModifier;
+import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
+import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthAttribute;
+import ladysnake.dissolution.common.util.DelayedTaskRunner;
 import ladysnake.dissolution.unused.common.blocks.BlockSepulchre;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.play.server.SPacketCamera;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
@@ -53,6 +55,10 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     private EntityAIInert aiDontDoShit = new EntityAIInert(false);
 
     private boolean sleeping;
+    // Fields used to track external changes to this entity's motion
+    private double prevMotionX;
+    private double prevMotionY;
+    private double prevMotionZ;
 
     public EntityPossessableImpl(World worldIn) {
         super(worldIn);
@@ -74,7 +80,6 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
         player.capabilities.allowFlying = false;
         player.eyeHeight = this.getEyeHeight();
         this.aiDontDoShit.setShouldExecute(true);
-        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).applyModifier(new CooldownStrengthModifier("cooldown_strength", player, 2));
         return true;
     }
 
@@ -87,9 +92,6 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
         if (!handler.getCorporealityStatus().isIncorporeal() || this.dead || force) {
             this.setPossessingEntity(null);
             player.eyeHeight = player.getDefaultEyeHeight();
-//            if (!world.isRemote) {
-//                ((EntityPlayerMP) player).connection.sendPacket(new SPacketCamera(player));
-//            }
             this.aiDontDoShit.setShouldExecute(false);
             return true;
         }
@@ -132,8 +134,9 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
         return possessingEntity == null || possessingEntity == player;
     }
 
-    private boolean isBeingPossessed() {
-        return this.getPossessingEntityId() != null;
+    @Override
+    public void markForLogOut() {
+        this.world.removeEntity(this);
     }
 
     @Override
@@ -149,6 +152,25 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
                 possessing.addPotionEffect(new PotionEffect(potionEffect));
             }
         }
+    }
+
+    @Override
+    public void onUpdate() {
+        if (!world.isRemote) {
+            if (this.prevMotionX != this.motionX || this.prevMotionY != this.motionY || this.prevMotionZ != this.motionZ) {
+                if (this.isBeingPossessed()) {
+                    EntityPlayer possessing = this.getPossessingEntity();
+                    possessing.motionX += this.motionX - this.prevMotionX;
+                    possessing.motionY += this.motionY - this.prevMotionY;
+                    possessing.motionZ += this.motionZ - this.prevMotionZ;
+                    possessing.velocityChanged = true;
+                }
+            }
+        }
+        super.onUpdate();
+        this.prevMotionX = this.motionX;
+        this.prevMotionY = this.motionY;
+        this.prevMotionZ = this.motionZ;
     }
 
     @Override
@@ -176,19 +198,6 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     }
 
     @Override
-    public Entity getLowestRidingEntity() {
-        /*
-        Prevents the player from being targeted in EntityRenderer#getMouseOver
-        Specifically passes this check:
-        if (entity1.getLowestRidingEntity() == entity.getLowestRidingEntity() && !entity1.canRiderInteract())
-        */
-        if (this.isBeingPossessed()) {
-            return this.getPossessingEntity();
-        }
-        return super.getLowestRidingEntity();
-    }
-
-    @Override
     protected void entityInit() {
         super.entityInit();
         this.getDataManager().register(POSSESSING_ENTITY_ID, Optional.absent());
@@ -200,40 +209,24 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
         AttributeHelper.substituteAttributeInstance(this.getAttributeMap(), new CooldownStrengthAttribute(this));
     }
 
-    @Override
-    protected void onInsideBlock(IBlockState block) {
-        super.onInsideBlock(block);
-        // Allows possessed entities to use portals
-        // TODO check if this is useful without riding
-        if (block.getBlock() == Blocks.PORTAL && !this.isRiding() && this.isBeingRidden() && this.getPossessingEntity() != null) {
-            this.setPortal(new BlockPos(this));
-        }
-    }
-
-    @Override
-    public void setPortal(@Nonnull BlockPos pos) {
-        super.setPortal(pos);
-        // Allows possessed entities to use portals
-        // TODO check if this is useful without riding
-        EntityPlayer passenger = getPossessingEntity();
-        if (passenger != null) {
-            passenger.setPortal(pos);
-        }
-    }
-
     @Nullable
     @Override
     public Entity changeDimension(int dimensionIn, @Nonnull ITeleporter teleporter) {
         // Teleports the player along with the entity
-        EntityPlayer passenger = this.getPossessingEntity();
+        final EntityPlayer passenger = this.getPossessingEntity();
         if (passenger != null && !world.isRemote) {
             CapabilityIncorporealHandler.getHandler(passenger).setPossessed(null, true);
+            ((EntityPlayerMP)passenger).connection.sendPacket(new SPacketCamera(this));
             passenger.setPosition(posX, posY, posZ);
-            passenger.changeDimension(dimensionIn, teleporter);
+            passenger.timeUntilPortal = passenger.getPortalCooldown();
         }
-        Entity clone = super.changeDimension(dimensionIn, teleporter);
+        final Entity clone = super.changeDimension(dimensionIn, teleporter);
         if (passenger != null && clone != null && !world.isRemote) {
-            CapabilityIncorporealHandler.getHandler(passenger).setPossessed((EntityLivingBase & IPossessable) clone, true);
+            // We need to delay the player's dimension change slightly, otherwise it can cause a concurrent modification crash
+            DelayedTaskRunner.INSTANCE.addDelayedTask(dimensionIn, 0, () -> {
+                passenger.changeDimension(dimensionIn, teleporter);
+                CapabilityIncorporealHandler.getHandler(passenger).setPossessed((EntityLivingBase & IPossessable) clone, true);
+            });
         }
         return clone;
     }
@@ -287,14 +280,16 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             this.setRotation(this.rotationYaw, this.rotationPitch);
             this.renderYawOffset = this.rotationYaw;
             this.rotationYawHead = this.renderYawOffset;
+            this.fallDistance = player.fallDistance;
 //            strafe = player.moveStrafing;
 //            forward = player.moveForward;
+//            vertical = player.moveVertical;
 
-            if (player.isUser()) {
-                this.setPosition(player.posX, player.posY, player.posZ);
+            super.travel(strafe, vertical, forward);
+            this.setPosition(player.posX, player.posY, player.posZ);
 //                this.setAIMoveSpeed((float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
-//                super.travel(strafe, vertical, forward);
-            }
+            this.limbSwing = player.limbSwing;
+            this.limbSwingAmount = player.limbSwingAmount;
         } else {
             super.travel(strafe, vertical, forward);
         }
@@ -358,6 +353,45 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     /* * * * * * * * * * *
       Plenty of delegation
      * * * * * * * * * * * */
+
+    @Override
+    public void knockBack(Entity entityIn, float strength, double xRatio, double zRatio) {
+        EntityPlayer possessing = getPossessingEntity();
+        if (possessing != null) {
+            possessing.knockBack(entityIn, strength, xRatio, zRatio);
+            possessing.velocityChanged = true;
+            return;
+        }
+        super.knockBack(entityIn, strength, xRatio, zRatio);
+    }
+
+    @Override
+    public boolean isRiding() {
+        EntityPlayer possessing = getPossessingEntity();
+        if (possessing != null) {
+            return possessing.isRiding();
+        }
+        return super.isRiding();
+    }
+
+    @Nullable
+    @Override
+    public Entity getRidingEntity() {
+        EntityPlayer possessing = getPossessingEntity();
+        if (possessing != null) {
+            return possessing.getRidingEntity();
+        }
+        return super.getRidingEntity();
+    }
+
+    @Override
+    public int getPortalCooldown() {
+        EntityPlayer possessing = getPossessingEntity();
+        if (possessing != null) {
+            return possessing.getPortalCooldown();
+        }
+        return super.getPortalCooldown();
+    }
 
     @Override
     public boolean isActiveItemStackBlocking() {
