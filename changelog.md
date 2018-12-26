@@ -1,5 +1,21 @@
 ##### Version 1.12.2-0.2.0
-Rewritten mob possession, hopefully fixing quite a few bugs
+Rewritten mob possession, hopefully fixing a lot of bugs
+
+Possession:
+- You can now use enderpearls and other short-distance teleportation !
+- You can now use grappling hooks and other velocity altering stuff !
+- Fixed players appearing (comically) sit on their possessed entity in multiplayer
+- Fixed being randomly kicked from world when left-clicking
+- Fixed the fire overlay appearing in third person
+- Fixed possessed entities moving by themselves under obscure circumstances
+
+Theoretical bugfixes: (needs feedback)
+- Possessed entities magically jumping to the other side of the world
+
+
+General bugfixes:
+- Fixed the soul shader sometimes appearing when it should not
+- Fixed soul players sometimes appearing solid to other players
 
 Mod compatibility:
 - Made evilcraft and cannibalism fleshes fit for undead consumption
