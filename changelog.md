@@ -9,10 +9,6 @@ Possession:
 - Fixed the fire overlay appearing in third person
 - Fixed possessed entities moving by themselves under obscure circumstances
 
-Theoretical bugfixes: (needs feedback)
-- Possessed entities magically jumping to the other side of the world
-
-
 General bugfixes:
 - Fixed the soul shader sometimes appearing when it should not
 - Fixed soul players sometimes appearing solid to other players

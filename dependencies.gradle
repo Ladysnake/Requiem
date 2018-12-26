@@ -39,6 +39,7 @@ dependencies {
     deobfCompile    "com.jamieswhiteshirt:clothesline-hooks:1.12.2-0.0.1.0"
     compileOnly     "ichunutil:iChunUtil:${mc_version}:${ichunutil_version}"
     compileOnly     "sync:Sync:${mc_version}:${sync_version}"
+    compileOnly     "com.github.Modding-Legacy:Aether-Legacy:${mc_version}-${aether_version}"
     compileOnly     "angry-pixel-the-betweenlands-mod:TheBetweenlands:3.3.11:universal"
     deobfProvided   "mezz.jei:jei_${mc_version}:${jei_version}:api"
     runtimeOnly     "mezz.jei:jei_${mc_version}:${jei_version}"
