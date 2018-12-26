@@ -18,12 +18,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.AbstractSkeleton;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -105,11 +107,31 @@ public class PossessionEventHandler {
     @SubscribeEvent
     public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
         // Saves the player's possessed entity and removes it, so that it doesn't wander around
-        IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.player);
+        EntityPlayer player = event.player;
+        IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
         IPossessable possessed = playerCorp.getPossessed();
-        World world = event.player.world;
+        World world = player.world;
         if (possessed != null && !world.isRemote) {
             possessed.markForLogOut();
+        }
+    }
+
+    @SubscribeEvent
+    public void onEntityTravelToDimension(EntityTravelToDimensionEvent event) {
+        /*
+        * The dimension change is usually handled by the possessed entity itself,
+        * but some teleporters may teleport the player first, or may refuse to teleport the entity.
+        * In that case, we handle it as a logout, and pray for the best.
+        */
+        if (event.getEntity() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) event.getEntity();
+            IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
+            IPossessable possessed = playerCorp.getPossessed();
+            World world = player.world;
+            if (possessed != null && !world.isRemote && playerCorp instanceof CapabilityIncorporealHandler.DefaultIncorporealHandler) {
+                ((CapabilityIncorporealHandler.DefaultIncorporealHandler) playerCorp).setSerializedPossessedEntity(((Entity)possessed).serializeNBT());
+                possessed.markForLogOut();
+            }
         }
     }
 
@@ -128,6 +150,7 @@ public class PossessionEventHandler {
                         if (host instanceof EntityLivingBase && host instanceof IPossessable) {
                             event.getWorld().spawnEntity(host);
                             handler.setPossessed((EntityLivingBase & IPossessable) host);
+                            DelayedTaskRunner.INSTANCE.addDelayedTask(player.dimension, 10, () -> handler.setPossessed((EntityLivingBase & IPossessable) host));
                         } else {
                             Dissolution.LOGGER.warn("{}'s possessed entity could not be deserialized", player);
                         }
