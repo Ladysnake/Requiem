@@ -8,8 +8,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apiguardian.api.API;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
@@ -17,7 +17,7 @@ public class DelayedTaskRunner {
     @EnhancedBusSubscriber(Ref.MOD_ID)
     public static final DelayedTaskRunner INSTANCE = new DelayedTaskRunner();
 
-    private final Int2ObjectMap<List<DelayedTask>> dimensionsDelayedTasks = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<Queue<DelayedTask>> dimensionsDelayedTasks = new Int2ObjectOpenHashMap<>();
 
     @SubscribeEvent
     public void onTickWorldTick(TickEvent.WorldTickEvent event) {
@@ -31,9 +31,10 @@ public class DelayedTaskRunner {
 
     @API(status = EXPERIMENTAL, since = "0.2.0")
     public void addDelayedTask(int dimension, int delay, Runnable action) {
-        List<DelayedTask> tasksForDimension = dimensionsDelayedTasks.get(dimension);
+        Queue<DelayedTask> tasksForDimension = dimensionsDelayedTasks.get(dimension);
         if (tasksForDimension == null) {
-            dimensionsDelayedTasks.put(dimension, tasksForDimension = new ArrayList<>());
+            // Using a concurrent queue as tasks could be added during iteration
+            dimensionsDelayedTasks.put(dimension, tasksForDimension = new ConcurrentLinkedQueue<>());
         }
         tasksForDimension.add(new DelayedTask(action, delay));
     }
