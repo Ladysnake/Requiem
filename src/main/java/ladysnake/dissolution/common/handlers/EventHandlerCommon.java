@@ -50,21 +50,22 @@ public class EventHandlerCommon {
 
     @SubscribeEvent
     public void clonePlayer(PlayerEvent.Clone event) {
-        if (event.isWasDeath() && !event.getEntityPlayer().isCreative()) {
-            final IIncorporealHandler corpse = CapabilityIncorporealHandler.getHandler(event.getOriginal());
-            final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
-            clone.setStrongSoul(corpse.isStrongSoul());
-            clone.setCorporealityStatus(corpse.getCorporealityStatus());
-            clone.getDialogueStats().deserializeNBT(corpse.getDialogueStats().serializeNBT());
-            clone.setSynced(false);
+        final IIncorporealHandler corpse = CapabilityIncorporealHandler.getHandler(event.getOriginal());
+        final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
+        clone.setStrongSoul(corpse.isStrongSoul());
+        clone.setCorporealityStatus(corpse.getCorporealityStatus());
+        clone.getDialogueStats().deserializeNBT(corpse.getDialogueStats().serializeNBT());
+        clone.setSynced(false);
 
+        if (event.isWasDeath() && !event.getEntityPlayer().isCreative()) {
             if (clone.isStrongSoul()) {
                 event.getEntityPlayer().experienceLevel = event.getOriginal().experienceLevel;
                 clone.getDeathStats().setDeathDimension(corpse.getDeathStats().getDeathDimension());
                 clone.getDeathStats().setDeathLocation(new BlockPos(event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ));
             }
-            // avoid accumulation of tracked players and allow garbage collection
-            corpse.getCorporealityStatus().resetState(event.getOriginal());
+        } else if (!event.isWasDeath()) {
+            // Bring the body along if coming from an end portal
+            clone.setSerializedPossessedEntity(corpse.getSerializedPossessedEntity());
         }
     }
 

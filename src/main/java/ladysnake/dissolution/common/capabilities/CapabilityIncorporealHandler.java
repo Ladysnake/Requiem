@@ -316,10 +316,12 @@ public class CapabilityIncorporealHandler {
             return this.synced;
         }
 
+        @Override
         public NBTTagCompound getSerializedPossessedEntity() {
             return serializedPossessedEntity;
         }
 
+        @Override
         public void setSerializedPossessedEntity(NBTTagCompound serializedPossessedEntity) {
             this.serializedPossessedEntity = serializedPossessedEntity;
         }
@@ -417,9 +419,9 @@ public class CapabilityIncorporealHandler {
                 if (tag.hasKey("possessedEntity")) {
                     defaultInstance.hostUUID = tag.getUniqueId("possessedEntity");
                 }
-                if (tag.hasKey("serializedPossessedEntity")) {
-                    defaultInstance.setSerializedPossessedEntity(tag.getCompoundTag("serializedPossessedEntity"));
-                }
+            }
+            if (tag.hasKey("serializedPossessedEntity")) {
+                instance.setSerializedPossessedEntity(tag.getCompoundTag("serializedPossessedEntity"));
             }
             instance.getDialogueStats().deserializeNBT(tag.getCompoundTag("dialogueStats"));
             instance.getDeathStats().deserializeNBT(tag.getCompoundTag("deathStats"));

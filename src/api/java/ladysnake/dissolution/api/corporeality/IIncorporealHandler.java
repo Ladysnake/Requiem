@@ -2,6 +2,7 @@ package ladysnake.dissolution.api.corporeality;
 
 import ladysnake.dissolution.api.IDialogueStats;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
@@ -85,6 +86,10 @@ public interface IIncorporealHandler {
      * @return true if this handler has already been synchronized at least once
      */
     boolean isSynced();
+
+    NBTTagCompound getSerializedPossessedEntity();
+
+    void setSerializedPossessedEntity(NBTTagCompound serializedPossessedEntity);
 
     void tick();
 

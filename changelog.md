@@ -16,6 +16,7 @@ Theoretical bugfixes: (needs feedback)
 General bugfixes:
 - Fixed the soul shader sometimes appearing when it should not
 - Fixed soul players sometimes appearing solid to other players
+- Fixed the mod forgetting everything about the player after coming back from the End
 
 Mod compatibility:
 - Made evilcraft and cannibalism fleshes fit for undead consumption

@@ -106,7 +106,7 @@ public class PossessionEventHandler {
 
     @SubscribeEvent
     public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
-        // Saves the player's possessed entity and removes it, so that it doesn't wander around
+        // Removes the player's possessed entity so that it doesn't wander around
         EntityPlayer player = event.player;
         IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
         IPossessable possessed = playerCorp.getPossessed();
@@ -128,8 +128,9 @@ public class PossessionEventHandler {
             IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
             IPossessable possessed = playerCorp.getPossessed();
             World world = player.world;
-            if (possessed != null && !world.isRemote && playerCorp instanceof CapabilityIncorporealHandler.DefaultIncorporealHandler) {
-                ((CapabilityIncorporealHandler.DefaultIncorporealHandler) playerCorp).setSerializedPossessedEntity(((Entity)possessed).serializeNBT());
+            if (possessed != null && !world.isRemote) {
+                // Save the entity ourselves as data is not written to disk during a dimension change
+                playerCorp.setSerializedPossessedEntity(((Entity)possessed).serializeNBT());
                 possessed.markForLogOut();
             }
         }
@@ -142,20 +143,20 @@ public class PossessionEventHandler {
             return;
         }
         CapabilityIncorporealHandler.getHandler(player).ifPresent(handler -> {
-            if (handler instanceof CapabilityIncorporealHandler.DefaultIncorporealHandler) {
-                final NBTTagCompound serializedPossessedEntity = ((CapabilityIncorporealHandler.DefaultIncorporealHandler) handler).getSerializedPossessedEntity();
-                if (serializedPossessedEntity != null) {
-                    DelayedTaskRunner.INSTANCE.addDelayedTask(player.dimension, 1, () -> {
-                        Entity host = EntityList.createEntityFromNBT(serializedPossessedEntity, event.getWorld());
-                        if (host instanceof EntityLivingBase && host instanceof IPossessable) {
-                            event.getWorld().spawnEntity(host);
-                            handler.setPossessed((EntityLivingBase & IPossessable) host);
-                            DelayedTaskRunner.INSTANCE.addDelayedTask(player.dimension, 10, () -> handler.setPossessed((EntityLivingBase & IPossessable) host));
-                        } else {
-                            Dissolution.LOGGER.warn("{}'s possessed entity could not be deserialized", player);
-                        }
-                    });
-                }
+            final NBTTagCompound serializedPossessedEntity = handler.getSerializedPossessedEntity();
+            if (serializedPossessedEntity != null) {
+                DelayedTaskRunner.INSTANCE.addDelayedTask(player.dimension, 1, () -> {
+                    Entity host = EntityList.createEntityFromNBT(serializedPossessedEntity, event.getWorld());
+                    if (host instanceof EntityLivingBase && host instanceof IPossessable) {
+                        host.setPosition(player.posX, player.posY, player.posZ);
+                        event.getWorld().spawnEntity(host);
+                        handler.setPossessed((EntityLivingBase & IPossessable) host);
+                        // Sometimes the client doesn't get notified, so we update again half a second later to be sure
+                        DelayedTaskRunner.INSTANCE.addDelayedTask(player.dimension, 10, () -> handler.setPossessed((EntityLivingBase & IPossessable) host));
+                    } else {
+                        Dissolution.LOGGER.warn("{}'s possessed entity could not be deserialized", player);
+                    }
+                });
             }
         });
     }
