@@ -227,6 +227,8 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
                 passenger.changeDimension(dimensionIn, teleporter);
                 CapabilityIncorporealHandler.getHandler(passenger).setPossessed((EntityLivingBase & IPossessable) clone, true);
             });
+            // Sometimes the client doesn't get notified, so we update again half a second later to be sure
+            DelayedTaskRunner.INSTANCE.addDelayedTask(dimensionIn, 10, () -> CapabilityIncorporealHandler.getHandler(passenger).setPossessed((EntityLivingBase & IPossessable) clone, true));
         }
         return clone;
     }
