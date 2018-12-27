@@ -7,7 +7,6 @@ import ladysnake.dissolution.api.possession.PossessionEvent;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.PossessableEntityFactory;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
-import ladysnake.dissolution.unused.common.entity.souls.AbstractSoul;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -40,8 +39,6 @@ public class InteractEventsHandler {
             if (handler.isIncorporeal()) {
                 event.getCollisionBoxesList().removeIf(axisAlignedBB -> axisAlignedBB.getAverageEdgeLength() < MAX_THICCNESS);
             }
-        } else if (event.getEntity() instanceof AbstractSoul) {
-            event.getCollisionBoxesList().removeIf(axisAlignedBB -> axisAlignedBB.getAverageEdgeLength() < MAX_THICCNESS);
         }
     }
 

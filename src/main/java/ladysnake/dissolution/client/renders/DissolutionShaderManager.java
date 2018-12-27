@@ -10,7 +10,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@EnhancedBusSubscriber(Ref.MOD_ID)
+import static net.minecraftforge.fml.relauncher.Side.CLIENT;
+
+@EnhancedBusSubscriber(value = Ref.MOD_ID, side = CLIENT)
 public class DissolutionShaderManager {
     /**
      * The shader used to render the blue overlay when incorporeal

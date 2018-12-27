@@ -4,7 +4,6 @@ import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
-import ladysnake.dissolution.unused.common.entity.souls.EntityFleetingSoul;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -58,13 +57,6 @@ public class ItemDebug extends Item implements ISoulInteractable {
                 }
                 break;
             case 3:
-                if (!playerIn.world.isRemote) {
-                    worldIn.loadedEntityList.stream().filter(e -> e instanceof EntityFleetingSoul).forEach(Entity::onKillCommand);
-                    EntityFleetingSoul cam = new EntityFleetingSoul(playerIn.world, playerIn.posX + 2, playerIn.posY, playerIn.posZ);
-                    worldIn.spawnEntity(cam);
-                }
-                break;
-            case 4:
                 if (!playerIn.world.isRemote) {
                     playerIn.sendStatusMessage(new TextComponentString("Printing fire information"), true);
                     List<Entity> fires = playerIn.world.getEntities(Entity.class, e -> e != null && e.getDistance(playerIn) < 20);

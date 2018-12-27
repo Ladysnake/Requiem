@@ -3,9 +3,7 @@ package ladysnake.dissolution.common;
 
 import ladylib.LLibContainer;
 import ladylib.LadyLib;
-import ladysnake.dissolution.client.gui.GuiIncorporealOverlay;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.commands.CommandDissolutionTree;
 import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
@@ -17,14 +15,10 @@ import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.inventory.DissolutionTab;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.networking.PacketHandler;
-import ladysnake.dissolution.unused.common.capabilities.CapabilityDistillateHandler;
-import ladysnake.dissolution.unused.common.capabilities.CapabilityGenericInventoryProvider;
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -64,9 +58,6 @@ public class Dissolution {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         CapabilityIncorporealHandler.register();
-        CapabilitySoulHandler.register();
-        CapabilityDistillateHandler.register();
-        CapabilityGenericInventoryProvider.register();
 
         DissolutionConfigManager.init(event.getSuggestedConfigurationFile());
 
@@ -88,9 +79,7 @@ public class Dissolution {
         NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
         PacketHandler.initPackets();
 
-        if (FMLCommonHandler.instance().getSide().isClient()) {
-            MinecraftForge.EVENT_BUS.register(new GuiIncorporealOverlay(Minecraft.getMinecraft()));
-        }
+        proxy.init();
     }
 
     @EventHandler

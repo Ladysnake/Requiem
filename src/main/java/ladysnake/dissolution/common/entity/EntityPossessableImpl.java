@@ -10,7 +10,6 @@ import ladysnake.dissolution.common.entity.ai.EntityAIInert;
 import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthAttribute;
 import ladysnake.dissolution.common.util.DelayedTaskRunner;
-import ladysnake.dissolution.unused.common.blocks.BlockSepulchre;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -236,7 +235,6 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     @Override
     public void setSleeping(boolean sleeping) {
         this.sleeping = sleeping;
-        BlockSepulchre.updateAllZombiesSleepingFlag();
     }
 
     @Override

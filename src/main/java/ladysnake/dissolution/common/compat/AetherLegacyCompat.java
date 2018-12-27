@@ -10,9 +10,8 @@ import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@EnhancedBusSubscriber(value = Ref.MOD_ID, dependencies = Aether.modid)
 public enum AetherLegacyCompat {
-    INSTANCE;
+    @EnhancedBusSubscriber(value = Ref.MOD_ID, dependencies = Aether.modid) INSTANCE;
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEntityTravelToDimension(EntityTravelToDimensionEvent event) {

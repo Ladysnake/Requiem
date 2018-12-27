@@ -14,7 +14,6 @@ import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PingMessage;
 import ladysnake.dissolution.common.registries.SoulStates;
-import ladysnake.dissolution.unused.common.blocks.BlockFluidMercury;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngame;
@@ -178,12 +177,6 @@ public class EventHandlerClient {
         }
 
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
-
-        if (player.world.isMaterialInBB(player.getEntityBoundingBox()
-                .grow(-0.1D, -0.4D, -0.1D), BlockFluidMercury.MATERIAL_MERCURY)) {
-            playerSP.motionX *= 0.4f;
-            playerSP.motionZ *= 0.4f;
-        }
 
         if (!event.player.isCreative() &&
                 playerCorp.getCorporealityStatus() == SoulStates.SOUL && event.phase == TickEvent.Phase.START &&

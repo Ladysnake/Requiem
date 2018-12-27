@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.init;
 
+import ladylib.compat.EnhancedBusSubscriber;
 import ladylib.registration.AutoRegister;
 import ladysnake.dissolution.common.OreDictHelper;
 import ladysnake.dissolution.common.Ref;
@@ -22,14 +23,15 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreIngredient;
 
 @SuppressWarnings({"unused"})
-@AutoRegister(Ref.MOD_ID)
-@GameRegistry.ObjectHolder(Ref.MOD_ID)
+@AutoRegister(value = Ref.MOD_ID, injectObjectHolder = true)
 public final class ModItems {
 
     /**
      * Used to register stuff
      */
-    static final ModItems INSTANCE = new ModItems();
+    @AutoRegister.Ignore
+    @EnhancedBusSubscriber(Ref.MOD_ID)
+    public static final ModItems INSTANCE = new ModItems();
 
     @AutoRegister.Unlisted
     public static final ItemLogo LOGO = new ItemLogo();
