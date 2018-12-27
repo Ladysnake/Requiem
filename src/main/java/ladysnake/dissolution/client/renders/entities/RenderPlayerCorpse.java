@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import ladylib.client.shader.ShaderRegistryEvent;
 import ladysnake.dissolution.client.renders.ShaderHelper;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.entity.EntityPlayerShell;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelPlayer;
@@ -23,15 +23,15 @@ import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = Side.CLIENT)
+@Mod.EventBusSubscriber(modid = Ref.MOD_ID, value = Side.CLIENT)
 public class RenderPlayerCorpse extends RenderBiped<EntityPlayerShell> {
 
     private boolean shouldRenderName = false;
-    private static final ResourceLocation CORPSE_SHADER = new ResourceLocation(Reference.MOD_ID, "corpse");
+    private static final ResourceLocation CORPSE_SHADER = new ResourceLocation(Ref.MOD_ID, "corpse");
 
     @SubscribeEvent
     public static void onShaderRegistry(ShaderRegistryEvent event) {
-        event.registerShader(CORPSE_SHADER, new ResourceLocation(Reference.MOD_ID, "shaders/vertex_base.vsh"), new ResourceLocation(Reference.MOD_ID, "shaders/corpsedissolution.fsh"));
+        event.registerShader(CORPSE_SHADER, new ResourceLocation(Ref.MOD_ID, "shaders/vertex_base.vsh"), new ResourceLocation(Ref.MOD_ID, "shaders/corpsedissolution.fsh"));
     }
 
     public RenderPlayerCorpse(RenderManager renderManagerIn) {

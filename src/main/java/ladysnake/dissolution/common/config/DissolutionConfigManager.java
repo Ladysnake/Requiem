@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import ladylib.config.ConfigUtil;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.init.ModItems;
 import ladysnake.dissolution.common.networking.ConfigMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
@@ -32,7 +32,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Pattern;
 
-@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+@Mod.EventBusSubscriber(modid = Ref.MOD_ID)
 public final class DissolutionConfigManager {
 
     public static Configuration config;
@@ -105,7 +105,7 @@ public final class DissolutionConfigManager {
      * @param configFile the file in which the config information is stored
      */
     public static void init(File configFile) {
-        config = new Configuration(configFile, String.valueOf(Reference.CONFIG_VERSION));
+        config = new Configuration(configFile, String.valueOf(Ref.CONFIG_VERSION));
         rootCategories = new TreeSet<>(Comparator.comparing(ConfigCategory::getName));
         syncedProps = new HashMap<>();
         backupProps = new HashMap<>();
@@ -160,13 +160,13 @@ public final class DissolutionConfigManager {
     private static void resetConfig(File configFile) {
         try {
             Path configPath = configFile.toPath();
-            Path backup = Paths.get(configFile.getParent(), Reference.MOD_NAME + "_backup.txt");
+            Path backup = Paths.get(configFile.getParent(), Ref.MOD_NAME + "_backup.txt");
             for (int i = 0; Files.exists(backup); i++) {
-                backup = backup.resolveSibling(Reference.MOD_NAME + "_backup" + i + ".txt");
+                backup = backup.resolveSibling(Ref.MOD_NAME + "_backup" + i + ".txt");
             }
             Files.copy(configPath, backup);
             Files.delete(configPath);
-            config = new Configuration(configFile, String.valueOf(Reference.CONFIG_VERSION));
+            config = new Configuration(configFile, String.valueOf(Ref.CONFIG_VERSION));
         } catch (IOException e) {
             Dissolution.LOGGER.error("Could not reset config !", e);
         }
@@ -198,7 +198,7 @@ public final class DissolutionConfigManager {
 
     @SubscribeEvent
     public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
-        if (event.getModID().equals(Reference.MOD_ID)) {
+        if (event.getModID().equals(Ref.MOD_ID)) {
             load();
             config.save();
         }

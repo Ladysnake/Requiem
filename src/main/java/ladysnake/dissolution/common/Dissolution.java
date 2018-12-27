@@ -3,9 +3,7 @@ package ladysnake.dissolution.common;
 
 import ladylib.LLibContainer;
 import ladylib.LadyLib;
-import ladysnake.dissolution.client.gui.GuiIncorporealOverlay;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import ladysnake.dissolution.common.capabilities.CapabilitySoulHandler;
 import ladysnake.dissolution.common.commands.CommandDissolutionTree;
 import ladysnake.dissolution.common.config.DissolutionConfig;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
@@ -17,14 +15,10 @@ import ladysnake.dissolution.common.init.CommonProxy;
 import ladysnake.dissolution.common.inventory.DissolutionTab;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.networking.PacketHandler;
-import ladysnake.dissolution.unused.common.capabilities.CapabilityDistillateHandler;
-import ladysnake.dissolution.unused.common.capabilities.CapabilityGenericInventoryProvider;
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -40,12 +34,12 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 
-@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION,
-        acceptedMinecraftVersions = Reference.MCVERSION, dependencies = Reference.DEPENDENCIES,
-        guiFactory = Reference.GUI_FACTORY_CLASS)
+@Mod(modid = Ref.MOD_ID, name = Ref.MOD_NAME, version = Ref.VERSION,
+        acceptedMinecraftVersions = Ref.MCVERSION, dependencies = Ref.DEPENDENCIES,
+        guiFactory = Ref.GUI_FACTORY_CLASS)
 public class Dissolution {
 
-    @Instance(Reference.MOD_ID)
+    @Instance(Ref.MOD_ID)
     public static Dissolution instance;
 
     public static DissolutionConfig config = new DissolutionConfig();
@@ -53,7 +47,7 @@ public class Dissolution {
     public static final CreativeTabs CREATIVE_TAB = new DissolutionTab();
     public static final Logger LOGGER = LogManager.getLogger("Dissolution");
 
-    @SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS, serverSide = Reference.SERVER_PROXY_CLASS)
+    @SidedProxy(clientSide = Ref.CLIENT_PROXY_CLASS, serverSide = Ref.SERVER_PROXY_CLASS)
     public static CommonProxy proxy;
     /**True if the last server checked does not have the mod installed*/
     public static boolean noServerInstall;
@@ -64,9 +58,6 @@ public class Dissolution {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         CapabilityIncorporealHandler.register();
-        CapabilitySoulHandler.register();
-        CapabilityDistillateHandler.register();
-        CapabilityGenericInventoryProvider.register();
 
         DissolutionConfigManager.init(event.getSuggestedConfigurationFile());
 
@@ -83,14 +74,12 @@ public class Dissolution {
 
         OreDictHelper.registerOres();
 
-        LootTableList.register(new ResourceLocation(Reference.MOD_ID, "inject/human"));
+        LootTableList.register(new ResourceLocation(Ref.MOD_ID, "inject/human"));
 
         NetworkRegistry.INSTANCE.registerGuiHandler(Dissolution.instance, new GuiProxy());
         PacketHandler.initPackets();
 
-        if (FMLCommonHandler.instance().getSide().isClient()) {
-            MinecraftForge.EVENT_BUS.register(new GuiIncorporealOverlay(Minecraft.getMinecraft()));
-        }
+        proxy.init();
     }
 
     @EventHandler
@@ -104,7 +93,7 @@ public class Dissolution {
      */
     @NetworkCheckHandler
     public boolean checkModLists(Map<String,String> modList, Side side) {
-        boolean modInstalled = Reference.VERSION.equals(modList.get(Reference.MOD_ID));
+        boolean modInstalled = Ref.VERSION.equals(modList.get(Ref.MOD_ID));
         if (side.isServer()) {
             noServerInstall = !modInstalled;
         }

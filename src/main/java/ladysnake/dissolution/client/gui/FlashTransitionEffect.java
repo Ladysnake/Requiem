@@ -1,7 +1,7 @@
 package ladysnake.dissolution.client.gui;
 
 import ladylib.compat.EnhancedBusSubscriber;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -19,10 +19,10 @@ import static net.minecraft.client.renderer.GlStateManager.*;
 import static net.minecraft.client.renderer.OpenGlHelper.defaultTexUnit;
 import static org.lwjgl.opengl.GL11.*;
 
-@EnhancedBusSubscriber(side = Side.CLIENT)
+@EnhancedBusSubscriber(value = Ref.MOD_ID, side = Side.CLIENT)
 public class FlashTransitionEffect {
     public static final FlashTransitionEffect INSTANCE = new FlashTransitionEffect();
-    private static final ResourceLocation TRANSITION_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/world_transition.png");
+    private static final ResourceLocation TRANSITION_TEXTURE = new ResourceLocation(Ref.MOD_ID, "textures/gui/world_transition.png");
 
     private int transitionTime;
     private int ticks;
@@ -46,7 +46,7 @@ public class FlashTransitionEffect {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    void onRenderWorldLast(RenderGameOverlayEvent.Pre event) {
+    public void onRenderWorldLast(RenderGameOverlayEvent.Pre event) {
         if (ticks <= 0 || event.getType() != RenderGameOverlayEvent.ElementType.ALL) {
             // no transition currently occurring, or wrong event type
             return;

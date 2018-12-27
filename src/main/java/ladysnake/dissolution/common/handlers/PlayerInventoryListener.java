@@ -1,6 +1,5 @@
 package ladysnake.dissolution.common.handlers;
 
-import ladysnake.dissolution.common.items.ItemScythe;
 import ladysnake.dissolution.common.networking.DisplayItemMessage;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -44,11 +43,11 @@ public class PlayerInventoryListener implements IContainerListener {
     }
 
     private ItemStack findItemToDisplay() {
-        for (ItemStack stack : player.inventory.mainInventory) {
+        /*for (ItemStack stack : player.inventory.mainInventory) {
             if (stack.getItem() instanceof ItemScythe) {
                 return stack;
             }
-        }
+        }*/
         return ItemStack.EMPTY;
     }
 

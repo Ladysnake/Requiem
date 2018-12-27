@@ -1,12 +1,12 @@
 package ladysnake.dissolution.common.networking;
 
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class PacketHandler {
-    public static final SimpleNetworkWrapper NET = NetworkRegistry.INSTANCE.newSimpleChannel(Reference.MOD_ID.toUpperCase());
+    public static final SimpleNetworkWrapper NET = NetworkRegistry.INSTANCE.newSimpleChannel(Ref.MOD_ID.toUpperCase());
 
     private static int nextPacketId = 0;
 

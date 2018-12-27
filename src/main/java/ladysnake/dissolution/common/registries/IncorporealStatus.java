@@ -1,12 +1,18 @@
 package ladysnake.dissolution.common.registries;
 
-import ladylib.misc.ReflectionUtil;
+import com.google.common.collect.MapMaker;
+import ladylib.reflection.TypedReflection;
+import ladylib.reflection.typed.TypedSetter;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
+import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
+import ladysnake.dissolution.common.entity.ai.attribute.PossessionDelegatingAttribute;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -17,10 +23,14 @@ import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.lang.invoke.MethodHandle;
+import java.util.Collections;
+import java.util.Set;
 
 public class IncorporealStatus extends CorporealityStatus {
-    private static final MethodHandle isImmuneToFireMH = ReflectionUtil.findSetterFromObfName(Entity.class, "field_70178_ae", boolean.class);
+    private static final TypedSetter<Entity, Boolean> isImmuneToFireMH =
+            TypedReflection.findSetter(Entity.class, "field_70178_ae", boolean.class);
+    /** All player entities who already got their attributes swapped out*/
+    private Set<EntityPlayer> attributeUpdated = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
 
     public IncorporealStatus() {
         super(false, true);
@@ -115,6 +125,20 @@ public class IncorporealStatus extends CorporealityStatus {
         super.initState(owner);
         changeState(owner, true);
         owner.setInvisible(Dissolution.config.ghost.invisibleGhosts);
+        if (!attributeUpdated.contains(owner)) {
+            swapAttributes(owner);
+            attributeUpdated.add(owner);
+        }
+    }
+
+    private void swapAttributes(EntityPlayer player) {
+        AbstractAttributeMap attributeMap = player.getAttributeMap();
+        IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
+        // Replace every registered attribute
+        for (IAttributeInstance current: attributeMap.getAllAttributes()) {
+            IAttributeInstance replacement = new PossessionDelegatingAttribute(attributeMap, current, handler);
+            AttributeHelper.substituteAttributeInstance(attributeMap, replacement);
+        }
     }
 
     @Override
@@ -122,19 +146,15 @@ public class IncorporealStatus extends CorporealityStatus {
         super.resetState(owner);
 
         changeState(owner, false);
-        owner.capabilities.allowFlying = false;
-        owner.capabilities.isFlying = false;
+        owner.capabilities.allowFlying = owner.isCreative();
+        owner.capabilities.isFlying = owner.isCreative() && owner.capabilities.isFlying;
         if (Dissolution.config.ghost.invisibleGhosts) {
             owner.setInvisible(false);
         }
     }
 
     protected void changeState(EntityPlayer owner, boolean init) {
-        try {
-            isImmuneToFireMH.invoke(owner, init);
-        } catch (Throwable throwable) {
-            Dissolution.LOGGER.error("Could not set player immunity to fire", throwable);
-        }
+        isImmuneToFireMH.set(owner, init);
     }
 
     protected boolean isAffected(IIncorporealHandler player) {

@@ -1,22 +1,26 @@
 package ladysnake.dissolution.common.entity;
 
 import com.google.common.base.Optional;
+import ladylib.reflection.TypedReflection;
+import ladylib.reflection.typed.TypedMethod0;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIInert;
-import ladysnake.dissolution.unused.common.blocks.BlockSepulchre;
+import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
+import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthAttribute;
+import ladysnake.dissolution.common.util.CollectionUtil;
+import ladysnake.dissolution.common.util.DelayedTaskRunner;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,12 +35,16 @@ import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ITeleporter;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.vector.Vector2f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -44,15 +52,20 @@ import java.util.UUID;
  * Used in {@link PossessableEntityFactory} to generate possessable versions of any mob. <br>
  * Note: do <b>NOT</b> check whether entities are instances of this class, it will always return false.
  */
+@Mod.EventBusSubscriber(modid = Ref.MOD_ID)
 public class EntityPossessableImpl extends EntityMob implements IPossessable {
     private static final DataParameter<Optional<UUID>> POSSESSING_ENTITY_ID =
             EntityDataManager.createKey(EntityPossessableImpl.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-    private static final DataParameter<Integer> PURIFIED_HEALTH =
-            EntityDataManager.createKey(EntityPossessableImpl.class, DataSerializers.VARINT);
+    private static final TypedMethod0<PotionEffect, Integer> deincrementDuration = TypedReflection.findMethod(PotionEffect.class, "func_76454_e", int.class);
 
     private EntityAIInert aiDontDoShit = new EntityAIInert(false);
 
     private boolean sleeping;
+    // Fields used to track external changes to this entity's motion
+    private double prevMotionX;
+    private double prevMotionY;
+    private double prevMotionZ;
+    private Set<PotionEffect> prevPotionEffects = new HashSet<>();
 
     public EntityPossessableImpl(World worldIn) {
         super(worldIn);
@@ -63,14 +76,15 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
 
     @Override
     public boolean onEntityPossessed(EntityPlayer player) {
-        if (this.getControllingPassenger() == player)
+        if (this.getPossessingEntity() == player)
             return true;
-        if (this.getControllingPassenger() != null) {
+        if (this.getPossessingEntity() != null) {
             Dissolution.LOGGER.warn("A player attempted to possess an entity that was already possessed");
             return false;
         }
         this.setPossessingEntity(player.getUniqueID());
-        player.startRiding(this);
+        player.capabilities.isFlying = false;
+        player.capabilities.allowFlying = false;
         player.eyeHeight = this.getEyeHeight();
         this.aiDontDoShit.setShouldExecute(true);
         return true;
@@ -89,6 +103,91 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             return true;
         }
         return false;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void possessTickClient() {
+        EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
+        Vector2f move = new Vector2f(playerSP.movementInput.moveStrafe, playerSP.movementInput.moveForward);
+//        move.scale((float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
+        playerSP.moveStrafing = move.x;
+        playerSP.moveForward = move.y;
+        playerSP.setJumping(playerSP.movementInput.jump);
+    }
+
+    @Nullable
+    public UUID getPossessingEntityId() {
+        return this.getDataManager().get(POSSESSING_ENTITY_ID).orNull();
+    }
+
+    @Nullable
+    @Override
+    public EntityPlayer getPossessingEntity() {
+        UUID possessingId = getPossessingEntityId();
+        return possessingId == null ? null : world.getPlayerEntityByUUID(possessingId);
+    }
+
+    private void setPossessingEntity(@Nullable UUID possessingEntity) {
+        if (!world.isRemote) {
+            this.aiDontDoShit.setShouldExecute(possessingEntity != null);
+        }
+        this.getDataManager().set(POSSESSING_ENTITY_ID, Optional.fromNullable(possessingEntity));
+    }
+
+    @Override
+    public boolean canBePossessedBy(EntityPlayer player) {
+        EntityPlayer possessingEntity = this.getPossessingEntity();
+        return possessingEntity == null || possessingEntity == player;
+    }
+
+    @Override
+    public void markForLogOut() {
+        this.world.removeEntity(this);
+    }
+
+    @Override
+    public void updatePossessing() {
+        EntityPlayer possessing = getPossessingEntity();
+        if (possessing != null) {
+            this.setPosition(possessing.posX, possessing.posY, possessing.posZ);
+        }
+    }
+
+    @Override
+    public void onUpdate() {
+        if (!world.isRemote) {
+            if (this.isBeingPossessed()) {
+                EntityPlayer possessing = Objects.requireNonNull(this.getPossessingEntity());
+                if (this.prevMotionX != this.motionX || this.prevMotionY != this.motionY || this.prevMotionZ != this.motionZ) {
+                    possessing.motionX += this.motionX - this.prevMotionX;
+                    possessing.motionY += this.motionY - this.prevMotionY;
+                    possessing.motionZ += this.motionZ - this.prevMotionZ;
+                    possessing.velocityChanged = true;
+                }
+                // Tick down potion effects from previous tick
+                prevPotionEffects.removeIf(p -> deincrementDuration.invoke(p) <= 0);
+                // Merge changes in potion effects from both entities
+                prevPotionEffects = CollectionUtil.mergeHistories(
+                        new HashSet<>(this.getActivePotionEffects()),
+                        new HashSet<>(possessing.getActivePotionEffects()),
+                        prevPotionEffects
+                );
+                // Resynchronize both entities
+                this.clearActivePotions();
+                possessing.clearActivePotions();
+                for (PotionEffect e : prevPotionEffects) {
+                    this.addPotionEffect(new PotionEffect(e));
+                    possessing.addPotionEffect(new PotionEffect(e));
+                }
+            } else {
+                prevPotionEffects.clear();
+            }
+        }
+        super.onUpdate();
+        this.prevMotionX = this.motionX;
+        this.prevMotionY = this.motionY;
+        this.prevMotionZ = this.motionZ;
     }
 
     @Override
@@ -116,70 +215,37 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void possessTickClient() {
-        EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
-        Vector2f move = new Vector2f(playerSP.movementInput.moveStrafe, playerSP.movementInput.moveForward);
-        move.scale((float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
-        playerSP.moveStrafing = move.x;
-        playerSP.moveForward = move.y;
-        this.setJumping(playerSP.movementInput.jump);
-    }
-
-    @Nullable
-    public UUID getPossessingEntityId() {
-        return this.getDataManager().get(POSSESSING_ENTITY_ID).orNull();
-    }
-
-    @Nullable
-    private EntityPlayer getPossessingEntity() {
-        UUID possessingId = getPossessingEntityId();
-        return possessingId == null ? null : world.getPlayerEntityByUUID(possessingId);
-    }
-
-    private void setPossessingEntity(@Nullable UUID possessingEntity) {
-        if (!world.isRemote) {
-            this.aiDontDoShit.setShouldExecute(possessingEntity != null);
-        }
-        this.getDataManager().set(POSSESSING_ENTITY_ID, Optional.fromNullable(possessingEntity));
-    }
-
-    @Override
     protected void entityInit() {
         super.entityInit();
         this.getDataManager().register(POSSESSING_ENTITY_ID, Optional.absent());
-        this.getDataManager().register(PURIFIED_HEALTH, 0);
     }
 
     @Override
-    protected void onInsideBlock(IBlockState block) {
-        super.onInsideBlock(block);
-        if (block.getBlock() == Blocks.PORTAL && !this.isRiding() && this.isBeingRidden() && this.getPossessingEntity() != null) {
-            this.setPortal(new BlockPos(this));
-        }
-    }
-
-    @Override
-    public void setPortal(@Nonnull BlockPos pos) {
-        super.setPortal(pos);
-        EntityPlayer passenger = getPossessingEntity();
-        if (passenger != null) {
-            passenger.setPortal(pos);
-        }
+    protected void applyEntityAttributes() {
+        super.applyEntityAttributes();
+        AttributeHelper.substituteAttributeInstance(this.getAttributeMap(), new CooldownStrengthAttribute(this));
     }
 
     @Nullable
     @Override
     public Entity changeDimension(int dimensionIn, @Nonnull ITeleporter teleporter) {
-        EntityPlayer passenger = this.getPossessingEntity();
+        // Teleports the player along with the entity
+        final EntityPlayer passenger = this.getPossessingEntity();
         if (passenger != null && !world.isRemote) {
             CapabilityIncorporealHandler.getHandler(passenger).setPossessed(null, true);
+            ((EntityPlayerMP)passenger).connection.sendPacket(new SPacketCamera(this));
             passenger.setPosition(posX, posY, posZ);
-            passenger.changeDimension(dimensionIn, teleporter);
+            passenger.timeUntilPortal = passenger.getPortalCooldown();
         }
-        Entity clone = super.changeDimension(dimensionIn, teleporter);
+        final Entity clone = super.changeDimension(dimensionIn, teleporter);
         if (passenger != null && clone != null && !world.isRemote) {
-            CapabilityIncorporealHandler.getHandler(passenger).setPossessed((EntityLivingBase & IPossessable) clone, true);
+            // We need to delay the player's dimension change slightly, otherwise it can cause a concurrent modification crash
+            DelayedTaskRunner.INSTANCE.addDelayedTask(dimensionIn, 0, () -> {
+                passenger.changeDimension(dimensionIn, teleporter);
+                CapabilityIncorporealHandler.getHandler(passenger).setPossessed((EntityLivingBase & IPossessable) clone, true);
+            });
+            // Sometimes the client doesn't get notified, so we update again half a second later to be sure
+            DelayedTaskRunner.INSTANCE.addDelayedTask(dimensionIn, 10, () -> CapabilityIncorporealHandler.getHandler(passenger).setPossessed((EntityLivingBase & IPossessable) clone, true));
         }
         return clone;
     }
@@ -187,12 +253,162 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     @Override
     public void setSleeping(boolean sleeping) {
         this.sleeping = sleeping;
-        BlockSepulchre.updateAllZombiesSleepingFlag();
     }
 
     @Override
     public boolean isPlayerSleeping() {
         return sleeping;
+    }
+
+    @Override
+    protected void updateFallState(double y, boolean onGroundIn, @Nonnull IBlockState state, @Nonnull BlockPos pos) {
+        // Prevent fall damage on ladders
+        if (this.isOnLadder() && this.getPossessingEntity() != null) {
+            this.fallDistance = 0;
+        }
+        super.updateFallState(y, onGroundIn, state, pos);
+    }
+
+    @Nonnull
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        super.writeToNBT(compound);
+        if (this.getPossessingEntityId() != null)
+            compound.setUniqueId("possessingEntity", this.getPossessingEntityId());
+        return compound;
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+        if (compound.hasKey("possessingEntity")) {
+            this.setPossessingEntity(compound.getUniqueId("possessingEntity"));
+        }
+    }
+
+    @Override
+    public void travel(float strafe, float vertical, float forward) {
+        // Stolen from AbstractHorse#travel
+        if (this.isBeingPossessed() && this.getPossessingEntity() != null) {
+            EntityPlayer player = this.getPossessingEntity();
+            assert player != null;
+            this.rotationYaw = player.rotationYaw;
+            this.prevRotationYaw = this.rotationYaw;
+            this.rotationPitch = player.rotationPitch;
+            this.setRotation(this.rotationYaw, this.rotationPitch);
+            this.renderYawOffset = this.rotationYaw;
+            this.rotationYawHead = this.renderYawOffset;
+            this.fallDistance = player.fallDistance;
+//            strafe = player.moveStrafing;
+//            forward = player.moveForward;
+//            vertical = player.moveVertical;
+
+            super.travel(strafe, vertical, forward);
+            this.setPosition(player.posX, player.posY, player.posZ);
+//                this.setAIMoveSpeed((float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
+            this.limbSwing = player.limbSwing;
+            this.limbSwingAmount = player.limbSwingAmount;
+        } else {
+            super.travel(strafe, vertical, forward);
+        }
+    }
+
+    @Nullable
+    public Entity getControllingPassenger() {
+        // Allows this entity to move client-side, in conjunction with #canBeSteered
+        return this.getPossessingEntity();
+    }
+
+    @Override
+    public boolean canBeSteered() {
+        // Allows this entity to move client-side
+        return this.getPossessingEntity() != null;
+    }
+
+    @Override
+    public void applyEntityCollision(Entity entityIn) {
+        // Prevent infinite propulsion through self collision
+        if (!entityIn.getUniqueID().equals(getPossessingEntityId())) {
+            super.applyEntityCollision(entityIn);
+        }
+    }
+
+    @Override
+    protected void collideWithEntity(Entity entityIn) {
+        // Prevent infinite propulsion through self collision
+        if (!entityIn.getUniqueID().equals(getPossessingEntityId())) {
+            super.collideWithEntity(entityIn);
+        }
+    }
+
+    @Override
+    public void onDeath(@Nonnull DamageSource cause) {
+        super.onDeath(cause);
+        if (this.getPossessingEntity() != null) {
+            EntityPlayer player = this.getPossessingEntity();
+            CapabilityIncorporealHandler.getHandler(player).setPossessed(null);
+            if (!world.isRemote) {
+                player.inventory.dropAllItems();
+                // Hardcore players die for good when their body is killed
+                if (world.getMinecraftServer().isHardcore()) {
+                    player.setHealth(0f);
+                    player.onDeath(cause);
+                    CapabilityIncorporealHandler.getHandler(player).setStrongSoul(false);
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean isOnSameTeam(Entity entityIn) {
+        // Player and possessed are in the same team because duh
+        Entity possessing = this.getPossessingEntity();
+        return entityIn.equals(possessing)
+                || (possessing != null && possessing.isOnSameTeam(entityIn))
+                || super.isOnSameTeam(entityIn);
+    }
+
+    /* * * * * * * * * * *
+      Plenty of delegation
+     * * * * * * * * * * * */
+
+    @Override
+    public void knockBack(Entity entityIn, float strength, double xRatio, double zRatio) {
+        EntityPlayer possessing = getPossessingEntity();
+        if (possessing != null) {
+            possessing.knockBack(entityIn, strength, xRatio, zRatio);
+            possessing.velocityChanged = true;
+            return;
+        }
+        super.knockBack(entityIn, strength, xRatio, zRatio);
+    }
+
+    @Override
+    public boolean isRiding() {
+        EntityPlayer possessing = getPossessingEntity();
+        if (possessing != null) {
+            return possessing.isRiding();
+        }
+        return super.isRiding();
+    }
+
+    @Nullable
+    @Override
+    public Entity getRidingEntity() {
+        EntityPlayer possessing = getPossessingEntity();
+        if (possessing != null) {
+            return possessing.getRidingEntity();
+        }
+        return super.getRidingEntity();
+    }
+
+    @Override
+    public int getPortalCooldown() {
+        EntityPlayer possessing = getPossessingEntity();
+        if (possessing != null) {
+            return possessing.getPortalCooldown();
+        }
+        return super.getPortalCooldown();
     }
 
     @Override
@@ -268,118 +484,6 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
         if (possessing == null) {
             super.updateActiveHand();
         }
-    }
-
-    @Override
-    protected void updateFallState(double y, boolean onGroundIn, @Nonnull IBlockState state, @Nonnull BlockPos pos) {
-        if (this.isOnLadder() && this.getPossessingEntity() != null) {
-            this.fallDistance = 0;
-        }
-        super.updateFallState(y, onGroundIn, state, pos);
-    }
-
-    @Nonnull
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        super.writeToNBT(compound);
-        if (this.getPossessingEntityId() != null)
-            compound.setUniqueId("possessingEntity", this.getPossessingEntityId());
-        return compound;
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);
-        this.setPossessingEntity(compound.getUniqueId("possessingEntity"));
-    }
-
-    @Override
-    public boolean canBePossessedBy(EntityPlayer player) {
-        return this.getControllingPassenger() == player || this.getControllingPassenger() == null;
-    }
-
-    @Override
-    protected void removePassenger(Entity passenger) {
-        CapabilityIncorporealHandler.getHandler(passenger).ifPresent(handler -> {
-            if (!world.isRemote) {
-                ((EntityPlayerMP) passenger).connection.sendPacket(new SPacketCamera(passenger));
-            }
-        });
-        super.removePassenger(passenger);
-    }
-
-    @Override
-    public void travel(float strafe, float vertical, float forward) {
-        if (this.isBeingRidden() && this.canBeSteered()) {
-            EntityLivingBase entityLivingBase = (EntityLivingBase) this.getControllingPassenger();
-            assert entityLivingBase != null;
-            this.rotationYaw = entityLivingBase.rotationYaw;
-            this.prevRotationYaw = this.rotationYaw;
-            this.rotationPitch = entityLivingBase.rotationPitch;
-            this.setRotation(this.rotationYaw, this.rotationPitch);
-            this.renderYawOffset = this.rotationYaw;
-            this.rotationYawHead = this.renderYawOffset;
-            strafe = entityLivingBase.moveStrafing;
-            forward = entityLivingBase.moveForward;
-
-            if (this.canPassengerSteer()) {
-                this.setAIMoveSpeed((float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
-                super.travel(strafe, vertical, forward);
-            }
-        } else {
-            super.travel(strafe, vertical, forward);
-        }
-    }
-
-    @Nullable
-    public Entity getControllingPassenger() {
-        return this.getPassengers().stream().filter(e -> e.getUniqueID().equals(getPossessingEntityId())).findAny().orElse(null);
-    }
-
-    @Override
-    public boolean canBeSteered() {
-        return this.getControllingPassenger() instanceof EntityLivingBase;
-    }
-
-    @Override
-    public void updatePassenger(@Nonnull Entity passenger) {
-        super.updatePassenger(passenger);
-        if (passenger.getUniqueID().equals(this.getPossessingEntityId())) {
-            passenger.setPosition(this.posX, this.posY, this.posZ);
-            if (passenger instanceof EntityPlayer) {
-//                for (PotionEffect potionEffect : ((EntityPlayer) passenger).getActivePotionMap().values())
-//                    this.addPotionEffect(new PotionEffect(potionEffect));
-                ((EntityPlayer) passenger).clearActivePotions();
-                for (PotionEffect potionEffect : this.getActivePotionMap().values()) {
-                    ((EntityPlayer) passenger).addPotionEffect(new PotionEffect(potionEffect));
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onDeath(@Nonnull DamageSource cause) {
-        super.onDeath(cause);
-        if (this.getPossessingEntity() != null) {
-            EntityPlayer player = this.getPossessingEntity();
-            CapabilityIncorporealHandler.getHandler(player).setPossessed(null);
-            if (!world.isRemote) {
-                player.inventory.dropAllItems();
-                // Hardcore players die for good when their body is killed
-                if (world.getMinecraftServer().isHardcore()) {
-                    player.setHealth(0f);
-                    player.onDeath(cause);
-                    CapabilityIncorporealHandler.getHandler(player).setStrongSoul(false);
-                }
-            }
-        }
-    }
-
-    @Override
-    public boolean isOnSameTeam(Entity entityIn) {
-        return entityIn.equals(this.getControllingPassenger())
-                || (this.getControllingPassenger() != null && this.getControllingPassenger().isOnSameTeam(entityIn))
-                || super.isOnSameTeam(entityIn);
     }
 
 }

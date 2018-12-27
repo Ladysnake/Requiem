@@ -109,6 +109,7 @@ configurations {
 
 dependencies {
     contained  "com.github.Pyrofab:Ladylib:${ladylib_version}"
+    contained  "com.jamieswhiteshirt:clothesline-hooks:${mc_version}-${clothesline_hook_version}"
     contained files(apiJar.archivePath) {
         builtBy apiJar
     }
@@ -126,7 +127,7 @@ jar {
                 'ContainedDeps': configurations.contained.files.collect { it.name }.join(" ")
         ])
     }
-    archiveName = "${archivesBaseName}-${mc_version}-${dissolution_version}-${version_nickname}.jar"
+    archiveName = "${archivesBaseName}-${mc_version}-${dissolution_version}${version_nickname}.jar"
 
     manifest {
         attributes 'FMLAT': 'dissolution_at.cfg'

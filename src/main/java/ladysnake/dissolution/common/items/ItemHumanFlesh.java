@@ -36,7 +36,10 @@ public class ItemHumanFlesh extends ItemFood {
             IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
             // no food value when you are a zombie
             if (handler.getPossessed() != null) {
-                stack.shrink(1);
+                // Only consume outside of creative
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
                 onFoodEaten(stack, worldIn, player);
                 player.addStat(StatList.getObjectUseStats(this));
                 return stack;

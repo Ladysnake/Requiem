@@ -1,6 +1,7 @@
 package ladysnake.dissolution.common.config;
 
 import net.minecraftforge.common.config.Config;
+import org.apiguardian.api.API;
 
 public class DissolutionConfig {
 
@@ -60,6 +61,7 @@ public class DissolutionConfig {
     /**
      * Only there to be used by unit tests
      */
+    @API(status = API.Status.INTERNAL, consumers = "ladysnake.dissolution.common.config")
     static class TestGhost extends Ghost {
 
         @Sync

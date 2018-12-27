@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.handlers;
 
 import ladysnake.dissolution.common.OreDictHelper;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.items.ItemHumanFlesh;
 import ladysnake.dissolution.common.registries.SoulStates;
@@ -13,7 +13,7 @@ import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+@Mod.EventBusSubscriber(modid = Ref.MOD_ID)
 public class HumanFleshEventHandler {
     /**
      * Handles undead purification through human flesh consumption. Don't ask.

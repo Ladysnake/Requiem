@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import com.mojang.authlib.GameProfile;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
 import ladysnake.dissolution.common.inventory.GuiProxy;
@@ -35,7 +35,7 @@ import java.util.UUID;
 @SuppressWarnings("Guava")
 public class EntityPlayerShell extends EntityLiving implements ISoulInteractable {
 
-    public static final ResourceLocation LOOT = new ResourceLocation(Reference.MOD_ID, "inject/human.json");
+    public static final ResourceLocation LOOT = new ResourceLocation(Ref.MOD_ID, "inject/human.json");
 
     protected static final float SIZE_X = 0.6F, SIZE_Y = 1.95F;
 

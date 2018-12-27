@@ -2,9 +2,9 @@ package ladysnake.dissolution.api.corporeality;
 
 import ladysnake.dissolution.api.IDialogueStats;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nonnull;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -37,6 +37,10 @@ public interface IIncorporealHandler {
     @Nonnull
     ICorporealityStatus getCorporealityStatus();
 
+    default boolean isIncorporeal() {
+        return getCorporealityStatus().isIncorporeal() && !isPossessionActive();
+    }
+
     /**
      * @param possessable the entity to possess
      * @return false if the change could not occur
@@ -56,6 +60,10 @@ public interface IIncorporealHandler {
     <T extends EntityLivingBase & IPossessable> T getPossessed();
 
     UUID getPossessedUUID();
+
+    default boolean isPossessionActive() {
+        return getPossessedUUID() != null;
+    }
 
     /**
      * Used for the dialogue when first entering a world
@@ -79,8 +87,10 @@ public interface IIncorporealHandler {
      */
     boolean isSynced();
 
-    void tick();
+    NBTTagCompound getSerializedPossessedEntity();
 
-    Optional<UUID> getDisguise();
+    void setSerializedPossessedEntity(NBTTagCompound serializedPossessedEntity);
+
+    void tick();
 
 }

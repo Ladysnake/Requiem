@@ -1,6 +1,5 @@
 package ladysnake.dissolution.common.handlers;
 
-import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
@@ -8,19 +7,18 @@ import ladysnake.dissolution.api.possession.PossessionEvent;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.PossessableEntityFactory;
 import ladysnake.dissolution.common.inventory.DissolutionInventoryHelper;
-import ladysnake.dissolution.common.registries.SoulStates;
-import ladysnake.dissolution.unused.common.entity.souls.AbstractSoul;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.GetCollisionBoxesEvent;
@@ -36,11 +34,11 @@ public class InteractEventsHandler {
      */
     @SubscribeEvent
     public void onGetCollisionBoxes(GetCollisionBoxesEvent event) {
-        if ((event.getEntity() instanceof AbstractSoul)
-                || ((event.getEntity() instanceof EntityPlayer)
-                && (CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity())
-                .getCorporealityStatus() == SoulStates.SOUL))) {
-            event.getCollisionBoxesList().removeIf(axisAlignedBB -> axisAlignedBB.getAverageEdgeLength() < MAX_THICCNESS);
+        if (event.getEntity() instanceof EntityPlayer) {
+            IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity());
+            if (handler.isIncorporeal()) {
+                event.getCollisionBoxesList().removeIf(axisAlignedBB -> axisAlignedBB.getAverageEdgeLength() < MAX_THICCNESS);
+            }
         }
     }
 
@@ -93,64 +91,56 @@ public class InteractEventsHandler {
      */
     @SubscribeEvent
     public void onProjectileImpact(ProjectileImpactEvent event) {
-        if (
-                event.getRayTraceResult().typeOfHit == RayTraceResult.Type.ENTITY &&
-                        CapabilityIncorporealHandler.getHandler(event.getRayTraceResult().entityHit)
-                                .map(IIncorporealHandler::getCorporealityStatus)
-                                .map(ICorporealityStatus::isIncorporeal).orElse(false)
-        ) {
+        Entity entityHit = event.getRayTraceResult().entityHit;
+        if (event.getRayTraceResult().typeOfHit == RayTraceResult.Type.ENTITY && entityHit instanceof EntityPlayer) {
+            IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler((EntityPlayer) entityHit);
+            if (handler.getCorporealityStatus().isIncorporeal()) {
+                if (handler.isPossessionActive()) {
+                    Entity possessed = handler.getPossessed();
+                    Entity projectile = event.getEntity();
+                    Entity shooter = null;
+                    if (projectile instanceof EntityArrow) {
+                        shooter = ((EntityArrow) projectile).shootingEntity;
+                    } else if (projectile instanceof EntityThrowable) {
+                        shooter = ((EntityThrowable) projectile).getThrower();
+                    }
+                    if (shooter != possessed && shooter != entityHit) {
+                        // Make the projectile impact the possessed entity
+                        event.getRayTraceResult().entityHit = handler.getPossessed();
+                        return;
+                    }
+                }
+                // Make the projectile not hit the spirit / the shooter
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    /**
+     * Prevent possessed mobs from shooting themselves with standard projectiles
+     */
+    @SubscribeEvent
+    public void onThrowableImpact(ProjectileImpactEvent.Throwable event) {
+        if (event.getRayTraceResult().typeOfHit == RayTraceResult.Type.ENTITY &&
+                CapabilityIncorporealHandler.getHandler(event.getThrowable().getThrower())
+                        .map(IIncorporealHandler::getPossessed)
+                        .filter(event.getRayTraceResult().entityHit::equals)
+                        .isPresent()) {
             event.setCanceled(true);
         }
     }
 
     /**
-     * Prevent possessed mobs from shooting themselves
+     * Prevent possessed mobs from shooting themselves with arrows
      */
     @SubscribeEvent
     public void onArrowImpact(ProjectileImpactEvent.Arrow event) {
         if (event.getRayTraceResult().typeOfHit == RayTraceResult.Type.ENTITY &&
                         CapabilityIncorporealHandler.getHandler(event.getArrow().shootingEntity)
                                 .map(IIncorporealHandler::getPossessed)
-                                .map(event.getRayTraceResult().entityHit::equals)
-                                .orElse(false)) {
+                                .filter(event.getRayTraceResult().entityHit::equals)
+                                .isPresent()) {
             event.setCanceled(true);
         }
-    }
-
-
-
-    /**
-     * Prevents a player from ending possession prematurely
-     */
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onEntityMount(EntityMountEvent event) {
-        if (event.getEntityMounting().world.isRemote) {
-            return;
-        }
-        CapabilityIncorporealHandler.getHandler(event.getEntity()).ifPresent(handler -> {
-            if (handler.getCorporealityStatus().isIncorporeal()) {
-                Entity beingMounted = event.getEntityBeingMounted();
-                if (event.isMounting()) {
-                    if (!beingMounted.getUniqueID().equals(handler.getPossessedUUID()) && handler.getPossessed() != null) {
-                        handler.getPossessed().startRiding(beingMounted);
-                        event.setCanceled(true);
-                    }
-                } else {
-                    EntityLivingBase possessed = handler.getPossessed();
-                    if (possessed != null && event.getEntity() instanceof EntityPlayer && ((EntityPlayer) event.getEntity()).isCreative()) {
-                        handler.setPossessed(null);
-                    } else {
-                        if (beingMounted == possessed && !(handler.setPossessed(null))) {
-                            if (possessed != null && possessed.isRiding()) {
-                                possessed.dismountRidingEntity();
-                            } else if (event.getEntity().isSneaking() && event.getEntity() instanceof EntityPlayer) {
-                                PlayerTickHandler.sneakingPossessingPlayers.add((EntityPlayer) event.getEntity());
-                            }
-                            event.setCanceled(true);
-                        }
-                    }
-                }
-            }
-        });
     }
 }

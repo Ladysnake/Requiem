@@ -1,7 +1,7 @@
 package ladysnake.dissolution.client.gui;
 
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -37,7 +37,7 @@ import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType
 public class GuiIncorporealOverlay extends GuiIngame {
 
     private static final ResourceLocation WIDGETS_TEX_PATH = new ResourceLocation("textures/gui/widgets.png");
-    private static final ResourceLocation ECTOPLASM_ICONS = new ResourceLocation(Reference.MOD_ID, "textures/gui/icons.png");
+    private static final ResourceLocation ECTOPLASM_ICONS = new ResourceLocation(Ref.MOD_ID, "textures/gui/icons.png");
     private final Random rand = new Random();
 
     public GuiIncorporealOverlay(Minecraft mc) {
@@ -48,13 +48,10 @@ public class GuiIncorporealOverlay extends GuiIngame {
     public void onRenderExperienceBar(RenderGameOverlayEvent.Post event) {
         final IIncorporealHandler pl = CapabilityIncorporealHandler.getHandler(this.mc.player);
         if (event.getType() == ElementType.ALL) {
-            OverlaysRenderer.INSTANCE.renderOverlays(event);
+            OverlaysRenderer.INSTANCE.renderOverlays(event.getPartialTicks());
 
             /* Draw Incorporeal Ingame Gui */
-//            if (pl.getCorporealityStatus().isIncorporeal() && pl.getPossessed() == null) {
-//                if (Dissolution.config.client.soulCompass)
-//                    this.drawOriginIndicator(event.getResolution());
-//            }
+
             ScaledResolution res = event.getResolution();
 
             if (this.mc.playerController.shouldDrawHUD()) {
@@ -121,11 +118,6 @@ public class GuiIncorporealOverlay extends GuiIngame {
         int width = scaledResolution.getScaledWidth();
         int height = scaledResolution.getScaledHeight();
 
-        GlStateManager.pushAttrib();
-//		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.75F);
-//		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-//				GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-//				GlStateManager.DestFactor.ZERO);
         GlStateManager.enableAlpha();
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -225,7 +217,6 @@ public class GuiIncorporealOverlay extends GuiIngame {
                 }
             }
         }
-        GlStateManager.popAttrib();
     }
 
     protected void renderHotbar(@Nonnull ScaledResolution sr, float partialTicks) {

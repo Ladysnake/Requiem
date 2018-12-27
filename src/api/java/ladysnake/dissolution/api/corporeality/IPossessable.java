@@ -3,8 +3,6 @@ package ladysnake.dissolution.api.corporeality;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.UUID;
 
@@ -38,6 +36,8 @@ public interface IPossessable {
 
     UUID getPossessingEntityId();
 
+    EntityPlayer getPossessingEntity();
+
     void setSleeping(boolean sleeping);
 
     /**
@@ -48,6 +48,17 @@ public interface IPossessable {
      */
     boolean proxyAttack(EntityLivingBase victim, DamageSource source, float amount);
 
-    @SideOnly(Side.CLIENT)
-    void possessTickClient();
+    default void possessTickClient() {}
+
+    default void updatePossessing() {}
+
+    default boolean isBeingPossessed() {
+        return this.getPossessingEntityId() != null;
+    }
+
+    /**
+     * Signals to this entity that the possessing player has logged out,
+     * and that the entity should disappear in the next tick
+     */
+    void markForLogOut();
 }

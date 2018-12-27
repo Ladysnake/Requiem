@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.init;
 
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.event.RegistryEvent;
@@ -10,14 +10,14 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.Locale;
 
-@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+@Mod.EventBusSubscriber(modid = Ref.MOD_ID)
 public enum ModSounds {
     ;
 
     private final SoundEvent sound;
 
     ModSounds() {
-        ResourceLocation soundLocation = new ResourceLocation(Reference.MOD_ID, this.toString());
+        ResourceLocation soundLocation = new ResourceLocation(Ref.MOD_ID, this.toString());
         this.sound = new SoundEvent(soundLocation);
         this.sound.setRegistryName(soundLocation);
     }

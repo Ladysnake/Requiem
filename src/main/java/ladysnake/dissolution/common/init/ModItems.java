@@ -1,8 +1,9 @@
 package ladysnake.dissolution.common.init;
 
+import ladylib.compat.EnhancedBusSubscriber;
 import ladylib.registration.AutoRegister;
 import ladysnake.dissolution.common.OreDictHelper;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.items.*;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
@@ -21,15 +22,16 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreIngredient;
 
-@SuppressWarnings({"WeakerAccess", "unused"})
-@AutoRegister(Reference.MOD_ID)
-@GameRegistry.ObjectHolder(Reference.MOD_ID)
+@SuppressWarnings({"unused"})
+@AutoRegister(value = Ref.MOD_ID, injectObjectHolder = true)
 public final class ModItems {
 
     /**
      * Used to register stuff
      */
-    static final ModItems INSTANCE = new ModItems();
+    @AutoRegister.Ignore
+    @EnhancedBusSubscriber(Ref.MOD_ID)
+    public static final ModItems INSTANCE = new ModItems();
 
     @AutoRegister.Unlisted
     public static final ItemLogo LOGO = new ItemLogo();

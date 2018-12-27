@@ -20,20 +20,27 @@ repositories {
     maven {
         url 'https://jitpack.io'
     }
+
+    maven {
+        url 'http://maven.jamieswhiteshirt.com/libs-release/'
+    }
 }
 
 dependencies {
-    compile         'org.jetbrains:annotations:15.0'
-    testCompile     'junit:junit:4.12'
-    deobfCompile    "com.github.Pyrofab:Ladylib:${ladylib_version}"
-    deobfProvided   'albedo:albedo:0.1.3'
+    compile         "org.jetbrains:annotations:15.0"
+    testCompile     "junit:junit:4.12"
+    // LadyLib is available at runtime through contained dependencies
+    deobfProvided   "com.github.Pyrofab:Ladylib:${ladylib_version}"
+    deobfProvided   "albedo:albedo:0.1.3"
     deobfProvided   "com.azanor.baubles:Baubles:${baubles_version}"
     deobfProvided   "thaumcraft:Thaumcraft:${mc_version}:${thaumcraft_version}"
     deobfProvided   "slimeknights.mantle:Mantle:${mantle_version}"
     deobfProvided   "knightminer:Inspirations:${mc_version}-${inspirations_version}"
-    deobfProvided   "ichunutil:iChunUtil:${mc_version}:${ichunutil_version}"
-    deobfProvided   "sync:Sync:${mc_version}:${sync_version}"
-    compileOnly   "angry-pixel-the-betweenlands-mod:TheBetweenlands:3.3.11:universal"
+    deobfCompile    "com.jamieswhiteshirt:clothesline-hooks:1.12.2-0.0.1.0"
+    compileOnly     "ichunutil:iChunUtil:${mc_version}:${ichunutil_version}"
+    compileOnly     "sync:Sync:${mc_version}:${sync_version}"
+    compileOnly     "com.github.Modding-Legacy:Aether-Legacy:${mc_version}-${aether_version}"
+    compileOnly     "angry-pixel-the-betweenlands-mod:TheBetweenlands:3.3.11:universal"
     deobfProvided   "mezz.jei:jei_${mc_version}:${jei_version}:api"
     runtimeOnly     "mezz.jei:jei_${mc_version}:${jei_version}"
 }

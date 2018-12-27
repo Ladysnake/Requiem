@@ -1,23 +1,19 @@
 package ladysnake.dissolution.common.handlers;
 
-import ladylib.misc.ReflectionUtil;
 import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
-import ladysnake.dissolution.api.corporeality.IPossessable;
-import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
+import ladysnake.dissolution.common.networking.IncorporealMessage;
+import ladysnake.dissolution.common.networking.PacketHandler;
+import ladysnake.dissolution.common.networking.PossessionMessage;
 import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.AbstractSkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
@@ -25,8 +21,6 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
-
-import java.lang.invoke.MethodHandle;
 
 
 /**
@@ -36,34 +30,42 @@ import java.lang.invoke.MethodHandle;
  */
 public class EventHandlerCommon {
 
-    private static final MethodHandle abstractSkeleton$getArrow = ReflectionUtil.findMethodHandleFromObfName(AbstractSkeleton.class, "func_190726_a", EntityArrow.class, float.class);
-
-    public EventHandlerCommon() {
-
-    }
-
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerLoggedInEvent event) {
         event.player.inventoryContainer.addListener(new PlayerInventoryListener((EntityPlayerMP) event.player));
     }
 
     @SubscribeEvent
-    public void clonePlayer(PlayerEvent.Clone event) {
-        if (event.isWasDeath() && !event.getEntityPlayer().isCreative()) {
-            final IIncorporealHandler corpse = CapabilityIncorporealHandler.getHandler(event.getOriginal());
-            final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
-            clone.setStrongSoul(corpse.isStrongSoul());
-            clone.setCorporealityStatus(corpse.getCorporealityStatus());
-            clone.getDialogueStats().deserializeNBT(corpse.getDialogueStats().serializeNBT());
-            clone.setSynced(false);
+    public void onPlayerStartTracking(PlayerEvent.StartTracking event) {
+        if (event.getEntityPlayer() instanceof EntityPlayerMP && event.getTarget() instanceof EntityPlayer) {
+            EntityPlayerMP thePlayer = (EntityPlayerMP) event.getEntityPlayer();
+            EntityPlayer target = (EntityPlayer) event.getTarget();
+            IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(target);
+            PacketHandler.NET.sendTo(new IncorporealMessage(target.getEntityId(), handler.isStrongSoul(), handler.getCorporealityStatus()), thePlayer);
+            if (handler.isPossessionActive()) {
+                PacketHandler.NET.sendTo(new PossessionMessage(target.getUniqueID(), handler.getPossessed().getEntityId()), thePlayer);
+            }
+        }
+    }
 
+    @SubscribeEvent
+    public void clonePlayer(PlayerEvent.Clone event) {
+        final IIncorporealHandler corpse = CapabilityIncorporealHandler.getHandler(event.getOriginal());
+        final IIncorporealHandler clone = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer());
+        clone.setStrongSoul(corpse.isStrongSoul());
+        clone.setCorporealityStatus(corpse.getCorporealityStatus());
+        clone.getDialogueStats().deserializeNBT(corpse.getDialogueStats().serializeNBT());
+        clone.setSynced(false);
+
+        if (event.isWasDeath() && !event.getEntityPlayer().isCreative()) {
             if (clone.isStrongSoul()) {
                 event.getEntityPlayer().experienceLevel = event.getOriginal().experienceLevel;
                 clone.getDeathStats().setDeathDimension(corpse.getDeathStats().getDeathDimension());
                 clone.getDeathStats().setDeathLocation(new BlockPos(event.getOriginal().posX, event.getOriginal().posY, event.getOriginal().posZ));
             }
-            // avoid accumulation of tracked players and allow garbage collection
-            corpse.getCorporealityStatus().resetState(event.getOriginal());
+        } else if (!event.isWasDeath()) {
+            // Bring the body along if coming from an end portal
+            clone.setSerializedPossessedEntity(corpse.getSerializedPossessedEntity());
         }
     }
 
@@ -75,51 +77,6 @@ public class EventHandlerCommon {
         final ICorporealityStatus playerCorp = CapabilityIncorporealHandler.getHandler(event.getEntityPlayer()).getCorporealityStatus();
         if (playerCorp.isIncorporeal()) {
             event.modifyVisibility(0D);
-        }
-    }
-
-    @SubscribeEvent
-    public void onEntityJoinWorld(EntityJoinWorldEvent event) {
-        if (event.getEntity() instanceof EntityArrow && !event.getWorld().isRemote) {
-            EntityArrow arrow = (EntityArrow) event.getEntity();
-            CapabilityIncorporealHandler.getHandler(arrow.shootingEntity).ifPresent(handler -> {
-                EntityLivingBase possessed = handler.getPossessed();
-                if (possessed instanceof AbstractSkeleton) {
-                    try {
-                        EntityArrow mobArrow = (EntityArrow) abstractSkeleton$getArrow.invoke(possessed, 0);
-                        mobArrow.setDamage(arrow.getDamage());
-                        mobArrow.copyLocationAndAnglesFrom(arrow);
-                        mobArrow.motionX = arrow.motionX;
-                        mobArrow.motionY = arrow.motionY;
-                        mobArrow.motionZ = arrow.motionZ;
-                        arrow.world.spawnEntity(mobArrow);
-                        event.setCanceled(true);
-                    } catch (Throwable throwable) {
-                        Dissolution.LOGGER.warn("Failed to get an arrow from a skeleton", throwable);
-                    }
-                }
-            });
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onLivingAttack(LivingAttackEvent event) {
-        if (event.getEntity() instanceof EntityPlayer && !event.getSource().canHarmInCreative()) {
-            ICorporealityStatus status = CapabilityIncorporealHandler.getHandler((EntityPlayer) event.getEntity()).getCorporealityStatus();
-            if (status.allowsInvulnerability()) {
-                if (event.getSource().getTrueSource() == null || DissolutionConfigManager.isEctoplasmImmuneTo(event.getSource().getTrueSource())) {
-                    event.setCanceled(!event.getSource().canHarmInCreative());
-                }
-            }
-        } else {
-            CapabilityIncorporealHandler.getHandler(event.getSource().getTrueSource()).ifPresent(handler -> {
-                IPossessable possessed = handler.getPossessed();
-                if (possessed != null) {
-                    if (possessed.proxyAttack(event.getEntityLiving(), event.getSource(), event.getAmount())) {
-                        event.setCanceled(true);
-                    }
-                }
-            });
         }
     }
 

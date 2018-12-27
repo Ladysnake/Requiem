@@ -5,7 +5,7 @@ import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.api.possession.DissolutionPossessionApi;
 import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
 import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.entity.EntityPlayerShell;
 import ladysnake.dissolution.common.entity.EntityPossessableImpl;
 import ladysnake.dissolution.common.entity.PossessableEntityFactory;
@@ -22,6 +22,7 @@ import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
@@ -39,7 +40,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
-@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+@Mod.EventBusSubscriber(modid = Ref.MOD_ID)
 public class ModEntities {
 
     private static int id = 0;
@@ -63,8 +64,8 @@ public class ModEntities {
                     defineImpl = instance != null && ((EntityMob)instance).isEntityUndead() && instance.isNonBoss();
                     // the easy way for mods to choose
                     try {
-                        Method m = ReflectionHelper.findMethod(entityClass, "dissolutionGeneratePossessedVersion", null);
-                        if (Modifier.isStatic(m.getModifiers()) && m.getReturnType() == boolean.class) {
+                        Method m = ObfuscationReflectionHelper.findMethod(entityClass, "dissolutionGeneratePossessedVersion", boolean.class);
+                        if (Modifier.isStatic(m.getModifiers())) {
                             defineImpl = (boolean) m.invoke(null);
                         }
                     } catch (ReflectionHelper.UnableToFindMethodException ignored) {
@@ -99,7 +100,7 @@ public class ModEntities {
                     event.getRegistry().register(
                             EntityEntryBuilder.create()
                                     .entity(possessableClass)
-                                    .id(new ResourceLocation(Reference.MOD_ID, String.valueOf(entityEntry.getRegistryName()).replace(':', '_') + "_possessable"), id++)
+                                    .id(new ResourceLocation(Ref.MOD_ID, String.valueOf(entityEntry.getRegistryName()).replace(':', '_') + "_possessable"), id++)
                                     .name(entityEntry.getName())
                                     .tracker(trackingRange, updateFrequency, sendVelocityUpdates)
                                     .build()
@@ -112,10 +113,10 @@ public class ModEntities {
     @SubscribeEvent
     public static void onRegistryMissingMappings(RegistryEvent.MissingMappings<EntityEntry> event) {
         for (RegistryEvent.MissingMappings.Mapping<EntityEntry> mapping : event.getMappings()) {
-            if (mapping.key.getNamespace().equals(Reference.MOD_ID) && mapping.key.getPath().endsWith("possessable")) {
+            if (mapping.key.getNamespace().equals(Ref.MOD_ID) && mapping.key.getPath().endsWith("possessable")) {
                 ForgeRegistries.ENTITIES.getKeys().stream()
                         // Mobs from dissolution
-                        .filter(rl -> rl.getNamespace().equals(Reference.MOD_ID))
+                        .filter(rl -> rl.getNamespace().equals(Ref.MOD_ID))
                         // Find the new name of the missing entry
                         .filter(s -> s.getPath().endsWith(mapping.key.getPath()))
                         .findAny()
@@ -138,7 +139,7 @@ public class ModEntities {
         }
         Class<?> factoryClass = entityentry$factory.get(entry).getClass();
         if (contructorFactoryClass.isAssignableFrom(factoryClass)) {
-            return ReflectionHelper.findConstructor(entry.getEntityClass(), World.class).newInstance((Object) null);
+            return ObfuscationReflectionHelper.findConstructor(entry.getEntityClass(), World.class).newInstance((Object) null);
         }
         return entry.newInstance(null);
     }
@@ -178,7 +179,7 @@ public class ModEntities {
         return EntityEntryBuilder.create()
                 .entity(entityFactory.apply(null).getClass())
                 .factory(entityFactory)
-                .id(new ResourceLocation(Reference.MOD_ID, name), id++)
+                .id(new ResourceLocation(Ref.MOD_ID, name), id++)
                 .name(name)
                 .tracker(trackingRange, 1, sendsVelocityUpdates);
     }

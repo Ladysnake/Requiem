@@ -26,9 +26,9 @@ public class GuiProxy implements IGuiHandler {
                 if (pc != null) {
                     return new ContainerChest(player.inventory, pc.getInventory(), player);
                 }
-            default:
-                return null;
+                break;
         }
+        return null;
     }
 
     @Override
@@ -41,6 +41,7 @@ public class GuiProxy implements IGuiHandler {
                 if (!pc.isEmpty()) {
                     return new GuiChest(player.inventory, pc.get(0).getInventory());
                 }
+                break;
         }
         return null;
     }

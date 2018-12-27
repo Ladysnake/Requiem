@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.commands;
 
 import ladysnake.dissolution.api.corporeality.ICorporealityStatus;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.registries.SoulStates;
 import net.minecraft.command.CommandBase;
@@ -54,7 +54,7 @@ public class CommandCorporealMode extends CommandBase {
         } else if (args.length > 1) {
             possibilities = Arrays.asList(server.getOnlinePlayerNames());
         }
-        return possibilities == null ? Collections.EMPTY_LIST : getListOfStringsMatchingLastWord(args, possibilities);
+        return possibilities == null ? Collections.emptyList() : getListOfStringsMatchingLastWord(args, possibilities);
     }
 
     /**
@@ -78,15 +78,18 @@ public class CommandCorporealMode extends CommandBase {
             try {
                 ResourceLocation regName = args[1].contains(":")
                         ? new ResourceLocation(args[1])
-                        : new ResourceLocation(Reference.MOD_ID, args[1]);
+                        : new ResourceLocation(Ref.MOD_ID, args[1]);
                 ICorporealityStatus newStatus = SoulStates.REGISTRY.getValue(regName);
                 EntityPlayer player = args.length >= 3 ? getPlayer(server, sender, args[2]) : getCommandSenderAsPlayer(sender);
                 IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
                 if (!handler.isStrongSoul()) {
                     throw new CommandException("commands.dissolution.corporeality_mode.set.weak_soul", player.getName());
                 }
-                handler.setCorporealityStatus(newStatus);
+                if (newStatus == null) {
+                    throw new CommandException("commands.dissolution.corporeality_mode.set.invalid", regName);
+                }
                 ITextComponent iTextComponent = new TextComponentTranslation(newStatus.getTranslationKey());
+                handler.setCorporealityStatus(newStatus);
                 if (sender.getEntityWorld().getGameRules().getBoolean("sendCommandFeedback")) {
                     player.sendMessage(new TextComponentTranslation("dissolution.corporeality_mode.changed", iTextComponent));
                 }

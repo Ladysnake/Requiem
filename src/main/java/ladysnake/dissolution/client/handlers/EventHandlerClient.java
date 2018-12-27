@@ -1,20 +1,19 @@
 package ladysnake.dissolution.client.handlers;
 
+import com.jamieswhiteshirt.clothesline.hooks.api.GetMouseOverEvent;
+import ladylib.reflection.TypedReflection;
+import ladylib.reflection.typed.TypedSetter;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
-import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.api.corporeality.PlayerIncorporealEvent;
-import ladysnake.dissolution.api.possession.PossessionEvent;
 import ladysnake.dissolution.client.particles.DissolutionParticleManager;
-import ladysnake.dissolution.client.renders.ShaderHelper;
 import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.Reference;
+import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import ladysnake.dissolution.common.networking.PingMessage;
 import ladysnake.dissolution.common.registries.SoulStates;
-import ladysnake.dissolution.unused.common.blocks.BlockFluidMercury;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngame;
@@ -23,6 +22,7 @@ import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.Render;
@@ -32,49 +32,31 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumHandSide;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.GameType;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
-
 @SideOnly(Side.CLIENT)
-@Mod.EventBusSubscriber(value = Side.CLIENT, modid = Reference.MOD_ID)
+@Mod.EventBusSubscriber(value = Side.CLIENT, modid = Ref.MOD_ID)
 public class EventHandlerClient {
-
-    private static final ResourceLocation SPECTRE_SHADER = new ResourceLocation(Reference.MOD_ID, "shaders/post/spectre.json");
 
     /**True if this client is connected to a server without the mod*/
     private static boolean noServerInstall;
-    private static int cameraAnimation = 0;
 
     private static final float SOUL_VERTICAL_SPEED = 0.1f;
-    private static MethodHandle highlightingItemStack;
+    private static final TypedSetter<GuiIngame, ItemStack> highlightingItemStack =
+            TypedReflection.findSetter(GuiIngame.class, "field_92016_l", ItemStack.class);
     private static int refreshTimer = 0;
-
-    static {
-        try {
-            Field f = ReflectionHelper.findField(GuiIngame.class, "highlightingItemStack", "field_92016_l");
-            highlightingItemStack = MethodHandles.lookup().unreflectSetter(f);
-        } catch (UnableToFindFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
 
     @SubscribeEvent
     public static void onGameTick(TickEvent.ClientTickEvent event) {
@@ -109,29 +91,12 @@ public class EventHandlerClient {
             if (DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT)) {
                 player.capabilities.setFlySpeed(event.getNewStatus().isIncorporeal() ? 0.025f : 0.05f);
             }
-            if (event.getNewStatus().isIncorporeal()) {
-                ShaderHelper.enableScreenShader(SPECTRE_SHADER);
-            } else {
-                ShaderHelper.disableScreenShader(SPECTRE_SHADER);
+            if (!event.getNewStatus().isIncorporeal()) {
                 GuiIngameForge.renderHotbar = true;
                 GuiIngameForge.renderFood = true;
                 GuiIngameForge.renderArmor = true;
                 GuiIngameForge.renderAir = true;
             }
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onPossession(PossessionEvent.Start event) {
-        if (event.getEntity().world.isRemote && event.getEntityPlayer() == Minecraft.getMinecraft().player) {
-            ShaderHelper.disableScreenShader(SPECTRE_SHADER);
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onPossession(PossessionEvent.Stop event) {
-        if (event.getEntity().world.isRemote && event.getEntityPlayer() == Minecraft.getMinecraft().player) {
-            ShaderHelper.enableScreenShader(SPECTRE_SHADER);
         }
     }
 
@@ -161,22 +126,9 @@ public class EventHandlerClient {
 
             // Prevents the display of the name of the selected ItemStack
             if (!show && !player.isCreative() && !possessing) {
-                try {
-                    highlightingItemStack.invoke(Minecraft.getMinecraft().ingameGUI, ItemStack.EMPTY);
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
+                highlightingItemStack.set(Minecraft.getMinecraft().ingameGUI, ItemStack.EMPTY);
             }
         }
-    }
-
-    @SubscribeEvent
-    public static void onGuiScreenInitGui(GuiScreenEvent.InitGuiEvent.Pre event) {
-//        if (event.getGui() instanceof GuiGameOver && Dissolution.config.respawn.skipDeathScreen) {
-//            event.setCanceled(true);
-////            Minecraft.getMinecraft().player.respawnPlayer();
-//            PacketHandler.NET.sendToServer(new RemnantRespawnMessage());
-//        }
     }
 
     @SubscribeEvent
@@ -196,6 +148,23 @@ public class EventHandlerClient {
     }
 
     @SubscribeEvent
+    public static void onEntityViewRenderRenderFog(GetMouseOverEvent event) {
+        // Prevents players from targeting souls
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.pointedEntity instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) mc.pointedEntity;
+            if (CapabilityIncorporealHandler.getHandler(player).getCorporealityStatus().isIncorporeal()) {
+                NetworkPlayerInfo info = mc.getConnection().getPlayerInfo(player.getGameProfile().getId());
+                GameType currentGm = info.getGameType();
+                // spectators cannot be targeted
+                info.setGameType(GameType.SPECTATOR);
+                mc.entityRenderer.getMouseOver(event.getPartialTicks());
+                info.setGameType(currentGm);
+            }
+        }
+    }
+
+    @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent event) {
         if (noServerInstall) {
             return;
@@ -209,18 +178,9 @@ public class EventHandlerClient {
 
         final IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(player);
 
-        if (cameraAnimation-- > 0 && event.player.eyeHeight < 1.8f) {
-            player.eyeHeight += player.getDefaultEyeHeight() / 20f;
-        }
-
-        if (player.world.isMaterialInBB(player.getEntityBoundingBox()
-                .grow(-0.1D, -0.4D, -0.1D), BlockFluidMercury.MATERIAL_MERCURY)) {
-            playerSP.motionX *= 0.4f;
-            playerSP.motionZ *= 0.4f;
-        }
-
         if (!event.player.isCreative() &&
-                playerCorp.getCorporealityStatus() == SoulStates.SOUL && event.phase == TickEvent.Phase.START) {
+                playerCorp.getCorporealityStatus() == SoulStates.SOUL && event.phase == TickEvent.Phase.START &&
+                !playerCorp.isPossessionActive()) {
 
             if (DissolutionConfigManager.isFlightSetTo(DissolutionConfigManager.FlightModes.CUSTOM_FLIGHT)) {
                 player.capabilities.setFlySpeed(0.025f);
@@ -240,10 +200,6 @@ public class EventHandlerClient {
                     }
                 }
             }
-        }
-        IPossessable possessed = playerCorp.getPossessed();
-        if (possessed != null) {
-            possessed.possessTickClient();
         }
     }
 
@@ -307,7 +263,7 @@ public class EventHandlerClient {
                     rotateAroundXAndYReverse(f1, f2, f3, f4);
                 }
                 // render hand if possible
-                if (event.getItemStack().isEmpty()) {
+                if (event.getItemStack().isEmpty() && !playerSP.isInvisible()) {
                     Render render = Minecraft.getMinecraft().getRenderManager().getEntityRenderObject(possessed);
                     if (render instanceof RenderLivingBase) {
                         RenderLivingBase renderLivingBase = (RenderLivingBase) render;
