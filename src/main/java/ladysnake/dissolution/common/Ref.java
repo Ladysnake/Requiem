@@ -9,7 +9,7 @@ public class Ref {
     static final String VERSION = "@VERSION@";
     static final String MCVERSION = "[1.12.2]";
     static final String DEPENDENCIES =
-            "required-after:forge@[14.23.3.2669,);" +
+            "required-after:forge@[14.23.5.2779,);" +
                     "required-after:" + LadyLib.MOD_ID + "@[" + LadyLib.VERSION + ",);" +
                     "required-after:" + ClotheslineHooks.MODID + "@[1.12.2-0.0.1.0,1.12.2-0.0.2.0);" +
             "after:albedo;" +
