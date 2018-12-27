@@ -1,18 +1,25 @@
-##### Version 1.12.2-0.2.0
+##### Version 1.12.2-0.2.0 - BUILT
 Rewritten mob possession, hopefully fixing a lot of bugs
+
+General Features:
+- Souls are now almost completely intangible regarding other entities
 
 Possession:
 - You can now use enderpearls and other short-distance teleportation !
 - You can now use grappling hooks and other velocity altering stuff !
 - Fixed players appearing (comically) sit on their possessed entity in multiplayer
 - Fixed being randomly kicked from world when left-clicking
+- Fixed possessed entities not respecting the player's attack cooldown
 - Fixed the fire overlay appearing in third person
 - Fixed possessed entities moving by themselves under obscure circumstances
+- Fixed possession breaking with some portals like Aether Legacy's
 
 General bugfixes:
 - Fixed the soul shader sometimes appearing when it should not
 - Fixed soul players sometimes appearing solid to other players
 - Fixed the mod forgetting everything about the player after coming back from the End
+- Fixed human flesh being consumed in creative
+- Fixed creative flight being removed when regaining corporeality in creative mode
 
 Mod compatibility:
 - Made evilcraft and cannibalism fleshes fit for undead consumption
