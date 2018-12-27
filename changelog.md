@@ -8,6 +8,9 @@ Possession:
 - You can now use enderpearls and other short-distance teleportation !
 - You can now use grappling hooks and other velocity altering apparatus !
 - YOU CAN NOW SPRINT
+- Potions are now synchronized properly between the player and its possessed entity 
+  (Drinking and curing potions work !)
+- Fixed hands appearing in first person when invisible
 - Fixed players appearing (comically) sit on their possessed entity in multiplayer
 - Fixed being randomly kicked from world when left-clicking
 - Fixed possessed entities not respecting the player's attack cooldown

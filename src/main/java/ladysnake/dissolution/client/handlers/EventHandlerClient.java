@@ -263,7 +263,7 @@ public class EventHandlerClient {
                     rotateAroundXAndYReverse(f1, f2, f3, f4);
                 }
                 // render hand if possible
-                if (event.getItemStack().isEmpty()) {
+                if (event.getItemStack().isEmpty() && !playerSP.isInvisible()) {
                     Render render = Minecraft.getMinecraft().getRenderManager().getEntityRenderObject(possessed);
                     if (render instanceof RenderLivingBase) {
                         RenderLivingBase renderLivingBase = (RenderLivingBase) render;
