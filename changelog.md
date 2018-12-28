@@ -1,3 +1,7 @@
+##### Version 1.12.2-0.2.1 - BUILT
+- Fixed players getting trapped inside the villager when curing a possessed zombie villager
+- Fixed eau de mort being useless for ending possession
+
 ##### Version 1.12.2-0.2.0 - BUILT
 Rewritten mob possession, hopefully fixing a lot of bugs
 
