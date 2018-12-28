@@ -229,10 +229,9 @@ public class CapabilityIncorporealHandler {
                 }
                 hostID = 0;
                 hostUUID = null;
-                serializedPossessedEntity = null;
-                owner.dismountRidingEntity();
                 owner.setInvisible(Dissolution.config.ghost.invisibleGhosts);   // restore previous visibility
                 owner.capabilities.allowFlying = true;
+                serializedPossessedEntity = null;
             } else {                            // start possessing an entity
                 // cancel the operation if a) the event is canceled or b) the possessed entity denies it
                 if (MinecraftForge.EVENT_BUS.post(new PossessionEvent.Start(owner, possessable, force)) ||
@@ -245,13 +244,17 @@ public class CapabilityIncorporealHandler {
                 owner.capabilities.allowFlying = false;
                 owner.capabilities.isFlying = false;
             }
+            syncWithClient(possessable);
+            return true;
+        }
+
+        private <T extends EntityLivingBase & IPossessable> void syncWithClient(@Nullable T possessable) {
             if (owner instanceof EntityPlayerMP && ((EntityPlayerMP) owner).connection != null) {
                 ((EntityPlayerMP) owner).connection.sendPacket(new SPacketCamera(possessable == null ? owner : possessable));
                 PossessionMessage message = new PossessionMessage(owner.getUniqueID(), hostID);
                 PacketHandler.NET.sendTo(message, (EntityPlayerMP) owner);
                 PacketHandler.NET.sendToAllTracking(message, owner);
             }
-            return true;
         }
 
         @Override
@@ -273,7 +276,9 @@ public class CapabilityIncorporealHandler {
                 host = null;
                 hostID = 0;
                 hostUUID = null;
+                owner.capabilities.allowFlying = true;
                 owner.setInvisible(Dissolution.config.ghost.invisibleGhosts);
+                syncWithClient(null);
             }
             return (T) host;
         }
