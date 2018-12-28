@@ -1,10 +1,11 @@
 package ladysnake.dissolution.common.items;
 
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
-import ladysnake.dissolution.client.renders.ShaderHelper;
-import ladysnake.dissolution.common.Ref;
+import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.handlers.CustomDissolutionTeleporter;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityZombieVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -12,7 +13,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
@@ -41,9 +41,11 @@ public class ItemDebug extends Item implements ISoulInteractable {
         }
         switch (debugWanted) {
             case 0:
-                if (worldIn.isRemote) {
-                    ShaderHelper.disableScreenShader(new ResourceLocation(Ref.MOD_ID, "shaders/post/spectre.json"));
-                    ShaderHelper.enableScreenShader(new ResourceLocation(Ref.MOD_ID, "shaders/post/spectre.json"));
+                if (!worldIn.isRemote) {
+                    EntityLivingBase possessed = CapabilityIncorporealHandler.getHandler(playerIn).getPossessed();
+                    if (possessed instanceof EntityZombieVillager) {
+                        ((EntityZombieVillager) possessed).processInteract(playerIn, EnumHand.OFF_HAND);
+                    }
                 }
                 break;
             case 1:

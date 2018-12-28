@@ -47,9 +47,12 @@ public class ItemAethereus extends Item {
                     EntityLivingBase possessed = handler.get().getPossessed();
                     if (possessed != null) {
                         handler.get().setPossessed(null, true);
-                        if (player != null) {
+                        if (player instanceof EntityPlayerMP) {
                             DissolutionInventoryHelper.transferEquipment(player, possessed);
                             player.inventory.dropAllItems();
+                            ((EntityPlayerMP)player).connection.setPlayerLocation(player.posX, player.posY + 1, player.posZ, player.rotationYaw, player.rotationPitch);
+                            player.motionY += 1f;
+                            player.velocityChanged = true;
                         }
                         return ItemStack.EMPTY;
                     } else {
