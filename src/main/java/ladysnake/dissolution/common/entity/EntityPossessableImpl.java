@@ -1,8 +1,6 @@
 package ladysnake.dissolution.common.entity;
 
 import com.google.common.base.Optional;
-import ladylib.reflection.TypedReflection;
-import ladylib.reflection.typed.TypedMethod0;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
@@ -11,7 +9,6 @@ import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.entity.ai.EntityAIInert;
 import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthAttribute;
-import ladysnake.dissolution.common.util.CollectionUtil;
 import ladysnake.dissolution.common.util.DelayedTaskRunner;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -28,7 +25,6 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SPacketCamera;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
@@ -42,9 +38,7 @@ import org.lwjgl.util.vector.Vector2f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -56,7 +50,6 @@ import java.util.UUID;
 public class EntityPossessableImpl extends EntityMob implements IPossessable {
     private static final DataParameter<Optional<UUID>> POSSESSING_ENTITY_ID =
             EntityDataManager.createKey(EntityPossessableImpl.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-    private static final TypedMethod0<PotionEffect, Integer> deincrementDuration = TypedReflection.findMethod(PotionEffect.class, "func_76454_e", int.class);
 
     private EntityAIInert aiDontDoShit = new EntityAIInert(false);
 
@@ -165,23 +158,6 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
                     possessing.motionZ += this.motionZ - this.prevMotionZ;
                     possessing.velocityChanged = true;
                 }
-                // Tick down potion effects from previous tick
-                prevPotionEffects.removeIf(p -> deincrementDuration.invoke(p) <= 0);
-                // Merge changes in potion effects from both entities
-                prevPotionEffects = CollectionUtil.mergeHistories(
-                        new HashSet<>(this.getActivePotionEffects()),
-                        new HashSet<>(possessing.getActivePotionEffects()),
-                        prevPotionEffects
-                );
-                // Resynchronize both entities
-                this.clearActivePotions();
-                possessing.clearActivePotions();
-                for (PotionEffect e : prevPotionEffects) {
-                    this.addPotionEffect(new PotionEffect(e));
-                    possessing.addPotionEffect(new PotionEffect(e));
-                }
-            } else {
-                prevPotionEffects.clear();
             }
         }
         super.onUpdate();
