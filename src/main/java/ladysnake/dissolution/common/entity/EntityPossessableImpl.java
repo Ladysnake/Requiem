@@ -58,7 +58,8 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     private double prevMotionX;
     private double prevMotionY;
     private double prevMotionZ;
-    private Set<PotionEffect> prevPotionEffects = new HashSet<>();
+    private Entity dummyRidingEntity;
+    private int ridingEntityQueries;
 
     public EntityPossessableImpl(World worldIn) {
         super(worldIn);
@@ -361,21 +362,36 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
 
     @Override
     public boolean isRiding() {
-        EntityPlayer possessing = getPossessingEntity();
-        if (possessing != null) {
-            return possessing.isRiding();
-        }
-        return super.isRiding();
+        return this.dummyRidingEntity != null || super.isRiding();
+    }
+
+    public void setDummyRidingEntity(@Nullable Entity dummyRidingEntity) {
+        this.dummyRidingEntity = dummyRidingEntity;
+        this.ridingEntityQueries = 2;
     }
 
     @Nullable
     @Override
     public Entity getRidingEntity() {
-        EntityPlayer possessing = getPossessingEntity();
-        if (possessing != null) {
-            return possessing.getRidingEntity();
+        // Stupid hack to render sat. Let's pray for no NullPointerException with modded renders
+        // I am really sorry for any coder reading this.
+        if (dummyRidingEntity != null) {
+            Entity ret = this.dummyRidingEntity;
+            if (--this.ridingEntityQueries <= 0) {
+                this.dummyRidingEntity = null;
+            }
+            return ret;
         }
         return super.getRidingEntity();
+    }
+
+    @Override
+    public boolean startRiding(Entity entityIn) {
+        EntityPlayer possessing = getPossessingEntity();
+        if (possessing != null) {
+            return possessing.startRiding(entityIn);
+        }
+        return super.startRiding(entityIn);
     }
 
     @Override

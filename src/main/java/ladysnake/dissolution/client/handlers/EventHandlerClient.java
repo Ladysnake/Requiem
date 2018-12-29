@@ -4,6 +4,7 @@ import com.jamieswhiteshirt.clothesline.hooks.api.GetMouseOverEvent;
 import ladylib.reflection.TypedReflection;
 import ladylib.reflection.typed.TypedSetter;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
+import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.api.corporeality.ISoulInteractable;
 import ladysnake.dissolution.api.corporeality.PlayerIncorporealEvent;
 import ladysnake.dissolution.client.particles.DissolutionParticleManager;
@@ -39,6 +40,7 @@ import net.minecraft.world.GameType;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
@@ -147,8 +149,18 @@ public class EventHandlerClient {
         }
     }
 
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public static void onRenderLiving(RenderLivingEvent.Pre event) {
+        if (event.getEntity() instanceof IPossessable) {
+            IPossessable possessable = (IPossessable) event.getEntity();
+            if (possessable.isBeingPossessed()) {
+                possessable.setDummyRidingEntity(possessable.getPossessingEntity().getRidingEntity());
+            }
+        }
+    }
+
     @SubscribeEvent
-    public static void onEntityViewRenderRenderFog(GetMouseOverEvent event) {
+    public static void onGetMouseOver(GetMouseOverEvent event) {
         // Prevents players from targeting souls
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.pointedEntity instanceof EntityPlayer) {
@@ -339,7 +351,7 @@ public class EventHandlerClient {
     @SubscribeEvent
     public static void onDrawBlockHighlight(DrawBlockHighlightEvent event) {
         if (!noServerInstall && event.getTarget().typeOfHit == RayTraceResult.Type.BLOCK) {
-            event.setCanceled(CapabilityIncorporealHandler.getHandler(event.getPlayer()).getCorporealityStatus().isIncorporeal() &&
+            event.setCanceled(CapabilityIncorporealHandler.getHandler(event.getPlayer()).isIncorporeal() &&
                     !(event.getPlayer().world.getBlockState(event.getTarget().getBlockPos()).getBlock() instanceof ISoulInteractable));
         }
     }
