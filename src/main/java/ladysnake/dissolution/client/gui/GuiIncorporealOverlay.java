@@ -1,43 +1,34 @@
 package ladysnake.dissolution.client.gui;
 
+import ladylib.reflection.TypedReflection;
+import ladylib.reflection.typed.TypedSetter;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
-import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.monster.*;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nonnull;
 import java.util.Random;
 
-import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.AIR;
-
 @SideOnly(Side.CLIENT)
-public class GuiIncorporealOverlay extends GuiIngame {
+public class GuiIncorporealOverlay extends GuiIngameForge {
 
-    private static final ResourceLocation WIDGETS_TEX_PATH = new ResourceLocation("textures/gui/widgets.png");
     private static final ResourceLocation ECTOPLASM_ICONS = new ResourceLocation(Ref.MOD_ID, "textures/gui/icons.png");
+    private static final TypedSetter<GuiIngameForge, RenderGameOverlayEvent> eventParent = TypedReflection.findSetter(GuiIngameForge.class, "eventParent", RenderGameOverlayEvent.class);
     private final Random rand = new Random();
 
     public GuiIncorporealOverlay(Minecraft mc) {
@@ -56,6 +47,7 @@ public class GuiIncorporealOverlay extends GuiIngame {
 
             if (this.mc.playerController.shouldDrawHUD()) {
                 EntityLivingBase possessed = pl.getPossessed();
+                eventParent.set(this, event);
                 if (possessed != null && possessed.getHealth() > 0) {
                     int textureRow = 0;
                     if (possessed instanceof EntityPigZombie) {
@@ -72,8 +64,13 @@ public class GuiIncorporealOverlay extends GuiIngame {
                     this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
                     this.drawCustomHealthBar(possessed, res, textureRow);
                     this.mc.getTextureManager().bindTexture(GuiIngameForge.ICONS);
-                    this.renderAir(event, res.getScaledWidth(), res.getScaledHeight(), possessed);
+                    this.renderArmor(res.getScaledWidth(), res.getScaledHeight());
+                    // We need to set the render view entity back to a player as renderAir and renderHotbar require it
+                    mc.setRenderViewEntity(this.mc.player);
+                    this.mc.player.setAir(possessed.getAir());
+                    this.renderAir(res.getScaledWidth(), res.getScaledHeight());
                     this.renderHotbar(res, event.getPartialTicks());
+                    mc.setRenderViewEntity(possessed);
                 }
             } else if (Minecraft.getMinecraft().player.isCreative() && pl.getPossessed() != null) {
                 this.renderHotbar(res, event.getPartialTicks());
@@ -87,31 +84,6 @@ public class GuiIncorporealOverlay extends GuiIngame {
             final IIncorporealHandler pl = CapabilityIncorporealHandler.getHandler(this.mc.player);
             event.setCanceled(pl.getCorporealityStatus().isIncorporeal() && pl.getPossessed() == null);
         }
-    }
-
-    protected void renderAir(RenderGameOverlayEvent parent, int width, int height, EntityLivingBase entity) {
-        if (MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Pre(parent, AIR))) return;
-        mc.profiler.startSection("air");
-        GlStateManager.enableBlend();
-        int left = width / 2 + 91;
-        int top = height - GuiIngameForge.right_height;
-
-        if (entity.isInsideOfMaterial(Material.WATER))
-        {
-            int air = entity.getAir();
-            int full = MathHelper.ceil((double)(air - 2) * 10.0D / 300.0D);
-            int partial = MathHelper.ceil((double)air * 10.0D / 300.0D) - full;
-
-            for (int i = 0; i < full + partial; ++i)
-            {
-                drawTexturedModalRect(left - i * 8 - 9, top, (i < full ? 16 : 25), 18, 9, 9);
-            }
-            GuiIngameForge.right_height += 10;
-        }
-
-        GlStateManager.disableBlend();
-        mc.profiler.endSection();
-        MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Post(parent, AIR));
     }
 
     private void drawCustomHealthBar(EntityLivingBase player, ScaledResolution scaledResolution, int textureRow) {
@@ -217,75 +189,6 @@ public class GuiIncorporealOverlay extends GuiIngame {
                 }
             }
         }
-    }
-
-    protected void renderHotbar(@Nonnull ScaledResolution sr, float partialTicks) {
-        // don't check that the render view entity is a player
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(WIDGETS_TEX_PATH);
-        EntityPlayer entityplayer = this.mc.player;
-        ItemStack itemstack = entityplayer.getHeldItemOffhand();
-        EnumHandSide enumhandside = entityplayer.getPrimaryHand().opposite();
-        int i = sr.getScaledWidth() / 2;
-        float f = this.zLevel;
-        int j = 182;
-        int k = 91;
-        this.zLevel = -90.0F;
-        this.drawTexturedModalRect(i - k, sr.getScaledHeight() - 22, 0, 0, j, 22);
-        this.drawTexturedModalRect(i - k - 1 + entityplayer.inventory.currentItem * 20, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
-
-        if (!itemstack.isEmpty()) {
-            if (enumhandside == EnumHandSide.LEFT) {
-                this.drawTexturedModalRect(i - 91 - 29, sr.getScaledHeight() - 23, 24, 22, 29, 24);
-            } else {
-                this.drawTexturedModalRect(i + 91, sr.getScaledHeight() - 23, 53, 22, 29, 24);
-            }
-        }
-
-        this.zLevel = f;
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        RenderHelper.enableGUIStandardItemLighting();
-
-        for (int l = 0; l < 9; ++l) {
-            int i1 = i - 90 + l * 20 + 2;
-            int j1 = sr.getScaledHeight() - 16 - 3;
-            this.renderHotbarItem(i1, j1, partialTicks, entityplayer, entityplayer.inventory.mainInventory.get(l));
-        }
-
-        if (!itemstack.isEmpty()) {
-            int l1 = sr.getScaledHeight() - 16 - 3;
-
-            if (enumhandside == EnumHandSide.LEFT) {
-                this.renderHotbarItem(i - 91 - 26, l1, partialTicks, entityplayer, itemstack);
-            } else {
-                this.renderHotbarItem(i + 91 + 10, l1, partialTicks, entityplayer, itemstack);
-            }
-        }
-
-        if (this.mc.gameSettings.attackIndicator == 2) {
-            float f1 = this.mc.player.getCooledAttackStrength(0.0F);
-
-            if (f1 < 1.0F) {
-                int i2 = sr.getScaledHeight() - 20;
-                int j2 = i + 91 + 6;
-
-                if (enumhandside == EnumHandSide.RIGHT) {
-                    j2 = i - 91 - 22;
-                }
-
-                this.mc.getTextureManager().bindTexture(Gui.ICONS);
-                int k1 = (int) (f1 * 19.0F);
-                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                this.drawTexturedModalRect(j2, i2, 0, 94, 18, 18);
-                this.drawTexturedModalRect(j2, i2 + 18 - k1, 18, 112 - k1, 18, k1);
-            }
-        }
-
-        RenderHelper.disableStandardItemLighting();
-        GlStateManager.disableRescaleNormal();
-        GlStateManager.disableBlend();
     }
 
 }

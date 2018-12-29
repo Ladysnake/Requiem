@@ -1,3 +1,11 @@
+##### Version 1.12.2-0.2.2 - BUILT
+- Now display armor bar during possession
+- Fixed a crash on becoming spirit with some mods altering player attributes
+- Fixed hitbox when possessing mobs bigger than the player
+- Fixed hand and fire overlay never appearing in first person during possession
+- Fixed absorption potions making possessed entities invincible
+- Fixed various riding issues with possessed entities
+
 ##### Version 1.12.2-0.2.1 - BUILT
 - Fixed players getting trapped inside the villager when curing a possessed zombie villager
 - Fixed eau de mort being useless for ending possession

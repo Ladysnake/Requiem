@@ -1,5 +1,6 @@
 package ladysnake.dissolution.api.corporeality;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
@@ -61,4 +62,6 @@ public interface IPossessable {
      * and that the entity should disappear in the next tick
      */
     void markForLogOut();
+
+    void setDummyRidingEntity(Entity riding);
 }

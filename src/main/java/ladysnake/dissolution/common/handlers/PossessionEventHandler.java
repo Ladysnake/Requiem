@@ -22,12 +22,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.PotionEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -204,6 +206,46 @@ public class PossessionEventHandler {
 
             PlayerSPMethodHolder.prevOnGround.set(self, self.onGround);
             PlayerSPMethodHolder.autoJumpEnabled.set(self, Minecraft.getMinecraft().gameSettings.autoJump);
+        }
+    }
+
+    private boolean messingWithPotions = false;
+
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public void onPotionAdded(PotionEvent.PotionAddedEvent event) {
+        Entity entity = event.getEntity();
+        if (entity != null && entity.world != null && !entity.world.isRemote && !messingWithPotions) {
+            messingWithPotions = true;
+            if (entity instanceof IPossessable) {
+                IPossessable possessable = (IPossessable) entity;
+                if (possessable.isBeingPossessed()) {
+                    possessable.getPossessingEntity().addPotionEffect(new PotionEffect(event.getPotionEffect()));
+                }
+            } else {
+                CapabilityIncorporealHandler.getHandler(entity)
+                        .map(IIncorporealHandler::getPossessed)
+                        .ifPresent(possessed -> ((EntityLivingBase) possessed).addPotionEffect(new PotionEffect(event.getPotionEffect())));
+            }
+            messingWithPotions = false;
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public void onPotionRemove(PotionEvent.PotionRemoveEvent event) {
+        Entity entity = event.getEntity();
+        if (entity != null && entity.world != null && !entity.world.isRemote && !messingWithPotions) {
+            messingWithPotions = true;
+            if (entity instanceof IPossessable) {
+                IPossessable possessable = (IPossessable) entity;
+                if (possessable.isBeingPossessed()) {
+                    possessable.getPossessingEntity().removePotionEffect(event.getPotion());
+                }
+            } else {
+                CapabilityIncorporealHandler.getHandler(entity)
+                        .map(IIncorporealHandler::getPossessed)
+                        .ifPresent(possessed -> ((EntityLivingBase) possessed).removePotionEffect(event.getPotion()));
+            }
+            messingWithPotions = false;
         }
     }
 
