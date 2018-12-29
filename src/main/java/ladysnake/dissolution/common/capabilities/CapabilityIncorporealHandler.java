@@ -22,6 +22,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketCamera;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -343,10 +344,13 @@ public class CapabilityIncorporealHandler {
                 if (possessed != null) {
                     float width = possessed.width;
                     float height = possessed.height;
-                    if (width < owner.width || height < owner.height) {
-                        // TODO set the size for bigger entities without making them slide
-                        entity$setSize.invoke(owner, width, height);
-                    }
+                    AxisAlignedBB aabb = owner.getEntityBoundingBox();
+                    double radius = (double)owner.width / 2.0D;
+                    entity$setSize.invoke(owner, width, height);
+                    // We need to set the bounding box ourselves otherwise the player will start sliding in Entity#resetPositionToBB
+                    // Fix taken from Resize Potion (https://github.com/CammiePone/Resize-Potion/blob/master/src/main/java/com/camellias/resizer/handlers/PotionHandler.java#L204)
+                    owner.setEntityBoundingBox(new AxisAlignedBB(owner.posX - radius, aabb.minY, owner.posZ - radius,
+                            owner.posX + radius, aabb.minY + (double)owner.height, owner.posZ + radius));
                 }
             } else {
                 lastFood = -1;
