@@ -1,6 +1,6 @@
-package ladysnake.dissolution.common.remnant;
+package ladysnake.dissolution.common.impl;
 
-import ladysnake.dissolution.api.remnant.RemnantCapability;
+import ladysnake.dissolution.api.remnant.RemnantHandler;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -9,13 +9,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ActionResult;
 
-public class DefaultRemnantHandler implements RemnantCapability {
+public class DefaultRemnantHandler implements RemnantHandler {
     public static final String INCORPOREAL_TAG = "incorporeal";
     public static final TrackedData<Boolean> PLAYER_INCORPOREAL = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     public static void init() {
         PlayerInteractionEvent.ATTACK_BLOCK.register((player, world, hand, blockPos, facing) -> {
-            if (!player.isCreative() && RemnantCapability.get(player).filter(RemnantCapability::isIncorporeal).isPresent()) {
+            if (!player.isCreative() && RemnantHandler.get(player).filter(RemnantHandler::isIncorporeal).isPresent()) {
                 return ActionResult.FAILURE;
             } else {
                 return ActionResult.PASS;

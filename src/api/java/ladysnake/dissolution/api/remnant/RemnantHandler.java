@@ -6,16 +6,16 @@ import net.minecraft.nbt.CompoundTag;
 
 import java.util.Optional;
 
-public interface RemnantCapability {
+public interface RemnantHandler {
 
     /**
-     * Helper method to get the remnant capability of an entity if it exists
-     * @param entity a possibly remnant entity
-     * @return the remnant capability of that entity
+     * Helper method to get the impl capability of an entity if it exists
+     * @param entity a possibly impl entity
+     * @return the impl capability of that entity
      */
-    static Optional<RemnantCapability> get(Entity entity) {
+    static Optional<RemnantHandler> get(Entity entity) {
         if (entity instanceof DissolutionPlayer) {
-            return Optional.ofNullable(((DissolutionPlayer)entity).getRemnantCapability());
+            return Optional.ofNullable(((DissolutionPlayer)entity).getRemnantHandler());
         }
         return Optional.empty();
     }

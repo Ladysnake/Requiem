@@ -2,7 +2,7 @@ package ladysnake.dissolution.mixin.client.render.entity;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.remnant.RemnantCapability;
+import ladysnake.dissolution.api.remnant.RemnantHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
@@ -25,10 +25,10 @@ public abstract class PlayerEntityRendererMixin {
             method = "render"
     )
     public void preRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
-        RemnantCapability renderedPlayerRemnantHandler = ((DissolutionPlayer) renderedPlayer).getRemnantCapability();
+        RemnantHandler renderedPlayerRemnantHandler = ((DissolutionPlayer) renderedPlayer).getRemnantHandler();
         if (renderedPlayerRemnantHandler != null && renderedPlayerRemnantHandler.isIncorporeal()) {
             Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
-            boolean isObserverRemnant = cameraEntity instanceof DissolutionPlayer && ((DissolutionPlayer) cameraEntity).getRemnantCapability() != null;
+            boolean isObserverRemnant = cameraEntity instanceof DissolutionPlayer && ((DissolutionPlayer) cameraEntity).getRemnantHandler() != null;
             float alpha = isObserverRemnant ? 0.8f : 0.05f;
             GlStateManager.color4f(0.9f, 0.9f, 1.0f, alpha); // Tints souls blue and transparent
         }

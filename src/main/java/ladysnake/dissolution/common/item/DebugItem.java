@@ -2,8 +2,8 @@ package ladysnake.dissolution.common.item;
 
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.remnant.RemnantCapability;
-import ladysnake.dissolution.common.remnant.DefaultRemnantHandler;
+import ladysnake.dissolution.api.remnant.RemnantHandler;
+import ladysnake.dissolution.common.impl.DefaultRemnantHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,10 +19,10 @@ public class DebugItem extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        RemnantCapability cap = ((DissolutionPlayer)player).getRemnantCapability();
+        RemnantHandler cap = ((DissolutionPlayer)player).getRemnantHandler();
         if (cap == null) {
             Dissolution.LOGGER.info("Turned {} into a remnant", player);
-            ((DissolutionPlayer)player).setRemnantCapability(cap = new DefaultRemnantHandler(player));
+            ((DissolutionPlayer)player).setRemnantHandler(cap = new DefaultRemnantHandler(player));
         }
         Dissolution.LOGGER.info("Player is {}", cap.isIncorporeal() ? "incorporeal" : "corporeal");
         cap.setIncorporeal(!cap.isIncorporeal());

@@ -2,7 +2,8 @@ package ladysnake.dissolution;
 
 import ladysnake.dissolution.common.block.DissolutionBlocks;
 import ladysnake.dissolution.common.item.DissolutionItems;
-import ladysnake.dissolution.common.remnant.DefaultRemnantHandler;
+import ladysnake.dissolution.common.network.DissolutionNetworking;
+import ladysnake.dissolution.common.impl.DefaultRemnantHandler;
 import net.fabricmc.api.ModInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

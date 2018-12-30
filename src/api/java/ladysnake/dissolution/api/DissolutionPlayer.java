@@ -1,12 +1,12 @@
 package ladysnake.dissolution.api;
 
-import ladysnake.dissolution.api.remnant.RemnantCapability;
+import ladysnake.dissolution.api.remnant.RemnantHandler;
 import org.jetbrains.annotations.Nullable;
 
 public interface DissolutionPlayer {
 
     @Nullable
-    RemnantCapability getRemnantCapability();
+    RemnantHandler getRemnantHandler();
 
-    void setRemnantCapability(RemnantCapability dissolution_remnantCapability);
+    void setRemnantHandler(RemnantHandler handler);
 }
