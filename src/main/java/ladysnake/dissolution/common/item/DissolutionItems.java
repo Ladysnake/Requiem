@@ -1,10 +1,8 @@
 package ladysnake.dissolution.common.item;
 
-import ladysnake.dissolution.common.item.DebugItem;
+import ladysnake.dissolution.Dissolution;
 import net.minecraft.item.Item;
 import net.minecraft.util.registry.Registry;
-
-import static ladysnake.dissolution.Dissolution.MODID;
 
 public class DissolutionItems {
     public static Item DEBUG_ITEM;
@@ -14,7 +12,7 @@ public class DissolutionItems {
     }
 
     public static Item registerItem(Item item, String name) {
-        Registry.register(Registry.ITEM, MODID + ":" + name, item);
+        Registry.register(Registry.ITEM, Dissolution.id(name), item);
         return item;
     }
 }
