@@ -3,9 +3,9 @@
   "package": "ladysnake.dissolution.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "PlayerEntityMixin",
-    "ServerPlayerEntityMixin",
-    "PlayerManagerMixin"
+    "entity.player.PlayerEntityMixin",
+    "server.network.ServerPlayerEntityMixin",
+    "server.PlayerManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

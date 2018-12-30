@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "",
+  "package": "ladysnake.dissolution.mixin.client",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
   ],

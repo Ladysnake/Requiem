@@ -1,4 +1,4 @@
-package ladysnake.dissolution.mixin;
+package ladysnake.dissolution.mixin.server.network;
 
 import ladysnake.dissolution.api.DissolutionPlayer;
 import net.minecraft.entity.Entity;
@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
-public class ServerPlayerEntityMixin {
+public abstract class ServerPlayerEntityMixin {
 
     @Inject(at = @At("HEAD"), method = "onStartedTracking")
     public void onStartedTracking(Entity tracked, CallbackInfo info) {

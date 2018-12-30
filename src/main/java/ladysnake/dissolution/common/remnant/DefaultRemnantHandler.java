@@ -1,4 +1,4 @@
-package ladysnake.dissolution.remnant;
+package ladysnake.dissolution.common.remnant;
 
 import ladysnake.dissolution.api.remnant.RemnantCapability;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;

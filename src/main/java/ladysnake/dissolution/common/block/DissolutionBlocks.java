@@ -1,5 +1,6 @@
-package ladysnake.dissolution.init;
+package ladysnake.dissolution.common.block;
 
+import ladysnake.dissolution.common.item.DissolutionItems;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;

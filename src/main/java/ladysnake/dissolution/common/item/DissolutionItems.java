@@ -1,6 +1,6 @@
-package ladysnake.dissolution.init;
+package ladysnake.dissolution.common.item;
 
-import ladysnake.dissolution.item.DebugItem;
+import ladysnake.dissolution.common.item.DebugItem;
 import net.minecraft.item.Item;
 import net.minecraft.util.registry.Registry;
 

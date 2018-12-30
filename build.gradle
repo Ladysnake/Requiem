@@ -24,7 +24,7 @@ minecraft {
 
 dependencies {
 	minecraft "com.mojang:minecraft:18w50a"
-	mappings "net.fabricmc:yarn:18w50a.72"
+	mappings "net.fabricmc:yarn:18w50a.83"
 	modCompile "net.fabricmc:fabric-loader:0.3.0.75"
 	compile "org.jetbrains:annotations:15.0"
 

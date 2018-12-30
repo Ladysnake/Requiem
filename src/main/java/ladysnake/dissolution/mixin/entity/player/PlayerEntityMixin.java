@@ -1,8 +1,8 @@
-package ladysnake.dissolution.mixin;
+package ladysnake.dissolution.mixin.entity.player;
 
 import ladysnake.dissolution.api.DissolutionPlayer;
 import ladysnake.dissolution.api.remnant.RemnantCapability;
-import ladysnake.dissolution.remnant.DefaultRemnantHandler;
+import ladysnake.dissolution.common.remnant.DefaultRemnantHandler;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.TrackedData;
