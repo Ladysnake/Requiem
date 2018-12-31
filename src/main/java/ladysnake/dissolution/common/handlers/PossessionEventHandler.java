@@ -165,9 +165,9 @@ public class PossessionEventHandler {
 
     @SubscribeEvent
     public void onPlayerUpdate(TickEvent.PlayerTickEvent event) {
-        if (event.side.isClient()) {
+        EntityPlayerSP self = Minecraft.getMinecraft().player;
+        if (event.player == self) {
             // Manually send position information
-            EntityPlayerSP self = (EntityPlayerSP) event.player;
             AxisAlignedBB axisalignedbb = self.getEntityBoundingBox();
             double d0 = self.posX - PlayerSPMethodHolder.lastReportedPosX.get(self);
             double d1 = axisalignedbb.minY - PlayerSPMethodHolder.lastReportedPosY.get(self);

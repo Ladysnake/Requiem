@@ -1,3 +1,6 @@
+##### Version 1.12.2-0.2.3 - BUILT
+- Fixed a client crash in multiplayer
+
 ##### Version 1.12.2-0.2.2 - BUILT
 - Now display armor bar during possession
 - Fixed a crash on becoming spirit with some mods altering player attributes
