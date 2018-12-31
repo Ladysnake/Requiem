@@ -1,3 +1,6 @@
+##### Version 1.12.2-0.2.4 - BUILT
+- Fixed clients being unable to connect to multiplayer servers
+
 ##### Version 1.12.2-0.2.3 - BUILT
 - Fixed a client crash in multiplayer
 

@@ -9,7 +9,6 @@ import ladylib.reflection.typed.TypedSetter;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
-import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import ladysnake.dissolution.common.util.DelayedTaskRunner;
 import net.minecraft.client.Minecraft;
@@ -37,7 +36,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.Optional;
 
-@EnhancedBusSubscriber(Ref.MOD_ID)
+import static ladysnake.dissolution.common.Ref.MOD_ID;
+import static net.minecraftforge.fml.relauncher.Side.CLIENT;
+
+@EnhancedBusSubscriber(MOD_ID)
 public class PossessionEventHandler {
     private static final TypedMethod1<AbstractSkeleton, Float, EntityArrow> abstractSkeleton$getArrow =
             TypedReflection.findMethod(AbstractSkeleton.class, "func_190726_a", EntityArrow.class, float.class);
@@ -163,52 +165,6 @@ public class PossessionEventHandler {
         });
     }
 
-    @SubscribeEvent
-    public void onPlayerUpdate(TickEvent.PlayerTickEvent event) {
-        EntityPlayerSP self = Minecraft.getMinecraft().player;
-        if (event.player == self) {
-            // Manually send position information
-            AxisAlignedBB axisalignedbb = self.getEntityBoundingBox();
-            double d0 = self.posX - PlayerSPMethodHolder.lastReportedPosX.get(self);
-            double d1 = axisalignedbb.minY - PlayerSPMethodHolder.lastReportedPosY.get(self);
-            double d2 = self.posZ - PlayerSPMethodHolder.lastReportedPosZ.get(self);
-            double d3 = (double) (self.rotationYaw - PlayerSPMethodHolder.lastReportedYaw.get(self));
-            double d4 = (double) (self.rotationPitch - PlayerSPMethodHolder.lastReportedPitch.get(self));
-            // ++positionUpdateTicks
-            PlayerSPMethodHolder.positionUpdateTicks.set(self, PlayerSPMethodHolder.positionUpdateTicks.get(self) + 1);
-            boolean flag2 = d0 * d0 + d1 * d1 + d2 * d2 > 9.0E-4D || PlayerSPMethodHolder.positionUpdateTicks.get(self) >= 20;
-            boolean flag3 = d3 != 0.0D || d4 != 0.0D;
-
-            if (self.isRiding()) {
-                self.connection.sendPacket(new CPacketPlayer.PositionRotation(self.motionX, -999.0D, self.motionZ, self.rotationYaw, self.rotationPitch, self.onGround));
-                flag2 = false;
-            } else if (flag2 && flag3) {
-                self.connection.sendPacket(new CPacketPlayer.PositionRotation(self.posX, axisalignedbb.minY, self.posZ, self.rotationYaw, self.rotationPitch, self.onGround));
-            } else if (flag2) {
-                self.connection.sendPacket(new CPacketPlayer.Position(self.posX, axisalignedbb.minY, self.posZ, self.onGround));
-            } else if (flag3) {
-                self.connection.sendPacket(new CPacketPlayer.Rotation(self.rotationYaw, self.rotationPitch, self.onGround));
-            } else if (PlayerSPMethodHolder.prevOnGround.get(self) != self.onGround) {
-                self.connection.sendPacket(new CPacketPlayer(self.onGround));
-            }
-
-            if (flag2) {
-                PlayerSPMethodHolder.lastReportedPosX.set(self, self.posX);
-                PlayerSPMethodHolder.lastReportedPosY.set(self, self.posY);
-                PlayerSPMethodHolder.lastReportedPosZ.set(self, self.posZ);
-                PlayerSPMethodHolder.positionUpdateTicks.set(self, 0);
-            }
-
-            if (flag3) {
-                PlayerSPMethodHolder.lastReportedYaw.set(self, self.rotationYaw);
-                PlayerSPMethodHolder.lastReportedPitch.set(self, self.rotationPitch);
-            }
-
-            PlayerSPMethodHolder.prevOnGround.set(self, self.onGround);
-            PlayerSPMethodHolder.autoJumpEnabled.set(self, Minecraft.getMinecraft().gameSettings.autoJump);
-        }
-    }
-
     private boolean messingWithPotions = false;
 
     @SubscribeEvent(priority = EventPriority.LOW)
@@ -249,7 +205,8 @@ public class PossessionEventHandler {
         }
     }
 
-    private static class PlayerSPMethodHolder {
+    @EnhancedBusSubscriber(value = MOD_ID, side = CLIENT)
+    public static class Client {
 
         private static final RWTypedField<EntityPlayerSP, Double> lastReportedPosX =
                 TypedReflection.createFieldRef(EntityPlayerSP.class, "field_175172_bI", double.class);
@@ -267,5 +224,52 @@ public class PossessionEventHandler {
                 TypedReflection.createFieldRef(EntityPlayerSP.class, "field_184841_cd", boolean.class);
         private static final TypedSetter<EntityPlayerSP, Boolean> autoJumpEnabled =
                 TypedReflection.findSetter(EntityPlayerSP.class, "field_189811_cr", boolean.class);
+
+        @SubscribeEvent
+        public void onPlayerUpdate(TickEvent.PlayerTickEvent event) {
+            EntityPlayerSP self = Minecraft.getMinecraft().player;
+            if (event.player == self) {
+                // Manually send position information
+                AxisAlignedBB axisalignedbb = self.getEntityBoundingBox();
+                double d0 = self.posX - lastReportedPosX.get(self);
+                double d1 = axisalignedbb.minY - lastReportedPosY.get(self);
+                double d2 = self.posZ - lastReportedPosZ.get(self);
+                double d3 = (double) (self.rotationYaw - lastReportedYaw.get(self));
+                double d4 = (double) (self.rotationPitch - lastReportedPitch.get(self));
+                // ++positionUpdateTicks
+                positionUpdateTicks.set(self, positionUpdateTicks.get(self) + 1);
+                boolean flag2 = d0 * d0 + d1 * d1 + d2 * d2 > 9.0E-4D || positionUpdateTicks.get(self) >= 20;
+                boolean flag3 = d3 != 0.0D || d4 != 0.0D;
+
+                if (self.isRiding()) {
+                    self.connection.sendPacket(new CPacketPlayer.PositionRotation(self.motionX, -999.0D, self.motionZ, self.rotationYaw, self.rotationPitch, self.onGround));
+                    flag2 = false;
+                } else if (flag2 && flag3) {
+                    self.connection.sendPacket(new CPacketPlayer.PositionRotation(self.posX, axisalignedbb.minY, self.posZ, self.rotationYaw, self.rotationPitch, self.onGround));
+                } else if (flag2) {
+                    self.connection.sendPacket(new CPacketPlayer.Position(self.posX, axisalignedbb.minY, self.posZ, self.onGround));
+                } else if (flag3) {
+                    self.connection.sendPacket(new CPacketPlayer.Rotation(self.rotationYaw, self.rotationPitch, self.onGround));
+                } else if (prevOnGround.get(self) != self.onGround) {
+                    self.connection.sendPacket(new CPacketPlayer(self.onGround));
+                }
+
+                if (flag2) {
+                    lastReportedPosX.set(self, self.posX);
+                    lastReportedPosY.set(self, self.posY);
+                    lastReportedPosZ.set(self, self.posZ);
+                    positionUpdateTicks.set(self, 0);
+                }
+
+                if (flag3) {
+                    lastReportedYaw.set(self, self.rotationYaw);
+                    lastReportedPitch.set(self, self.rotationPitch);
+                }
+
+                prevOnGround.set(self, self.onGround);
+                autoJumpEnabled.set(self, Minecraft.getMinecraft().gameSettings.autoJump);
+            }
+        }
+
     }
 }
