@@ -20,12 +20,14 @@ public class DebugItem extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         RemnantHandler cap = ((DissolutionPlayer)player).getRemnantHandler();
-        if (cap == null) {
-            Dissolution.LOGGER.info("Turned {} into a remnant", player);
-            ((DissolutionPlayer)player).setRemnantHandler(cap = new DefaultRemnantHandler(player));
+        Dissolution.LOGGER.info("Player was {}", cap != null && cap.isIncorporeal() ? "incorporeal" : "corporeal");
+        if (!world.isClient) {
+            if (cap == null) {
+                Dissolution.LOGGER.info("Turned {} into a remnant", player);
+                ((DissolutionPlayer)player).setRemnantHandler(cap = new DefaultRemnantHandler(player));
+            }
+            cap.setIncorporeal(!cap.isIncorporeal());
         }
-        Dissolution.LOGGER.info("Player is {}", cap.isIncorporeal() ? "incorporeal" : "corporeal");
-        cap.setIncorporeal(!cap.isIncorporeal());
         return new TypedActionResult<>(ActionResult.SUCCESS, player.getStackInHand(hand));
     }
 }

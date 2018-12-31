@@ -1,17 +1,17 @@
 package ladysnake.dissolution.common.impl;
 
+import ladysnake.dissolution.api.DissolutionPlayer;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
+
+import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 
 public class DefaultRemnantHandler implements RemnantHandler {
     public static final String INCORPOREAL_TAG = "incorporeal";
-    public static final TrackedData<Boolean> PLAYER_INCORPOREAL = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     public static void init() {
         PlayerInteractionEvent.ATTACK_BLOCK.register((player, world, hand, blockPos, facing) -> {
@@ -23,7 +23,17 @@ public class DefaultRemnantHandler implements RemnantHandler {
         });
     }
 
+    public static RemnantHandler getOrMakeRemnant(PlayerEntity player) {
+        RemnantHandler handler = ((DissolutionPlayer)player).getRemnantHandler();
+        if (handler == null) {
+            handler = new DefaultRemnantHandler(player);
+            ((DissolutionPlayer)player).setRemnantHandler(handler);
+        }
+        return handler;
+    }
+
     protected PlayerEntity owner;
+    protected boolean incorporeal;
     protected boolean wasAllowedFlight;
 
     public DefaultRemnantHandler(PlayerEntity owner) {
@@ -32,17 +42,22 @@ public class DefaultRemnantHandler implements RemnantHandler {
 
     @Override
     public boolean isIncorporeal() {
-        return this.owner.getDataTracker().get(PLAYER_INCORPOREAL);
+        return this.incorporeal;
     }
 
     @Override
     public void setIncorporeal(boolean incorporeal) {
-        this.owner.getDataTracker().set(PLAYER_INCORPOREAL, incorporeal);
+        this.incorporeal = incorporeal;
         if (incorporeal) {
             this.wasAllowedFlight = this.owner.abilities.allowFlying;
             this.owner.abilities.allowFlying = true;
         } else {
             this.owner.abilities.allowFlying = this.wasAllowedFlight;
+        }
+        if (!this.owner.world.isClient) {
+            // Synchronizes with all players tracking the owner
+            sendTo((ServerPlayerEntity) this.owner, createCorporealityPacket(this.owner));
+            sendToAllTracking(this.owner, createCorporealityPacket(this.owner));
         }
     }
 

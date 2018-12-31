@@ -8,10 +8,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static ladysnake.dissolution.common.network.DissolutionNetworking.createCorporealityPacket;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.sendTo;
+
 @Mixin(PlayerManager.class)
 public abstract class PlayerManagerMixin {
     @Inject(at = @At("TAIL"), method = "onPlayerConnect")
     public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity createdPlayer, CallbackInfo info) {
-        // TODO send a packet to synchronize remnant data
+        sendTo(createdPlayer, createCorporealityPacket(createdPlayer));
     }
 }

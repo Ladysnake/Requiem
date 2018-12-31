@@ -9,4 +9,8 @@ public interface DissolutionPlayer {
     RemnantHandler getRemnantHandler();
 
     void setRemnantHandler(RemnantHandler handler);
+
+    default boolean isRemnant() {
+        return this.getRemnantHandler() != null;
+    }
 }

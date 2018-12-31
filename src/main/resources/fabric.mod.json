@@ -3,7 +3,10 @@
   "name": "Dissolution",
   "version": "1.0.0",
   "side": "universal",
-  "initializer": "ladysnake.dissolution.Dissolution",
+  "initializers": [
+    "ladysnake.dissolution.Dissolution",
+    "ladysnake.dissolution.client.DissolutionClient"
+  ],
   "mixins": {
     "client": "mixins.dissolution.client.json",
     "common": "mixins.dissolution.common.json"

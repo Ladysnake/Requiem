@@ -5,9 +5,9 @@ import ladysnake.dissolution.api.remnant.RemnantHandler;
 import ladysnake.dissolution.common.impl.DefaultRemnantHandler;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,10 +15,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
+
 @Mixin(value = PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity implements DissolutionPlayer {
     private static final String TAG_REMNANT_DATA = "dissolution:remnant_data";
-    private static final TrackedData<Boolean> DISSOLUTION_INCORPOREAL = DefaultRemnantHandler.PLAYER_INCORPOREAL;
 
     private @Nullable RemnantHandler remnantHandler;
 
@@ -34,11 +35,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
     @Override
     public void setRemnantHandler(@Nullable RemnantHandler handler) {
         this.remnantHandler = handler;
-    }
-
-    @Inject(at = @At("TAIL"), method = "initDataTracker")
-    protected void initDataTracker(CallbackInfo info) {
-        ((PlayerEntity)(Object)this).getDataTracker().startTracking(DISSOLUTION_INCORPOREAL, false);
+        if (!this.world.isClient) {
+            ServerPlayerEntity player = (ServerPlayerEntity)(Object)this;
+            sendTo(player, createCorporealityPacket(player));
+            sendToAllTracking(player, createCorporealityPacket(player));
+        }
     }
 
     @Inject(at = @At("TAIL"), method = "writeCustomDataToTag")
