@@ -71,3 +71,4 @@ lingering_potion.effect.dissolution.obnoxious=Витающее Протвное 
 potion.effect.dissolution.obnoxious=Противное Зелье
 splash_potion.effect.dissolution.obnoxious=Взрывное Протвное Зелье
 commands.dissolution.corporeality_mode.set.invalid=%s is not a valid soul state
+dissolution.message.peaceful_despawn=You feel your body fading away as the world starts rejecting any hostility

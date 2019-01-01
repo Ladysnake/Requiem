@@ -71,3 +71,4 @@ lingering_potion.effect.dissolution.obnoxious=Potion odieuse persistante
 potion.effect.dissolution.obnoxious=Potion odieuse
 splash_potion.effect.dissolution.obnoxious=Potion odieuse jetable
 commands.dissolution.corporeality_mode.set.invalid=%s is not a valid soul state
+dissolution.message.peaceful_despawn=Vous sentez votre corps disparaître tandis que le Monde rejette toute hostilité
