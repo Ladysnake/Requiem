@@ -3,7 +3,8 @@
   "package": "ladysnake.dissolution.mixin.client",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "render.entity.PlayerEntityRendererMixin"
+    "render.entity.PlayerEntityRendererMixin",
+    "render.gl.ShaderEffectMixin"
   ],
   "injectors": {
     "defaultRequire": 1
