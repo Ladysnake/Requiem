@@ -1,3 +1,10 @@
+##### Version 1.12.2-0.2.5 - BUILT
+- Added a little message for when the world switched to peaceful while possessing a mob
+
+Mod compatibility:
+- The possessed entity now appears in the inventories of Baubles and Aether Legacy
+- Fixed an incompatibility with Potion Core causing players to get forcefully logged out when left clicking during possession
+
 ##### Version 1.12.2-0.2.4 - BUILT
 - Fixed clients being unable to connect to multiplayer servers
 
