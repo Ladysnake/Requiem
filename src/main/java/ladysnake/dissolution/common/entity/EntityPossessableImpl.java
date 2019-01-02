@@ -28,10 +28,12 @@ import net.minecraft.network.play.server.SPacketCamera;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.ITeleporter;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.relauncher.Side;
@@ -162,7 +164,8 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
                     possessing.velocityChanged = true;
                 }
                 if (this.world.getDifficulty() == EnumDifficulty.PEACEFUL) {
-                    possessing.sendMessage(new TextComponentTranslation("dissolution.message.peaceful_despawn"));
+                    possessing.sendStatusMessage(new TextComponentTranslation("dissolution.message.peaceful_despawn"), true);
+                    ((WorldServer)world).spawnParticle((EntityPlayerMP)possessing, EnumParticleTypes.SMOKE_NORMAL, false, posX, posY, posZ, 30, 0, 0.5,0, 0.5);
                 }
             }
         }
