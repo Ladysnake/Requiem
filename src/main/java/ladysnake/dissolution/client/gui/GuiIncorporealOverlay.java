@@ -115,7 +115,12 @@ public class GuiIncorporealOverlay extends GuiIngameForge {
 
         IAttributeInstance attrMaxHealth = player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
         float healthMax = (float) attrMaxHealth.getAttributeValue();
-        float absorb = MathHelper.ceil(player.getAbsorptionAmount());
+        int absorb = MathHelper.ceil(mc.player.getAbsorptionAmount());
+
+        if (healthMax > 100) {
+            drawShortenedCustomHealthBar(health, absorb, width, height, textureRow);
+            return;
+        }
 
         int healthRows = MathHelper.ceil((healthMax + absorb) / 2.0F / 10.0F);
         int rowHeight = Math.max(10 - (healthRows - 2), 3);
@@ -185,6 +190,23 @@ public class GuiIncorporealOverlay extends GuiIngameForge {
                 }
             }
         }
+    }
+
+    private void drawShortenedCustomHealthBar(int health, int absorb, int width, int height, int textureRow) {
+        int left = width / 2 - 91;
+        int top = height - GuiIngameForge.left_height;
+        GuiIngameForge.left_height += 11;
+        mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
+        drawTexturedModalRect(left, top, 0, textureRow * 9, 9, 9);
+        drawTexturedModalRect(left, top, 36, textureRow * 9, 9, 9);
+        left = mc.fontRenderer.drawString("x" + health / 2, left + 9, top, 0xFFFFFF, true);
+        if (absorb > 0) {
+            mc.getTextureManager().bindTexture(ICONS);
+            drawTexturedModalRect(left + 11, top, 16, 0, 9, 9);
+            drawTexturedModalRect(left + 11, top, 16 + 144, 0, 9, 9);
+            mc.fontRenderer.drawString("x" + absorb / 2, left + 11 + 9, top, 0xFFFFFF, true);
+        }
+
     }
 
 }
