@@ -21,7 +21,7 @@ public class HumanFleshEventHandler {
     @SubscribeEvent
     public static void onLivingEntityUseItem(LivingEntityUseItemEvent.Finish event) {
         World world = event.getEntity().world;
-        if (world.isRemote || world.getMinecraftServer().isHardcore()) {
+        if (world.isRemote) {
             return;
         }
         if (OreDictHelper.doesItemMatch(event.getItem(), OreDictHelper.HUMAN_FLESH_RAW) || event.getItem().getItem() instanceof ItemHumanFlesh || event.getItem().getItem() == Items.GOLDEN_APPLE) {
