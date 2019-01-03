@@ -331,6 +331,8 @@ public class PlayerRespawnHandler {
         entityplayermp.setHealth(entityplayermp.getHealth());
         net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerRespawnEvent(entityplayermp, false);
         player.connection.player = entityplayermp;
+        // Try to fix the "all entities disappear" bug
+        player.getServerWorld().getEntityTracker().updateVisibility(entityplayermp);
         PacketHandler.NET.sendTo(new IncorporealMessage(entityplayermp.getEntityId(), true, SoulStates.SOUL), entityplayermp);
         PacketHandler.NET.sendTo(new FlashTransitionMessage(), entityplayermp);
     }
