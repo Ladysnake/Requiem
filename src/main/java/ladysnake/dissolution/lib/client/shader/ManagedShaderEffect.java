@@ -2,11 +2,11 @@ package ladysnake.dissolution.lib.client.shader;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.dissolution.Dissolution;
-import net.minecraft.class_279;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.gl.GlProgram;
 import net.minecraft.client.gl.PostProcessShader;
+import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.texture.Texture;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.resource.ResourceManager;
@@ -65,7 +65,7 @@ public final class ManagedShaderEffect {
 
     private final Identifier location;
     private final Consumer<ManagedShaderEffect> uniformInitBlock;
-    private class_279 shaderGroup;
+    private ShaderEffect shaderGroup;
     private boolean errored;
 
     private ManagedShaderEffect(Identifier location, Consumer<ManagedShaderEffect> uniformInitBlock) {
@@ -74,7 +74,7 @@ public final class ManagedShaderEffect {
     }
 
     /**
-     * Returns this shader's {@link class_279}, creating and initializing it if it doesn't exist.
+     * Returns this shader's {@link ShaderEffect}, creating and initializing it if it doesn't exist.
      * <p>
      *     This method will return <code>null</code> if an error occurs during initialization.
      * <p>
@@ -84,7 +84,7 @@ public final class ManagedShaderEffect {
      */
     @Nullable
     @API(status = MAINTAINED, since = "2.6.2")
-    public class_279 getShaderEffect() {
+    public ShaderEffect getShaderEffect() {
         if (!this.isInitialized() && !this.errored) {
             try {
                 initialize();
@@ -112,8 +112,8 @@ public final class ManagedShaderEffect {
     public void initialize() throws IOException {
         this.dispose(false);
         MinecraftClient mc = MinecraftClient.getInstance();
-        this.shaderGroup = new class_279(mc.getTextureManager(), mc.getResourceManager(), mc.getFramebuffer(), this.location);
-        this.shaderGroup.method_1259(mc.window.getWindowWidth(), mc.window.getWindowHeight());
+        this.shaderGroup = new ShaderEffect(mc.getTextureManager(), mc.getResourceManager(), mc.getFramebuffer(), this.location);
+        this.shaderGroup.setupDimensions(mc.window.getWindowWidth(), mc.window.getWindowHeight());
         this.uniformInitBlock.accept(this);
     }
 
@@ -186,11 +186,11 @@ public final class ManagedShaderEffect {
      */
     @API(status = STABLE, since = "2.6.2")
     public void render(float partialTicks) {
-        class_279 sg = this.getShaderEffect();
+        ShaderEffect sg = this.getShaderEffect();
         if (sg != null) {
             GlStateManager.matrixMode(GL11.GL_TEXTURE);
             GlStateManager.loadIdentity();
-            sg.method_1258(partialTicks);
+            sg.render(partialTicks);
             MinecraftClient.getInstance().getFramebuffer().beginWrite(true);
             GlStateManager.disableBlend();
             GlStateManager.enableAlphaTest();
@@ -425,7 +425,7 @@ public final class ManagedShaderEffect {
                 if (windowWidth != oldDisplayWidth || oldDisplayHeight != windowHeight) {
                     for (ManagedShaderEffect ss : managedShaderEffects) {
                         if (ss.isInitialized()) {
-                            ss.shaderGroup.method_1259(windowWidth, windowHeight);
+                            ss.shaderGroup.setupDimensions(windowWidth, windowHeight);
                             ss.uniformInitBlock.accept(ss);
                         }
                     }
