@@ -87,8 +87,11 @@ public class PossessableEntityFactory {
                 }
                 corpseAttribute.setBaseValue(attribute.getBaseValue());
                 for (AttributeModifier modifier : attribute.getModifiers()) {
-                    corpseAttribute.removeModifier(modifier.getID());
-                    corpseAttribute.applyModifier(modifier);
+                    // Special case Epic Siege Mod as its modifiers will get reapplied afterwards.
+                    if (!modifier.getName().startsWith("ESM_TWEAK")) {
+                        corpseAttribute.removeModifier(modifier.getID());
+                        corpseAttribute.applyModifier(modifier);
+                    }
                 }
             }
             for (PotionEffect potionEffect : deadGuy.getActivePotionEffects()) {

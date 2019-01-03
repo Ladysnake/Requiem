@@ -12,7 +12,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.monster.*;
-import net.minecraft.init.MobEffects;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.GuiIngameForge;
@@ -116,7 +115,12 @@ public class GuiIncorporealOverlay extends GuiIngameForge {
 
         IAttributeInstance attrMaxHealth = player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
         float healthMax = (float) attrMaxHealth.getAttributeValue();
-        float absorb = MathHelper.ceil(player.getAbsorptionAmount());
+        int absorb = MathHelper.ceil(mc.player.getAbsorptionAmount());
+
+        if (healthMax > 100) {
+            drawShortenedCustomHealthBar(health, absorb, width, height, textureRow);
+            return;
+        }
 
         int healthRows = MathHelper.ceil((healthMax + absorb) / 2.0F / 10.0F);
         int rowHeight = Math.max(10 - (healthRows - 2), 3);
@@ -130,23 +134,17 @@ public class GuiIncorporealOverlay extends GuiIngameForge {
             GuiIngameForge.left_height += 10 - rowHeight;
         }
 
-        int regen = -1;
-        if (player.isPotionActive(MobEffects.REGENERATION)) {
-            regen = updateCounter % 25;
-        }
-
-        int MARGIN = 0;
-        final int BACKGROUND = (highlight ? MARGIN + 9 : MARGIN);
-        final int TOP = textureRow * 9;
-        if (player.isPotionActive(MobEffects.POISON)) {
-            MARGIN += 36;
-            this.mc.getTextureManager().bindTexture(ICONS);
-        } else if (player.isPotionActive(MobEffects.WITHER)) {
-            MARGIN += 72;
+        int textureMargin = 0;
+        int textureTop;
+        if (absorb > 0) {
+            textureMargin += 16;
+            textureTop = 0;
             this.mc.getTextureManager().bindTexture(ICONS);
         } else {
+            textureTop = textureRow * 9;
             this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
         }
+        int textureBackground = (highlight ? textureMargin + 9 : textureMargin);
 
         float absorbRemaining = absorb;
 
@@ -159,36 +157,56 @@ public class GuiIncorporealOverlay extends GuiIngameForge {
             if (health <= 4) {
                 y += rand.nextInt(2);
             }
-            if (i == regen) {
-                y -= 2;
-            }
 
-            drawTexturedModalRect(x, y, BACKGROUND, TOP, 9, 9);
+            drawTexturedModalRect(x, y, textureBackground, textureTop, 9, 9);
 
             if (highlight) {
                 if (i * 2 + 1 < healthLast) {
-                    drawTexturedModalRect(x, y, MARGIN + 54, TOP, 9, 9); //6
+                    drawTexturedModalRect(x, y, textureMargin + 54, textureTop, 9, 9); //6
                 } else if (i * 2 + 1 == healthLast) {
-                    drawTexturedModalRect(x, y, MARGIN + 63, TOP, 9, 9); //7
+                    drawTexturedModalRect(x, y, textureMargin + 63, textureTop, 9, 9); //7
                 }
             }
 
             if (absorbRemaining > 0.0F) {
                 if (absorbRemaining == absorb && absorb % 2.0F == 1.0F) {
-                    drawTexturedModalRect(x, y, MARGIN + 153, TOP, 9, 9); //17
+                    drawTexturedModalRect(x, y, textureMargin + 153, textureTop, 9, 9); //17
                     absorbRemaining -= 1.0F;
                 } else {
-                    drawTexturedModalRect(x, y, MARGIN + 144, TOP, 9, 9); //16
+                    drawTexturedModalRect(x, y, textureMargin + 144, textureTop, 9, 9); //16
                     absorbRemaining -= 2.0F;
+                }
+                if (absorbRemaining <= 0.0F) {
+                    this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
+                    textureMargin -= 16;
+                    textureTop = textureRow * 9;
+                    textureBackground = (highlight ? textureMargin + 9 : textureMargin);
                 }
             } else {
                 if (i * 2 + 1 < health) {
-                    drawTexturedModalRect(x, y, MARGIN + 36, TOP, 9, 9); //4
+                    drawTexturedModalRect(x, y, textureMargin + 36, textureTop, 9, 9); //4
                 } else if (i * 2 + 1 == health) {
-                    drawTexturedModalRect(x, y, MARGIN + 45, TOP, 9, 9); //5
+                    drawTexturedModalRect(x, y, textureMargin + 45, textureTop, 9, 9); //5
                 }
             }
         }
+    }
+
+    private void drawShortenedCustomHealthBar(int health, int absorb, int width, int height, int textureRow) {
+        int left = width / 2 - 91;
+        int top = height - GuiIngameForge.left_height;
+        GuiIngameForge.left_height += 11;
+        mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
+        drawTexturedModalRect(left, top, 0, textureRow * 9, 9, 9);
+        drawTexturedModalRect(left, top, 36, textureRow * 9, 9, 9);
+        left = mc.fontRenderer.drawString("x" + health / 2, left + 9, top, 0xFFFFFF, true);
+        if (absorb > 0) {
+            mc.getTextureManager().bindTexture(ICONS);
+            drawTexturedModalRect(left + 11, top, 16, 0, 9, 9);
+            drawTexturedModalRect(left + 11, top, 16 + 144, 0, 9, 9);
+            mc.fontRenderer.drawString("x" + absorb / 2, left + 11 + 9, top, 0xFFFFFF, true);
+        }
+
     }
 
 }
