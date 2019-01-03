@@ -1,3 +1,8 @@
+##### Version 1.12.2-0.2.6 - BUILT
+- Mobs with more than 100 hp now use a custom health bar to avoid wasting screen space
+- Fixed an incompatibility with Epic Siege Mod making mobs disappear when possessed
+- Fixed absorption hearts not rendering
+
 ##### Version 1.12.2-0.2.5 - BUILT
 - Added a little message for when the world switched to peaceful while possessing a mob
 
