@@ -11,8 +11,6 @@ import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthAttribute;
 import ladysnake.dissolution.common.util.DelayedTaskRunner;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -36,9 +34,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.ITeleporter;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.vector.Vector2f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -81,8 +76,6 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             return false;
         }
         this.setPossessingEntity(player.getUniqueID());
-        player.capabilities.isFlying = false;
-        player.capabilities.allowFlying = false;
         player.eyeHeight = this.getEyeHeight();
         this.aiDontDoShit.setShouldExecute(true);
         return true;
@@ -101,17 +94,6 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             return true;
         }
         return false;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void possessTickClient() {
-        EntityPlayerSP playerSP = Minecraft.getMinecraft().player;
-        Vector2f move = new Vector2f(playerSP.movementInput.moveStrafe, playerSP.movementInput.moveForward);
-//        move.scale((float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
-        playerSP.moveStrafing = move.x;
-        playerSP.moveForward = move.y;
-        playerSP.setJumping(playerSP.movementInput.jump);
     }
 
     @Nullable

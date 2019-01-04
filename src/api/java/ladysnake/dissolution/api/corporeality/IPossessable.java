@@ -49,6 +49,7 @@ public interface IPossessable {
      */
     boolean proxyAttack(EntityLivingBase victim, DamageSource source, float amount);
 
+    @Deprecated
     default void possessTickClient() {}
 
     default void updatePossessing() {}
