@@ -16,6 +16,7 @@ import ladysnake.dissolution.common.inventory.DissolutionTab;
 import ladysnake.dissolution.common.inventory.GuiProxy;
 import ladysnake.dissolution.common.networking.PacketHandler;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.MinecraftForge;
@@ -46,6 +47,7 @@ public class Dissolution {
 
     public static final CreativeTabs CREATIVE_TAB = new DissolutionTab();
     public static final Logger LOGGER = LogManager.getLogger("Dissolution");
+    public static final DamageSource OUT_OF_XP = new DamageSource("dissolution.out_of_xp").setDamageBypassesArmor();
 
     @SidedProxy(clientSide = Ref.CLIENT_PROXY_CLASS, serverSide = Ref.SERVER_PROXY_CLASS)
     public static CommonProxy proxy;

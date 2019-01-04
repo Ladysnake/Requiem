@@ -72,3 +72,4 @@ potion.effect.dissolution.obnoxious=Potion odieuse
 splash_potion.effect.dissolution.obnoxious=Potion odieuse jetable
 commands.dissolution.corporeality_mode.set.invalid=%s is not a valid soul state
 dissolution.message.peaceful_despawn=Vous sentez votre corps disparaître tandis que le Monde rejette toute hostilité
+dissolution.message.out_of_xp_death=Alors que vos derniers souvenirs s'effacent, votre âme fait de même. Vous sentez les mains froides de l'inexistence vous attraper, vous entraîner petit à petit vers le néant. Vous réalisez que vous ne faites dorénavant plus partie de ce monde, physiquement et mentalement, et qu'il est temps de lâcher prise...

@@ -1,3 +1,9 @@
+##### Version 1.12.2-0.3.0 - BUILT
+- Revamped hardcore behaviour:
+Instead of Dissolution acting as a 1up in hardcore, XP serves as a timer. If you run out of it as a soul, game over.
+- Experience removed now scales with your level (higher levels last longer)
+- Fixed entities disappearing when you die (maybe)
+
 ##### Version 1.12.2-0.2.6 - BUILT
 - Mobs with more than 100 hp now use a custom health bar to avoid wasting screen space
 - Fixed an incompatibility with Epic Siege Mod making mobs disappear when possessed

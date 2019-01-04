@@ -72,3 +72,4 @@ potion.effect.dissolution.obnoxious=Противное Зелье
 splash_potion.effect.dissolution.obnoxious=Взрывное Протвное Зелье
 commands.dissolution.corporeality_mode.set.invalid=%s is not a valid soul state
 dissolution.message.peaceful_despawn=You feel your body fading away as the world starts rejecting any hostility
+dissolution.message.out_of_xp_death=As your last memory fades away, so does your soul. You feel the cold hands of inexistence grabbing your back, and gradually all of yourself. You realize you are no longer part of this world, physically and mentally, and that it is time to let go...

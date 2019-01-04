@@ -334,12 +334,6 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             CapabilityIncorporealHandler.getHandler(player).setPossessed(null);
             if (!world.isRemote) {
                 player.inventory.dropAllItems();
-                // Hardcore players die for good when their body is killed
-                if (world.getMinecraftServer().isHardcore()) {
-                    player.setHealth(0f);
-                    player.onDeath(cause);
-                    CapabilityIncorporealHandler.getHandler(player).setStrongSoul(false);
-                }
             }
         }
     }
