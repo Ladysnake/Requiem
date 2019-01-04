@@ -1,3 +1,11 @@
+##### Version 1.12.2-0.3.1 - BUILT
+- The possessed entity now appears in the creative inventory
+- Creative players can now initiate possession
+- Fire does not appear in first person for creative players during possession anymore
+- Fixed hotbar not appearing in creative
+- Fixed creative flight only letting players hover instead of flying freely during possession
+- Fixed creative players getting robbed of their flight when possessing a mob
+
 ##### Version 1.12.2-0.3.0 - BUILT
 - Revamped hardcore behaviour:
 Instead of Dissolution acting as a 1up in hardcore, XP serves as a timer. If you run out of it as a soul, game over.
