@@ -242,8 +242,8 @@ public class CapabilityIncorporealHandler {
                 hostID = possessable.getEntityId();
                 hostUUID = possessable.getUniqueID();
                 owner.setInvisible(true);   // prevent the soul from being seen at all
-                owner.capabilities.allowFlying = false;
-                owner.capabilities.isFlying = false;
+                owner.capabilities.allowFlying = owner.isCreative();
+                owner.capabilities.isFlying = owner.isCreative() && owner.capabilities.isFlying;
             }
             syncWithClient(possessable);
             return true;

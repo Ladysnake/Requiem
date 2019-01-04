@@ -27,7 +27,7 @@ public class OverlaysRenderer {
         EntityLivingBase possessed = playerCorp.getPossessed();
         if (possessed != null && mc.gameSettings.thirdPersonView == 0) {
             mc.getItemRenderer().renderOverlays(partialTicks);
-            if (possessed.isBurning()) {
+            if (possessed.isBurning() && !player.isCreative()) {
                 if (!net.minecraftforge.event.ForgeEventFactory.renderFireOverlay(mc.player, partialTicks)) {
                     this.renderFireInFirstPerson(new ScaledResolution(mc));
                 }
