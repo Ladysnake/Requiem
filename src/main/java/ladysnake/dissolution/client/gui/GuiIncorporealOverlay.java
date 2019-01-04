@@ -44,35 +44,35 @@ public class GuiIncorporealOverlay extends GuiIngameForge {
 
             ScaledResolution res = event.getResolution();
 
-            if (this.mc.playerController.shouldDrawHUD()) {
-                EntityLivingBase possessed = pl.getPossessed();
-                eventParent.set(this, event);
-                if (possessed != null && possessed.getHealth() > 0) {
-                    int textureRow = 0;
-                    if (possessed instanceof EntityPigZombie) {
-                        textureRow = 1;
-                    } else if (possessed instanceof EntityHusk) {
-                        textureRow = 2;
-                    } else if (possessed instanceof EntityWitherSkeleton) {
-                        textureRow = 4;
-                    } else if (possessed instanceof EntityStray) {
-                        textureRow = 5;
-                    } else if (possessed instanceof EntitySkeleton) {
-                        textureRow = 3;
+            EntityLivingBase possessed = pl.getPossessed();
+            if (possessed != null) {
+                if (this.mc.playerController.shouldDrawHUD()) {
+                    eventParent.set(this, event);
+                    if (possessed.getHealth() > 0) {
+                        int textureRow = 0;
+                        if (possessed instanceof EntityPigZombie) {
+                            textureRow = 1;
+                        } else if (possessed instanceof EntityHusk) {
+                            textureRow = 2;
+                        } else if (possessed instanceof EntityWitherSkeleton) {
+                            textureRow = 4;
+                        } else if (possessed instanceof EntityStray) {
+                            textureRow = 5;
+                        } else if (possessed instanceof EntitySkeleton) {
+                            textureRow = 3;
+                        }
+                        this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
+                        this.drawCustomHealthBar(possessed, res, textureRow);
+                        this.mc.getTextureManager().bindTexture(GuiIngameForge.ICONS);
+                        this.renderArmor(res.getScaledWidth(), res.getScaledHeight());
                     }
-                    this.mc.getTextureManager().bindTexture(ECTOPLASM_ICONS);
-                    this.drawCustomHealthBar(possessed, res, textureRow);
-                    this.mc.getTextureManager().bindTexture(GuiIngameForge.ICONS);
-                    this.renderArmor(res.getScaledWidth(), res.getScaledHeight());
-                    // We need to set the render view entity back to a player as renderAir and renderHotbar require it
-                    mc.setRenderViewEntity(this.mc.player);
-                    this.mc.player.setAir(possessed.getAir());
-                    this.renderAir(res.getScaledWidth(), res.getScaledHeight());
-                    this.renderHotbar(res, event.getPartialTicks());
-                    mc.setRenderViewEntity(possessed);
                 }
-            } else if (Minecraft.getMinecraft().player.isCreative() && pl.getPossessed() != null) {
+                // We need to set the render view entity back to a player as renderAir and renderHotbar require it
+                mc.setRenderViewEntity(this.mc.player);
+                this.mc.player.setAir(possessed.getAir());
+                this.renderAir(res.getScaledWidth(), res.getScaledHeight());
                 this.renderHotbar(res, event.getPartialTicks());
+                mc.setRenderViewEntity(possessed);
             }
         }
     }

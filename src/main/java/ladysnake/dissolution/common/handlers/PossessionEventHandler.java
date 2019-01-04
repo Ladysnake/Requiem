@@ -3,9 +3,8 @@ package ladysnake.dissolution.common.handlers;
 import ladylib.compat.EnhancedBusSubscriber;
 import ladylib.misc.ReflectionFailedException;
 import ladylib.reflection.TypedReflection;
-import ladylib.reflection.typed.RWTypedField;
+import ladylib.reflection.typed.TypedMethod0;
 import ladylib.reflection.typed.TypedMethod1;
-import ladylib.reflection.typed.TypedSetter;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
 import ladysnake.dissolution.api.corporeality.IPossessable;
 import ladysnake.dissolution.common.Dissolution;
@@ -20,9 +19,7 @@ import net.minecraft.entity.monster.AbstractSkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
@@ -50,12 +47,8 @@ public class PossessionEventHandler {
         if (event.phase != TickEvent.Phase.START) return;
         IIncorporealHandler playerCorp = CapabilityIncorporealHandler.getHandler(event.player);
         IPossessable possessed = playerCorp.getPossessed();
-        World world = event.player.world;
         if (possessed != null) {
             possessed.updatePossessing();
-            if (world.isRemote) {
-                possessed.possessTickClient();
-            }
         }
     }
 
@@ -208,66 +201,21 @@ public class PossessionEventHandler {
     @EnhancedBusSubscriber(value = MOD_ID, side = CLIENT)
     public static class Client {
 
-        private static final RWTypedField<EntityPlayerSP, Double> lastReportedPosX =
-                TypedReflection.createFieldRef(EntityPlayerSP.class, "field_175172_bI", double.class);
-        private static final RWTypedField<EntityPlayerSP, Double> lastReportedPosY =
-                TypedReflection.createFieldRef(EntityPlayerSP.class, "field_175166_bJ", double.class);
-        private static final RWTypedField<EntityPlayerSP, Double> lastReportedPosZ =
-                TypedReflection.createFieldRef(EntityPlayerSP.class, "field_175167_bK", double.class);
-        private static final RWTypedField<EntityPlayerSP, Float> lastReportedYaw =
-                TypedReflection.createFieldRef(EntityPlayerSP.class, "field_175164_bL", float.class);
-        private static final RWTypedField<EntityPlayerSP, Float> lastReportedPitch =
-                TypedReflection.createFieldRef(EntityPlayerSP.class, "field_175165_bM", float.class);
-        private static final RWTypedField<EntityPlayerSP, Integer> positionUpdateTicks =
-                TypedReflection.createFieldRef(EntityPlayerSP.class, "field_175168_bP", int.class);
-        private static final RWTypedField<EntityPlayerSP, Boolean> prevOnGround =
-                TypedReflection.createFieldRef(EntityPlayerSP.class, "field_184841_cd", boolean.class);
-        private static final TypedSetter<EntityPlayerSP, Boolean> autoJumpEnabled =
-                TypedReflection.findSetter(EntityPlayerSP.class, "field_189811_cr", boolean.class);
+        public static final TypedMethod0<EntityPlayerSP, Void> ON_UPDATE_WALKING_PLAYER = TypedReflection.findMethod(EntityPlayerSP.class, "func_175161_p", void.class);
 
         @SubscribeEvent
         public void onPlayerUpdate(TickEvent.PlayerTickEvent event) {
             EntityPlayerSP self = Minecraft.getMinecraft().player;
             if (event.player == self) {
-                // Manually send position information
-                AxisAlignedBB axisalignedbb = self.getEntityBoundingBox();
-                double d0 = self.posX - lastReportedPosX.get(self);
-                double d1 = axisalignedbb.minY - lastReportedPosY.get(self);
-                double d2 = self.posZ - lastReportedPosZ.get(self);
-                double d3 = (double) (self.rotationYaw - lastReportedYaw.get(self));
-                double d4 = (double) (self.rotationPitch - lastReportedPitch.get(self));
-                // ++positionUpdateTicks
-                positionUpdateTicks.set(self, positionUpdateTicks.get(self) + 1);
-                boolean flag2 = d0 * d0 + d1 * d1 + d2 * d2 > 9.0E-4D || positionUpdateTicks.get(self) >= 20;
-                boolean flag3 = d3 != 0.0D || d4 != 0.0D;
-
-                if (self.isRiding()) {
-                    self.connection.sendPacket(new CPacketPlayer.PositionRotation(self.motionX, -999.0D, self.motionZ, self.rotationYaw, self.rotationPitch, self.onGround));
-                    flag2 = false;
-                } else if (flag2 && flag3) {
-                    self.connection.sendPacket(new CPacketPlayer.PositionRotation(self.posX, axisalignedbb.minY, self.posZ, self.rotationYaw, self.rotationPitch, self.onGround));
-                } else if (flag2) {
-                    self.connection.sendPacket(new CPacketPlayer.Position(self.posX, axisalignedbb.minY, self.posZ, self.onGround));
-                } else if (flag3) {
-                    self.connection.sendPacket(new CPacketPlayer.Rotation(self.rotationYaw, self.rotationPitch, self.onGround));
-                } else if (prevOnGround.get(self) != self.onGround) {
-                    self.connection.sendPacket(new CPacketPlayer(self.onGround));
+                Entity possessed = CapabilityIncorporealHandler.getHandler(self).getPossessed();
+                if (possessed != null) {
+                    if (event.phase == TickEvent.Phase.START) {
+                        Minecraft.getMinecraft().setRenderViewEntity(self);
+                    } else {
+                        ON_UPDATE_WALKING_PLAYER.invoke(self);
+                        Minecraft.getMinecraft().setRenderViewEntity(possessed);
+                    }
                 }
-
-                if (flag2) {
-                    lastReportedPosX.set(self, self.posX);
-                    lastReportedPosY.set(self, self.posY);
-                    lastReportedPosZ.set(self, self.posZ);
-                    positionUpdateTicks.set(self, 0);
-                }
-
-                if (flag3) {
-                    lastReportedYaw.set(self, self.rotationYaw);
-                    lastReportedPitch.set(self, self.rotationPitch);
-                }
-
-                prevOnGround.set(self, self.onGround);
-                autoJumpEnabled.set(self, Minecraft.getMinecraft().gameSettings.autoJump);
             }
         }
 

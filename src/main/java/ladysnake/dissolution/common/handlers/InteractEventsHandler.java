@@ -50,8 +50,7 @@ public class InteractEventsHandler {
         EntityPlayer player = event.getEntityPlayer();
         Entity target = event.getTarget();
         IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(player);
-        if (!(handler.getCorporealityStatus().isIncorporeal() && handler.getPossessed() == null
-                && !player.isCreative())) {
+        if (!(handler.getCorporealityStatus().isIncorporeal() && handler.getPossessed() == null)) {
             return;
         }
         event.setCanceled(true);

@@ -1,5 +1,6 @@
 package ladysnake.dissolution.client.handlers;
 
+import baubles.client.gui.GuiPlayerExpanded;
 import com.jamieswhiteshirt.clothesline.hooks.api.GetMouseOverEvent;
 import ladylib.reflection.TypedReflection;
 import ladylib.reflection.typed.TypedSetter;
@@ -19,15 +20,18 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -39,6 +43,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.GameType;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.*;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -52,6 +57,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @Mod.EventBusSubscriber(value = Side.CLIENT, modid = Ref.MOD_ID)
 public class EventHandlerClient {
 
+    public static final boolean BAUBLES_LOADED = Loader.isModLoaded("baubles");
     /**True if this client is connected to a server without the mod*/
     private static boolean noServerInstall;
 
@@ -137,14 +143,20 @@ public class EventHandlerClient {
     public static void onInventoryRender(GuiScreenEvent.DrawScreenEvent.Pre event) {
         EntityPlayerSP player = Minecraft.getMinecraft().player;
         GuiScreen gui = event.getGui();
-        if (player != null && gui instanceof GuiInventory) {
-            GuiInventory inv = (GuiInventory) gui;
+        if (player != null && (gui instanceof GuiInventory || gui instanceof GuiContainerCreative || BAUBLES_LOADED && gui instanceof GuiPlayerExpanded)) {
+            InventoryEffectRenderer inv = (InventoryEffectRenderer) gui;
             int guiLeft = inv.getGuiLeft();
             int guiTop = inv.getGuiTop();
             EntityLivingBase possessed = CapabilityIncorporealHandler.getHandler(player).getPossessed();
             if (possessed != null) {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                GuiInventory.drawEntityOnScreen(guiLeft + 51, guiTop + 75, 30, guiLeft + 51 - inv.oldMouseX, guiTop + 75 - 50 - inv.oldMouseY, possessed);
+                if (gui instanceof GuiContainerCreative) {
+                    if (CreativeTabs.CREATIVE_TAB_ARRAY[((GuiContainerCreative) gui).getSelectedTabIndex()] == CreativeTabs.INVENTORY) {
+                        GuiInventory.drawEntityOnScreen(guiLeft + 88, guiTop + 45, 20, guiLeft + 88 - event.getMouseX(), guiTop + 45 - 30 - event.getMouseY(), possessed);
+                    }
+                } else {
+                    GuiInventory.drawEntityOnScreen(guiLeft + 51, guiTop + 75, 30, guiLeft + 51 - event.getMouseX(), guiTop + 75 - 50 - event.getMouseY(), possessed);
+                }
             }
         }
     }
