@@ -46,8 +46,8 @@ public class GuiIncorporealOverlay extends GuiIngameForge {
 
             EntityLivingBase possessed = pl.getPossessed();
             if (possessed != null) {
+                eventParent.set(this, event);
                 if (this.mc.playerController.shouldDrawHUD()) {
-                    eventParent.set(this, event);
                     if (possessed.getHealth() > 0) {
                         int textureRow = 0;
                         if (possessed instanceof EntityPigZombie) {
