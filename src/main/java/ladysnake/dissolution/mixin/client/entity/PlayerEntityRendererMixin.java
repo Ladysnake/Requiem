@@ -1,4 +1,4 @@
-package ladysnake.dissolution.mixin.client.render.entity;
+package ladysnake.dissolution.mixin.client.entity;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.dissolution.api.DissolutionPlayer;

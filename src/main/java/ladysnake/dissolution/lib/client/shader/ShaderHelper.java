@@ -14,6 +14,7 @@ import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.message.FormattedMessage;
+import org.apiguardian.api.API;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBShaderObjects;
@@ -32,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.IntConsumer;
 
+import static org.apiguardian.api.API.Status.INTERNAL;
 import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderHelper {
@@ -61,12 +63,12 @@ public class ShaderHelper {
     /**
      * Subscribes this class to MinecraftClient's resource manager to reload shaders like normal assets.
      */
-    public static void init() {
+    @API(status = INTERNAL)
+    public static void init(ReloadableResourceManager resourceManager) {
         if (!initialized) {
-            MinecraftClient mc = MinecraftClient.getInstance();
-            ((ReloadableResourceManager) mc.getResourceManager()).addListener(ShaderHelper::loadShaders);
-            ((ReloadableResourceManager) mc.getResourceManager()).addListener(ManagedShaderEffect.ReloadHandler.INSTANCE);
-            ClientTickEvent.CLIENT.register(ManagedShaderEffect.ReloadHandler.INSTANCE::refreshScreenShaders);
+            resourceManager.addListener(ShaderHelper::loadShaders);
+            resourceManager.addListener(ShaderEffectManager.INSTANCE);
+            ClientTickEvent.CLIENT.register(ShaderEffectManager.INSTANCE::refreshScreenShaders);
 //            ClientCommandHandler.instance.registerCommand(new ShaderReloadCommand());
             initialized = true;
         }
