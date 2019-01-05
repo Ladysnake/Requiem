@@ -1,3 +1,7 @@
+##### Version 1.12.2-0.3.2 - BUILT
+- Fixed crash when possessing something in creative
+- Fixed JourneyMap's waypoints rendering weirdly in soul mode
+
 ##### Version 1.12.2-0.3.1 - BUILT
 - The possessed entity now appears in the creative inventory
 - Creative players can now initiate possession
