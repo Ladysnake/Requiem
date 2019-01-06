@@ -1,3 +1,6 @@
+##### Version 1.12.2-0.3.3 - BUILT
+- Added a config option to disable ambient sounds made by possessed mobs
+
 ##### Version 1.12.2-0.3.2 - BUILT
 - Fixed crash when possessing something in creative
 - Fixed JourneyMap's waypoints rendering weirdly in soul mode
