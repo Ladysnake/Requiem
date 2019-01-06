@@ -1,6 +1,7 @@
 package ladysnake.dissolution.common.impl;
 
 import ladysnake.dissolution.api.DissolutionPlayer;
+import ladysnake.dissolution.api.possession.Possessable;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,6 +21,13 @@ public class DefaultRemnantHandler implements RemnantHandler {
             } else {
                 return ActionResult.PASS;
             }
+        });
+        PlayerInteractionEvent.INTERACT_ENTITY_POSITIONED.register((player, world, hand, entity, hitPosition) -> {
+            if (entity instanceof Possessable) {
+                ((Possessable) entity).setPossessingEntity(player.getUuid());
+                return ActionResult.SUCCESS;
+            }
+            return ActionResult.FAILURE;
         });
     }
 

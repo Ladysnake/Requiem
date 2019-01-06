@@ -1,6 +1,7 @@
 package ladysnake.dissolution;
 
 import ladysnake.dissolution.common.block.DissolutionBlocks;
+import ladysnake.dissolution.common.entity.DissolutionEntities;
 import ladysnake.dissolution.common.impl.DefaultRemnantHandler;
 import ladysnake.dissolution.common.item.DissolutionItems;
 import net.fabricmc.api.ModInitializer;
@@ -19,6 +20,7 @@ public class Dissolution implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		DissolutionBlocks.init();
+		DissolutionEntities.init();
 		DissolutionItems.init();
 		DefaultRemnantHandler.init();
 	}
