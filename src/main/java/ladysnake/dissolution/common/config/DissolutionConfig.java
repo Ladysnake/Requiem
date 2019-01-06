@@ -19,6 +19,9 @@ public class DissolutionConfig {
     @Config.Comment("Because some people need dialogue to be explicit")
     public boolean technicianDialogue = false;
 
+    @Config.Comment("If true, possessed entities will not emit any ambient sound.")
+    public boolean cancelPossessingAmbientSounds = false;
+
     @Config.Comment("Make human flesh consumption add warp if Thaumcraft is installed")
     public boolean warpyFlesh = true;
 

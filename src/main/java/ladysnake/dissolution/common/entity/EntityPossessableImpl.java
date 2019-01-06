@@ -97,6 +97,7 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
     }
 
     @Nullable
+    @Override
     public UUID getPossessingEntityId() {
         return this.getDataManager().get(POSSESSING_ENTITY_ID).orNull();
     }
@@ -234,6 +235,13 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             this.fallDistance = 0;
         }
         super.updateFallState(y, onGroundIn, state, pos);
+    }
+
+    @Override
+    public void playLivingSound() {
+        if (!Dissolution.config.cancelPossessingAmbientSounds) {
+            super.playLivingSound();
+        }
     }
 
     @Nonnull
