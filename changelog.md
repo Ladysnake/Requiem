@@ -1,3 +1,9 @@
+##### Version 1.12.2-0.3.4 - BUILT
+- Inventory drops when a possessed entity dies now respect the keepInventory gamerule
+
+Technical changes:
+- Possessed entities now fire `PlayerDropsEvent` when they die, making gravestones mods possibly compatible
+
 ##### Version 1.12.2-0.3.3 - BUILT
 - Added a config option to disable ambient sounds made by possessed mobs
 
