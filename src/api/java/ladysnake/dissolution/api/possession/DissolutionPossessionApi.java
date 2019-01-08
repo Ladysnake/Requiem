@@ -71,7 +71,6 @@ public class DissolutionPossessionApi {
      * @return true if the given class has been registered
      */
     public static boolean isEntityRegistered(Class<? extends Entity> entityClass) {
-        //noinspection SuspiciousMethodCalls
         return EntityLivingBase.class.isAssignableFrom(entityClass) && POSSESSABLES.containsKey(entityClass);
     }
 }

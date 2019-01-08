@@ -215,6 +215,7 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             // Sometimes the client doesn't get notified, so we update again half a second later to be sure
             DelayedTaskRunner.INSTANCE.addDelayedTask(dimensionIn, 10, () -> CapabilityIncorporealHandler.getHandler(passenger).setPossessed((EntityLivingBase & IPossessable) clone, true));
         }
+
         return clone;
     }
 
@@ -322,7 +323,7 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
         if (this.getPossessingEntity() != null) {
             EntityPlayer player = this.getPossessingEntity();
             CapabilityIncorporealHandler.getHandler(player).setPossessed(null);
-            if (!world.isRemote) {
+            if (!world.isRemote && !world.getGameRules().getBoolean("keepInventory")) {
                 player.inventory.dropAllItems();
             }
         }
