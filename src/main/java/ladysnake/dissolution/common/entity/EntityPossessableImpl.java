@@ -33,6 +33,7 @@ import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.ITeleporter;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nonnull;
@@ -324,7 +325,11 @@ public class EntityPossessableImpl extends EntityMob implements IPossessable {
             EntityPlayer player = this.getPossessingEntity();
             CapabilityIncorporealHandler.getHandler(player).setPossessed(null);
             if (!world.isRemote && !world.getGameRules().getBoolean("keepInventory")) {
+                player.captureDrops = true;
+                player.capturedDrops.clear();
                 player.inventory.dropAllItems();
+                player.captureDrops = false;
+                ForgeEventFactory.onPlayerDrops(player, cause, player.capturedDrops, recentlyHit > 0);
             }
         }
     }
