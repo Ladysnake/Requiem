@@ -8,7 +8,7 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
  * A read-write reference to a field, using method handles as getter and setter
  * @param <T> type of the field's owner
  * @param <R> type of the field's value
- * @see TypedReflection#createFieldRef(Class, String, Class)
+ * @see TypedMethodHandles#createFieldRef(Class, String, Class)
  * @since 2.6
  */
 @API(status = EXPERIMENTAL, since = "2.6.2")

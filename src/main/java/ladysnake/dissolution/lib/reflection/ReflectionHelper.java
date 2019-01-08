@@ -1,17 +1,16 @@
 package ladysnake.dissolution.lib.reflection;
 
-import ladysnake.dissolution.lib.reflection.typed.TypedReflection;
+import ladysnake.dissolution.lib.reflection.typed.TypedMethodHandles;
 import org.apiguardian.api.API;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
 
-public class ReflectionUtil {
+public class ReflectionHelper {
 
     private static final MethodHandles.Lookup TRUSTED_LOOKUP;
 
@@ -42,13 +41,13 @@ public class ReflectionUtil {
      * @return A handle for the method with the specified name and parameters in the given class.
      * @throws UnableToFindMethodException if an issue prevents the method from being reflected
      *
-     * @see TypedReflection#findMethod(Class, String, Class)
+     * @see TypedMethodHandles#findVirtual(Class, String, Class)
      */
     @API(status = STABLE, since = "2.6.2")
     public static MethodHandle findMethodHandleFromObfName(Class<?> clazz, String methodObfName, Class<?> returnType, Class<?>... parameterTypes) {
         try {
             // FIXME THIS WILL NOT WORK IN AN OBFUSCATED ENVIRONMENT
-            return getTrustedLookup(clazz).findVirtual(clazz, methodObfName, MethodType.methodType(returnType, parameterTypes));
+            return getTrustedLookup(clazz).unreflect(clazz.getDeclaredMethod(methodObfName, parameterTypes));
         } catch (NoSuchMethodException | IllegalAccessException e) {
             throw new UnableToFindMethodException(e);
         }
@@ -70,7 +69,7 @@ public class ReflectionUtil {
     public static MethodHandle findGetterFromObfName(Class<?> clazz, String fieldObfName, Class<?> type) {
         try {
             // FIXME THIS WILL NOT WORK IN AN OBFUSCATED ENVIRONMENT
-            return getTrustedLookup(clazz).findGetter(clazz, fieldObfName, type);
+            return getTrustedLookup(clazz).unreflectGetter(clazz.getDeclaredField(fieldObfName));
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new UnableToFindFieldException(e);
         }
@@ -92,7 +91,7 @@ public class ReflectionUtil {
     public static MethodHandle findSetterFromObfName(Class<?> clazz, String fieldObfName, Class<?> type) {
         try {
             // FIXME THIS WILL NOT WORK IN AN OBFUSCATED ENVIRONMENT
-            return getTrustedLookup(clazz).findSetter(clazz, fieldObfName, type);
+            return getTrustedLookup(clazz).unreflectSetter(clazz.getDeclaredField(fieldObfName));
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new UnableToFindFieldException(e);
         }
