@@ -1,6 +1,6 @@
 package ladysnake.dissolution.mixin.client;
 
-import ladysnake.dissolution.lib.client.event.ClientLoadingEvent;
+import ladysnake.satin.client.event.ClientLoadingEvent;
 import net.fabricmc.fabric.util.HandlerArray;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ReloadableResourceManager;

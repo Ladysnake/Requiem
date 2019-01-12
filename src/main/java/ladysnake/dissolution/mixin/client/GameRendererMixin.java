@@ -1,7 +1,7 @@
 package ladysnake.dissolution.mixin.client;
 
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
-import ladysnake.dissolution.lib.client.event.RenderEvent;
+import ladysnake.satin.client.event.RenderEvent;
 import net.fabricmc.fabric.util.HandlerArray;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;

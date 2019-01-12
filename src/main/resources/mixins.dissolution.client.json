@@ -5,9 +5,7 @@
   "mixins": [
     "GameRendererMixin",
     "MinecraftClientMixin",
-    "entity.PlayerEntityRendererMixin",
-    "render.gl.AccessiblePassesShaderEffect",
-    "render.gl.GlProgramMixin"
+    "entity.PlayerEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

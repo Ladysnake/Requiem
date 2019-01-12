@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.entity.ai.attribute;
 
-import ladysnake.dissolution.lib.reflection.typed.TypedGetter;
-import ladysnake.dissolution.lib.reflection.typed.TypedMethodHandles;
+import ladysnake.reflectivefabric.reflection.typed.TypedGetter;
+import ladysnake.reflectivefabric.reflection.typed.TypedMethodHandles;
 import net.minecraft.entity.attribute.*;
 
 import java.util.Map;

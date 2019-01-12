@@ -3,8 +3,8 @@ package ladysnake.dissolution.client;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
-import ladysnake.dissolution.lib.client.shader.ManagedShaderEffect;
-import ladysnake.dissolution.lib.client.shader.ShaderEffectManager;
+import ladysnake.satin.client.shader.ManagedShaderEffect;
+import ladysnake.satin.client.shader.ShaderEffectManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 

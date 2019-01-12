@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "ladysnake.satin.mixin.client",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "gl.AccessiblePassesShaderEffect",
+    "gl.GlProgramMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

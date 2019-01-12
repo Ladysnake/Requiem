@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.entity;
 
 import ladysnake.dissolution.Dissolution;
-import ladysnake.dissolution.lib.DebugUtil;
+import ladysnake.reflectivefabric.misc.DebugUtil;
 import net.fabricmc.fabric.entity.EntityTrackingRegistry;
 import net.fabricmc.fabric.entity.FabricEntityTypeBuilder;
 import net.minecraft.client.network.packet.MobSpawnClientPacket;
