@@ -2,6 +2,7 @@ package ladysnake.dissolution.lib.client.shader;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.dissolution.Dissolution;
+import ladysnake.dissolution.mixin.client.render.gl.AccessiblePassesShaderEffect;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.gl.GlProgram;
@@ -11,8 +12,8 @@ import net.minecraft.client.texture.Texture;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.util.Identifier;
 import org.apiguardian.api.API;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.function.Consumer;
 

@@ -9,10 +9,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -24,22 +20,15 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
-public class PossessableEntityImpl extends MobEntityWithAi implements Possessable {
-    private static final TrackedData<Optional<UUID>> POSSESSING_ENTITY_ID =
-            DataTracker.registerData(PossessableEntityImpl.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+public class PossessableEntityImpl extends PossessableEntityBase implements Possessable {
+    private @Nullable UUID possessorUuid;
 
     public PossessableEntityImpl(World world) {
-        this(DissolutionEntities.DEBUG_POSSESSABLE, world);
+        super(world);
     }
 
-    protected PossessableEntityImpl(EntityType<?> entityType_1, World world_1) {
+    public PossessableEntityImpl(EntityType<?> entityType_1, World world_1) {
         super(entityType_1, world_1);
-    }
-
-    @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        this.getDataTracker().startTracking(POSSESSING_ENTITY_ID, Optional.empty());
     }
 
     @Override
@@ -57,18 +46,23 @@ public class PossessableEntityImpl extends MobEntityWithAi implements Possessabl
     }
 
     @Override
-    public Optional<UUID> getPossessingEntityId() {
-        return this.getDataTracker().get(POSSESSING_ENTITY_ID);
+    public Optional<UUID> getPossessingEntityUuid() {
+        return Optional.ofNullable(possessorUuid);
     }
 
     @Override
     public Optional<PlayerEntity> getPossessingEntity() {
-        return getPossessingEntityId().map(world::getPlayerByUuid);
+        return getPossessingEntityUuid().map(world::getPlayerByUuid);
     }
 
     @Override
-    public void setPossessingEntity(@Nullable UUID possessingEntity) {
-        this.getDataTracker().set(POSSESSING_ENTITY_ID, Optional.ofNullable(possessingEntity));
+    public boolean canBePossessedBy(PlayerEntity player) {
+        return !this.isBeingPossessed();
+    }
+
+    @Override
+    public void setPossessingEntity(@Nullable UUID possessorUuid) {
+        this.possessorUuid = possessorUuid;
     }
 
     @Override
@@ -121,7 +115,7 @@ public class PossessableEntityImpl extends MobEntityWithAi implements Possessabl
     @Override
     public void pushAwayFrom(Entity entityIn) {
         // Prevent infinite propulsion through self collision
-        if (!getPossessingEntityId().filter(entityIn.getUuid()::equals).isPresent()) {
+        if (!getPossessingEntityUuid().filter(entityIn.getUuid()::equals).isPresent()) {
             super.pushAwayFrom(entityIn);
         }
     }
@@ -129,7 +123,7 @@ public class PossessableEntityImpl extends MobEntityWithAi implements Possessabl
     @Override
     protected void pushAway(Entity entityIn) {
         // Prevent infinite propulsion through self collision
-        if (!getPossessingEntityId().filter(entityIn.getUuid()::equals).isPresent()) {
+        if (!getPossessingEntityUuid().filter(entityIn.getUuid()::equals).isPresent()) {
             super.pushAwayFrom(entityIn);
         }
     }
@@ -231,7 +225,7 @@ public class PossessableEntityImpl extends MobEntityWithAi implements Possessabl
     @Override
     public void method_6076() {
         // Not actual delegation, we just avoid updating the item twice
-        if (!getPossessingEntityId().isPresent()) {
+        if (!getPossessingEntityUuid().isPresent()) {
             super.method_6076();
         }
     }

@@ -2,7 +2,8 @@ package ladysnake.dissolution;
 
 import ladysnake.dissolution.common.block.DissolutionBlocks;
 import ladysnake.dissolution.common.entity.DissolutionEntities;
-import ladysnake.dissolution.common.impl.DefaultRemnantHandler;
+import ladysnake.dissolution.common.impl.possession.Possession;
+import ladysnake.dissolution.common.impl.remnant.DefaultRemnantHandler;
 import ladysnake.dissolution.common.item.DissolutionItems;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
@@ -23,5 +24,6 @@ public class Dissolution implements ModInitializer {
 		DissolutionEntities.init();
 		DissolutionItems.init();
 		DefaultRemnantHandler.init();
+		Possession.init();
 	}
 }

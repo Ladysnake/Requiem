@@ -1,19 +1,21 @@
-package ladysnake.dissolution.common.impl;
+package ladysnake.dissolution.common.impl.remnant;
 
 import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.possession.Possessable;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
+import org.apiguardian.api.API;
 
 import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
+import static org.apiguardian.api.API.Status.INTERNAL;
 
 public class DefaultRemnantHandler implements RemnantHandler {
     public static final String INCORPOREAL_TAG = "incorporeal";
 
+    @API(status = INTERNAL)
     public static void init() {
         PlayerInteractionEvent.ATTACK_BLOCK.register((player, world, hand, blockPos, facing) -> {
             if (!player.isCreative() && RemnantHandler.get(player).filter(RemnantHandler::isIncorporeal).isPresent()) {
@@ -22,15 +24,9 @@ public class DefaultRemnantHandler implements RemnantHandler {
                 return ActionResult.PASS;
             }
         });
-        PlayerInteractionEvent.INTERACT_ENTITY_POSITIONED.register((player, world, hand, entity, hitPosition) -> {
-            if (entity instanceof Possessable) {
-                ((Possessable) entity).setPossessingEntity(player.getUuid());
-                return ActionResult.SUCCESS;
-            }
-            return ActionResult.FAILURE;
-        });
     }
 
+    @API(status = INTERNAL)
     public static RemnantHandler getOrMakeRemnant(PlayerEntity player) {
         RemnantHandler handler = ((DissolutionPlayer)player).getRemnantHandler();
         if (handler == null) {

@@ -3,7 +3,7 @@ package ladysnake.dissolution.common.item;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.DissolutionPlayer;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
-import ladysnake.dissolution.common.impl.DefaultRemnantHandler;
+import ladysnake.dissolution.common.impl.remnant.DefaultRemnantHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

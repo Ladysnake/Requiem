@@ -18,6 +18,7 @@ import static io.netty.buffer.Unpooled.buffer;
 
 public class DissolutionNetworking {
     public static final Identifier REMNANT_SYNC = Dissolution.id("remnant_sync");
+    public static final Identifier POSSESSION_SYNC = Dissolution.id("possession_sync");
 
     public static void sendTo(ServerPlayerEntity player, CustomPayloadClientPacket packet) {
         if (player.networkHandler != null) {
@@ -47,5 +48,12 @@ public class DissolutionNetworking {
         buf.writeBoolean(remnant);
         buf.writeBoolean(incorporeal);
         return new CustomPayloadClientPacket(REMNANT_SYNC, buf);
+    }
+
+    public static CustomPayloadClientPacket createPossessionPacket(UUID playerUuid, int possessedId) {
+        PacketByteBuf buf = new PacketByteBuf(buffer());
+        buf.writeUuid(playerUuid);
+        buf.writeInt(possessedId);
+        return new CustomPayloadClientPacket(POSSESSION_SYNC, buf);
     }
 }

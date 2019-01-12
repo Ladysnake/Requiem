@@ -13,12 +13,14 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  * These hooks redirect identifier instantiations to allow specifying a domain for shader files.
  */
 @Mixin(GlProgram.class)
-public class GlProgramMixin {
+public abstract class GlProgramMixin {
     /**
      * @param arg the string passed to the redirected Identifier constructor
      * @param id the actual id passed as an argument to the method
      * @return a new Identifier
      */
+    // The minecraft dev plugin currently fails to recognize an instantiation target
+    @SuppressWarnings("UnresolvedMixinReference")
     @Redirect(
             at = @At(
                     value = "NEW",
@@ -39,6 +41,8 @@ public class GlProgramMixin {
      * @param id the actual id passed as an argument to the method
      * @return a new Identifier
      */
+    // The minecraft dev plugin currently fails to recognize an instantiation target
+    @SuppressWarnings("UnresolvedMixinReference")
     @Redirect(
             at = @At(
                     value = "NEW",

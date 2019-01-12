@@ -1,9 +1,11 @@
 package ladysnake.dissolution.api;
 
+import ladysnake.dissolution.api.possession.Possessor;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
-import org.jetbrains.annotations.Nullable;
 
-public interface DissolutionPlayer {
+import javax.annotation.Nullable;
+
+public interface DissolutionPlayer extends Possessor {
 
     @Nullable
     RemnantHandler getRemnantHandler();
