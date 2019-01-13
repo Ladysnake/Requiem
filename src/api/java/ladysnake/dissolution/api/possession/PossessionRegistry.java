@@ -45,7 +45,9 @@ public interface PossessionRegistry {
     <E extends MobEntity> void registerPossessedConverter(EntityType<E> baseEntityType, PossessableSubstitutionHandler<E> possessedEntityType);
 
     /**
-     * Checks if an entity type is eligible for possession
+     * Checks if an entity type is eligible for possession. <br>
+     * This check may not account for technical limitations causing {@link #convert(MobEntity, PlayerEntity)}
+     * to return <code>null</code>.
      *
      * @param entityType an entity type
      * @return true if entities of that type can be {@link #convert(MobEntity, PlayerEntity) converted}
@@ -53,7 +55,9 @@ public interface PossessionRegistry {
     boolean canBePossessed(EntityType<?> entityType);
 
     /**
-     * Checks if an entity is eligible for possession
+     * Checks if an entity is eligible for possession. <br>
+     * This check may not account for technical limitations causing {@link #convert(MobEntity, PlayerEntity)}
+     * to return <code>null</code>
      *
      * @param entity an entity
      * @return true if the entity can be {@link #convert(MobEntity, PlayerEntity) converted}
@@ -63,16 +67,19 @@ public interface PossessionRegistry {
     }
 
     /**
-     * Provides a possessable version of the given entity. <br>
+     * Provides a possessable version of the given entity. <p>
+     * The return value will be <code>null</code> if the entity can not be possessed.
+     * This method is allowed to return <code>null</code> even if the entity is theoretically
+     * possessable. <br>
      * The behaviour of this method is undefined if <code>entity</code> is already Possessable.
      *
      * @param entity the entity to convert
      * @param possessor the player initiating the possession
      * @return a possessable entity behaving similarly to <code>entity</code>
-     * @throws IllegalArgumentException if the entity is illegible for conversion
      * @see #canBePossessed(MobEntity)
      */
-    Possessable convert(MobEntity entity, @Nullable PlayerEntity possessor);
+    @Nullable
+    <T extends MobEntity> Possessable convert(T entity, PlayerEntity possessor);
 
     /**
      * Checks if a call to {@link #registerPossessedConverter(EntityType, PossessableSubstitutionHandler)} has been made for the given

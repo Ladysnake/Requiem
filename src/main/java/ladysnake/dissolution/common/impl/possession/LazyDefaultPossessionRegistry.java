@@ -4,13 +4,11 @@ import ladysnake.dissolution.api.possession.PossessableSubstitutionHandler;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 
-import java.util.function.Function;
-
 public class LazyDefaultPossessionRegistry extends SimplePossessionRegistry {
 
-    private Function<EntityType<? extends MobEntity>, PossessableSubstitutionHandler<?>> defaultConverterProvider;
+    private PossessableConverterProvider defaultConverterProvider;
 
-    public LazyDefaultPossessionRegistry(Function<EntityType<? extends MobEntity>, PossessableSubstitutionHandler<?>> defaultConverterProvider) {
+    public LazyDefaultPossessionRegistry(PossessableConverterProvider defaultConverterProvider) {
         this.defaultConverterProvider = defaultConverterProvider;
     }
 
@@ -19,12 +17,15 @@ public class LazyDefaultPossessionRegistry extends SimplePossessionRegistry {
         return !this.blacklist.contains(entityType);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    protected PossessableSubstitutionHandler<MobEntity> getConverterFor(EntityType<?> entityType) {
-        EntityType<? extends MobEntity> mobType = (EntityType<? extends MobEntity>) entityType;
+    protected <T extends MobEntity> PossessableSubstitutionHandler<T> getConverterFor(EntityType<?> entityType) {
+        @SuppressWarnings("unchecked")
+        EntityType<T> mobType = (EntityType<T>) entityType;
         if (!isEntityRegistered(mobType)) {
-            this.registerPossessedConverter(mobType, (PossessableSubstitutionHandler) defaultConverterProvider.apply(mobType));
+            PossessableSubstitutionHandler<T> substitutionHandler = defaultConverterProvider.get(mobType);
+            if (substitutionHandler != null) {
+                this.registerPossessedConverter(mobType, substitutionHandler);
+            }
         }
         return super.getConverterFor(entityType);
     }

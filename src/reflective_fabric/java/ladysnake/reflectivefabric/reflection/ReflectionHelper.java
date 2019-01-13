@@ -3,8 +3,7 @@ package ladysnake.reflectivefabric.reflection;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethodHandles;
 import org.apiguardian.api.API;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
+import java.lang.invoke.*;
 import java.lang.reflect.Field;
 
 import static org.apiguardian.api.API.Status.MAINTAINED;
@@ -94,6 +93,58 @@ public class ReflectionHelper {
             return getTrustedLookup(clazz).unreflectSetter(clazz.getDeclaredField(fieldObfName));
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new UnableToFindFieldException(e);
+        }
+    }
+
+    /**
+     * Creates a factory for the given class implementing the given <tt>lambdaType</tt>.
+     * The constructor of the class will be looked up using the default public {@link MethodHandles.Lookup} object.
+     *
+     * @param clazz       the class for which to create a factory
+     * @param invokedName the name of the method to implement in the functional interface
+     * @param lambdaType  the class of a functional interface that the factory will implement
+     * @return a factory implementing <tt>lambdaType</tt>
+     * @see #createFactory(Class, String, Class, MethodHandles.Lookup, MethodType, Class[])
+     */
+    @API(status = STABLE, since = "2.6.2")
+    public static <T> T createFactory(Class<?> clazz, String invokedName, Class<? super T> lambdaType) {
+        return createFactory(clazz, invokedName, lambdaType, MethodHandles.lookup(), MethodType.methodType(Object.class));
+    }
+
+    /**
+     * Creates a factory for the given class implementing the given <tt>lambdaType</tt>.
+     * The constructor of the class will be looked up using the passed in <tt>lookup</tt> object.
+     *
+     * @param clazz         Class for which to create a factory
+     * @param invokedName   Name of the method to be implemented in the functional interface
+     * @param lambdaType    Class of a functional interface to be implemented by the factory
+     * @param lookup        Lookup to be used to find the constructor
+     * @param samMethodType Signature and return type of method to be implemented by the function object.
+     * @return a factory implementing <tt>lambdaType</tt>
+     */
+    @API(status = STABLE, since = "2.6.2")
+    @SuppressWarnings("unchecked")
+    public static <T> T createFactory(
+            Class<?> clazz,
+            String invokedName,
+            Class<? super T> lambdaType,
+            MethodHandles.Lookup lookup,
+            MethodType samMethodType,
+            Class<?>... cnstParams
+    ) {
+        try {
+            MethodHandle handle = lookup.findConstructor(clazz, MethodType.methodType(void.class, cnstParams));
+            CallSite metafactory = LambdaMetafactory.metafactory(
+                    lookup,
+                    invokedName,
+                    MethodType.methodType(lambdaType),
+                    samMethodType,
+                    handle,
+                    MethodType.methodType(clazz, cnstParams)
+            );
+            return (T) metafactory.getTarget().invoke();
+        } catch (Throwable throwable) {
+            throw new UncheckedReflectionException(throwable);
         }
     }
 

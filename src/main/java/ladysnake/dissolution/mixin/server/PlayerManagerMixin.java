@@ -64,25 +64,29 @@ public abstract class PlayerManagerMixin {
             Entity possessedEntityMount = ChunkSaveHandlerImpl.readEntity(serializedPossessedInfo.getCompound(POSSESSED_ENTITY_TAG), world, true);
             if (possessedEntityMount != null) {
                 UUID possessedEntityUuid = serializedPossessedInfo.getUuid(POSSESSED_UUID_TAG);
-                if (possessedEntityMount instanceof MobEntity && possessedEntityMount.getUuid().equals(possessedEntityUuid)) {
-                    ((Possessor)player).startPossessing((MobEntity) possessedEntityMount);
-                } else {
-                    for (Entity entity : possessedEntityMount.method_5736()) {
-                        if (entity instanceof MobEntity && entity.getUuid().equals(possessedEntityUuid)) {
-                            ((Possessor)player).startPossessing((MobEntity) entity);
-                            break;
-                        }
-                    }
-                }
+                resumePossession((Possessor) player, world, possessedEntityMount, possessedEntityUuid);
+            }
+        }
+    }
 
-                if (!((Possessor)player).isPossessing()) {
-                    Dissolution.LOGGER.warn("Couldn't reattach possessed entity to player");
-                    world.method_8507(possessedEntityMount);
-
-                    for (Entity entity : possessedEntityMount.method_5736()) {
-                        world.method_8507(entity);
-                    }
+    private void resumePossession(Possessor player, ServerWorld world, Entity possessedEntityMount, UUID possessedEntityUuid) {
+        if (possessedEntityMount instanceof MobEntity && possessedEntityMount.getUuid().equals(possessedEntityUuid)) {
+            player.startPossessing((MobEntity) possessedEntityMount);
+        } else {
+            for (Entity entity : possessedEntityMount.method_5736()) {
+                if (entity instanceof MobEntity && entity.getUuid().equals(possessedEntityUuid)) {
+                    player.startPossessing((MobEntity) entity);
+                    break;
                 }
+            }
+        }
+
+        if (!player.isPossessing()) {
+            Dissolution.LOGGER.warn("Couldn't reattach possessed entity to player");
+            world.method_8507(possessedEntityMount);
+
+            for (Entity entity : possessedEntityMount.method_5736()) {
+                world.method_8507(entity);
             }
         }
     }

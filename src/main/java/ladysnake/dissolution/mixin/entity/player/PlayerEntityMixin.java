@@ -6,7 +6,6 @@ import ladysnake.dissolution.api.possession.Possessable;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
 import ladysnake.dissolution.common.impl.possession.Possession;
 import ladysnake.dissolution.common.impl.remnant.DefaultRemnantHandler;
-import ladysnake.dissolution.common.network.DissolutionNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -64,11 +63,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
         if (!canStartPossessing(mob)) {
             return false;
         }
-        Possessable possessable = null;
+        @Nullable Possessable possessable;
         final PlayerEntity player = (PlayerEntity) (Object) this;
         if (mob instanceof Possessable) {
             possessable = (Possessable) mob;
-        } else if (Possession.getConversionRegistry().canBePossessed(mob)) {
+        } else {
             possessable = Possession.getConversionRegistry().convert(mob, player);
         }
         // 2- check that the mob can be possessed
@@ -76,31 +75,28 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
             return false;
         }
         // 3- Actually set the possessed entity
-        this.setPossessed(possessable);
+        MobEntity pMob = (MobEntity) possessable;
+        this.possessedUuid = pMob.getUuid();
+        this.possessedNetworkId = pMob.getEntityId();
         possessable.setPossessingEntity(((PlayerEntity)(Object)this).getUuid());
+        syncPossessed();
         return true;
-    }
-
-    private void setPossessed(@Nullable Possessable possessable) {
-        if (possessable != null) {
-            this.possessedUuid = ((MobEntity)possessable).getUuid();
-            this.possessedNetworkId = ((MobEntity)possessable).getEntityId();
-        } else {
-            this.possessedUuid = null;
-            this.possessedNetworkId = 0;
-        }
-        if (!this.world.isClient) {
-            ServerPlayerEntity player = (ServerPlayerEntity)(Object) this;
-            DissolutionNetworking.sendTo(player, DissolutionNetworking.createPossessionPacket(player.getUuid(), this.possessedNetworkId));
-        }
     }
 
     @Override
     public void stopPossessing() {
         Possessable possessedEntity = this.getPossessedEntity();
         if (possessedEntity != null) {
-            this.setPossessed(null);
+            this.possessedUuid = null;
+            this.possessedNetworkId = 0;
             possessedEntity.setPossessingEntity(null);
+            syncPossessed();
+        }
+    }
+
+    private void syncPossessed() {
+        if (!this.world.isClient) {
+            sendTo((ServerPlayerEntity)(Object)this, createPossessionPacket(getUuid(), this.possessedNetworkId));
         }
     }
 
@@ -117,10 +113,13 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
                 // Second attempt: use the UUID (server)
                 host = this.world.getEntityByUuid(this.getPossessedEntityUuid());
             }
-            if (host == null) {
+            if (host instanceof MobEntity && host instanceof Possessable) {
+                this.possessedUuid = host.getUuid();
+                this.possessedNetworkId = host.getEntityId();
+                syncPossessed();
+            } else {
                 Dissolution.LOGGER.warn("{}: this player's possessed entity is nowhere to be found", this);
-            } else if (host instanceof MobEntity && host instanceof Possessable) {
-                this.setPossessed((Possessable) host);
+                host = null;
             }
         }
         return (Possessable) host;

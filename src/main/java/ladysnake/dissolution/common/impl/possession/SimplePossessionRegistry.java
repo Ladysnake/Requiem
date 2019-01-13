@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class SimplePossessionRegistry implements PossessionRegistry {
@@ -36,17 +37,27 @@ public class SimplePossessionRegistry implements PossessionRegistry {
         return !this.blacklist.contains(entityType) && this.converters.containsKey(entityType);
     }
 
+    @Nullable
     @Override
-    public Possessable convert(MobEntity entity, PlayerEntity possessor) {
+    public <T extends MobEntity> Possessable convert(T entity, PlayerEntity possessor) {
         if (!this.canBePossessed(entity)) {
-            throw new IllegalArgumentException(entity + " can not be turned into a possessable variant!");
+            return null;
         }
-        return this.getConverterFor(entity.getType()).apply(entity, possessor);
+        PossessableSubstitutionHandler<T> converter = this.getConverterFor(entity.getType());
+        if (converter != null) {
+            return converter.apply(entity, possessor);
+        }
+        return null;
     }
 
+    /**
+     * Gets the appropriate converter for entities of the given type.
+     * <em>Note: the returned substitution handler is unsafely casted and should only be used on the same entity type</em>
+     */
+    @Nullable
     @SuppressWarnings({"unchecked", "SuspiciousMethodCalls"})
-    protected PossessableSubstitutionHandler<MobEntity> getConverterFor(EntityType<?> entityType) {
-        return (PossessableSubstitutionHandler<MobEntity>) this.converters.get(entityType);
+    protected <T extends MobEntity> PossessableSubstitutionHandler<T> getConverterFor(EntityType<?> entityType) {
+        return (PossessableSubstitutionHandler<T>) this.converters.get(entityType);
     }
 
     @Override

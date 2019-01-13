@@ -1,6 +1,7 @@
 package ladysnake.dissolution.common.impl.remnant;
 
 import ladysnake.dissolution.api.DissolutionPlayer;
+import ladysnake.dissolution.api.possession.Possessor;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -46,7 +47,7 @@ public class DefaultRemnantHandler implements RemnantHandler {
 
     @Override
     public boolean isIncorporeal() {
-        return this.incorporeal;
+        return this.incorporeal && !((Possessor)owner).isPossessing();
     }
 
     @Override

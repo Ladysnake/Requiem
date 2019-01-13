@@ -1,14 +1,13 @@
 package ladysnake.dissolution.common.entity;
 
 import ladysnake.dissolution.api.possession.Possessable;
+import ladysnake.dissolution.api.possession.Possessor;
 import ladysnake.dissolution.common.entity.ai.InertGoal;
-import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
-import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthAttribute;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -34,9 +33,9 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     @Override
     protected void initAttributes() {
         super.initAttributes();
-        if (this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE) != null) {
-            AttributeHelper.substituteAttributeInstance(this.getAttributeContainer(), new CooldownStrengthAttribute(this));
-        }
+//        if (this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE) != null) {
+//            AttributeHelper.substituteAttributeInstance(this.getAttributeContainer(), new CooldownStrengthAttribute(this));
+//        }
     }
 
     @Override
@@ -132,6 +131,18 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     public boolean canUsePortals() {
         // This entity's dimension should always be changed by the player
         return false;
+    }
+
+    @Override
+    public void onDeath(DamageSource damageSource_1) {
+        super.onDeath(damageSource_1);
+        this.getPossessingEntity().ifPresent(possessor -> {
+            ((Possessor)possessor).stopPossessing();
+            if (!world.isClient && !world.getGameRules().getBoolean("keepInventory")) {
+                possessor.inventory.dropAll();
+            }
+        });
+
     }
 
     /* * * * * * * * * * *

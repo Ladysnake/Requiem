@@ -39,6 +39,8 @@ public class ClientMessageHandling {
                 Entity entity = player.world.getEntityById(possessedId);
                 if (entity instanceof MobEntity) {
                     ((DissolutionPlayer)player).startPossessing((MobEntity) entity);
+                } else {
+                    ((DissolutionPlayer)player).stopPossessing();
                 }
             }
         }));

@@ -6,12 +6,21 @@ import ladysnake.dissolution.api.possession.PossessionRegistry;
 import ladysnake.dissolution.api.possession.Possessor;
 import ladysnake.dissolution.common.entity.PossessableEntityImpl;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.ActionResult;
+import org.apiguardian.api.API;
 
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+
+/**
+ * Entry point for the possession mechanic.
+ * Everything here is subject to be moved to a more specialized place.
+ */
+@API(status = EXPERIMENTAL)
 public class Possession {
-    private static PossessionRegistry registry = new SimplePossessionRegistry();
+    private static PossessionRegistry registry = new LazyDefaultPossessionRegistry(new ASMConverterProvider());
 
     public static PossessionRegistry getConversionRegistry() {
         return registry;
@@ -42,6 +51,10 @@ public class Possession {
 
     public static <E extends MobEntity, P extends MobEntity & Possessable> void swapEntities(E entity, P clone) {
         entity.world.method_8507(entity);
-        clone.world.spawnEntity(clone);
+        if (clone.world.isClient) {
+            ((ClientWorld)clone.world).method_2942(clone.getEntityId(), clone);
+        } else {
+            clone.world.spawnEntity(clone);
+        }
     }
 }
