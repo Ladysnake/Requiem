@@ -195,7 +195,7 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     @Override
     public void setEquippedStack(EquipmentSlot var1, ItemStack var2) {
         Optional<PlayerEntity> possessing = getPossessingEntity();
-        if (possessing.isPresent()) {
+        if (possessing.filter(p -> !p.world.isClient).isPresent()) {
             possessing.get().setEquippedStack(var1, var2);
         } else {
             super.setEquippedStack(var1, var2);
