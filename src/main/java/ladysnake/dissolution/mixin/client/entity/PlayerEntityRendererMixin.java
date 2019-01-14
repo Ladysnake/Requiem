@@ -18,12 +18,19 @@ import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 @Mixin(PlayerEntityRenderer.class)
 public abstract class PlayerEntityRendererMixin {
 
+    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
+    public void cancelRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
+        if (((Possessor)renderedPlayer).isPossessing()) {
+            info.cancel();
+        }
+    }
+
     @Inject(
+            method = "render",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;render(Lnet/minecraft/entity/LivingEntity;DDDFF)V"
-            ),
-            method = "render"
+            )
     )
     public void preRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
         RemnantHandler renderedPlayerRemnantHandler = ((DissolutionPlayer) renderedPlayer).getRemnantHandler();
@@ -32,18 +39,16 @@ public abstract class PlayerEntityRendererMixin {
             boolean isObserverRemnant = cameraEntity instanceof DissolutionPlayer && ((DissolutionPlayer) cameraEntity).getRemnantHandler() != null;
             float alpha = isObserverRemnant ? 0.8f : 0.05f;
             GlStateManager.color4f(0.9f, 0.9f, 1.0f, alpha); // Tints souls blue and transparent
-        } else if (((Possessor)renderedPlayer).isPossessing()) {
-            GlStateManager.color4f(0f,0f,0f,0f);
         }
     }
 
     @Inject(
+            method = "render",
             at = @At(
                     value = "INVOKE",
                     shift = AFTER,
                     target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;render(Lnet/minecraft/entity/LivingEntity;DDDFF)V"
-            ),
-            method = "render"
+            )
     )
     public void postRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
         GlStateManager.color4f(1f, 1f, 1f, 1f);
