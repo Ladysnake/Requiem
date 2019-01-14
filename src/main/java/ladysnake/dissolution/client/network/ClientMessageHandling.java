@@ -25,7 +25,7 @@ public class ClientMessageHandling {
             PlayerEntity player = context.getPlayer().world.getPlayerByUuid(playerUuid);
             if (player != null) {
                 if (remnant) {
-                    DefaultRemnantHandler.getOrMakeRemnant(player).setIncorporeal(incorporeal);
+                    DefaultRemnantHandler.getOrMakeRemnant(player).setSoul(incorporeal);
                 } else {
                     ((DissolutionPlayer)player).setRemnantHandler(null);
                 }

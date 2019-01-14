@@ -102,7 +102,8 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     @Override
     public Entity getPrimaryPassenger() {
         // Allows this entity to move client-side, in conjunction with #method_5956
-        return this.getPossessingEntity().orElse(null);
+        return this.getPossessingEntity().map(p -> (Entity)p)
+                .orElseGet(super::getPrimaryPassenger);
     }
 
     @Override

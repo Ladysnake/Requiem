@@ -47,11 +47,16 @@ public class DefaultRemnantHandler implements RemnantHandler {
 
     @Override
     public boolean isIncorporeal() {
-        return this.incorporeal && !((Possessor)owner).isPossessing();
+        return this.isSoul() && !((Possessor)owner).isPossessing();
     }
 
     @Override
-    public void setIncorporeal(boolean incorporeal) {
+    public boolean isSoul() {
+        return this.incorporeal;
+    }
+
+    @Override
+    public void setSoul(boolean incorporeal) {
         this.incorporeal = incorporeal;
         if (incorporeal) {
             this.wasAllowedFlight = this.owner.abilities.allowFlying;
@@ -75,6 +80,6 @@ public class DefaultRemnantHandler implements RemnantHandler {
 
     @Override
     public void readFromTag(CompoundTag tag) {
-        this.setIncorporeal(tag.getBoolean(INCORPOREAL_TAG));
+        this.setSoul(tag.getBoolean(INCORPOREAL_TAG));
     }
 }

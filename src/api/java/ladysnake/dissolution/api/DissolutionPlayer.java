@@ -3,11 +3,11 @@ package ladysnake.dissolution.api;
 import ladysnake.dissolution.api.possession.Possessor;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
 
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 
 public interface DissolutionPlayer extends Possessor {
 
-    @Nullable
+    @CheckForNull
     RemnantHandler getRemnantHandler();
 
     void setRemnantHandler(RemnantHandler handler);

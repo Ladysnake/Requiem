@@ -22,7 +22,9 @@ public interface RemnantHandler {
 
     boolean isIncorporeal();
 
-    void setIncorporeal(boolean incorporeal);
+    boolean isSoul();
+
+    void setSoul(boolean incorporeal);
 
     CompoundTag writeToTag();
 

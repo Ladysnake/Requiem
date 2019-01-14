@@ -19,7 +19,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
@@ -100,7 +102,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
         }
     }
 
-    @Nullable
+    @CheckForNull
     @Override
     public Possessable getPossessedEntity() {
         if (!isPossessing()) {
@@ -125,10 +127,25 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
         return (Possessable) host;
     }
 
-    @Nullable
+    @Override
+    public boolean isPossessing() {
+        return this.possessedUuid != null;
+    }
+
+    @CheckForNull
     @Override
     public UUID getPossessedEntityUuid() {
         return this.possessedUuid;
+    }
+
+    @Inject(method = "getEyeHeight", at = @At("RETURN"), cancellable = true)
+    public void adjustEyeHeight(CallbackInfoReturnable<Float> info) {
+        if (this.isPossessing()) {
+            Entity possessedEntity = (Entity) this.getPossessedEntity();
+            if (possessedEntity != null) {
+                info.setReturnValue(possessedEntity.getEyeHeight());
+            }
+        }
     }
 
     @Inject(at = @At("TAIL"), method = "writeCustomDataToTag")

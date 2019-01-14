@@ -2,7 +2,7 @@ package ladysnake.dissolution.api.possession;
 
 import net.minecraft.entity.mob.MobEntity;
 
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 import java.util.UUID;
 
 public interface Possessor {
@@ -12,9 +12,9 @@ public interface Possessor {
 
     void stopPossessing();
 
-    @Nullable Possessable getPossessedEntity();
+    @CheckForNull Possessable getPossessedEntity();
 
-    @Nullable UUID getPossessedEntityUuid();
+    @CheckForNull UUID getPossessedEntityUuid();
 
     default boolean isPossessing() {
         return getPossessedEntityUuid() != null;
