@@ -5,7 +5,7 @@ import ladysnake.satin.client.event.RenderEvent;
 import net.fabricmc.fabric.util.HandlerArray;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.util.Profiler;
+import net.minecraft.util.profiler.Profiler;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,11 +35,11 @@ public abstract class GameRendererMixin {
         FloatConsumer[] handlers = ((HandlerArray<FloatConsumer>)RenderEvent.SHADER_EFFECT).getBackingArray();
         if (handlers.length > 0) {
             Profiler profiler = this.client.getProfiler();
-            profiler.begin("shaders");
+            profiler.push("shaders");
             for (FloatConsumer handler : handlers) {
                 handler.accept(tickDelta);
             }
-            profiler.end();
+            profiler.pop();
         }
     }
 }

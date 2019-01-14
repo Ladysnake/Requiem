@@ -109,7 +109,7 @@ public abstract class PlayerManagerMixin {
             for (Entity ridden : ((Entity) possessedEntity).method_5736()) {
                 serverWorld_1.method_8507(ridden);
             }
-            serverWorld_1.getChunk(player.chunkX, player.chunkZ).markDirty();
+            serverWorld_1.getWorldChunk(player.chunkX, player.chunkZ).markDirty();
         }
     }
 }
