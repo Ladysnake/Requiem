@@ -74,7 +74,7 @@ public class DefaultRemnantHandler implements RemnantHandler {
     @Override
     public CompoundTag writeToTag() {
         CompoundTag serialized = new CompoundTag();
-        serialized.putBoolean(INCORPOREAL_TAG, this.isIncorporeal());
+        serialized.putBoolean(INCORPOREAL_TAG, this.isSoul());
         return serialized;
     }
 

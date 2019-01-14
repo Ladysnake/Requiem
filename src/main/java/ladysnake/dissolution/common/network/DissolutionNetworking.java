@@ -36,7 +36,7 @@ public class DissolutionNetworking {
     public static CustomPayloadClientPacket createCorporealityPacket(PlayerEntity synchronizedPlayer) {
         RemnantHandler synchronizedHandler = ((DissolutionPlayer)synchronizedPlayer).getRemnantHandler();
         boolean remnant = synchronizedHandler != null;
-        boolean incorporeal = remnant && synchronizedHandler.isIncorporeal();
+        boolean incorporeal = remnant && synchronizedHandler.isSoul();
         UUID playerUuid = synchronizedPlayer.getUuid();
         return createCorporealityPacket(playerUuid, remnant, incorporeal);
     }
@@ -50,6 +50,7 @@ public class DissolutionNetworking {
         return new CustomPayloadClientPacket(REMNANT_SYNC, buf);
     }
 
+    @Contract(pure = true)
     public static CustomPayloadClientPacket createPossessionPacket(UUID playerUuid, int possessedId) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeUuid(playerUuid);
