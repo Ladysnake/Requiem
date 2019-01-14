@@ -1,4 +1,4 @@
-package ladysnake.dissolution.mixin.client;
+package ladysnake.satin.mixin.client;
 
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import ladysnake.satin.client.event.RenderEvent;

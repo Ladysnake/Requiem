@@ -3,6 +3,8 @@
   "package": "ladysnake.satin.mixin.client",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "GameRendererMixin",
+    "MinecraftClientMixin",
     "gl.AccessiblePassesShaderEffect",
     "gl.GlProgramMixin"
   ],

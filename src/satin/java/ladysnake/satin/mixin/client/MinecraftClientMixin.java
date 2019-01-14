@@ -1,4 +1,4 @@
-package ladysnake.dissolution.mixin.client;
+package ladysnake.satin.mixin.client;
 
 import ladysnake.satin.client.event.ClientLoadingEvent;
 import net.fabricmc.fabric.util.HandlerArray;
