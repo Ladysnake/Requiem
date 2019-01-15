@@ -15,7 +15,7 @@ import java.util.List;
 import static org.spongepowered.asm.mixin.injection.At.Shift.BY;
 
 @Mixin(GameRenderer.class)
-public class GameRendererMixin {
+public abstract class GameRendererMixin {
     @Inject(
             method = "method_3190",
             at = @At(

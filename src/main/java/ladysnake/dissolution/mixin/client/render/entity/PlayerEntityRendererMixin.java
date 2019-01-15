@@ -1,4 +1,4 @@
-package ladysnake.dissolution.mixin.client.entity;
+package ladysnake.dissolution.mixin.client.render.entity;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.dissolution.api.DissolutionPlayer;
@@ -75,33 +75,37 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     @SuppressWarnings("InvalidMemberReference")
     @Inject(method = {"method_4220", "method_4221"}, at = @At("HEAD"), cancellable = true)
     public void renderPossessedHand(AbstractClientPlayerEntity renderedPlayer, CallbackInfo info) {
-        if (((Possessor)renderedPlayer).isPossessing()) {
-            LivingEntity possessed = (LivingEntity)((Possessor) renderedPlayer).getPossessedEntity();
-            if (possessed != null) {
-                EntityRenderer renderer = MinecraftClient.getInstance().getEntityRenderManager().getRenderer(possessed);
-                // If the mob has an arm, render it instead of the player's
-                if (renderer instanceof FeatureRendererContext) {
-                    Model model = ((LivingEntityRenderer) renderer).getModel();
-                    if (model instanceof BipedEntityModel) {
-                        boolean rightArm = renderedPlayer.getMainHand() == OptionMainHand.RIGHT;
-                        GlStateManager.color3f(1.0F, 1.0F, 1.0F);
-                        BipedEntityModel playerEntityModel_1 = (BipedEntityModel) model;
-                        this.setModelPose(renderedPlayer);
-                        GlStateManager.enableBlend();
-                        playerEntityModel_1.swingProgress = 0.0F;
-                        playerEntityModel_1.isSneaking = false;
-                        playerEntityModel_1.field_3396 = 0.0F;
-                        //noinspection unchecked
-                        playerEntityModel_1.method_17087(possessed, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-                        Cuboid arm = rightArm ? playerEntityModel_1.armRight : playerEntityModel_1.armLeft;
-                        arm.pitch = 0.0F;
-                        arm.render(0.0625F);
-                        GlStateManager.disableBlend();
+        RemnantHandler remnantHandler = ((DissolutionPlayer) renderedPlayer).getRemnantHandler();
+        if (remnantHandler != null && remnantHandler.isSoul()) {
+            if (((DissolutionPlayer) renderedPlayer).isPossessing()) {
+                LivingEntity possessed = (LivingEntity) ((Possessor) renderedPlayer).getPossessedEntity();
+                if (possessed != null) {
+                    EntityRenderer renderer = MinecraftClient.getInstance().getEntityRenderManager().getRenderer(possessed);
+                    // If the mob has an arm, render it instead of the player's
+                    if (renderer instanceof FeatureRendererContext) {
+                        Model model = ((LivingEntityRenderer) renderer).getModel();
+                        if (model instanceof BipedEntityModel) {
+                            renderer.bindTexture(((AccessibleTextureEntityRenderer) renderer).getTexture(possessed));
+                            boolean rightArm = renderedPlayer.getMainHand() == OptionMainHand.RIGHT;
+                            GlStateManager.color3f(1.0F, 1.0F, 1.0F);
+                            BipedEntityModel playerEntityModel_1 = (BipedEntityModel) model;
+                            this.setModelPose(renderedPlayer);
+                            GlStateManager.enableBlend();
+                            playerEntityModel_1.swingProgress = 0.0F;
+                            playerEntityModel_1.isSneaking = false;
+                            playerEntityModel_1.field_3396 = 0.0F;
+                            //noinspection unchecked
+                            playerEntityModel_1.method_17087(possessed, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+                            Cuboid arm = rightArm ? playerEntityModel_1.armRight : playerEntityModel_1.armLeft;
+                            arm.pitch = 0.0F;
+                            arm.render(0.0625F);
+                            GlStateManager.disableBlend();
+                        }
                     }
                 }
-                // prevent rendering the player's arm regardless
-                info.cancel();
             }
+            // prevent rendering a soul's arm regardless
+            info.cancel();
         }
     }
 }
