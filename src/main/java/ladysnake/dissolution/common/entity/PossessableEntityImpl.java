@@ -66,6 +66,7 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
 
     @Override
     public void update() {
+        // Make possessed monsters despawn gracefully
         if (!this.world.isClient) {
             this.getPossessingEntity().ifPresent(player -> {
                 if (this instanceof Monster && this.world.getDifficulty() == Difficulty.PEACEFUL) {
@@ -77,7 +78,15 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     }
 
     @Override
+    public boolean isInvulnerableTo(DamageSource damageSource_1) {
+        // Prevent possessed entities from hitting themselves
+        return super.isInvulnerableTo(damageSource_1) ||
+                this.getPossessingEntity().filter(p -> p.isCreative() || p == damageSource_1.getAttacker()).isPresent();
+    }
+
+    @Override
     public void method_6091(float strafe, float vertical, float forward) {
+        // Always set the entity at the possessor's position
         Optional<PlayerEntity> optionalPlayer = this.getPossessingEntity();
         if (optionalPlayer.isPresent()) {
             PlayerEntity player = optionalPlayer.get();
@@ -137,6 +146,7 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     @Override
     public void onDeath(DamageSource damageSource_1) {
         super.onDeath(damageSource_1);
+        // Drop player inventory on death
         this.getPossessingEntity().ifPresent(possessor -> {
             ((Possessor)possessor).stopPossessing();
             if (!world.isClient && !possessor.isCreative() && !world.getGameRules().getBoolean("keepInventory")) {
