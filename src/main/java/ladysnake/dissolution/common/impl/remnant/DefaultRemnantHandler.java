@@ -26,6 +26,13 @@ public class DefaultRemnantHandler implements RemnantHandler {
                 return ActionResult.PASS;
             }
         });
+        // Prevent incorporeal players from hitting anything
+        PlayerInteractionEvent.ATTACK_ENTITY.register((playerEntity, world, hand, entity) -> {
+            if (RemnantHandler.get(playerEntity).filter(RemnantHandler::isIncorporeal).isPresent()) {
+                return ActionResult.FAILURE;
+            }
+            return ActionResult.PASS;
+        });
     }
 
     @API(status = INTERNAL)

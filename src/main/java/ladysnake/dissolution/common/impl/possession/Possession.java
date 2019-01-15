@@ -9,6 +9,7 @@ import ladysnake.dissolution.common.impl.possession.asm.ASMConverterProvider;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.ActionResult;
 import org.apiguardian.api.API;
@@ -28,6 +29,7 @@ public class Possession {
     }
 
     public static void init() {
+        // Start possession on right click
         PlayerInteractionEvent.INTERACT_ENTITY_POSITIONED.register((player, world, hand, entity, hitPosition) -> {
             if (entity instanceof MobEntity && !entity.world.isClient) {
                 MobEntity mob = (MobEntity) entity;
@@ -38,6 +40,18 @@ public class Possession {
                 return ActionResult.SUCCESS;
             }
             return ActionResult.FAILURE;
+        });
+        // Proxy melee attacks
+        PlayerInteractionEvent.ATTACK_ENTITY.register((playerEntity, world, hand, target) -> {
+            LivingEntity possessed = (LivingEntity) ((Possessor)playerEntity).getPossessedEntity();
+            if (possessed != null && !possessed.invalid) {
+                if (target instanceof LivingEntity) {
+                    playerEntity.getMainHandStack().onEntityDamaged((LivingEntity) target, playerEntity);
+                }
+                possessed.method_6121(target);
+                return ActionResult.SUCCESS;
+            }
+            return ActionResult.PASS;
         });
         registerDefaultConversions();
     }
