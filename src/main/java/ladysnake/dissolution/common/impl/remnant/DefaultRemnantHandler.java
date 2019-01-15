@@ -4,6 +4,7 @@ import ladysnake.dissolution.api.DissolutionPlayer;
 import ladysnake.dissolution.api.possession.Possessor;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
+import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -39,7 +40,6 @@ public class DefaultRemnantHandler implements RemnantHandler {
 
     protected PlayerEntity owner;
     protected boolean incorporeal;
-    protected boolean wasAllowedFlight;
 
     public DefaultRemnantHandler(PlayerEntity owner) {
         this.owner = owner;
@@ -58,11 +58,12 @@ public class DefaultRemnantHandler implements RemnantHandler {
     @Override
     public void setSoul(boolean incorporeal) {
         this.incorporeal = incorporeal;
+        PlayerAbilities abilities = this.owner.abilities;
         if (incorporeal) {
-            this.wasAllowedFlight = this.owner.abilities.allowFlying;
-            this.owner.abilities.allowFlying = true;
+            abilities.allowFlying = true;
         } else {
-            this.owner.abilities.allowFlying = this.wasAllowedFlight;
+            abilities.allowFlying = this.owner.isCreative();
+            abilities.flying = abilities.flying && abilities.allowFlying;
         }
         if (!this.owner.world.isClient) {
             // Synchronizes with all players tracking the owner
