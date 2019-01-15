@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "entity.PlayerEntityRendererMixin",
+    "gui.ingame.PlayerInventoryGuiMixin",
     "render.GameRendererMixin",
     "render.WorldRendererMixin"
   ],

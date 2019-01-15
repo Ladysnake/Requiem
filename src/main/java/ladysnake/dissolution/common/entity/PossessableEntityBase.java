@@ -4,6 +4,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.world.World;
 
+/**
+ * Only there to provide <code>super</code> constructors for {@link PossessableEntityImpl}
+ */
 public abstract class PossessableEntityBase extends MobEntityWithAi {
     protected PossessableEntityBase(World world) {
         this(DissolutionEntities.DEBUG_POSSESSABLE, world);
