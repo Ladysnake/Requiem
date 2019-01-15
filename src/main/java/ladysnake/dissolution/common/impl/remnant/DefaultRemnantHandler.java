@@ -61,9 +61,11 @@ public class DefaultRemnantHandler implements RemnantHandler {
         PlayerAbilities abilities = this.owner.abilities;
         if (incorporeal) {
             abilities.allowFlying = true;
+            abilities.invulnerable = true;
         } else {
             abilities.allowFlying = this.owner.isCreative();
             abilities.flying = abilities.flying && abilities.allowFlying;
+            abilities.invulnerable = this.owner.isCreative();
         }
         if (!this.owner.world.isClient) {
             // Synchronizes with all players tracking the owner
