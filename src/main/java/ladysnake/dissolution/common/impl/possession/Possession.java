@@ -5,6 +5,7 @@ import ladysnake.dissolution.api.possession.PossessableSubstitutionHandler;
 import ladysnake.dissolution.api.possession.PossessionRegistry;
 import ladysnake.dissolution.api.possession.Possessor;
 import ladysnake.dissolution.common.entity.PossessableEntityImpl;
+import ladysnake.dissolution.common.impl.possession.asm.ASMConverterProvider;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;

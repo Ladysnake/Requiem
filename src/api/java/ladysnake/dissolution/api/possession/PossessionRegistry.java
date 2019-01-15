@@ -6,6 +6,9 @@ import net.minecraft.entity.player.PlayerEntity;
 
 import javax.annotation.Nullable;
 
+/**
+ * A registry handling conversion from standard entities to {@link Possessable} ones.
+ */
 public interface PossessionRegistry {
     /**
      * Excludes all the given entity types from the possession mechanism. <br>

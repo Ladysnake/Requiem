@@ -1,7 +1,10 @@
-package ladysnake.dissolution.common.impl.possession;
+package ladysnake.dissolution.common.impl.possession.asm;
 
+import ladysnake.dissolution.api.possession.PossessableConverterProvider;
 import ladysnake.dissolution.api.possession.PossessableSubstitutionHandler;
 import ladysnake.dissolution.common.entity.PossessableEntityImpl;
+import ladysnake.dissolution.common.impl.possession.CopyStrategies;
+import ladysnake.dissolution.common.impl.possession.Possession;
 import ladysnake.dissolution.common.impl.possession.asm.MixedInSubclassFactory;
 import ladysnake.reflectivefabric.reflection.ReflectionHelper;
 import net.minecraft.entity.Entity;

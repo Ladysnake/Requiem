@@ -15,7 +15,6 @@ import java.util.function.Function;
  *
  * @param <E> the type of mobs that this handler can substitute
  */
-// No guarantee this will remain a functional interface
 @FunctionalInterface
 @API(status = API.Status.EXPERIMENTAL)
 public interface PossessableSubstitutionHandler<E extends MobEntity> extends BiFunction<E, PlayerEntity, Possessable> {
