@@ -1,28 +1,19 @@
 package ladysnake.dissolution.common.entity.ai.attribute;
 
-import ladysnake.reflectivefabric.reflection.typed.TypedGetter;
-import ladysnake.reflectivefabric.reflection.typed.TypedMethodHandles;
+import ladysnake.dissolution.mixin.entity.attribute.AbstractEntityAttributeContainerAccessorMixin;
+import ladysnake.dissolution.mixin.entity.attribute.EntityAttributeContainerAccessorMixin;
 import net.minecraft.entity.attribute.*;
 
 import java.util.Map;
 
 public final class AttributeHelper {
     private AttributeHelper() { throw new AssertionError(); }
-    private static TypedGetter<AbstractEntityAttributeContainer, Map> abstractEntityAttributeContainer$attributes =
-            TypedMethodHandles.findGetter(AbstractEntityAttributeContainer.class, "field_111154_a", Map.class);
-    private static TypedGetter<AbstractEntityAttributeContainer, Map> abstractEntityAttributeContainer$attributesByName =
-            TypedMethodHandles.findGetter(AbstractEntityAttributeContainer.class, "field_111153_b", Map.class);
-    private static TypedGetter<EntityAttributeContainer, Map> entityAttributeContainer$instancesByName =
-            TypedMethodHandles.findGetter(EntityAttributeContainer.class, "field_111163_c", Map.class);
 
-    public static void substituteAttributeInstance(AbstractEntityAttributeContainer EntityAttributeContainer, EntityAttributeInstance replacement) {
-        @SuppressWarnings("unchecked")
-        final Map<EntityAttribute, EntityAttributeInstance> attributes = abstractEntityAttributeContainer$attributes.invoke(EntityAttributeContainer);
-        @SuppressWarnings("unchecked")
-        final Map<String, EntityAttributeInstance> attributesByName = abstractEntityAttributeContainer$attributesByName.invoke(EntityAttributeContainer);
-        @SuppressWarnings("unchecked")
-        final Map<String, EntityAttributeInstance> instancesByName = (EntityAttributeContainer instanceof EntityAttributeContainer)
-                ? entityAttributeContainer$instancesByName.invoke((EntityAttributeContainer) EntityAttributeContainer)
+    public static void substituteAttributeInstance(AbstractEntityAttributeContainer entityAttributeContainer, EntityAttributeInstance replacement) {
+        final Map<EntityAttribute, EntityAttributeInstance> attributes = ((AbstractEntityAttributeContainerAccessorMixin)entityAttributeContainer).getInstancesByKey();
+        final Map<String, EntityAttributeInstance> attributesByName = ((AbstractEntityAttributeContainerAccessorMixin)entityAttributeContainer).getInstancesById();
+        final Map<String, EntityAttributeInstance> instancesByName = (entityAttributeContainer instanceof EntityAttributeContainer)
+                ? ((EntityAttributeContainerAccessorMixin) entityAttributeContainer).getInstancesByName()
                 : null;
         EntityAttribute attribute = replacement.getAttribute();
         String name = attribute.getId();
