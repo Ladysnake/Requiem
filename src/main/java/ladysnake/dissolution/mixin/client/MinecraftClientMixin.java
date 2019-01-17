@@ -16,7 +16,7 @@ import static ladysnake.dissolution.common.network.DissolutionNetworking.createL
 import static ladysnake.dissolution.common.network.DissolutionNetworking.sendToServer;
 
 @Mixin(MinecraftClient.class)
-public class MinecraftClientMixin {
+public abstract class MinecraftClientMixin {
     @Shadow
     public ClientPlayerEntity player;
 

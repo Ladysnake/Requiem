@@ -5,6 +5,7 @@
   "mixins": [
     "MinecraftClientAccessorMixin",
     "MinecraftClientMixin",
+    "gui.hud.InGameHudMixin",
     "gui.ingame.PlayerInventoryGuiMixin",
     "render.GameRendererMixin",
     "render.WorldRendererMixin",

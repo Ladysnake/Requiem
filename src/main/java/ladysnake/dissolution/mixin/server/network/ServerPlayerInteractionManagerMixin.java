@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 
 @Mixin(ServerPlayerInteractionManager.class)
-public class ServerPlayerInteractionManagerMixin {
+public abstract class ServerPlayerInteractionManagerMixin {
 
     @Shadow public ServerPlayerEntity player;
 

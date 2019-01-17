@@ -18,6 +18,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class WorldRendererMixin {
     @Shadow @Final private MinecraftClient client;
 
+    /**
+     * This sets the possessed entity as the camera in the entity rendering section, to skip rendering that
+     * entity completely.
+     */
     @Inject(method = "renderEntities", at = @At("HEAD"))
     public void preRenderEntities(Entity camera, class_856 frustum, float tickDelta, CallbackInfo info) {
         if (camera instanceof Possessor) {
@@ -28,6 +32,9 @@ public abstract class WorldRendererMixin {
         }
     }
 
+    /**
+     * Reverts the change made in {@link #preRenderEntities(Entity, class_856, float, CallbackInfo)}
+     */
     @Inject(method = "renderEntities", at = @At("RETURN"))
     public void postRenderEntities(Entity camera, class_856 frustum, float tickDelta, CallbackInfo info) {
         if (camera instanceof Possessor) {
