@@ -3,10 +3,12 @@ package ladysnake.dissolution.common.network;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.DissolutionPlayer;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.packet.CustomPayloadClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.network.packet.CustomPayloadServerPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
@@ -17,8 +19,16 @@ import java.util.UUID;
 import static io.netty.buffer.Unpooled.buffer;
 
 public class DissolutionNetworking {
+    // Server -> Client
     public static final Identifier REMNANT_SYNC = Dissolution.id("remnant_sync");
     public static final Identifier POSSESSION_SYNC = Dissolution.id("possession_sync");
+
+    // Client -> Server
+    public static final Identifier LEFT_CLICK_AIR = Dissolution.id("attack_air");
+
+    public static void sendToServer(CustomPayloadServerPacket packet) {
+        MinecraftClient.getInstance().player.networkHandler.sendPacket(packet);
+    }
 
     public static void sendTo(ServerPlayerEntity player, CustomPayloadClientPacket packet) {
         if (player.networkHandler != null) {
@@ -56,5 +66,10 @@ public class DissolutionNetworking {
         buf.writeUuid(playerUuid);
         buf.writeInt(possessedId);
         return new CustomPayloadClientPacket(POSSESSION_SYNC, buf);
+    }
+
+    @Contract(pure = true)
+    public static CustomPayloadServerPacket createLeftClickPacket() {
+        return new CustomPayloadServerPacket(LEFT_CLICK_AIR, new PacketByteBuf(buffer()));
     }
 }

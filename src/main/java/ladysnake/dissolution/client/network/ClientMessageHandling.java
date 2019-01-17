@@ -19,10 +19,10 @@ import static ladysnake.dissolution.common.network.DissolutionNetworking.REMNANT
 
 public class ClientMessageHandling {
     public static void init() {
-        register(REMNANT_SYNC, (context, packet) -> {
-            UUID playerUuid = packet.readUuid();
-            boolean remnant = packet.readBoolean();
-            boolean incorporeal = packet.readBoolean();
+        register(REMNANT_SYNC, (context, buf) -> {
+            UUID playerUuid = buf.readUuid();
+            boolean remnant = buf.readBoolean();
+            boolean incorporeal = buf.readBoolean();
             PlayerEntity player = context.getPlayer().world.getPlayerByUuid(playerUuid);
             if (player != null) {
                 if (remnant) {
@@ -32,9 +32,9 @@ public class ClientMessageHandling {
                 }
             }
         });
-        register(POSSESSION_SYNC, ((context, packet) -> {
-            UUID playerUuid = packet.readUuid();
-            int possessedId = packet.readInt();
+        register(POSSESSION_SYNC, ((context, buf) -> {
+            UUID playerUuid = buf.readUuid();
+            int possessedId = buf.readInt();
             PlayerEntity player = context.getPlayer().world.getPlayerByUuid(playerUuid);
             MinecraftClient client = MinecraftClient.getInstance();
             if (player != null) {

@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common.impl.possession;
 
+import ladysnake.dissolution.api.entity.TriggerableAttacker;
 import ladysnake.dissolution.api.possession.Possessable;
 import ladysnake.dissolution.api.possession.PossessableSubstitutionHandler;
 import ladysnake.dissolution.api.possession.PossessionRegistry;
@@ -45,11 +46,9 @@ public class Possession {
         PlayerInteractionEvent.ATTACK_ENTITY.register((playerEntity, world, hand, target) -> {
             LivingEntity possessed = (LivingEntity) ((Possessor)playerEntity).getPossessedEntity();
             if (possessed != null && !possessed.invalid) {
-                if (target instanceof LivingEntity) {
-                    playerEntity.getMainHandStack().onEntityDamaged((LivingEntity) target, playerEntity);
+                if (((TriggerableAttacker)possessed).triggerDirectAttack(playerEntity, target)) {
+                    return ActionResult.SUCCESS;
                 }
-                possessed.method_6121(target);
-                return ActionResult.SUCCESS;
             }
             return ActionResult.PASS;
         });

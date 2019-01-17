@@ -7,9 +7,11 @@
     "entity.LivingEntityMixin",
     "entity.attribute.AbstractEntityAttributeContainerAccessorMixin",
     "entity.attribute.EntityAttributeContainerAccessorMixin",
+    "entity.mob.BlazeEntityMixin",
     "entity.player.PlayerEntityMixin",
     "server.PlayerManagerMixin",
-    "server.network.ServerPlayerEntityMixin"
+    "server.network.ServerPlayerEntityMixin",
+    "server.network.ServerPlayerInteractionManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
