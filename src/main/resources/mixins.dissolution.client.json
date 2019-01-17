@@ -3,6 +3,7 @@
   "package": "ladysnake.dissolution.mixin.client",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "MinecraftClientAccessorMixin",
     "gui.ingame.PlayerInventoryGuiMixin",
     "render.GameRendererMixin",
     "render.WorldRendererMixin",

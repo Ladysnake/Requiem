@@ -2,6 +2,7 @@ package ladysnake.dissolution.mixin.client.render;
 
 import ladysnake.dissolution.api.possession.Possessable;
 import ladysnake.dissolution.api.possession.Possessor;
+import ladysnake.dissolution.mixin.client.MinecraftClientAccessorMixin;
 import net.minecraft.class_856;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.WorldRenderer;
@@ -22,7 +23,7 @@ public abstract class WorldRendererMixin {
         if (camera instanceof Possessor) {
             Possessable possessed = ((Possessor) camera).getPossessedEntity();
             if (possessed != null) {
-                MinecraftClient.getInstance().setCameraEntity((Entity) possessed);
+                ((MinecraftClientAccessorMixin)MinecraftClient.getInstance()).setCameraEntityDirect((Entity) possessed);
             }
         }
     }
@@ -32,7 +33,7 @@ public abstract class WorldRendererMixin {
         if (camera instanceof Possessor) {
             Possessable possessed = ((Possessor) camera).getPossessedEntity();
             if (possessed == client.getCameraEntity()) {
-                client.setCameraEntity(camera);
+                ((MinecraftClientAccessorMixin)MinecraftClient.getInstance()).setCameraEntityDirect(camera);
             }
         }
     }

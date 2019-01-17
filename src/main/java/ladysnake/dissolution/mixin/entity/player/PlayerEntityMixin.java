@@ -56,7 +56,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
 
     @Override
     public boolean canStartPossessing(MobEntity mob) {
-        return true;
+        PlayerEntity self = (PlayerEntity)(Object)this;
+        return self.world.isClient || (!self.isSpectator() && this.isRemnant() && this.getRemnantHandler().isIncorporeal());
     }
 
     @Override
@@ -80,6 +81,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
         MobEntity pMob = (MobEntity) possessable;
         this.possessedUuid = pMob.getUuid();
         this.possessedNetworkId = pMob.getEntityId();
+        this.setSize(pMob.width, pMob.height);
         possessable.setPossessingEntity(((PlayerEntity)(Object)this).getUuid());
         syncPossessed();
         return true;

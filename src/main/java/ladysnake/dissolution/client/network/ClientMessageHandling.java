@@ -4,6 +4,7 @@ import ladysnake.dissolution.api.DissolutionPlayer;
 import ladysnake.dissolution.common.impl.remnant.DefaultRemnantHandler;
 import net.fabricmc.fabric.networking.CustomPayloadPacketRegistry;
 import net.fabricmc.fabric.networking.PacketContext;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,12 +36,15 @@ public class ClientMessageHandling {
             UUID playerUuid = packet.readUuid();
             int possessedId = packet.readInt();
             PlayerEntity player = context.getPlayer().world.getPlayerByUuid(playerUuid);
+            MinecraftClient client = MinecraftClient.getInstance();
             if (player != null) {
                 Entity entity = player.world.getEntityById(possessedId);
                 if (entity instanceof MobEntity) {
                     ((DissolutionPlayer)player).startPossessing((MobEntity) entity);
+                    client.worldRenderer.onSetCameraEntity(entity);
                 } else {
                     ((DissolutionPlayer)player).stopPossessing();
+                    client.worldRenderer.onSetCameraEntity(player);
                 }
             }
         }));
