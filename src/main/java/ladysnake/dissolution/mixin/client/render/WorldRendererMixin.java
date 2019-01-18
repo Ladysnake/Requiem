@@ -1,7 +1,7 @@
 package ladysnake.dissolution.mixin.client.render;
 
+import ladysnake.dissolution.api.DissolutionPlayer;
 import ladysnake.dissolution.api.possession.Possessable;
-import ladysnake.dissolution.api.possession.Possessor;
 import ladysnake.dissolution.mixin.client.MinecraftClientAccessorMixin;
 import net.minecraft.class_856;
 import net.minecraft.client.MinecraftClient;
@@ -24,8 +24,8 @@ public abstract class WorldRendererMixin {
      */
     @Inject(method = "renderEntities", at = @At("HEAD"))
     public void preRenderEntities(Entity camera, class_856 frustum, float tickDelta, CallbackInfo info) {
-        if (camera instanceof Possessor) {
-            Possessable possessed = ((Possessor) camera).getPossessedEntity();
+        if (camera instanceof DissolutionPlayer) {
+            Possessable possessed = ((DissolutionPlayer) camera).getPossessionManager().getPossessedEntity();
             if (possessed != null) {
                 ((MinecraftClientAccessorMixin)MinecraftClient.getInstance()).setCameraEntityDirect((Entity) possessed);
             }
@@ -37,8 +37,8 @@ public abstract class WorldRendererMixin {
      */
     @Inject(method = "renderEntities", at = @At("RETURN"))
     public void postRenderEntities(Entity camera, class_856 frustum, float tickDelta, CallbackInfo info) {
-        if (camera instanceof Possessor) {
-            Possessable possessed = ((Possessor) camera).getPossessedEntity();
+        if (camera instanceof DissolutionPlayer) {
+            Possessable possessed = ((DissolutionPlayer) camera).getPossessionManager().getPossessedEntity();
             if (possessed == client.getCameraEntity()) {
                 ((MinecraftClientAccessorMixin)MinecraftClient.getInstance()).setCameraEntityDirect(camera);
             }

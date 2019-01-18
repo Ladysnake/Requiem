@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.network;
 
+import ladysnake.dissolution.api.DissolutionPlayer;
 import ladysnake.dissolution.api.possession.Possessable;
-import ladysnake.dissolution.api.possession.Possessor;
 import net.fabricmc.fabric.networking.CustomPayloadPacketRegistry;
 import net.fabricmc.fabric.networking.PacketContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,7 +17,7 @@ public class ServerMessageHandling {
     public static void init() {
         register(LEFT_CLICK_AIR, (context, buf) -> {
             PlayerEntity player = context.getPlayer();
-            Possessable possessed = ((Possessor)player).getPossessedEntity();
+            Possessable possessed = ((DissolutionPlayer)player).getPossessionManager().getPossessedEntity();
             if (possessed != null) {
                 possessed.triggerIndirectAttack(player);
             }

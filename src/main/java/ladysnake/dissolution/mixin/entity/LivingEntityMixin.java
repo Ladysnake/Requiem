@@ -1,7 +1,7 @@
 package ladysnake.dissolution.mixin.entity;
 
+import ladysnake.dissolution.api.DissolutionPlayer;
 import ladysnake.dissolution.api.entity.TriggerableAttacker;
-import ladysnake.dissolution.api.possession.Possessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -42,8 +42,8 @@ public abstract class LivingEntityMixin extends Entity implements TriggerableAtt
      */
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     public void proxyDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
-        if (source.getAttacker() instanceof Possessor) {
-            Entity possessed = (Entity) ((Possessor) source.getAttacker()).getPossessedEntity();
+        if (source.getAttacker() instanceof DissolutionPlayer) {
+            Entity possessed = (Entity) ((DissolutionPlayer) source.getAttacker()).getPossessionManager().getPossessedEntity();
             if (possessed != null) {
                 DamageSource newSource = null;
                 if (source instanceof ProjectileDamageSource)

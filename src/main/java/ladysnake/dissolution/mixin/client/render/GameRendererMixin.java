@@ -1,6 +1,6 @@
 package ladysnake.dissolution.mixin.client.render;
 
-import ladysnake.dissolution.api.possession.Possessor;
+import ladysnake.dissolution.api.DissolutionPlayer;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
@@ -31,10 +31,10 @@ public abstract class GameRendererMixin {
     public void unselectPossessedEntity(float tickDelta, CallbackInfo info,
                                         Entity camera, double double_1, Vec3d vec3d_1, boolean boolean_1, int int_1, double double_2, Vec3d vec3d_2, Vec3d vec3d_3, Vec3d vec3d_4, float float_2,
                                         List<Entity> entities) {
-        if (camera instanceof Possessor && ((Possessor) camera).isPossessing()) {
+        if (camera instanceof DissolutionPlayer && ((DissolutionPlayer) camera).getPossessionManager().isPossessing()) {
             // Possessable are still entities
             //noinspection SuspiciousMethodCalls
-            entities.remove(((Possessor) camera).getPossessedEntity());
+            entities.remove(((DissolutionPlayer) camera).getPossessionManager().getPossessedEntity());
         }
     }
 }

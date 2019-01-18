@@ -1,10 +1,10 @@
 package ladysnake.dissolution.common.impl.possession;
 
+import ladysnake.dissolution.api.DissolutionPlayer;
 import ladysnake.dissolution.api.entity.TriggerableAttacker;
 import ladysnake.dissolution.api.possession.Possessable;
 import ladysnake.dissolution.api.possession.PossessableSubstitutionHandler;
 import ladysnake.dissolution.api.possession.PossessionRegistry;
-import ladysnake.dissolution.api.possession.Possessor;
 import ladysnake.dissolution.common.entity.PossessableEntityImpl;
 import ladysnake.dissolution.common.impl.possession.asm.ASMConverterProvider;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
@@ -34,7 +34,7 @@ public class Possession {
         PlayerInteractionEvent.INTERACT_ENTITY_POSITIONED.register((player, world, hand, entity, hitPosition) -> {
             if (entity instanceof MobEntity && !entity.world.isClient) {
                 MobEntity mob = (MobEntity) entity;
-                if (((Possessor) player).startPossessing(mob)) {
+                if (((DissolutionPlayer) player).getPossessionManager().startPossessing(mob)) {
                     return ActionResult.SUCCESS;
                 }
             } else if (entity.world.isClient) {
@@ -44,7 +44,7 @@ public class Possession {
         });
         // Proxy melee attacks
         PlayerInteractionEvent.ATTACK_ENTITY.register((playerEntity, world, hand, target) -> {
-            LivingEntity possessed = (LivingEntity) ((Possessor)playerEntity).getPossessedEntity();
+            LivingEntity possessed = (LivingEntity) ((DissolutionPlayer)playerEntity).getPossessionManager().getPossessedEntity();
             if (possessed != null && !possessed.invalid) {
                 if (((TriggerableAttacker)possessed).triggerDirectAttack(playerEntity, target)) {
                     return ActionResult.SUCCESS;

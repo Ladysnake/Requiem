@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * A {@link Possessable} entity can be possessed by a {@link Possessor}.
+ * A {@link Possessable} entity can be possessed by a {@link PossessionManager}.
  * When possessed, the entity should stop acting on its own, and act as a delegate body
  * for the possessing player.
  */

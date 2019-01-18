@@ -1,8 +1,8 @@
 package ladysnake.dissolution.mixin.server.network;
 
 import com.mojang.authlib.GameProfile;
+import ladysnake.dissolution.api.DissolutionPlayer;
 import ladysnake.dissolution.api.possession.Possessable;
-import ladysnake.dissolution.api.possession.Possessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -38,7 +38,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
     @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
     public void writePossessedMobToTag(CompoundTag tag, CallbackInfo info) {
-        Entity possessedEntity = (Entity) ((Possessor)this).getPossessedEntity();
+        Entity possessedEntity = (Entity) ((DissolutionPlayer)this).getPossessionManager().getPossessedEntity();
         if (possessedEntity != null) {
             Entity possessedEntityVehicle = possessedEntity.getTopmostRiddenEntity();
             CompoundTag possessedRoot = new CompoundTag();

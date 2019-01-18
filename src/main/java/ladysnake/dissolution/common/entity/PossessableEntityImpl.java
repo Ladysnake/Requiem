@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.entity;
 
+import ladysnake.dissolution.api.DissolutionPlayer;
 import ladysnake.dissolution.api.possession.Possessable;
-import ladysnake.dissolution.api.possession.Possessor;
 import ladysnake.dissolution.common.entity.ai.InertGoal;
 import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthAttribute;
@@ -151,7 +151,7 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
         super.onDeath(damageSource_1);
         // Drop player inventory on death
         this.getPossessingEntity().ifPresent(possessor -> {
-            ((Possessor)possessor).stopPossessing();
+            ((DissolutionPlayer)possessor).getPossessionManager().stopPossessing();
             if (!world.isClient && !possessor.isCreative() && !world.getGameRules().getBoolean("keepInventory")) {
                 possessor.inventory.dropAll();
             }

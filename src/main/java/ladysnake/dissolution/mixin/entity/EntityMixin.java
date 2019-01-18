@@ -1,6 +1,6 @@
 package ladysnake.dissolution.mixin.entity;
 
-import ladysnake.dissolution.api.possession.Possessor;
+import ladysnake.dissolution.api.DissolutionPlayer;
 import net.minecraft.entity.Entity;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,8 +22,8 @@ public abstract class EntityMixin {
             cancellable = true
     )
     public void overrideSoulResize(float width, float height, CallbackInfo info) {
-        if (this instanceof Possessor) {
-            Entity possessed = (Entity) ((Possessor)this).getPossessedEntity();
+        if (this instanceof DissolutionPlayer) {
+            Entity possessed = (Entity) ((DissolutionPlayer)this).getPossessionManager().getPossessedEntity();
             if (possessed != null && (possessed.width != width || possessed.height != height)) {
                 this.setSize(possessed.width, possessed.height);
                 info.cancel();

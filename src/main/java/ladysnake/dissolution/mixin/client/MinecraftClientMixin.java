@@ -1,6 +1,6 @@
 package ladysnake.dissolution.mixin.client;
 
-import ladysnake.dissolution.api.possession.Possessor;
+import ladysnake.dissolution.api.DissolutionPlayer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.network.ClientConnection;
@@ -32,7 +32,7 @@ public abstract class MinecraftClientMixin {
             )
     )
     public void onShakeFistAtAir(CallbackInfo info) {
-        if (((Possessor) player).isPossessing()) {
+        if (((DissolutionPlayer) player).getPossessionManager().isPossessing()) {
             sendToServer(createLeftClickPacket());
         }
     }

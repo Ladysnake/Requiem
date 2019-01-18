@@ -2,7 +2,6 @@ package ladysnake.dissolution.mixin.client.render.entity;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.possession.Possessor;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Cuboid;
@@ -35,7 +34,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     public void cancelRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
-        if (((Possessor)renderedPlayer).isPossessing()) {
+        if (((DissolutionPlayer)renderedPlayer).getPossessionManager().isPossessing()) {
             info.cancel();
         }
     }
@@ -77,8 +76,8 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     public void renderPossessedHand(AbstractClientPlayerEntity renderedPlayer, CallbackInfo info) {
         RemnantHandler remnantHandler = ((DissolutionPlayer) renderedPlayer).getRemnantHandler();
         if (remnantHandler != null && remnantHandler.isSoul()) {
-            if (((DissolutionPlayer) renderedPlayer).isPossessing()) {
-                LivingEntity possessed = (LivingEntity) ((Possessor) renderedPlayer).getPossessedEntity();
+            if (((DissolutionPlayer) renderedPlayer).getPossessionManager().isPossessing()) {
+                LivingEntity possessed = (LivingEntity) ((DissolutionPlayer) renderedPlayer).getPossessionManager().getPossessedEntity();
                 if (possessed != null) {
                     EntityRenderer renderer = MinecraftClient.getInstance().getEntityRenderManager().getRenderer(possessed);
                     // If the mob has an arm, render it instead of the player's

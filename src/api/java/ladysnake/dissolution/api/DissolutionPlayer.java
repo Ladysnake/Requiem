@@ -1,6 +1,6 @@
 package ladysnake.dissolution.api;
 
-import ladysnake.dissolution.api.possession.Possessor;
+import ladysnake.dissolution.api.possession.PossessionManager;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
 import net.minecraft.entity.player.PlayerEntity;
 
@@ -10,13 +10,15 @@ import javax.annotation.Nullable;
 /**
  * Implemented by {@link PlayerEntity players}.
  */
-public interface DissolutionPlayer extends Possessor {
+public interface DissolutionPlayer {
 
     /**
      * @return the player's handler, or <code>null</code> if the player is not a remnant
      */
     @Nullable
     RemnantHandler getRemnantHandler();
+
+    PossessionManager getPossessionManager();
 
     void setRemnantHandler(@CheckForNull RemnantHandler handler);
 

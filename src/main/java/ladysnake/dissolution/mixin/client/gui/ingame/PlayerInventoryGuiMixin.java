@@ -1,6 +1,6 @@
 package ladysnake.dissolution.mixin.client.gui.ingame;
 
-import ladysnake.dissolution.api.possession.Possessor;
+import ladysnake.dissolution.api.DissolutionPlayer;
 import net.minecraft.client.gui.ingame.AbstractPlayerInventoryGui;
 import net.minecraft.client.gui.ingame.CreativePlayerInventoryGui;
 import net.minecraft.client.gui.ingame.PlayerInventoryGui;
@@ -29,8 +29,8 @@ public abstract class PlayerInventoryGuiMixin extends AbstractPlayerInventoryGui
     )
     public void drawPossessedEntity(float tickDelta, int mouseX, int mouseY, CallbackInfo info) {
         Entity cameraEntity = this.client.getCameraEntity();
-        if (cameraEntity instanceof Possessor && ((Possessor) cameraEntity).isPossessing()) {
-            LivingEntity possessed = (LivingEntity) ((Possessor) cameraEntity).getPossessedEntity();
+        if (cameraEntity instanceof DissolutionPlayer && ((DissolutionPlayer) cameraEntity).getPossessionManager().isPossessing()) {
+            LivingEntity possessed = (LivingEntity) ((DissolutionPlayer) cameraEntity).getPossessionManager().getPossessedEntity();
             if (possessed != null) {
                 //noinspection ConstantConditions
                 if ((Object) this instanceof PlayerInventoryGui) {

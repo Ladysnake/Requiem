@@ -1,7 +1,6 @@
 package ladysnake.dissolution.common.impl.remnant;
 
 import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.possession.Possessor;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
 import net.minecraft.entity.player.PlayerAbilities;
@@ -54,7 +53,7 @@ public class DefaultRemnantHandler implements RemnantHandler {
 
     @Override
     public boolean isIncorporeal() {
-        return this.isSoul() && !((Possessor)owner).isPossessing();
+        return this.isSoul() && !((DissolutionPlayer)owner).getPossessionManager().isPossessing();
     }
 
     @Override
@@ -73,7 +72,7 @@ public class DefaultRemnantHandler implements RemnantHandler {
             abilities.allowFlying = this.owner.isCreative();
             abilities.flying = abilities.flying && abilities.allowFlying;
             abilities.invulnerable = this.owner.isCreative();
-            ((Possessor)this.owner).stopPossessing();
+            ((DissolutionPlayer)this.owner).getPossessionManager().stopPossessing();
         }
         if (!this.owner.world.isClient) {
             // Synchronizes with all players tracking the owner

@@ -2,8 +2,9 @@ package ladysnake.dissolution.mixin.server;
 
 import com.mojang.authlib.GameProfile;
 import ladysnake.dissolution.Dissolution;
+import ladysnake.dissolution.api.DissolutionPlayer;
 import ladysnake.dissolution.api.possession.Possessable;
-import ladysnake.dissolution.api.possession.Possessor;
+import ladysnake.dissolution.api.possession.PossessionManager;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
@@ -64,12 +65,12 @@ public abstract class PlayerManagerMixin {
             Entity possessedEntityMount = ChunkSaveHandlerImpl.readEntity(serializedPossessedInfo.getCompound(POSSESSED_ENTITY_TAG), world, true);
             if (possessedEntityMount != null) {
                 UUID possessedEntityUuid = serializedPossessedInfo.getUuid(POSSESSED_UUID_TAG);
-                resumePossession((Possessor) player, world, possessedEntityMount, possessedEntityUuid);
+                resumePossession(((DissolutionPlayer) player).getPossessionManager(), world, possessedEntityMount, possessedEntityUuid);
             }
         }
     }
 
-    private void resumePossession(Possessor player, ServerWorld world, Entity possessedEntityMount, UUID possessedEntityUuid) {
+    private void resumePossession(PossessionManager player, ServerWorld world, Entity possessedEntityMount, UUID possessedEntityUuid) {
         if (possessedEntityMount instanceof MobEntity && possessedEntityMount.getUuid().equals(possessedEntityUuid)) {
             player.startPossessing((MobEntity) possessedEntityMount);
         } else {
@@ -101,9 +102,9 @@ public abstract class PlayerManagerMixin {
             )
     )
     public void logOutPossessedEntity(ServerPlayerEntity player, CallbackInfo info) {
-        Possessable possessedEntity = ((Possessor) player).getPossessedEntity();
+        Possessable possessedEntity = ((DissolutionPlayer) player).getPossessionManager().getPossessedEntity();
         if (possessedEntity != null) {
-            ((Possessor) player).stopPossessing();
+            ((DissolutionPlayer) player).getPossessionManager().stopPossessing();
             ServerWorld serverWorld_1 = player.getServerWorld();
             serverWorld_1.method_8507((Entity) possessedEntity);
             for (Entity ridden : ((Entity) possessedEntity).method_5736()) {

@@ -6,9 +6,9 @@ import javax.annotation.CheckForNull;
 import java.util.UUID;
 
 /**
- * A {@link Possessor} can possess a {@link Possessable} entity, using it as a delegate body.
+ * A {@link PossessionManager} handles a player's possession status.
  */
-public interface Possessor {
+public interface PossessionManager {
     boolean startPossessing(MobEntity mob);
 
     boolean canStartPossessing(MobEntity mob);
