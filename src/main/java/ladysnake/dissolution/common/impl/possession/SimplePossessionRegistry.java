@@ -3,27 +3,20 @@ package ladysnake.dissolution.common.impl.possession;
 import ladysnake.dissolution.api.possession.Possessable;
 import ladysnake.dissolution.api.possession.conversion.PossessableSubstitutionHandler;
 import ladysnake.dissolution.api.possession.conversion.PossessionRegistry;
+import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SimplePossessionRegistry implements PossessionRegistry {
     protected final Map<EntityType<? extends MobEntity>, PossessableSubstitutionHandler> converters = new HashMap<>();
-    protected final Set<EntityType<?>> blacklist = new HashSet<>();
 
-    @Override
-    public void addToBlacklist(EntityType<?>... entityTypes) {
-        Collections.addAll(blacklist, entityTypes);
-    }
-
-    @Override
-    public void removeFromBlacklist(EntityType<?>... entityTypes) {
-        for (EntityType<?> blacklisted : entityTypes) {
-            this.blacklist.remove(blacklisted);
-        }
+    public boolean isBlacklisted(EntityType<?> entityType) {
+        return DissolutionEntityTags.POSSESSION_BLACKLIST.contains(entityType);
     }
 
     @Override
@@ -33,8 +26,7 @@ public class SimplePossessionRegistry implements PossessionRegistry {
 
     @Override
     public boolean canBePossessed(EntityType<?> entityType) {
-        //noinspection SuspiciousMethodCalls
-        return !this.blacklist.contains(entityType) && this.converters.containsKey(entityType);
+        return !isBlacklisted(entityType) && this.converters.containsKey(entityType);
     }
 
     @Nullable

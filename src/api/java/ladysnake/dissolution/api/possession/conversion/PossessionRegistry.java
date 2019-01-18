@@ -11,20 +11,6 @@ import javax.annotation.Nullable;
  * A registry handling conversion from standard entities to {@link Possessable} ones.
  */
 public interface PossessionRegistry {
-    /**
-     * Excludes all the given entity types from the possession mechanism. <br>
-     * Players will be unable to possess any entity that has been excluded here. <br>
-     *
-     * @param entityTypes entity types to blacklist from possession
-     * @see #registerPossessedConverter(EntityType, PossessableSubstitutionHandler)
-     */
-    void addToBlacklist(EntityType<?>... entityTypes);
-
-    /**
-     * Allows back conversion of the given entity types
-     * @param entityTypes entity types to remove from the blacklist
-     */
-    void removeFromBlacklist(EntityType<?>... entityTypes);
 
     /**
      * Use this method to register your own possessable version of an entity.
@@ -44,7 +30,6 @@ public interface PossessionRegistry {
      *
      * @param baseEntityType      the EntityType of the regular entity
      * @param possessedEntityType the EntityType of an equivalent entity that can be possessed
-     * @see #addToBlacklist(EntityType[])
      */
     <E extends MobEntity> void registerPossessedConverter(EntityType<E> baseEntityType, PossessableSubstitutionHandler<E> possessedEntityType);
 

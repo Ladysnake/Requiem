@@ -15,7 +15,7 @@ public class LazyDefaultPossessionRegistry extends SimplePossessionRegistry {
 
     @Override
     public boolean canBePossessed(EntityType<?> entityType) {
-        return !this.blacklist.contains(entityType);
+        return !isBlacklisted(entityType);
     }
 
     @Override
