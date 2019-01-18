@@ -3,10 +3,10 @@ package ladysnake.dissolution.common.impl.possession;
 import ladysnake.dissolution.api.DissolutionPlayer;
 import ladysnake.dissolution.api.entity.TriggerableAttacker;
 import ladysnake.dissolution.api.possession.Possessable;
-import ladysnake.dissolution.api.possession.PossessableSubstitutionHandler;
-import ladysnake.dissolution.api.possession.PossessionRegistry;
+import ladysnake.dissolution.api.possession.conversion.PossessableSubstitutionHandler;
+import ladysnake.dissolution.api.possession.conversion.PossessionRegistry;
 import ladysnake.dissolution.common.entity.PossessableEntityImpl;
-import ladysnake.dissolution.common.impl.possession.asm.ASMConverterProvider;
+import ladysnake.dissolution.common.impl.possession.asm.AsmConverterProvider;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;
@@ -23,7 +23,7 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
  */
 @API(status = EXPERIMENTAL)
 public class Possession {
-    private static PossessionRegistry registry = new LazyDefaultPossessionRegistry(new ASMConverterProvider());
+    private static PossessionRegistry registry = new LazyDefaultPossessionRegistry(new AsmConverterProvider());
 
     public static PossessionRegistry getConversionRegistry() {
         return registry;

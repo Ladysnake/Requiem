@@ -15,7 +15,7 @@ public class CooldownStrengthAttribute extends DelegatingAttribute {
     @Override
     public double getValue() {
         final double strength = super.getValue();
-        return owner.getPossessingEntity().map(player -> {
+        return owner.getPossessor().map(player -> {
             double attackCharge = player.method_7261(0.5f);
             return strength * (0.2F + attackCharge * attackCharge * 0.8F);
         }).orElse(strength);

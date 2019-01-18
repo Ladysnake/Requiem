@@ -1,6 +1,5 @@
-package ladysnake.dissolution.api.possession;
+package ladysnake.dissolution.api.possession.conversion;
 
-import ladysnake.dissolution.api.possession.PossessableSubstitutionHandler;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 

@@ -1,11 +1,10 @@
 package ladysnake.dissolution.common.impl.possession.asm;
 
-import ladysnake.dissolution.api.possession.PossessableConverterProvider;
-import ladysnake.dissolution.api.possession.PossessableSubstitutionHandler;
+import ladysnake.dissolution.api.possession.conversion.PossessableConverterProvider;
+import ladysnake.dissolution.api.possession.conversion.PossessableSubstitutionHandler;
 import ladysnake.dissolution.common.entity.PossessableEntityImpl;
 import ladysnake.dissolution.common.impl.possession.CopyStrategies;
 import ladysnake.dissolution.common.impl.possession.Possession;
-import ladysnake.dissolution.common.impl.possession.asm.MixedInSubclassFactory;
 import ladysnake.reflectivefabric.reflection.ReflectionHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -22,7 +21,7 @@ import java.util.function.Function;
 import static org.apiguardian.api.API.Status.INTERNAL;
 
 @API(status = INTERNAL)
-public class ASMConverterProvider implements PossessableConverterProvider {
+public class AsmConverterProvider implements PossessableConverterProvider {
     private static final Class<?>[] WORLD_CONSTRUCTOR = {World.class};
 
     private final MixedInSubclassFactory<MobEntity> factory = new MixedInSubclassFactory<>(PossessableEntityImpl.class);

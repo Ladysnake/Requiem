@@ -55,7 +55,7 @@ public class PossessionManagerImpl implements PossessionManager {
         // These size changes will be actually applied when the player ticks
         this.player.width = pMob.width;
         this.player.height = pMob.height;
-        possessable.setPossessingEntity(this.player.getUuid());
+        possessable.setPossessor(this.player);
         syncPossessed();
         return true;
     }
@@ -66,7 +66,7 @@ public class PossessionManagerImpl implements PossessionManager {
         if (possessedEntity != null) {
             this.possessedUuid = null;
             this.possessedNetworkId = 0;
-            possessedEntity.setPossessingEntity(null);
+            possessedEntity.setPossessor(null);
             syncPossessed();
         }
     }

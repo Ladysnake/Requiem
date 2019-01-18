@@ -9,9 +9,9 @@ import java.util.Optional;
 public interface RemnantHandler {
 
     /**
-     * Helper method to get the impl capability of an entity if it exists
-     * @param entity a possibly impl entity
-     * @return the impl capability of that entity
+     * Helper method to get the remnant handler of an entity if it exists
+     * @param entity a possibly remnant entity
+     * @return the remnant handler of that entity
      */
     static Optional<RemnantHandler> get(Entity entity) {
         if (entity instanceof DissolutionPlayer) {

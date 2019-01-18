@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 public interface DissolutionPlayer {
 
     /**
-     * @return the player's handler, or <code>null</code> if the player is not a remnant
+     * @return the player's handler, or {@code null} if the player is not a remnant
      */
     @Nullable
     RemnantHandler getRemnantHandler();

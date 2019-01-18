@@ -1,8 +1,8 @@
 package ladysnake.dissolution.common.impl.possession.asm;
 
 import ladysnake.dissolution.api.possession.Possessable;
-import ladysnake.dissolution.api.possession.PossessableSubstitutionHandler;
-import ladysnake.dissolution.api.possession.PossessionRegistry;
+import ladysnake.dissolution.api.possession.conversion.PossessableSubstitutionHandler;
+import ladysnake.dissolution.api.possession.conversion.PossessionRegistry;
 import ladysnake.dissolution.common.entity.PossessableEntityImpl;
 import net.fabricmc.loader.launch.common.FabricLauncherBase;
 import net.minecraft.entity.EntityType;
@@ -28,7 +28,7 @@ import static org.apiguardian.api.API.Status.INTERNAL;
 public class MixedInSubclassFactory<T> {
 
     private final Class<? extends T> implementationClass;
-    private final ASMClassLoader loader = new ASMClassLoader();
+    private final AsmClassLoader loader = new AsmClassLoader();
     // A cache containing every entity type created by this factory
     private final Map<Class<? extends T>, Class<? extends T>> generatedClasses = new HashMap<>();
 

@@ -30,7 +30,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
             sendTo((ServerPlayerEntity)(Object)this, createCorporealityPacket((PlayerEntity) tracked));
         } else if (tracked instanceof Possessable) {
             // Synchronize possessed entities with their possessor
-            if (((Possessable)tracked).getPossessingEntityUuid().filter(this.getUuid()::equals).isPresent()) {
+            if (((Possessable)tracked).getPossessorUuid().filter(this.getUuid()::equals).isPresent()) {
                 sendTo((ServerPlayerEntity)(Object)this, createPossessionPacket(getUuid(), tracked.getEntityId()));
             }
         }

@@ -8,9 +8,9 @@ import static org.apiguardian.api.API.Status.INTERNAL;
  * A class loader allowing the creation of any class from its bytecode, as well as its injection into the classpath
  */
 @API(status = INTERNAL)
-public class ASMClassLoader extends ClassLoader {
-    ASMClassLoader() {
-        super(ASMClassLoader.class.getClassLoader());
+public class AsmClassLoader extends ClassLoader {
+    AsmClassLoader() {
+        super(AsmClassLoader.class.getClassLoader());
     }
 
     public Class<?> define(String name, byte[] data) {
