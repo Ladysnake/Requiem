@@ -18,6 +18,7 @@ import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
@@ -63,8 +64,8 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     }
 
     @Override
-    public void setPossessor(@Nullable PlayerEntity possessor) {
-        this.possessorUuid = possessor.getUuid();
+    public void setPossessor(@CheckForNull PlayerEntity possessor) {
+        this.possessorUuid = possessor != null ? possessor.getUuid() : null;
     }
 
     @Override
