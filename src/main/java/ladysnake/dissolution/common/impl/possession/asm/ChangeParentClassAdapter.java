@@ -151,6 +151,11 @@ public class ChangeParentClassAdapter extends ClassVisitor {
                     local[i] = ChangeParentClassAdapter.this.name;
                 }
             }
+            for (int i = 0; i < stack.length; i++) {
+                if (templateName.equals(stack[i])) {
+                    stack[i] = ChangeParentClassAdapter.this.name;
+                }
+            }
             super.visitFrame(type, nLocal, local, nStack, stack);
         }
     }
