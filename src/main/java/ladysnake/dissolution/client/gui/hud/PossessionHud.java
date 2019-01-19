@@ -2,26 +2,42 @@ package ladysnake.dissolution.client.gui.hud;
 
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.DissolutionPlayer;
+import ladysnake.dissolution.api.remnant.RemnantHandler;
+import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.*;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Random;
 
 public class PossessionHud extends Drawable {
-    private static final Identifier DISSOLUTION_ECTOPLASM_ICONS = Dissolution.id("textures/gui/icons.png");
-    public static PossessionHud INSTANCE = new PossessionHud(MinecraftClient.getInstance());
+    public static final Identifier DISSOLUTION_ECTOPLASM_ICONS = Dissolution.id("textures/gui/icons.png");
+    public static final PossessionHud INSTANCE = new PossessionHud(MinecraftClient.getInstance());
 
     private MinecraftClient client;
     private Random random = new Random();
 
     public PossessionHud(MinecraftClient client) {
         this.client = client;
+    }
+
+    public ActionResult onRenderHotbar(@SuppressWarnings("unused") float tickDelta) {
+        DissolutionPlayer player = (DissolutionPlayer) MinecraftClient.getInstance().player;
+        RemnantHandler handler = player.getRemnantHandler();
+        if (handler != null && handler.isSoul()) {
+            Entity possessed = (Entity) player.getPossessionManager().getPossessedEntity();
+            if (possessed == null || !DissolutionEntityTags.ITEM_USER.contains(possessed.getType())) {
+                return ActionResult.SUCCESS;
+            }
+        }
+        return ActionResult.PASS;
     }
 
     public void draw(int healthLast, int ticks, boolean highlight) {
@@ -35,15 +51,17 @@ public class PossessionHud extends Drawable {
                     int textureRow = 0;
                     // TODO use entity tags instead of mojangswitch
                     if (possessed instanceof PigZombieEntity) {
-                        textureRow = 1;
-                    } else if (possessed instanceof HuskEntity) {
                         textureRow = 2;
-                    } else if (possessed instanceof WitherSkeletonEntity) {
-                        textureRow = 4;
-                    } else if (possessed instanceof StrayEntity) {
-                        textureRow = 5;
-                    } else if (possessed instanceof SkeletonEntity) {
+                    } else if (possessed instanceof HuskEntity) {
                         textureRow = 3;
+                    } else if (possessed instanceof ZombieEntity) {
+                        textureRow = 1;
+                    } else if (possessed instanceof WitherSkeletonEntity) {
+                        textureRow = 5;
+                    } else if (possessed instanceof StrayEntity) {
+                        textureRow = 6;
+                    } else if (possessed instanceof SkeletonEntity) {
+                        textureRow = 4;
                     }
                     this.client.getTextureManager().bindTexture(DISSOLUTION_ECTOPLASM_ICONS);
                     this.drawPossessionHealthBar(possessed, scaledWidth, scaledHeight, textureRow, healthLast, highlight, ticks);

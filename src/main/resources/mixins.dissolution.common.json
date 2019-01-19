@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "entity.EntityMixin",
+    "entity.ItemEntityMixin",
     "entity.LivingEntityMixin",
     "entity.attribute.AbstractEntityAttributeContainerAccessorMixin",
     "entity.attribute.EntityAttributeContainerAccessorMixin",

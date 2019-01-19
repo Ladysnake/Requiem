@@ -1,8 +1,11 @@
 package ladysnake.dissolution.common.impl.remnant;
 
 import ladysnake.dissolution.api.DissolutionPlayer;
+import ladysnake.dissolution.api.event.PlayerEvent;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
+import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -18,6 +21,17 @@ public class DefaultRemnantHandler implements RemnantHandler {
 
     @API(status = INTERNAL)
     public static void init() {
+        // Prevent incorporeal players from picking up anything
+        PlayerEvent.PICKUP_ITEM.register((player, pickedUp) -> {
+            if (RemnantHandler.get(player).filter(RemnantHandler::isSoul).isPresent()) {
+                Entity possessed = (Entity) ((DissolutionPlayer)player).getPossessionManager().getPossessedEntity();
+                if (possessed == null || !DissolutionEntityTags.ITEM_USER.contains(possessed.getType())) {
+                    return ActionResult.FAILURE;
+                }
+            }
+            return ActionResult.PASS;
+        });
+        // Prevent incorporeal players from breaking anything
         PlayerInteractionEvent.ATTACK_BLOCK.register((player, world, hand, blockPos, facing) -> {
             if (!player.isCreative() && RemnantHandler.get(player).filter(RemnantHandler::isIncorporeal).isPresent()) {
                 return ActionResult.FAILURE;

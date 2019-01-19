@@ -1,20 +1,22 @@
 package ladysnake.dissolution.mixin.client.gui.hud;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import ladysnake.dissolution.api.DissolutionPlayer;
+import ladysnake.dissolution.api.event.client.HudEvent;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
 import ladysnake.dissolution.client.gui.hud.PossessionHud;
+import net.fabricmc.fabric.util.HandlerArray;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.util.ActionResult;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Random;
 
 @Mixin(InGameHud.class)
 public class InGameHudMixin extends Drawable {
@@ -25,11 +27,7 @@ public class InGameHudMixin extends Drawable {
 
     @Shadow private int ticks;
 
-    @Shadow @Final private Random random;
-
     @Shadow private int field_2033;
-
-    @Shadow private int scaledHeight;
 
     @Inject(
             method = "method_1760",
@@ -46,11 +44,11 @@ public class InGameHudMixin extends Drawable {
     }
 
     @Inject(method = "method_1759", at = @At("HEAD"), cancellable = true)
-    public void cancelHotBarRender(float tickDelta, CallbackInfo info) {
-        RemnantHandler handler = ((DissolutionPlayer)client.player).getRemnantHandler();
-        // TODO make the hotbar disappear for some mobs only
-        if (handler != null && handler.isSoul()) {
-            info.cancel();
+    public void fireHotBarRenderEvent(float tickDelta, CallbackInfo info) {
+        for (Float2ObjectFunction<ActionResult> handler : ((HandlerArray<Float2ObjectFunction<ActionResult>>) HudEvent.RENDER_HOTBAR).getBackingArray()) {
+            if (handler.get(tickDelta) != ActionResult.PASS) {
+                info.cancel();
+            }
         }
     }
 
