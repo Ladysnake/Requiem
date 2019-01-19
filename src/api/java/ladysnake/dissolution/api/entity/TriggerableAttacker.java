@@ -21,7 +21,8 @@ public interface TriggerableAttacker {
     }
 
     /**
-     * Triggers an indirect attack. Indirect attacks have no defined target and are usually some kind of projectile.
+     * Triggers an indirect attack.
+     * Indirect attacks have no defined target and are usually some kind of projectile.
      *
      * @param player the player commanding the attack
      * @return <code>true</code> if the attack is a success
