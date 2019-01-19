@@ -5,6 +5,6 @@
 @ParametersAreNonnullByDefault
 package ladysnake.dissolution.mixin.client.render.entity;
 
-import ladysnake.dissolution.MethodsReturnNonnullByDefault;
+import ladysnake.dissolution.api.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

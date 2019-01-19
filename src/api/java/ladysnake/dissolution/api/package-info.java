@@ -1,10 +1,8 @@
 /**
- * Root package for the mod
+ * API classes for Dissolution
  */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package ladysnake.dissolution;
-
-import ladysnake.dissolution.api.MethodsReturnNonnullByDefault;
+package ladysnake.dissolution.api;
 
 import javax.annotation.ParametersAreNonnullByDefault;

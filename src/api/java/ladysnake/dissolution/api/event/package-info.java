@@ -1,9 +1,9 @@
 /**
- * Classes implementing behaviours defined in the API
+ * Events fired by dissolution
  */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package ladysnake.dissolution.common.impl;
+package ladysnake.dissolution.api.event;
 
 import ladysnake.dissolution.api.MethodsReturnNonnullByDefault;
 

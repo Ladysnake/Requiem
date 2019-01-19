@@ -1,9 +1,9 @@
 /**
- * Classes implementing behaviours defined in the API
+ * API classes for the remnant mechanic of Dissolution
  */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package ladysnake.dissolution.common.impl;
+package ladysnake.dissolution.api.remnant;
 
 import ladysnake.dissolution.api.MethodsReturnNonnullByDefault;
 

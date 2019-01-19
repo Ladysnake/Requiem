@@ -5,6 +5,6 @@
 @ParametersAreNonnullByDefault
 package ladysnake.dissolution.common.entity.ai;
 
-import ladysnake.dissolution.MethodsReturnNonnullByDefault;
+import ladysnake.dissolution.api.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

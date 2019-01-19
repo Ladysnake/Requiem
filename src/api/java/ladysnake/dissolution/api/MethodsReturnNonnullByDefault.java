@@ -1,4 +1,4 @@
-package ladysnake.dissolution;
+package ladysnake.dissolution.api;
 
 import javax.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifierDefault;

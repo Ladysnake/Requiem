@@ -1,9 +1,9 @@
 /**
- * Classes implementing behaviours defined in the API
+ * API classes pertaining to the possession mechanic
  */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package ladysnake.dissolution.common.impl;
+package ladysnake.dissolution.api.possession;
 
 import ladysnake.dissolution.api.MethodsReturnNonnullByDefault;
 

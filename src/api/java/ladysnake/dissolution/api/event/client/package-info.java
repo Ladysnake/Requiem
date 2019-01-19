@@ -1,9 +1,9 @@
 /**
- * Classes implementing behaviours defined in the API
+ * Events fired by dissolution on the {@link net.fabricmc.api.EnvType#CLIENT client}
  */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package ladysnake.dissolution.common.impl;
+package ladysnake.dissolution.api.event.client;
 
 import ladysnake.dissolution.api.MethodsReturnNonnullByDefault;
 
