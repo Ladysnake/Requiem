@@ -5,6 +5,7 @@
   "mixins": [
     "GameRendererMixin",
     "MinecraftClientMixin",
+    "WorldRendererMixin",
     "gl.AccessiblePassesShaderEffect",
     "gl.GlProgramMixin"
   ],

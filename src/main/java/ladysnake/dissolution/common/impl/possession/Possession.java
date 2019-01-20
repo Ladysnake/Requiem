@@ -5,6 +5,7 @@ import ladysnake.dissolution.api.entity.TriggerableAttacker;
 import ladysnake.dissolution.api.possession.Possessable;
 import ladysnake.dissolution.api.possession.conversion.PossessableSubstitutionHandler;
 import ladysnake.dissolution.api.possession.conversion.PossessionRegistry;
+import ladysnake.dissolution.api.remnant.RemnantHandler;
 import ladysnake.dissolution.common.entity.PossessableEntityImpl;
 import ladysnake.dissolution.common.impl.possession.asm.AsmConverterProvider;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
@@ -32,15 +33,18 @@ public class Possession {
     public static void init() {
         // Start possession on right click
         PlayerInteractionEvent.INTERACT_ENTITY_POSITIONED.register((player, world, hand, entity, hitPosition) -> {
-            if (entity instanceof MobEntity && !entity.world.isClient) {
-                MobEntity mob = (MobEntity) entity;
-                if (((DissolutionPlayer) player).getPossessionManager().startPossessing(mob)) {
+            if (RemnantHandler.get(player).filter(RemnantHandler::isIncorporeal).isPresent()) {
+                if (entity instanceof MobEntity && !entity.world.isClient) {
+                    MobEntity mob = (MobEntity) entity;
+                    if (((DissolutionPlayer) player).getPossessionManager().startPossessing(mob)) {
+                        return ActionResult.SUCCESS;
+                    }
+                } else if (entity.world.isClient) {
                     return ActionResult.SUCCESS;
                 }
-            } else if (entity.world.isClient) {
-                return ActionResult.SUCCESS;
+                return ActionResult.FAILURE;
             }
-            return ActionResult.FAILURE;
+            return ActionResult.PASS;
         });
         // Proxy melee attacks
         PlayerInteractionEvent.ATTACK_ENTITY.register((playerEntity, world, hand, target) -> {
