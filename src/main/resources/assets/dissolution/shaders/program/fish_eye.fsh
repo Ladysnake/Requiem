@@ -36,7 +36,7 @@ void main(void)
   if (power > 0.0)//fisheye
     uv = m + normalize(d) * tan(r * power) * bind / tan( bind * power);
   else if (power < 0.0)//antifisheye
-   uv = m + normalize(d) * atan(r * -power * 10.0) * bind / atan(-power * bind * 10.0);
+    uv = m + normalize(d) * atan(r * -power * 10.0) * bind / atan(-power * bind * 10.0);
   else
     uv = p;//no effect for power = 1.0
 

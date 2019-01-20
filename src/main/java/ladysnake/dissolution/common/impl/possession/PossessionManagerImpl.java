@@ -50,6 +50,7 @@ public class PossessionManagerImpl implements PossessionManager {
         }
         // 3- Actually set the possessed entity
         MobEntity pMob = (MobEntity) possessable;
+        this.player.setPositionAndAngles(pMob);
         this.possessedUuid = pMob.getUuid();
         this.possessedNetworkId = pMob.getEntityId();
         // These size changes will be actually applied when the player ticks

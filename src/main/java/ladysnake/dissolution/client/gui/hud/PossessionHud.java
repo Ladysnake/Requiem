@@ -29,9 +29,10 @@ public class PossessionHud extends Drawable {
     }
 
     public ActionResult onRenderHotbar(@SuppressWarnings("unused") float tickDelta) {
-        DissolutionPlayer player = (DissolutionPlayer) MinecraftClient.getInstance().player;
+        MinecraftClient client = MinecraftClient.getInstance();
+        DissolutionPlayer player = (DissolutionPlayer) client.player;
         RemnantHandler handler = player.getRemnantHandler();
-        if (handler != null && handler.isSoul()) {
+        if (!client.player.isCreative() && handler != null && handler.isSoul()) {
             Entity possessed = (Entity) player.getPossessionManager().getPossessedEntity();
             if (possessed == null || !DissolutionEntityTags.ITEM_USER.contains(possessed.getType())) {
                 return ActionResult.SUCCESS;

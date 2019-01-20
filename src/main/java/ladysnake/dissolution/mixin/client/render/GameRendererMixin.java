@@ -1,6 +1,7 @@
 package ladysnake.dissolution.mixin.client.render;
 
 import ladysnake.dissolution.api.DissolutionPlayer;
+import ladysnake.dissolution.client.ShaderHandler;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
@@ -36,5 +37,6 @@ public abstract class GameRendererMixin {
             //noinspection SuspiciousMethodCalls
             entities.remove(((DissolutionPlayer) camera).getPossessionManager().getPossessedEntity());
         }
+        entities.remove(ShaderHandler.INSTANCE.possessed);
     }
 }

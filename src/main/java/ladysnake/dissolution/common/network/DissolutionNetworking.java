@@ -25,6 +25,7 @@ public class DissolutionNetworking {
 
     // Client -> Server
     public static final Identifier LEFT_CLICK_AIR = Dissolution.id("attack_air");
+    public static final Identifier POSSESSION_REQUEST = Dissolution.id("possession_request");
 
     public static void sendToServer(CustomPayloadServerPacket packet) {
         MinecraftClient.getInstance().player.networkHandler.sendPacket(packet);
@@ -71,5 +72,12 @@ public class DissolutionNetworking {
     @Contract(pure = true)
     public static CustomPayloadServerPacket createLeftClickPacket() {
         return new CustomPayloadServerPacket(LEFT_CLICK_AIR, new PacketByteBuf(buffer()));
+    }
+
+    @Contract(pure = true)
+    public static CustomPayloadServerPacket createPossessionRequestPacket(Entity entity) {
+        PacketByteBuf buf = new PacketByteBuf(buffer());
+        buf.writeInt(entity.getEntityId());
+        return new CustomPayloadServerPacket(POSSESSION_REQUEST, buf);
     }
 }

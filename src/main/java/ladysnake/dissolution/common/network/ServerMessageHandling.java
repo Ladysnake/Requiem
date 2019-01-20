@@ -4,6 +4,8 @@ import ladysnake.dissolution.api.DissolutionPlayer;
 import ladysnake.dissolution.api.possession.Possessable;
 import net.fabricmc.fabric.networking.CustomPayloadPacketRegistry;
 import net.fabricmc.fabric.networking.PacketContext;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
@@ -11,6 +13,7 @@ import net.minecraft.util.PacketByteBuf;
 import java.util.function.BiConsumer;
 
 import static ladysnake.dissolution.common.network.DissolutionNetworking.LEFT_CLICK_AIR;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.POSSESSION_REQUEST;
 
 public class ServerMessageHandling {
 
@@ -20,6 +23,14 @@ public class ServerMessageHandling {
             Possessable possessed = ((DissolutionPlayer)player).getPossessionManager().getPossessedEntity();
             if (possessed != null) {
                 possessed.triggerIndirectAttack(player);
+            }
+        });
+        register(POSSESSION_REQUEST, (context, buf) -> {
+            PlayerEntity player = context.getPlayer();
+            int requestedId = buf.readInt();
+            Entity entity = player.world.getEntityById(requestedId);
+            if (entity instanceof MobEntity && entity.distanceTo(player) < 20) {
+                ((DissolutionPlayer)player).getPossessionManager().startPossessing((MobEntity) entity);
             }
         });
     }

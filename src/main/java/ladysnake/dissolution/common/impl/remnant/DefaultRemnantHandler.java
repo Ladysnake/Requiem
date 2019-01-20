@@ -23,7 +23,7 @@ public class DefaultRemnantHandler implements RemnantHandler {
     public static void init() {
         // Prevent incorporeal players from picking up anything
         PlayerEvent.PICKUP_ITEM.register((player, pickedUp) -> {
-            if (RemnantHandler.get(player).filter(RemnantHandler::isSoul).isPresent()) {
+            if (!player.isCreative() && RemnantHandler.get(player).filter(RemnantHandler::isSoul).isPresent()) {
                 Entity possessed = (Entity) ((DissolutionPlayer)player).getPossessionManager().getPossessedEntity();
                 if (possessed == null || !DissolutionEntityTags.ITEM_USER.contains(possessed.getType())) {
                     return ActionResult.FAILURE;
