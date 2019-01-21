@@ -6,6 +6,7 @@ import ladysnake.dissolution.api.possession.Possessable;
 import ladysnake.dissolution.api.possession.conversion.PossessableSubstitutionHandler;
 import ladysnake.dissolution.api.possession.conversion.PossessionRegistry;
 import ladysnake.dissolution.api.remnant.RemnantHandler;
+import ladysnake.dissolution.client.ShaderHandler;
 import ladysnake.dissolution.common.entity.PossessableEntityImpl;
 import ladysnake.dissolution.common.impl.possession.asm.AsmConverterProvider;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
@@ -34,13 +35,8 @@ public class Possession {
         // Start possession on right click
         PlayerInteractionEvent.INTERACT_ENTITY_POSITIONED.register((player, world, hand, entity, hitPosition) -> {
             if (RemnantHandler.get(player).filter(RemnantHandler::isIncorporeal).isPresent()) {
-                if (entity instanceof MobEntity && !entity.world.isClient) {
-                    MobEntity mob = (MobEntity) entity;
-                    if (((DissolutionPlayer) player).getPossessionManager().startPossessing(mob)) {
-                        return ActionResult.SUCCESS;
-                    }
-                } else if (entity.world.isClient) {
-                    return ActionResult.SUCCESS;
+                if (entity instanceof MobEntity && entity.world.isClient) {
+                    ShaderHandler.INSTANCE.beginFishEyeAnimation(entity);
                 }
                 return ActionResult.FAILURE;
             }

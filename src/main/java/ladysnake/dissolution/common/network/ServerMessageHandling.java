@@ -25,13 +25,15 @@ public class ServerMessageHandling {
                 possessed.triggerIndirectAttack(player);
             }
         });
-        register(POSSESSION_REQUEST, (context, buf) -> {
-            PlayerEntity player = context.getPlayer();
+        CustomPayloadPacketRegistry.SERVER.register(POSSESSION_REQUEST, (context, buf) -> {
             int requestedId = buf.readInt();
-            Entity entity = player.world.getEntityById(requestedId);
-            if (entity instanceof MobEntity && entity.distanceTo(player) < 20) {
-                ((DissolutionPlayer)player).getPossessionManager().startPossessing((MobEntity) entity);
-            }
+            context.getTaskQueue().execute(() -> {
+                PlayerEntity player = context.getPlayer();
+                Entity entity = player.world.getEntityById(requestedId);
+                if (entity instanceof MobEntity && entity.distanceTo(player) < 20) {
+                    ((DissolutionPlayer) player).getPossessionManager().startPossessing((MobEntity) entity);
+                }
+            });
         });
     }
 

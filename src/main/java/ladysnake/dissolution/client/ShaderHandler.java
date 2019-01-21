@@ -34,7 +34,7 @@ public final class ShaderHandler implements FloatConsumer, RenderEvent.PreBlockE
     public @Nullable Entity possessed;
 
     public void tick(@SuppressWarnings("unused") MinecraftClient client) {
-        if (this.possessed != null && --fishEyeAnimation == 0) {
+        if (this.possessed != null && --fishEyeAnimation == 2) {
             sendToServer(createPossessionRequestPacket(possessed));
         }
     }
