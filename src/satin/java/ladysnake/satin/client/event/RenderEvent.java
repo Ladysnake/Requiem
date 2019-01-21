@@ -5,7 +5,10 @@ import net.fabricmc.fabric.util.HandlerArray;
 import net.fabricmc.fabric.util.HandlerRegistry;
 import net.minecraft.class_856;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.Identifier;
 import org.apiguardian.api.API;
+
+import java.util.function.Function;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
@@ -24,6 +27,11 @@ public final class RenderEvent {
      * Post process shader effects should generally be rendered at that time.
      */
     public static final HandlerRegistry<FloatConsumer> SHADER_EFFECT = new HandlerArray<>(FloatConsumer.class);
+
+    /**
+     * Fired in {@link net.minecraft.client.render.GameRenderer#onSetCameraEntity(Entity)}
+     */
+    public static final HandlerRegistry<Function<Entity, Identifier>> PICK_ENTITY_SHADER = new HandlerArray<>(Function.class);
 
     /**
      * Fired after Minecraft has rendered all entities and before it renders block entities.

@@ -9,9 +9,7 @@
     "minecraft:zombie_pigman",
     "minecraft:zombie_villager",
 
-    "minecraft:skeleton",
-    "minecraft:stray",
-    "minecraft:wither_skeleton",
+    "#minecraft:skeletons",
 
     "minecraft:pillager",
     "minecraft:villager",

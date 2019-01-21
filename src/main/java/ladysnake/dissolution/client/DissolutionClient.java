@@ -20,6 +20,7 @@ public class DissolutionClient implements ClientModInitializer {
         ClientMessageHandling.init();
         RenderEvent.SHADER_EFFECT.register(ShaderHandler.INSTANCE);
         RenderEvent.BLOCK_ENTITIES_RENDER.register(ShaderHandler.INSTANCE);
+        RenderEvent.PICK_ENTITY_SHADER.register(EntityShaders::getShader);
         ClientTickEvent.CLIENT.register(ShaderHandler.INSTANCE::tick);
         HudEvent.RENDER_HOTBAR.register(PossessionHud.INSTANCE::onRenderHotbar);
         EntityRendererRegistry.INSTANCE.register(PossessableEntityImpl.class, (r, it) -> new BipedEntityRenderer<>(r, new PlayerEntityModel<>(0f, false), .5f));
