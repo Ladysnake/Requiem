@@ -1,6 +1,6 @@
 package ladysnake.dissolution.mixin.client.render;
 
-import ladysnake.dissolution.api.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;

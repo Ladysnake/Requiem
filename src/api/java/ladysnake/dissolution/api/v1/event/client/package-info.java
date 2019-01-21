@@ -3,8 +3,8 @@
  */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package ladysnake.dissolution.api.event.client;
+package ladysnake.dissolution.api.v1.event.client;
 
-import ladysnake.dissolution.api.MethodsReturnNonnullByDefault;
+import ladysnake.dissolution.api.v1.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

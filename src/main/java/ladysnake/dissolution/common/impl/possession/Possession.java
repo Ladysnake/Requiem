@@ -1,11 +1,11 @@
 package ladysnake.dissolution.common.impl.possession;
 
-import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.entity.TriggerableAttacker;
-import ladysnake.dissolution.api.possession.Possessable;
-import ladysnake.dissolution.api.possession.conversion.PossessableSubstitutionHandler;
-import ladysnake.dissolution.api.possession.conversion.PossessionRegistry;
-import ladysnake.dissolution.api.remnant.RemnantHandler;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.entity.TriggerableAttacker;
+import ladysnake.dissolution.api.v1.possession.Possessable;
+import ladysnake.dissolution.api.v1.possession.conversion.PossessableSubstitutionHandler;
+import ladysnake.dissolution.api.v1.possession.conversion.PossessionRegistry;
+import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import ladysnake.dissolution.client.ShaderHandler;
 import ladysnake.dissolution.common.entity.PossessableEntityImpl;
 import ladysnake.dissolution.common.impl.possession.asm.AsmConverterProvider;

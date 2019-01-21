@@ -1,4 +1,4 @@
-package ladysnake.dissolution.api.event;
+package ladysnake.dissolution.api.v1.event;
 
 import net.fabricmc.fabric.util.HandlerArray;
 import net.fabricmc.fabric.util.HandlerRegistry;

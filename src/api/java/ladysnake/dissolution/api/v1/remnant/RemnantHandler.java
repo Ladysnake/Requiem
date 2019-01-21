@@ -1,6 +1,6 @@
-package ladysnake.dissolution.api.remnant;
+package ladysnake.dissolution.api.v1.remnant;
 
-import ladysnake.dissolution.api.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 

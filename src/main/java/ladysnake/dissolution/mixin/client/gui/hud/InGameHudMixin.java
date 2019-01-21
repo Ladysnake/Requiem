@@ -2,9 +2,9 @@ package ladysnake.dissolution.mixin.client.gui.hud;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
-import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.event.client.HudEvent;
-import ladysnake.dissolution.api.remnant.RemnantHandler;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.event.client.HudEvent;
+import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import ladysnake.dissolution.client.gui.hud.PossessionHud;
 import net.fabricmc.fabric.util.HandlerArray;
 import net.minecraft.client.MinecraftClient;

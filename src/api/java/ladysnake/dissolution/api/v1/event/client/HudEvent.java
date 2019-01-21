@@ -1,4 +1,4 @@
-package ladysnake.dissolution.api.event.client;
+package ladysnake.dissolution.api.v1.event.client;
 
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import net.fabricmc.fabric.util.HandlerArray;

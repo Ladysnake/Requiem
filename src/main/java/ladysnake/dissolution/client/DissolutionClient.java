@@ -1,6 +1,6 @@
 package ladysnake.dissolution.client;
 
-import ladysnake.dissolution.api.event.client.HudEvent;
+import ladysnake.dissolution.api.v1.event.client.HudEvent;
 import ladysnake.dissolution.client.gui.hud.PossessionHud;
 import ladysnake.dissolution.client.network.ClientMessageHandling;
 import ladysnake.dissolution.common.entity.PossessableEntityImpl;

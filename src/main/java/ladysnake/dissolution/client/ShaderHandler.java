@@ -3,7 +3,7 @@ package ladysnake.dissolution.client;
 import com.mojang.blaze3d.platform.GlStateManager;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import ladysnake.dissolution.Dissolution;
-import ladysnake.dissolution.api.remnant.RemnantHandler;
+import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import ladysnake.satin.client.event.RenderEvent;
 import ladysnake.satin.client.shader.ManagedShaderEffect;
 import ladysnake.satin.client.shader.ShaderEffectManager;

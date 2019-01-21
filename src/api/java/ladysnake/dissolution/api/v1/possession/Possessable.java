@@ -1,6 +1,6 @@
-package ladysnake.dissolution.api.possession;
+package ladysnake.dissolution.api.v1.possession;
 
-import ladysnake.dissolution.api.entity.TriggerableAttacker;
+import ladysnake.dissolution.api.v1.entity.TriggerableAttacker;
 import net.minecraft.entity.player.PlayerEntity;
 
 import javax.annotation.Nullable;

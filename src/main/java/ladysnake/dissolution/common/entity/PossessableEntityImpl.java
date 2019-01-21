@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.entity;
 
-import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.possession.Possessable;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.common.entity.ai.InertGoal;
 import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthAttribute;

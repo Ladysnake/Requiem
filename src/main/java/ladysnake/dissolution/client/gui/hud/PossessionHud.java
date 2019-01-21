@@ -1,8 +1,8 @@
 package ladysnake.dissolution.client.gui.hud;
 
 import ladysnake.dissolution.Dissolution;
-import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.remnant.RemnantHandler;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;

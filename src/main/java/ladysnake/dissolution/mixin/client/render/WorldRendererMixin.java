@@ -1,7 +1,7 @@
 package ladysnake.dissolution.mixin.client.render;
 
-import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.possession.Possessable;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.mixin.client.MinecraftClientAccessorMixin;
 import net.minecraft.class_856;
 import net.minecraft.client.MinecraftClient;

@@ -1,7 +1,7 @@
-package ladysnake.dissolution.api;
+package ladysnake.dissolution.api.v1;
 
-import ladysnake.dissolution.api.possession.PossessionManager;
-import ladysnake.dissolution.api.remnant.RemnantHandler;
+import ladysnake.dissolution.api.v1.possession.PossessionManager;
+import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import net.minecraft.entity.player.PlayerEntity;
 
 import javax.annotation.CheckForNull;

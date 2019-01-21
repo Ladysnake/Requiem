@@ -1,8 +1,8 @@
 package ladysnake.dissolution.common.item;
 
 import ladysnake.dissolution.Dissolution;
-import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.remnant.RemnantHandler;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import ladysnake.dissolution.client.ShaderHandler;
 import ladysnake.dissolution.common.impl.remnant.DefaultRemnantHandler;
 import net.minecraft.block.BlockState;

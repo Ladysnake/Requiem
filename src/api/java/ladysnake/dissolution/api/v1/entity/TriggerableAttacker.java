@@ -1,4 +1,4 @@
-package ladysnake.dissolution.api.entity;
+package ladysnake.dissolution.api.v1.entity;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;

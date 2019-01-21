@@ -1,6 +1,6 @@
 package ladysnake.dissolution.client.network;
 
-import ladysnake.dissolution.api.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.common.impl.remnant.DefaultRemnantHandler;
 import net.fabricmc.fabric.networking.CustomPayloadPacketRegistry;
 import net.fabricmc.fabric.networking.PacketContext;

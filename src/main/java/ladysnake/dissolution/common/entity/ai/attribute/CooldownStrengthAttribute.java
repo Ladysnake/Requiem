@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.entity.ai.attribute;
 
-import ladysnake.dissolution.api.possession.Possessable;
+import ladysnake.dissolution.api.v1.possession.Possessable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 

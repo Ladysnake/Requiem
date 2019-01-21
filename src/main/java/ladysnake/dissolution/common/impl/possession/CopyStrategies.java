@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.impl.possession;
 
-import ladysnake.dissolution.api.possession.Possessable;
+import ladysnake.dissolution.api.v1.possession.Possessable;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
 import org.apiguardian.api.API;

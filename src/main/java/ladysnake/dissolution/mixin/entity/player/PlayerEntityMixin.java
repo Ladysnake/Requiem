@@ -1,8 +1,8 @@
 package ladysnake.dissolution.mixin.entity.player;
 
-import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.possession.PossessionManager;
-import ladysnake.dissolution.api.remnant.RemnantHandler;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.possession.PossessionManager;
+import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import ladysnake.dissolution.common.impl.possession.PossessionManagerImpl;
 import ladysnake.dissolution.common.impl.remnant.DefaultRemnantHandler;
 import net.minecraft.entity.Entity;

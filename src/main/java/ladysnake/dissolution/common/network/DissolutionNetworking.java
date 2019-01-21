@@ -1,8 +1,8 @@
 package ladysnake.dissolution.common.network;
 
 import ladysnake.dissolution.Dissolution;
-import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.remnant.RemnantHandler;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.packet.CustomPayloadClientPacket;
 import net.minecraft.entity.Entity;

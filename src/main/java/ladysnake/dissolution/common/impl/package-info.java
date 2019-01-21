@@ -5,6 +5,6 @@
 @ParametersAreNonnullByDefault
 package ladysnake.dissolution.common.impl;
 
-import ladysnake.dissolution.api.MethodsReturnNonnullByDefault;
+import ladysnake.dissolution.api.v1.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

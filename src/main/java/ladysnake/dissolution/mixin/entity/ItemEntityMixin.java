@@ -1,6 +1,6 @@
 package ladysnake.dissolution.mixin.entity;
 
-import ladysnake.dissolution.api.event.PlayerEvent;
+import ladysnake.dissolution.api.v1.event.PlayerEvent;
 import net.fabricmc.fabric.util.HandlerArray;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

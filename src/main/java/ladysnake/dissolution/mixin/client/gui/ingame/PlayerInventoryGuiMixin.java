@@ -1,6 +1,6 @@
 package ladysnake.dissolution.mixin.client.gui.ingame;
 
-import ladysnake.dissolution.api.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import net.minecraft.client.gui.ingame.AbstractPlayerInventoryGui;
 import net.minecraft.client.gui.ingame.CreativePlayerInventoryGui;
 import net.minecraft.client.gui.ingame.PlayerInventoryGui;

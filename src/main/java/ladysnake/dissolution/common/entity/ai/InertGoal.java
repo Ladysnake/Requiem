@@ -1,6 +1,6 @@
 package ladysnake.dissolution.common.entity.ai;
 
-import ladysnake.dissolution.api.possession.Possessable;
+import ladysnake.dissolution.api.v1.possession.Possessable;
 import net.minecraft.entity.ai.goal.Goal;
 
 public class InertGoal extends Goal {

@@ -1,6 +1,6 @@
 package ladysnake.dissolution.mixin.entity;
 
-import ladysnake.dissolution.api.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import net.minecraft.entity.Entity;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;

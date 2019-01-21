@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.network;
 
-import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.possession.Possessable;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.possession.Possessable;
 import net.fabricmc.fabric.networking.CustomPayloadPacketRegistry;
 import net.fabricmc.fabric.networking.PacketContext;
 import net.minecraft.entity.Entity;

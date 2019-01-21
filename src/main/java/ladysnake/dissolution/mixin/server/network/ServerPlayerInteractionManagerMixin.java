@@ -1,6 +1,6 @@
 package ladysnake.dissolution.mixin.server.network;
 
-import ladysnake.dissolution.api.remnant.RemnantHandler;
+import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.world.GameMode;

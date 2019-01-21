@@ -1,4 +1,4 @@
-package ladysnake.dissolution.api.possession;
+package ladysnake.dissolution.api.v1.possession;
 
 import net.minecraft.entity.mob.MobEntity;
 

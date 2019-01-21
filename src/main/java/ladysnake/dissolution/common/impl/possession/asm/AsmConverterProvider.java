@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.impl.possession.asm;
 
-import ladysnake.dissolution.api.possession.conversion.PossessableConverterProvider;
-import ladysnake.dissolution.api.possession.conversion.PossessableSubstitutionHandler;
+import ladysnake.dissolution.api.v1.possession.conversion.PossessableConverterProvider;
+import ladysnake.dissolution.api.v1.possession.conversion.PossessableSubstitutionHandler;
 import ladysnake.dissolution.common.entity.PossessableEntityImpl;
 import ladysnake.dissolution.common.impl.possession.CopyStrategies;
 import ladysnake.dissolution.common.impl.possession.Possession;

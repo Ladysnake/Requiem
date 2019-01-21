@@ -1,9 +1,9 @@
 package ladysnake.dissolution.common.impl.possession;
 
 import ladysnake.dissolution.Dissolution;
-import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.possession.Possessable;
-import ladysnake.dissolution.api.possession.PossessionManager;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.possession.Possessable;
+import ladysnake.dissolution.api.v1.possession.PossessionManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;

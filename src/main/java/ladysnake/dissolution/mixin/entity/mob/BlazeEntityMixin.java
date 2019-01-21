@@ -1,6 +1,6 @@
 package ladysnake.dissolution.mixin.entity.mob;
 
-import ladysnake.dissolution.api.entity.TriggerableAttacker;
+import ladysnake.dissolution.api.v1.entity.TriggerableAttacker;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.entity.mob.MobEntity;

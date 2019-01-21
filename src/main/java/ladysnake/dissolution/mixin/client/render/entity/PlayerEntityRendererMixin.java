@@ -1,8 +1,8 @@
 package ladysnake.dissolution.mixin.client.render.entity;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.remnant.RemnantHandler;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.model.Model;

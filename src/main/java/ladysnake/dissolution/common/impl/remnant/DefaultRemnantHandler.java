@@ -1,8 +1,8 @@
 package ladysnake.dissolution.common.impl.remnant;
 
-import ladysnake.dissolution.api.DissolutionPlayer;
-import ladysnake.dissolution.api.event.PlayerEvent;
-import ladysnake.dissolution.api.remnant.RemnantHandler;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.event.PlayerEvent;
+import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
 import net.minecraft.entity.Entity;
