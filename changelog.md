@@ -1,3 +1,6 @@
+##### Version 1.12.2-0.3.5 - BUILT
+- Fixed the shader config options not working
+
 ##### Version 1.12.2-0.3.4 - BUILT
 - Inventory drops when a possessed entity dies now respect the keepInventory gamerule
 

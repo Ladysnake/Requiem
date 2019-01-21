@@ -3,6 +3,7 @@ package ladysnake.dissolution.client.renders;
 import ladylib.client.shader.PostProcessShader;
 import ladylib.compat.EnhancedBusSubscriber;
 import ladysnake.dissolution.api.corporeality.IIncorporealHandler;
+import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Ref;
 import ladysnake.dissolution.common.capabilities.CapabilityIncorporealHandler;
 import net.minecraft.client.Minecraft;
@@ -27,7 +28,7 @@ public class DissolutionShaderManager {
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onRenderWorldLast(RenderWorldLastEvent event) {
         IIncorporealHandler handler = CapabilityIncorporealHandler.getHandler(Minecraft.getMinecraft().player);
-        if (handler.isIncorporeal()) {
+        if (handler.isIncorporeal() && Dissolution.config.client.useShaders) {
             shader.render(event.getPartialTicks());
             GlStateManager.matrixMode(GL11.GL_MODELVIEW);
         }
