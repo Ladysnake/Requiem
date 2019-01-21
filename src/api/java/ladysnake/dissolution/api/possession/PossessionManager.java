@@ -3,7 +3,6 @@ package ladysnake.dissolution.api.possession;
 import net.minecraft.entity.mob.MobEntity;
 
 import javax.annotation.CheckForNull;
-import java.util.UUID;
 
 /**
  * A {@link PossessionManager} handles a player's possession status.
@@ -17,9 +16,5 @@ public interface PossessionManager {
 
     @CheckForNull Possessable getPossessedEntity();
 
-    @CheckForNull UUID getPossessedEntityUuid();
-
-    default boolean isPossessing() {
-        return getPossessedEntityUuid() != null;
-    }
+    boolean isPossessing();
 }

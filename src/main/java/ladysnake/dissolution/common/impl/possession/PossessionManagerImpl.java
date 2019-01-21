@@ -27,7 +27,7 @@ public class PossessionManagerImpl implements PossessionManager {
     }
 
     @Override
-    public boolean canStartPossessing(MobEntity mob) {
+    public boolean canStartPossessing(final MobEntity mob) {
         DissolutionPlayer self = (DissolutionPlayer) player;
         return player.world.isClient || (!player.isSpectator() && self.isRemnant() && self.getRemnantHandler().isIncorporeal());
     }
@@ -91,12 +91,16 @@ public class PossessionManagerImpl implements PossessionManager {
                 // Second attempt: use the UUID (server)
                 host = this.player.world.getEntityByUuid(this.getPossessedEntityUuid());
             }
+            // Set the possessed uuid to null to avoid infinite recursion
+            this.possessedUuid = null;
             if (host instanceof MobEntity && host instanceof Possessable) {
-                this.possessedUuid = host.getUuid();
-                this.possessedNetworkId = host.getEntityId();
-                syncPossessed();
+                this.startPossessing((MobEntity) host);
             } else {
-                Dissolution.LOGGER.warn("{}: this player's possessed entity is nowhere to be found", this);
+                if (host == null) {
+                    Dissolution.LOGGER.warn("{}: this player's supposedly possessed entity cannot be possessed!");
+                }
+                Dissolution.LOGGER.debug("{}: this player's possessed entity is nowhere to be found", this);
+                this.stopPossessing();
                 host = null;
             }
         }
@@ -109,7 +113,6 @@ public class PossessionManagerImpl implements PossessionManager {
     }
 
     @CheckForNull
-    @Override
     public UUID getPossessedEntityUuid() {
         return this.possessedUuid;
     }
