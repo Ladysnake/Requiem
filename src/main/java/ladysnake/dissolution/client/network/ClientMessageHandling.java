@@ -41,7 +41,6 @@ public class ClientMessageHandling {
                 Entity entity = player.world.getEntityById(possessedId);
                 if (entity instanceof MobEntity) {
                     ((DissolutionPlayer)player).getPossessionManager().startPossessing((MobEntity) entity);
-                    client.worldRenderer.onSetCameraEntity(entity);
                 } else {
                     ((DissolutionPlayer)player).getPossessionManager().stopPossessing();
                     client.worldRenderer.onSetCameraEntity(player);
