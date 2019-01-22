@@ -30,4 +30,9 @@ public interface TriggerableAttacker {
     default boolean triggerIndirectAttack(PlayerEntity player) {
         return false;
     }
+
+    /**
+     * Called each tick when the mob is possessed
+     */
+    default void updateTriggeredAttackState() {}
 }

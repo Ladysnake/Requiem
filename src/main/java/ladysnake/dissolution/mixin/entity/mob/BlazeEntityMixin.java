@@ -12,9 +12,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BlazeEntity.class)
 public abstract class BlazeEntityMixin extends MobEntity implements TriggerableAttacker {
@@ -28,8 +25,8 @@ public abstract class BlazeEntityMixin extends MobEntity implements TriggerableA
         super(entityType_1, world_1);
     }
 
-    @Inject(method = "mobTick", at = @At("HEAD"))
-    public void updateFire(CallbackInfo info) {
+    @Override
+    public void updateTriggeredAttackState() {
         if (this.isFireActive() && --dissolution_fireTicks < 0) {
             this.setFireActive(false);
         }

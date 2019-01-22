@@ -121,6 +121,12 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
         }
     }
 
+    @Override
+    public void updateLogic() {
+        super.updateLogic();
+        this.updateTriggeredAttackState();
+    }
+
     @Nullable
     @Override
     public Entity getPrimaryPassenger() {
