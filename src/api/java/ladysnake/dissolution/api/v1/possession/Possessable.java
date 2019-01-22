@@ -1,7 +1,9 @@
 package ladysnake.dissolution.api.v1.possession;
 
 import ladysnake.dissolution.api.v1.entity.TriggerableAttacker;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -59,4 +61,6 @@ public interface Possessable extends TriggerableAttacker {
      * @param possessor the new possessor of this entity
      */
     void setPossessor(@Nullable PlayerEntity possessor);
+
+    void fall(double double_1, boolean boolean_1, BlockState blockState_1, BlockPos blockPos_1);
 }

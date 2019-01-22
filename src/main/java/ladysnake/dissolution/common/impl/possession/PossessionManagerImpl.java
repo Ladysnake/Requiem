@@ -4,6 +4,7 @@ import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.PossessionManager;
+import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -53,10 +54,13 @@ public class PossessionManagerImpl implements PossessionManager {
         this.possessedNetworkId = pMob.getEntityId();
         possessable.setPossessor(this.player);
         syncPossessed();
+        // 4- Update some attributes
+        this.player.setPositionAndAngles(pMob);
+        this.player.abilities.allowFlying = this.player.isCreative() || DissolutionEntityTags.FLIGHT.contains(pMob.getType());
+        this.player.abilities.flying = false;
         // These size changes will be actually applied when the player ticks
         this.player.width = pMob.width;
         this.player.height = pMob.height;
-        this.player.setPositionAndAngles(pMob);
         return true;
     }
 
@@ -68,6 +72,7 @@ public class PossessionManagerImpl implements PossessionManager {
             this.possessedNetworkId = 0;
             possessedEntity.setPossessor(null);
             syncPossessed();
+            this.player.abilities.allowFlying = true;
         }
     }
 

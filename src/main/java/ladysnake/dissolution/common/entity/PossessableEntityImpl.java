@@ -5,6 +5,7 @@ import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.common.entity.ai.InertGoal;
 import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthAttribute;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -16,6 +17,7 @@ import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
@@ -69,6 +71,11 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     @Override
     public void setPossessor(@CheckForNull PlayerEntity possessor) {
         this.possessorUuid = possessor != null ? possessor.getUuid() : null;
+    }
+
+    @Override
+    public void fall(double double_1, boolean boolean_1, BlockState blockState_1, BlockPos blockPos_1) {
+        this.method_5623(double_1, boolean_1, blockState_1, blockPos_1);
     }
 
     @Override

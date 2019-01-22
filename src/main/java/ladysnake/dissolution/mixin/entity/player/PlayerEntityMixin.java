@@ -5,12 +5,14 @@ import ladysnake.dissolution.api.v1.possession.PossessionManager;
 import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import ladysnake.dissolution.common.impl.possession.PossessionManagerImpl;
 import ladysnake.dissolution.common.impl.remnant.DefaultRemnantHandler;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -60,6 +62,15 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
             if (possessedEntity != null) {
                 info.setReturnValue(possessedEntity.getEyeHeight());
             }
+        }
+    }
+
+    @Inject(method = "slowMovement", at = @At("HEAD"), cancellable = true)
+    public void slowMovement(BlockState blockState_1, Vec3d vec3d_1, CallbackInfo info) {
+        Entity possessed = (Entity) this.getPossessionManager().getPossessedEntity();
+        if (possessed != null) {
+            possessed.slowMovement(blockState_1, vec3d_1);
+            info.cancel();
         }
     }
 

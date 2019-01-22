@@ -2,6 +2,7 @@ package ladysnake.dissolution.mixin.entity;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.entity.TriggerableAttacker;
+import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -54,6 +55,16 @@ public abstract class LivingEntityMixin extends Entity implements TriggerableAtt
                     ((LivingEntity) (Object) this).damage(newSource, amount);
                     info.setReturnValue(true);
                 }
+            }
+        }
+    }
+
+    @Inject(method = "canClimb", at = @At("HEAD"), cancellable = true)
+    public void canClimb(CallbackInfoReturnable<Boolean> info) {
+        if (this instanceof DissolutionPlayer && this.horizontalCollision) {
+            LivingEntity possessed = (LivingEntity) ((DissolutionPlayer) this).getPossessionManager().getPossessedEntity();
+            if (possessed != null) {
+                info.setReturnValue(DissolutionEntityTags.CLIMBER.contains(possessed.getType()));
             }
         }
     }
