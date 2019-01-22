@@ -14,8 +14,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-import static ladysnake.dissolution.common.network.DissolutionNetworking.createPossessionPacket;
-import static ladysnake.dissolution.common.network.DissolutionNetworking.sendTo;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 
 public class PossessionManagerImpl implements PossessionManager {
     private PlayerEntity player;
@@ -50,14 +49,14 @@ public class PossessionManagerImpl implements PossessionManager {
         }
         // 3- Actually set the possessed entity
         MobEntity pMob = (MobEntity) possessable;
-        this.player.setPositionAndAngles(pMob);
         this.possessedUuid = pMob.getUuid();
         this.possessedNetworkId = pMob.getEntityId();
+        possessable.setPossessor(this.player);
+        syncPossessed();
         // These size changes will be actually applied when the player ticks
         this.player.width = pMob.width;
         this.player.height = pMob.height;
-        possessable.setPossessor(this.player);
-        syncPossessed();
+        this.player.setPositionAndAngles(pMob);
         return true;
     }
 
@@ -75,6 +74,7 @@ public class PossessionManagerImpl implements PossessionManager {
     private void syncPossessed() {
         if (!this.player.world.isClient) {
             sendTo((ServerPlayerEntity)this.player, createPossessionPacket(this.player.getUuid(), this.possessedNetworkId));
+            sendToAllTracking(this.player, createPossessionPacket(this.player.getUuid(), this.possessedNetworkId));
         }
     }
 

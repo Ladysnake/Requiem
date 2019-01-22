@@ -29,10 +29,9 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
             // Synchronize soul players with other players
             sendTo((ServerPlayerEntity)(Object)this, createCorporealityPacket((PlayerEntity) tracked));
         } else if (tracked instanceof Possessable) {
-            // Synchronize possessed entities with their possessor
-            if (((Possessable)tracked).getPossessorUuid().filter(this.getUuid()::equals).isPresent()) {
-                sendTo((ServerPlayerEntity)(Object)this, createPossessionPacket(getUuid(), tracked.getEntityId()));
-            }
+            // Synchronize possessed entities with their possessor / other players
+            ((Possessable) tracked).getPossessorUuid()
+                    .ifPresent(uuid -> sendTo((ServerPlayerEntity)(Object)this, createPossessionPacket(uuid, tracked.getEntityId())));
         }
     }
 
