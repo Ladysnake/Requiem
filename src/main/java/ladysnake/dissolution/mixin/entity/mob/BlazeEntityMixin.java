@@ -43,6 +43,7 @@ public abstract class BlazeEntityMixin extends MobEntity implements TriggerableA
 
         this.world.fireWorldEvent(null, 1018, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
         this.dissolution_fireTicks = 200;
+        this.setFireActive(true);
         SmallFireballEntity smallFireballEntity_1 = new SmallFireballEntity(
                 this.world,
                 this,
