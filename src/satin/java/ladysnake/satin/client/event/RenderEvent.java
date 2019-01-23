@@ -3,7 +3,7 @@ package ladysnake.satin.client.event;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import net.fabricmc.fabric.util.HandlerArray;
 import net.fabricmc.fabric.util.HandlerRegistry;
-import net.minecraft.class_856;
+import net.minecraft.client.render.VisibleRegion;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import org.apiguardian.api.API;
@@ -20,7 +20,7 @@ public final class RenderEvent {
 
     @FunctionalInterface
     public interface PreBlockEntities {
-        void onPreRenderBlockEntities(Entity camera, class_856 frustum, float tickDelta);
+        void onPreRenderBlockEntities(Entity camera, VisibleRegion frustum, float tickDelta);
     }
     /**
      * Fired when Minecraft renders the entity outline framebuffer.
@@ -29,7 +29,7 @@ public final class RenderEvent {
     public static final HandlerRegistry<FloatConsumer> SHADER_EFFECT = new HandlerArray<>(FloatConsumer.class);
 
     /**
-     * Fired in {@link net.minecraft.client.render.GameRenderer#onSetCameraEntity(Entity)}
+     * Fired in {@link net.minecraft.client.render.GameRenderer#onCameraEntitySet(Entity)}
      */
     public static final HandlerRegistry<Function<Entity, Identifier>> PICK_ENTITY_SHADER = new HandlerArray<>(Function.class);
 

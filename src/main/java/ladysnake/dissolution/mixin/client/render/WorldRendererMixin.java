@@ -3,8 +3,8 @@ package ladysnake.dissolution.mixin.client.render;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.mixin.client.MinecraftClientAccessorMixin;
-import net.minecraft.class_856;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.VisibleRegion;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Final;
@@ -23,7 +23,7 @@ public abstract class WorldRendererMixin {
      * entity completely.
      */
     @Inject(method = "renderEntities", at = @At("HEAD"))
-    public void preRenderEntities(Entity camera, class_856 frustum, float tickDelta, CallbackInfo info) {
+    public void preRenderEntities(Entity camera, VisibleRegion frustum, float tickDelta, CallbackInfo info) {
         if (camera instanceof DissolutionPlayer) {
             Possessable possessed = ((DissolutionPlayer) camera).getPossessionManager().getPossessedEntity();
             if (possessed != null) {
@@ -33,10 +33,10 @@ public abstract class WorldRendererMixin {
     }
 
     /**
-     * Reverts the change made in {@link #preRenderEntities(Entity, class_856, float, CallbackInfo)}
+     * Reverts the change made in {@link #preRenderEntities(Entity, VisibleRegion, float, CallbackInfo)}
      */
     @Inject(method = "renderEntities", at = @At("RETURN"))
-    public void postRenderEntities(Entity camera, class_856 frustum, float tickDelta, CallbackInfo info) {
+    public void postRenderEntities(Entity camera, VisibleRegion frustum, float tickDelta, CallbackInfo info) {
         if (camera instanceof DissolutionPlayer) {
             Possessable possessed = ((DissolutionPlayer) camera).getPossessionManager().getPossessedEntity();
             if (possessed == client.getCameraEntity()) {

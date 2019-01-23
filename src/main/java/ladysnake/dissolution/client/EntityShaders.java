@@ -15,7 +15,7 @@ public final class EntityShaders {
         if (camera instanceof DissolutionPlayer) {
             Entity possessed = (Entity) ((DissolutionPlayer)camera).getPossessionManager().getPossessedEntity();
             if (possessed != null) {
-                MinecraftClient.getInstance().worldRenderer.onSetCameraEntity(possessed);
+                MinecraftClient.getInstance().gameRenderer.onCameraEntitySet(possessed);
             }
         } else if (camera instanceof WaterCreatureEntity) {
             return ShaderHandler.FISH_EYE_SHADER_ID;

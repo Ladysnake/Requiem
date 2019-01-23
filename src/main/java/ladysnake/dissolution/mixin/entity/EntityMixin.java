@@ -24,8 +24,8 @@ public abstract class EntityMixin {
     public void overrideSoulResize(float width, float height, CallbackInfo info) {
         if (this instanceof DissolutionPlayer) {
             Entity possessed = (Entity) ((DissolutionPlayer)this).getPossessionManager().getPossessedEntity();
-            if (possessed != null && (possessed.width != width || possessed.height != height)) {
-                this.setSize(possessed.width, possessed.height);
+            if (possessed != null && (possessed.getWidth() != width || possessed.getHeight() != height)) {
+                this.setSize(possessed.getWidth(), possessed.getHeight());
                 info.cancel();
             }
         }

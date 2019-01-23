@@ -1,5 +1,5 @@
 /**
- * V1 API
+ * V1 API classes for Dissolution
  */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault

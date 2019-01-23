@@ -7,10 +7,10 @@ import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import ladysnake.satin.client.event.RenderEvent;
 import ladysnake.satin.client.shader.ManagedShaderEffect;
 import ladysnake.satin.client.shader.ShaderEffectManager;
-import net.minecraft.class_856;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.VisibleRegion;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 
@@ -54,18 +54,18 @@ public final class ShaderHandler implements FloatConsumer, RenderEvent.PreBlockE
             fishEyeShader.render(tickDelta);
             if (this.possessed != null && this.framebuffer != null) {
                 GlStateManager.enableBlend();
-                GlStateManager.blendFuncSeparate(GlStateManager.SrcBlendFactor.SRC_ALPHA, GlStateManager.DstBlendFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcBlendFactor.ZERO, GlStateManager.DstBlendFactor.ONE);
-                this.framebuffer.draw(this.mc.window.getWindowWidth(), this.mc.window.getWindowHeight(), false);
-                MinecraftClient.getInstance().renderer.drawFramebuffer();
+                GlStateManager.blendFuncSeparate(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ZERO, GlStateManager.class_1027.ONE);
+                this.framebuffer.draw(this.mc.window.getWidth(), this.mc.window.getHeight(), false);
+                MinecraftClient.getInstance().worldRenderer.drawEntityOutlinesFramebuffer();
             }
         }
     }
 
     @Override
-    public void onPreRenderBlockEntities(Entity camera, class_856 frustum, float tickDelta) {
+    public void onPreRenderBlockEntities(Entity camera, VisibleRegion frustum, float tickDelta) {
         if (this.possessed != null) {
             if (this.framebuffer == null) {
-                this.framebuffer = new GlFramebuffer(mc.window.getWindowWidth(), mc.window.getWindowHeight(), true, MinecraftClient.isSystemMac);
+                this.framebuffer = new GlFramebuffer(mc.window.getWidth(), mc.window.getHeight(), true, MinecraftClient.isSystemMac);
             }
             this.framebuffer.clear(MinecraftClient.isSystemMac);
             GlStateManager.disableFog();

@@ -24,7 +24,7 @@ import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
 
-    @Shadow private ShaderEffect field_4024;
+    @Shadow private ShaderEffect shader;
 
     @Shadow protected abstract void loadShader(Identifier identifier_1);
 
@@ -36,10 +36,10 @@ public abstract class GameRendererMixin {
     @Inject(
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/WorldRenderer;drawFramebuffer()V",
+                    target = "Lnet/minecraft/client/render/WorldRenderer;drawEntityOutlinesFramebuffer()V",
                     shift = AFTER
             ),
-            method = "method_3192"
+            method = "render"
     )
     public void hookShaderRender(float tickDelta, long nanoTime, boolean renderLevel, CallbackInfo info) {
         FloatConsumer[] handlers = ((HandlerArray<FloatConsumer>)RenderEvent.SHADER_EFFECT).getBackingArray();
@@ -53,16 +53,16 @@ public abstract class GameRendererMixin {
         }
     }
 
-    @Inject(method = "onSetCameraEntity", at = @At(value = "RETURN", ordinal = 1))
+    @Inject(method = "onCameraEntitySet", at = @At(value = "RETURN", ordinal = 1))
     public void useCustomEntityShader(@Nullable Entity entity, CallbackInfo info) {
-        if (this.field_4024 == null) {
+        if (this.shader == null) {
             for (Function<Entity, Identifier> handler : ((HandlerArray<Function<Entity, Identifier>>) RenderEvent.PICK_ENTITY_SHADER).getBackingArray()) {
                 Identifier id = handler.apply(entity);
                 if (id != null) {
                     this.loadShader(id);
                 }
                 // Allow listeners to set the shader themselves if they need to configure it
-                if (this.field_4024 != null) {
+                if (this.shader != null) {
                     return;
                 }
             }

@@ -5,6 +5,8 @@ import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.PossessionManager;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
+import ladysnake.reflectivefabric.reflection.typed.TypedMethod2;
+import ladysnake.reflectivefabric.reflection.typed.TypedMethodHandles;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,8 +18,11 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 
 import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
+import static ladysnake.reflectivefabric.reflection.ReflectionHelper.pick;
 
 public class PossessionManagerImpl implements PossessionManager {
+    private static final TypedMethod2<PlayerEntity, Float, Float, Void> PLAYER$SET_SIZE = TypedMethodHandles.findVirtual(PlayerEntity.class, pick("method_5835", "setSize"), void.class, float.class, float.class);
+
     private PlayerEntity player;
     private @Nullable UUID possessedUuid;
     private int possessedNetworkId;
@@ -58,9 +63,7 @@ public class PossessionManagerImpl implements PossessionManager {
         this.player.setPositionAndAngles(pMob);
         this.player.abilities.allowFlying = this.player.isCreative() || DissolutionEntityTags.FLIGHT.contains(pMob.getType());
         this.player.abilities.flying = false;
-        // These size changes will be actually applied when the player ticks
-        this.player.width = pMob.width;
-        this.player.height = pMob.height;
+        PLAYER$SET_SIZE.invoke(player, pMob.getWidth(), pMob.getHeight());
         return true;
     }
 

@@ -36,7 +36,7 @@ public abstract class GhastEntityMixin extends FlyingEntity implements Triggerab
             FireballEntity fireballEntity_1 = new FireballEntity(world, this, rot.x, rot.y, rot.z);
             fireballEntity_1.explosionPower = this.getFireballStrength();
             fireballEntity_1.x = this.x + vec3d_1.x * 4.0D;
-            fireballEntity_1.y = this.y + (double)(this.height / 2.0F) + 0.5D;
+            fireballEntity_1.y = this.y + (double)(this.getHeight() / 2.0F) + 0.5D;
             fireballEntity_1.z = this.z + vec3d_1.z * 4.0D;
             world.spawnEntity(fireballEntity_1);
             this.dissolution_fireballCooldown = -40;

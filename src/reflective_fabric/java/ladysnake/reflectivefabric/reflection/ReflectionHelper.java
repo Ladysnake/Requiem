@@ -6,6 +6,7 @@ import org.apiguardian.api.API;
 import java.lang.invoke.*;
 import java.lang.reflect.Field;
 
+import static ladysnake.reflectivefabric.misc.DebugUtil.isDevEnv;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
 
@@ -24,6 +25,10 @@ public class ReflectionHelper {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new UncheckedReflectionException("Could not access trusted lookup", e);
         }
+    }
+
+    public static String pick(String obfName, String mappedName) {
+        return isDevEnv() ? mappedName : obfName;
     }
 
     /**

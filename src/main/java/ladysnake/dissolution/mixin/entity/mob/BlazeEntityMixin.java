@@ -48,7 +48,7 @@ public abstract class BlazeEntityMixin extends MobEntity implements TriggerableA
                 rot.y,
                 rot.z + this.getRand().nextGaussian() * (double)float_1
         );
-        smallFireballEntity_1.y = this.y + (double)(this.height / 2.0F) + 0.5D;
+        smallFireballEntity_1.y = this.y + (double)(this.getHeight() / 2.0F) + 0.5D;
         this.world.spawnEntity(smallFireballEntity_1);
         return true;
     }

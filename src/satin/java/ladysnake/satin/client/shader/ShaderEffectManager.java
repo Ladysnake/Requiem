@@ -73,8 +73,8 @@ public final class ShaderEffectManager implements ResourceReloadListener {
     @API(status = INTERNAL)
     public void refreshScreenShaders(MinecraftClient mc) {
         if (!ShaderHelper.areShadersForbidden() && !managedShaderEffects.isEmpty()) {
-            int windowHeight = mc.window.getWindowHeight();
-            int windowWidth = mc.window.getWindowWidth();
+            int windowHeight = mc.window.getHeight();
+            int windowWidth = mc.window.getWidth();
             if (windowWidth != oldDisplayWidth || oldDisplayHeight != windowHeight) {
                 for (ManagedShaderEffect ss : managedShaderEffects) {
                     if (ss.isInitialized()) {

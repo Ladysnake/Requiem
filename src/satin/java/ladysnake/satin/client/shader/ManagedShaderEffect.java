@@ -93,7 +93,7 @@ public final class ManagedShaderEffect {
         this.release();
         MinecraftClient mc = MinecraftClient.getInstance();
         this.shaderGroup = new ShaderEffect(mc.getTextureManager(), mc.getResourceManager(), mc.getFramebuffer(), this.location);
-        this.setup(mc.window.getWindowWidth(), mc.window.getWindowHeight());
+        this.setup(mc.window.getWidth(), mc.window.getHeight());
     }
 
     @API(status = INTERNAL)

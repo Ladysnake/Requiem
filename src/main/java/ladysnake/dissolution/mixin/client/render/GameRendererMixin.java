@@ -21,7 +21,7 @@ public abstract class GameRendererMixin {
     @Shadow public abstract ShaderEffect getShader();
 
     @Inject(
-            method = "method_3190",
+            method = "updateTargetedEntity",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/world/ClientWorld;" +
