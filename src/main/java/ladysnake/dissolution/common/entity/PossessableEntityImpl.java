@@ -6,6 +6,7 @@ import ladysnake.dissolution.common.entity.ai.InertGoal;
 import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthAttribute;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.network.packet.EntityVelocityUpdateClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -16,6 +17,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
@@ -189,7 +191,9 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     public void method_6005(Entity entity_1, float float_1, double double_1, double double_2) {
         Optional<PlayerEntity> possessing = getPossessor();
         if (possessing.isPresent()) {
-            possessing.get().method_6005(entity_1, float_1, double_1, double_2);
+            PlayerEntity player = possessing.get();
+            player.method_6005(entity_1, float_1, double_1, double_2);
+            ((ServerPlayerEntity) player).networkHandler.sendPacket(new EntityVelocityUpdateClientPacket(player));
         } else {
             super.method_6005(entity_1, float_1, double_1, double_2);
         }
