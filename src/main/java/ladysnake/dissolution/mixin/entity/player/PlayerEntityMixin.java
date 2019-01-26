@@ -73,6 +73,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
         }
     }
 
+    @Inject(method = "updateMovement", at = @At("HEAD"))
+    private void updateMovementAlterer(CallbackInfo info) {
+        this.movementAlterer.update();
+    }
+
     @Inject(method = "getEyeHeight", at = @At("RETURN"), cancellable = true)
     private void adjustEyeHeight(CallbackInfoReturnable<Float> info) {
         if (this.getPossessionComponent().isPossessing()) {

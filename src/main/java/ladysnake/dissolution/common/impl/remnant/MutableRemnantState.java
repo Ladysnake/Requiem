@@ -3,6 +3,7 @@ package ladysnake.dissolution.common.impl.remnant;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.event.PlayerEvent;
 import ladysnake.dissolution.api.v1.remnant.RemnantState;
+import ladysnake.dissolution.common.impl.SerializableMovementConfig;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
 import net.minecraft.entity.Entity;
@@ -67,21 +68,25 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public void setSoul(boolean incorporeal) {
-        this.incorporeal = incorporeal;
-        PlayerAbilities abilities = this.owner.abilities;
-        if (incorporeal) {
-            abilities.allowFlying = true;
-            abilities.invulnerable = true;
-        } else {
-            abilities.allowFlying = this.owner.isCreative();
-            abilities.flying = abilities.flying && abilities.allowFlying;
-            abilities.invulnerable = this.owner.isCreative();
-            ((DissolutionPlayer)this.owner).getPossessionComponent().stopPossessing();
-        }
-        if (!this.owner.world.isClient) {
-            // Synchronizes with all players tracking the owner
-            sendTo((ServerPlayerEntity) this.owner, createCorporealityPacket(this.owner));
-            sendToAllTracking(this.owner, createCorporealityPacket(this.owner));
+        if (this.incorporeal != incorporeal) {
+            this.incorporeal = incorporeal;
+            PlayerAbilities abilities = this.owner.abilities;
+            SerializableMovementConfig config;
+            if (incorporeal) {
+                config = SerializableMovementConfig.SOUL;
+                abilities.invulnerable = true;
+            } else {
+                config = null;
+                abilities.allowFlying = false;
+                abilities.invulnerable = this.owner.isCreative();
+                ((DissolutionPlayer)this.owner).getPossessionComponent().stopPossessing();
+            }
+            ((DissolutionPlayer)this.owner).getMovementAlterer().setConfig(config);
+            if (!this.owner.world.isClient) {
+                // Synchronizes with all players tracking the owner
+                sendTo((ServerPlayerEntity) this.owner, createCorporealityPacket(this.owner));
+                sendToAllTracking(this.owner, createCorporealityPacket(this.owner));
+            }
         }
     }
 

@@ -9,11 +9,20 @@ public interface MovementConfig {
 
     /**
      * Returns the gravity that should be applied by movement alterers using this config.
-     * Minecraft's default gravity is {@literal 0.2f}.
+     * This will be applied on top of Minecraft's default gravity, which is of <tt>0.005</tt>.
      *
      * @return the gravity that should be applied by movement alterers using this config
      */
-    float getGravity();
+    float getAddedGravity();
+
+    /**
+     * Returns the speed modifier that should be applied during falls by movement alterers using this config.
+     * The entity's vertical speed will be multiplied by this amount.
+     * The modification is made after {@link #getAddedGravity()}.
+     *
+     * @return the speed modifier that should be applied during falls by movement alterers using this config
+     */
+    float getFallSpeedModifier();
 
     /**
      * Returns the inertia that should be applied by movement alterers using this config.

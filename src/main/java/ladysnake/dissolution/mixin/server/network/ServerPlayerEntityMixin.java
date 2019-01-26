@@ -44,7 +44,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     private void method_5623(double double_1, boolean boolean_1, BlockState blockState_1, BlockPos blockPos_1, CallbackInfo info) {
         Possessable possessed = ((DissolutionPlayer)this).getPossessionComponent().getPossessedEntity();
         if (possessed != null) {
-            possessed.fall(double_1, boolean_1, blockState_1, blockPos_1);
+            possessed.onPossessorFalls(this.fallDistance, double_1, boolean_1, blockState_1, blockPos_1);
+            info.cancel();
         }
     }
 

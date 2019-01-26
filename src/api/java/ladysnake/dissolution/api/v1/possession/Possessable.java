@@ -62,5 +62,5 @@ public interface Possessable extends TriggerableAttacker {
      */
     void setPossessor(@Nullable PlayerEntity possessor);
 
-    void fall(double double_1, boolean boolean_1, BlockState blockState_1, BlockPos blockPos_1);
+    void onPossessorFalls(float fallDistance, double double_1, boolean boolean_1, BlockState blockState_1, BlockPos blockPos_1);
 }

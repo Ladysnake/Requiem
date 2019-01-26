@@ -2,8 +2,10 @@ package ladysnake.dissolution.common.impl.possession;
 
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.entity.MovementConfig;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
+import ladysnake.dissolution.common.impl.SerializableMovementConfig;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethod2;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethodHandles;
@@ -21,7 +23,7 @@ import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 import static ladysnake.reflectivefabric.reflection.ReflectionHelper.pick;
 
 public class PossessionComponentImpl implements PossessionComponent {
-    private static final TypedMethod2<PlayerEntity, Float, Float, Void> PLAYER$SET_SIZE = TypedMethodHandles.findVirtual(PlayerEntity.class, pick("method_5835", "setSize"), void.class, float.class, float.class);
+    private static final TypedMethod2<Entity, Float, Float, Void> PLAYER$SET_SIZE = TypedMethodHandles.findVirtual(Entity.class, pick("method_5835", "setSize"), void.class, float.class, float.class);
 
     private PlayerEntity player;
     @Nullable private UUID possessedUuid;
@@ -61,8 +63,7 @@ public class PossessionComponentImpl implements PossessionComponent {
         syncPossessed();
         // 4- Update some attributes
         this.player.setPositionAndAngles(pMob);
-        this.player.abilities.allowFlying = this.player.isCreative() || DissolutionEntityTags.FLIGHT.contains(pMob.getType());
-        this.player.abilities.flying = false;
+        ((DissolutionPlayer)this.player).getMovementAlterer().setConfig(new SerializableMovementConfig(DissolutionEntityTags.FLIGHT.contains(pMob.getType()) ? MovementConfig.FlightMode.ENABLED : MovementConfig.FlightMode.DISABLED, 0, 1f, 0));
         PLAYER$SET_SIZE.invoke(player, pMob.getWidth(), pMob.getHeight());
         return true;
     }
@@ -73,9 +74,9 @@ public class PossessionComponentImpl implements PossessionComponent {
         if (possessedEntity != null) {
             this.possessedUuid = null;
             this.possessedNetworkId = 0;
+            ((DissolutionPlayer)this.player).getMovementAlterer().setConfig(SerializableMovementConfig.SOUL);
             possessedEntity.setPossessor(null);
             syncPossessed();
-            this.player.abilities.allowFlying = true;
         }
     }
 

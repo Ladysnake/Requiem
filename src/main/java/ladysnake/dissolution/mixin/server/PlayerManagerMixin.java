@@ -61,6 +61,7 @@ public abstract class PlayerManagerMixin {
             @Nullable CompoundTag serializedPlayer
     ) {
         if (serializedPlayer != null && serializedPlayer.containsKey(POSSESSED_ROOT_TAG, NbtType.COMPOUND)) {
+            sendTo(player, createCorporealityPacket(player));
             ServerWorld world = this.server.getWorld(player.dimension);
             CompoundTag serializedPossessedInfo = serializedPlayer.getCompound(POSSESSED_ROOT_TAG);
             Entity possessedEntityMount = ChunkSaveHandlerImpl.readEntity(serializedPossessedInfo.getCompound(POSSESSED_ENTITY_TAG), world, true);

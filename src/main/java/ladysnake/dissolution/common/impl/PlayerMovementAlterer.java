@@ -3,9 +3,11 @@ package ladysnake.dissolution.common.impl;
 import ladysnake.dissolution.api.v1.entity.MovementAlterer;
 import ladysnake.dissolution.api.v1.entity.MovementConfig;
 import net.minecraft.client.network.packet.PlayerAbilitiesClientPacket;
+import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 public class PlayerMovementAlterer implements MovementAlterer {
@@ -20,27 +22,22 @@ public class PlayerMovementAlterer implements MovementAlterer {
         this.player = player;
     }
 
-    @Nullable
     @Override
-    public MovementConfig getConfig() {
-        return config;
-    }
-
-    @Override
-    public void setConfig(MovementConfig config) {
+    public void setConfig(@CheckForNull MovementConfig config) {
         this.config = config;
+        this.applyConfig();
     }
 
     @Override
-    public void onMotionStateChanged() {
+    public void applyConfig() {
         if (this.config == null) {
             return;
         }
-        if (this.config.getFlightMode() != MovementConfig.FlightMode.DISABLED) {
-            this.player.abilities.allowFlying = true;
-            if (!this.player.world.isClient) {
-                ((ServerPlayerEntity) player).networkHandler.sendPacket(new PlayerAbilitiesClientPacket(player.abilities));
-            }
+        PlayerAbilities abilities = this.player.abilities;
+        abilities.allowFlying = this.player.isCreative() || this.player.isSpectator() || this.config.getFlightMode() != MovementConfig.FlightMode.DISABLED;
+        abilities.flying &= abilities.allowFlying;
+        if (player instanceof ServerPlayerEntity && ((ServerPlayerEntity) player).networkHandler != null) {
+            ((ServerPlayerEntity) player).networkHandler.sendPacket(new PlayerAbilitiesClientPacket(abilities));
         }
     }
 
@@ -51,6 +48,10 @@ public class PlayerMovementAlterer implements MovementAlterer {
         }
         if (this.config.getFlightMode() == MovementConfig.FlightMode.FORCED) {
             this.player.abilities.flying = true;
+        }
+        this.player.velocityY -= this.config.getAddedGravity();
+        if (!this.player.onGround && this.player.velocityY < 0) {
+            this.player.velocityY *= this.config.getFallSpeedModifier();
         }
         applyInertia(this.config.getInertia());
         this.lastVelocityX = this.player.velocityX;

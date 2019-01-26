@@ -74,7 +74,8 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     }
 
     @Override
-    public void fall(double double_1, boolean boolean_1, BlockState blockState_1, BlockPos blockPos_1) {
+    public void onPossessorFalls(float fallDistance, double double_1, boolean boolean_1, BlockState blockState_1, BlockPos blockPos_1) {
+        this.fallDistance = fallDistance;
         this.method_5623(double_1, boolean_1, blockState_1, blockPos_1);
     }
 
@@ -110,7 +111,8 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
             this.setRotation(this.yaw, this.pitch);
             this.field_6283 = this.yaw;
             this.headYaw = this.field_6283;
-            this.fallDistance = player.fallDistance;
+            // Prevent this entity from taking fall damage unless triggered by the possessor
+            this.fallDistance = 0;
 
             super.method_6091(strafe, vertical, forward);
             this.setPosition(player.x, player.y, player.z);
