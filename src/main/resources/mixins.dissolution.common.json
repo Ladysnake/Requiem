@@ -11,6 +11,7 @@
     "entity.mob.BlazeEntityMixin",
     "entity.mob.GhastEntityMixin",
     "entity.player.PlayerEntityMixin",
+    "predicate.entity.EntityPredicatesMixin",
     "server.PlayerManagerMixin",
     "server.network.ServerPlayerEntityMixin",
     "server.network.ServerPlayerInteractionManagerMixin"
