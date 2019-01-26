@@ -9,6 +9,7 @@
     "entity.attribute.AbstractEntityAttributeContainerAccessorMixin",
     "entity.attribute.EntityAttributeContainerAccessorMixin",
     "entity.mob.BlazeEntityMixin",
+    "entity.mob.GhastEntityMixin",
     "entity.player.PlayerEntityMixin",
     "server.PlayerManagerMixin",
     "server.network.ServerPlayerEntityMixin",
