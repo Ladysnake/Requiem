@@ -13,7 +13,7 @@ public final class EntityShaders {
     @Nullable
     public static Identifier getShader(Entity camera) {
         if (camera instanceof DissolutionPlayer) {
-            Entity possessed = (Entity) ((DissolutionPlayer)camera).getPossessionManager().getPossessedEntity();
+            Entity possessed = (Entity) ((DissolutionPlayer)camera).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {
                 MinecraftClient.getInstance().gameRenderer.onCameraEntitySet(possessed);
             }

@@ -14,6 +14,7 @@ public class ChangeParentClassAdapter extends ClassVisitor {
     private final Type templateType;
 
     private final String name;
+    @SuppressWarnings("NullableProblems") // late init
     private String oldSuperName;
     private final String newSuperName;
 

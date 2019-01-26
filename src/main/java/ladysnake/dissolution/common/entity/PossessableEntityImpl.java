@@ -168,7 +168,7 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
         super.onDeath(damageSource_1);
         // Drop player inventory on death
         this.getPossessor().ifPresent(possessor -> {
-            ((DissolutionPlayer)possessor).getPossessionManager().stopPossessing();
+            ((DissolutionPlayer)possessor).getPossessionComponent().stopPossessing();
             if (!world.isClient && !possessor.isCreative() && !world.getGameRules().getBoolean("keepInventory")) {
                 possessor.inventory.dropAll();
             }

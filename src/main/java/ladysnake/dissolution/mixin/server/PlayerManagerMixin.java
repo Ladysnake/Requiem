@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.Possessable;
-import ladysnake.dissolution.api.v1.possession.PossessionManager;
+import ladysnake.dissolution.api.v1.possession.PossessionComponent;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
@@ -24,6 +24,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 import static ladysnake.dissolution.common.network.DissolutionNetworking.createCorporealityPacket;
@@ -36,7 +37,7 @@ public abstract class PlayerManagerMixin {
     @Shadow @Final private MinecraftServer server;
 
     @Inject(method = "onPlayerConnect", at = @At("RETURN"))
-    public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity createdPlayer, CallbackInfo info) {
+    private void onPlayerConnect(ClientConnection connection, ServerPlayerEntity createdPlayer, CallbackInfo info) {
         sendTo(createdPlayer, createCorporealityPacket(createdPlayer));
     }
 
@@ -49,7 +50,7 @@ public abstract class PlayerManagerMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    public void logInPossessedEntity(
+    private void logInPossessedEntity(
             ClientConnection connection,
             ServerPlayerEntity player,
             CallbackInfo info,
@@ -57,7 +58,7 @@ public abstract class PlayerManagerMixin {
             GameProfile gameProfile_1,
             UserCache userCache_1,
             String string_1,
-            CompoundTag serializedPlayer
+            @Nullable CompoundTag serializedPlayer
     ) {
         if (serializedPlayer != null && serializedPlayer.containsKey(POSSESSED_ROOT_TAG, NbtType.COMPOUND)) {
             ServerWorld world = this.server.getWorld(player.dimension);
@@ -65,12 +66,12 @@ public abstract class PlayerManagerMixin {
             Entity possessedEntityMount = ChunkSaveHandlerImpl.readEntity(serializedPossessedInfo.getCompound(POSSESSED_ENTITY_TAG), world, true);
             if (possessedEntityMount != null) {
                 UUID possessedEntityUuid = serializedPossessedInfo.getUuid(POSSESSED_UUID_TAG);
-                resumePossession(((DissolutionPlayer) player).getPossessionManager(), world, possessedEntityMount, possessedEntityUuid);
+                resumePossession(((DissolutionPlayer) player).getPossessionComponent(), world, possessedEntityMount, possessedEntityUuid);
             }
         }
     }
 
-    private void resumePossession(PossessionManager player, ServerWorld world, Entity possessedEntityMount, UUID possessedEntityUuid) {
+    private void resumePossession(PossessionComponent player, ServerWorld world, Entity possessedEntityMount, UUID possessedEntityUuid) {
         if (possessedEntityMount instanceof MobEntity && possessedEntityMount.getUuid().equals(possessedEntityUuid)) {
             player.startPossessing((MobEntity) possessedEntityMount);
         } else {
@@ -101,10 +102,10 @@ public abstract class PlayerManagerMixin {
                     ordinal = 0
             )
     )
-    public void logOutPossessedEntity(ServerPlayerEntity player, CallbackInfo info) {
-        Possessable possessedEntity = ((DissolutionPlayer) player).getPossessionManager().getPossessedEntity();
+    private void logOutPossessedEntity(ServerPlayerEntity player, CallbackInfo info) {
+        Possessable possessedEntity = ((DissolutionPlayer) player).getPossessionComponent().getPossessedEntity();
         if (possessedEntity != null) {
-            ((DissolutionPlayer) player).getPossessionManager().stopPossessing();
+            ((DissolutionPlayer) player).getPossessionComponent().stopPossessing();
             ServerWorld serverWorld_1 = player.getServerWorld();
             serverWorld_1.method_8507((Entity) possessedEntity);
             for (Entity ridden : ((Entity) possessedEntity).method_5736()) {

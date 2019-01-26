@@ -5,7 +5,7 @@ import ladysnake.dissolution.api.v1.entity.TriggerableAttacker;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.conversion.PossessableSubstitutionHandler;
 import ladysnake.dissolution.api.v1.possession.conversion.PossessionRegistry;
-import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
+import ladysnake.dissolution.api.v1.remnant.RemnantState;
 import ladysnake.dissolution.client.ShaderHandler;
 import ladysnake.dissolution.common.entity.PossessableEntityImpl;
 import ladysnake.dissolution.common.impl.possession.asm.AsmConverterProvider;
@@ -34,7 +34,7 @@ public class Possession {
     public static void init() {
         // Start possession on right click
         PlayerInteractionEvent.INTERACT_ENTITY_POSITIONED.register((player, world, hand, entity, hitPosition) -> {
-            if (RemnantHandler.get(player).filter(RemnantHandler::isIncorporeal).isPresent()) {
+            if (RemnantState.getIfRemnant(player).filter(RemnantState::isIncorporeal).isPresent()) {
                 if (entity instanceof MobEntity && entity.world.isClient) {
                     ShaderHandler.INSTANCE.beginFishEyeAnimation(entity);
                 }
@@ -44,7 +44,7 @@ public class Possession {
         });
         // Proxy melee attacks
         PlayerInteractionEvent.ATTACK_ENTITY.register((playerEntity, world, hand, target) -> {
-            LivingEntity possessed = (LivingEntity) ((DissolutionPlayer)playerEntity).getPossessionManager().getPossessedEntity();
+            LivingEntity possessed = (LivingEntity) ((DissolutionPlayer)playerEntity).getPossessionComponent().getPossessedEntity();
             if (possessed != null && !possessed.invalid) {
                 if (((TriggerableAttacker)possessed).triggerDirectAttack(playerEntity, target)) {
                     return ActionResult.SUCCESS;

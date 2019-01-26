@@ -2,9 +2,8 @@ package ladysnake.dissolution.common.item;
 
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
-import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
+import ladysnake.dissolution.api.v1.remnant.RemnantState;
 import ladysnake.dissolution.client.ShaderHandler;
-import ladysnake.dissolution.common.impl.remnant.DefaultRemnantHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,12 +31,12 @@ public class DebugItem extends Item {
         } else {
             switch (debugMode) {
                 case 0:
-                    RemnantHandler cap = ((DissolutionPlayer)player).getRemnantHandler();
-                    Dissolution.LOGGER.info("Player was {}", cap != null && cap.isSoul() ? "incorporeal" : "corporeal");
+                    RemnantState cap = ((DissolutionPlayer)player).getRemnantState();
+                    Dissolution.LOGGER.info("Player was {}", cap.isSoul() ? "incorporeal" : "corporeal");
                     if (!world.isClient) {
-                        if (cap == null) {
+                        if (!((DissolutionPlayer) player).isRemnant()) {
                             Dissolution.LOGGER.info("Turned {} into a remnant", player);
-                            ((DissolutionPlayer)player).setRemnantHandler(cap = new DefaultRemnantHandler(player));
+                            ((DissolutionPlayer)player).setRemnant(true);
                         }
                         cap.setSoul(!cap.isSoul());
                     }

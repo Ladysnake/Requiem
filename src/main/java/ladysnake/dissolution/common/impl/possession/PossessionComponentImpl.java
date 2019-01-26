@@ -3,7 +3,7 @@ package ladysnake.dissolution.common.impl.possession;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.Possessable;
-import ladysnake.dissolution.api.v1.possession.PossessionManager;
+import ladysnake.dissolution.api.v1.possession.PossessionComponent;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethod2;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethodHandles;
@@ -20,21 +20,21 @@ import java.util.UUID;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 import static ladysnake.reflectivefabric.reflection.ReflectionHelper.pick;
 
-public class PossessionManagerImpl implements PossessionManager {
+public class PossessionComponentImpl implements PossessionComponent {
     private static final TypedMethod2<PlayerEntity, Float, Float, Void> PLAYER$SET_SIZE = TypedMethodHandles.findVirtual(PlayerEntity.class, pick("method_5835", "setSize"), void.class, float.class, float.class);
 
     private PlayerEntity player;
-    private @Nullable UUID possessedUuid;
+    @Nullable private UUID possessedUuid;
     private int possessedNetworkId;
 
-    public PossessionManagerImpl(PlayerEntity player) {
+    public PossessionComponentImpl(PlayerEntity player) {
         this.player = player;
     }
 
     @Override
     public boolean canStartPossessing(final MobEntity mob) {
-        DissolutionPlayer self = (DissolutionPlayer) player;
-        return player.world.isClient || (!player.isSpectator() && self.isRemnant() && self.getRemnantHandler().isIncorporeal());
+        DissolutionPlayer dp = (DissolutionPlayer) player;
+        return player.world.isClient || (!player.isSpectator() && dp.isRemnant() && dp.getRemnantState().isIncorporeal());
     }
 
     @Override

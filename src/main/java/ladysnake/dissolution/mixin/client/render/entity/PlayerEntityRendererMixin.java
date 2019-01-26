@@ -2,7 +2,6 @@ package ladysnake.dissolution.mixin.client.render.entity;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
-import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.model.Model;
@@ -33,8 +32,8 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     }
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
-    public void cancelRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
-        if (((DissolutionPlayer)renderedPlayer).getPossessionManager().isPossessing()) {
+    private void cancelRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
+        if (((DissolutionPlayer)renderedPlayer).getPossessionComponent().isPossessing()) {
             info.cancel();
         }
     }
@@ -46,11 +45,10 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                     target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;render(Lnet/minecraft/entity/LivingEntity;DDDFF)V"
             )
     )
-    public void preRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
-        RemnantHandler renderedPlayerRemnantHandler = ((DissolutionPlayer) renderedPlayer).getRemnantHandler();
-        if (renderedPlayerRemnantHandler != null && renderedPlayerRemnantHandler.isIncorporeal()) {
+    private void preRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
+        if (((DissolutionPlayer) renderedPlayer).getRemnantState().isIncorporeal()) {
             Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
-            boolean isObserverRemnant = cameraEntity instanceof DissolutionPlayer && ((DissolutionPlayer) cameraEntity).getRemnantHandler() != null;
+            boolean isObserverRemnant = cameraEntity instanceof DissolutionPlayer && ((DissolutionPlayer) cameraEntity).isRemnant();
             float alpha = isObserverRemnant ? 0.8f : 0.05f;
             GlStateManager.color4f(0.9f, 0.9f, 1.0f, alpha); // Tints souls blue and transparent
         }
@@ -64,7 +62,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                     target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;render(Lnet/minecraft/entity/LivingEntity;DDDFF)V"
             )
     )
-    public void postRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
+    private void postRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
         GlStateManager.color4f(1f, 1f, 1f, 1f);
     }
 
@@ -73,11 +71,10 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
     @SuppressWarnings("InvalidMemberReference")
     @Inject(method = {"method_4220", "method_4221"}, at = @At("HEAD"), cancellable = true)
-    public void renderPossessedHand(AbstractClientPlayerEntity renderedPlayer, CallbackInfo info) {
-        RemnantHandler remnantHandler = ((DissolutionPlayer) renderedPlayer).getRemnantHandler();
-        if (remnantHandler != null && remnantHandler.isSoul()) {
-            if (((DissolutionPlayer) renderedPlayer).getPossessionManager().isPossessing()) {
-                LivingEntity possessed = (LivingEntity) ((DissolutionPlayer) renderedPlayer).getPossessionManager().getPossessedEntity();
+    private void renderPossessedHand(AbstractClientPlayerEntity renderedPlayer, CallbackInfo info) {
+        if (((DissolutionPlayer) renderedPlayer).getRemnantState().isSoul()) {
+            if (((DissolutionPlayer) renderedPlayer).getPossessionComponent().isPossessing()) {
+                LivingEntity possessed = (LivingEntity) ((DissolutionPlayer) renderedPlayer).getPossessionComponent().getPossessedEntity();
                 if (possessed != null) {
                     EntityRenderer renderer = MinecraftClient.getInstance().getEntityRenderManager().getRenderer(possessed);
                     // If the mob has an arm, render it instead of the player's

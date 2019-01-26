@@ -3,7 +3,7 @@ package ladysnake.dissolution.client;
 import com.mojang.blaze3d.platform.GlStateManager;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import ladysnake.dissolution.Dissolution;
-import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
+import ladysnake.dissolution.api.v1.remnant.RemnantState;
 import ladysnake.satin.client.event.RenderEvent;
 import ladysnake.satin.client.shader.ManagedShaderEffect;
 import ladysnake.satin.client.shader.ShaderEffectManager;
@@ -46,7 +46,7 @@ public final class ShaderHandler implements FloatConsumer, RenderEvent.PreBlockE
 
     @Override
     public void accept(float tickDelta) {
-        if (RemnantHandler.get(mc.player).filter(RemnantHandler::isIncorporeal).isPresent()) {
+        if (RemnantState.getIfRemnant(mc.player).filter(RemnantState::isIncorporeal).isPresent()) {
             spectreShader.render(tickDelta);
         }
         if (fishEyeAnimation > 0) {

@@ -32,13 +32,13 @@ public abstract class GameRendererMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    public void unselectPossessedEntity(float tickDelta, CallbackInfo info,
-                                        Entity camera, double double_1, Vec3d vec3d_1, boolean boolean_1, int int_1, double double_2, Vec3d vec3d_2, Vec3d vec3d_3, Vec3d vec3d_4, float float_2,
-                                        List<Entity> entities) {
-        if (camera instanceof DissolutionPlayer && ((DissolutionPlayer) camera).getPossessionManager().isPossessing()) {
+    private void unselectPossessedEntity(float tickDelta, CallbackInfo info,
+                                         Entity camera, double double_1, Vec3d vec3d_1, boolean boolean_1, int int_1, double double_2, Vec3d vec3d_2, Vec3d vec3d_3, Vec3d vec3d_4, float float_2,
+                                         List<Entity> entities) {
+        if (camera instanceof DissolutionPlayer && ((DissolutionPlayer) camera).getPossessionComponent().isPossessing()) {
             // Possessable are still entities
             //noinspection SuspiciousMethodCalls
-            entities.remove(((DissolutionPlayer) camera).getPossessionManager().getPossessedEntity());
+            entities.remove(((DissolutionPlayer) camera).getPossessionComponent().getPossessedEntity());
         }
     }
 }

@@ -1,7 +1,7 @@
 package ladysnake.dissolution.mixin.server.network;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
-import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
+import ladysnake.dissolution.api.v1.remnant.RemnantState;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -27,9 +27,9 @@ public abstract class ServerPlayerInteractionManagerMixin {
                     target = "Lnet/minecraft/world/GameMode;setAbilitites(Lnet/minecraft/entity/player/PlayerAbilities;)V",
                     shift = AFTER
             ))
-    public void keepSoulAbilities(GameMode newMode, CallbackInfo info) {
-        if (RemnantHandler.get(this.player).filter(RemnantHandler::isSoul).isPresent()) {
-            Entity possessed = (Entity) ((DissolutionPlayer)this.player).getPossessionManager().getPossessedEntity();
+    private void keepSoulAbilities(GameMode newMode, CallbackInfo info) {
+        if (RemnantState.getIfRemnant(this.player).filter(RemnantState::isSoul).isPresent()) {
+            Entity possessed = (Entity) ((DissolutionPlayer)this.player).getPossessionComponent().getPossessedEntity();
             this.player.abilities.invulnerable = true;
             this.player.abilities.allowFlying = possessed == null || this.player.isCreative() || DissolutionEntityTags.FLIGHT.contains(possessed.getType());
         }

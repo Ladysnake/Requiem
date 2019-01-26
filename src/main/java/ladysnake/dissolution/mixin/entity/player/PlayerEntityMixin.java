@@ -1,18 +1,19 @@
 package ladysnake.dissolution.mixin.entity.player;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
-import ladysnake.dissolution.api.v1.possession.PossessionManager;
-import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
-import ladysnake.dissolution.common.impl.possession.PossessionManagerImpl;
-import ladysnake.dissolution.common.impl.remnant.DefaultRemnantHandler;
-import net.minecraft.block.BlockState;
+import ladysnake.dissolution.api.v1.entity.MovementAlterer;
+import ladysnake.dissolution.api.v1.possession.PossessionComponent;
+import ladysnake.dissolution.api.v1.remnant.RemnantState;
+import ladysnake.dissolution.common.impl.PlayerMovementAlterer;
+import ladysnake.dissolution.common.impl.possession.PossessionComponentImpl;
+import ladysnake.dissolution.common.impl.remnant.MutableRemnantState;
+import ladysnake.dissolution.common.impl.remnant.NullRemnantState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,74 +21,82 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import javax.annotation.Nullable;
-
 import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 
 @Mixin(value = PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity implements DissolutionPlayer {
+    private static final RemnantState NULL_STATE = new NullRemnantState();
     private static final String TAG_REMNANT_DATA = "dissolution:remnant_data";
 
-    private @Nullable RemnantHandler remnantHandler;
-    private PossessionManager possessionManager = new PossessionManagerImpl((PlayerEntity)(Object)this);
+    private RemnantState remnantState = NULL_STATE;
+    private PossessionComponent possessionComponent = new PossessionComponentImpl((PlayerEntity) (Object) this);
+    private MovementAlterer movementAlterer = new PlayerMovementAlterer((PlayerEntity)(Object)this);
 
     protected PlayerEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
 
     @Override
-    public @Nullable RemnantHandler getRemnantHandler() {
-        return this.remnantHandler;
+    public RemnantState getRemnantState() {
+        return this.remnantState;
     }
 
     @Override
-    public PossessionManager getPossessionManager() {
-        return possessionManager;
+    public PossessionComponent getPossessionComponent() {
+        return possessionComponent;
     }
 
     @Override
-    public void setRemnantHandler(@Nullable RemnantHandler handler) {
-        this.remnantHandler = handler;
+    public MovementAlterer getMovementAlterer() {
+        return this.movementAlterer;
+    }
+
+    @Override
+    public void setRemnant(boolean remnant) {
+        if (remnant != this.isRemnant()) {
+            RemnantState state = remnant ? new MutableRemnantState((PlayerEntity) (Object) this) : NULL_STATE;
+            this.setRemnantState(state);
+        }
+    }
+
+    @Override
+    public boolean isRemnant() {
+        return !(this.remnantState instanceof NullRemnantState);
+    }
+
+    private void setRemnantState(RemnantState handler) {
+        this.remnantState = handler;
         if (!this.world.isClient) {
-            ServerPlayerEntity player = (ServerPlayerEntity)(Object)this;
+            ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
             sendTo(player, createCorporealityPacket(player));
             sendToAllTracking(player, createCorporealityPacket(player));
         }
     }
 
     @Inject(method = "getEyeHeight", at = @At("RETURN"), cancellable = true)
-    public void adjustEyeHeight(CallbackInfoReturnable<Float> info) {
-        if (this.getPossessionManager().isPossessing()) {
-            Entity possessedEntity = (Entity) this.getPossessionManager().getPossessedEntity();
+    private void adjustEyeHeight(CallbackInfoReturnable<Float> info) {
+        if (this.getPossessionComponent().isPossessing()) {
+            Entity possessedEntity = (Entity) this.getPossessionComponent().getPossessedEntity();
             if (possessedEntity != null) {
                 info.setReturnValue(possessedEntity.getEyeHeight());
             }
         }
     }
 
-    @Inject(method = "slowMovement", at = @At("HEAD"), cancellable = true)
-    public void slowMovement(BlockState blockState_1, Vec3d vec3d_1, CallbackInfo info) {
-        Entity possessed = (Entity) this.getPossessionManager().getPossessedEntity();
-        if (possessed != null) {
-            possessed.slowMovement(blockState_1, vec3d_1);
-            info.cancel();
-        }
-    }
-
     @Inject(at = @At("TAIL"), method = "writeCustomDataToTag")
-    public void writeCustomDataToTag(CompoundTag tag, CallbackInfo info) {
-        if (this.remnantHandler != null) {
-            tag.put(TAG_REMNANT_DATA, this.remnantHandler.writeToTag());
+    private void writeCustomDataToTag(CompoundTag tag, CallbackInfo info) {
+        if (this.isRemnant()) {
+            tag.put(TAG_REMNANT_DATA, this.remnantState.writeToTag());
         }
     }
 
     @Inject(at = @At("TAIL"), method = "readCustomDataFromTag")
-    public void readCustomDataFromTag(CompoundTag tag, CallbackInfo info) {
+    private void readCustomDataFromTag(CompoundTag tag, CallbackInfo info) {
         if (tag.containsKey(TAG_REMNANT_DATA)) {
-            if (this.remnantHandler == null) {
-                this.setRemnantHandler(new DefaultRemnantHandler((PlayerEntity)(Object)this));
+            if (!this.isRemnant()) {
+                this.setRemnantState(new MutableRemnantState((PlayerEntity) (Object) this));
             }
-            this.remnantHandler.readFromTag(tag.getCompound(TAG_REMNANT_DATA));
+            this.remnantState.readFromTag(tag.getCompound(TAG_REMNANT_DATA));
         }
     }
 }

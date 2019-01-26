@@ -5,9 +5,9 @@ import net.minecraft.entity.mob.MobEntity;
 import javax.annotation.CheckForNull;
 
 /**
- * A {@link PossessionManager} handles a player's possession status.
+ * A {@link PossessionComponent} handles a player's possession status.
  */
-public interface PossessionManager {
+public interface PossessionComponent {
     boolean startPossessing(MobEntity mob);
 
     boolean canStartPossessing(MobEntity mob);

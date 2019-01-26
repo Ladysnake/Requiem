@@ -3,7 +3,7 @@ package ladysnake.dissolution;
 import ladysnake.dissolution.common.block.DissolutionBlocks;
 import ladysnake.dissolution.common.entity.DissolutionEntities;
 import ladysnake.dissolution.common.impl.possession.Possession;
-import ladysnake.dissolution.common.impl.remnant.DefaultRemnantHandler;
+import ladysnake.dissolution.common.impl.remnant.MutableRemnantState;
 import ladysnake.dissolution.common.item.DissolutionItems;
 import ladysnake.dissolution.common.network.ServerMessageHandling;
 import net.fabricmc.api.ModInitializer;
@@ -24,7 +24,7 @@ public class Dissolution implements ModInitializer {
         DissolutionBlocks.init();
         DissolutionEntities.init();
         DissolutionItems.init();
-        DefaultRemnantHandler.init();
+        MutableRemnantState.init();
         Possession.init();
         ServerMessageHandling.init();
     }

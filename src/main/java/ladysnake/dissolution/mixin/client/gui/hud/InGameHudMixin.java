@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.event.client.HudEvent;
-import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import ladysnake.dissolution.client.gui.hud.PossessionHud;
 import net.fabricmc.fabric.util.HandlerArray;
 import net.minecraft.client.MinecraftClient;
@@ -33,9 +32,8 @@ public class InGameHudMixin extends Drawable {
             method = "method_1760",
             at = @At(value = "CONSTANT", args = "stringValue=health")
     )
-    public void drawPossessionHud(CallbackInfo info) {
-        RemnantHandler handler = ((DissolutionPlayer)client.player).getRemnantHandler();
-        if (handler != null && handler.isSoul()) {
+    private void drawPossessionHud(CallbackInfo info) {
+        if (((DissolutionPlayer)client.player).getRemnantState().isSoul()) {
             boolean highlight = this.field_2032 > (long) this.ticks && (this.field_2032 - (long) this.ticks) / 3L % 2L == 1L;
             PossessionHud.INSTANCE.draw(this.field_2033, this.ticks, highlight);
             // Make everything that follows *invisible*
@@ -44,7 +42,7 @@ public class InGameHudMixin extends Drawable {
     }
 
     @Inject(method = "method_1759", at = @At("HEAD"), cancellable = true)
-    public void fireHotBarRenderEvent(float tickDelta, CallbackInfo info) {
+    private void fireHotBarRenderEvent(float tickDelta, CallbackInfo info) {
         for (Float2ObjectFunction<ActionResult> handler : ((HandlerArray<Float2ObjectFunction<ActionResult>>) HudEvent.RENDER_HOTBAR).getBackingArray()) {
             if (handler.get(tickDelta) != ActionResult.PASS) {
                 info.cancel();
@@ -56,9 +54,8 @@ public class InGameHudMixin extends Drawable {
             method = "method_1760",
             at = @At(value = "CONSTANT", args = "stringValue=air")
     )
-    public void resumeDrawing(CallbackInfo info) {
-        RemnantHandler handler = ((DissolutionPlayer)client.player).getRemnantHandler();
-        if (handler != null && handler.isSoul()) {
+    private void resumeDrawing(CallbackInfo info) {
+        if (((DissolutionPlayer)client.player).getRemnantState().isSoul()) {
             GlStateManager.color4f(1, 1, 1, 1);
         }
     }

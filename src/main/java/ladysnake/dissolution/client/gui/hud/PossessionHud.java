@@ -2,7 +2,6 @@ package ladysnake.dissolution.client.gui.hud;
 
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
-import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
@@ -31,9 +30,8 @@ public class PossessionHud extends Drawable {
     public ActionResult onRenderHotbar(@SuppressWarnings("unused") float tickDelta) {
         MinecraftClient client = MinecraftClient.getInstance();
         DissolutionPlayer player = (DissolutionPlayer) client.player;
-        RemnantHandler handler = player.getRemnantHandler();
-        if (!client.player.isCreative() && handler != null && handler.isSoul()) {
-            Entity possessed = (Entity) player.getPossessionManager().getPossessedEntity();
+        if (!client.player.isCreative() && player.getRemnantState().isSoul()) {
+            Entity possessed = (Entity) player.getPossessionComponent().getPossessedEntity();
             if (possessed == null || !DissolutionEntityTags.ITEM_USER.contains(possessed.getType())) {
                 return ActionResult.SUCCESS;
             }
@@ -45,7 +43,7 @@ public class PossessionHud extends Drawable {
         int scaledWidth = this.client.window.getScaledWidth();
         int scaledHeight = this.client.window.getScaledHeight();
 
-        LivingEntity possessed = (LivingEntity) ((DissolutionPlayer) this.client.player).getPossessionManager().getPossessedEntity();
+        LivingEntity possessed = (LivingEntity) ((DissolutionPlayer) this.client.player).getPossessionComponent().getPossessedEntity();
         if (possessed != null) {
             if (this.client.interactionManager.hasStatusBars()) {
                 if (possessed.getHealth() > 0) {

@@ -29,7 +29,7 @@ public abstract class ItemEntityMixin extends Entity {
             ),
             cancellable = true
     )
-    public void fireItemPickupEvent(PlayerEntity playerEntity_1, CallbackInfo info) {
+    private void fireItemPickupEvent(PlayerEntity playerEntity_1, CallbackInfo info) {
         for (PlayerEvent.ItemPickup handler : ((HandlerArray<PlayerEvent.ItemPickup>)PlayerEvent.PICKUP_ITEM).getBackingArray()) {
             if (handler.onItemPickup(playerEntity_1, (ItemEntity)(Object)this) != ActionResult.PASS) {
                 info.cancel();

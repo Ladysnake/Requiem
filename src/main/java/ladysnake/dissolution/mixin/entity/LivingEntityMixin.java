@@ -42,9 +42,9 @@ public abstract class LivingEntityMixin extends Entity implements TriggerableAtt
      * @param info   callback
      */
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
-    public void proxyDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
+    private void proxyDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
         if (source.getAttacker() instanceof DissolutionPlayer) {
-            Entity possessed = (Entity) ((DissolutionPlayer) source.getAttacker()).getPossessionManager().getPossessedEntity();
+            Entity possessed = (Entity) ((DissolutionPlayer) source.getAttacker()).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {
                 DamageSource newSource = null;
                 if (source instanceof ProjectileDamageSource)
@@ -60,9 +60,9 @@ public abstract class LivingEntityMixin extends Entity implements TriggerableAtt
     }
 
     @Inject(method = "canClimb", at = @At("HEAD"), cancellable = true)
-    public void canClimb(CallbackInfoReturnable<Boolean> info) {
+    private void canClimb(CallbackInfoReturnable<Boolean> info) {
         if (this instanceof DissolutionPlayer && this.horizontalCollision) {
-            LivingEntity possessed = (LivingEntity) ((DissolutionPlayer) this).getPossessionManager().getPossessedEntity();
+            LivingEntity possessed = (LivingEntity) ((DissolutionPlayer) this).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {
                 info.setReturnValue(DissolutionEntityTags.CLIMBER.contains(possessed.getType()));
             }

@@ -29,8 +29,8 @@ public abstract class PlayerInventoryGuiMixin extends AbstractPlayerInventoryGui
     )
     public void drawPossessedEntity(float tickDelta, int mouseX, int mouseY, CallbackInfo info) {
         Entity cameraEntity = this.client.getCameraEntity();
-        if (cameraEntity instanceof DissolutionPlayer && ((DissolutionPlayer) cameraEntity).getPossessionManager().isPossessing()) {
-            LivingEntity possessed = (LivingEntity) ((DissolutionPlayer) cameraEntity).getPossessionManager().getPossessedEntity();
+        if (cameraEntity instanceof DissolutionPlayer && ((DissolutionPlayer) cameraEntity).getPossessionComponent().isPossessing()) {
+            LivingEntity possessed = (LivingEntity) ((DissolutionPlayer) cameraEntity).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {
                 //noinspection ConstantConditions
                 if ((Object) this instanceof PlayerInventoryGui) {

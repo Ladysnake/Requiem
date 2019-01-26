@@ -20,7 +20,7 @@ public class ServerMessageHandling {
     public static void init() {
         register(LEFT_CLICK_AIR, (context, buf) -> {
             PlayerEntity player = context.getPlayer();
-            Possessable possessed = ((DissolutionPlayer)player).getPossessionManager().getPossessedEntity();
+            Possessable possessed = ((DissolutionPlayer)player).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {
                 possessed.triggerIndirectAttack(player);
             }
@@ -31,7 +31,7 @@ public class ServerMessageHandling {
                 PlayerEntity player = context.getPlayer();
                 Entity entity = player.world.getEntityById(requestedId);
                 if (entity instanceof MobEntity && entity.distanceTo(player) < 20) {
-                    ((DissolutionPlayer) player).getPossessionManager().startPossessing((MobEntity) entity);
+                    ((DissolutionPlayer) player).getPossessionComponent().startPossessing((MobEntity) entity);
                 }
             });
         });

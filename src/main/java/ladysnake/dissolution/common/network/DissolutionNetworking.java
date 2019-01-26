@@ -2,7 +2,6 @@ package ladysnake.dissolution.common.network;
 
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
-import ladysnake.dissolution.api.v1.remnant.RemnantHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.packet.CustomPayloadClientPacket;
 import net.minecraft.entity.Entity;
@@ -45,9 +44,8 @@ public class DissolutionNetworking {
 
     @Contract(pure = true)
     public static CustomPayloadClientPacket createCorporealityPacket(PlayerEntity synchronizedPlayer) {
-        RemnantHandler synchronizedHandler = ((DissolutionPlayer)synchronizedPlayer).getRemnantHandler();
-        boolean remnant = synchronizedHandler != null;
-        boolean incorporeal = remnant && synchronizedHandler.isSoul();
+        boolean remnant = ((DissolutionPlayer) synchronizedPlayer).isRemnant();
+        boolean incorporeal = remnant && ((DissolutionPlayer)synchronizedPlayer).getRemnantState().isSoul();
         UUID playerUuid = synchronizedPlayer.getUuid();
         return createCorporealityPacket(playerUuid, remnant, incorporeal);
     }

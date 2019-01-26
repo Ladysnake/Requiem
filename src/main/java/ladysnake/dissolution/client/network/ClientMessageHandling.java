@@ -1,7 +1,6 @@
 package ladysnake.dissolution.client.network;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
-import ladysnake.dissolution.common.impl.remnant.DefaultRemnantHandler;
 import net.fabricmc.fabric.networking.CustomPayloadPacketRegistry;
 import net.fabricmc.fabric.networking.PacketContext;
 import net.minecraft.client.MinecraftClient;
@@ -26,9 +25,10 @@ public class ClientMessageHandling {
             PlayerEntity player = context.getPlayer().world.getPlayerByUuid(playerUuid);
             if (player != null) {
                 if (remnant) {
-                    DefaultRemnantHandler.getOrMakeRemnant(player).setSoul(incorporeal);
+                    ((DissolutionPlayer)player).setRemnant(true);
+                    ((DissolutionPlayer) player).getRemnantState().setSoul(incorporeal);
                 } else {
-                    ((DissolutionPlayer)player).setRemnantHandler(null);
+                    ((DissolutionPlayer)player).setRemnant(false);
                 }
             }
         });
@@ -40,10 +40,10 @@ public class ClientMessageHandling {
             if (player != null) {
                 Entity entity = player.world.getEntityById(possessedId);
                 if (entity instanceof MobEntity) {
-                    ((DissolutionPlayer)player).getPossessionManager().startPossessing((MobEntity) entity);
+                    ((DissolutionPlayer)player).getPossessionComponent().startPossessing((MobEntity) entity);
                     client.gameRenderer.onCameraEntitySet(entity);
                 } else {
-                    ((DissolutionPlayer)player).getPossessionManager().stopPossessing();
+                    ((DissolutionPlayer)player).getPossessionComponent().stopPossessing();
                     client.gameRenderer.onCameraEntitySet(player);
                 }
             }

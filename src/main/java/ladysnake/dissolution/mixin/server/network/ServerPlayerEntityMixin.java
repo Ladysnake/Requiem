@@ -29,7 +29,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     }
 
     @Inject(method = "onStartedTracking", at = @At("HEAD"))
-    public void onStartedTracking(Entity tracked, CallbackInfo info) {
+    private void onStartedTracking(Entity tracked, CallbackInfo info) {
         if (tracked instanceof PlayerEntity) {
             // Synchronize soul players with other players
             sendTo((ServerPlayerEntity)(Object)this, createCorporealityPacket((PlayerEntity) tracked));
@@ -41,16 +41,16 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     }
 
     @Inject(method = "method_5623", at=@At("HEAD"), cancellable = true)
-    protected void method_5623(double double_1, boolean boolean_1, BlockState blockState_1, BlockPos blockPos_1, CallbackInfo info) {
-        Possessable possessed = ((DissolutionPlayer)this).getPossessionManager().getPossessedEntity();
+    private void method_5623(double double_1, boolean boolean_1, BlockState blockState_1, BlockPos blockPos_1, CallbackInfo info) {
+        Possessable possessed = ((DissolutionPlayer)this).getPossessionComponent().getPossessedEntity();
         if (possessed != null) {
             possessed.fall(double_1, boolean_1, blockState_1, blockPos_1);
         }
     }
 
     @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
-    public void writePossessedMobToTag(CompoundTag tag, CallbackInfo info) {
-        Entity possessedEntity = (Entity) ((DissolutionPlayer)this).getPossessionManager().getPossessedEntity();
+    private void writePossessedMobToTag(CompoundTag tag, CallbackInfo info) {
+        Entity possessedEntity = (Entity) ((DissolutionPlayer)this).getPossessionComponent().getPossessedEntity();
         if (possessedEntity != null) {
             Entity possessedEntityVehicle = possessedEntity.getTopmostRiddenEntity();
             CompoundTag possessedRoot = new CompoundTag();

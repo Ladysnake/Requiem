@@ -23,9 +23,9 @@ public abstract class WorldRendererMixin {
      * entity completely.
      */
     @Inject(method = "renderEntities", at = @At("HEAD"))
-    public void preRenderEntities(Entity camera, VisibleRegion frustum, float tickDelta, CallbackInfo info) {
+    private void preRenderEntities(Entity camera, VisibleRegion frustum, float tickDelta, CallbackInfo info) {
         if (camera instanceof DissolutionPlayer) {
-            Possessable possessed = ((DissolutionPlayer) camera).getPossessionManager().getPossessedEntity();
+            Possessable possessed = ((DissolutionPlayer) camera).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {
                 ((MinecraftClientAccessorMixin)MinecraftClient.getInstance()).setCameraEntityDirect((Entity) possessed);
             }
@@ -36,9 +36,9 @@ public abstract class WorldRendererMixin {
      * Reverts the change made in {@link #preRenderEntities(Entity, VisibleRegion, float, CallbackInfo)}
      */
     @Inject(method = "renderEntities", at = @At("RETURN"))
-    public void postRenderEntities(Entity camera, VisibleRegion frustum, float tickDelta, CallbackInfo info) {
+    private void postRenderEntities(Entity camera, VisibleRegion frustum, float tickDelta, CallbackInfo info) {
         if (camera instanceof DissolutionPlayer) {
-            Possessable possessed = ((DissolutionPlayer) camera).getPossessionManager().getPossessedEntity();
+            Possessable possessed = ((DissolutionPlayer) camera).getPossessionComponent().getPossessedEntity();
             if (possessed == client.getCameraEntity()) {
                 ((MinecraftClientAccessorMixin)MinecraftClient.getInstance()).setCameraEntityDirect(camera);
             }
