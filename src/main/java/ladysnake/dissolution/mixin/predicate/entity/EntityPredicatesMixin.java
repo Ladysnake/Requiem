@@ -17,6 +17,15 @@ import java.util.function.Predicate;
 public abstract class EntityPredicatesMixin {
     @Shadow @Mutable @Final public static Predicate<Entity> EXCEPT_SPECTATOR;
 
+    /**
+     * We want to prevent collisions with / selection of soul players.
+     * The easiest way to do this is to make them be considered spectators.
+     * (Just considering vanilla projectiles, there are 3 ways to get collided entities,
+     * all using this predicate at some point)
+     * Issue: we have to patch some methods in world to actually ignore it.
+     * Suggestions are welcome.
+     * @see ladysnake.dissolution.mixin.world.WorldMixin
+     */
     @SuppressWarnings("UnresolvedMixinReference")   // <clinit> is in fact a valid target
     @Inject(method = "<clinit>", at = @At("TAIL"))
     private static void excludeSouls(CallbackInfo info) {

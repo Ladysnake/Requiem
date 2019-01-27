@@ -14,7 +14,8 @@
     "predicate.entity.EntityPredicatesMixin",
     "server.PlayerManagerMixin",
     "server.network.ServerPlayerEntityMixin",
-    "server.network.ServerPlayerInteractionManagerMixin"
+    "server.network.ServerPlayerInteractionManagerMixin",
+    "world.WorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1

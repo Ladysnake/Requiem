@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public interface RemnantState {
 
@@ -20,13 +21,20 @@ public interface RemnantState {
     void readFromTag(CompoundTag tag);
 
     /**
+     * A predicate matching entities that are remnant
+     */
+    Predicate<Entity> REMNANT = e -> e instanceof DissolutionPlayer && ((DissolutionPlayer) e).isRemnant();
+
+    /**
      * Helper method to get the remnant state of an entity if it exists
      *
      * @param entity a possibly remnant entity
      * @return the remnant handler of that entity
      */
     static Optional<RemnantState> getIfRemnant(@Nullable Entity entity) {
-        if (entity instanceof DissolutionPlayer && ((DissolutionPlayer) entity).isRemnant()) {
+        if (REMNANT.test(entity)) {
+            //The predicate guarantees that the entity is not null
+            //noinspection ConstantConditions
             return Optional.of(((DissolutionPlayer) entity).getRemnantState());
         }
         return Optional.empty();
