@@ -11,7 +11,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.Monster;
@@ -44,8 +43,6 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
         super.initAttributes();
         if (this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE) != null) {
             AttributeHelper.substituteAttributeInstance(this.getAttributeContainer(), new CooldownStrengthAttribute(this));
-        } else {
-            this.getAttributeContainer().register(EntityAttributes.ATTACK_DAMAGE).addModifier(new EntityAttributeModifier("Non-combatting mob", 0, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
         }
     }
 

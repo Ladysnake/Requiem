@@ -6,6 +6,9 @@ import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.damage.ProjectileDamageSource;
@@ -17,6 +20,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.annotation.Nullable;
+
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity implements TriggerableAttacker {
     public LivingEntityMixin(EntityType<?> entityType_1, World world_1) {
@@ -25,9 +30,13 @@ public abstract class LivingEntityMixin extends Entity implements TriggerableAtt
 
     @Shadow public abstract boolean method_6121(Entity entity_1);
 
+    @Nullable
+    @Shadow public abstract EntityAttributeInstance getAttributeInstance(EntityAttribute entityAttribute_1);
+
     @Override
     public boolean triggerDirectAttack(PlayerEntity player, Entity target) {
-        boolean success = this.method_6121(target);
+        // We actually need to check if the entity has an attack damage attribute, because mojang doesn't.
+        boolean success = this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE) != null && this.method_6121(target);
         if (success && target instanceof LivingEntity) {
             player.getMainHandStack().onEntityDamaged((LivingEntity) target, player);
         }
