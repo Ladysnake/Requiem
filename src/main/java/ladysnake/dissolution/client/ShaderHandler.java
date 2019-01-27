@@ -12,9 +12,12 @@ import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.VisibleRegion;
 import net.minecraft.entity.Entity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
+import java.lang.ref.WeakReference;
 
 import static ladysnake.dissolution.common.network.DissolutionNetworking.createPossessionRequestPacket;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.sendToServer;
@@ -31,17 +34,20 @@ public final class ShaderHandler implements FloatConsumer, RenderEvent.PreBlockE
     private GlFramebuffer framebuffer;
 
     public int fishEyeAnimation = -1;
-    public @Nullable Entity possessed;
+    @Nullable
+    public WeakReference<Entity> possessed;
 
     public void tick(@SuppressWarnings("unused") MinecraftClient client) {
-        if (this.possessed != null && --fishEyeAnimation == 2) {
+        Entity possessed = this.possessed != null ? this.possessed.get() : null;
+        if (possessed != null && --fishEyeAnimation == 2) {
             sendToServer(createPossessionRequestPacket(possessed));
         }
     }
 
     public void beginFishEyeAnimation(Entity possessed) {
         this.fishEyeAnimation = 10;
-        this.possessed = possessed;
+        this.possessed = new WeakReference<>(possessed);
+        possessed.world.playSound(mc.player, possessed.x, possessed.y, possessed.z, SoundEvents.ENTITY_VEX_AMBIENT, SoundCategory.PLAYER, 2, 0.6f);
     }
 
     @Override
@@ -63,7 +69,8 @@ public final class ShaderHandler implements FloatConsumer, RenderEvent.PreBlockE
 
     @Override
     public void onPreRenderBlockEntities(Entity camera, VisibleRegion frustum, float tickDelta) {
-        if (this.possessed != null) {
+        Entity possessed = this.possessed != null ? this.possessed.get() : null;
+        if (possessed != null) {
             if (this.framebuffer == null) {
                 this.framebuffer = new GlFramebuffer(mc.window.getWidth(), mc.window.getHeight(), true, MinecraftClient.isSystemMac);
             }
@@ -75,7 +82,7 @@ public final class ShaderHandler implements FloatConsumer, RenderEvent.PreBlockE
 
             GuiLighting.enable();
             GlStateManager.enableLighting();
-            this.mc.getEntityRenderManager().render(this.possessed, tickDelta, false);
+            this.mc.getEntityRenderManager().render(possessed, tickDelta, false);
             GlStateManager.enableFog();
             GlStateManager.enableBlend();
             GlStateManager.enableColorMaterial();
@@ -84,6 +91,4 @@ public final class ShaderHandler implements FloatConsumer, RenderEvent.PreBlockE
             this.mc.getFramebuffer().beginWrite(false);
         }
     }
-
-
 }
