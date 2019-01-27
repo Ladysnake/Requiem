@@ -29,6 +29,7 @@ public class PossessionComponentImpl implements PossessionComponent {
 
     public PossessionComponentImpl(PlayerEntity player) {
         this.player = player;
+        this.possessedNetworkId = -1;
     }
 
     @Override
@@ -71,7 +72,7 @@ public class PossessionComponentImpl implements PossessionComponent {
         Possessable possessedEntity = this.getPossessedEntity();
         if (possessedEntity != null) {
             this.possessedUuid = null;
-            this.possessedNetworkId = 0;
+            this.possessedNetworkId = -1;
             ((DissolutionPlayer)this.player).getMovementAlterer().setConfig(SerializableMovementConfig.SOUL);
             possessedEntity.setPossessor(null);
             syncPossessed();
