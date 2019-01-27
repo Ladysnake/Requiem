@@ -4,7 +4,7 @@ import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.entity.MovementAlterer;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
 import ladysnake.dissolution.api.v1.remnant.RemnantState;
-import ladysnake.dissolution.common.impl.PlayerMovementAlterer;
+import ladysnake.dissolution.common.impl.movement.PlayerMovementAlterer;
 import ladysnake.dissolution.common.impl.possession.PossessionComponentImpl;
 import ladysnake.dissolution.common.impl.remnant.MutableRemnantState;
 import ladysnake.dissolution.common.impl.remnant.NullRemnantState;

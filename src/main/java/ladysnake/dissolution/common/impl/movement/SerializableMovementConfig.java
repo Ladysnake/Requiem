@@ -1,6 +1,7 @@
-package ladysnake.dissolution.common.impl;
+package ladysnake.dissolution.common.impl.movement;
 
 import ladysnake.dissolution.api.v1.entity.MovementConfig;
+import ladysnake.reflectivefabric.misc.CalledThroughReflection;
 import org.apiguardian.api.API;
 
 public class SerializableMovementConfig implements MovementConfig {
@@ -10,6 +11,12 @@ public class SerializableMovementConfig implements MovementConfig {
     private float gravity;
     private float fallSpeedModifier;
     private float inertia;
+
+    @CalledThroughReflection
+    @API(status = API.Status.INTERNAL)
+    public SerializableMovementConfig() {
+        this(MovementConfig.FlightMode.DISABLED, 0, 1f, 0);
+    }
 
     @API(status = API.Status.INTERNAL)
     public SerializableMovementConfig(FlightMode flightMode, float gravity, float fallSpeedModifier, float inertia) {

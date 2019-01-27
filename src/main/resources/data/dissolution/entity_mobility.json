@@ -1,0 +1,26 @@
+{
+  "minecraft:chicken": {
+    "flightMode": "DISABLED",
+    "gravity": 0.0,
+    "fallSpeedModifier": 0.6,
+    "inertia": 0.0
+  },
+  "minecraft:blaze":  {
+    "flightMode": "ENABLED"
+  },
+  "minecraft:ghast": {
+    "flightMode": "FORCED"
+  },
+  "minecraft:bat": {
+    "flightMode": "ENABLED"
+  },
+  "minecraft:phantom": {
+    "flightMode": "FORCED"
+  },
+  "minecraft:parrot": {
+    "flightMode": "ENABLED"
+  },
+  "minecraft:vex": {
+    "flightMode": "FORCED"
+  }
+}

@@ -2,11 +2,9 @@ package ladysnake.dissolution.common.impl.possession;
 
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
-import ladysnake.dissolution.api.v1.entity.MovementConfig;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
-import ladysnake.dissolution.common.impl.SerializableMovementConfig;
-import ladysnake.dissolution.common.tag.DissolutionEntityTags;
+import ladysnake.dissolution.common.impl.movement.SerializableMovementConfig;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethod2;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethodHandles;
 import net.minecraft.entity.Entity;
@@ -63,7 +61,7 @@ public class PossessionComponentImpl implements PossessionComponent {
         syncPossessed();
         // 4- Update some attributes
         this.player.setPositionAndAngles(pMob);
-        ((DissolutionPlayer)this.player).getMovementAlterer().setConfig(new SerializableMovementConfig(DissolutionEntityTags.FLIGHT.contains(pMob.getType()) ? MovementConfig.FlightMode.ENABLED : MovementConfig.FlightMode.DISABLED, 0, 1f, 0));
+        ((DissolutionPlayer)this.player).getMovementAlterer().setConfig(Dissolution.getMovementAltererManager().getEntityMovementConfig(pMob.getType()));
         PLAYER$SET_SIZE.invoke(player, pMob.getWidth(), pMob.getHeight());
         return true;
     }

@@ -3,7 +3,7 @@ package ladysnake.dissolution.common.impl.remnant;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.event.PlayerEvent;
 import ladysnake.dissolution.api.v1.remnant.RemnantState;
-import ladysnake.dissolution.common.impl.SerializableMovementConfig;
+import ladysnake.dissolution.common.impl.movement.SerializableMovementConfig;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
 import net.minecraft.entity.Entity;

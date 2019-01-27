@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.impl;
+package ladysnake.dissolution.common.impl.movement;
 
 import ladysnake.dissolution.api.v1.entity.MovementAlterer;
 import ladysnake.dissolution.api.v1.entity.MovementConfig;
