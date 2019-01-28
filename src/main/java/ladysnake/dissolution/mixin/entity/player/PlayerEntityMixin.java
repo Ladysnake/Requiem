@@ -65,6 +65,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
     }
 
     private void setRemnantState(RemnantState handler) {
+        this.remnantState.setSoul(false);
         this.remnantState = handler;
         if (!this.world.isClient) {
             ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;

@@ -77,7 +77,7 @@ public class MutableRemnantState implements RemnantState {
                 abilities.invulnerable = true;
             } else {
                 config = null;
-                abilities.allowFlying = false;
+                abilities.allowFlying = this.owner.isCreative();
                 abilities.invulnerable = this.owner.isCreative();
                 ((DissolutionPlayer)this.owner).getPossessionComponent().stopPossessing();
             }

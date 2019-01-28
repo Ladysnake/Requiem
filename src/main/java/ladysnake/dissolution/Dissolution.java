@@ -1,6 +1,7 @@
 package ladysnake.dissolution;
 
 import ladysnake.dissolution.common.block.DissolutionBlocks;
+import ladysnake.dissolution.common.command.DissolutionCommand;
 import ladysnake.dissolution.common.entity.DissolutionEntities;
 import ladysnake.dissolution.common.impl.movement.MovementAltererManager;
 import ladysnake.dissolution.common.impl.possession.Possession;
@@ -8,6 +9,7 @@ import ladysnake.dissolution.common.impl.remnant.MutableRemnantState;
 import ladysnake.dissolution.common.item.DissolutionItems;
 import ladysnake.dissolution.common.network.ServerMessageHandling;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.commands.CommandRegistry;
 import net.fabricmc.fabric.events.ServerEvent;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
@@ -35,6 +37,7 @@ public class Dissolution implements ModInitializer {
         MutableRemnantState.init();
         Possession.init();
         ServerMessageHandling.init();
+        CommandRegistry.INSTANCE.register(false, DissolutionCommand::onCommand);
         ServerEvent.START.register(server -> server.getDataManager().addListener(MOVEMENT_ALTERER_MANAGER));
     }
 }
