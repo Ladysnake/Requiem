@@ -46,9 +46,10 @@ public class Possession {
         PlayerInteractionEvent.ATTACK_ENTITY.register((playerEntity, world, hand, target) -> {
             LivingEntity possessed = (LivingEntity) ((DissolutionPlayer)playerEntity).getPossessionComponent().getPossessedEntity();
             if (possessed != null && !possessed.invalid) {
-                if (((TriggerableAttacker)possessed).triggerDirectAttack(playerEntity, target)) {
+                if (possessed.world.isClient || ((TriggerableAttacker)possessed).triggerDirectAttack(playerEntity, target)) {
                     return ActionResult.SUCCESS;
                 }
+                return ActionResult.FAILURE;
             }
             return ActionResult.PASS;
         });

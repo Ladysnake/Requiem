@@ -37,7 +37,7 @@ public class Dissolution implements ModInitializer {
         MutableRemnantState.init();
         Possession.init();
         ServerMessageHandling.init();
-        CommandRegistry.INSTANCE.register(false, DissolutionCommand::onCommand);
+        CommandRegistry.INSTANCE.register(false, DissolutionCommand::register);
         ServerEvent.START.register(server -> server.getDataManager().addListener(MOVEMENT_ALTERER_MANAGER));
     }
 }

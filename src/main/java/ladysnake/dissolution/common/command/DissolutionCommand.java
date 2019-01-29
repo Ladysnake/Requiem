@@ -25,7 +25,7 @@ public class DissolutionCommand {
     public static final String REMNANT_SUBCOMMAND = "remnant";
     public static final String ETHEREAL_SUBCOMMAND = "soul";
 
-    public static void onCommand(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal(DISSOLUTION_ROOT_COMMAND)
                 .requires(s -> s.hasPermissionLevel(2))
                 .then(literal(POSSESSION_SUBCOMMAND)

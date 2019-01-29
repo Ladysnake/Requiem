@@ -1,26 +1,36 @@
 package ladysnake.dissolution.mixin.server.network;
 
 import com.mojang.authlib.GameProfile;
+import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.Possessable;
+import ladysnake.dissolution.api.v1.possession.PossessionComponent;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ChunkSaveHandlerImpl;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import javax.annotation.Nullable;
 
 import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 import static ladysnake.dissolution.mixin.server.PlayerTagKeys.*;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity {
+    @Nullable
+    private CompoundTag dissolution_possessedEntityTag;
 
     @Shadow public abstract SleepResult trySleep(BlockPos blockPos_1);
 
@@ -37,6 +47,39 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
             // Synchronize possessed entities with their possessor / other players
             ((Possessable) tracked).getPossessorUuid()
                     .ifPresent(uuid -> sendTo((ServerPlayerEntity)(Object)this, createPossessionPacket(uuid, tracked.getEntityId())));
+        }
+    }
+
+    @Inject(method = "changeDimension", at = @At("HEAD"))
+    private void changePossessedDimension(DimensionType dim, CallbackInfoReturnable<Entity> info) {
+        PossessionComponent possessionComponent = ((DissolutionPlayer) this).getPossessionComponent();
+        if (possessionComponent.isPossessing()) {
+            Entity current = (Entity) possessionComponent.getPossessedEntity();
+            if (current != null) {
+                possessionComponent.stopPossessing();
+                this.dissolution_possessedEntityTag = new CompoundTag();
+                current.saveSelfToTag(this.dissolution_possessedEntityTag);
+                this.world.removeEntity(current);
+            }
+        }
+    }
+
+    @Inject(method = "onTeleportationDone", at = @At("HEAD"))
+    private void onTeleportDone(CallbackInfo info) {
+        sendTo((ServerPlayerEntity)(Object)this, createCorporealityPacket(this));
+        if (this.dissolution_possessedEntityTag != null) {
+            Entity formerPossessed = ChunkSaveHandlerImpl.readEntity(this.dissolution_possessedEntityTag, world, false);
+            if (formerPossessed instanceof MobEntity) {
+                formerPossessed.setPositionAndAngles(this);
+                if (world.spawnEntity(formerPossessed)) {
+                    ((DissolutionPlayer)this).getPossessionComponent().startPossessing((MobEntity) formerPossessed);
+                } else {
+                    Dissolution.LOGGER.error("Failed to spawn possessed entity {}", formerPossessed);
+                }
+            } else {
+                Dissolution.LOGGER.error("Could not recreate possessed entity {}", dissolution_possessedEntityTag);
+            }
+            this.dissolution_possessedEntityTag = null;
         }
     }
 
@@ -59,6 +102,11 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
             possessedEntityVehicle.saveToTag(serializedPossessed);
             possessedRoot.put(POSSESSED_ENTITY_TAG, serializedPossessed);
             possessedRoot.putUuid(POSSESSED_UUID_TAG, possessedEntity.getUuid());
+            tag.put(POSSESSED_ROOT_TAG, possessedRoot);
+        } else if (this.dissolution_possessedEntityTag != null) {
+            CompoundTag possessedRoot = new CompoundTag();
+            possessedRoot.put(POSSESSED_ENTITY_TAG, this.dissolution_possessedEntityTag);
+            possessedRoot.putUuid(POSSESSED_UUID_TAG, this.dissolution_possessedEntityTag.getUuid("UUID"));
             tag.put(POSSESSED_ROOT_TAG, possessedRoot);
         }
     }

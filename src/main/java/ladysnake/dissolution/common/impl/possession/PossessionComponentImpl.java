@@ -104,8 +104,8 @@ public class PossessionComponentImpl implements PossessionComponent {
             if (host instanceof MobEntity && host instanceof Possessable) {
                 this.startPossessing((MobEntity) host);
             } else {
-                if (host == null) {
-                    Dissolution.LOGGER.warn("{}: this player's supposedly possessed entity cannot be possessed!");
+                if (host != null) {
+                    Dissolution.LOGGER.warn("{}: this player's supposedly possessed entity ({}) cannot be possessed!", this.player, host);
                 }
                 Dissolution.LOGGER.debug("{}: this player's possessed entity is nowhere to be found", this);
                 this.stopPossessing();
