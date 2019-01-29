@@ -6,10 +6,13 @@ import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.network.packet.MobSpawnClientPacket;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkSaveHandlerImpl;
@@ -33,6 +36,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     private CompoundTag dissolution_possessedEntityTag;
 
     @Shadow public abstract SleepResult trySleep(BlockPos blockPos_1);
+
+    @Shadow public ServerPlayNetworkHandler networkHandler;
 
     public ServerPlayerEntityMixin(World world_1, GameProfile gameProfile_1) {
         super(world_1, gameProfile_1);
@@ -72,6 +77,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
             if (formerPossessed instanceof MobEntity) {
                 formerPossessed.setPositionAndAngles(this);
                 if (world.spawnEntity(formerPossessed)) {
+                    this.networkHandler.sendPacket(new MobSpawnClientPacket((LivingEntity) formerPossessed));
                     ((DissolutionPlayer)this).getPossessionComponent().startPossessing((MobEntity) formerPossessed);
                 } else {
                     Dissolution.LOGGER.error("Failed to spawn possessed entity {}", formerPossessed);

@@ -8,8 +8,13 @@ import ladysnake.dissolution.common.impl.movement.SerializableMovementConfig;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethod2;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethodHandles;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
@@ -54,17 +59,38 @@ public class PossessionComponentImpl implements PossessionComponent {
         if (possessable == null || !possessable.canBePossessedBy(player)) {
             return false;
         }
-        // 3- Actually set the possessed entity
-        MobEntity pMob = (MobEntity) possessable;
-        this.possessedUuid = pMob.getUuid();
-        this.possessedNetworkId = pMob.getEntityId();
+        MobEntity host = (MobEntity) possessable;
+        // 3- transfer inventory
+        // TODO data driven item giving
+        if (host.getMainHandStack().getItem() instanceof BowItem) {
+            player.method_7270(new ItemStack(Items.ARROW, host.world.random.nextInt(10) + 2));
+        }
+        PossessionComponentImpl.transferEquipment(host, player);
+        // 4- Actually set the possessed entity
+        this.possessedUuid = host.getUuid();
+        this.possessedNetworkId = host.getEntityId();
         possessable.setPossessor(this.player);
         syncPossessed();
-        // 4- Update some attributes
-        this.player.setPositionAndAngles(pMob);
-        ((DissolutionPlayer)this.player).getMovementAlterer().setConfig(Dissolution.getMovementAltererManager().getEntityMovementConfig(pMob.getType()));
-        PLAYER$SET_SIZE.invoke(player, pMob.getWidth(), pMob.getHeight());
+        // 5- Update some attributes
+        this.player.setPositionAndAngles(host);
+        ((DissolutionPlayer)this.player).getMovementAlterer().setConfig(Dissolution.getMovementAltererManager().getEntityMovementConfig(host.getType()));
+        PLAYER$SET_SIZE.invoke(player, host.getWidth(), host.getHeight());
         return true;
+    }
+
+    private static void transferEquipment(LivingEntity source, LivingEntity dest) {
+        for (ItemStack stuff : source.getItemsEquipped()) {
+            if (stuff.isEmpty()) {
+                continue;
+            }
+            EquipmentSlot slot = MobEntity.getPreferredEquipmentSlot(stuff);
+            if (!dest.getEquippedStack(slot).isEmpty()) {
+                dest.dropStack(stuff, 0.5f);
+            } else {
+                dest.setEquippedStack(slot, stuff);
+            }
+            source.setEquippedStack(slot, ItemStack.EMPTY);
+        }
     }
 
     @Override
@@ -75,6 +101,7 @@ public class PossessionComponentImpl implements PossessionComponent {
             this.possessedNetworkId = -1;
             ((DissolutionPlayer)this.player).getMovementAlterer().setConfig(SerializableMovementConfig.SOUL);
             possessedEntity.setPossessor(null);
+            PossessionComponentImpl.transferEquipment(player, (LivingEntity) possessedEntity);
             syncPossessed();
         }
     }
