@@ -1,6 +1,6 @@
 package ladysnake.dissolution.api.v1.possession;
 
-import ladysnake.dissolution.api.v1.entity.TriggerableAttacker;
+import ladysnake.dissolution.api.v1.entity.ability.MobAbilityController;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -14,7 +14,7 @@ import java.util.UUID;
  * When possessed, the entity should stop acting on its own, and act as a delegate body
  * for the possessing player.
  */
-public interface Possessable extends TriggerableAttacker {
+public interface Possessable {
     /**
      * Returns an {@link Optional} describing the {@link UUID unique id} of the
      * player possessing this entity, or an empty {@code Optional} if this
@@ -54,6 +54,8 @@ public interface Possessable extends TriggerableAttacker {
      * @implNote The default implementation checks whether it has no current possessor
      */
     boolean canBePossessedBy(PlayerEntity player);
+
+    MobAbilityController getMobAbilityController();
 
     /**
      * Sets the player possessing this entity.

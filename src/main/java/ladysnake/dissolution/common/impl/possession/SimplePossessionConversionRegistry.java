@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.impl.possession;
 
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.conversion.PossessableSubstitutionHandler;
-import ladysnake.dissolution.api.v1.possession.conversion.PossessionRegistry;
+import ladysnake.dissolution.api.v1.possession.conversion.PossessionConversionRegistry;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
@@ -12,11 +12,11 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SimplePossessionRegistry implements PossessionRegistry {
+public class SimplePossessionConversionRegistry implements PossessionConversionRegistry {
     protected final Map<EntityType<? extends MobEntity>, PossessableSubstitutionHandler> converters = new HashMap<>();
 
-    public boolean isBlacklisted(EntityType<?> entityType) {
-        return DissolutionEntityTags.POSSESSION_BLACKLIST.contains(entityType);
+    public boolean isAllowed(EntityType<?> entityType) {
+        return !DissolutionEntityTags.POSSESSION_BLACKLIST.contains(entityType);
     }
 
     @Override
@@ -26,7 +26,9 @@ public class SimplePossessionRegistry implements PossessionRegistry {
 
     @Override
     public boolean canBePossessed(EntityType<?> entityType) {
-        return !isBlacklisted(entityType) && this.converters.containsKey(entityType);
+        //it's fine, if the entity type is not that of a mob, it just won't be in the map
+        //noinspection SuspiciousMethodCalls
+        return isAllowed(entityType) && this.converters.containsKey(entityType);
     }
 
     @Nullable

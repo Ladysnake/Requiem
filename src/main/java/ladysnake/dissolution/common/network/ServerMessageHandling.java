@@ -1,6 +1,7 @@
 package ladysnake.dissolution.common.network;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.entity.ability.AbilityType;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import net.fabricmc.fabric.networking.CustomPayloadPacketRegistry;
 import net.fabricmc.fabric.networking.PacketContext;
@@ -22,7 +23,7 @@ public class ServerMessageHandling {
             PlayerEntity player = context.getPlayer();
             Possessable possessed = ((DissolutionPlayer)player).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {
-                possessed.triggerIndirectAttack(player);
+                possessed.getMobAbilityController().useIndirect(AbilityType.ATTACK);
             }
         });
         CustomPayloadPacketRegistry.SERVER.register(POSSESSION_REQUEST, (context, buf) -> {

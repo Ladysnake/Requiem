@@ -8,8 +8,6 @@
     "entity.LivingEntityMixin",
     "entity.attribute.AbstractEntityAttributeContainerAccessorMixin",
     "entity.attribute.EntityAttributeContainerAccessorMixin",
-    "entity.mob.BlazeEntityMixin",
-    "entity.mob.GhastEntityMixin",
     "entity.player.PlayerEntityMixin",
     "predicate.entity.EntityPredicatesMixin",
     "server.PlayerManagerMixin",

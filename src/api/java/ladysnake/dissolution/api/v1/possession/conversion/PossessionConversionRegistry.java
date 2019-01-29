@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 /**
  * A registry handling conversion from standard entities to {@link Possessable} ones.
  */
-public interface PossessionRegistry {
+public interface PossessionConversionRegistry {
 
     /**
      * Use this method to register your own possessable version of an entity.

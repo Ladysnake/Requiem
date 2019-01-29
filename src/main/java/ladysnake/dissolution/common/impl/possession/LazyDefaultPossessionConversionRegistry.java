@@ -5,17 +5,17 @@ import ladysnake.dissolution.api.v1.possession.conversion.PossessableSubstitutio
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 
-public class LazyDefaultPossessionRegistry extends SimplePossessionRegistry {
+public class LazyDefaultPossessionConversionRegistry extends SimplePossessionConversionRegistry {
 
     private PossessableConverterProvider defaultConverterProvider;
 
-    public LazyDefaultPossessionRegistry(PossessableConverterProvider defaultConverterProvider) {
+    public LazyDefaultPossessionConversionRegistry(PossessableConverterProvider defaultConverterProvider) {
         this.defaultConverterProvider = defaultConverterProvider;
     }
 
     @Override
     public boolean canBePossessed(EntityType<?> entityType) {
-        return !isBlacklisted(entityType);
+        return isAllowed(entityType);
     }
 
     @Override

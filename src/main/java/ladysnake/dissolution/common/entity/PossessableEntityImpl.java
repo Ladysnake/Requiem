@@ -1,10 +1,12 @@
 package ladysnake.dissolution.common.entity;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.entity.ability.*;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.common.entity.ai.InertGoal;
 import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthAttribute;
+import ladysnake.dissolution.common.impl.possession.Possession;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.EntityVelocityUpdateClientPacket;
 import net.minecraft.entity.Entity;
@@ -27,8 +29,10 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
-public class PossessableEntityImpl extends PossessableEntityBase implements Possessable {
+public class PossessableEntityImpl extends PossessableEntityBase implements Possessable, MobAbilityController {
     private @Nullable UUID possessorUuid;
+    private IndirectAbility<? super PossessableEntityImpl> indirectAttack;
+    private DirectAbility<? super PossessableEntityImpl> directAttack;
 
     public PossessableEntityImpl(World world) {
         super(world);
@@ -50,6 +54,12 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     protected void method_5959() {
         super.method_5959();
         this.goalSelector.add(99, new InertGoal(this));
+        this.configure(Possession.getAbilityRegistry().getConfig(this));
+    }
+
+    private void configure(MobAbilityConfig<? super PossessableEntityImpl> config) {
+        this.directAttack = config.getDirectAbility(this, AbilityType.ATTACK);
+        this.indirectAttack = config.getIndirectAbility(this, AbilityType.ATTACK);
     }
 
     @Override
@@ -68,6 +78,11 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     }
 
     @Override
+    public MobAbilityController getMobAbilityController() {
+        return this;
+    }
+
+    @Override
     public void setPossessor(@CheckForNull PlayerEntity possessor) {
         this.possessorUuid = possessor != null ? possessor.getUuid() : null;
     }
@@ -76,6 +91,26 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     public void onPossessorFalls(float fallDistance, double double_1, boolean boolean_1, BlockState blockState_1, BlockPos blockPos_1) {
         this.fallDistance = fallDistance;
         this.method_5623(double_1, boolean_1, blockState_1, blockPos_1);
+    }
+
+    @Override
+    public boolean useDirect(AbilityType type, Entity target) {
+        if (type == AbilityType.ATTACK) {
+            return this.getPossessor().map(p -> directAttack.trigger(p, target)).orElse(false);
+        } else if (type == AbilityType.INTERACT) {
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean useIndirect(AbilityType type) {
+        if (type == AbilityType.ATTACK) {
+            return this.getPossessor().map(indirectAttack::trigger).orElse(false);
+        } else if (type == AbilityType.INTERACT) {
+            return false;
+        }
+        return false;
     }
 
     @Override
@@ -125,7 +160,9 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     @Override
     public void updateLogic() {
         super.updateLogic();
-        this.updateTriggeredAttackState();
+        if (this.indirectAttack != null) {
+            this.indirectAttack.update();
+        }
     }
 
     @Nullable

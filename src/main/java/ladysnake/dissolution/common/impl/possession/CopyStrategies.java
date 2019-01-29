@@ -5,6 +5,8 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
 import org.apiguardian.api.API;
 
+import java.util.function.BiConsumer;
+
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 public final class CopyStrategies {
@@ -14,10 +16,12 @@ public final class CopyStrategies {
      * Intended to be used as a method reference
      */
     @API(status = EXPERIMENTAL)
-    public static <E extends MobEntity, P extends MobEntity & Possessable> void basicCopy(E entity, P clone) {
-        clone.setPositionAndAngles(entity);
-        clone.setEntityId(entity.getEntityId());
-        clone.setUuid(entity.getUuid());
+    public static <E extends MobEntity, P extends MobEntity & Possessable> BiConsumer<E, P> basicCopy() {
+        return (entity, clone) -> {
+            clone.setPositionAndAngles(entity);
+            clone.setEntityId(entity.getEntityId());
+            clone.setUuid(entity.getUuid());
+        };
     }
 
     /**

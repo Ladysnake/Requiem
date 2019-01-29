@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.impl.possession.asm;
 
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.conversion.PossessableSubstitutionHandler;
-import ladysnake.dissolution.api.v1.possession.conversion.PossessionRegistry;
+import ladysnake.dissolution.api.v1.possession.conversion.PossessionConversionRegistry;
 import ladysnake.dissolution.common.entity.PossessableEntityImpl;
 import net.fabricmc.loader.launch.common.FabricLauncherBase;
 import net.minecraft.entity.EntityType;
@@ -41,7 +41,7 @@ public class MixedInSubclassFactory<T> {
      * <p>
      * The new class will have the given base class as its superclass and implement {@link Possessable}, using
      * {@link PossessableEntityImpl} as a template.
-     * @see PossessionRegistry#registerPossessedConverter(EntityType, PossessableSubstitutionHandler)
+     * @see PossessionConversionRegistry#registerPossessedConverter(EntityType, PossessableSubstitutionHandler)
      */
     @SuppressWarnings("unchecked")
     public <C extends T> Class<? extends C> defineMixedInSubclass(Class<C> baseEntityClass) {
