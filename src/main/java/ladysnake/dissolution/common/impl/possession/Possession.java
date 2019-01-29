@@ -12,6 +12,7 @@ import ladysnake.dissolution.common.entity.PossessableEntityImpl;
 import ladysnake.dissolution.common.entity.ability.BlazeFireballAbility;
 import ladysnake.dissolution.common.entity.ability.CreeperPrimingAbility;
 import ladysnake.dissolution.common.entity.ability.GhastFireballAbility;
+import ladysnake.dissolution.common.entity.ability.MeleeAbility;
 import ladysnake.dissolution.common.impl.ability.DefaultedMobAbilityRegistry;
 import ladysnake.dissolution.common.impl.ability.SimpleMobAbilityConfig;
 import ladysnake.dissolution.common.impl.possession.asm.AsmConverterProvider;
@@ -25,7 +26,6 @@ import org.apiguardian.api.API;
 
 import java.util.function.BiConsumer;
 
-import static ladysnake.dissolution.common.impl.ability.SimpleMobAbilityConfig.defaultMelee;
 import static ladysnake.dissolution.common.impl.possession.CopyStrategies.basicCopy;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
@@ -73,9 +73,9 @@ public final class Possession {
     }
 
     private static void registerDefaultAbilities() {
-        abilityRegistry.register(EntityType.BLAZE, new SimpleMobAbilityConfig<>(defaultMelee(), BlazeFireballAbility::new));
-        abilityRegistry.register(EntityType.GHAST, new SimpleMobAbilityConfig<>(defaultMelee(), GhastFireballAbility::new));
-        abilityRegistry.register(EntityType.CREEPER, new SimpleMobAbilityConfig<>(defaultMelee(), CreeperPrimingAbility::new));
+        abilityRegistry.register(EntityType.BLAZE, new SimpleMobAbilityConfig<>(MeleeAbility::new, BlazeFireballAbility::new));
+        abilityRegistry.register(EntityType.GHAST, new SimpleMobAbilityConfig<>(MeleeAbility::new, GhastFireballAbility::new));
+        abilityRegistry.register(EntityType.CREEPER, new SimpleMobAbilityConfig<>(MeleeAbility::new, CreeperPrimingAbility::new));
     }
 
     private static void registerDefaultConversions() {

@@ -4,43 +4,37 @@ import ladysnake.dissolution.api.v1.entity.ability.AbilityType;
 import ladysnake.dissolution.api.v1.entity.ability.DirectAbility;
 import ladysnake.dissolution.api.v1.entity.ability.IndirectAbility;
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityConfig;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
+import ladysnake.dissolution.common.entity.ability.MeleeAbility;
 import net.minecraft.entity.mob.MobEntity;
+import org.apiguardian.api.API;
 
 import java.util.function.Function;
 
 public class SimpleMobAbilityConfig<E extends MobEntity> implements MobAbilityConfig<E> {
-    public static <T extends MobEntity> Function<T, DirectAbility<? super T>> defaultMelee() {
-        return (mob) -> (player, target) -> {
-            // We actually need to check if the entity has an attack damage attribute, because mojang doesn't.
-            boolean success = mob.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE) != null && mob.method_6121(target);
-            if (success && target instanceof LivingEntity) {
-                player.getMainHandStack().onEntityDamaged((LivingEntity) target, player);
-            }
-            return success;
-        };
-    }
 
+    @API(status = API.Status.EXPERIMENTAL)
     public static <T extends MobEntity> Function<T, DirectAbility<? super T>> noneDirect(){
         return (mob) -> (p, t) -> false;
     }
 
+    @API(status = API.Status.EXPERIMENTAL)
     public static <T extends MobEntity> Function<T, IndirectAbility<? super T>> noneIndirect(){
         return (mob) -> (p) -> false;
     }
 
-    public static final MobAbilityConfig<MobEntity> DEFAULT = new SimpleMobAbilityConfig<>(defaultMelee(), noneIndirect(), noneDirect(), noneIndirect());
+    public static final MobAbilityConfig<MobEntity> DEFAULT = new SimpleMobAbilityConfig<>(MeleeAbility::new, noneIndirect(), noneDirect(), noneIndirect());
 
     private final Function<E, DirectAbility<? super E>> directAttackFactory;
     private final Function<E, IndirectAbility<? super E>> indirectAttackFactory;
     private final Function<E, DirectAbility<? super E>> directInteractionFactory;
     private final Function<E, IndirectAbility<? super E>> indirectInteractionFactory;
 
+    @API(status = API.Status.EXPERIMENTAL)
     public SimpleMobAbilityConfig(Function<E, DirectAbility<? super E>> directAttackFactory, Function<E, IndirectAbility<? super E>> indirectAttackFactory) {
         this(directAttackFactory, indirectAttackFactory, noneDirect(), noneIndirect());
     }
 
+    @API(status = API.Status.EXPERIMENTAL)
     public SimpleMobAbilityConfig(Function<E, DirectAbility<? super E>> directAttackFactory, Function<E, IndirectAbility<? super E>> indirectAttackFactory, Function<E, DirectAbility<? super E>> directInteractionFactory, Function<E, IndirectAbility<? super E>> indirectInteractionFactory) {
         this.directAttackFactory = directAttackFactory;
         this.indirectAttackFactory = indirectAttackFactory;
