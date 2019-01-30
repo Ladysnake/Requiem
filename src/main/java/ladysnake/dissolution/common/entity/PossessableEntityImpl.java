@@ -32,7 +32,9 @@ import java.util.UUID;
 public class PossessableEntityImpl extends PossessableEntityBase implements Possessable, MobAbilityController {
     private @Nullable UUID possessorUuid;
     private IndirectAbility<? super PossessableEntityImpl> indirectAttack;
+    private IndirectAbility<? super PossessableEntityImpl> indirectInteraction;
     private DirectAbility<? super PossessableEntityImpl> directAttack;
+    private DirectAbility<? super PossessableEntityImpl> directInteraction;
 
     public PossessableEntityImpl(World world) {
         super(world);
@@ -59,7 +61,9 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
 
     private void configure(MobAbilityConfig<? super PossessableEntityImpl> config) {
         this.directAttack = config.getDirectAbility(this, AbilityType.ATTACK);
+        this.directInteraction = config.getDirectAbility(this, AbilityType.INTERACT);
         this.indirectAttack = config.getIndirectAbility(this, AbilityType.ATTACK);
+        this.indirectInteraction = config.getIndirectAbility(this, AbilityType.INTERACT);
     }
 
     @Override
@@ -98,7 +102,7 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
         if (type == AbilityType.ATTACK) {
             return this.getPossessor().map(p -> directAttack.trigger(p, target)).orElse(false);
         } else if (type == AbilityType.INTERACT) {
-            return false;
+            return this.getPossessor().map(p -> directInteraction.trigger(p, target)).orElse(false);
         }
         return false;
     }
@@ -108,7 +112,7 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
         if (type == AbilityType.ATTACK) {
             return this.getPossessor().map(indirectAttack::trigger).orElse(false);
         } else if (type == AbilityType.INTERACT) {
-            return false;
+            return this.getPossessor().map(indirectInteraction::trigger).orElse(false);
         }
         return false;
     }

@@ -24,6 +24,7 @@ public class DissolutionNetworking {
 
     // Client -> Server
     public static final Identifier LEFT_CLICK_AIR = Dissolution.id("attack_air");
+    public static final Identifier RIGHT_CLICK_AIR = Dissolution.id("interact_air");
     public static final Identifier POSSESSION_REQUEST = Dissolution.id("possession_request");
 
     public static void sendToServer(CustomPayloadServerPacket packet) {
@@ -70,6 +71,11 @@ public class DissolutionNetworking {
     @Contract(pure = true)
     public static CustomPayloadServerPacket createLeftClickPacket() {
         return new CustomPayloadServerPacket(LEFT_CLICK_AIR, new PacketByteBuf(buffer()));
+    }
+
+    @Contract(pure = true)
+    public static CustomPayloadServerPacket createRightClickPacket() {
+        return new CustomPayloadServerPacket(RIGHT_CLICK_AIR, new PacketByteBuf(buffer()));
     }
 
     @Contract(pure = true)

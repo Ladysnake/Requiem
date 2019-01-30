@@ -13,8 +13,7 @@ import net.minecraft.util.PacketByteBuf;
 
 import java.util.function.BiConsumer;
 
-import static ladysnake.dissolution.common.network.DissolutionNetworking.LEFT_CLICK_AIR;
-import static ladysnake.dissolution.common.network.DissolutionNetworking.POSSESSION_REQUEST;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 
 public class ServerMessageHandling {
 
@@ -24,6 +23,13 @@ public class ServerMessageHandling {
             Possessable possessed = ((DissolutionPlayer)player).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {
                 possessed.getMobAbilityController().useIndirect(AbilityType.ATTACK);
+            }
+        });
+        register(RIGHT_CLICK_AIR, (context, buf) -> {
+            PlayerEntity player = context.getPlayer();
+            Possessable possessed = ((DissolutionPlayer)player).getPossessionComponent().getPossessedEntity();
+            if (possessed != null) {
+                possessed.getMobAbilityController().useIndirect(AbilityType.INTERACT);
             }
         });
         CustomPayloadPacketRegistry.SERVER.register(POSSESSION_REQUEST, (context, buf) -> {
