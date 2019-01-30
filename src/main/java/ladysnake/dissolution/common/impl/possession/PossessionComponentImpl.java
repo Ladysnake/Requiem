@@ -98,11 +98,9 @@ public class PossessionComponentImpl implements PossessionComponent {
         Possessable possessedEntity = this.getPossessedEntity();
         if (possessedEntity != null) {
             this.possessedUuid = null;
-            this.possessedNetworkId = -1;
-            ((DissolutionPlayer)this.player).getMovementAlterer().setConfig(SerializableMovementConfig.SOUL);
+            resetState();
             possessedEntity.setPossessor(null);
             PossessionComponentImpl.transferEquipment(player, (LivingEntity) possessedEntity);
-            syncPossessed();
         }
     }
 
@@ -135,11 +133,17 @@ public class PossessionComponentImpl implements PossessionComponent {
                     Dissolution.LOGGER.warn("{}: this player's supposedly possessed entity ({}) cannot be possessed!", this.player, host);
                 }
                 Dissolution.LOGGER.debug("{}: this player's possessed entity is nowhere to be found", this);
-                this.stopPossessing();
+                this.resetState();
                 host = null;
             }
         }
         return (Possessable) host;
+    }
+
+    private void resetState() {
+        this.possessedNetworkId = -1;
+        ((DissolutionPlayer) this.player).getMovementAlterer().setConfig(SerializableMovementConfig.SOUL);
+        syncPossessed();
     }
 
     @Override
