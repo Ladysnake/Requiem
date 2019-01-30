@@ -46,8 +46,8 @@ public class AsmConverterProvider implements PossessableConverterProvider {
                                 MethodType.methodType(Object.class, Object.class),
                                 World.class
                         )),
-                        CopyStrategies::nbtCopy,
-                        Possession::swapEntities
+                        CopyStrategies.nbtCopy(),
+                        Possession.swapEntities()
                 );
             }
         }

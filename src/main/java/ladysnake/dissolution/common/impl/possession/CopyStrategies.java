@@ -12,9 +12,6 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 public final class CopyStrategies {
     private CopyStrategies() { throw new AssertionError(); }
 
-    /**
-     * Intended to be used as a method reference
-     */
     @API(status = EXPERIMENTAL)
     public static <E extends MobEntity, P extends MobEntity & Possessable> BiConsumer<E, P> basicCopy() {
         return (entity, clone) -> {
@@ -24,14 +21,13 @@ public final class CopyStrategies {
         };
     }
 
-    /**
-     * Intended to be used as a method reference
-     */
     @API(status = EXPERIMENTAL)
-    public static <E extends MobEntity, P extends MobEntity & Possessable> void nbtCopy(E entity, P clone) {
-        CompoundTag serialized = new CompoundTag();
-        entity.toTag(serialized);
-        clone.fromTag(serialized);
-        clone.setEntityId(entity.getEntityId());
+    public static <E extends MobEntity, P extends MobEntity & Possessable> BiConsumer<E, P> nbtCopy() {
+        return (entity, clone) -> {
+            CompoundTag serialized = new CompoundTag();
+            entity.toTag(serialized);
+            clone.fromTag(serialized);
+            clone.setEntityId(entity.getEntityId());
+        };
     }
 }
