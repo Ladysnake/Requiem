@@ -164,8 +164,11 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     @Override
     public void updateLogic() {
         super.updateLogic();
-        if (this.indirectAttack != null) {
+        if (!this.world.isClient) {
+            this.directAttack.update();
             this.indirectAttack.update();
+            this.directInteraction.update();
+            this.indirectInteraction.update();
         }
     }
 
