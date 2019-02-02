@@ -31,7 +31,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         super(entityRenderDispatcher_1, entityModel_1, float_1);
     }
 
-    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "method_4215", at = @At("HEAD"), cancellable = true)
     private void cancelRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
         if (((DissolutionPlayer)renderedPlayer).getPossessionComponent().isPossessing()) {
             info.cancel();
@@ -39,10 +39,10 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     }
 
     @Inject(
-            method = "render",
+            method = "method_4215",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;render(Lnet/minecraft/entity/LivingEntity;DDDFF)V"
+                    target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;method_4054(Lnet/minecraft/entity/LivingEntity;DDDFF)V"
             )
     )
     private void preRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
@@ -55,11 +55,11 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     }
 
     @Inject(
-            method = "render",
+            method = "method_4215",
             at = @At(
                     value = "INVOKE",
                     shift = AFTER,
-                    target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;render(Lnet/minecraft/entity/LivingEntity;DDDFF)V"
+                    target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;method_4054(Lnet/minecraft/entity/LivingEntity;DDDFF)V"
             )
     )
     private void postRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
