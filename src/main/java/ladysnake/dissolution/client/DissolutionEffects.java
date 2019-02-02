@@ -38,9 +38,12 @@ public final class DissolutionEffects implements RenderEvent.PreBlockEntities, R
 
     public void tick(@SuppressWarnings("unused") MinecraftClient client) {
         Entity possessed = this.possessed != null ? this.possessed.get() : null;
-        if (possessed != null && --fishEyeAnimation == 3) {
-            sendToServer(createPossessionRequestPacket(possessed));
-            this.possessed = null;
+        if (possessed != null) {
+            if (--fishEyeAnimation == 3) {
+                sendToServer(createPossessionRequestPacket(possessed));
+            } else if (fishEyeAnimation == 0) {
+                this.possessed = null;
+            }
         }
     }
 
@@ -63,8 +66,8 @@ public final class DissolutionEffects implements RenderEvent.PreBlockEntities, R
         }
         if (RemnantState.getIfRemnant(mc.player).filter(RemnantState::isIncorporeal).isPresent()) {
             spectreShader.render(tickDelta);
-            GlStateManager.matrixMode(GL11.GL_MODELVIEW);
         }
+        GlStateManager.matrixMode(GL11.GL_MODELVIEW);
     }
 
     @Override
