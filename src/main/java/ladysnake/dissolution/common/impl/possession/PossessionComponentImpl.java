@@ -5,6 +5,7 @@ import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
 import ladysnake.dissolution.common.impl.movement.SerializableMovementConfig;
+import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethod2;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethodHandles;
 import net.minecraft.entity.Entity;
@@ -65,7 +66,9 @@ public class PossessionComponentImpl implements PossessionComponent {
         if (host.getMainHandStack().getItem() instanceof BowItem) {
             player.method_7270(new ItemStack(Items.ARROW, host.world.random.nextInt(10) + 2));
         }
-        PossessionComponentImpl.transferEquipment(host, player);
+        if (DissolutionEntityTags.ITEM_USER.contains(host.getType())) {
+            PossessionComponentImpl.transferEquipment(host, player);
+        }
         // 4- Actually set the possessed entity
         this.possessedUuid = host.getUuid();
         this.possessedNetworkId = host.getEntityId();
@@ -100,7 +103,9 @@ public class PossessionComponentImpl implements PossessionComponent {
             this.possessedUuid = null;
             resetState();
             possessedEntity.setPossessor(null);
-            PossessionComponentImpl.transferEquipment(player, (LivingEntity) possessedEntity);
+            if (DissolutionEntityTags.ITEM_USER.contains(((Entity)possessedEntity).getType())) {
+                PossessionComponentImpl.transferEquipment(player, (LivingEntity) possessedEntity);
+            }
         }
     }
 

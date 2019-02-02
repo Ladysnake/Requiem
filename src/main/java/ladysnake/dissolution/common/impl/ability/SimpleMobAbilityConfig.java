@@ -51,4 +51,34 @@ public class SimpleMobAbilityConfig<E extends MobEntity> implements MobAbilityCo
     public IndirectAbility<? super E> getIndirectAbility(E mob, AbilityType type) {
         return (type == AbilityType.ATTACK ? indirectAttackFactory : indirectInteractionFactory).apply(mob);
     }
+
+    public static class Builder<E extends MobEntity> implements MobAbilityConfig.Builder<E> {
+        private Function<E, DirectAbility<? super E>> directAttackFactory = MeleeAbility::new;
+        private Function<E, IndirectAbility<? super E>> indirectAttackFactory = noneIndirect();
+        private Function<E, DirectAbility<? super E>> directInteractionFactory = noneDirect();
+        private Function<E, IndirectAbility<? super E>> indirectInteractionFactory = noneIndirect();
+
+        @Override
+        public MobAbilityConfig.Builder<E> direct(AbilityType type, Function<E, DirectAbility<? super E>> factory) {
+            switch (type) {
+                case ATTACK: directAttackFactory = factory; break;
+                case INTERACT: directInteractionFactory = factory; break;
+            }
+            return this;
+        }
+
+        @Override
+        public MobAbilityConfig.Builder<E> indirect(AbilityType type, Function<E, IndirectAbility<? super E>> factory) {
+            switch (type) {
+                case ATTACK: indirectAttackFactory = factory; break;
+                case INTERACT: indirectInteractionFactory = factory; break;
+            }
+            return this;
+        }
+
+        @Override
+        public MobAbilityConfig<E> build() {
+            return new SimpleMobAbilityConfig<>(directAttackFactory, indirectAttackFactory, directInteractionFactory, indirectInteractionFactory);
+        }
+    }
 }

@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.impl.movement;
 
+import ladysnake.dissolution.api.v1.annotation.CalledThroughReflection;
 import ladysnake.dissolution.api.v1.entity.MovementConfig;
-import ladysnake.reflectivefabric.misc.CalledThroughReflection;
 import org.apiguardian.api.API;
 
 public class SerializableMovementConfig implements MovementConfig {

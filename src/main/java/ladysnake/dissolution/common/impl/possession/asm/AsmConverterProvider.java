@@ -1,10 +1,9 @@
 package ladysnake.dissolution.common.impl.possession.asm;
 
+import ladysnake.dissolution.api.v1.possession.conversion.CopyStrategies;
 import ladysnake.dissolution.api.v1.possession.conversion.PossessableConverterProvider;
 import ladysnake.dissolution.api.v1.possession.conversion.PossessableSubstitutionHandler;
 import ladysnake.dissolution.common.entity.PossessableEntityImpl;
-import ladysnake.dissolution.common.impl.possession.CopyStrategies;
-import ladysnake.dissolution.common.impl.possession.Possession;
 import ladysnake.reflectivefabric.reflection.ReflectionHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -47,7 +46,7 @@ public class AsmConverterProvider implements PossessableConverterProvider {
                                 World.class
                         )),
                         CopyStrategies.nbtCopy(),
-                        Possession.swapEntities()
+                        PossessableSubstitutionHandler.swapEntities()
                 );
             }
         }

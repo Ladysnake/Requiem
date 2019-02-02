@@ -1,4 +1,4 @@
-package ladysnake.reflectivefabric.misc;
+package ladysnake.dissolution.api.v1.annotation;
 
 import org.apiguardian.api.API;
 
@@ -14,6 +14,5 @@ import static org.apiguardian.api.API.Status.MAINTAINED;
  */
 @API(status = MAINTAINED, since = "2.6.2")
 @Retention(RetentionPolicy.SOURCE)
-@Target({ElementType.METHOD, ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.FIELD})
-public @interface CalledThroughReflection {
-}
+@Target({ElementType.METHOD, ElementType.TYPE, ElementType.CONSTRUCTOR})
+public @interface CalledThroughReflection { }

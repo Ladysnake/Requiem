@@ -1,6 +1,7 @@
 package ladysnake.dissolution.api.v1.possession.conversion;
 
 import ladysnake.dissolution.api.v1.possession.Possessable;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.apiguardian.api.API;
@@ -49,5 +50,16 @@ public interface PossessableSubstitutionHandler<E extends MobEntity> extends BiF
             }
             return possessable;
         });
+    }
+
+    static <E extends MobEntity, P extends MobEntity & Possessable> BiConsumer<E, P> swapEntities() {
+        return (entity, clone) -> {
+            entity.world.method_8507(entity);
+            if (clone.world.isClient) {
+                ((ClientWorld)clone.world).method_2942(clone.getEntityId(), clone);
+            } else {
+                clone.world.spawnEntity(clone);
+            }
+        };
     }
 }

@@ -1,8 +1,12 @@
 package ladysnake.dissolution;
 
+import ladysnake.dissolution.api.v1.DissolutionApi;
+import ladysnake.dissolution.api.v1.DissolutionPlugin;
+import ladysnake.dissolution.common.VanillaDissolutionPlugin;
 import ladysnake.dissolution.common.block.DissolutionBlocks;
 import ladysnake.dissolution.common.command.DissolutionCommand;
 import ladysnake.dissolution.common.entity.DissolutionEntities;
+import ladysnake.dissolution.common.impl.ApiInitializer;
 import ladysnake.dissolution.common.impl.movement.MovementAltererManager;
 import ladysnake.dissolution.common.impl.possession.Possession;
 import ladysnake.dissolution.common.impl.remnant.MutableRemnantState;
@@ -31,13 +35,22 @@ public class Dissolution implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        ApiInitializer.init();
         DissolutionBlocks.init();
         DissolutionEntities.init();
         DissolutionItems.init();
         MutableRemnantState.init();
         Possession.init();
         ServerMessageHandling.init();
+        DissolutionApi.registerPlugin(new VanillaDissolutionPlugin());
         CommandRegistry.INSTANCE.register(false, DissolutionCommand::register);
         ServerEvent.START.register(server -> server.getDataManager().addListener(MOVEMENT_ALTERER_MANAGER));
+        ApiInitializer.setPluginCallback(Dissolution::registerPlugin);
+    }
+
+    private static void registerPlugin(DissolutionPlugin plugin) {
+        plugin.onDissolutionInitialize();
+        plugin.registerMobAbilities(Possession.getAbilityRegistry());
+        plugin.registerPossessedConversions(Possession.getConversionRegistry());
     }
 }

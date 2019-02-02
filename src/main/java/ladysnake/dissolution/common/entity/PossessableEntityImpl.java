@@ -44,20 +44,9 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
         super(entityType_1, world_1);
     }
 
-    @Override
-    protected void initAttributes() {
-        super.initAttributes();
-        if (this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE) != null) {
-            AttributeHelper.substituteAttributeInstance(this.getAttributeContainer(), new CooldownStrengthAttribute(this));
-        }
-    }
-
-    @Override
-    protected void method_5959() {
-        super.method_5959();
-        this.goalSelector.add(99, new InertGoal(this));
-        this.configure(Possession.getAbilityRegistry().getConfig(this));
-    }
+    /* * * * * * * * * * * * * *
+      Interfaces implementation
+     * * * * * * * * * * * * * */
 
     private void configure(MobAbilityConfig<? super PossessableEntityImpl> config) {
         this.directAttack = config.getDirectAbility(this, AbilityType.ATTACK);
@@ -115,6 +104,25 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
             return this.getPossessor().map(indirectInteraction::trigger).orElse(false);
         }
         return false;
+    }
+
+    /* * * * * * * * * * *
+        Entity overrides
+    * * * * * * * * * * */
+
+    @Override
+    protected void initAttributes() {
+        super.initAttributes();
+        if (this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE) != null) {
+            AttributeHelper.substituteAttributeInstance(this.getAttributeContainer(), new CooldownStrengthAttribute(this));
+        }
+    }
+
+    @Override
+    protected void method_5959() {
+        super.method_5959();
+        this.goalSelector.add(99, new InertGoal(this));
+        this.configure(Possession.getAbilityRegistry().getConfig(this));
     }
 
     @Override
@@ -205,7 +213,7 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     @Override
     public boolean canUsePortals() {
         // This entity's dimension should always be changed by the player
-        return false;
+        return !isBeingPossessed() && super.canUsePortals();
     }
 
     @Override
@@ -219,6 +227,16 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
             }
         });
 
+    }
+
+    /**
+     * Updates the logic for the held item when the hand is active
+     */
+    @Override
+    public void method_6076() {
+        if (!getPossessorUuid().isPresent()) {
+            super.method_6076();
+        }
     }
 
     /* * * * * * * * * * *
@@ -306,16 +324,5 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
         return getPossessor()
                 .map(LivingEntity::method_6115)
                 .orElseGet(super::method_6115);
-    }
-
-    /**
-     * Updates the logic for the held item when the hand is active
-     */
-    @Override
-    public void method_6076() {
-        // Not actual delegation, we just avoid updating the item twice
-        if (!getPossessorUuid().isPresent()) {
-            super.method_6076();
-        }
     }
 }
