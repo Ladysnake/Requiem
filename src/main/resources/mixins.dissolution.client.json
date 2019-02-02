@@ -6,7 +6,7 @@
     "MinecraftClientAccessorMixin",
     "MinecraftClientMixin",
     "gui.hud.InGameHudMixin",
-    "gui.ingame.PlayerInventoryGuiMixin",
+    "gui.ingame.PlayerInventoryScreenMixin",
     "render.GameRendererMixin",
     "render.WorldRendererMixin",
     "render.entity.AccessibleTextureEntityRenderer",

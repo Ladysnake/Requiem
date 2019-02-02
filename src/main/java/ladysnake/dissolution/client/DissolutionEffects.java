@@ -59,7 +59,7 @@ public final class DissolutionEffects implements RenderEvent.PreBlockEntities, R
             fishEyeShader.render(tickDelta);
             if (this.possessed != null && this.framebuffer != null) {
                 GlStateManager.enableBlend();
-                GlStateManager.blendFuncSeparate(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ZERO, GlStateManager.class_1027.ONE);
+                GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
                 this.framebuffer.draw(this.mc.window.getWidth(), this.mc.window.getHeight(), false);
                 MinecraftClient.getInstance().worldRenderer.drawEntityOutlinesFramebuffer();
             }

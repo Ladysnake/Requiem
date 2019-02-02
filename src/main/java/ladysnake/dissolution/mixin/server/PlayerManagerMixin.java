@@ -7,6 +7,7 @@ import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.ClientConnection;
@@ -15,7 +16,6 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.UserCache;
-import net.minecraft.world.ChunkSaveHandlerImpl;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -64,7 +64,7 @@ public abstract class PlayerManagerMixin {
             sendTo(player, createCorporealityPacket(player));
             ServerWorld world = this.server.getWorld(player.dimension);
             CompoundTag serializedPossessedInfo = serializedPlayer.getCompound(POSSESSED_ROOT_TAG);
-            Entity possessedEntityMount = ChunkSaveHandlerImpl.readEntity(serializedPossessedInfo.getCompound(POSSESSED_ENTITY_TAG), world, true);
+            Entity possessedEntityMount = EntityType.loadEntityWithPassengers(serializedPossessedInfo.getCompound(POSSESSED_ENTITY_TAG), world, true);
             if (possessedEntityMount != null) {
                 UUID possessedEntityUuid = serializedPossessedInfo.getUuid(POSSESSED_UUID_TAG);
                 resumePossession(((DissolutionPlayer) player).getPossessionComponent(), world, possessedEntityMount, possessedEntityUuid);

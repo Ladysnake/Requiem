@@ -27,8 +27,7 @@ public class AsmConverterProvider implements PossessableConverterProvider {
 
     @Nullable
     @Override
-    public <T extends MobEntity> PossessableSubstitutionHandler<T> get(EntityType<T> type) {
-        Class<? extends T> baseClass = type.getEntityClass();
+    public <T extends MobEntity> PossessableSubstitutionHandler<T> get(EntityType<T> type, Class<T> baseClass) {
         Class<? extends T> generatedClass = factory.defineMixedInSubclass(baseClass);
         Function<T, World> worldGetter = Entity::getEntityWorld;
         // Look for a constructor that we can handle

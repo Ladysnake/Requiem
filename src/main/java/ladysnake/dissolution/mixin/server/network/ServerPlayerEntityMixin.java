@@ -8,6 +8,7 @@ import ladysnake.dissolution.api.v1.possession.PossessionComponent;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.MobSpawnClientPacket;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,7 +16,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkSaveHandlerImpl;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Mixin;
@@ -73,7 +73,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     private void onTeleportDone(CallbackInfo info) {
         sendTo((ServerPlayerEntity)(Object)this, createCorporealityPacket(this));
         if (this.dissolution_possessedEntityTag != null) {
-            Entity formerPossessed = ChunkSaveHandlerImpl.readEntity(this.dissolution_possessedEntityTag, world, false);
+            Entity formerPossessed = EntityType.loadEntityWithPassengers(this.dissolution_possessedEntityTag, world, false);
             if (formerPossessed instanceof MobEntity) {
                 formerPossessed.setPositionAndAngles(this);
                 if (world.spawnEntity(formerPossessed)) {

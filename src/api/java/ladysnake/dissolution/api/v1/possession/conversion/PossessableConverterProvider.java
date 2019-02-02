@@ -10,5 +10,5 @@ import javax.annotation.Nullable;
  */
 public interface PossessableConverterProvider {
     @Nullable
-    <T extends MobEntity> PossessableSubstitutionHandler<T> get(EntityType<T> type);
+    <T extends MobEntity> PossessableSubstitutionHandler<T> get(EntityType<T> type, Class<T> entityClass);
 }

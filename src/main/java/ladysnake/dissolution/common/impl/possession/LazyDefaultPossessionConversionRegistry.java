@@ -19,15 +19,17 @@ public class LazyDefaultPossessionConversionRegistry extends SimplePossessionCon
     }
 
     @Override
-    protected <T extends MobEntity> PossessableSubstitutionHandler<T> getConverterFor(EntityType<?> entityType) {
+    protected <T extends MobEntity> PossessableSubstitutionHandler<T> getConverterFor(EntityType<?> entityType, Class<?> entityClass) {
         @SuppressWarnings("unchecked")
         EntityType<T> mobType = (EntityType<T>) entityType;
+        @SuppressWarnings("unchecked")
+        Class<T> mobClass = (Class<T>) entityClass;
         if (!isEntityRegistered(mobType)) {
-            PossessableSubstitutionHandler<T> substitutionHandler = defaultConverterProvider.get(mobType);
+            PossessableSubstitutionHandler<T> substitutionHandler = defaultConverterProvider.get(mobType, mobClass);
             if (substitutionHandler != null) {
                 this.registerPossessedConverter(mobType, substitutionHandler);
             }
         }
-        return super.getConverterFor(entityType);
+        return super.getConverterFor(entityType, entityClass);
     }
 }

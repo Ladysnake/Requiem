@@ -37,7 +37,7 @@ public class SimplePossessionConversionRegistry implements PossessionConversionR
         if (!this.canBePossessed(entity)) {
             return null;
         }
-        PossessableSubstitutionHandler<T> converter = this.getConverterFor(entity.getType());
+        PossessableSubstitutionHandler<T> converter = this.getConverterFor(entity.getType(), entity.getClass());
         if (converter != null) {
             return converter.apply(entity, possessor);
         }
@@ -50,7 +50,7 @@ public class SimplePossessionConversionRegistry implements PossessionConversionR
      */
     @Nullable
     @SuppressWarnings({"unchecked", "SuspiciousMethodCalls"})
-    protected <T extends MobEntity> PossessableSubstitutionHandler<T> getConverterFor(EntityType<?> entityType) {
+    protected <T extends MobEntity> PossessableSubstitutionHandler<T> getConverterFor(EntityType<?> entityType, Class<?> entityClass) {
         return (PossessableSubstitutionHandler<T>) this.converters.get(entityType);
     }
 

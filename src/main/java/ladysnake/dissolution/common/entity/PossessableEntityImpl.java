@@ -320,9 +320,9 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
      * @return true if this entity's main hand is active
      */
     @Override
-    public boolean method_6115() {
+    public boolean isUsingItem() {
         return getPossessor()
-                .map(LivingEntity::method_6115)
-                .orElseGet(super::method_6115);
+                .map(LivingEntity::isUsingItem)
+                .orElseGet(super::isUsingItem);
     }
 }

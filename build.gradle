@@ -1,7 +1,17 @@
+// Credits to UpcraftLP for the base build script
+import java.nio.charset.StandardCharsets
+
 plugins {
-	id 'fabric-loom' version '0.2.0-SNAPSHOT'
+	id "fabric-loom" version "0.2.0-SNAPSHOT"
+	id "com.matthewprenger.cursegradle" version "1.1.2"
+	id "maven-publish"
 }
 
+// Update JSON generation
+apply from: 'https://raw.githubusercontent.com/Ladysnake/LadyLib/master/update_json.gradle'
+build.finalizedBy updateJson
+
+group = "io.github.Ladysnake"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -34,16 +44,63 @@ sourceSets {
 minecraft {
 }
 
-dependencies {
-	minecraft "com.mojang:minecraft:19w03c"
-	mappings "net.fabricmc:yarn:19w03c.5"
-	modCompile "net.fabricmc:fabric-loader:0.3.3.99"
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	modCompile "net.fabricmc:fabric:0.1.4.78"
+processResources {
+	// this will ensure that this task is redone when there"s a change
+	inputs.property "version", project.version
 
-	compile "org.jetbrains:annotations:15.0"
-	compile "com.google.code.findbugs:jsr305:3.0.2"
-	compile "org.apiguardian:apiguardian-api:1.0.0"
+	def sources = sourceSets.stream().flatMap { ss -> ss.resources.srcDirs.stream() }.toArray()
+	// replace stuff in fabric.mod.json, nothing else
+	from(sources) {
+		include "fabric.mod.json"
+
+		// add mod metadata
+		expand "version": project.version
+	}
+
+	// copy everything else, that"s not the fabric.mod.json
+	from(sources) {
+		exclude "fabric.mod.json"
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${mc_version}"
+	mappings "net.fabricmc:yarn:${yarn_mappings}"
+	modCompile "net.fabricmc:fabric-loader:${loader_version}"
+	// Fabric API. This is technically optional, but you probably want it anyway.
+	modCompile "net.fabricmc:fabric:${fabric_version}"
+
+	compile "org.jetbrains:annotations:${jb_annotations_version}"
+	compile "com.google.code.findbugs:jsr305:${findbugs_version}"
+	compile "org.apiguardian:apiguardian-api:${apiguardian_version}"
+}
+
+compileJava {
+	options.encoding = StandardCharsets.UTF_8.name()
+}
+
+if (JavaVersion.current().isJava8Compatible()) {
+	allprojects {
+		tasks.withType(Javadoc) {
+			options.addStringOption("Xdoclint:none", "-quiet")
+		}
+	}
+}
+
+jar {
+	manifest.mainAttributes(
+			"Implementation-Title": project.archivesBaseName,
+			"Implementation-Version": project.version,
+			"Maven-Artifact": "${project.group}:${project.name}:${project.version}".toLowerCase(Locale.ROOT),
+			"Built-On-Minecraft": "${mc_version}",
+			"Built-On-Java": "${System.getProperty("java.vm.version")} (${System.getProperty("java.vm.vendor")})"
+	)
+}
+
+task apiJar(type: Jar, dependsOn: classes) {
+	classifier = 'api'
+	from sourceSets.api.allSource
+	from sourceSets.api.output
 }
 
 // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
@@ -52,4 +109,73 @@ dependencies {
 task sourcesJar(type: Jar, dependsOn: classes) {
 	classifier = 'sources'
 	from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	from javadoc.destinationDir
+	from "LICENSE.md"
+	classifier = "javadoc"
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifact jar
+			artifact apiJar
+			artifact javadocJar
+			artifact sourcesJar
+		}
+	}
+
+	repositories {
+		mavenLocal()
+	}
+}
+
+curseforge {
+	if (project.hasProperty("curse_key")) {
+		apiKey = findProperty("curse_key")
+	}
+
+	if (project.hasProperty("curseforge_id")) {
+		project {
+			id = findProperty("curseforge_id")
+			mainArtifact(jar) {
+				displayName = "${project.archivesBaseName} MC${mc_version} v${mod_version}"
+			}
+			releaseType = project.release_type
+
+			//TODO remove when MC 1.14 releases
+			//usually automatically determined by the CurseGradle plugin
+			addGameVersion '1.14-Snapshot'
+
+			changelogType = "markdown"
+			changelog = new File("changelog.md") //TODO generate changelog
+
+			relations {
+
+			}
+
+			addArtifact javadocJar
+			addArtifact sourcesJar
+		}
+		options {
+			forgeGradleIntegration = false
+		}
+
+	}
+}
+
+tasks.publish.dependsOn build
+
+afterEvaluate {
+	//make curseforge task depend on build
+	if (project.hasProperty("curseforge_id")) {
+		tasks.each {
+			if (it.name == "curseforge" + findProperty(curseforge_id)) {
+				it.dependsOn build
+				it.mustRunAfter build
+			}
+		}
+	}
 }

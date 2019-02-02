@@ -18,6 +18,6 @@ public class EntityTypeAdapter extends TypeAdapter<EntityType<?>> {
     @Nullable
     @Override
     public EntityType<?> read(JsonReader in) throws IOException {
-        return EntityType.get(in.nextString());
+        return EntityType.get(in.nextString()).orElse(null);
     }
 }
