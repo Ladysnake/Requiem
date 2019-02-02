@@ -9,13 +9,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
-import static ladysnake.dissolution.common.entity.ability.EvokerFangAbility.CAST_SPELL_GOAL$CAST_SPELL;
 import static ladysnake.reflectivefabric.reflection.ReflectionHelper.pick;
 
 public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
     private static final Function<EvokerEntity, ? extends SpellcastingIllagerEntity.CastSpellGoal> VEX_GOAL_FACTORY;
 
     private final SpellcastingIllagerEntity.CastSpellGoal summonVexGoal;
+    private boolean started;
 
     public EvokerVexAbility(EvokerEntity owner) {
         super(owner);
@@ -27,8 +27,8 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
         boolean success = false;
         owner.setTarget(owner); // The target needs to be non null to let the goal run
         if (summonVexGoal.canStart()) {
-            CAST_SPELL_GOAL$CAST_SPELL.invoke(summonVexGoal);
-            owner.setTarget(null);
+            summonVexGoal.start();
+            started = true;
             success = true;
         }
         owner.setTarget(null);
@@ -37,11 +37,16 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
 
     @Override
     public void update() {
-        owner.setTarget(owner);
-        if (summonVexGoal.shouldContinue()) {
-            summonVexGoal.tick();
+        if (started) {
+            owner.setTarget(owner);
+            if (summonVexGoal.shouldContinue()) {
+                summonVexGoal.tick();
+            } else {
+                owner.method_7138(SpellcastingIllagerEntity.class_1618.NONE);
+                started = false;
+            }
+            owner.setTarget(null);
         }
-        owner.setTarget(null);
     }
 
     static {
