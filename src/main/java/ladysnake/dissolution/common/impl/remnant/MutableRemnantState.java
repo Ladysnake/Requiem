@@ -41,8 +41,8 @@ public class MutableRemnantState implements RemnantState {
             }
         });
         // Prevent incorporeal players from hitting anything
-        PlayerInteractionEvent.ATTACK_ENTITY.register((playerEntity, world, hand, entity) -> {
-            if (RemnantState.getIfRemnant(playerEntity).filter(RemnantState::isIncorporeal).isPresent()) {
+        PlayerInteractionEvent.ATTACK_ENTITY.register((player, world, hand, entity) -> {
+            if (!player.isCreative() && RemnantState.getIfRemnant(player).filter(RemnantState::isIncorporeal).isPresent()) {
                 return ActionResult.FAILURE;
             }
             return ActionResult.PASS;
