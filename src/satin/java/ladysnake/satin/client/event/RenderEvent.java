@@ -24,7 +24,7 @@ public final class RenderEvent {
     }
 
     @FunctionalInterface
-    public interface WindowResized {
+    public interface ResolutionChangeListener {
         void onWindowResized(int newWidth, int newHeight);
     }
 
@@ -45,9 +45,9 @@ public final class RenderEvent {
     public static final HandlerRegistry<PreBlockEntities> BLOCK_ENTITIES_RENDER = new HandlerArray<>(PreBlockEntities.class);
 
     /**
-     * Fired each time Minecraft's window is resized
+     * Fired each time Minecraft's window resolution changes
      */
-    public static final HandlerRegistry<WindowResized> WINDOW_RESIZED = new HandlerArray<>(WindowResized.class);
+    public static final HandlerRegistry<ResolutionChangeListener> RESOLUTION_CHANGED = new HandlerArray<>(ResolutionChangeListener.class);
 
     private RenderEvent() { }
 }

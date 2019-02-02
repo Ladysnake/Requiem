@@ -20,7 +20,7 @@ public class DissolutionClient implements ClientModInitializer {
         ClientMessageHandling.init();
         RenderEvent.SHADER_EFFECT.register(DissolutionEffects.INSTANCE::renderShaders);
         RenderEvent.BLOCK_ENTITIES_RENDER.register(DissolutionEffects.INSTANCE);
-        RenderEvent.WINDOW_RESIZED.register(DissolutionEffects.INSTANCE);
+        RenderEvent.RESOLUTION_CHANGED.register(DissolutionEffects.INSTANCE);
         RenderEvent.PICK_ENTITY_SHADER.register(EntityShaders::getShader);
         ClientTickEvent.CLIENT.register(DissolutionEffects.INSTANCE::tick);
         HudEvent.RENDER_HOTBAR.register(PossessionHud.INSTANCE::onRenderHotbar);

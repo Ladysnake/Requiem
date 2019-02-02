@@ -21,7 +21,7 @@ import java.lang.ref.WeakReference;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.createPossessionRequestPacket;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.sendToServer;
 
-public final class DissolutionEffects implements RenderEvent.PreBlockEntities, RenderEvent.WindowResized {
+public final class DissolutionEffects implements RenderEvent.PreBlockEntities, RenderEvent.ResolutionChangeListener {
     public static final Identifier SPECTRE_SHADER_ID = Dissolution.id("shaders/post/spectre.json");
     public static final Identifier FISH_EYE_SHADER_ID = Dissolution.id("shaders/post/fish_eye.json");
 

@@ -1,8 +1,6 @@
 package ladysnake.satin.client.shader;
 
 import ladysnake.satin.client.event.RenderEvent;
-import net.fabricmc.fabric.util.HandlerArray;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.util.Identifier;
@@ -13,13 +11,11 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.function.Consumer;
 
-import static org.apiguardian.api.API.Status.*;
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+import static org.apiguardian.api.API.Status.MAINTAINED;
 
-public final class ShaderEffectManager implements ResourceReloadListener {
+public final class ShaderEffectManager implements ResourceReloadListener, RenderEvent.ResolutionChangeListener {
     public static final ShaderEffectManager INSTANCE = new ShaderEffectManager();
-
-    private static int oldDisplayWidth = -1;
-    private static int oldDisplayHeight = -1;
 
     // Let shaders be garbage collected when no one uses them
     private static Set<ManagedShaderEffect> managedShaderEffects = Collections.newSetFromMap(new WeakHashMap<>());
@@ -72,23 +68,15 @@ public final class ShaderEffectManager implements ResourceReloadListener {
         }
     }
 
-    @API(status = INTERNAL)
-    public void refreshScreenShaders(MinecraftClient mc) {
-        int windowHeight = mc.window.getHeight();
-        int windowWidth = mc.window.getWidth();
-        if (windowWidth != oldDisplayWidth || oldDisplayHeight != windowHeight) {
-            for (RenderEvent.WindowResized handler : ((HandlerArray<RenderEvent.WindowResized>)RenderEvent.WINDOW_RESIZED).getBackingArray()) {
-                handler.onWindowResized(windowWidth, windowHeight);
-            }
-            if (!ShaderHelper.areShadersDisallowed() && !managedShaderEffects.isEmpty()) {
-                for (ManagedShaderEffect ss : managedShaderEffects) {
-                    if (ss.isInitialized()) {
-                        ss.setup(windowWidth, windowHeight);
-                    }
+    @Override
+    public void onWindowResized(int newWidth, int newHeight) {
+        if (!ShaderHelper.areShadersDisallowed() && !managedShaderEffects.isEmpty()) {
+            for (ManagedShaderEffect ss : managedShaderEffects) {
+                if (ss.isInitialized()) {
+                    ss.setup(newWidth, newHeight);
                 }
             }
-            oldDisplayWidth = windowWidth;
-            oldDisplayHeight = windowHeight;
         }
     }
+
 }
