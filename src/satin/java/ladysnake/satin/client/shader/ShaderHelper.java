@@ -55,7 +55,7 @@ public class ShaderHelper {
     /**A map of programs to maps of uniform names to location*/
     private static final Int2ObjectMap<Object2IntMap<String>> uniformsCache = new Int2ObjectOpenHashMap<>();
 
-    public static boolean areShadersForbidden() {
+    public static boolean areShadersDisallowed() {
         return !GLX.isNextGen();
     }
 
@@ -88,7 +88,7 @@ public class ShaderHelper {
      * @param program the reference to the desired shader (0 to remove any current shader)
      */
     public static void useShader(int program) {
-        if (areShadersForbidden()) {
+        if (areShadersDisallowed()) {
             return;
         }
 
@@ -108,7 +108,7 @@ public class ShaderHelper {
      * @param operation   a gl operation to apply to this uniform
      */
     public static void setAttribValue(String attribName, IntConsumer operation) {
-        if (areShadersForbidden() || currentProgram == 0) {
+        if (areShadersDisallowed() || currentProgram == 0) {
             return;
         }
 
@@ -128,7 +128,7 @@ public class ShaderHelper {
      * @param operation   a gl operation to apply to this uniform
      */
     public static void setUniformValue(String uniformName, IntConsumer operation) {
-        if (areShadersForbidden() || currentProgram == 0) {
+        if (areShadersDisallowed() || currentProgram == 0) {
             return;
         }
 
@@ -145,7 +145,7 @@ public class ShaderHelper {
      * @param value       an int value for this uniform
      */
     public static void setUniform(String uniformName, int value) {
-        if (areShadersForbidden() || currentProgram == 0) {
+        if (areShadersDisallowed() || currentProgram == 0) {
             return;
         }
 
@@ -164,7 +164,7 @@ public class ShaderHelper {
      * @param values      between 1 and 4 float values
      */
     public static void setUniform(String uniformName, float... values) {
-        if (areShadersForbidden()) {
+        if (areShadersDisallowed()) {
             return;
         }
 
@@ -196,7 +196,7 @@ public class ShaderHelper {
      * @param mat4        a raw array of float values
      */
     public static void setUniform(String uniformName, FloatBuffer mat4) {
-        if (areShadersForbidden()) {
+        if (areShadersDisallowed()) {
             return;
         }
 
@@ -324,7 +324,7 @@ public class ShaderHelper {
      * @param resourceManager MinecraftClient's resource manager
      */
     private static void loadShaders(ResourceManager resourceManager) {
-        if (areShadersForbidden()) {
+        if (areShadersDisallowed()) {
             return;
         }
         Map<Identifier, ShaderPair> registeredShaders = new HashMap<>();

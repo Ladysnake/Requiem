@@ -1,5 +1,7 @@
 package ladysnake.satin.client.shader;
 
+import ladysnake.satin.client.event.RenderEvent;
+import net.fabricmc.fabric.util.HandlerArray;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadListener;
@@ -72,19 +74,21 @@ public final class ShaderEffectManager implements ResourceReloadListener {
 
     @API(status = INTERNAL)
     public void refreshScreenShaders(MinecraftClient mc) {
-        if (!ShaderHelper.areShadersForbidden() && !managedShaderEffects.isEmpty()) {
-            int windowHeight = mc.window.getHeight();
-            int windowWidth = mc.window.getWidth();
-            if (windowWidth != oldDisplayWidth || oldDisplayHeight != windowHeight) {
+        int windowHeight = mc.window.getHeight();
+        int windowWidth = mc.window.getWidth();
+        if (windowWidth != oldDisplayWidth || oldDisplayHeight != windowHeight) {
+            for (RenderEvent.WindowResized handler : ((HandlerArray<RenderEvent.WindowResized>)RenderEvent.WINDOW_RESIZED).getBackingArray()) {
+                handler.onWindowResized(windowWidth, windowHeight);
+            }
+            if (!ShaderHelper.areShadersDisallowed() && !managedShaderEffects.isEmpty()) {
                 for (ManagedShaderEffect ss : managedShaderEffects) {
                     if (ss.isInitialized()) {
                         ss.setup(windowWidth, windowHeight);
                     }
                 }
-
-                oldDisplayWidth = windowWidth;
-                oldDisplayHeight = windowHeight;
             }
+            oldDisplayWidth = windowWidth;
+            oldDisplayHeight = windowHeight;
         }
     }
 }

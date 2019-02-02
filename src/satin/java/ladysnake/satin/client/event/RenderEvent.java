@@ -22,6 +22,12 @@ public final class RenderEvent {
     public interface PreBlockEntities {
         void onPreRenderBlockEntities(Entity camera, VisibleRegion frustum, float tickDelta);
     }
+
+    @FunctionalInterface
+    public interface WindowResized {
+        void onWindowResized(int newWidth, int newHeight);
+    }
+
     /**
      * Fired when Minecraft renders the entity outline framebuffer.
      * Post process shader effects should generally be rendered at that time.
@@ -37,6 +43,11 @@ public final class RenderEvent {
      * Fired after Minecraft has rendered all entities and before it renders block entities.
      */
     public static final HandlerRegistry<PreBlockEntities> BLOCK_ENTITIES_RENDER = new HandlerArray<>(PreBlockEntities.class);
+
+    /**
+     * Fired each time Minecraft's window is resized
+     */
+    public static final HandlerRegistry<WindowResized> WINDOW_RESIZED = new HandlerArray<>(WindowResized.class);
 
     private RenderEvent() { }
 }
