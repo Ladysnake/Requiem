@@ -258,6 +258,19 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
         }
     }
 
+    /**
+     * Teleport
+     *
+     * @param enderTp <code>true</code> for ender particles and sound effect
+     * @return <code>true</code> if the teleportation is successful, otherwise <code>false</code>
+     */
+    @Override
+    public boolean method_6082(double x, double y, double z, boolean enderTp) {
+        return getPossessor()
+                .map(p -> p.method_6082(x, y, z, enderTp))
+                .orElseGet(() -> super.method_6082(x, y, z, enderTp));
+    }
+
     @Override
     public boolean startRiding(Entity entity_1) {
         Optional<PlayerEntity> possessing = getPossessor();

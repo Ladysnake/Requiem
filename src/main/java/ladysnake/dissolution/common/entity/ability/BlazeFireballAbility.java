@@ -1,23 +1,24 @@
 package ladysnake.dissolution.common.entity.ability;
 
 import net.minecraft.entity.mob.BlazeEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class BlazeFireballAbility extends IndirectAbilityBase<BlazeEntity> {
+public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
     private int fireTicks;
 
-    public BlazeFireballAbility(BlazeEntity owner) {
+    public BlazeFireballAbility(MobEntity owner) {
         super(owner);
     }
 
     @Override
     public void update() {
-        if (this.owner.isFireActive() && --fireTicks < 0) {
-            this.owner.setFireActive(false);
+        if (this.owner instanceof BlazeEntity && ((BlazeEntity) this.owner).isFireActive() && --fireTicks < 0) {
+            ((BlazeEntity) this.owner).setFireActive(false);
         }
     }
 
@@ -28,8 +29,10 @@ public class BlazeFireballAbility extends IndirectAbilityBase<BlazeEntity> {
         Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
 
         this.owner.world.fireWorldEvent(null, 1018, new BlockPos((int)this.owner.x, (int)this.owner.y, (int)this.owner.z), 0);
-        this.fireTicks = 200;
-        this.owner.setFireActive(true);
+        if (this.owner instanceof BlazeEntity) {
+            this.fireTicks = 200;
+            ((BlazeEntity) this.owner).setFireActive(true);
+        }
         SmallFireballEntity smallFireballEntity_1 = new SmallFireballEntity(
                 this.owner.world,
                 this.owner,

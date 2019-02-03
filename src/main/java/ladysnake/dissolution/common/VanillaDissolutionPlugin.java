@@ -11,12 +11,18 @@ import ladysnake.dissolution.common.entity.ability.*;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.*;
+import net.minecraft.entity.mob.CreeperEntity;
+import net.minecraft.entity.mob.EvokerEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.ActionResult;
 
 public class VanillaDissolutionPlugin implements DissolutionPlugin {
     @Override
     public void onDissolutionInitialize() {
+        registerPossessionEventHandlers();
+    }
+
+    private void registerPossessionEventHandlers() {
         // Start possession on right click
         PlayerInteractionEvent.INTERACT_ENTITY_POSITIONED.register((player, world, hand, target, hitPosition) -> {
             if (((DissolutionPlayer)player).getRemnantState().isIncorporeal()) {
@@ -42,13 +48,14 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
 
     @Override
     public void registerMobAbilities(MobAbilityRegistry abilityRegistry) {
-        abilityRegistry.register(EntityType.BLAZE, MobAbilityConfig.<BlazeEntity>builder().indirectAttack(BlazeFireballAbility::new).build());
-        abilityRegistry.register(EntityType.GHAST, MobAbilityConfig.<GhastEntity>builder().indirectAttack(GhastFireballAbility::new).build());
+        abilityRegistry.register(EntityType.BLAZE, MobAbilityConfig.builder().indirectAttack(BlazeFireballAbility::new).build());
         abilityRegistry.register(EntityType.CREEPER, MobAbilityConfig.<CreeperEntity>builder().indirectAttack(CreeperPrimingAbility::new).build());
+        abilityRegistry.register(EntityType.ENDERMAN, MobAbilityConfig.builder().indirectInteract(BlinkAbility::new).build());
         abilityRegistry.register(EntityType.EVOKER, MobAbilityConfig.<EvokerEntity>builder()
                 .directAttack(EvokerFangAbility::new)
                 .directInteract(EvokerWololoAbility::new)
                 .indirectInteract(EvokerVexAbility::new)
                 .build());
+        abilityRegistry.register(EntityType.GHAST, MobAbilityConfig.builder().indirectAttack(GhastFireballAbility::new).build());
     }
 }
