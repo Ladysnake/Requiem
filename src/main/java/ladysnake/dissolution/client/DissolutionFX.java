@@ -10,9 +10,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.render.VisibleRegion;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -21,30 +23,52 @@ import java.lang.ref.WeakReference;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.createPossessionRequestPacket;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.sendToServer;
 
-public final class DissolutionEffects implements RenderEvent.PreBlockEntities, RenderEvent.ResolutionChangeListener {
+public final class DissolutionFX implements RenderEvent.PreBlockEntities, RenderEvent.ResolutionChangeListener {
     public static final Identifier SPECTRE_SHADER_ID = Dissolution.id("shaders/post/spectre.json");
     public static final Identifier FISH_EYE_SHADER_ID = Dissolution.id("shaders/post/fish_eye.json");
 
-    public static final DissolutionEffects INSTANCE = new DissolutionEffects();
+    public static final DissolutionFX INSTANCE = new DissolutionFX();
 
     private final MinecraftClient mc = MinecraftClient.getInstance();
     private final ManagedShaderEffect spectreShader = ShaderEffectManager.manage(SPECTRE_SHADER_ID);
     private final ManagedShaderEffect fishEyeShader = ShaderEffectManager.manage(FISH_EYE_SHADER_ID);
     private GlFramebuffer framebuffer;
 
-    public int fishEyeAnimation = -1;
+    private int fishEyeAnimation = -1;
     @Nullable
     public WeakReference<Entity> possessed;
 
     public void tick(@SuppressWarnings("unused") MinecraftClient client) {
         Entity possessed = this.possessed != null ? this.possessed.get() : null;
         if (possessed != null) {
+            turnToFace(possessed);
             if (--fishEyeAnimation == 3) {
                 sendToServer(createPossessionRequestPacket(possessed));
             } else if (fishEyeAnimation == 0) {
                 this.possessed = null;
             }
         }
+    }
+
+    /**
+     * This method has been adapted from
+     * <a href=https://github.com/coolAlias/DynamicSwordSkills/blob/master/src/main/java/dynamicswordskills/skills/SwordBasic.java>
+     * Dynamic Sword Skills' source code
+     * </a> under the terms of the GNU General Public License v3.
+     *
+     * @param entity the targeted entity
+     * @author coolAlias
+     */
+    private void turnToFace(Entity entity) {
+        PlayerEntity player = mc.player;
+        double dx = player.x - entity.x;
+        double dz = player.z - entity.z;
+        double angle = Math.atan2(dz, dx) * 180 / Math.PI;
+        double pitch = Math.atan2((player.y + player.getEyeHeight()) - (entity.y + (entity.getHeight() / 2.0F)), Math.sqrt(dx * dx + dz * dz)) * 180 / Math.PI;
+        double distance = player.distanceTo(entity) / 2;
+        float rYaw = MathHelper.wrapDegrees((float)(angle - player.yaw)) + 90F;
+        float rPitch = (float) pitch - (float)(10.0F / Math.sqrt(distance)) + (float)(distance * Math.PI / 90);
+        player.method_5872(rYaw, -(rPitch - player.pitch));
     }
 
     public void beginFishEyeAnimation(Entity possessed) {

@@ -18,7 +18,7 @@ public final class EntityShaders {
                 MinecraftClient.getInstance().gameRenderer.onCameraEntitySet(possessed);
             }
         } else if (camera instanceof WaterCreatureEntity) {
-            return DissolutionEffects.FISH_EYE_SHADER_ID;
+            return DissolutionFX.FISH_EYE_SHADER_ID;
         }
         return null;
     }

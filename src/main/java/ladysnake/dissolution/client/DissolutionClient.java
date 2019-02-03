@@ -18,11 +18,11 @@ public class DissolutionClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientMessageHandling.init();
-        RenderEvent.SHADER_EFFECT.register(DissolutionEffects.INSTANCE::renderShaders);
-        RenderEvent.BLOCK_ENTITIES_RENDER.register(DissolutionEffects.INSTANCE);
-        RenderEvent.RESOLUTION_CHANGED.register(DissolutionEffects.INSTANCE);
+        RenderEvent.SHADER_EFFECT.register(DissolutionFX.INSTANCE::renderShaders);
+        RenderEvent.BLOCK_ENTITIES_RENDER.register(DissolutionFX.INSTANCE);
+        RenderEvent.RESOLUTION_CHANGED.register(DissolutionFX.INSTANCE);
         RenderEvent.PICK_ENTITY_SHADER.register(EntityShaders::getShader);
-        ClientTickEvent.CLIENT.register(DissolutionEffects.INSTANCE::tick);
+        ClientTickEvent.CLIENT.register(DissolutionFX.INSTANCE::tick);
         HudEvent.RENDER_HOTBAR.register(PossessionHud.INSTANCE::onRenderHotbar);
         EntityRendererRegistry.INSTANCE.register(PossessableEntityImpl.class, (r, it) -> new BipedEntityRenderer<>(r, new PlayerEntityModel<>(0f, false), .5f));
     }

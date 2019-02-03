@@ -78,6 +78,8 @@ public class PossessionComponentImpl implements PossessionComponent {
         this.player.setPositionAndAngles(host);
         ((DissolutionPlayer)this.player).getMovementAlterer().setConfig(Dissolution.getMovementAltererManager().getEntityMovementConfig(host.getType()));
         PLAYER$SET_SIZE.invoke(player, host.getWidth(), host.getHeight());
+        // 6- Make the mob react a bit
+        host.playAmbientSound();
         return true;
     }
 

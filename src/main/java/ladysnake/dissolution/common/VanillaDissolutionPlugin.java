@@ -6,7 +6,7 @@ import ladysnake.dissolution.api.v1.entity.ability.AbilityType;
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.dissolution.api.v1.possession.Possessable;
-import ladysnake.dissolution.client.DissolutionEffects;
+import ladysnake.dissolution.client.DissolutionFX;
 import ladysnake.dissolution.common.entity.ability.*;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
 import net.minecraft.entity.EntityType;
@@ -21,7 +21,7 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
         PlayerInteractionEvent.INTERACT_ENTITY_POSITIONED.register((player, world, hand, target, hitPosition) -> {
             if (((DissolutionPlayer)player).getRemnantState().isIncorporeal()) {
                 if (target instanceof MobEntity && target.world.isClient) {
-                    DissolutionEffects.INSTANCE.beginFishEyeAnimation(target);
+                    DissolutionFX.INSTANCE.beginFishEyeAnimation(target);
                 }
                 return ActionResult.FAILURE;
             }
