@@ -1,24 +1,33 @@
 {
-  "minecraft:chicken": {
-    "flightMode": "DISABLED",
-    "gravity": 0.0,
-    "fallSpeedModifier": 0.6,
-    "inertia": 0.0
+  "minecraft:bat": {
+    "fallSpeedModifier": 0.9,
+    "flightMode": "ENABLED",
+    "swimMode": "DISABLED"
   },
   "minecraft:blaze":  {
     "flightMode": "ENABLED"
   },
+  "minecraft:chicken": {
+    "fallSpeedModifier": 0.6
+  },
+  "minecraft:drowned": {
+    "swimMode": "ENABLED"
+  },
+  "minecraft:elder_guardian": {
+    "swimMode": "FORCED"
+  },
   "minecraft:ghast": {
     "flightMode": "FORCED"
   },
-  "minecraft:bat": {
-    "flightMode": "ENABLED"
-  },
-  "minecraft:phantom": {
-    "flightMode": "FORCED"
+  "minecraft:guardian": {
+    "swimMode": "FORCED"
   },
   "minecraft:parrot": {
     "flightMode": "ENABLED"
+  },
+  "minecraft:phantom": {
+    "flightMode": "FORCED",
+    "inertia": 0.8
   },
   "minecraft:vex": {
     "flightMode": "FORCED"

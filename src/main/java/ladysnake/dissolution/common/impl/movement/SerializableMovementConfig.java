@@ -5,9 +5,10 @@ import ladysnake.dissolution.api.v1.entity.MovementConfig;
 import org.apiguardian.api.API;
 
 public class SerializableMovementConfig implements MovementConfig {
-    public static final SerializableMovementConfig SOUL = new SerializableMovementConfig(FlightMode.ENABLED, 0, 1f, 0.1F);
+    public static final SerializableMovementConfig SOUL = new SerializableMovementConfig(MovementMode.ENABLED, MovementMode.UNSPECIFIED, 0, 1f, 0.1F);
 
-    private FlightMode flightMode;
+    private MovementMode flightMode;
+    private MovementMode swimMode;
     private float gravity;
     private float fallSpeedModifier;
     private float inertia;
@@ -15,19 +16,20 @@ public class SerializableMovementConfig implements MovementConfig {
     @CalledThroughReflection
     @API(status = API.Status.INTERNAL)
     public SerializableMovementConfig() {
-        this(MovementConfig.FlightMode.DISABLED, 0, 1f, 0);
+        this(MovementMode.UNSPECIFIED, MovementMode.UNSPECIFIED, 0, 1f, 0);
     }
 
     @API(status = API.Status.INTERNAL)
-    public SerializableMovementConfig(FlightMode flightMode, float gravity, float fallSpeedModifier, float inertia) {
+    public SerializableMovementConfig(MovementMode flightMode, MovementMode swimMode, float gravity, float fallSpeedModifier, float inertia) {
         this.flightMode = flightMode;
+        this.swimMode = swimMode;
         this.gravity = gravity;
         this.fallSpeedModifier = fallSpeedModifier;
         this.inertia = inertia;
     }
 
     @Override
-    public FlightMode getFlightMode() {
+    public MovementMode getFlightMode() {
         return flightMode;
     }
 
@@ -44,5 +46,10 @@ public class SerializableMovementConfig implements MovementConfig {
     @Override
     public float getInertia() {
         return inertia;
+    }
+
+    @Override
+    public MovementMode getSwimMode() {
+        return swimMode;
     }
 }

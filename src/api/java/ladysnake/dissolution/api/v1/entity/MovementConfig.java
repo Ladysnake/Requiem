@@ -3,9 +3,9 @@ package ladysnake.dissolution.api.v1.entity;
 public interface MovementConfig {
     /**
      * @return the flight mode applied to the entity
-     * @see FlightMode
+     * @see MovementMode
      */
-    FlightMode getFlightMode();
+    MovementMode getFlightMode();
 
     /**
      * Returns the gravity that should be applied by movement alterers using this config.
@@ -34,7 +34,13 @@ public interface MovementConfig {
      */
     float getInertia();
 
-    enum FlightMode {
+    /**
+     * @return the swimming mode applied to the entity
+     * @see MovementMode
+     */
+    MovementMode getSwimMode();
+
+    enum MovementMode {
         /**
          * The entity cannot fly
          */
@@ -46,6 +52,10 @@ public interface MovementConfig {
         /**
          * The entity is always flying
          */
-        FORCED
+        FORCED,
+        /**
+         * No information
+         */
+        UNSPECIFIED
     }
 }
