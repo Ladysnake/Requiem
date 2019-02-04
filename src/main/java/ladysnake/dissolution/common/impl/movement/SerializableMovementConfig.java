@@ -5,7 +5,7 @@ import ladysnake.dissolution.api.v1.entity.MovementConfig;
 import org.apiguardian.api.API;
 
 public class SerializableMovementConfig implements MovementConfig {
-    public static final SerializableMovementConfig SOUL = new SerializableMovementConfig(MovementMode.ENABLED, MovementMode.UNSPECIFIED, 0, 1f, 0.1F);
+    public static final SerializableMovementConfig SOUL = new SerializableMovementConfig(MovementMode.ENABLED, MovementMode.ENABLED, 0, 1f, 0.1F);
 
     private MovementMode flightMode;
     private MovementMode swimMode;

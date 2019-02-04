@@ -1,9 +1,12 @@
 package ladysnake.dissolution.common.impl.possession;
 
+import com.google.common.collect.MapMaker;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
+import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
+import ladysnake.dissolution.common.entity.ai.attribute.PossessionDelegatingAttribute;
 import ladysnake.dissolution.common.impl.movement.SerializableMovementConfig;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethod2;
@@ -11,6 +14,8 @@ import ladysnake.reflectivefabric.reflection.typed.TypedMethodHandles;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BowItem;
@@ -21,6 +26,8 @@ import net.minecraft.server.world.ServerWorld;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.Set;
 import java.util.UUID;
 
 import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
@@ -28,6 +35,7 @@ import static ladysnake.reflectivefabric.reflection.ReflectionHelper.pick;
 
 public class PossessionComponentImpl implements PossessionComponent {
     private static final TypedMethod2<Entity, Float, Float, Void> PLAYER$SET_SIZE = TypedMethodHandles.findVirtual(Entity.class, pick("method_5835", "setSize"), void.class, float.class, float.class);
+    private Set<PlayerEntity> attributeUpdated = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
 
     private PlayerEntity player;
     @Nullable private UUID possessedUuid;
@@ -78,9 +86,23 @@ public class PossessionComponentImpl implements PossessionComponent {
         this.player.setPositionAndAngles(host);
         ((DissolutionPlayer)this.player).getMovementAlterer().setConfig(Dissolution.getMovementAltererManager().getEntityMovementConfig(host.getType()));
         PLAYER$SET_SIZE.invoke(player, host.getWidth(), host.getHeight());
+        if (!attributeUpdated.contains(this.player)) {
+            swapAttributes(this.player);
+            attributeUpdated.add(this.player);
+        }
+
         // 6- Make the mob react a bit
         host.playAmbientSound();
         return true;
+    }
+
+    private void swapAttributes(PlayerEntity player) {
+        AbstractEntityAttributeContainer attributeMap = player.getAttributeContainer();
+        // Replace every registered attribute
+        for (EntityAttributeInstance current: attributeMap.values()) {
+            EntityAttributeInstance replacement = new PossessionDelegatingAttribute(attributeMap, current, this);
+            AttributeHelper.substituteAttributeInstance(attributeMap, replacement);
+        }
     }
 
     private static void transferEquipment(LivingEntity source, LivingEntity dest) {

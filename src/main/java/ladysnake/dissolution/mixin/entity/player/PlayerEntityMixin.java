@@ -11,6 +11,7 @@ import ladysnake.dissolution.common.impl.remnant.NullRemnantState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,6 +19,7 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -77,6 +79,20 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
     @Inject(method = "updateMovement", at = @At("HEAD"))
     private void updateMovementAlterer(CallbackInfo info) {
         this.movementAlterer.update();
+    }
+
+    /**
+     * Players' base movement speed is reset each tick to their walking speed.
+     * We don't want that when a possession is occurring.
+     *
+     * @param attr the {@code this} attribute reference
+     * @param value the value that is supposed to be assigned
+     */
+    @Redirect(method = "updateMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/attribute/EntityAttributeInstance;setBaseValue(D)V"))
+    private void ignoreSpeedResetDuringPossession(EntityAttributeInstance attr, double value) {
+        if (!this.getPossessionComponent().isPossessing()) {
+            attr.setBaseValue(value);
+        }
     }
 
     @Inject(method = "getEyeHeight", at = @At("RETURN"), cancellable = true)

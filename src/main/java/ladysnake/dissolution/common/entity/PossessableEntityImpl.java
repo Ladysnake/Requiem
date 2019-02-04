@@ -13,6 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.Monster;
@@ -30,6 +31,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class PossessableEntityImpl extends PossessableEntityBase implements Possessable, MobAbilityController {
+    public static final UUID INHERENT_MOB_SLOWNESS_UUID = UUID.fromString("a2ebbb6b-fd10-4a30-a0c7-dadb9700732e");
+    /**
+     * Mobs do not use 100% of their movement speed attribute, so we compensate with this modifier when they are possessed
+     */
+    public static final EntityAttributeModifier INHERENT_MOB_SLOWNESS = new EntityAttributeModifier(
+            INHERENT_MOB_SLOWNESS_UUID,
+            "Inherent Mob Slowness",
+            -0.66,
+            EntityAttributeModifier.Operation.MULTIPLY_TOTAL
+    ).setSerialize(false);
     private @Nullable UUID possessorUuid;
     private IndirectAbility<? super PossessableEntityImpl> indirectAttack;
     private IndirectAbility<? super PossessableEntityImpl> indirectInteraction;
@@ -77,7 +88,13 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
 
     @Override
     public void setPossessor(@CheckForNull PlayerEntity possessor) {
-        this.possessorUuid = possessor != null ? possessor.getUuid() : null;
+        if (possessor != null) {
+            this.possessorUuid = possessor.getUuid();
+            this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).addModifier(INHERENT_MOB_SLOWNESS);
+        } else {
+            this.possessorUuid = null;
+            this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).removeModifier(INHERENT_MOB_SLOWNESS_UUID);
+        }
     }
 
     @Override
@@ -128,13 +145,16 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     @Override
     public void update() {
         // Make possessed monsters despawn gracefully
-        if (!this.world.isClient) {
-            this.getPossessor().ifPresent(player -> {
+        this.getPossessor().ifPresent(player -> {
+            if (!this.world.isClient) {
                 if (this instanceof Monster && this.world.getDifficulty() == Difficulty.PEACEFUL) {
                     player.addChatMessage(new TranslatableTextComponent("dissolution.message.peaceful_despawn"), true);
                 }
-            });
-        }
+            }
+            // Set the player's hit timer for damage animation and stuff
+            player.field_6008 = this.field_6008;
+            player.setAbsorptionAmount(this.getAbsorptionAmount());
+        });
         super.update();
     }
 
@@ -145,6 +165,9 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
                 this.getPossessor().filter(p -> p.isCreative() || p == damageSource_1.getAttacker()).isPresent();
     }
 
+    /**
+     * Called by living entities each tick to process the move logic
+     */
     @Override
     public void method_6091(float strafe, float vertical, float forward) {
         // Always set the entity at the possessor's position
@@ -157,6 +180,7 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
             this.setRotation(this.yaw, this.pitch);
             this.field_6283 = this.yaw;
             this.headYaw = this.field_6283;
+            this.method_5796(player.isSwimming());
             // Prevent this entity from taking fall damage unless triggered by the possessor
             this.fallDistance = 0;
 

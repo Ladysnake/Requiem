@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 public class DelegatingAttribute extends EntityAttributeInstanceImpl {
-    protected EntityAttributeInstance original;
+    protected final EntityAttributeInstance original;
 
     public DelegatingAttribute(AbstractEntityAttributeContainer map, EntityAttributeInstance original) {
         super(map, original.getAttribute());

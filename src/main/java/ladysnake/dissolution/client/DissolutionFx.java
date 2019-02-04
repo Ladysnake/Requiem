@@ -23,11 +23,11 @@ import java.lang.ref.WeakReference;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.createPossessionRequestPacket;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.sendToServer;
 
-public final class DissolutionFX implements RenderEvent.PreBlockEntities, RenderEvent.ResolutionChangeListener {
+public final class DissolutionFx implements RenderEvent.PreBlockEntities, RenderEvent.ResolutionChangeListener {
     public static final Identifier SPECTRE_SHADER_ID = Dissolution.id("shaders/post/spectre.json");
     public static final Identifier FISH_EYE_SHADER_ID = Dissolution.id("shaders/post/fish_eye.json");
 
-    public static final DissolutionFX INSTANCE = new DissolutionFX();
+    public static final DissolutionFx INSTANCE = new DissolutionFx();
 
     private final MinecraftClient mc = MinecraftClient.getInstance();
     private final ManagedShaderEffect spectreShader = ShaderEffectManager.manage(SPECTRE_SHADER_ID);
@@ -65,7 +65,7 @@ public final class DissolutionFX implements RenderEvent.PreBlockEntities, Render
         double dz = player.z - entity.z;
         double angle = Math.atan2(dz, dx) * 180 / Math.PI;
         double pitch = Math.atan2((player.y + player.getEyeHeight()) - (entity.y + (entity.getHeight() / 2.0F)), Math.sqrt(dx * dx + dz * dz)) * 180 / Math.PI;
-        double distance = player.distanceTo(entity) / 2;
+        double distance = player.distanceTo(entity);
         float rYaw = MathHelper.wrapDegrees((float)(angle - player.yaw)) + 90F;
         float rPitch = (float) pitch - (float)(10.0F / Math.sqrt(distance)) + (float)(distance * Math.PI / 90);
         player.method_5872(rYaw, -(rPitch - player.pitch));
