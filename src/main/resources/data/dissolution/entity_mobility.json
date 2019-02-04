@@ -5,7 +5,9 @@
     "swimMode": "DISABLED"
   },
   "minecraft:blaze":  {
-    "flightMode": "ENABLED"
+    "flightMode": "FORCED",
+    "inertia": 0.4,
+    "gravity": 0.03
   },
   "minecraft:chicken": {
     "fallSpeedModifier": 0.6
