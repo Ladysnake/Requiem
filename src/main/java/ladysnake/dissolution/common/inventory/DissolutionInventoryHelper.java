@@ -1,6 +1,5 @@
 package ladysnake.dissolution.common.inventory;
 
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -86,11 +85,11 @@ public final class DissolutionInventoryHelper {
     }
 
     public static void transferEquipment(EntityLivingBase source, EntityLivingBase dest) {
-        for (ItemStack stuff : source.getEquipmentAndArmor()) {
+        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+            ItemStack stuff = source.getItemStackFromSlot(slot);
             if (stuff.isEmpty()) {
                 continue;
             }
-            EntityEquipmentSlot slot = EntityLiving.getSlotForItemStack(stuff);
             if (!dest.getItemStackFromSlot(slot).isEmpty()) {
                 dest.entityDropItem(stuff, 0.5f);
             } else {
