@@ -106,11 +106,11 @@ public class PossessionComponentImpl implements PossessionComponent {
     }
 
     private static void transferEquipment(LivingEntity source, LivingEntity dest) {
-        for (ItemStack stuff : source.getItemsEquipped()) {
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            ItemStack stuff = source.getEquippedStack(slot);
             if (stuff.isEmpty()) {
                 continue;
             }
-            EquipmentSlot slot = MobEntity.getPreferredEquipmentSlot(stuff);
             if (!dest.getEquippedStack(slot).isEmpty()) {
                 dest.dropStack(stuff, 0.5f);
             } else {
