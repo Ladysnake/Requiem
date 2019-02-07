@@ -1,3 +1,7 @@
+##### Version 1.12.2-0.3.6 - BUILT
+- ADDED A WHITELIST CONFIG OPTION FOR POSSESSING MOBS. THERE.
+- Fixed offhand items never getting transferred between bodies
+
 ##### Version 1.12.2-0.3.5 - BUILT
 - Fixed the shader config options not working
 
