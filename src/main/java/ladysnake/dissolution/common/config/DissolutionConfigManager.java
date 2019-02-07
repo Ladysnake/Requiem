@@ -39,6 +39,7 @@ public final class DissolutionConfigManager {
     private static final ImmutableSet<Pattern> GHOST_HUNTER_WHITELIST = ImmutableSet.of();
     private static ImmutableSet<Pattern> BLOCK_WHITELIST;
     private static ImmutableSet<Pattern> POSSESSION_BLACKLIST;
+    private static ImmutableSet<Pattern> POSSESSION_WHITELIST;
     static Set<ConfigCategory> rootCategories;
     public static Map<String, Property> syncedProps;
     /** Saves local config values */
@@ -68,6 +69,16 @@ public final class DissolutionConfigManager {
     public static boolean isEntityBlacklisted(Entity entity) {
         String name = String.valueOf(EntityList.getKey(entity));
         for (Pattern checker : POSSESSION_BLACKLIST) {
+            if (checker.matcher(name).matches()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isEntityWhitelisted(EntityEntry entity) {
+        String name = String.valueOf(entity.getRegistryName());
+        for (Pattern checker : POSSESSION_WHITELIST) {
             if (checker.matcher(name).matches()) {
                 return true;
             }
@@ -121,6 +132,7 @@ public final class DissolutionConfigManager {
         DissolutionConfigReader.readAndInitializeConfig(config);
         BLOCK_WHITELIST = buildConfigList(Dissolution.config.ghost.authorizedBlocks);
         POSSESSION_BLACKLIST = buildConfigList(Dissolution.config.ghost.possessionBlacklist);
+        POSSESSION_WHITELIST = buildConfigList(Dissolution.config.ghost.possessionWhitelist);
     }
 
     /**

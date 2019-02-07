@@ -29,7 +29,10 @@ import java.util.Set;
 public class IncorporealStatus extends CorporealityStatus {
     private static final TypedSetter<Entity, Boolean> isImmuneToFireMH =
             TypedReflection.findSetter(Entity.class, "field_70178_ae", boolean.class);
-    /** All player entities who already got their attributes swapped out*/
+    /**
+     * All player entities who already got their attributes swapped out.
+     * This set uses weak keys and identity comparison.
+     */
     private Set<EntityPlayer> attributeUpdated = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
 
     public IncorporealStatus() {

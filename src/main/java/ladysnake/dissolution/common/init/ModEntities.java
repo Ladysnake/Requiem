@@ -6,6 +6,7 @@ import ladysnake.dissolution.api.possession.DissolutionPossessionApi;
 import ladysnake.dissolution.client.renders.entities.RenderPlayerCorpse;
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Ref;
+import ladysnake.dissolution.common.config.DissolutionConfigManager;
 import ladysnake.dissolution.common.entity.EntityPlayerShell;
 import ladysnake.dissolution.common.entity.EntityPossessableImpl;
 import ladysnake.dissolution.common.entity.PossessableEntityFactory;
@@ -57,25 +58,27 @@ public class ModEntities {
             }
             // Only declare new implementations for mobs that can not already be possessed
             if (EntityMob.class.isAssignableFrom(entityClass) && !IPossessable.class.isAssignableFrom(entityClass)) {
-                boolean defineImpl = false;
-                try {
-                    // create an instance to check if it fulfills the criteria
-                    Entity instance = newInstance(entityEntry);
-                    defineImpl = instance != null && ((EntityMob)instance).isEntityUndead() && instance.isNonBoss();
-                    // the easy way for mods to choose
+                boolean defineImpl = DissolutionConfigManager.isEntityWhitelisted(entityEntry);
+                if (!defineImpl) {
                     try {
-                        Method m = ObfuscationReflectionHelper.findMethod(entityClass, "dissolutionGeneratePossessedVersion", boolean.class);
-                        if (Modifier.isStatic(m.getModifiers())) {
-                            defineImpl = (boolean) m.invoke(null);
+                        // create an instance to check if it fulfills the criteria
+                        Entity instance = newInstance(entityEntry);
+                        defineImpl = instance != null && ((EntityMob)instance).isEntityUndead() && instance.isNonBoss();
+                        // the easy way for mods to choose
+                        try {
+                            Method m = ObfuscationReflectionHelper.findMethod(entityClass, "dissolutionGeneratePossessedVersion", boolean.class);
+                            if (Modifier.isStatic(m.getModifiers())) {
+                                defineImpl = (boolean) m.invoke(null);
+                            }
+                        } catch (ReflectionHelper.UnableToFindMethodException ignored) {
+                            // ignored
+                        } catch (Exception e) {
+                            Dissolution.LOGGER.error("A check method has thrown an exception", e);
                         }
-                    } catch (ReflectionHelper.UnableToFindMethodException ignored) {
-                        // ignored
                     } catch (Exception e) {
-                        Dissolution.LOGGER.error("A check method has thrown an exception", e);
+                        // countless mobs will probably fail due to the null world, no need to spam the log with the stacktrace
+                        Dissolution.LOGGER.warn("Could not check whether to create a possessable version of {} ({})", entityEntry.getRegistryName(), e.getCause());
                     }
-                } catch (Exception e) {
-                    // countless mobs will probably fail due to the null world, no need to spam the log with the stacktrace
-                    Dissolution.LOGGER.warn("Could not check whether to create a possessable version of {} ({})", entityEntry.getRegistryName(), e.getCause());
                 }
                 if (defineImpl) {
                     @SuppressWarnings("unchecked") Class<? extends EntityLivingBase> possessableClass =

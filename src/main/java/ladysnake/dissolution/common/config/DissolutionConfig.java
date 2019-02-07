@@ -56,6 +56,15 @@ public class DissolutionConfig {
         })
         public String[] possessionBlacklist = new String[0];
 
+        @RegExCheck("^/.+/$|^[\\w*]+:\\w+$")
+        @Config.Comment({
+                "A list of entities that souls can possess. ",
+                "This allows non-undead mobs and bosses to be possessed.",
+                "If the name begins and ends with a \'/\', it will be interpreted as a regular expression."
+        })
+        @Config.RequiresMcRestart
+        public String[] possessionWhitelist = new String[0];
+
         @Config.Comment("If set to false, incorporeal players won't be able to use the /dissolution stuck command to get back to their spawnpoint")
         public boolean allowStuckCommand = true;
 

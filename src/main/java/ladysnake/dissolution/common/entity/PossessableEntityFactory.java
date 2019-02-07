@@ -66,9 +66,6 @@ public class PossessableEntityFactory {
         if (deadGuy instanceof IPossessable) {
             return (T) deadGuy;
         }
-        if (!deadGuy.isEntityUndead()) {
-            return null;
-        }
 
         EntityLivingBase corpse = null;
 

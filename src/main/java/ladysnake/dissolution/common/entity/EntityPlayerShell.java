@@ -106,6 +106,7 @@ public class EntityPlayerShell extends EntityLiving implements ISoulInteractable
      * Applies the given player interaction to this Entity.
      */
     @Nonnull
+    @Override
     public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand) {
         ItemStack itemstack = player.getHeldItem(hand);
 
