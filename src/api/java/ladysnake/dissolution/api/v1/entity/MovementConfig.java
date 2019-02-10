@@ -54,7 +54,8 @@ public interface MovementConfig {
          */
         FORCED,
         /**
-         * No information
+         * No information, the program should use heuristics to determine which of the
+         * other modes to use
          */
         UNSPECIFIED
     }

@@ -6,7 +6,10 @@ import ladysnake.dissolution.api.v1.entity.ability.AbilityType;
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.dissolution.api.v1.possession.Possessable;
+import ladysnake.dissolution.api.v1.possession.conversion.PossessionConversionRegistry;
 import ladysnake.dissolution.client.DissolutionFx;
+import ladysnake.dissolution.common.entity.DissolutionEntities;
+import ladysnake.dissolution.common.entity.PlayerShellEntity;
 import ladysnake.dissolution.common.entity.ability.*;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
 import net.minecraft.entity.EntityType;
@@ -17,6 +20,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.ActionResult;
 
 public class VanillaDissolutionPlugin implements DissolutionPlugin {
+
     @Override
     public void onDissolutionInitialize() {
         registerPossessionEventHandlers();
@@ -57,5 +61,10 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
                 .indirectInteract(EvokerVexAbility::new)
                 .build());
         abilityRegistry.register(EntityType.GHAST, MobAbilityConfig.builder().indirectAttack(GhastFireballAbility::new).build());
+    }
+
+    @Override
+    public void registerPossessedConversions(PossessionConversionRegistry registry) {
+        registry.registerPossessedConverter(DissolutionEntities.PLAYER_SHELL, PlayerShellEntity::onSoulInteract);
     }
 }

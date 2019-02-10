@@ -19,7 +19,7 @@ public class LazyDefaultPossessionConversionRegistry extends SimplePossessionCon
     }
 
     @Override
-    protected <T extends MobEntity> PossessableSubstitutionHandler<T> getConverterFor(EntityType<?> entityType, Class<?> entityClass) {
+    protected <T extends MobEntity> PossessableSubstitutionHandler<T> getConverterFor(EntityType<?> entityType, Class<? extends MobEntity> entityClass) {
         @SuppressWarnings("unchecked")
         EntityType<T> mobType = (EntityType<T>) entityType;
         @SuppressWarnings("unchecked")

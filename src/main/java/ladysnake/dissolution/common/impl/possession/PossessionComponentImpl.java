@@ -9,10 +9,10 @@ import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.dissolution.common.entity.ai.attribute.PossessionDelegatingAttribute;
 import ladysnake.dissolution.common.impl.movement.SerializableMovementConfig;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
+import ladysnake.dissolution.common.util.InventoryHelper;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethod2;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethodHandles;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -75,7 +75,7 @@ public class PossessionComponentImpl implements PossessionComponent {
             player.method_7270(new ItemStack(Items.ARROW, host.world.random.nextInt(10) + 2));
         }
         if (DissolutionEntityTags.ITEM_USER.contains(host.getType())) {
-            PossessionComponentImpl.transferEquipment(host, player);
+            InventoryHelper.transferEquipment(host, player);
         }
         // 4- Actually set the possessed entity
         this.possessedUuid = host.getUuid();
@@ -105,21 +105,6 @@ public class PossessionComponentImpl implements PossessionComponent {
         }
     }
 
-    private static void transferEquipment(LivingEntity source, LivingEntity dest) {
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            ItemStack stuff = source.getEquippedStack(slot);
-            if (stuff.isEmpty()) {
-                continue;
-            }
-            if (!dest.getEquippedStack(slot).isEmpty()) {
-                dest.dropStack(stuff, 0.5f);
-            } else {
-                dest.setEquippedStack(slot, stuff);
-            }
-            source.setEquippedStack(slot, ItemStack.EMPTY);
-        }
-    }
-
     @Override
     public void stopPossessing() {
         Possessable possessedEntity = this.getPossessedEntity();
@@ -128,7 +113,7 @@ public class PossessionComponentImpl implements PossessionComponent {
             resetState();
             possessedEntity.setPossessor(null);
             if (DissolutionEntityTags.ITEM_USER.contains(((Entity)possessedEntity).getType())) {
-                PossessionComponentImpl.transferEquipment(player, (LivingEntity) possessedEntity);
+                InventoryHelper.transferEquipment(player, (LivingEntity) possessedEntity);
             }
         }
     }

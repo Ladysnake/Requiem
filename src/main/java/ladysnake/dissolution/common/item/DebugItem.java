@@ -3,13 +3,13 @@ package ladysnake.dissolution.common.item;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.remnant.RemnantState;
+import ladysnake.dissolution.common.entity.PlayerShellEntity;
+import ladysnake.dissolution.common.util.InventoryHelper;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.network.packet.EntityVelocityUpdateClientPacket;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -39,15 +39,14 @@ public class DebugItem extends Item {
                             Dissolution.LOGGER.info("Turned {} into a remnant", player);
                             ((DissolutionPlayer)player).setRemnant(true);
                         }
+                        PlayerShellEntity shellEntity = new PlayerShellEntity(player);
+                        InventoryHelper.transferEquipment(player, shellEntity);
+                        shellEntity.transferInventory(player.inventory, shellEntity.getInventory(), shellEntity.getInventory().getInvSize());
+                        world.spawnEntity(shellEntity);
                         cap.setSoul(!cap.isSoul());
                     }
                     break;
                 case 1:
-                    if (!world.isClient) {
-                        player.method_6005(null, 1f, 1, 1);
-                        ((ServerPlayerEntity)player).networkHandler.sendPacket(new EntityVelocityUpdateClientPacket(player));
-
-                    }
                     break;
             }
         }

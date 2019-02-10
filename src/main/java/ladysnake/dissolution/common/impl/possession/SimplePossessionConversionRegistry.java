@@ -50,12 +50,12 @@ public class SimplePossessionConversionRegistry implements PossessionConversionR
      */
     @Nullable
     @SuppressWarnings({"unchecked", "SuspiciousMethodCalls"})
-    protected <T extends MobEntity> PossessableSubstitutionHandler<T> getConverterFor(EntityType<?> entityType, Class<?> entityClass) {
+    protected <T extends MobEntity> PossessableSubstitutionHandler<T> getConverterFor(EntityType<?> entityType, Class<? extends MobEntity> entityClass) {
         return (PossessableSubstitutionHandler<T>) this.converters.get(entityType);
     }
 
     @Override
     public boolean isEntityRegistered(EntityType<? extends MobEntity> entityType) {
-        return false;
+        return converters.containsKey(entityType);
     }
 }

@@ -6,7 +6,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 
-public class PlayerEvent {
+public final class PlayerEvent {
     @FunctionalInterface
     public interface ItemPickup {
         ActionResult onItemPickup(PlayerEntity player, ItemEntity pickedUp);

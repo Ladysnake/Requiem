@@ -1,9 +1,13 @@
 package ladysnake.dissolution.common.impl.movement;
 
+import com.google.gson.Gson;
 import ladysnake.dissolution.api.v1.annotation.CalledThroughReflection;
 import ladysnake.dissolution.api.v1.entity.MovementConfig;
 import org.apiguardian.api.API;
 
+/**
+ * A {@link MovementConfig} that can be easily manipulated by {@link Gson} and equivalent.
+ */
 public class SerializableMovementConfig implements MovementConfig {
     public static final SerializableMovementConfig SOUL = new SerializableMovementConfig(MovementMode.ENABLED, MovementMode.ENABLED, 0, 1f, 0.1F);
 

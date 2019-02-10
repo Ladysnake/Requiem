@@ -4,6 +4,8 @@ import ladysnake.dissolution.api.v1.annotation.CalledThroughReflection;
 import ladysnake.dissolution.api.v1.event.client.HudEvent;
 import ladysnake.dissolution.client.gui.hud.PossessionHud;
 import ladysnake.dissolution.client.network.ClientMessageHandling;
+import ladysnake.dissolution.client.render.entity.PlayerShellEntityRenderer;
+import ladysnake.dissolution.common.entity.PlayerShellEntity;
 import ladysnake.dissolution.common.entity.PossessableEntityImpl;
 import ladysnake.satin.client.event.RenderEvent;
 import net.fabricmc.api.ClientModInitializer;
@@ -25,5 +27,6 @@ public class DissolutionClient implements ClientModInitializer {
         ClientTickEvent.CLIENT.register(DissolutionFx.INSTANCE::tick);
         HudEvent.RENDER_HOTBAR.register(PossessionHud.INSTANCE::onRenderHotbar);
         EntityRendererRegistry.INSTANCE.register(PossessableEntityImpl.class, (r, it) -> new BipedEntityRenderer<>(r, new PlayerEntityModel<>(0f, false), .5f));
+        EntityRendererRegistry.INSTANCE.register(PlayerShellEntity.class, (r, it) -> new PlayerShellEntityRenderer(r));
     }
 }
