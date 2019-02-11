@@ -136,8 +136,8 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     }
 
     @Override
-    protected void method_5959() {
-        super.method_5959();
+    protected void initGoals() {
+        super.initGoals();
         this.goalSelector.add(99, new InertGoal(this));
         this.configure(Possession.getAbilityRegistry().getConfig(this));
     }

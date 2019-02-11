@@ -1,5 +1,6 @@
 package ladysnake.satin.client.shader;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.satin.Satin;
 import ladysnake.satin.mixin.client.gl.AccessiblePassesShaderEffect;
@@ -13,6 +14,7 @@ import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.util.Identifier;
 import org.apiguardian.api.API;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -36,6 +38,7 @@ public final class ManagedShaderEffect {
 
     private final Identifier location;
     private final Consumer<ManagedShaderEffect> uniformInitBlock;
+    @CheckForNull
     private ShaderEffect shaderGroup;
     private boolean errored;
 
@@ -98,6 +101,7 @@ public final class ManagedShaderEffect {
 
     @API(status = INTERNAL)
     public void setup(int windowWidth, int windowHeight) {
+        Preconditions.checkNotNull(shaderGroup);
         this.shaderGroup.setupDimensions(windowWidth, windowHeight);
         this.uniformInitBlock.accept(this);
     }

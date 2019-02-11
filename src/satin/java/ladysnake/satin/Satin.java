@@ -1,6 +1,6 @@
 package ladysnake.satin;
 
-import ladysnake.satin.client.event.ClientLoadingEvent;
+import ladysnake.satin.client.event.ResourceManagerLoadedCallback;
 import ladysnake.satin.client.shader.ShaderHelper;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.launch.common.FabricLauncherBase;
@@ -17,6 +17,6 @@ public class Satin implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        ClientLoadingEvent.RESOURCE_MANAGER.register(ShaderHelper::init);
+        ResourceManagerLoadedCallback.EVENT.register(ShaderHelper::init);
     }
 }

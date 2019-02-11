@@ -4,6 +4,7 @@ import ladysnake.dissolution.api.v1.possession.Possessable;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import org.apiguardian.api.API;
 
 import javax.annotation.Nullable;
@@ -54,10 +55,14 @@ public interface PossessableSubstitutionHandler<E extends MobEntity> extends BiF
 
     static <E extends MobEntity, P extends MobEntity & Possessable> BiConsumer<E, P> swapEntities() {
         return (entity, clone) -> {
-            entity.world.method_8507(entity);
+            // Server and clients have different methods to remove entities
             if (clone.world.isClient) {
+                // On clients, we force replace the existing entity with the clone
                 ((ClientWorld)clone.world).method_2942(clone.getEntityId(), clone);
             } else {
+                // On servers, we remove the entity immediately
+                ((ServerWorld)entity.world).method_18217(entity);
+                // Then spawn the clone
                 clone.world.spawnEntity(clone);
             }
         };

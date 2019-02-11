@@ -15,6 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -64,7 +65,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
                 possessionComponent.stopPossessing();
                 this.dissolution_possessedEntityTag = new CompoundTag();
                 current.saveSelfToTag(this.dissolution_possessedEntityTag);
-                this.world.removeEntity(current);
+                ((ServerWorld)this.world).method_18216(current);
             }
         }
     }
@@ -73,7 +74,11 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     private void onTeleportDone(CallbackInfo info) {
         sendTo((ServerPlayerEntity)(Object)this, createCorporealityPacket(this));
         if (this.dissolution_possessedEntityTag != null) {
-            Entity formerPossessed = EntityType.loadEntityWithPassengers(this.dissolution_possessedEntityTag, world, false);
+            Entity formerPossessed = EntityType.loadEntityWithPassengers(
+                    this.dissolution_possessedEntityTag,
+                    world,
+                    (entity_1x) -> !((ServerWorld)world).method_18197(entity_1x, true) ? null : entity_1x
+            );
             if (formerPossessed instanceof MobEntity) {
                 formerPossessed.setPositionAndAngles(this);
                 if (world.spawnEntity(formerPossessed)) {

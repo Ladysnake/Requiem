@@ -7,7 +7,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import ladysnake.satin.Satin;
-import ladysnake.satin.client.event.RenderEvent;
+import ladysnake.satin.client.event.ResolutionChangeCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.ResourceManager;
@@ -65,9 +65,9 @@ public class ShaderHelper {
     @API(status = INTERNAL)
     public static void init(ReloadableResourceManager resourceManager) {
         if (!initialized) {
-            resourceManager.addListener(ShaderHelper::loadShaders);
+//            resourceManager.addListener(ShaderHelper::loadShaders);
             resourceManager.addListener(ShaderEffectManager.INSTANCE);
-            RenderEvent.RESOLUTION_CHANGED.register(ShaderEffectManager.INSTANCE);
+            ResolutionChangeCallback.EVENT.register(ShaderEffectManager.INSTANCE);
 //            ClientCommandHandler.instance.registerCommand(new ShaderReloadCommand());
             initialized = true;
         }

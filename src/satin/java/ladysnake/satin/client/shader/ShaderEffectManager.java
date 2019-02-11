@@ -1,9 +1,10 @@
 package ladysnake.satin.client.shader;
 
-import ladysnake.satin.client.event.RenderEvent;
+import ladysnake.satin.client.event.ResolutionChangeCallback;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.profiler.Profiler;
 import org.apiguardian.api.API;
 
 import java.util.Collections;
@@ -14,7 +15,7 @@ import java.util.function.Consumer;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 
-public final class ShaderEffectManager implements ResourceReloadListener, RenderEvent.ResolutionChangeListener {
+public final class ShaderEffectManager implements SynchronousResourceReloadListener, ResolutionChangeCallback {
     public static final ShaderEffectManager INSTANCE = new ShaderEffectManager();
 
     // Let shaders be garbage collected when no one uses them
@@ -60,9 +61,15 @@ public final class ShaderEffectManager implements ResourceReloadListener, Render
         managedShaderEffects.remove(shader);
     }
 
+    // Here because the compiler cannot see the synthetic default override
+    // TODO remove when mapped
+    @Override
+    public void apply(ResourceManager var1, Void var2, Profiler var3) {
+        this.method_14491(var1);
+    }
 
     @Override
-    public void onResourceReload(ResourceManager resourceManager) {
+    public void method_14491(ResourceManager resourceManager) {
         for (ManagedShaderEffect ss : managedShaderEffects) {
             ss.release();
         }

@@ -41,7 +41,8 @@ public class PlayerMovementAlterer implements MovementAlterer {
             return;
         }
         PlayerAbilities abilities = this.player.abilities;
-        abilities.allowFlying = player.isCreative() || player.isSpectator() || getActualFlightMode(config, player) != DISABLED;
+        // method_7325 == isSpectator
+        abilities.allowFlying = player.isCreative() || player.method_7325() || getActualFlightMode(config, player) != DISABLED;
         abilities.flying &= abilities.allowFlying;
         if (player instanceof ServerPlayerEntity && ((ServerPlayerEntity) player).networkHandler != null) {
             ((ServerPlayerEntity) player).networkHandler.sendPacket(new PlayerAbilitiesClientPacket(abilities));

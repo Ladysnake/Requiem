@@ -1,10 +1,8 @@
 package ladysnake.dissolution.mixin.client.gui.hud;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
-import ladysnake.dissolution.api.v1.event.client.HudEvent;
-import net.fabricmc.fabric.util.HandlerArray;
+import ladysnake.dissolution.api.v1.event.client.HotbarRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -54,10 +52,8 @@ public class InGameHudMixin extends Drawable {
 
     @Inject(method = "method_1759", at = @At("HEAD"), cancellable = true)
     private void fireHotBarRenderEvent(float tickDelta, CallbackInfo info) {
-        for (Float2ObjectFunction<ActionResult> handler : ((HandlerArray<Float2ObjectFunction<ActionResult>>) HudEvent.RENDER_HOTBAR).getBackingArray()) {
-            if (handler.get(tickDelta) != ActionResult.PASS) {
-                info.cancel();
-            }
+        if (HotbarRenderCallback.EVENT.invoker().onHotbarRendered(tickDelta) != ActionResult.PASS) {
+            info.cancel();
         }
     }
 

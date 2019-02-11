@@ -11,7 +11,8 @@ import ladysnake.dissolution.client.DissolutionFx;
 import ladysnake.dissolution.common.entity.DissolutionEntities;
 import ladysnake.dissolution.common.entity.PlayerShellEntity;
 import ladysnake.dissolution.common.entity.ability.*;
-import net.fabricmc.fabric.events.PlayerInteractionEvent;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.CreeperEntity;
@@ -28,7 +29,7 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
 
     private void registerPossessionEventHandlers() {
         // Start possession on right click
-        PlayerInteractionEvent.INTERACT_ENTITY_POSITIONED.register((player, world, hand, target, hitPosition) -> {
+        UseEntityCallback.EVENT.register((player, world, hand, target, hitPosition) -> {
             if (((DissolutionPlayer)player).getRemnantState().isIncorporeal()) {
                 if (target instanceof MobEntity && target.world.isClient) {
                     DissolutionFx.INSTANCE.beginFishEyeAnimation(target);
@@ -38,7 +39,7 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
             return ActionResult.PASS;
         });
         // Proxy melee attacks
-        PlayerInteractionEvent.ATTACK_ENTITY.register((playerEntity, world, hand, target) -> {
+        AttackEntityCallback.EVENT.register((playerEntity, world, hand, target, hitResult) -> {
             LivingEntity possessed = (LivingEntity) ((DissolutionPlayer)playerEntity).getPossessionComponent().getPossessedEntity();
             if (possessed != null && !possessed.invalid) {
                 if (possessed.world.isClient || ((Possessable)possessed).getMobAbilityController().useDirect(AbilityType.ATTACK, target)) {

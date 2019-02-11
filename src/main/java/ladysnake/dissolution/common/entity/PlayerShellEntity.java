@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -85,7 +86,7 @@ public class PlayerShellEntity extends MobEntity {
                     this.dropInventory();
                 }
                 InventoryHelper.transferEquipment(this, possessor);
-                this.world.removeEntity(this);
+                ((ServerWorld)this.world).method_18216(this);
                 ((DissolutionPlayer) possessor).getRemnantState().setSoul(false);
             }
         }
@@ -122,7 +123,7 @@ public class PlayerShellEntity extends MobEntity {
         ItemStack itemstack = player.getStackInHand(hand);
 
         if (itemstack.getItem() != Items.NAME_TAG) {
-            if (!this.world.isClient && !player.isSpectator()) {
+            if (!this.world.isClient && !player.method_7325()) {
                 EquipmentSlot entityequipmentslot = MobEntity.getPreferredEquipmentSlot(itemstack);
 
                 if (itemstack.isEmpty()) {

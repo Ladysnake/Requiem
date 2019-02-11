@@ -2,7 +2,7 @@ package ladysnake.dissolution.common.entity;
 
 import ladysnake.dissolution.Dissolution;
 import ladysnake.reflectivefabric.misc.DebugUtil;
-import net.fabricmc.fabric.entity.FabricEntityTypeBuilder;
+import net.fabricmc.fabric.api.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.registry.Registry;

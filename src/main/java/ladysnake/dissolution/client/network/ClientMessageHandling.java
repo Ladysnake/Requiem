@@ -1,8 +1,8 @@
 package ladysnake.dissolution.client.network;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
-import net.fabricmc.fabric.networking.CustomPayloadPacketRegistry;
-import net.fabricmc.fabric.networking.PacketContext;
+import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
+import net.fabricmc.fabric.api.network.PacketContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
@@ -51,7 +51,7 @@ public class ClientMessageHandling {
     }
 
     private static void register(Identifier id, BiConsumer<PacketContext, PacketByteBuf> handler) {
-        CustomPayloadPacketRegistry.CLIENT.register(
+        ClientSidePacketRegistry.INSTANCE.register(
                 id,
                 (context, packet) -> context.getTaskQueue().execute(() -> handler.accept(context, packet))
         );

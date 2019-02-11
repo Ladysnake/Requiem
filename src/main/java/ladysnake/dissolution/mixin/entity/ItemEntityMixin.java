@@ -1,7 +1,6 @@
 package ladysnake.dissolution.mixin.entity;
 
-import ladysnake.dissolution.api.v1.event.PlayerEvent;
-import net.fabricmc.fabric.util.HandlerArray;
+import ladysnake.dissolution.api.v1.event.ItemPickupCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -30,10 +29,8 @@ public abstract class ItemEntityMixin extends Entity {
             cancellable = true
     )
     private void fireItemPickupEvent(PlayerEntity playerEntity_1, CallbackInfo info) {
-        for (PlayerEvent.ItemPickup handler : ((HandlerArray<PlayerEvent.ItemPickup>)PlayerEvent.PICKUP_ITEM).getBackingArray()) {
-            if (handler.onItemPickup(playerEntity_1, (ItemEntity)(Object)this) != ActionResult.PASS) {
-                info.cancel();
-            }
+        if (ItemPickupCallback.EVENT.invoker().onItemPickup(playerEntity_1, (ItemEntity)(Object)this) != ActionResult.PASS) {
+            info.cancel();
         }
     }
 }

@@ -1,11 +1,12 @@
 package ladysnake.dissolution.common.impl.remnant;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
-import ladysnake.dissolution.api.v1.event.PlayerEvent;
+import ladysnake.dissolution.api.v1.event.ItemPickupCallback;
 import ladysnake.dissolution.api.v1.remnant.RemnantState;
 import ladysnake.dissolution.common.impl.movement.SerializableMovementConfig;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
-import net.fabricmc.fabric.events.PlayerInteractionEvent;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,7 +24,7 @@ public class MutableRemnantState implements RemnantState {
     @API(status = INTERNAL)
     public static void init() {
         // Prevent incorporeal players from picking up anything
-        PlayerEvent.PICKUP_ITEM.register((player, pickedUp) -> {
+        ItemPickupCallback.EVENT.register((player, pickedUp) -> {
             if (!player.isCreative() && RemnantState.getIfRemnant(player).filter(RemnantState::isSoul).isPresent()) {
                 Entity possessed = (Entity) ((DissolutionPlayer)player).getPossessionComponent().getPossessedEntity();
                 if (possessed == null || !DissolutionEntityTags.ITEM_USER.contains(possessed.getType())) {
@@ -33,7 +34,7 @@ public class MutableRemnantState implements RemnantState {
             return ActionResult.PASS;
         });
         // Prevent incorporeal players from breaking anything
-        PlayerInteractionEvent.ATTACK_BLOCK.register((player, world, hand, blockPos, facing) -> {
+        AttackBlockCallback.EVENT.register((player, world, hand, blockPos, facing) -> {
             if (!player.isCreative() && RemnantState.getIfRemnant(player).filter(RemnantState::isIncorporeal).isPresent()) {
                 return ActionResult.FAILURE;
             } else {
@@ -41,7 +42,7 @@ public class MutableRemnantState implements RemnantState {
             }
         });
         // Prevent incorporeal players from hitting anything
-        PlayerInteractionEvent.ATTACK_ENTITY.register((player, world, hand, entity) -> {
+        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (!player.isCreative() && RemnantState.getIfRemnant(player).filter(RemnantState::isIncorporeal).isPresent()) {
                 return ActionResult.FAILURE;
             }

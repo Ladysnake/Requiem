@@ -3,8 +3,8 @@ package ladysnake.dissolution.common.network;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.entity.ability.AbilityType;
 import ladysnake.dissolution.api.v1.possession.Possessable;
-import net.fabricmc.fabric.networking.CustomPayloadPacketRegistry;
-import net.fabricmc.fabric.networking.PacketContext;
+import net.fabricmc.fabric.api.network.PacketContext;
+import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,7 +32,7 @@ public class ServerMessageHandling {
                 possessed.getMobAbilityController().useIndirect(AbilityType.INTERACT);
             }
         });
-        CustomPayloadPacketRegistry.SERVER.register(POSSESSION_REQUEST, (context, buf) -> {
+        ServerSidePacketRegistry.INSTANCE.register(POSSESSION_REQUEST, (context, buf) -> {
             int requestedId = buf.readInt();
             context.getTaskQueue().execute(() -> {
                 PlayerEntity player = context.getPlayer();
@@ -45,7 +45,7 @@ public class ServerMessageHandling {
     }
 
     private static void register(Identifier id, BiConsumer<PacketContext, PacketByteBuf> handler) {
-        CustomPayloadPacketRegistry.SERVER.register(
+        ServerSidePacketRegistry.INSTANCE.register(
                 id,
                 (context, packet) -> context.getTaskQueue().execute(() -> handler.accept(context, packet))
         );

@@ -64,7 +64,11 @@ public abstract class PlayerManagerMixin {
             sendTo(player, createCorporealityPacket(player));
             ServerWorld world = this.server.getWorld(player.dimension);
             CompoundTag serializedPossessedInfo = serializedPlayer.getCompound(POSSESSED_ROOT_TAG);
-            Entity possessedEntityMount = EntityType.loadEntityWithPassengers(serializedPossessedInfo.getCompound(POSSESSED_ENTITY_TAG), world, true);
+            Entity possessedEntityMount = EntityType.loadEntityWithPassengers(
+                    serializedPossessedInfo.getCompound(POSSESSED_ENTITY_TAG),
+                    world,
+                    (entity_1x) -> !world.method_18197(entity_1x, true) ? null : entity_1x
+            );
             if (possessedEntityMount != null) {
                 UUID possessedEntityUuid = serializedPossessedInfo.getUuid(POSSESSED_UUID_TAG);
                 resumePossession(((DissolutionPlayer) player).getPossessionComponent(), world, possessedEntityMount, possessedEntityUuid);
@@ -86,10 +90,10 @@ public abstract class PlayerManagerMixin {
 
         if (!player.isPossessing()) {
             Dissolution.LOGGER.warn("Couldn't reattach possessed entity to player");
-            world.method_8507(possessedEntityMount);
+            world.method_18217(possessedEntityMount);
 
             for (Entity entity : possessedEntityMount.method_5736()) {
-                world.method_8507(entity);
+                world.method_18217(entity);
             }
         }
     }
@@ -108,9 +112,9 @@ public abstract class PlayerManagerMixin {
         if (possessedEntity != null) {
             ((DissolutionPlayer) player).getPossessionComponent().stopPossessing();
             ServerWorld serverWorld_1 = player.getServerWorld();
-            serverWorld_1.method_8507((Entity) possessedEntity);
+            serverWorld_1.method_18217((Entity) possessedEntity);
             for (Entity ridden : ((Entity) possessedEntity).method_5736()) {
-                serverWorld_1.method_8507(ridden);
+                serverWorld_1.method_18217(ridden);
             }
             serverWorld_1.getWorldChunk(player.chunkX, player.chunkZ).markDirty();
         }

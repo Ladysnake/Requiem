@@ -18,8 +18,7 @@ import javax.annotation.Nonnull;
 import java.util.Map;
 
 public class PlayerShellEntityRenderer extends BipedEntityRenderer<PlayerShellEntity, PlayerEntityModel<PlayerShellEntity>> {
-    private boolean shouldRenderName = false;
-    
+
     public PlayerShellEntityRenderer(EntityRenderDispatcher renderManagerIn) {
         super(renderManagerIn, new PlayerEntityModel<>(0.0F, true), 0.5F);
         this.addFeature(new ArmorBipedFeatureRenderer<>(this, new BipedEntityModel<>(0.5F), new BipedEntityModel<>(1.0F)));

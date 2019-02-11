@@ -1,14 +1,12 @@
 package ladysnake.satin.mixin.client;
 
-import it.unimi.dsi.fastutil.floats.FloatConsumer;
-import ladysnake.satin.client.event.RenderEvent;
-import net.fabricmc.fabric.util.HandlerArray;
+import ladysnake.satin.client.event.PickEntityShaderCallback;
+import ladysnake.satin.client.event.ShaderEffectRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -17,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
-import java.util.function.Function;
 
 import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 
@@ -31,7 +28,7 @@ public abstract class GameRendererMixin {
     @Final @Shadow private MinecraftClient client;
 
     /**
-     * Fires {@link RenderEvent#SHADER_EFFECT}
+     * Fires {@link ShaderEffectRenderCallback#EVENT}
      */
     @Inject(
             at = @At(
@@ -41,31 +38,14 @@ public abstract class GameRendererMixin {
             ),
             method = "render"
     )
-    public void hookShaderRender(float tickDelta, long nanoTime, boolean renderLevel, CallbackInfo info) {
-        FloatConsumer[] handlers = ((HandlerArray<FloatConsumer>)RenderEvent.SHADER_EFFECT).getBackingArray();
-        if (handlers.length > 0) {
-            Profiler profiler = this.client.getProfiler();
-            profiler.push("shaders");
-            for (FloatConsumer handler : handlers) {
-                handler.accept(tickDelta);
-            }
-            profiler.pop();
-        }
+    private void hookShaderRender(float tickDelta, long nanoTime, boolean renderLevel, CallbackInfo info) {
+        ShaderEffectRenderCallback.EVENT.invoker().renderShaderEffects(tickDelta);
     }
 
     @Inject(method = "onCameraEntitySet", at = @At(value = "RETURN", ordinal = 1))
-    public void useCustomEntityShader(@Nullable Entity entity, CallbackInfo info) {
+    private void useCustomEntityShader(@Nullable Entity entity, CallbackInfo info) {
         if (this.shader == null) {
-            for (Function<Entity, Identifier> handler : ((HandlerArray<Function<Entity, Identifier>>) RenderEvent.PICK_ENTITY_SHADER).getBackingArray()) {
-                Identifier id = handler.apply(entity);
-                if (id != null) {
-                    this.loadShader(id);
-                }
-                // Allow listeners to set the shader themselves if they need to configure it
-                if (this.shader != null) {
-                    return;
-                }
-            }
+            PickEntityShaderCallback.EVENT.invoker().pickEntityShader(entity, this::loadShader, () -> this.shader);
         }
     }
 }

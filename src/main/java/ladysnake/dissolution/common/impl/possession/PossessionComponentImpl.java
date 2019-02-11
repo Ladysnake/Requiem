@@ -49,7 +49,8 @@ public class PossessionComponentImpl implements PossessionComponent {
     @Override
     public boolean canStartPossessing(final MobEntity mob) {
         DissolutionPlayer dp = (DissolutionPlayer) player;
-        return player.world.isClient || (!player.isSpectator() && dp.isRemnant() && dp.getRemnantState().isIncorporeal());
+        // method_7325 == isSpectator
+        return player.world.isClient || (!player.method_7325() && dp.isRemnant() && dp.getRemnantState().isIncorporeal());
     }
 
     @Override
@@ -136,7 +137,8 @@ public class PossessionComponentImpl implements PossessionComponent {
         if (host == null) {
             if (this.player.world instanceof ServerWorld) {
                 // Second attempt: use the UUID (server)
-                host = this.player.world.getEntityByUuid(this.getPossessedEntityUuid());
+                // method_14190 == getEntityByUuid
+                host = ((ServerWorld)this.player.world).method_14190(this.getPossessedEntityUuid());
             }
             // Set the possessed uuid to null to avoid infinite recursion
             this.possessedUuid = null;
