@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.entity.MovementConfig;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.entity.EntityType;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -19,10 +20,11 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MovementAltererManager implements SynchronousResourceReloadListener {
+public class MovementAltererManager implements IdentifiableResourceReloadListener<Void>, SynchronousResourceReloadListener {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(new TypeToken<EntityType<?>>() {}.getType(), new EntityTypeAdapter()).create();
     public static final Identifier LOCATION = Dissolution.id("entity_mobility.json");
     private static final Type TYPE = new TypeToken<Map<EntityType<?>, SerializableMovementConfig>>() {}.getType();
+    public static final Identifier LISTENER_ID = Dissolution.id("movement_alterer");
 
     private final Map<EntityType<?>, SerializableMovementConfig> entityMovementConfigs = new HashMap<>();
 
@@ -46,5 +48,10 @@ public class MovementAltererManager implements SynchronousResourceReloadListener
 
     public MovementConfig getEntityMovementConfig(EntityType<?> type) {
         return this.entityMovementConfigs.getOrDefault(type, new SerializableMovementConfig());
+    }
+
+    @Override
+    public Identifier getFabricId() {
+        return LISTENER_ID;
     }
 }
