@@ -1,44 +1,33 @@
 package ladysnake.dissolution.mixin.client.render;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import java.util.List;
-
-import static org.spongepowered.asm.mixin.injection.At.Shift.BY;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
     @Shadow public abstract ShaderEffect getShader();
 
+    @SuppressWarnings("UnresolvedMixinReference") // Synthetic method
     @Inject(
-            method = "updateTargetedEntity",
+            // Inject into the synthetic method corresponding to the lambda in updateTargetedEntity
+            method = "method_18144",
             at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/world/ClientWorld;" +
-                            "getEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/BoundingBox;Ljava/util/function/Predicate;)" +
-                            "Ljava/util/List;",
-                    shift = BY,
-                    by = 2
+                    value = "RETURN"
             ),
-            locals = LocalCapture.CAPTURE_FAILHARD
+            cancellable = true
     )
-    private void unselectPossessedEntity(float tickDelta, CallbackInfo info,
-                                         Entity camera, double double_1, Vec3d vec3d_1, boolean boolean_1, int int_1, double double_2, Vec3d vec3d_2, Vec3d vec3d_3, Vec3d vec3d_4, float float_2,
-                                         List<Entity> entities) {
+    private static void unselectPossessedEntity(Entity tested, CallbackInfoReturnable<Boolean> info) {
+        Entity camera = MinecraftClient.getInstance().getCameraEntity();
         if (camera instanceof DissolutionPlayer && ((DissolutionPlayer) camera).getPossessionComponent().isPossessing()) {
-            // Possessable are still entities
-            //noinspection SuspiciousMethodCalls
-            entities.remove(((DissolutionPlayer) camera).getPossessionComponent().getPossessedEntity());
+            info.setReturnValue(false);
         }
     }
 }
