@@ -186,6 +186,7 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
 
             super.method_6091(strafe, vertical, forward);
             this.setPosition(player.x, player.y, player.z);
+            // update limb movement
             this.field_6249 = player.field_6249;
             this.field_6225 = player.field_6225;
         } else {
