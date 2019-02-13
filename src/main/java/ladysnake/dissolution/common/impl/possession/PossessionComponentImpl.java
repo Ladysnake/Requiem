@@ -12,6 +12,7 @@ import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import ladysnake.dissolution.common.util.InventoryHelper;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethod2;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethodHandles;
+import net.minecraft.client.network.packet.MobSpawnClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
@@ -115,6 +116,9 @@ public class PossessionComponentImpl implements PossessionComponent {
             possessedEntity.setPossessor(null);
             if (DissolutionEntityTags.ITEM_USER.contains(((Entity)possessedEntity).getType())) {
                 InventoryHelper.transferEquipment(player, (LivingEntity) possessedEntity);
+            }
+            if (player instanceof ServerPlayerEntity) {
+                ((ServerPlayerEntity)this.player).networkHandler.sendPacket(new MobSpawnClientPacket((LivingEntity) possessedEntity));
             }
         }
     }

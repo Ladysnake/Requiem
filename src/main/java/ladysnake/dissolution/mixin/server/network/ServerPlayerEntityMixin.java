@@ -27,6 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
+import java.util.function.Function;
 
 import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 import static ladysnake.dissolution.mixin.server.PlayerTagKeys.*;
@@ -77,7 +78,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
             Entity formerPossessed = EntityType.loadEntityWithPassengers(
                     this.dissolution_possessedEntityTag,
                     world,
-                    (entity_1x) -> !((ServerWorld)world).method_18197(entity_1x, true) ? null : entity_1x
+                    Function.identity()
             );
             if (formerPossessed instanceof MobEntity) {
                 formerPossessed.setPositionAndAngles(this);
