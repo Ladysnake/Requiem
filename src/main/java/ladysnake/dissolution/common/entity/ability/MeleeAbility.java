@@ -7,14 +7,21 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class MeleeAbility extends DirectAbilityBase<MobEntity> {
+    private boolean ignoreDamageAttribute;
+
     public MeleeAbility(MobEntity owner) {
+        this(owner, false);
+    }
+
+    public MeleeAbility(MobEntity owner, boolean ignoreDamageAttribute) {
         super(owner);
+        this.ignoreDamageAttribute = ignoreDamageAttribute;
     }
 
     @Override
     public boolean trigger(PlayerEntity player, Entity target) {
         // We actually need to check if the entity has an attack damage attribute, because mojang doesn't.
-        boolean success = owner.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE) != null && owner.method_6121(target);
+        boolean success = (ignoreDamageAttribute || owner.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE) != null) && owner.method_6121(target);
         if (success && target instanceof LivingEntity) {
             player.getMainHandStack().onEntityDamaged((LivingEntity) target, player);
         }

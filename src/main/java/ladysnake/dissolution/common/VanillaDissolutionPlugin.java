@@ -57,6 +57,7 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
     @Override
     public void registerMobAbilities(MobAbilityRegistry abilityRegistry) {
         abilityRegistry.register(EntityType.BLAZE, MobAbilityConfig.builder().indirectAttack(BlazeFireballAbility::new).build());
+        abilityRegistry.register(EntityType.CAT, MobAbilityConfig.builder().directAttack(e -> new MeleeAbility(e, true)).build());
         abilityRegistry.register(EntityType.CREEPER, MobAbilityConfig.<CreeperEntity>builder().indirectAttack(CreeperPrimingAbility::new).build());
         abilityRegistry.register(EntityType.ENDERMAN, MobAbilityConfig.builder().indirectInteract(BlinkAbility::new).build());
         abilityRegistry.register(EntityType.EVOKER, MobAbilityConfig.<EvokerEntity>builder()
@@ -65,9 +66,11 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
                 .indirectInteract(EvokerVexAbility::new)
                 .build());
         abilityRegistry.register(EntityType.GHAST, MobAbilityConfig.builder().indirectAttack(GhastFireballAbility::new).build());
+        abilityRegistry.register(EntityType.IRON_GOLEM, MobAbilityConfig.builder().directAttack(e -> new MeleeAbility(e, true)).build());
         abilityRegistry.register(EntityType.LLAMA, MobAbilityConfig.<LlamaEntity>builder().indirectAttack(RangedAttackAbility::new).build());
-        abilityRegistry.register(EntityType.TRADER_LLAMA, MobAbilityConfig.<LlamaEntity>builder().indirectAttack(RangedAttackAbility::new).build());
+        abilityRegistry.register(EntityType.OCELOT, MobAbilityConfig.builder().directAttack(e -> new MeleeAbility(e, true)).build());
         abilityRegistry.register(EntityType.SNOW_GOLEM, MobAbilityConfig.<SnowmanEntity>builder().indirectAttack(RangedAttackAbility::new).build());
+        abilityRegistry.register(EntityType.TRADER_LLAMA, MobAbilityConfig.<LlamaEntity>builder().indirectAttack(RangedAttackAbility::new).build());
         abilityRegistry.register(EntityType.WITCH, MobAbilityConfig.<WitchEntity>builder().indirectAttack(RangedAttackAbility::new).build());
     }
 
