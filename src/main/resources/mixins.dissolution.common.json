@@ -9,11 +9,9 @@
     "entity.attribute.AbstractEntityAttributeContainerAccessorMixin",
     "entity.attribute.EntityAttributeContainerAccessorMixin",
     "entity.player.PlayerEntityMixin",
-    "predicate.entity.EntityPredicatesMixin",
     "server.PlayerManagerMixin",
     "server.network.ServerPlayerEntityMixin",
-    "server.network.ServerPlayerInteractionManagerMixin",
-    "world.WorldMixin"
+    "server.network.ServerPlayerInteractionManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

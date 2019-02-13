@@ -45,6 +45,13 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
+    @Inject(method = "doesCollide", at = @At("RETURN"), cancellable = true)
+    private void soulsDontCollide(CallbackInfoReturnable<Boolean> info) {
+        if (this instanceof DissolutionPlayer && ((DissolutionPlayer) this).getRemnantState().isSoul()) {
+            info.setReturnValue(false);
+        }
+    }
+
     @Inject(method = "canClimb", at = @At("HEAD"), cancellable = true)
     private void canClimb(CallbackInfoReturnable<Boolean> info) {
         if (this instanceof DissolutionPlayer && this.horizontalCollision) {
