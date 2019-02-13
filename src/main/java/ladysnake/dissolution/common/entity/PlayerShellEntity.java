@@ -82,7 +82,7 @@ public class PlayerShellEntity extends MobEntity {
             possessor.setPositionAndAngles(this);
             if (!world.isClient) {
                 if (this.inventory != null) {
-                    transferInventory(this.inventory, possessor.inventory, possessor.inventory.main.size());
+                    transferInventory(this.inventory, possessor.inventory, Math.min(possessor.inventory.main.size(), this.inventory.getInvSize()));
                     this.dropInventory();
                 }
                 InventoryHelper.transferEquipment(this, possessor);
@@ -227,7 +227,7 @@ public class PlayerShellEntity extends MobEntity {
         super.readCustomDataFromTag(compound);
         if (compound.containsKey("Items")) {
             ListTag items = compound.getList("Items", 10);
-            this.inventory = new BasicInventory(items.size());
+            this.inventory = new BasicInventory(compound.getInt("InvSize"));
 
             for(int int_1 = 0; int_1 < items.size(); ++int_1) {
                 CompoundTag compoundTag_2 = items.getCompoundTag(int_1);
@@ -257,6 +257,7 @@ public class PlayerShellEntity extends MobEntity {
             }
 
             compound.put("Items", listTag_1);
+            compound.putInt("InvSize", this.inventory.getInvSize());
         }
         this.getPlayerUuid().ifPresent(uuid -> compound.putUuid("Player", uuid));
     }

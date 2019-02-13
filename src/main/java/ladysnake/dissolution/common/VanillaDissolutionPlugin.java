@@ -18,6 +18,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.WitchEntity;
+import net.minecraft.entity.passive.LlamaEntity;
+import net.minecraft.entity.passive.SnowmanEntity;
 import net.minecraft.util.ActionResult;
 
 public class VanillaDissolutionPlugin implements DissolutionPlugin {
@@ -62,6 +65,10 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
                 .indirectInteract(EvokerVexAbility::new)
                 .build());
         abilityRegistry.register(EntityType.GHAST, MobAbilityConfig.builder().indirectAttack(GhastFireballAbility::new).build());
+        abilityRegistry.register(EntityType.LLAMA, MobAbilityConfig.<LlamaEntity>builder().indirectAttack(RangedAttackAbility::new).build());
+        abilityRegistry.register(EntityType.TRADER_LLAMA, MobAbilityConfig.<LlamaEntity>builder().indirectAttack(RangedAttackAbility::new).build());
+        abilityRegistry.register(EntityType.SNOW_GOLEM, MobAbilityConfig.<SnowmanEntity>builder().indirectAttack(RangedAttackAbility::new).build());
+        abilityRegistry.register(EntityType.WITCH, MobAbilityConfig.<WitchEntity>builder().indirectAttack(RangedAttackAbility::new).build());
     }
 
     @Override
