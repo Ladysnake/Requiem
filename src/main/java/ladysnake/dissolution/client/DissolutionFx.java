@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 
-import static ladysnake.dissolution.common.network.DissolutionNetworking.createPossessionRequestPacket;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.createPossessionRequestMessage;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.sendToServer;
 
 public final class DissolutionFx implements PreBlockEntitiesCallback, ResolutionChangeCallback {
@@ -33,18 +33,19 @@ public final class DissolutionFx implements PreBlockEntitiesCallback, Resolution
     private final MinecraftClient mc = MinecraftClient.getInstance();
     private final ManagedShaderEffect spectreShader = ShaderEffectManager.manage(SPECTRE_SHADER_ID);
     private final ManagedShaderEffect fishEyeShader = ShaderEffectManager.manage(FISH_EYE_SHADER_ID);
+    @Nullable
     private GlFramebuffer framebuffer;
 
     private int fishEyeAnimation = -1;
     @Nullable
     public WeakReference<Entity> possessed;
 
-    public void tick(@SuppressWarnings("unused") MinecraftClient client) {
+    public void update(@SuppressWarnings("unused") MinecraftClient client) {
         Entity possessed = this.possessed != null ? this.possessed.get() : null;
         if (possessed != null) {
             turnToFace(possessed);
             if (--fishEyeAnimation == 3) {
-                sendToServer(createPossessionRequestPacket(possessed));
+                sendToServer(createPossessionRequestMessage(possessed));
             } else if (fishEyeAnimation == 0) {
                 this.possessed = null;
             }

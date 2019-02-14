@@ -13,5 +13,6 @@
   "dissolution:not_remnant": "Mortal",
   "dissolution:commands.possession.stop.success.other": "%s stopped possessing %s",
   "dissolution:commands.possession.stop.success.target": "You were made to stop possessing %s",
-  "dissolution:commands.possession.stop.success.self": "Stopped possessing %s"
+  "dissolution:commands.possession.stop.success.self": "Stopped possessing %s",
+  "key.dissolution.ethereal_fracture": "Ethereal Fracture"
 }

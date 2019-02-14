@@ -23,11 +23,13 @@ public class DissolutionClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientMessageHandling.init();
+        DissolutionKeyBinding.init();
         ShaderEffectRenderCallback.EVENT.register(DissolutionFx.INSTANCE::renderShaders);
         PreBlockEntitiesCallback.EVENT.register(DissolutionFx.INSTANCE);
         ResolutionChangeCallback.EVENT.register(DissolutionFx.INSTANCE);
         PickEntityShaderCallback.EVENT.register(EntityShaders::pickShader);
-        ClientTickCallback.EVENT.register(DissolutionFx.INSTANCE::tick);
+        ClientTickCallback.EVENT.register(DissolutionFx.INSTANCE::update);
+        ClientTickCallback.EVENT.register(DissolutionKeyBinding::update);
         HotbarRenderCallback.EVENT.register(PossessionHud.INSTANCE::onRenderHotbar);
         EntityRendererRegistry.INSTANCE.register(PossessableEntityImpl.class, (r, it) -> new BipedEntityRenderer<>(r, new PlayerEntityModel<>(0f, false), .5f));
         EntityRendererRegistry.INSTANCE.register(PlayerShellEntity.class, (r, it) -> new PlayerShellEntityRenderer(r));

@@ -3,6 +3,10 @@ package ladysnake.dissolution.common.network;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.entity.ability.AbilityType;
 import ladysnake.dissolution.api.v1.possession.Possessable;
+import ladysnake.dissolution.api.v1.possession.PossessionComponent;
+import ladysnake.dissolution.api.v1.remnant.RemnantState;
+import ladysnake.dissolution.common.entity.PlayerShellEntity;
+import ladysnake.dissolution.common.util.InventoryHelper;
 import net.fabricmc.fabric.api.network.PacketContext;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.entity.Entity;
@@ -30,6 +34,23 @@ public class ServerMessageHandling {
             Possessable possessed = ((DissolutionPlayer)player).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {
                 possessed.getMobAbilityController().useIndirect(AbilityType.INTERACT);
+            }
+        });
+        register(ETHEREAL_FRACTURE, (context, buf) -> {
+            PlayerEntity player = context.getPlayer();
+            if (!((DissolutionPlayer)player).isRemnant()) {
+                return;
+            }
+            RemnantState remnantState = ((DissolutionPlayer) player).getRemnantState();
+            PossessionComponent possessionComponent = ((DissolutionPlayer) player).getPossessionComponent();
+            if (!remnantState.isSoul()) {
+                PlayerShellEntity shellEntity = new PlayerShellEntity(player);
+                InventoryHelper.transferEquipment(player, shellEntity);
+                shellEntity.transferInventory(player.inventory, shellEntity.getInventory(), shellEntity.getInventory().getInvSize());
+                player.world.spawnEntity(shellEntity);
+                remnantState.setSoul(true);
+            } else if (possessionComponent.isPossessing()) {
+                possessionComponent.stopPossessing();
             }
         });
         ServerSidePacketRegistry.INSTANCE.register(POSSESSION_REQUEST, (context, buf) -> {

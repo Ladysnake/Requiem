@@ -49,11 +49,11 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     private void onStartedTracking(Entity tracked, CallbackInfo info) {
         if (tracked instanceof PlayerEntity) {
             // Synchronize soul players with other players
-            sendTo((ServerPlayerEntity)(Object)this, createCorporealityPacket((PlayerEntity) tracked));
+            sendTo((ServerPlayerEntity)(Object)this, createCorporealityMessage((PlayerEntity) tracked));
         } else if (tracked instanceof Possessable) {
             // Synchronize possessed entities with their possessor / other players
             ((Possessable) tracked).getPossessorUuid()
-                    .ifPresent(uuid -> sendTo((ServerPlayerEntity)(Object)this, createPossessionPacket(uuid, tracked.getEntityId())));
+                    .ifPresent(uuid -> sendTo((ServerPlayerEntity)(Object)this, createPossessionMessage(uuid, tracked.getEntityId())));
         }
     }
 
@@ -73,7 +73,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
     @Inject(method = "onTeleportationDone", at = @At("HEAD"))
     private void onTeleportDone(CallbackInfo info) {
-        sendTo((ServerPlayerEntity)(Object)this, createCorporealityPacket(this));
+        sendTo((ServerPlayerEntity)(Object)this, createCorporealityMessage(this));
         if (this.dissolution_possessedEntityTag != null) {
             Entity formerPossessed = EntityType.loadEntityWithPassengers(
                     this.dissolution_possessedEntityTag,

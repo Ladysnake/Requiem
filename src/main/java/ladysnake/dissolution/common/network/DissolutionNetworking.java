@@ -26,6 +26,7 @@ public class DissolutionNetworking {
     public static final Identifier LEFT_CLICK_AIR = Dissolution.id("attack_air");
     public static final Identifier RIGHT_CLICK_AIR = Dissolution.id("interact_air");
     public static final Identifier POSSESSION_REQUEST = Dissolution.id("possession_request");
+    public static final Identifier ETHEREAL_FRACTURE = Dissolution.id("ethereal_fracture");
 
     public static void sendToServer(CustomPayloadServerPacket packet) {
         MinecraftClient.getInstance().player.networkHandler.sendPacket(packet);
@@ -44,15 +45,15 @@ public class DissolutionNetworking {
     }
 
     @Contract(pure = true)
-    public static CustomPayloadClientPacket createCorporealityPacket(PlayerEntity synchronizedPlayer) {
+    public static CustomPayloadClientPacket createCorporealityMessage(PlayerEntity synchronizedPlayer) {
         boolean remnant = ((DissolutionPlayer) synchronizedPlayer).isRemnant();
         boolean incorporeal = remnant && ((DissolutionPlayer)synchronizedPlayer).getRemnantState().isSoul();
         UUID playerUuid = synchronizedPlayer.getUuid();
-        return createCorporealityPacket(playerUuid, remnant, incorporeal);
+        return createCorporealityMessage(playerUuid, remnant, incorporeal);
     }
 
     @Contract(pure = true)
-    public static CustomPayloadClientPacket createCorporealityPacket(UUID playerUuid, boolean remnant, boolean incorporeal) {
+    public static CustomPayloadClientPacket createCorporealityMessage(UUID playerUuid, boolean remnant, boolean incorporeal) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeUuid(playerUuid);
         buf.writeBoolean(remnant);
@@ -61,7 +62,7 @@ public class DissolutionNetworking {
     }
 
     @Contract(pure = true)
-    public static CustomPayloadClientPacket createPossessionPacket(UUID playerUuid, int possessedId) {
+    public static CustomPayloadClientPacket createPossessionMessage(UUID playerUuid, int possessedId) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeUuid(playerUuid);
         buf.writeInt(possessedId);
@@ -69,17 +70,22 @@ public class DissolutionNetworking {
     }
 
     @Contract(pure = true)
-    public static CustomPayloadServerPacket createLeftClickPacket() {
+    public static CustomPayloadServerPacket createLeftClickMessage() {
         return new CustomPayloadServerPacket(LEFT_CLICK_AIR, new PacketByteBuf(buffer()));
     }
 
     @Contract(pure = true)
-    public static CustomPayloadServerPacket createRightClickPacket() {
+    public static CustomPayloadServerPacket createRightClickMessage() {
         return new CustomPayloadServerPacket(RIGHT_CLICK_AIR, new PacketByteBuf(buffer()));
     }
 
     @Contract(pure = true)
-    public static CustomPayloadServerPacket createPossessionRequestPacket(Entity entity) {
+    public static CustomPayloadServerPacket createEtherealFractureMessage() {
+        return new CustomPayloadServerPacket(ETHEREAL_FRACTURE, new PacketByteBuf(buffer()));
+    }
+
+    @Contract(pure = true)
+    public static CustomPayloadServerPacket createPossessionRequestMessage(Entity entity) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeInt(entity.getEntityId());
         return new CustomPayloadServerPacket(POSSESSION_REQUEST, buf);

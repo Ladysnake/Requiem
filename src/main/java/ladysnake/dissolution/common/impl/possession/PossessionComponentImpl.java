@@ -125,8 +125,8 @@ public class PossessionComponentImpl implements PossessionComponent {
 
     private void syncPossessed() {
         if (!this.player.world.isClient) {
-            sendTo((ServerPlayerEntity)this.player, createPossessionPacket(this.player.getUuid(), this.possessedNetworkId));
-            sendToAllTracking(this.player, createPossessionPacket(this.player.getUuid(), this.possessedNetworkId));
+            sendTo((ServerPlayerEntity)this.player, createPossessionMessage(this.player.getUuid(), this.possessedNetworkId));
+            sendToAllTracking(this.player, createPossessionMessage(this.player.getUuid(), this.possessedNetworkId));
         }
     }
 

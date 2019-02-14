@@ -28,7 +28,7 @@ public abstract class MinecraftClientMixin {
     )
     private void onShakeFistAtAir(CallbackInfo info) {
         if (((DissolutionPlayer) player).getPossessionComponent().isPossessing()) {
-            sendToServer(createLeftClickPacket());
+            sendToServer(createLeftClickMessage());
         }
     }
 
@@ -40,7 +40,7 @@ public abstract class MinecraftClientMixin {
         // Check that the player is qualified to interact with something
         if (!this.interactionManager.isBreakingBlock() && !this.player.method_3144()) {
             if (((DissolutionPlayer) player).getPossessionComponent().isPossessing() && player.getMainHandStack().isEmpty()) {
-                sendToServer(createRightClickPacket());
+                sendToServer(createRightClickMessage());
             }
         }
     }

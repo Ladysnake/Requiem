@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-import static ladysnake.dissolution.common.network.DissolutionNetworking.createCorporealityPacket;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.createCorporealityMessage;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.sendTo;
 import static ladysnake.dissolution.mixin.server.PlayerTagKeys.*;
 import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
@@ -38,7 +38,7 @@ public abstract class PlayerManagerMixin {
 
     @Inject(method = "onPlayerConnect", at = @At("RETURN"))
     private void onPlayerConnect(ClientConnection connection, ServerPlayerEntity createdPlayer, CallbackInfo info) {
-        sendTo(createdPlayer, createCorporealityPacket(createdPlayer));
+        sendTo(createdPlayer, createCorporealityMessage(createdPlayer));
     }
 
     @Inject(
@@ -61,7 +61,7 @@ public abstract class PlayerManagerMixin {
             @Nullable CompoundTag serializedPlayer
     ) {
         if (serializedPlayer != null && serializedPlayer.containsKey(POSSESSED_ROOT_TAG, NbtType.COMPOUND)) {
-            sendTo(player, createCorporealityPacket(player));
+            sendTo(player, createCorporealityMessage(player));
             ServerWorld world = this.server.getWorld(player.dimension);
             CompoundTag serializedPossessedInfo = serializedPlayer.getCompound(POSSESSED_ROOT_TAG);
             Entity possessedEntityMount = EntityType.loadEntityWithPassengers(

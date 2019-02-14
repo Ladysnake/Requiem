@@ -85,8 +85,8 @@ public class MutableRemnantState implements RemnantState {
             ((DissolutionPlayer)this.owner).getMovementAlterer().setConfig(config);
             if (!this.owner.world.isClient) {
                 // Synchronizes with all players tracking the owner
-                sendTo((ServerPlayerEntity) this.owner, createCorporealityPacket(this.owner));
-                sendToAllTracking(this.owner, createCorporealityPacket(this.owner));
+                sendTo((ServerPlayerEntity) this.owner, createCorporealityMessage(this.owner));
+                sendToAllTracking(this.owner, createCorporealityMessage(this.owner));
             }
         }
     }

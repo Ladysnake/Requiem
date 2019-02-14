@@ -71,8 +71,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
         this.remnantState = handler;
         if (!this.world.isClient) {
             ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
-            sendTo(player, createCorporealityPacket(player));
-            sendToAllTracking(player, createCorporealityPacket(player));
+            sendTo(player, createCorporealityMessage(player));
+            sendToAllTracking(player, createCorporealityMessage(player));
         }
     }
 
