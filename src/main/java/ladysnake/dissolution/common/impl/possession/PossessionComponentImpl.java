@@ -110,16 +110,19 @@ public class PossessionComponentImpl implements PossessionComponent {
 
     @Override
     public void stopPossessing() {
-        Possessable possessedEntity = this.getPossessedEntity();
-        if (possessedEntity != null) {
+        Possessable possessed = this.getPossessedEntity();
+        if (possessed != null) {
             this.possessedUuid = null;
             resetState();
-            possessedEntity.setPossessor(null);
-            if (DissolutionEntityTags.ITEM_USER.contains(((Entity)possessedEntity).getType())) {
-                InventoryHelper.transferEquipment(player, (LivingEntity) possessedEntity);
-            }
+            possessed.setPossessor(null);
             if (player instanceof ServerPlayerEntity) {
-                ((ServerPlayerEntity)this.player).networkHandler.sendPacket(new MobSpawnClientPacket((LivingEntity) possessedEntity));
+                Entity possessedEntity = (Entity) possessed;
+                if (DissolutionEntityTags.ITEM_USER.contains(possessedEntity.getType())) {
+                    InventoryHelper.transferEquipment(player, (LivingEntity) possessed);
+                }
+                EntityTracker tracker = ((ServerWorld) player.world).getEntityTracker();
+                tracker.remove(possessedEntity);
+                tracker.add(possessedEntity);
             }
         }
     }
