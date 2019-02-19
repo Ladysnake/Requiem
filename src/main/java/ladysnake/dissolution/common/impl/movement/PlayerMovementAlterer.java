@@ -3,7 +3,7 @@ package ladysnake.dissolution.common.impl.movement;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.entity.MovementAlterer;
 import ladysnake.dissolution.api.v1.entity.MovementConfig;
-import net.minecraft.client.network.packet.PlayerAbilitiesClientPacket;
+import net.minecraft.client.network.packet.PlayerAbilitiesS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.WaterCreatureEntity;
@@ -41,11 +41,10 @@ public class PlayerMovementAlterer implements MovementAlterer {
             return;
         }
         PlayerAbilities abilities = this.player.abilities;
-        // method_7325 == isSpectator
-        abilities.allowFlying = player.isCreative() || player.method_7325() || getActualFlightMode(config, player) != DISABLED;
+        abilities.allowFlying = player.isCreative() || player.isSpectator() || getActualFlightMode(config, player) != DISABLED;
         abilities.flying &= abilities.allowFlying;
         if (player instanceof ServerPlayerEntity && ((ServerPlayerEntity) player).networkHandler != null) {
-            ((ServerPlayerEntity) player).networkHandler.sendPacket(new PlayerAbilitiesClientPacket(abilities));
+            ((ServerPlayerEntity) player).networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(abilities));
         }
     }
 

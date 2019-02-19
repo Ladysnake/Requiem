@@ -24,7 +24,7 @@ public class GhastFireballAbility extends IndirectAbilityBase<MobEntity> {
         if (this.fireballCooldown >= 20) {
             Vec3d vec3d_1 = this.owner.getRotationVec(1.0F);
             Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
-            this.owner.world.fireWorldEvent(null, 1016, new BlockPos(this.owner), 0);
+            this.owner.world.playEvent(null, 1016, new BlockPos(this.owner), 0);
             FireballEntity fireballEntity_1 = new FireballEntity(this.owner.world, this.owner, rot.x, rot.y, rot.z);
             fireballEntity_1.explosionPower = this.owner instanceof GhastEntity ? ((GhastEntity) this.owner).getFireballStrength() : 1;
             fireballEntity_1.x = this.owner.x + vec3d_1.x * 4.0D;

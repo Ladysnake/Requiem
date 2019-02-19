@@ -1,10 +1,9 @@
 package ladysnake.satin.client.shader;
 
 import ladysnake.satin.client.event.ResolutionChangeCallback;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
 import org.apiguardian.api.API;
 
 import java.util.Collections;
@@ -15,8 +14,9 @@ import java.util.function.Consumer;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 
-public final class ShaderEffectManager implements SynchronousResourceReloadListener, ResolutionChangeCallback {
+public final class ShaderEffectManager implements SimpleSynchronousResourceReloadListener, ResolutionChangeCallback {
     public static final ShaderEffectManager INSTANCE = new ShaderEffectManager();
+    public static final Identifier SHADER_RESOURCE_KEY = new Identifier("dissolution:shaders");
 
     // Let shaders be garbage collected when no one uses them
     private static Set<ManagedShaderEffect> managedShaderEffects = Collections.newSetFromMap(new WeakHashMap<>());
@@ -61,15 +61,13 @@ public final class ShaderEffectManager implements SynchronousResourceReloadListe
         managedShaderEffects.remove(shader);
     }
 
-    // Here because the compiler cannot see the synthetic default override
-    // TODO remove when mapped
     @Override
-    public void apply(ResourceManager var1, Void var2, Profiler var3) {
-        this.method_14491(var1);
+    public Identifier getFabricId() {
+        return SHADER_RESOURCE_KEY;
     }
 
     @Override
-    public void method_14491(ResourceManager resourceManager) {
+    public void apply(ResourceManager var1) {
         for (ManagedShaderEffect ss : managedShaderEffects) {
             ss.release();
         }

@@ -8,7 +8,7 @@ import ladysnake.dissolution.common.entity.ai.InertGoal;
 import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthAttribute;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.network.packet.EntityVelocityUpdateClientPacket;
+import net.minecraft.client.network.packet.EntityVelocityUpdateS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -277,7 +277,7 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
         if (possessing.isPresent()) {
             PlayerEntity player = possessing.get();
             player.method_6005(entity_1, float_1, double_1, double_2);
-            ((ServerPlayerEntity) player).networkHandler.sendPacket(new EntityVelocityUpdateClientPacket(player));
+            ((ServerPlayerEntity) player).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(player));
         } else {
             super.method_6005(entity_1, float_1, double_1, double_2);
         }

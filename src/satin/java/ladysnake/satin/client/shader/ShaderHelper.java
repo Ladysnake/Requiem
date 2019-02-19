@@ -66,7 +66,7 @@ public class ShaderHelper {
     public static void init(ReloadableResourceManager resourceManager) {
         if (!initialized) {
 //            resourceManager.addListener(ShaderHelper::loadShaders);
-            resourceManager.addListener(ShaderEffectManager.INSTANCE);
+            resourceManager.registerListener(ShaderEffectManager.INSTANCE);
             ResolutionChangeCallback.EVENT.register(ShaderEffectManager.INSTANCE);
 //            ClientCommandHandler.instance.registerCommand(new ShaderReloadCommand());
             initialized = true;

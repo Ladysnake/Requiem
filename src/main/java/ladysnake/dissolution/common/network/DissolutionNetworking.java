@@ -3,11 +3,11 @@ package ladysnake.dissolution.common.network;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.packet.CustomPayloadClientPacket;
+import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.packet.CustomPayloadServerPacket;
+import net.minecraft.server.network.packet.CustomPayloadC2SPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
@@ -29,24 +29,24 @@ public class DissolutionNetworking {
     public static final Identifier POSSESSION_REQUEST = Dissolution.id("possession_request");
     public static final Identifier ETHEREAL_FRACTURE = Dissolution.id("ethereal_fracture");
 
-    public static void sendToServer(CustomPayloadServerPacket packet) {
+    public static void sendToServer(CustomPayloadC2SPacket packet) {
         MinecraftClient.getInstance().player.networkHandler.sendPacket(packet);
     }
 
-    public static void sendTo(ServerPlayerEntity player, CustomPayloadClientPacket packet) {
+    public static void sendTo(ServerPlayerEntity player, CustomPayloadS2CPacket packet) {
         if (player.networkHandler != null) {
             player.networkHandler.sendPacket(packet);
         }
     }
 
-    public static void sendToAllTracking(Entity tracked, CustomPayloadClientPacket packet) {
+    public static void sendToAllTracking(Entity tracked, CustomPayloadS2CPacket packet) {
         if (tracked.world instanceof ServerWorld) {
             ((ServerWorld) tracked.world).getEntityTracker().method_14079(tracked, packet);
         }
     }
 
     @Contract(pure = true)
-    public static CustomPayloadClientPacket createCorporealityMessage(PlayerEntity synchronizedPlayer) {
+    public static CustomPayloadS2CPacket createCorporealityMessage(PlayerEntity synchronizedPlayer) {
         boolean remnant = ((DissolutionPlayer) synchronizedPlayer).isRemnant();
         boolean incorporeal = remnant && ((DissolutionPlayer)synchronizedPlayer).getRemnantState().isSoul();
         UUID playerUuid = synchronizedPlayer.getUuid();
@@ -54,46 +54,46 @@ public class DissolutionNetworking {
     }
 
     @Contract(pure = true)
-    public static CustomPayloadClientPacket createCorporealityMessage(UUID playerUuid, boolean remnant, boolean incorporeal) {
+    public static CustomPayloadS2CPacket createCorporealityMessage(UUID playerUuid, boolean remnant, boolean incorporeal) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeUuid(playerUuid);
         buf.writeBoolean(remnant);
         buf.writeBoolean(incorporeal);
-        return new CustomPayloadClientPacket(REMNANT_SYNC, buf);
+        return new CustomPayloadS2CPacket(REMNANT_SYNC, buf);
     }
 
     @Contract(pure = true)
-    public static CustomPayloadClientPacket createPossessionMessage(UUID playerUuid, int possessedId) {
+    public static CustomPayloadS2CPacket createPossessionMessage(UUID playerUuid, int possessedId) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeUuid(playerUuid);
         buf.writeInt(possessedId);
-        return new CustomPayloadClientPacket(POSSESSION_SYNC, buf);
+        return new CustomPayloadS2CPacket(POSSESSION_SYNC, buf);
     }
 
     @Contract(pure = true)
-    public static CustomPayloadClientPacket createEtherealAnimationMessage() {
-        return new CustomPayloadClientPacket(ETHEREAL_ANIMATION, new PacketByteBuf(buffer()));
+    public static CustomPayloadS2CPacket createEtherealAnimationMessage() {
+        return new CustomPayloadS2CPacket(ETHEREAL_ANIMATION, new PacketByteBuf(buffer()));
     }
 
     @Contract(pure = true)
-    public static CustomPayloadServerPacket createLeftClickMessage() {
-        return new CustomPayloadServerPacket(LEFT_CLICK_AIR, new PacketByteBuf(buffer()));
+    public static CustomPayloadC2SPacket createLeftClickMessage() {
+        return new CustomPayloadC2SPacket(LEFT_CLICK_AIR, new PacketByteBuf(buffer()));
     }
 
     @Contract(pure = true)
-    public static CustomPayloadServerPacket createRightClickMessage() {
-        return new CustomPayloadServerPacket(RIGHT_CLICK_AIR, new PacketByteBuf(buffer()));
+    public static CustomPayloadC2SPacket createRightClickMessage() {
+        return new CustomPayloadC2SPacket(RIGHT_CLICK_AIR, new PacketByteBuf(buffer()));
     }
 
     @Contract(pure = true)
-    public static CustomPayloadServerPacket createEtherealFractureMessage() {
-        return new CustomPayloadServerPacket(ETHEREAL_FRACTURE, new PacketByteBuf(buffer()));
+    public static CustomPayloadC2SPacket createEtherealFractureMessage() {
+        return new CustomPayloadC2SPacket(ETHEREAL_FRACTURE, new PacketByteBuf(buffer()));
     }
 
     @Contract(pure = true)
-    public static CustomPayloadServerPacket createPossessionRequestMessage(Entity entity) {
+    public static CustomPayloadC2SPacket createPossessionRequestMessage(Entity entity) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeInt(entity.getEntityId());
-        return new CustomPayloadServerPacket(POSSESSION_REQUEST, buf);
+        return new CustomPayloadC2SPacket(POSSESSION_REQUEST, buf);
     }
 }

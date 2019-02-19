@@ -51,8 +51,7 @@ public class PossessionComponentImpl implements PossessionComponent {
     @Override
     public boolean canStartPossessing(final MobEntity mob) {
         DissolutionPlayer dp = (DissolutionPlayer) player;
-        // method_7325 == isSpectator
-        return player.world.isClient || (!player.method_7325() && dp.isRemnant() && dp.getRemnantState().isIncorporeal());
+        return player.world.isClient || (!player.isSpectator() && dp.isRemnant() && dp.getRemnantState().isIncorporeal());
     }
 
     @Override

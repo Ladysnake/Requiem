@@ -33,9 +33,9 @@ public class PlayerShellEntityRenderer extends BipedEntityRenderer<PlayerShellEn
         MinecraftClient client = MinecraftClient.getInstance();
         GameProfile profile = entity.getProfile();
         Identifier texture;
-        Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> skinMap = client.getSkinProvider().method_4654(profile);
+        Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> skinMap = client.getSkinProvider().getTextures(profile);
         if (skinMap.containsKey(MinecraftProfileTexture.Type.SKIN)) {
-            texture = client.getSkinProvider().method_4656(skinMap.get(MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN);
+            texture = client.getSkinProvider().loadSkin(skinMap.get(MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN);
         } else {
             texture = DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(profile));
         }

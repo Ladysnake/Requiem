@@ -1,7 +1,7 @@
 package ladysnake.satin.mixin.client.gl;
 
-import net.minecraft.client.gl.GlProgram;
 import net.minecraft.client.gl.GlShader;
+import net.minecraft.client.gl.JsonGlProgram;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  * Minecraft does not take into account domains when parsing a shader program.
  * These hooks redirect identifier instantiations to allow specifying a domain for shader files.
  */
-@Mixin(GlProgram.class)
-public abstract class GlProgramMixin {
+@Mixin(JsonGlProgram.class)
+public abstract class JsonGlProgramMixin {
     /**
      * @param arg the string passed to the redirected Identifier constructor
      * @param id the actual id passed as an argument to the method
@@ -48,7 +48,7 @@ public abstract class GlProgramMixin {
                     value = "NEW",
                     target = "(Ljava/lang/String;)Lnet/minecraft/util/Identifier;"
             ),
-            method = "method_16036"
+            method = "getShader"
     )
     private static Identifier constructProgramIdentifier(String arg, ResourceManager unused, GlShader.Type shaderType, String id) {
         if (!arg.contains(":")) {

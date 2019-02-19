@@ -122,9 +122,9 @@ public final class DissolutionFx implements PreBlockEntitiesCallback, Resolution
         Entity possessed = getAnimationEntity();
         if (possessed != null) {
             if (this.framebuffer == null) {
-                this.framebuffer = new GlFramebuffer(mc.window.getWidth(), mc.window.getHeight(), true, MinecraftClient.isSystemMac);
+                this.framebuffer = new GlFramebuffer(mc.window.getWidth(), mc.window.getHeight(), true, MinecraftClient.IS_SYSTEM_MAC);
             }
-            this.framebuffer.clear(MinecraftClient.isSystemMac);
+            this.framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
             GlStateManager.disableFog();
             this.framebuffer.beginWrite(false);
             this.mc.getEntityRenderManager().render(possessed, tickDelta, true);
@@ -141,7 +141,7 @@ public final class DissolutionFx implements PreBlockEntitiesCallback, Resolution
     @Override
     public void onWindowResized(int newWidth, int newHeight) {
         if (this.framebuffer != null) {
-            this.framebuffer.resize(newWidth, newHeight, MinecraftClient.isSystemMac);
+            this.framebuffer.resize(newWidth, newHeight, MinecraftClient.IS_SYSTEM_MAC);
         }
     }
 }

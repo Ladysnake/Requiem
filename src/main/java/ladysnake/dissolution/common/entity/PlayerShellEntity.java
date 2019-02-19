@@ -123,7 +123,7 @@ public class PlayerShellEntity extends MobEntity {
         ItemStack itemstack = player.getStackInHand(hand);
 
         if (itemstack.getItem() != Items.NAME_TAG) {
-            if (!this.world.isClient && !player.method_7325()) {
+            if (!this.world.isClient && !player.isSpectator()) {
                 EquipmentSlot entityequipmentslot = MobEntity.getPreferredEquipmentSlot(itemstack);
 
                 if (itemstack.isEmpty()) {

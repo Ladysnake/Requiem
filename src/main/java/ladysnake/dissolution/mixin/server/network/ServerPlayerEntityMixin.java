@@ -6,7 +6,7 @@ import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.network.packet.MobSpawnClientPacket;
+import net.minecraft.client.network.packet.MobSpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -83,7 +83,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
             if (formerPossessed instanceof MobEntity) {
                 formerPossessed.setPositionAndAngles(this);
                 if (world.spawnEntity(formerPossessed)) {
-                    this.networkHandler.sendPacket(new MobSpawnClientPacket((LivingEntity) formerPossessed));
+                    this.networkHandler.sendPacket(new MobSpawnS2CPacket((LivingEntity) formerPossessed));
                     ((DissolutionPlayer)this).getPossessionComponent().startPossessing((MobEntity) formerPossessed);
                 } else {
                     Dissolution.LOGGER.error("Failed to spawn possessed entity {}", formerPossessed);

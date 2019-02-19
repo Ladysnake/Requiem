@@ -6,7 +6,7 @@ import ladysnake.satin.Satin;
 import ladysnake.satin.mixin.client.gl.AccessiblePassesShaderEffect;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlFramebuffer;
-import net.minecraft.client.gl.GlProgram;
+import net.minecraft.client.gl.JsonGlProgram;
 import net.minecraft.client.gl.PostProcessShader;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.texture.Texture;
@@ -204,8 +204,9 @@ public final class ManagedShaderEffect {
     public void setupDynamicUniforms(int index, Runnable dynamicSetBlock) {
         AccessiblePassesShaderEffect sg = (AccessiblePassesShaderEffect) this.getShaderEffect();
         if (sg != null) {
-            GlProgram sm = sg.getPasses().get(index).getProgram();
-            ShaderHelper.useShader(sm.getProgramRef());
+            JsonGlProgram sm = sg.getPasses().get(index).getProgram();
+            // method_1270 == getProgramRef
+            ShaderHelper.useShader(sm.method_1270());
             dynamicSetBlock.run();
             ShaderHelper.revert();
         }
@@ -257,7 +258,7 @@ public final class ManagedShaderEffect {
         AccessiblePassesShaderEffect sg = (AccessiblePassesShaderEffect) this.getShaderEffect();
         if (sg != null) {
             for (PostProcessShader shader : sg.getPasses()) {
-                shader.getProgram().getUniformByNameOrDummy(uniformName).put(value0, value1, value2, value3);
+                shader.getProgram().getUniformByNameOrDummy(uniformName).set(value0, value1, value2, value3);
             }
         }
     }
@@ -272,7 +273,7 @@ public final class ManagedShaderEffect {
         AccessiblePassesShaderEffect sg = (AccessiblePassesShaderEffect) this.getShaderEffect();
         if (sg != null) {
             for (PostProcessShader shader : sg.getPasses()) {
-                shader.getProgram().getUniformByNameOrDummy(uniformName).put(value);
+                shader.getProgram().getUniformByNameOrDummy(uniformName).set(value);
             }
         }
     }
@@ -288,7 +289,7 @@ public final class ManagedShaderEffect {
         AccessiblePassesShaderEffect sg = (AccessiblePassesShaderEffect) this.getShaderEffect();
         if (sg != null) {
             for (PostProcessShader shader : sg.getPasses()) {
-                shader.getProgram().getUniformByNameOrDummy(uniformName).put(value0, value1);
+                shader.getProgram().getUniformByNameOrDummy(uniformName).set(value0, value1);
             }
         }
     }
@@ -305,7 +306,7 @@ public final class ManagedShaderEffect {
         AccessiblePassesShaderEffect sg = (AccessiblePassesShaderEffect) this.getShaderEffect();
         if (sg != null) {
             for (PostProcessShader shader : sg.getPasses()) {
-                shader.getProgram().getUniformByNameOrDummy(uniformName).put(value0, value1, value2);
+                shader.getProgram().getUniformByNameOrDummy(uniformName).set(value0, value1, value2);
             }
         }
     }
@@ -323,7 +324,7 @@ public final class ManagedShaderEffect {
         AccessiblePassesShaderEffect sg = (AccessiblePassesShaderEffect) this.getShaderEffect();
         if (sg != null) {
             for (PostProcessShader shader : sg.getPasses()) {
-                shader.getProgram().getUniformByNameOrDummy(uniformName).put(value0, value1, value2, value3);
+                shader.getProgram().getUniformByNameOrDummy(uniformName).set(value0, value1, value2, value3);
             }
         }
     }
@@ -338,7 +339,7 @@ public final class ManagedShaderEffect {
         AccessiblePassesShaderEffect sg = (AccessiblePassesShaderEffect) this.getShaderEffect();
         if (sg != null) {
             for (PostProcessShader shader : sg.getPasses()) {
-                shader.getProgram().getUniformByNameOrDummy(uniformName).put(value);
+                shader.getProgram().getUniformByNameOrDummy(uniformName).set(value);
             }
         }
     }

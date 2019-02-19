@@ -24,7 +24,7 @@ public class RangedAttackAbility<T extends MobEntity & RangedAttacker> extends I
         Vec3d endPoint = startPoint.add(lookVec.x * range, lookVec.y * range, lookVec.z * range);
         Vec3d vec3d_2 = this.owner.getRotationVec(1.0F);
         BoundingBox boundingBox_1 = this.owner.getBoundingBox().stretch(vec3d_2.x * range, vec3d_2.y * range, vec3d_2.z * range).expand(1.0D, 1.0D, 1.0D);
-        EntityHitResult trace = class_1675.method_18075(this.owner, startPoint, endPoint, boundingBox_1, (entity_1x) -> entity_1x != player && !entity_1x.method_7325() && entity_1x.doesCollide(), range);
+        EntityHitResult trace = class_1675.method_18075(this.owner, startPoint, endPoint, boundingBox_1, (entity_1x) -> entity_1x != player && !entity_1x.isSpectator() && entity_1x.doesCollide(), range);
         if (trace != null) {
             Entity traced = trace.getEntity();
             if (traced instanceof LivingEntity) {

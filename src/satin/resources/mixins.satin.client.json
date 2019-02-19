@@ -7,7 +7,7 @@
     "MinecraftClientMixin",
     "WorldRendererMixin",
     "gl.AccessiblePassesShaderEffect",
-    "gl.GlProgramMixin"
+    "gl.JsonGlProgramMixin"
   ],
   "injectors": {
     "defaultRequire": 1
