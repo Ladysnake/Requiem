@@ -1,6 +1,7 @@
 package ladysnake.dissolution.client.network;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.client.DissolutionFx;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.network.PacketContext;
 import net.minecraft.client.MinecraftClient;
@@ -13,8 +14,7 @@ import net.minecraft.util.PacketByteBuf;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
-import static ladysnake.dissolution.common.network.DissolutionNetworking.POSSESSION_SYNC;
-import static ladysnake.dissolution.common.network.DissolutionNetworking.REMNANT_SYNC;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 
 public class ClientMessageHandling {
     public static void init() {
@@ -48,6 +48,7 @@ public class ClientMessageHandling {
                 }
             }
         }));
+        register(ETHEREAL_ANIMATION, ((context, buf) -> DissolutionFx.INSTANCE.beginEtherealAnimation()));
     }
 
     private static void register(Identifier id, BiConsumer<PacketContext, PacketByteBuf> handler) {

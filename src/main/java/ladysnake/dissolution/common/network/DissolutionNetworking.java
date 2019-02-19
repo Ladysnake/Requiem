@@ -21,6 +21,7 @@ public class DissolutionNetworking {
     // Server -> Client
     public static final Identifier REMNANT_SYNC = Dissolution.id("remnant_sync");
     public static final Identifier POSSESSION_SYNC = Dissolution.id("possession_sync");
+    public static final Identifier ETHEREAL_ANIMATION = Dissolution.id("ethereal_animation");
 
     // Client -> Server
     public static final Identifier LEFT_CLICK_AIR = Dissolution.id("attack_air");
@@ -67,6 +68,11 @@ public class DissolutionNetworking {
         buf.writeUuid(playerUuid);
         buf.writeInt(possessedId);
         return new CustomPayloadClientPacket(POSSESSION_SYNC, buf);
+    }
+
+    @Contract(pure = true)
+    public static CustomPayloadClientPacket createEtherealAnimationMessage() {
+        return new CustomPayloadClientPacket(ETHEREAL_ANIMATION, new PacketByteBuf(buffer()));
     }
 
     @Contract(pure = true)

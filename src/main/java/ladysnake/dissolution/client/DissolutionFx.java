@@ -2,7 +2,7 @@ package ladysnake.dissolution.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.dissolution.Dissolution;
-import ladysnake.dissolution.api.v1.remnant.RemnantState;
+import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.satin.client.event.PreBlockEntitiesCallback;
 import ladysnake.satin.client.event.ResolutionChangeCallback;
 import ladysnake.satin.client.shader.ManagedShaderEffect;
@@ -37,19 +37,32 @@ public final class DissolutionFx implements PreBlockEntitiesCallback, Resolution
     private GlFramebuffer framebuffer;
 
     private int fishEyeAnimation = -1;
+    private int etherealAnimation = 0;
+    /**
+     * Incremented every tick for animations
+     */
+    private int ticks = 0;
     @Nullable
-    public WeakReference<Entity> possessed;
+    private WeakReference<Entity> possessed;
 
     public void update(@SuppressWarnings("unused") MinecraftClient client) {
-        Entity possessed = this.possessed != null ? this.possessed.get() : null;
+        ticks++;
+        etherealAnimation--;
+        Entity possessed = getAnimationEntity();
         if (possessed != null) {
             turnToFace(possessed);
-            if (--fishEyeAnimation == 3) {
+            if (--fishEyeAnimation == 2) {
                 sendToServer(createPossessionRequestMessage(possessed));
-            } else if (fishEyeAnimation == 0) {
+            }
+            if (!((DissolutionPlayer) client.player).getRemnantState().isIncorporeal()) {
                 this.possessed = null;
             }
         }
+    }
+
+    @Nullable
+    public Entity getAnimationEntity() {
+        return this.possessed != null ? this.possessed.get() : null;
     }
 
     /**
@@ -79,8 +92,13 @@ public final class DissolutionFx implements PreBlockEntitiesCallback, Resolution
         possessed.world.playSound(mc.player, possessed.x, possessed.y, possessed.z, SoundEvents.ENTITY_VEX_AMBIENT, SoundCategory.PLAYER, 2, 0.6f);
     }
 
+    public void beginEtherealAnimation() {
+        this.etherealAnimation = 10;
+        mc.player.world.playSound(mc.player, mc.player.x, mc.player.y, mc.player.z, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYER, 2, 0.6f);
+    }
+
     public void renderShaders(float tickDelta) {
-        if (fishEyeAnimation > 0) {
+        if (this.possessed != null && this.possessed.get() != null) {
             fishEyeShader.setUniformValue("Slider", (fishEyeAnimation - tickDelta) / 40 + 0.25f);
             fishEyeShader.render(tickDelta);
             if (this.possessed != null && this.framebuffer != null) {
@@ -90,7 +108,10 @@ public final class DissolutionFx implements PreBlockEntitiesCallback, Resolution
                 MinecraftClient.getInstance().worldRenderer.drawEntityOutlinesFramebuffer();
             }
         }
-        if (RemnantState.getIfRemnant(mc.player).filter(RemnantState::isIncorporeal).isPresent()) {
+        if (((DissolutionPlayer)mc.player).getRemnantState().isIncorporeal() || this.etherealAnimation > 0) {
+            spectreShader.setUniformValue("STime", (ticks + tickDelta) / 20f);
+            // 10 -> 1
+            spectreShader.setUniformValue("Zoom", Math.max(1, (etherealAnimation - tickDelta)));
             spectreShader.render(tickDelta);
         }
         GlStateManager.matrixMode(GL11.GL_MODELVIEW);
@@ -98,7 +119,7 @@ public final class DissolutionFx implements PreBlockEntitiesCallback, Resolution
 
     @Override
     public void onPreRenderBlockEntities(Entity camera, VisibleRegion frustum, float tickDelta) {
-        Entity possessed = this.possessed != null ? this.possessed.get() : null;
+        Entity possessed = getAnimationEntity();
         if (possessed != null) {
             if (this.framebuffer == null) {
                 this.framebuffer = new GlFramebuffer(mc.window.getWidth(), mc.window.getHeight(), true, MinecraftClient.isSystemMac);

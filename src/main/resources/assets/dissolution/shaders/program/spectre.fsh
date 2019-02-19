@@ -1,33 +1,66 @@
+// Adapted from a shader by @patriciogv
+// https://thebookofshaders.com/edit.php#11/circleWave-noise.frag
+
 #version 120
 
 uniform sampler2D DiffuseSampler;
 
-uniform float Time;
+// Time in seconds
+uniform float STime;
+// Screen dimensions
+uniform vec2 OutSize;
+// Intensity modifier
+uniform float Intensity;
+uniform float Zoom;
 
 varying vec2 texCoord;
-/*
-vec3 saturate(vec4 rgba, float adjustment) {
-  if (rgba.r > rgba.g && rgba.r > rgba.b) {
-    rgba.r *= adjustment;
-  }
-  if (rgba.g > rgba.b && rgba.g > rgba.r) {
-    rgba.g *= adjustment;
-  }
-  if (rgba.b > rgba.r && rgba.b > rgba.g) {
-    rgba.b *= adjustment;
-  }
 
-  return rgba;
+vec2 random2(vec2 st){
+  st = vec2( dot(st,vec2(127.1,311.7)),
+  dot(st,vec2(269.5,183.3)) );
+  return -1.0 + 2.0*fract(sin(st)*43758.5453123);
 }
-*/
+
+// Value Noise by Inigo Quilez - iq/2013
+// https://www.shadertoy.com/view/lsf3WH
+float noise(vec2 st) {
+  vec2 i = floor(st);
+  vec2 f = fract(st);
+
+  vec2 u = f*f*(3.0-2.0*f);
+
+  return mix( mix( dot( random2(i + vec2(0.0,0.0) ), f - vec2(0.0,0.0) ),
+  dot( random2(i + vec2(1.0,0.0) ), f - vec2(1.0,0.0) ), u.x),
+  mix( dot( random2(i + vec2(0.0,1.0) ), f - vec2(0.0,1.0) ),
+  dot( random2(i + vec2(1.0,1.0) ), f - vec2(1.0,1.0) ), u.x), u.y);
+}
+
+float shape(vec2 st, float a, float radius) {
+  float r = length(st)*2.0;
+  float m = abs(mod(a+STime/4.,3.14*2.)-3.14)/4.6;
+  float f = radius;
+  m += noise(st+STime*0.1)*.5;
+  f += sin(a*1.)*noise(st+STime*.2) * 0.5;
+  f += (sin(a*20.)*.1*pow(m,2.));
+  // Up the contrast to make streaks
+  return f*f*(smoothstep(f,f+1.0,r));
+}
+
+float streaks(vec2 st, float a, float radius) {
+  float f = radius;
+  f += sin(a*20.)*noise(st+STime*.2) * 0.5;
+  // Up the contrast
+  return pow(f, 10.0);
+}
+
 void main() {
-    vec4 tex = texture2D(DiffuseSampler, texCoord);
+  vec2 st = gl_FragCoord.xy / OutSize.xy;
+  vec3 tex = texture2D(DiffuseSampler, st).rgb;
+  st = (vec2(0.5)-st) * Zoom;
+  float a = atan(st.y, st.x);
+  float intensity = shape(st, a, 0.8) * Intensity;
+  vec3 color = mix(tex, vec3(0, 0.7, 1.), intensity * 0.6);
+  color += streaks(st, a, 0.8) * intensity;
 
-    tex.r *= 1.0 - pow(abs(texCoord.x * 2 - 1), 2.5);
-    tex.r *= 1.0 - pow(abs(texCoord.y * 2 - 1), 2.5);
-
-    tex.b *= 1.5;
-    tex.g *= 1.1;
-
-    gl_FragColor = tex;
+  gl_FragColor = vec4(color, 1.0 );
 }
