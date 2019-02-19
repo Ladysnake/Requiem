@@ -5,6 +5,7 @@ import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
+import ladysnake.dissolution.common.DissolutionRegistries;
 import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.dissolution.common.entity.ai.attribute.PossessionDelegatingAttribute;
 import ladysnake.dissolution.common.impl.movement.SerializableMovementConfig;
@@ -12,7 +13,6 @@ import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import ladysnake.dissolution.common.util.InventoryHelper;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethod2;
 import ladysnake.reflectivefabric.reflection.typed.TypedMethodHandles;
-import net.minecraft.client.network.packet.MobSpawnClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
@@ -22,6 +22,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.network.EntityTracker;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
@@ -64,7 +65,7 @@ public class PossessionComponentImpl implements PossessionComponent {
         if (mob instanceof Possessable) {
             possessable = (Possessable) mob;
         } else {
-            possessable = Possession.getConversionRegistry().convert(mob, player);
+            possessable = DissolutionRegistries.CONVERSION.convert(mob, player);
         }
         // 2- check that the mob can be possessed
         if (possessable == null || !possessable.canBePossessedBy(player)) {

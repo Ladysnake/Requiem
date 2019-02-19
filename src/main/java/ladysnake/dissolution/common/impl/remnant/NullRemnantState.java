@@ -1,9 +1,13 @@
 package ladysnake.dissolution.common.impl.remnant;
 
 import ladysnake.dissolution.api.v1.remnant.RemnantState;
+import ladysnake.dissolution.api.v1.remnant.RemnantType;
+import ladysnake.dissolution.common.remnant.RemnantStates;
 import net.minecraft.nbt.CompoundTag;
 
 public final class NullRemnantState implements RemnantState {
+
+    public static final RemnantState NULL_STATE = new NullRemnantState();
 
     @Override
     public boolean isIncorporeal() {
@@ -21,12 +25,22 @@ public final class NullRemnantState implements RemnantState {
     }
 
     @Override
-    public CompoundTag writeToTag() {
-        return new CompoundTag();
+    public void fracture() {
+        // NO-OP
     }
 
     @Override
-    public void readFromTag(CompoundTag tag) {
+    public RemnantType getType() {
+        return RemnantStates.NULL;
+    }
+
+    @Override
+    public CompoundTag toTag(CompoundTag tag) {
+        return tag;
+    }
+
+    @Override
+    public void fromTag(CompoundTag tag) {
         // NO-OP
     }
 }

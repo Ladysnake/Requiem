@@ -3,10 +3,10 @@ package ladysnake.dissolution.common.entity;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.entity.ability.*;
 import ladysnake.dissolution.api.v1.possession.Possessable;
+import ladysnake.dissolution.common.DissolutionRegistries;
 import ladysnake.dissolution.common.entity.ai.InertGoal;
 import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthAttribute;
-import ladysnake.dissolution.common.impl.possession.Possession;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.EntityVelocityUpdateClientPacket;
 import net.minecraft.entity.Entity;
@@ -139,7 +139,7 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     protected void initGoals() {
         super.initGoals();
         this.goalSelector.add(99, new InertGoal(this));
-        this.configure(Possession.getAbilityRegistry().getConfig(this));
+        this.configure(DissolutionRegistries.ABILITIES.getConfig(this));
     }
 
     @Override

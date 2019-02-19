@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public interface RemnantState {
+    String NULL_STATE_ID = "dissolution:null";
 
     boolean isIncorporeal();
 
@@ -16,9 +17,13 @@ public interface RemnantState {
 
     void setSoul(boolean incorporeal);
 
-    CompoundTag writeToTag();
+    void fracture();
 
-    void readFromTag(CompoundTag tag);
+    RemnantType getType();
+
+    CompoundTag toTag(CompoundTag tag);
+
+    void fromTag(CompoundTag tag);
 
     /**
      * A predicate matching entities that are remnant

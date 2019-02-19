@@ -5,14 +5,19 @@ import ladysnake.dissolution.api.v1.DissolutionPlugin;
 import ladysnake.dissolution.api.v1.entity.ability.AbilityType;
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityRegistry;
+import ladysnake.dissolution.api.v1.event.ItemPickupCallback;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.conversion.PossessionConversionRegistry;
+import ladysnake.dissolution.api.v1.remnant.RemnantState;
 import ladysnake.dissolution.client.DissolutionFx;
 import ladysnake.dissolution.common.entity.DissolutionEntities;
 import ladysnake.dissolution.common.entity.PlayerShellEntity;
 import ladysnake.dissolution.common.entity.ability.*;
+import ladysnake.dissolution.common.tag.DissolutionEntityTags;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.CreeperEntity;
@@ -27,7 +32,36 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
 
     @Override
     public void onDissolutionInitialize() {
+        registerEtherealEventHandlers();
         registerPossessionEventHandlers();
+    }
+
+    private void registerEtherealEventHandlers() {
+        // Prevent incorporeal players from picking up anything
+        ItemPickupCallback.EVENT.register((player, pickedUp) -> {
+            if (!player.isCreative() && RemnantState.getIfRemnant(player).filter(RemnantState::isSoul).isPresent()) {
+                Entity possessed = (Entity) ((DissolutionPlayer)player).getPossessionComponent().getPossessedEntity();
+                if (possessed == null || !DissolutionEntityTags.ITEM_USER.contains(possessed.getType())) {
+                    return ActionResult.FAILURE;
+                }
+            }
+            return ActionResult.PASS;
+        });
+        // Prevent incorporeal players from breaking anything
+        AttackBlockCallback.EVENT.register((player, world, hand, blockPos, facing) -> {
+            if (!player.isCreative() && RemnantState.getIfRemnant(player).filter(RemnantState::isIncorporeal).isPresent()) {
+                return ActionResult.FAILURE;
+            } else {
+                return ActionResult.PASS;
+            }
+        });
+        // Prevent incorporeal players from hitting anything
+        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            if (!player.isCreative() && RemnantState.getIfRemnant(player).filter(RemnantState::isIncorporeal).isPresent()) {
+                return ActionResult.FAILURE;
+            }
+            return ActionResult.PASS;
+        });
     }
 
     private void registerPossessionEventHandlers() {
