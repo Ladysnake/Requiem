@@ -6,7 +6,7 @@ import ladysnake.dissolution.client.gui.hud.PossessionHud;
 import ladysnake.dissolution.client.network.ClientMessageHandling;
 import ladysnake.dissolution.client.render.entity.PlayerShellEntityRenderer;
 import ladysnake.dissolution.common.entity.PlayerShellEntity;
-import ladysnake.dissolution.common.entity.PossessableEntityImpl;
+import ladysnake.dissolution.common.impl.possession.entity.PossessableEntityImpl;
 import ladysnake.satin.client.event.PickEntityShaderCallback;
 import ladysnake.satin.client.event.PreBlockEntitiesCallback;
 import ladysnake.satin.client.event.ResolutionChangeCallback;

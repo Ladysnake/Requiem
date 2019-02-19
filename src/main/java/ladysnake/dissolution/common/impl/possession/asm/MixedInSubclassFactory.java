@@ -3,7 +3,7 @@ package ladysnake.dissolution.common.impl.possession.asm;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.conversion.PossessableSubstitutionHandler;
 import ladysnake.dissolution.api.v1.possession.conversion.PossessionConversionRegistry;
-import ladysnake.dissolution.common.entity.PossessableEntityImpl;
+import ladysnake.dissolution.common.impl.possession.entity.PossessableEntityImpl;
 import net.fabricmc.loader.launch.common.FabricLauncherBase;
 import net.minecraft.entity.EntityType;
 import org.apiguardian.api.API;

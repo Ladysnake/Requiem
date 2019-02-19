@@ -1,5 +1,6 @@
-package ladysnake.dissolution.common.entity;
+package ladysnake.dissolution.common.impl.possession.entity;
 
+import ladysnake.dissolution.common.entity.DissolutionEntities;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.world.World;

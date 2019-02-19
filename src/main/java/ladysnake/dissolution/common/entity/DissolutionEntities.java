@@ -1,6 +1,7 @@
 package ladysnake.dissolution.common.entity;
 
 import ladysnake.dissolution.Dissolution;
+import ladysnake.dissolution.common.impl.possession.entity.PossessableEntityImpl;
 import ladysnake.reflectivefabric.misc.DebugUtil;
 import net.fabricmc.fabric.api.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityCategory;

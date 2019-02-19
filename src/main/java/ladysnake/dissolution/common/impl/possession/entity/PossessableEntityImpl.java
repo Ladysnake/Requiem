@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.entity;
+package ladysnake.dissolution.common.impl.possession.entity;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.entity.ability.*;
