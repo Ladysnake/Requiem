@@ -69,7 +69,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     @Shadow
     protected abstract void setModelPose(AbstractClientPlayerEntity player);
 
-    @SuppressWarnings("InvalidMemberReference")
+    @SuppressWarnings("InvalidMemberReference") // Method array is unsupported by the plugin
     @Inject(method = {"method_4220", "method_4221"}, at = @At("HEAD"), cancellable = true)
     private void renderPossessedHand(AbstractClientPlayerEntity renderedPlayer, CallbackInfo info) {
         if (((DissolutionPlayer) renderedPlayer).getRemnantState().isSoul()) {

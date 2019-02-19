@@ -1,7 +1,7 @@
 package ladysnake.dissolution.mixin.client.render.entity;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
-import ladysnake.dissolution.api.v1.possession.Possessable;
+import ladysnake.dissolution.client.DissolutionFx;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VisibleRegion;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -17,14 +17,17 @@ import javax.annotation.Nullable;
 @Mixin(EntityRenderDispatcher.class)
 public abstract class EntityRenderDispatcherMixin {
     @Nullable
-    private Possessable dissolution_camerasPossessed;
+    private Entity dissolution_camerasPossessed;
 
     @Inject(method = "setRenderPosition", at = @At("HEAD"))
     private void updateCamerasPossessedEntity(double x, double y, double z, CallbackInfo info) {
         MinecraftClient client = MinecraftClient.getInstance();
         Entity camera = client.getCameraEntity();
         if (camera instanceof DissolutionPlayer && client.options.field_1850 == 0) {
-            dissolution_camerasPossessed = ((DissolutionPlayer) camera).getPossessionComponent().getPossessedEntity();
+            dissolution_camerasPossessed = (Entity) ((DissolutionPlayer) camera).getPossessionComponent().getPossessedEntity();
+            if (dissolution_camerasPossessed == null) {
+                dissolution_camerasPossessed = DissolutionFx.INSTANCE.getAnimationEntity();
+            }
         } else {
             dissolution_camerasPossessed = null;
         }
