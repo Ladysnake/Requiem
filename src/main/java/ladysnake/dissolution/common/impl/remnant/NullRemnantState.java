@@ -31,7 +31,7 @@ public final class NullRemnantState implements RemnantState {
 
     @Override
     public RemnantType getType() {
-        return RemnantStates.NULL;
+        return RemnantStates.MORTAL;
     }
 
     @Override

@@ -43,12 +43,13 @@ public class Dissolution implements ModInitializer {
         ServerMessageHandling.init();
         DissolutionApi.registerPlugin(new VanillaDissolutionPlugin());
         CommandRegistry.INSTANCE.register(false, DissolutionCommand::register);
-        ResourceManagerHelper.get(ResourceType.DATA).addReloadListener(MOVEMENT_ALTERER_MANAGER);
+        ResourceManagerHelper.get(ResourceType.DATA).registerReloadListener(MOVEMENT_ALTERER_MANAGER);
         ApiInitializer.setPluginCallback(Dissolution::registerPlugin);
     }
 
     private static void registerPlugin(DissolutionPlugin plugin) {
         plugin.onDissolutionInitialize();
+        plugin.registerRemnantStates(DissolutionRegistries.REMNANT_STATES);
         plugin.registerMobAbilities(DissolutionRegistries.ABILITIES);
         plugin.registerPossessedConversions(DissolutionRegistries.CONVERSION);
     }

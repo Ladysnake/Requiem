@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common;
 
+import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.DissolutionPlugin;
 import ladysnake.dissolution.api.v1.entity.ability.AbilityType;
@@ -9,6 +10,7 @@ import ladysnake.dissolution.api.v1.event.ItemPickupCallback;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.conversion.PossessionConversionRegistry;
 import ladysnake.dissolution.api.v1.remnant.RemnantState;
+import ladysnake.dissolution.api.v1.remnant.RemnantType;
 import ladysnake.dissolution.client.DissolutionFx;
 import ladysnake.dissolution.common.entity.DissolutionEntities;
 import ladysnake.dissolution.common.entity.PlayerShellEntity;
@@ -27,6 +29,10 @@ import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.SnowmanEntity;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.registry.Registry;
+
+import static ladysnake.dissolution.common.remnant.RemnantStates.LARVA;
+import static ladysnake.dissolution.common.remnant.RemnantStates.YOUNG;
 
 public class VanillaDissolutionPlugin implements DissolutionPlugin {
 
@@ -111,5 +117,11 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
     @Override
     public void registerPossessedConversions(PossessionConversionRegistry registry) {
         registry.registerPossessedConverter(DissolutionEntities.PLAYER_SHELL, PlayerShellEntity::onSoulInteract);
+    }
+
+    @Override
+    public void registerRemnantStates(Registry<RemnantType> registry) {
+        Registry.register(registry, Dissolution.id("larva"), LARVA);
+        Registry.register(registry, Dissolution.id("young"), YOUNG);
     }
 }

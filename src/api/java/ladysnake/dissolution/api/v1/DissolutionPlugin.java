@@ -2,6 +2,8 @@ package ladysnake.dissolution.api.v1;
 
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.dissolution.api.v1.possession.conversion.PossessionConversionRegistry;
+import ladysnake.dissolution.api.v1.remnant.RemnantType;
+import net.minecraft.util.registry.Registry;
 
 /**
  * A {@link DissolutionPlugin} is an entry point for API consumers.
@@ -36,4 +38,15 @@ public interface DissolutionPlugin {
      * @param registry Dissolution's conversion registry
      */
     default void registerPossessedConversions(PossessionConversionRegistry registry) {}
+
+    /**
+     * Register {@link RemnantType} to provide custom {@link ladysnake.dissolution.api.v1.remnant.RemnantState} players
+     * can be in.
+     * <p>
+     * The passed in {@link Registry} can be safely reused outside of this method.
+     * Stored instances should be refreshed each time this method is called.
+     *
+     * @param registry Dissolution's remnant type registry
+     */
+    default void registerRemnantStates(Registry<RemnantType> registry) {}
 }

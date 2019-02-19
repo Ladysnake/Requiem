@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public interface RemnantState {
-    String NULL_STATE_ID = "dissolution:null";
+    String NULL_STATE_ID = "dissolution:mortal";
 
     boolean isIncorporeal();
 
