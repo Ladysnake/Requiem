@@ -1,5 +1,6 @@
 package ladysnake.dissolution.common;
 
+import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.dissolution.api.v1.possession.conversion.PossessionConversionRegistry;
 import ladysnake.dissolution.api.v1.remnant.RemnantState;
@@ -27,6 +28,7 @@ public final class DissolutionRegistries {
     public static final DefaultMappedRegistry<RemnantType> REMNANT_STATES = new DefaultMappedRegistry<>(RemnantState.NULL_STATE_ID);
 
     public static void init() {
+        Registry.register(Registry.REGISTRIES, Dissolution.id("remnant_states"), REMNANT_STATES);
         Registry.register(REMNANT_STATES, new Identifier(RemnantState.NULL_STATE_ID), p -> NullRemnantState.NULL_STATE);
     }
 
