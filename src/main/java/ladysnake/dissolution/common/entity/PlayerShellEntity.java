@@ -19,7 +19,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -43,19 +42,15 @@ public class PlayerShellEntity extends MobEntity {
     private GameProfile profile;
 
     public PlayerShellEntity(PlayerEntity player) {
-        this(player.world);
+        this(DissolutionEntities.PLAYER_SHELL, player.world);
         this.setPositionAndAngles(player);
         this.inventory = new BasicInventory(player.inventory.main.size());
         this.setPlayerUuid(player.getUuid());
         this.setCustomName(new StringTextComponent(player.getEntityName()));
     }
 
-    public PlayerShellEntity(World world) {
-        this(DissolutionEntities.PLAYER_SHELL, world);
-    }
-
     @API(status = MAINTAINED)
-    protected PlayerShellEntity(EntityType<?> entityType_1, World world_1) {
+    protected PlayerShellEntity(EntityType<? extends PlayerShellEntity> entityType_1, World world_1) {
         super(entityType_1, world_1);
     }
 
@@ -87,7 +82,7 @@ public class PlayerShellEntity extends MobEntity {
                     this.dropInventory();
                 }
                 InventoryHelper.transferEquipment(this, possessor);
-                ((ServerWorld)this.world).method_18216(this);
+                this.invalidate();
                 ((DissolutionPlayer) possessor).getRemnantState().setSoul(false);
             }
         }

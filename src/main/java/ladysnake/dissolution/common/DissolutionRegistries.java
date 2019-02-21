@@ -11,7 +11,7 @@ import ladysnake.dissolution.common.impl.possession.LazyDefaultPossessionConvers
 import ladysnake.dissolution.common.impl.possession.asm.AsmConverterProvider;
 import ladysnake.dissolution.common.impl.remnant.NullRemnantState;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.DefaultMappedRegistry;
+import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
 import org.apiguardian.api.API;
 
@@ -25,7 +25,7 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 public final class DissolutionRegistries {
     public static final PossessionConversionRegistry CONVERSION = new LazyDefaultPossessionConversionRegistry(new AsmConverterProvider());
     public static final MobAbilityRegistry ABILITIES = new DefaultedMobAbilityRegistry(SimpleMobAbilityConfig.DEFAULT);
-    public static final DefaultMappedRegistry<RemnantType> REMNANT_STATES = new DefaultMappedRegistry<>(RemnantState.NULL_STATE_ID);
+    public static final DefaultedRegistry<RemnantType> REMNANT_STATES = new DefaultedRegistry<>(RemnantState.NULL_STATE_ID);
 
     public static void init() {
         Registry.register(Registry.REGISTRIES, Dissolution.id("remnant_states"), REMNANT_STATES);

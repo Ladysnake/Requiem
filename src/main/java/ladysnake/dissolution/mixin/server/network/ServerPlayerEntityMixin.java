@@ -1,6 +1,5 @@
 package ladysnake.dissolution.mixin.server.network;
 
-import com.mojang.authlib.GameProfile;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.Possessable;
@@ -15,7 +14,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -33,17 +31,15 @@ import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 import static ladysnake.dissolution.mixin.server.PlayerTagKeys.*;
 
 @Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin extends PlayerEntity {
+public abstract class ServerPlayerEntityMixin extends LivingEntity {
     @Nullable
     private CompoundTag dissolution_possessedEntityTag;
 
-    @Shadow public abstract SleepResult trySleep(BlockPos blockPos_1);
+    protected ServerPlayerEntityMixin(EntityType<? extends LivingEntity> entityType_1, World world_1) {
+        super(entityType_1, world_1);
+    }
 
     @Shadow public ServerPlayNetworkHandler networkHandler;
-
-    public ServerPlayerEntityMixin(World world_1, GameProfile gameProfile_1) {
-        super(world_1, gameProfile_1);
-    }
 
     @Inject(method = "onStartedTracking", at = @At("HEAD"))
     private void onStartedTracking(Entity tracked, CallbackInfo info) {
@@ -66,14 +62,14 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
                 possessionComponent.stopPossessing();
                 this.dissolution_possessedEntityTag = new CompoundTag();
                 current.saveSelfToTag(this.dissolution_possessedEntityTag);
-                ((ServerWorld)this.world).method_18216(current);
+                current.invalidate();
             }
         }
     }
 
     @Inject(method = "onTeleportationDone", at = @At("HEAD"))
     private void onTeleportDone(CallbackInfo info) {
-        sendTo((ServerPlayerEntity)(Object)this, createCorporealityMessage(this));
+        sendTo((ServerPlayerEntity)(Object)this, createCorporealityMessage((PlayerEntity)(Object) this));
         if (this.dissolution_possessedEntityTag != null) {
             Entity formerPossessed = EntityType.loadEntityWithPassengers(
                     this.dissolution_possessedEntityTag,

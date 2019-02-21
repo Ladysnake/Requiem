@@ -10,9 +10,7 @@ import ladysnake.dissolution.common.impl.movement.PlayerMovementAlterer;
 import ladysnake.dissolution.common.impl.possession.PossessionComponentImpl;
 import ladysnake.dissolution.common.impl.remnant.NullRemnantState;
 import ladysnake.dissolution.common.remnant.RemnantStates;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -36,7 +34,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
     private PossessionComponent possessionComponent = new PossessionComponentImpl((PlayerEntity) (Object) this);
     private MovementAlterer movementAlterer = new PlayerMovementAlterer((PlayerEntity)(Object)this);
 
-    protected PlayerEntityMixin(EntityType<?> type, World world) {
+    protected PlayerEntityMixin(EntityType<? extends PlayerEntity> type, World world) {
         super(type, world);
     }
 
@@ -97,13 +95,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
         }
     }
 
-    @Inject(method = "getEyeHeight", at = @At("RETURN"), cancellable = true)
-    private void adjustEyeHeight(CallbackInfoReturnable<Float> info) {
-        if (this.getPossessionComponent().isPossessing()) {
-            Entity possessedEntity = (Entity) this.getPossessionComponent().getPossessedEntity();
-            if (possessedEntity != null) {
-                info.setReturnValue(possessedEntity.getEyeHeight());
-            }
+    @Inject(method = "getSizeForStatus", at = @At("HEAD"), cancellable = true)
+    private void adjustSize(EntityPose pose, CallbackInfoReturnable<EntitySize> cir) {
+        Entity possessedEntity = (Entity) this.getPossessionComponent().getPossessedEntity();
+        if (possessedEntity != null) {
+            cir.setReturnValue(possessedEntity.getSizeForStatus(pose));
         }
     }
 

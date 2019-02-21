@@ -2,6 +2,7 @@ package ladysnake.dissolution.common.network;
 
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
 import net.minecraft.entity.Entity;
@@ -41,7 +42,7 @@ public class DissolutionNetworking {
 
     public static void sendToAllTracking(Entity tracked, CustomPayloadS2CPacket packet) {
         if (tracked.world instanceof ServerWorld) {
-            ((ServerWorld) tracked.world).getEntityTracker().method_14079(tracked, packet);
+            PlayerStream.watching(tracked).forEach(p -> sendTo((ServerPlayerEntity) p, packet));
         }
     }
 

@@ -11,6 +11,7 @@ import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -21,9 +22,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
     @Nullable
     private MovementConfig config;
     private PlayerEntity player;
-    private double lastVelocityX;
-    private double lastVelocityY;
-    private double lastVelocityZ;
+    private Vec3d lastVelocity = Vec3d.ZERO;
 
     public PlayerMovementAlterer(PlayerEntity player) {
         this.player = player;
@@ -62,14 +61,23 @@ public class PlayerMovementAlterer implements MovementAlterer {
         if (getActualFlightMode(config, getPlayerOrPossessed(player)) == FORCED) {
             this.player.abilities.flying = true;
         }
-        this.player.velocityY -= this.config.getAddedGravity();
-        if (!this.player.onGround && this.player.velocityY < 0) {
-            this.player.velocityY *= this.config.getFallSpeedModifier();
+        Vec3d velocity = this.player.getVelocity();
+        velocity = applyGravity(velocity, this.config.getAddedGravity());
+        velocity = applyFallSpeedModifier(velocity, this.config.getFallSpeedModifier());
+        velocity = applyInertia(velocity, this.config.getInertia());
+        this.player.setVelocity(velocity);
+        this.lastVelocity = velocity;
+    }
+
+    private Vec3d applyGravity(Vec3d velocity, float addedGravity) {
+        return velocity.subtract(0, addedGravity, 0);
+    }
+
+    private Vec3d applyFallSpeedModifier(Vec3d velocity, float fallSpeedModifier) {
+        if (!this.player.onGround && velocity.y < 0) {
+            velocity = velocity.method_18805(1.0, fallSpeedModifier, 1.0);
         }
-        applyInertia(this.config.getInertia());
-        this.lastVelocityX = this.player.velocityX;
-        this.lastVelocityY = this.player.velocityY;
-        this.lastVelocityZ = this.player.velocityZ;
+        return velocity;
     }
 
     private static LivingEntity getPlayerOrPossessed(PlayerEntity player) {
@@ -91,9 +99,8 @@ public class PlayerMovementAlterer implements MovementAlterer {
         return config.getFlightMode();
     }
 
-    private void applyInertia(float inertia) {
-        this.player.velocityX = this.player.velocityX * (1- inertia) + this.lastVelocityX * inertia;
-        this.player.velocityY = this.player.velocityY * (1- inertia) + this.lastVelocityY * inertia;
-        this.player.velocityZ = this.player.velocityZ * (1- inertia) + this.lastVelocityZ * inertia;
+    private Vec3d applyInertia(Vec3d velocity, float inertia) {
+        // velocity = velocity * (1 - inertia) + lastVelocity * inertia
+        return velocity.multiply(1 - inertia).add(this.lastVelocity.multiply(inertia));
     }
 }

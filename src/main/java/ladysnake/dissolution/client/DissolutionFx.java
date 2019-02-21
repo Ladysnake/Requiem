@@ -79,7 +79,7 @@ public final class DissolutionFx implements PreBlockEntitiesCallback, Resolution
         double dx = player.x - entity.x;
         double dz = player.z - entity.z;
         double angle = Math.atan2(dz, dx) * 180 / Math.PI;
-        double pitch = Math.atan2((player.y + player.getEyeHeight()) - (entity.y + (entity.getHeight() / 2.0F)), Math.sqrt(dx * dx + dz * dz)) * 180 / Math.PI;
+        double pitch = Math.atan2((player.y + player.getEyeHeight(player.getStatus())) - (entity.y + (entity.getHeight() / 2.0F)), Math.sqrt(dx * dx + dz * dz)) * 180 / Math.PI;
         double distance = player.distanceTo(entity);
         float rYaw = MathHelper.wrapDegrees((float)(angle - player.yaw)) + 90F;
         float rPitch = (float) pitch - (float)(10.0F / Math.sqrt(distance)) + (float)(distance * Math.PI / 90);

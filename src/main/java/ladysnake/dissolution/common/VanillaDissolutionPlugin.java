@@ -48,7 +48,7 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
             if (!player.isCreative() && RemnantState.getIfRemnant(player).filter(RemnantState::isSoul).isPresent()) {
                 Entity possessed = (Entity) ((DissolutionPlayer)player).getPossessionComponent().getPossessedEntity();
                 if (possessed == null || !DissolutionEntityTags.ITEM_USER.contains(possessed.getType())) {
-                    return ActionResult.FAILURE;
+                    return ActionResult.FAIL;
                 }
             }
             return ActionResult.PASS;
@@ -56,7 +56,7 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
         // Prevent incorporeal players from breaking anything
         AttackBlockCallback.EVENT.register((player, world, hand, blockPos, facing) -> {
             if (!player.isCreative() && RemnantState.getIfRemnant(player).filter(RemnantState::isIncorporeal).isPresent()) {
-                return ActionResult.FAILURE;
+                return ActionResult.FAIL;
             } else {
                 return ActionResult.PASS;
             }
@@ -64,7 +64,7 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
         // Prevent incorporeal players from hitting anything
         AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (!player.isCreative() && RemnantState.getIfRemnant(player).filter(RemnantState::isIncorporeal).isPresent()) {
-                return ActionResult.FAILURE;
+                return ActionResult.FAIL;
             }
             return ActionResult.PASS;
         });
@@ -77,7 +77,7 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
                 if (target instanceof MobEntity && target.world.isClient) {
                     DissolutionFx.INSTANCE.beginFishEyeAnimation(target);
                 }
-                return ActionResult.FAILURE;
+                return ActionResult.FAIL;
             }
             return ActionResult.PASS;
         });
@@ -88,7 +88,7 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
                 if (possessed.world.isClient || ((Possessable)possessed).getMobAbilityController().useDirect(AbilityType.ATTACK, target)) {
                     return ActionResult.SUCCESS;
                 }
-                return ActionResult.FAILURE;
+                return ActionResult.FAIL;
             }
             return ActionResult.PASS;
         });

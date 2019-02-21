@@ -3,11 +3,10 @@ package ladysnake.dissolution.client.gui.hud;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Drawable;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ActionResult;
 
-public class PossessionHud extends Drawable {
+public class PossessionHud {
     public static final PossessionHud INSTANCE = new PossessionHud();
 
     public ActionResult onRenderHotbar(@SuppressWarnings("unused") float tickDelta) {

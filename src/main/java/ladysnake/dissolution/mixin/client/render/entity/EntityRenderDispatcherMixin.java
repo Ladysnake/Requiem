@@ -23,7 +23,7 @@ public abstract class EntityRenderDispatcherMixin {
     private void updateCamerasPossessedEntity(double x, double y, double z, CallbackInfo info) {
         MinecraftClient client = MinecraftClient.getInstance();
         Entity camera = client.getCameraEntity();
-        if (camera instanceof DissolutionPlayer && client.options.field_1850 == 0) {
+        if (camera instanceof DissolutionPlayer && client.options.perspective == 0) {
             dissolution_camerasPossessed = (Entity) ((DissolutionPlayer) camera).getPossessionComponent().getPossessedEntity();
             if (dissolution_camerasPossessed == null) {
                 dissolution_camerasPossessed = DissolutionFx.INSTANCE.getAnimationEntity();

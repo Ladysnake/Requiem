@@ -67,7 +67,7 @@ public abstract class PlayerManagerMixin {
             Entity possessedEntityMount = EntityType.loadEntityWithPassengers(
                     serializedPossessedInfo.getCompound(POSSESSED_ENTITY_TAG),
                     world,
-                    (entity_1x) -> !world.method_18197(entity_1x, true) ? null : entity_1x
+                    (entity_1x) -> !world.method_18768(entity_1x) ? null : entity_1x
             );
             if (possessedEntityMount != null) {
                 UUID possessedEntityUuid = serializedPossessedInfo.getUuid(POSSESSED_UUID_TAG);
@@ -80,7 +80,7 @@ public abstract class PlayerManagerMixin {
         if (possessedEntityMount instanceof MobEntity && possessedEntityMount.getUuid().equals(possessedEntityUuid)) {
             player.startPossessing((MobEntity) possessedEntityMount);
         } else {
-            for (Entity entity : possessedEntityMount.method_5736()) {
+            for (Entity entity : possessedEntityMount.getPassengersDeep()) {
                 if (entity instanceof MobEntity && entity.getUuid().equals(possessedEntityUuid)) {
                     player.startPossessing((MobEntity) entity);
                     break;
@@ -90,10 +90,10 @@ public abstract class PlayerManagerMixin {
 
         if (!player.isPossessing()) {
             Dissolution.LOGGER.warn("Couldn't reattach possessed entity to player");
-            world.method_18217(possessedEntityMount);
+            world.method_18774(possessedEntityMount);
 
-            for (Entity entity : possessedEntityMount.method_5736()) {
-                world.method_18217(entity);
+            for (Entity entity : possessedEntityMount.getPassengersDeep()) {
+                world.method_18774(entity);
             }
         }
     }
@@ -112,11 +112,11 @@ public abstract class PlayerManagerMixin {
         if (possessedEntity != null) {
             ((DissolutionPlayer) player).getPossessionComponent().stopPossessing();
             ServerWorld serverWorld_1 = player.getServerWorld();
-            serverWorld_1.method_18217((Entity) possessedEntity);
-            for (Entity ridden : ((Entity) possessedEntity).method_5736()) {
-                serverWorld_1.method_18217(ridden);
+            serverWorld_1.method_18774((Entity) possessedEntity);
+            for (Entity ridden : ((Entity) possessedEntity).getPassengersDeep()) {
+                serverWorld_1.method_18774(ridden);
             }
-            serverWorld_1.getWorldChunk(player.chunkX, player.chunkZ).markDirty();
+            serverWorld_1.method_8497(player.chunkX, player.chunkZ).markDirty();
         }
     }
 }

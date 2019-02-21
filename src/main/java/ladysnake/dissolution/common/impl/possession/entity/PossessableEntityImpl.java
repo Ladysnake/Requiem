@@ -1,6 +1,7 @@
 package ladysnake.dissolution.common.impl.possession.entity;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.annotation.CalledThroughReflection;
 import ladysnake.dissolution.api.v1.entity.ability.*;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.common.DissolutionRegistries;
@@ -16,12 +17,14 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
@@ -47,11 +50,18 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     private DirectAbility<? super PossessableEntityImpl> directAttack;
     private DirectAbility<? super PossessableEntityImpl> directInteraction;
 
+    @CalledThroughReflection
+    @SuppressWarnings("unchecked")
+    public PossessableEntityImpl(MobEntityWithAi cloned) {
+        this((EntityType<? extends MobEntityWithAi>) cloned.getType(), cloned.world);
+    }
+
+    @CalledThroughReflection
     public PossessableEntityImpl(World world) {
         super(world);
     }
 
-    public PossessableEntityImpl(EntityType<?> entityType_1, World world_1) {
+    public PossessableEntityImpl(EntityType<? extends MobEntityWithAi> entityType_1, World world_1) {
         super(entityType_1, world_1);
     }
 
@@ -73,7 +83,8 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
 
     @Override
     public Optional<PlayerEntity> getPossessor() {
-        return getPossessorUuid().map(world::getPlayerByUuid);
+        // method_18470 == getPlayerByUuid
+        return getPossessorUuid().map(world::method_18470);
     }
 
     @Override
@@ -169,7 +180,7 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
      * Called by living entities each tick to process the move logic
      */
     @Override
-    public void method_6091(float strafe, float vertical, float forward) {
+    public void travel(Vec3d direction) {
         // Always set the entity at the possessor's position
         Optional<PlayerEntity> optionalPlayer = this.getPossessor();
         if (optionalPlayer.isPresent()) {
@@ -184,13 +195,13 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
             // Prevent this entity from taking fall damage unless triggered by the possessor
             this.fallDistance = 0;
 
-            super.method_6091(strafe, vertical, forward);
+            super.travel(direction);
             this.setPosition(player.x, player.y, player.z);
             // update limb movement
             this.field_6249 = player.field_6249;
             this.field_6225 = player.field_6225;
         } else {
-            super.method_6091(strafe, vertical, forward);
+            super.travel(direction);
         }
     }
 

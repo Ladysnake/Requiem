@@ -61,7 +61,7 @@ public interface PossessableSubstitutionHandler<E extends MobEntity> extends BiF
                 ((ClientWorld)clone.world).method_2942(clone.getEntityId(), clone);
             } else {
                 // On servers, we remove the entity immediately
-                ((ServerWorld)entity.world).method_18217(entity);
+                ((ServerWorld)entity.world).method_18774(entity);
                 // Then spawn the clone
                 clone.world.spawnEntity(clone);
             }

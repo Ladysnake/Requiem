@@ -13,7 +13,7 @@ public abstract class PossessableEntityBase extends MobEntityWithAi {
         this(DissolutionEntities.DEBUG_POSSESSABLE, world);
     }
 
-    protected PossessableEntityBase(EntityType<?> entityType_1, World world_1) {
+    protected PossessableEntityBase(EntityType<? extends MobEntityWithAi> entityType_1, World world_1) {
         super(entityType_1, world_1);
     }
 }
