@@ -45,6 +45,7 @@ public abstract class MutableRemnantState implements RemnantState {
             } else {
                 config = null;
                 abilities.allowFlying = this.player.isCreative();
+                abilities.flying &= abilities.allowFlying;
                 abilities.invulnerable = this.player.isCreative();
                 ((DissolutionPlayer)this.player).getPossessionComponent().stopPossessing();
             }
