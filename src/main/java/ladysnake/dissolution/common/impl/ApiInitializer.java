@@ -7,11 +7,15 @@ import ladysnake.dissolution.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.dissolution.api.v1.internal.ApiInternals;
 import ladysnake.dissolution.common.impl.ability.SimpleMobAbilityConfig;
 import ladysnake.reflectivefabric.reflection.UncheckedReflectionException;
+import org.apiguardian.api.API;
 
 import java.lang.reflect.Field;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static org.apiguardian.api.API.Status.INTERNAL;
+
+@API(status = INTERNAL)
 public class ApiInitializer {
     public static void init() {
         try {
