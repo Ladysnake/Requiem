@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.util.ActionResult;
@@ -79,8 +80,8 @@ public class PlayerShellEntity extends MobEntity {
     @Nullable
     public Possessable onSoulInteract(@Nullable PlayerEntity possessor) {
         if (possessor != null) {
-            possessor.setPositionAndAngles(this);
             if (!world.isClient) {
+                ((ServerPlayerEntity)possessor).networkHandler.teleportRequest(this.x, this.y, this.z, this.yaw, this.pitch);
                 if (this.inventory != null) {
                     transferInventory(this.inventory, possessor.inventory, Math.min(possessor.inventory.main.size(), this.inventory.getInvSize()));
                     this.dropInventory();
@@ -120,28 +121,28 @@ public class PlayerShellEntity extends MobEntity {
     @Nonnull
     @Override
     public ActionResult interactAt(PlayerEntity player, Vec3d vec, Hand hand) {
-        ItemStack itemstack = player.getStackInHand(hand);
+        ItemStack stack = player.getStackInHand(hand);
 
-        if (itemstack.getItem() != Items.NAME_TAG) {
+        if (stack.getItem() != Items.NAME_TAG) {
             if (!this.world.isClient && !player.isSpectator()) {
-                EquipmentSlot entityequipmentslot = MobEntity.getPreferredEquipmentSlot(itemstack);
+                EquipmentSlot slot = MobEntity.getPreferredEquipmentSlot(stack);
 
-                if (itemstack.isEmpty()) {
-                    EquipmentSlot entityEquipmentSlot2 = this.getClickedSlot(vec);
+                if (stack.isEmpty()) {
+                    EquipmentSlot clickedSlot = this.getClickedSlot(vec);
 
-                    if (this.isEquippedStackValid(entityEquipmentSlot2)) {
-                        this.swapItem(player, entityEquipmentSlot2, itemstack, hand);
+                    if (this.isEquippedStackValid(clickedSlot)) {
+                        this.swapItem(player, clickedSlot, stack, hand);
                     } else {
                         return ActionResult.PASS;
                     }
                 } else {
 
-                    this.swapItem(player, entityequipmentslot, itemstack, hand);
+                    this.swapItem(player, slot, stack, hand);
                 }
 
                 return ActionResult.SUCCESS;
             } else {
-                return itemstack.isEmpty() && !this.isEquippedStackValid(this.getClickedSlot(vec)) ? ActionResult.PASS
+                return stack.isEmpty() && !this.isEquippedStackValid(this.getClickedSlot(vec)) ? ActionResult.PASS
                         : ActionResult.SUCCESS;
             }
         } else {
@@ -156,42 +157,41 @@ public class PlayerShellEntity extends MobEntity {
      * @return the targeted equipment slot
      */
     protected EquipmentSlot getClickedSlot(Vec3d raytrace) {
-        EquipmentSlot entityEquipmentSlot = EquipmentSlot.HAND_MAIN;
+        EquipmentSlot slot = EquipmentSlot.HAND_MAIN;
         boolean flag = this.isChild();
         double d0 = (raytrace.y) * (flag ? 2.0D : 1.0D);
-        EquipmentSlot entityEquipmentSlot1 = EquipmentSlot.FEET;
 
-        if (d0 >= 0.1D && d0 < 0.1D + (flag ? 0.8D : 0.45D) && this.isEquippedStackValid(entityEquipmentSlot1)) {
-            entityEquipmentSlot = EquipmentSlot.FEET;
+        if (d0 >= 0.1D && d0 < 0.1D + (flag ? 0.8D : 0.45D) && this.isEquippedStackValid(EquipmentSlot.FEET)) {
+            slot = EquipmentSlot.FEET;
         } else if (d0 >= 0.9D + (flag ? 0.3D : 0.0D) && d0 < 0.9D + (flag ? 1.0D : 0.7D)
                 && this.isEquippedStackValid(EquipmentSlot.CHEST)) {
-            entityEquipmentSlot = EquipmentSlot.CHEST;
+            slot = EquipmentSlot.CHEST;
         } else if (d0 >= 0.4D && d0 < 0.4D + (flag ? 1.0D : 0.8D) && this.isEquippedStackValid(EquipmentSlot.LEGS)) {
-            entityEquipmentSlot = EquipmentSlot.LEGS;
+            slot = EquipmentSlot.LEGS;
         } else if (d0 >= 1.6D && this.isEquippedStackValid(EquipmentSlot.HEAD)) {
-            entityEquipmentSlot = EquipmentSlot.HEAD;
+            slot = EquipmentSlot.HEAD;
         }
 
-        return entityEquipmentSlot;
+        return slot;
     }
 
     protected void swapItem(PlayerEntity player, EquipmentSlot targetedSlot, ItemStack playerItemStack,
                             Hand hand) {
-        ItemStack itemstack = this.getEquippedStack(targetedSlot);
-        if (player.abilities.creativeMode && itemstack.isEmpty() && !playerItemStack.isEmpty()) {
-            ItemStack itemstack2 = playerItemStack.copy();
-            itemstack2.setAmount(1);
-            this.setEquippedStack(targetedSlot, itemstack2);
+        ItemStack equippedStack = this.getEquippedStack(targetedSlot);
+        if (player.abilities.creativeMode && equippedStack.isEmpty() && !playerItemStack.isEmpty()) {
+            ItemStack copy = playerItemStack.copy();
+            copy.setAmount(1);
+            this.setEquippedStack(targetedSlot, copy);
         } else if (!playerItemStack.isEmpty() && playerItemStack.getAmount() > 1) {
-            if (itemstack.isEmpty()) {
-                ItemStack itemstack1 = playerItemStack.copy();
-                itemstack1.setAmount(1);
-                this.setEquippedStack(targetedSlot, itemstack1);
+            if (equippedStack.isEmpty()) {
+                ItemStack copy = playerItemStack.copy();
+                copy.setAmount(1);
+                this.setEquippedStack(targetedSlot, copy);
                 playerItemStack.subtractAmount(1);
             }
         } else {
             this.setEquippedStack(targetedSlot, playerItemStack);
-            player.setStackInHand(hand, itemstack);
+            player.setStackInHand(hand, equippedStack);
         }
     }
 
@@ -218,45 +218,45 @@ public class PlayerShellEntity extends MobEntity {
      * Gets the drop chance of the item in the given slot. > 1 means it must drop with no durability loss.
      */
     @Override
-    protected float method_5929(EquipmentSlot equipmentSlot_1) {
+    protected float method_5929(EquipmentSlot slot) {
         return 2.0F;
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compound) {
-        super.readCustomDataFromTag(compound);
-        if (compound.containsKey("Items")) {
-            ListTag items = compound.getList("Items", 10);
-            this.inventory = new BasicInventory(compound.getInt("InvSize"));
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        if (tag.containsKey("Items")) {
+            ListTag items = tag.getList("Items", 10);
+            this.inventory = new BasicInventory(tag.getInt("InvSize"));
 
-            for(int int_1 = 0; int_1 < items.size(); ++int_1) {
-                CompoundTag compoundTag_2 = items.getCompoundTag(int_1);
-                int int_2 = compoundTag_2.getByte("Slot") & 255;
-                if (int_2 >= 2 && int_2 < this.inventory.getInvSize()) {
-                    this.inventory.setInvStack(int_2, ItemStack.fromTag(compoundTag_2));
+            for(int i = 0; i < items.size(); ++i) {
+                CompoundTag compoundTag_2 = items.getCompoundTag(i);
+                int slot = compoundTag_2.getByte("Slot") & 255;
+                if (slot >= 2 && slot < this.inventory.getInvSize()) {
+                    this.inventory.setInvStack(slot, ItemStack.fromTag(compoundTag_2));
                 }
             }
         }
-        this.setPlayerUuid(compound.getUuid("Player"));
+        this.setPlayerUuid(tag.getUuid("Player"));
     }
 
     @Override
     public void writeCustomDataToTag(CompoundTag compound) {
         super.writeCustomDataToTag(compound);
         if (this.inventory != null) {
-            ListTag listTag_1 = new ListTag();
+            ListTag items = new ListTag();
 
-            for(int int_1 = 2; int_1 < this.inventory.getInvSize(); ++int_1) {
-                ItemStack itemStack_1 = this.inventory.getInvStack(int_1);
-                if (!itemStack_1.isEmpty()) {
-                    CompoundTag compoundTag_2 = new CompoundTag();
-                    compoundTag_2.putByte("Slot", (byte)int_1);
-                    itemStack_1.toTag(compoundTag_2);
-                    listTag_1.add(compoundTag_2);
+            for(int i = 2; i < this.inventory.getInvSize(); ++i) {
+                ItemStack stack = this.inventory.getInvStack(i);
+                if (!stack.isEmpty()) {
+                    CompoundTag slotTag = new CompoundTag();
+                    slotTag.putByte("Slot", (byte)i);
+                    stack.toTag(slotTag);
+                    items.add(slotTag);
                 }
             }
 
-            compound.put("Items", listTag_1);
+            compound.put("Items", items);
             compound.putInt("InvSize", this.inventory.getInvSize());
         }
         this.getPlayerUuid().ifPresent(uuid -> compound.putUuid("Player", uuid));
