@@ -159,6 +159,7 @@ public class PossessionComponentImpl implements PossessionComponent {
         this.possessedNetworkId = -1;
         ((DissolutionPlayer) this.player).getMovementAlterer().setConfig(SerializableMovementConfig.SOUL);
         this.player.method_18382(); // update size
+        this.player.setBreath(this.player.getMaxBreath());
         syncPossessed();
     }
 
