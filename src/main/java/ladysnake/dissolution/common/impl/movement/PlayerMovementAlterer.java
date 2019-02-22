@@ -48,6 +48,14 @@ public class PlayerMovementAlterer implements MovementAlterer {
     }
 
     @Override
+    public float getUnderwaterAcceleration(float baseAcceleration) {
+        if (this.config != null && getActualSwimMode(this.config, getPlayerOrPossessed(player)) == FORCED) {
+            return 0.96F;
+        }
+        return baseAcceleration;
+    }
+
+    @Override
     public void update() {
         if (this.config == null) {
             return;
@@ -92,7 +100,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
         return config.getSwimMode();
     }
 
-    private MovementConfig.MovementMode getActualFlightMode(MovementConfig config, Entity entity) {
+    private static MovementConfig.MovementMode getActualFlightMode(MovementConfig config, Entity entity) {
         if (config.getFlightMode() == UNSPECIFIED) {
             return entity instanceof FlyingEntity ? FORCED : DISABLED;
         }

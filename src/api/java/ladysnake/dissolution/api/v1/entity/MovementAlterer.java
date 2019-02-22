@@ -1,5 +1,7 @@
 package ladysnake.dissolution.api.v1.entity;
 
+import net.minecraft.util.math.Vec3d;
+
 import javax.annotation.CheckForNull;
 
 /**
@@ -13,4 +15,12 @@ public interface MovementAlterer {
     void applyConfig();
 
     void update();
+
+    /**
+     * Gets the acceleration that this entity has underwater.
+     *
+     * @param baseAcceleration the default acceleration computed in {@link net.minecraft.entity.LivingEntity#travel(Vec3d)}
+     * @return the modified acceleration
+     */
+    float getUnderwaterAcceleration(float baseAcceleration);
 }

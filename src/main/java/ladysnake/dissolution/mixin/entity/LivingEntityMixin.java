@@ -11,12 +11,36 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
     public LivingEntityMixin(EntityType<?> entityType_1, World world_1) {
         super(entityType_1, world_1);
+    }
+
+    @ModifyVariable(
+            method = "travel",
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/enchantment/EnchantmentHelper;getDepthStrider(Lnet/minecraft/entity/LivingEntity;)I"
+                    )
+            ),
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/entity/LivingEntity;move(Lnet/minecraft/entity/MovementType;Lnet/minecraft/util/math/Vec3d;)V",
+                    ordinal = 0
+            ),
+            ordinal = 0
+    )
+    private float fixUnderwaterVelocity(float /* float_4 */ speedAmount) {
+        if (this instanceof DissolutionPlayer) {
+            return ((DissolutionPlayer) this).getMovementAlterer().getUnderwaterAcceleration(speedAmount);
+        }
+        return speedAmount;
     }
 
     /**
