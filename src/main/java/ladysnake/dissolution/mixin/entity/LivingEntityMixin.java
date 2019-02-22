@@ -1,10 +1,9 @@
 package ladysnake.dissolution.mixin.entity;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.possession.PossessionComponent;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.damage.ProjectileDamageSource;
@@ -58,6 +57,21 @@ public abstract class LivingEntityMixin extends Entity {
             LivingEntity possessed = (LivingEntity) ((DissolutionPlayer) this).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {
                 info.setReturnValue(DissolutionEntityTags.CLIMBER.contains(possessed.getType()));
+            }
+        }
+    }
+
+    @Inject(method = "getEyeHeight", at = @At("HEAD"), cancellable = true)
+    private void adjustEyeHeight(EntityPose pose, EntitySize size, CallbackInfoReturnable<Float> cir) {
+        if (this instanceof DissolutionPlayer) {
+            PossessionComponent possessionComponent = ((DissolutionPlayer) this).getPossessionComponent();
+            // This method can be called before the possession component is set
+            //noinspection ConstantConditions
+            if (possessionComponent != null) {
+                LivingEntity possessed = (LivingEntity) possessionComponent.getPossessedEntity();
+                if (possessed != null) {
+                    cir.setReturnValue(possessed.getEyeHeight(pose));
+                }
             }
         }
     }

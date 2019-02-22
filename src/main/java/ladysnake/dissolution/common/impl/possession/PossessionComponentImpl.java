@@ -81,6 +81,7 @@ public class PossessionComponentImpl implements PossessionComponent {
         syncPossessed();
         // 5- Update some attributes
         this.player.setPositionAndAngles(host);
+        this.player.method_18382(); // update size
         ((DissolutionPlayer)this.player).getMovementAlterer().setConfig(Dissolution.getMovementAltererManager().getEntityMovementConfig(host.getType()));
         if (!attributeUpdated.contains(this.player)) {
             swapAttributes(this.player);
@@ -157,6 +158,7 @@ public class PossessionComponentImpl implements PossessionComponent {
     private void resetState() {
         this.possessedNetworkId = -1;
         ((DissolutionPlayer) this.player).getMovementAlterer().setConfig(SerializableMovementConfig.SOUL);
+        this.player.method_18382(); // update size
         syncPossessed();
     }
 
