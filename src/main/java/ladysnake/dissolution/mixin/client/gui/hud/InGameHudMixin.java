@@ -6,17 +6,17 @@ import ladysnake.dissolution.api.v1.event.client.HotbarRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
@@ -48,13 +48,30 @@ public abstract class InGameHudMixin extends DrawableHelper {
                     target = "Lnet/minecraft/client/gui/hud/InGameHud;method_1744(Lnet/minecraft/entity/LivingEntity;)I"
             )
     )
-    private int preventFoodRender(InGameHud inGameHud, LivingEntity livingEntity_1) {
+    private int preventFoodRender(InGameHud self, LivingEntity livingEntity_1) {
         int actual = this.method_1744(livingEntity_1);
         DissolutionPlayer cameraPlayer = (DissolutionPlayer) this.getCameraPlayer();
-        if (actual == 0 && cameraPlayer != null && cameraPlayer.getPossessionComponent().isPossessing()) {
+        if (actual == 0 && cameraPlayer != null && cameraPlayer.getRemnantState().isSoul()) {
             return -1;
         }
         return actual;
+    }
+
+    @Redirect(
+            method = "renderStatusBars",
+            slice = @Slice(from = @At(value = "CONSTANT", args="stringValue=air")),
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isInFluid(Lnet/minecraft/tag/Tag;)Z")
+    )
+    private boolean preventAirRender(PlayerEntity playerEntity, Tag<Fluid> fluid) {
+        if (((DissolutionPlayer)playerEntity).getRemnantState().isSoul()) {
+            Entity possessed = (Entity) ((DissolutionPlayer) playerEntity).getPossessionComponent().getPossessedEntity();
+            if (possessed == null) {
+                return false;
+            } else if (possessed instanceof LivingEntity && ((LivingEntity) possessed).canBreatheInWater()) {
+                return false;
+            }
+        }
+        return playerEntity.isInFluid(fluid);
     }
 
     @ModifyVariable(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/SystemUtil;getMeasuringTimeMs()J"), ordinal = 0)
