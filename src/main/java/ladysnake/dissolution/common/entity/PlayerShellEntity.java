@@ -3,6 +3,7 @@ package ladysnake.dissolution.common.entity;
 import com.mojang.authlib.GameProfile;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.Possessable;
+import ladysnake.dissolution.api.v1.possession.conversion.CopyStrategies;
 import ladysnake.dissolution.common.util.InventoryHelper;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.EntityType;
@@ -43,7 +44,9 @@ public class PlayerShellEntity extends MobEntity {
 
     public PlayerShellEntity(PlayerEntity player) {
         this(DissolutionEntities.PLAYER_SHELL, player.world);
-        this.setPositionAndAngles(player);
+        UUID actualUuid = this.uuid;
+        CopyStrategies.performNbtCopy(player, this);
+        this.uuid = actualUuid;
         this.inventory = new BasicInventory(player.inventory.main.size());
         this.setPlayerUuid(player.getUuid());
         this.setCustomName(new StringTextComponent(player.getEntityName()));

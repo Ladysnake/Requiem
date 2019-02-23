@@ -1,6 +1,7 @@
 package ladysnake.dissolution.api.v1.possession.conversion;
 
 import ladysnake.dissolution.api.v1.possession.Possessable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
 import org.apiguardian.api.API;
@@ -24,10 +25,14 @@ public final class CopyStrategies {
     @API(status = EXPERIMENTAL)
     public static <E extends MobEntity, P extends MobEntity & Possessable> BiConsumer<E, P> nbtCopy() {
         return (entity, clone) -> {
-            CompoundTag serialized = new CompoundTag();
-            entity.toTag(serialized);
-            clone.fromTag(serialized);
+            performNbtCopy(entity, clone);
             clone.setEntityId(entity.getEntityId());
         };
+    }
+
+    public static void performNbtCopy(Entity entity, Entity clone) {
+        CompoundTag serialized = new CompoundTag();
+        entity.toTag(serialized);
+        clone.fromTag(serialized);
     }
 }
