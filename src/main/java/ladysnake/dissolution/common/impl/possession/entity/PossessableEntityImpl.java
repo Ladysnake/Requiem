@@ -8,8 +8,8 @@ import ladysnake.dissolution.common.DissolutionRegistries;
 import ladysnake.dissolution.common.entity.ai.InertGoal;
 import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthAttribute;
+import ladysnake.dissolution.mixin.entity.LivingEntityAccessor;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.network.packet.EntityVelocityUpdateS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -21,7 +21,6 @@ import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -288,9 +287,16 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
         if (possessing.isPresent()) {
             PlayerEntity player = possessing.get();
             player.method_6005(entity_1, float_1, double_1, double_2);
-            ((ServerPlayerEntity) player).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(player));
         } else {
             super.method_6005(entity_1, float_1, double_1, double_2);
+        }
+    }
+
+    @Override
+    protected void scheduleVelocityUpdate() {
+        super.scheduleVelocityUpdate();
+        if (!world.isClient && this.velocityModified) {
+            this.getPossessor().ifPresent(player -> player.velocityModified = true);
         }
     }
 
@@ -327,9 +333,19 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
     }
 
     @Override
-    public Iterable<ItemStack> getItemsHand() {
+    protected void damageShield(float float_1) {
         Optional<PlayerEntity> possessing = getPossessor();
-        return possessing
+        if (possessing.filter(p -> !p.world.isClient).isPresent()) {
+            ((LivingEntityAccessor)possessing.get()).invokeDamageShield(float_1);
+            this.world.summonParticle(possessing.get(), (byte)29);
+        } else {
+            super.damageShield(float_1);
+        }
+    }
+
+    @Override
+    public Iterable<ItemStack> getItemsHand() {
+        return getPossessor()
                 .map(PlayerEntity::getItemsHand)
                 .orElseGet(super::getItemsHand);
     }

@@ -5,6 +5,7 @@
   "mixins": [
     "entity.EntityMixin",
     "entity.ItemEntityMixin",
+    "entity.LivingEntityAccessor",
     "entity.LivingEntityMixin",
     "entity.ai.goal.FollowTargetGoalMixin",
     "entity.attribute.AbstractEntityAttributeContainerAccessorMixin",
