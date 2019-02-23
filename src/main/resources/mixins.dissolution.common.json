@@ -6,6 +6,7 @@
     "entity.EntityMixin",
     "entity.ItemEntityMixin",
     "entity.LivingEntityMixin",
+    "entity.ai.goal.FollowTargetGoalMixin",
     "entity.attribute.AbstractEntityAttributeContainerAccessorMixin",
     "entity.attribute.EntityAttributeContainerAccessorMixin",
     "entity.player.PlayerEntityMixin",
