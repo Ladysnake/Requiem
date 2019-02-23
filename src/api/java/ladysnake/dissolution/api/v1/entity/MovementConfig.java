@@ -40,21 +40,23 @@ public interface MovementConfig {
      */
     MovementMode getSwimMode();
 
+    boolean shouldFlopOnLand();
+
     enum MovementMode {
         /**
-         * The entity cannot fly
+         * The entity cannot use this movement
          */
         DISABLED,
         /**
-         * The entity can fly, and can stop flying at any time
+         * The entity can use this movement, and can stop using it at any time
          */
         ENABLED,
         /**
-         * The entity is always flying
+         * The entity is always using this movement
          */
         FORCED,
         /**
-         * No information, the program should use heuristics to determine which of the
+         * No information, the {@link MovementAlterer} should use heuristics to determine which of the
          * other modes to use
          */
         UNSPECIFIED

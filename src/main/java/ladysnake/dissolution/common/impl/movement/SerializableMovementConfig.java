@@ -9,10 +9,11 @@ import org.apiguardian.api.API;
  * A {@link MovementConfig} that can be easily manipulated by {@link Gson} and equivalent.
  */
 public class SerializableMovementConfig implements MovementConfig {
-    public static final SerializableMovementConfig SOUL = new SerializableMovementConfig(MovementMode.ENABLED, MovementMode.ENABLED, 0, 1f, 0.1F);
+    public static final SerializableMovementConfig SOUL = new SerializableMovementConfig(MovementMode.ENABLED, MovementMode.ENABLED, false, 0, 1f, 0.1F);
 
     private MovementMode flightMode;
     private MovementMode swimMode;
+    private boolean flopsOnLand;
     private float gravity;
     private float fallSpeedModifier;
     private float inertia;
@@ -20,13 +21,14 @@ public class SerializableMovementConfig implements MovementConfig {
     @CalledThroughReflection
     @API(status = API.Status.INTERNAL)
     public SerializableMovementConfig() {
-        this(MovementMode.UNSPECIFIED, MovementMode.UNSPECIFIED, 0, 1f, 0);
+        this(MovementMode.UNSPECIFIED, MovementMode.UNSPECIFIED, false, 0, 1f, 0);
     }
 
     @API(status = API.Status.INTERNAL)
-    public SerializableMovementConfig(MovementMode flightMode, MovementMode swimMode, float gravity, float fallSpeedModifier, float inertia) {
+    public SerializableMovementConfig(MovementMode flightMode, MovementMode swimMode, boolean flopsOnLand, float gravity, float fallSpeedModifier, float inertia) {
         this.flightMode = flightMode;
         this.swimMode = swimMode;
+        this.flopsOnLand = flopsOnLand;
         this.gravity = gravity;
         this.fallSpeedModifier = fallSpeedModifier;
         this.inertia = inertia;
@@ -55,5 +57,10 @@ public class SerializableMovementConfig implements MovementConfig {
     @Override
     public MovementMode getSwimMode() {
         return swimMode;
+    }
+
+    @Override
+    public boolean shouldFlopOnLand() {
+        return flopsOnLand;
     }
 }

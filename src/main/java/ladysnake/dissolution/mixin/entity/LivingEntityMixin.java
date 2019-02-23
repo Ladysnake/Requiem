@@ -38,7 +38,7 @@ public abstract class LivingEntityMixin extends Entity {
     )
     private float fixUnderwaterVelocity(float /* float_4 */ speedAmount) {
         if (this instanceof DissolutionPlayer) {
-            return ((DissolutionPlayer) this).getMovementAlterer().getUnderwaterAcceleration(speedAmount);
+            return ((DissolutionPlayer) this).getMovementAlterer().getSwimmingAcceleration(speedAmount);
         }
         return speedAmount;
     }

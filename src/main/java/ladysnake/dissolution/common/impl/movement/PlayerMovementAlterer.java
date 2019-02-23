@@ -48,7 +48,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
     }
 
     @Override
-    public float getUnderwaterAcceleration(float baseAcceleration) {
+    public float getSwimmingAcceleration(float baseAcceleration) {
         if (this.config != null && getActualSwimMode(this.config, getPlayerOrPossessed(player)) == FORCED) {
             return 0.96F;
         }
@@ -68,6 +68,9 @@ public class PlayerMovementAlterer implements MovementAlterer {
         }
         if (getActualFlightMode(config, getPlayerOrPossessed(player)) == FORCED) {
             this.player.abilities.flying = true;
+        }
+        if (this.player.onGround && config.shouldFlopOnLand() && this.player.world.getBlockState(this.player.getPos()).isAir()) {
+            this.player.jump();
         }
         Vec3d velocity = this.player.getVelocity();
         velocity = applyGravity(velocity, this.config.getAddedGravity());

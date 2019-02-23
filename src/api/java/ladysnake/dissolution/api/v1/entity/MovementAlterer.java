@@ -22,5 +22,5 @@ public interface MovementAlterer {
      * @param baseAcceleration the default acceleration computed in {@link net.minecraft.entity.LivingEntity#travel(Vec3d)}
      * @return the modified acceleration
      */
-    float getUnderwaterAcceleration(float baseAcceleration);
+    float getSwimmingAcceleration(float baseAcceleration);
 }
