@@ -26,17 +26,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 
-@Mixin(value = PlayerEntity.class)
+@Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity implements DissolutionPlayer {
+
+    /* Implementation of DissolutionPlayer */
+
     private static final String TAG_REMNANT_DATA = "dissolution:remnant_data";
 
     private RemnantState remnantState = NullRemnantState.NULL_STATE;
     private PossessionComponent possessionComponent = new PossessionComponentImpl((PlayerEntity) (Object) this);
     private MovementAlterer movementAlterer = new PlayerMovementAlterer((PlayerEntity)(Object)this);
-
-    protected PlayerEntityMixin(EntityType<? extends PlayerEntity> type, World world) {
-        super(type, world);
-    }
 
     @Override
     public RemnantState getRemnantState() {
@@ -81,27 +80,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
         this.movementAlterer.update();
     }
 
-    /**
-     * Players' base movement speed is reset each tick to their walking speed.
-     * We don't want that when a possession is occurring.
-     *
-     * @param attr the {@code this} attribute reference
-     * @param value the value that is supposed to be assigned
-     */
-    @Redirect(method = "updateMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/attribute/EntityAttributeInstance;setBaseValue(D)V"))
-    private void ignoreSpeedResetDuringPossession(EntityAttributeInstance attr, double value) {
-        if (!this.getPossessionComponent().isPossessing()) {
-            attr.setBaseValue(value);
-        }
-    }
-
-    @Inject(method = "getSizeForStatus", at = @At("HEAD"), cancellable = true)
-    private void adjustSize(EntityPose pose, CallbackInfoReturnable<EntitySize> cir) {
-        Entity possessedEntity = (Entity) this.getPossessionComponent().getPossessedEntity();
-        if (possessedEntity != null) {
-            cir.setReturnValue(possessedEntity.getSizeForStatus(pose));
-        }
-    }
+    /* NBT (de)serialization of added fields */
 
     @Inject(at = @At("TAIL"), method = "writeCustomDataToTag")
     private void writeCustomDataToTag(CompoundTag tag, CallbackInfo info) {
@@ -118,4 +97,37 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
         handler.fromTag(remnantTag);
         this.setRemnantState(handler);
     }
+
+    /* Actual modifications of vanilla behaviour */
+
+    /**
+     * Players' base movement speed is reset each tick to their walking speed.
+     * We don't want that when a possession is occurring.
+     *
+     * @param attr the {@code this} attribute reference
+     * @param value the value that is supposed to be assigned
+     */
+    @Redirect(method = "updateMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/attribute/EntityAttributeInstance;setBaseValue(D)V"))
+    private void ignoreSpeedResetDuringPossession(EntityAttributeInstance attr, double value) {
+        if (!this.getPossessionComponent().isPossessing()) {
+            attr.setBaseValue(value);
+        }
+    }
+
+    /**
+     * Players' sizes are hardcoded in an immutable enum map.
+     * This injection delegates the call to the possessed entity, if any.
+     */
+    @Inject(method = "getSizeForStatus", at = @At("HEAD"), cancellable = true)
+    private void adjustSize(EntityPose pose, CallbackInfoReturnable<EntitySize> cir) {
+        Entity possessedEntity = (Entity) this.getPossessionComponent().getPossessedEntity();
+        if (possessedEntity != null) {
+            cir.setReturnValue(possessedEntity.getSizeForStatus(pose));
+        }
+    }
+
+    protected PlayerEntityMixin(EntityType<? extends PlayerEntity> type, World world) {
+        super(type, world);
+    }
+
 }
