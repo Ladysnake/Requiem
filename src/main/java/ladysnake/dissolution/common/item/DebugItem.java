@@ -3,8 +3,6 @@ package ladysnake.dissolution.common.item;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.remnant.RemnantState;
-import ladysnake.dissolution.common.entity.PlayerShellEntity;
-import ladysnake.dissolution.common.util.InventoryHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -39,10 +37,6 @@ public class DebugItem extends Item {
                             Dissolution.LOGGER.info("Turned {} into a remnant", player);
                             ((DissolutionPlayer)player).setRemnant(true);
                         }
-                        PlayerShellEntity shellEntity = new PlayerShellEntity(player);
-                        InventoryHelper.transferEquipment(player, shellEntity);
-                        shellEntity.transferInventory(player.inventory, shellEntity.getInventory(), shellEntity.getInventory().getInvSize());
-                        world.spawnEntity(shellEntity);
                         cap.setSoul(!cap.isSoul());
                     }
                     break;

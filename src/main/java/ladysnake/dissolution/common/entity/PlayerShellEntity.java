@@ -3,9 +3,9 @@ package ladysnake.dissolution.common.entity;
 import com.mojang.authlib.GameProfile;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.Possessable;
-import ladysnake.dissolution.api.v1.possession.conversion.CopyStrategies;
 import ladysnake.dissolution.common.util.InventoryHelper;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.data.DataTracker;
@@ -39,18 +39,45 @@ import static org.apiguardian.api.API.Status.MAINTAINED;
 public class PlayerShellEntity extends MobEntity {
     public static final TrackedData<Optional<UUID>>PLAYER_UUID = DataTracker.registerData(PlayerShellEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 
-    protected BasicInventory inventory;
-    private GameProfile profile;
-
-    public PlayerShellEntity(PlayerEntity player) {
-        this(DissolutionEntities.PLAYER_SHELL, player.world);
-        UUID actualUuid = this.uuid;
-        CopyStrategies.performNbtCopy(player, this);
-        this.uuid = actualUuid;
-        this.inventory = new BasicInventory(player.inventory.main.size());
-        this.setPlayerUuid(player.getUuid());
-        this.setCustomName(new StringTextComponent(player.getEntityName()));
+    public static PlayerShellEntity fromPlayer(PlayerEntity player) {
+        PlayerShellEntity shell = new PlayerShellEntity(DissolutionEntities.PLAYER_SHELL, player.world);
+        shell.playerNbt = performNbtCopy(player, shell);
+        int invSize = player.inventory.main.size();
+        shell.inventory = new BasicInventory(invSize);
+        InventoryHelper.transferEquipment(player, shell);
+        shell.transferInventory(player.inventory, shell.inventory, invSize);
+        shell.setPlayerUuid(player.getUuid());
+        shell.setCustomName(new StringTextComponent(player.getEntityName()));
+        return shell;
     }
+
+    private static CompoundTag performNbtCopy(Entity from, Entity to) {
+        UUID fromUuid = to.getUuid();
+        // Save the complete representation of the player
+        CompoundTag serialized = new CompoundTag();
+        // We write every attribute of the destination entity to the tag, then we override.
+        // That way, attributes that do not exist in the base entity are kept intact during the copy.
+        to.toTag(serialized);
+        from.toTag(serialized);
+        to.fromTag(serialized);
+        // Restore UUID
+        to.setUuid(fromUuid);
+        return serialized;
+    }
+
+    /**
+     * Saves the content of the inventory the player had when this shell was created
+     */
+    protected BasicInventory inventory;
+    /**
+     * The player's game profile
+     */
+    private GameProfile profile;
+    /**
+     * The full NBT data representing the player when this shell was created
+     */
+    @Nullable
+    protected CompoundTag playerNbt;
 
     @API(status = MAINTAINED)
     protected PlayerShellEntity(EntityType<? extends PlayerShellEntity> entityType_1, World world_1) {
@@ -79,6 +106,12 @@ public class PlayerShellEntity extends MobEntity {
     public Possessable onSoulInteract(@Nullable PlayerEntity possessor) {
         if (possessor != null) {
             if (!world.isClient) {
+                // restore the player to their previous state
+                if (playerNbt != null) {
+                    possessor.fromTag(playerNbt);
+                }
+                // override common data that may have been altered during this shell's existence
+                performNbtCopy(this, possessor);
                 ((ServerPlayerEntity)possessor).networkHandler.teleportRequest(this.x, this.y, this.z, this.yaw, this.pitch);
                 if (this.inventory != null) {
                     transferInventory(this.inventory, possessor.inventory, Math.min(possessor.inventory.main.size(), this.inventory.getInvSize()));
@@ -90,10 +123,6 @@ public class PlayerShellEntity extends MobEntity {
             }
         }
         return null;
-    }
-
-    public BasicInventory getInventory() {
-        return inventory;
     }
 
     public void transferInventory(Inventory from, Inventory to, int size) {
@@ -120,27 +149,23 @@ public class PlayerShellEntity extends MobEntity {
     @Override
     public ActionResult interactAt(PlayerEntity player, Vec3d vec, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
-
         if (stack.getItem() != Items.NAME_TAG) {
             if (!this.world.isClient && !player.isSpectator()) {
                 EquipmentSlot slot = MobEntity.getPreferredEquipmentSlot(stack);
-
                 if (stack.isEmpty()) {
                     EquipmentSlot clickedSlot = this.getClickedSlot(vec);
-
                     if (this.isEquippedStackValid(clickedSlot)) {
                         this.swapItem(player, clickedSlot, stack, hand);
                     } else {
                         return ActionResult.PASS;
                     }
                 } else {
-
                     this.swapItem(player, slot, stack, hand);
                 }
-
                 return ActionResult.SUCCESS;
             } else {
-                return stack.isEmpty() && !this.isEquippedStackValid(this.getClickedSlot(vec)) ? ActionResult.PASS
+                return stack.isEmpty() && !this.isEquippedStackValid(this.getClickedSlot(vec))
+                        ? ActionResult.PASS
                         : ActionResult.SUCCESS;
             }
         } else {
@@ -151,13 +176,13 @@ public class PlayerShellEntity extends MobEntity {
     /**
      * Vanilla code from the armor stand
      *
-     * @param raytrace the look vector of the player
+     * @param rayTrace the look vector of the player
      * @return the targeted equipment slot
      */
-    protected EquipmentSlot getClickedSlot(Vec3d raytrace) {
+    protected EquipmentSlot getClickedSlot(Vec3d rayTrace) {
         EquipmentSlot slot = EquipmentSlot.HAND_MAIN;
         boolean flag = this.isChild();
-        double d0 = (raytrace.y) * (flag ? 2.0D : 1.0D);
+        double d0 = (rayTrace.y) * (flag ? 2.0D : 1.0D);
 
         if (d0 >= 0.1D && d0 < 0.1D + (flag ? 0.8D : 0.45D) && this.isEquippedStackValid(EquipmentSlot.FEET)) {
             slot = EquipmentSlot.FEET;
@@ -194,7 +219,7 @@ public class PlayerShellEntity extends MobEntity {
     }
 
     @Override
-    public boolean canImmediatelyDespawn(double double_1) {
+    public boolean canImmediatelyDespawn(double distance) {
         return false;
     }
 
@@ -234,6 +259,9 @@ public class PlayerShellEntity extends MobEntity {
                     this.inventory.setInvStack(slot, ItemStack.fromTag(compoundTag_2));
                 }
             }
+        }
+        if (tag.containsKey("PlayerNbt")) {
+            this.playerNbt = tag.getCompound("PlayerNbt");
         }
         this.setPlayerUuid(tag.getUuid("Player"));
     }

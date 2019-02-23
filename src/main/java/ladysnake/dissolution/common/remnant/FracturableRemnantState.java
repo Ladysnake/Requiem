@@ -6,7 +6,6 @@ import ladysnake.dissolution.api.v1.remnant.RemnantType;
 import ladysnake.dissolution.common.entity.PlayerShellEntity;
 import ladysnake.dissolution.common.impl.remnant.MutableRemnantState;
 import ladysnake.dissolution.common.network.DissolutionNetworking;
-import ladysnake.dissolution.common.util.InventoryHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -22,13 +21,12 @@ public class FracturableRemnantState extends MutableRemnantState {
         if (!player.world.isClient) {
             PossessionComponent possessionComponent = ((DissolutionPlayer) this.player).getPossessionComponent();
             if (!this.isSoul()) {
-                PlayerShellEntity shellEntity = new PlayerShellEntity(player);
-                InventoryHelper.transferEquipment(player, shellEntity);
-                shellEntity.transferInventory(player.inventory, shellEntity.getInventory(), shellEntity.getInventory().getInvSize());
+                PlayerShellEntity shellEntity = PlayerShellEntity.fromPlayer(player);
                 player.world.spawnEntity(shellEntity);
                 this.setSoul(true);
             } else if (possessionComponent.isPossessing()) {
                 possessionComponent.stopPossessing();
+
             } else {
                 return;
             }
