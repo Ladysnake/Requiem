@@ -4,6 +4,7 @@ import ladysnake.dissolution.api.v1.remnant.RemnantState;
 import ladysnake.dissolution.api.v1.remnant.RemnantType;
 import ladysnake.dissolution.common.remnant.RemnantStates;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public final class NullRemnantState implements RemnantState {
 
@@ -41,6 +42,11 @@ public final class NullRemnantState implements RemnantState {
 
     @Override
     public void fromTag(CompoundTag tag) {
+        // NO-OP
+    }
+
+    @Override
+    public void onPlayerClone(ServerPlayerEntity clone, boolean returnFromEnd) {
         // NO-OP
     }
 }

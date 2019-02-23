@@ -3,6 +3,8 @@ package ladysnake.dissolution.mixin.server;
 import com.mojang.authlib.GameProfile;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.event.PlayerCloneCallback;
+import ladysnake.dissolution.api.v1.event.PlayerRespawnCallback;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
 import net.fabricmc.fabric.api.util.NbtType;
@@ -14,14 +16,20 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.UserCache;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.dimension.DimensionType;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import javax.annotation.Nullable;
@@ -118,5 +126,48 @@ public abstract class PlayerManagerMixin {
             }
             serverWorld_1.method_8497(player.chunkX, player.chunkZ).markDirty();
         }
+    }
+
+    @Inject(
+            method = "method_14556",
+            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;method_17892(Lnet/minecraft/entity/Entity;)Z")),
+            at = @At(
+                    value = "FIELD",
+                    opcode = Opcodes.GETFIELD,
+                    target = "Lnet/minecraft/server/network/ServerPlayerEntity;networkHandler:Lnet/minecraft/server/network/ServerPlayNetworkHandler;",
+                    ordinal = 0
+            ),
+            locals = LocalCapture.CAPTURE_FAILHARD
+    )
+    private void firePlayerCloneEvent(
+            ServerPlayerEntity original,
+            DimensionType destination,
+            boolean returnFromEnd,
+            CallbackInfoReturnable<ServerPlayerEntity> cir,
+            BlockPos spawnPos,
+            boolean forcedSpawn,
+            ServerPlayerInteractionManager manager,
+            ServerPlayerEntity clone
+    ) {
+        PlayerCloneCallback.EVENT.invoker().onPlayerClone(original, clone, returnFromEnd);
+    }
+
+    @Inject(
+            method = "method_14556",
+            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;method_17892(Lnet/minecraft/entity/Entity;)Z")),
+            at = @At("RETURN"),
+            locals = LocalCapture.CAPTURE_FAILHARD
+    )
+    private void firePlayerRespawnEvent(
+            ServerPlayerEntity original,
+            DimensionType destination,
+            boolean returnFromEnd,
+            CallbackInfoReturnable<ServerPlayerEntity> cir,
+            BlockPos spawnPos,
+            boolean forcedSpawn,
+            ServerPlayerInteractionManager manager,
+            ServerPlayerEntity clone
+    ) {
+        PlayerRespawnCallback.EVENT.invoker().onPlayerRespawn(clone, returnFromEnd);
     }
 }

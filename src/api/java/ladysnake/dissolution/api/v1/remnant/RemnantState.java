@@ -3,6 +3,7 @@ package ladysnake.dissolution.api.v1.remnant;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -20,6 +21,14 @@ public interface RemnantState {
     void fracture();
 
     RemnantType getType();
+
+    /**
+     * Called when this remnant state's player is cloned
+     *
+     * @param clone the player's clone
+     * @param returnFromEnd false if the original player is dead, true otherwise
+     */
+    void onPlayerClone(ServerPlayerEntity clone, boolean returnFromEnd);
 
     CompoundTag toTag(CompoundTag tag);
 
