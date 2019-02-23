@@ -46,7 +46,7 @@ public final class NullRemnantState implements RemnantState {
     }
 
     @Override
-    public void onPlayerClone(ServerPlayerEntity clone, boolean returnFromEnd) {
+    public void onPlayerClone(ServerPlayerEntity clone, boolean dead) {
         // NO-OP
     }
 }

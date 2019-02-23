@@ -72,7 +72,7 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
             }
             return ActionResult.PASS;
         });
-        PlayerCloneCallback.EVENT.register(((original, clone, returnFromEnd) -> ((DissolutionPlayer)original).getRemnantState().onPlayerClone(clone, returnFromEnd)));
+        PlayerCloneCallback.EVENT.register(((original, clone, returnFromEnd) -> ((DissolutionPlayer)original).getRemnantState().onPlayerClone(clone, !returnFromEnd)));
         PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> {
             CustomPayloadS2CPacket corporealityMessage = createCorporealityMessage(player);
             sendTo(player, corporealityMessage);

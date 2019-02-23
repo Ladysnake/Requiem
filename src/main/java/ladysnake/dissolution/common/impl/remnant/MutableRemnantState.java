@@ -59,10 +59,12 @@ public abstract class MutableRemnantState implements RemnantState {
     }
 
     @Override
-    public void onPlayerClone(ServerPlayerEntity clone, boolean returnFromEnd) {
-        clone.setPositionAndAngles(this.player);
+    public void onPlayerClone(ServerPlayerEntity clone, boolean dead) {
         ((DissolutionPlayer)clone).setRemnant(true);
-        ((DissolutionPlayer) clone).getRemnantState().setSoul(true);
+        if (dead) {
+            clone.setPositionAndAngles(this.player);
+            ((DissolutionPlayer) clone).getRemnantState().setSoul(true);
+        }
     }
 
     @Override

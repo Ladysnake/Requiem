@@ -26,9 +26,9 @@ public interface RemnantState {
      * Called when this remnant state's player is cloned
      *
      * @param clone the player's clone
-     * @param returnFromEnd false if the original player is dead, true otherwise
+     * @param dead true if the original player is dead, false otherwise
      */
-    void onPlayerClone(ServerPlayerEntity clone, boolean returnFromEnd);
+    void onPlayerClone(ServerPlayerEntity clone, boolean dead);
 
     CompoundTag toTag(CompoundTag tag);
 
