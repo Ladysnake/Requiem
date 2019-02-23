@@ -321,6 +321,11 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
                 .orElseGet(() -> super.startRiding(entity_1));
     }
 
+    @Override
+    public boolean isFallFlying() {
+        return super.isFallFlying() || getPossessor().filter(PlayerEntity::isFallFlying).isPresent();
+    }
+
     /**
      * @return Whether this entity is using a shield or equivalent
      */
