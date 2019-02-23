@@ -106,11 +106,13 @@ public class PlayerShellEntity extends MobEntity {
     public Possessable onSoulInteract(@Nullable PlayerEntity possessor) {
         if (possessor != null) {
             if (!world.isClient) {
+                possessor.inventory.dropAll();
                 // restore the player to their previous state
                 if (playerNbt != null) {
                     possessor.fromTag(playerNbt);
                 }
                 // override common data that may have been altered during this shell's existence
+                possessor.inventory.clear();
                 performNbtCopy(this, possessor);
                 ((ServerPlayerEntity)possessor).networkHandler.teleportRequest(this.x, this.y, this.z, this.yaw, this.pitch);
                 if (this.inventory != null) {
