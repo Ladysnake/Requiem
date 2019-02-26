@@ -66,12 +66,17 @@ processResources {
 	}
 }
 
+repositories {
+	maven { url 'https://jitpack.io' }
+}
+
 dependencies {
 	minecraft "com.mojang:minecraft:${mc_version}"
 	mappings "net.fabricmc:yarn:${yarn_mappings}"
 	modCompile "net.fabricmc:fabric-loader:${loader_version}"
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modCompile "net.fabricmc:fabric:${fabric_version}"
+	modCompile "com.github.Ladysnake:Satin:1c5d92640f"
 
 	compile "org.jetbrains:annotations:${jb_annotations_version}"
 	compile "com.google.code.findbugs:jsr305:${findbugs_version}"

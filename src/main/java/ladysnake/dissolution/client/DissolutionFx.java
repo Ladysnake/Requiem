@@ -3,10 +3,10 @@ package ladysnake.dissolution.client;
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
-import ladysnake.satin.client.event.PreBlockEntitiesCallback;
-import ladysnake.satin.client.event.ResolutionChangeCallback;
-import ladysnake.satin.client.shader.ManagedShaderEffect;
-import ladysnake.satin.client.shader.ShaderEffectManager;
+import ladysnake.satin.api.event.PostEntitiesRenderCallback;
+import ladysnake.satin.api.event.ResolutionChangeCallback;
+import ladysnake.satin.api.managed.ManagedShaderEffect;
+import ladysnake.satin.api.managed.ShaderEffectManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.render.VisibleRegion;
@@ -24,15 +24,15 @@ import java.lang.ref.WeakReference;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.createPossessionRequestMessage;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.sendToServer;
 
-public final class DissolutionFx implements PreBlockEntitiesCallback, ResolutionChangeCallback {
+public final class DissolutionFx implements PostEntitiesRenderCallback, ResolutionChangeCallback {
     public static final Identifier SPECTRE_SHADER_ID = Dissolution.id("shaders/post/spectre.json");
     public static final Identifier FISH_EYE_SHADER_ID = Dissolution.id("shaders/post/fish_eye.json");
 
     public static final DissolutionFx INSTANCE = new DissolutionFx();
 
     private final MinecraftClient mc = MinecraftClient.getInstance();
-    private final ManagedShaderEffect spectreShader = ShaderEffectManager.manage(SPECTRE_SHADER_ID);
-    private final ManagedShaderEffect fishEyeShader = ShaderEffectManager.manage(FISH_EYE_SHADER_ID);
+    private final ManagedShaderEffect spectreShader = ShaderEffectManager.getInstance().manage(SPECTRE_SHADER_ID);
+    private final ManagedShaderEffect fishEyeShader = ShaderEffectManager.getInstance().manage(FISH_EYE_SHADER_ID);
     @Nullable
     private GlFramebuffer framebuffer;
 
@@ -118,7 +118,7 @@ public final class DissolutionFx implements PreBlockEntitiesCallback, Resolution
     }
 
     @Override
-    public void onPreRenderBlockEntities(Entity camera, VisibleRegion frustum, float tickDelta) {
+    public void onEntitiesRendered(Entity camera, VisibleRegion frustum, float tickDelta) {
         Entity possessed = getAnimationEntity();
         if (possessed != null) {
             if (this.framebuffer == null) {
@@ -139,7 +139,7 @@ public final class DissolutionFx implements PreBlockEntitiesCallback, Resolution
     }
 
     @Override
-    public void onWindowResized(int newWidth, int newHeight) {
+    public void onResolutionChanged(int newWidth, int newHeight) {
         if (this.framebuffer != null) {
             this.framebuffer.resize(newWidth, newHeight, MinecraftClient.IS_SYSTEM_MAC);
         }
