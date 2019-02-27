@@ -1,21 +1,16 @@
 package ladysnake.dissolution.client.render.entity;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.blaze3d.platform.GlStateManager;
+import ladysnake.dissolution.client.DissolutionSkinManager;
 import ladysnake.dissolution.common.entity.PlayerShellEntity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.feature.*;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
-import net.minecraft.client.util.DefaultSkinHelper;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nonnull;
-import java.util.Map;
 
 public class PlayerShellEntityRenderer extends BipedEntityRenderer<PlayerShellEntity, PlayerEntityModel<PlayerShellEntity>> {
 
@@ -30,16 +25,7 @@ public class PlayerShellEntityRenderer extends BipedEntityRenderer<PlayerShellEn
 
     @Override
     protected Identifier getTexture(PlayerShellEntity entity) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        GameProfile profile = entity.getProfile();
-        Identifier texture;
-        Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> skinMap = client.getSkinProvider().getTextures(profile);
-        if (skinMap.containsKey(MinecraftProfileTexture.Type.SKIN)) {
-            texture = client.getSkinProvider().loadSkin(skinMap.get(MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN);
-        } else {
-            texture = DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(profile));
-        }
-        return texture;
+        return DissolutionSkinManager.get(entity.getProfile());
     }
 
     /**

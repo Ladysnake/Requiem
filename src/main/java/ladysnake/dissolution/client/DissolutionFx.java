@@ -16,7 +16,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
@@ -114,7 +113,6 @@ public final class DissolutionFx implements PostEntitiesRenderCallback, Resoluti
             spectreShader.setUniformValue("Zoom", Math.max(1, (etherealAnimation - tickDelta)));
             spectreShader.render(tickDelta);
         }
-        GlStateManager.matrixMode(GL11.GL_MODELVIEW);
     }
 
     @Override
