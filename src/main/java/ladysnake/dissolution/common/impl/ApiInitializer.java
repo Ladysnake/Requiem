@@ -34,7 +34,7 @@ public class ApiInitializer {
 
     public static void setPluginCallback(Consumer<DissolutionPlugin> callback) {
         try {
-            Field f = DissolutionApi.class.getDeclaredField("registerHandler");
+            Field f = ApiInternals.class.getDeclaredField("registerHandler");
             f.setAccessible(true);
             @SuppressWarnings("unchecked") Consumer<DissolutionPlugin> registerHandler = (Consumer<DissolutionPlugin>) f.get(null);
             f.set(null, registerHandler.andThen(callback));

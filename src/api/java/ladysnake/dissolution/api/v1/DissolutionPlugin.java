@@ -13,7 +13,9 @@ import net.minecraft.util.registry.Registry;
  */
 public interface DissolutionPlugin {
     /**
-     * Called when dissolution's core features have been fully initialized
+     * Called when dissolution's core features have been fully initialized.
+     * <p>
+     * This method is called before any other {@code DissolutionPlugin} method.
      */
     default void onDissolutionInitialize() {}
 
