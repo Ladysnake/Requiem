@@ -4,7 +4,6 @@ import com.mojang.authlib.GameProfile;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.common.util.InventoryHelper;
-import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -134,14 +133,6 @@ public class PlayerShellEntity extends MobEntity {
                 from.setInvStack(i, ItemStack.EMPTY);
             }
         }
-    }
-
-    @Override
-    public void onTrackedDataSet(TrackedData<?> key) {
-        if (PLAYER_UUID.equals(key)) {
-            this.getPlayerUuid().ifPresent(uuid -> this.profile = SkullBlockEntity.loadProperties(new GameProfile(uuid, getName().getString())));
-        }
-        super.onTrackedDataSet(key);
     }
 
     /**

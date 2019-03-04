@@ -3,7 +3,7 @@ package ladysnake.dissolution.client;
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
-import ladysnake.satin.api.event.PostEntitiesRenderCallback;
+import ladysnake.satin.api.event.EntitiesPostRenderCallback;
 import ladysnake.satin.api.event.ResolutionChangeCallback;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
@@ -23,7 +23,7 @@ import java.lang.ref.WeakReference;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.createPossessionRequestMessage;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.sendToServer;
 
-public final class DissolutionFx implements PostEntitiesRenderCallback, ResolutionChangeCallback {
+public final class DissolutionFx implements EntitiesPostRenderCallback, ResolutionChangeCallback {
     public static final Identifier SPECTRE_SHADER_ID = Dissolution.id("shaders/post/spectre.json");
     public static final Identifier FISH_EYE_SHADER_ID = Dissolution.id("shaders/post/fish_eye.json");
 

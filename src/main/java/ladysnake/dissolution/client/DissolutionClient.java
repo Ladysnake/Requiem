@@ -7,8 +7,8 @@ import ladysnake.dissolution.client.network.ClientMessageHandling;
 import ladysnake.dissolution.client.render.entity.PlayerShellEntityRenderer;
 import ladysnake.dissolution.common.entity.PlayerShellEntity;
 import ladysnake.dissolution.common.impl.possession.entity.PossessableEntityImpl;
+import ladysnake.satin.api.event.EntitiesPostRenderCallback;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
-import ladysnake.satin.api.event.PostEntitiesRenderCallback;
 import ladysnake.satin.api.event.ResolutionChangeCallback;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import net.fabricmc.api.ClientModInitializer;
@@ -25,7 +25,7 @@ public class DissolutionClient implements ClientModInitializer {
         ClientMessageHandling.init();
         DissolutionKeyBinding.init();
         ShaderEffectRenderCallback.EVENT.register(DissolutionFx.INSTANCE::renderShaders);
-        PostEntitiesRenderCallback.EVENT.register(DissolutionFx.INSTANCE);
+        EntitiesPostRenderCallback.EVENT.register(DissolutionFx.INSTANCE);
         ResolutionChangeCallback.EVENT.register(DissolutionFx.INSTANCE);
         PickEntityShaderCallback.EVENT.register(EntityShaders::pickShader);
         ClientTickCallback.EVENT.register(DissolutionFx.INSTANCE::update);

@@ -30,17 +30,11 @@ sourceSets {
         compileClasspath = main.compileClasspath
         runtimeClasspath = main.runtimeClasspath
     }
-    satin {
-        compileClasspath = main.compileClasspath
-        runtimeClasspath = main.runtimeClasspath
-    }
     main {
         compileClasspath += api.output
         runtimeClasspath += api.output
         compileClasspath += reflective_fabric.output
         runtimeClasspath += reflective_fabric.output
-        compileClasspath += satin.output
-        runtimeClasspath += satin.output
     }
 }
 
@@ -76,7 +70,8 @@ dependencies {
     modCompile "net.fabricmc:fabric-loader:${loader_version}"
     // Fabric API. This is technically optional, but you probably want it anyway.
     modCompile "net.fabricmc:fabric:${fabric_version}"
-    modCompile "com.github.Ladysnake:Satin:1c5d92640f"
+//    modCompile "com.github.Ladysnake:Satin:b513da151c"
+    compile files("libs/satin-1.0.0-SNAPSHOT-dev.jar")
 
     compile "org.jetbrains:annotations:${jb_annotations_version}"
     compile "com.google.code.findbugs:jsr305:${findbugs_version}"

@@ -18,7 +18,7 @@ public class DissolutionEntities {
             DEBUG_POSSESSABLE = Registry.register(
                     Registry.ENTITY_TYPE,
                     Dissolution.id("debug_possessable"),
-                    FabricEntityTypeBuilder.<PossessableEntityImpl>create(EntityCategory.MISC, (EntityType.class_4049) PossessableEntityImpl::new)
+                    FabricEntityTypeBuilder.create(EntityCategory.MISC, (EntityType.class_4049<PossessableEntityImpl>) PossessableEntityImpl::new)
                             .size(EntitySize.resizeable(0.6F, 1.95F))
                             .trackable(64, 1, true)
                             .build()
@@ -27,7 +27,7 @@ public class DissolutionEntities {
         PLAYER_SHELL = Registry.register(
                 Registry.ENTITY_TYPE,
                 Dissolution.id("player_shell"),
-                FabricEntityTypeBuilder.<PlayerShellEntity>create(EntityCategory.MISC, (EntityType.class_4049) PlayerShellEntity::new)
+                FabricEntityTypeBuilder.create(EntityCategory.MISC, PlayerShellEntity::new)
                         .size(EntitySize.resizeable(EntityType.PLAYER.getWidth(), EntityType.PLAYER.getHeight()))
                         .trackable(64, 1, true)
                         .build()
