@@ -19,11 +19,14 @@ public abstract class EntityRenderDispatcherMixin {
     @Nullable
     private Entity dissolution_camerasPossessed;
 
+    /**
+     * Called once per frame, used to update the entity
+     */
     @Inject(method = "setRenderPosition", at = @At("HEAD"))
     private void updateCamerasPossessedEntity(double x, double y, double z, CallbackInfo info) {
         MinecraftClient client = MinecraftClient.getInstance();
         Entity camera = client.getCameraEntity();
-        if (camera instanceof DissolutionPlayer && client.options.perspective == 0) {
+        if (camera instanceof DissolutionPlayer) {
             dissolution_camerasPossessed = (Entity) ((DissolutionPlayer) camera).getPossessionComponent().getPossessedEntity();
             if (dissolution_camerasPossessed == null) {
                 dissolution_camerasPossessed = DissolutionFx.INSTANCE.getAnimationEntity();

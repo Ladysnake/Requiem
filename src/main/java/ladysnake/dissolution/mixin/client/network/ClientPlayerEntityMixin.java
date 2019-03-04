@@ -18,21 +18,6 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Di
         super(world_1, gameProfile_1);
     }
 
-    /*
-     * Possessed entities set themselves to the position of the player each tick, but that is not enough
-     * if the player is ticked <em>after</em> the entity.
-     */
-/*
-    @Inject(method = "updateMovement", at = @At("RETURN"))
-    private void updatePossessedPosition(CallbackInfo info) {
-        Entity possessed = (Entity) this.getPossessionComponent().getPossessedEntity();
-        // TODO figure a more reliable way than getEntityId to know order of update
-        if (possessed != null && possessed.getEntityId() > this.getEntityId()) {
-            possessed.setPosition(x, y, z);
-        }
-    }
-*/
-
     @Inject(method = "method_3150", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
     private void stopPushingOutOfBlocks(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValue()) {

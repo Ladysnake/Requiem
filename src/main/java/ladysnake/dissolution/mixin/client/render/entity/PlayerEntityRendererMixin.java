@@ -31,9 +31,16 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         super(entityRenderDispatcher_1, entityModel_1, float_1);
     }
 
+    /**
+     * Prevents players possessing something from being rendered, and renders their possessed entity
+     * instead. This both prevents visual stuttering from position desync and lets mods render the player
+     * correctly.
+     */
     @Inject(method = "method_4215", at = @At("HEAD"), cancellable = true)
     private void cancelRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
-        if (((DissolutionPlayer)renderedPlayer).getPossessionComponent().isPossessing()) {
+        Entity possessedEntity = (Entity) ((DissolutionPlayer) renderedPlayer).getPossessionComponent().getPossessedEntity();
+        if (possessedEntity != null) {
+            MinecraftClient.getInstance().getEntityRenderManager().render(possessedEntity, x, y, z, yaw, tickDelta, true);
             info.cancel();
         }
     }
