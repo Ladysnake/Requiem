@@ -38,8 +38,13 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
      */
     @Inject(method = "method_4215", at = @At("HEAD"), cancellable = true)
     private void cancelRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
-        Entity possessedEntity = (Entity) ((DissolutionPlayer) renderedPlayer).getPossessionComponent().getPossessedEntity();
+        LivingEntity possessedEntity = (LivingEntity) ((DissolutionPlayer) renderedPlayer).getPossessionComponent().getPossessedEntity();
         if (possessedEntity != null) {
+            possessedEntity.field_6283 = renderedPlayer.field_6283;
+            possessedEntity.yaw = renderedPlayer.yaw;
+            possessedEntity.pitch = renderedPlayer.pitch;
+            possessedEntity.headYaw = renderedPlayer.headYaw;
+            possessedEntity.prevHeadYaw = renderedPlayer.prevHeadYaw;
             MinecraftClient.getInstance().getEntityRenderManager().render(possessedEntity, x, y, z, yaw, tickDelta, true);
             info.cancel();
         }

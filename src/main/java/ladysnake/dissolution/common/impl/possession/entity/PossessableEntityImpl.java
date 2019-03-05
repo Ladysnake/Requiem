@@ -184,12 +184,8 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
         Optional<PlayerEntity> optionalPlayer = this.getPossessor();
         if (optionalPlayer.isPresent()) {
             PlayerEntity player = optionalPlayer.get();
-            this.yaw = player.yaw;
-            this.prevYaw = this.yaw;
-            this.pitch = player.pitch;
-            this.setRotation(this.yaw, this.pitch);
-            this.field_6283 = this.yaw;
-            this.headYaw = this.field_6283;
+            this.setRotation(player.yaw, player.pitch);
+            this.headYaw = this.field_6283 = this.prevYaw = this.yaw;
             this.method_5796(player.isSwimming());
             // Prevent this entity from taking fall damage unless triggered by the possessor
             this.fallDistance = 0;

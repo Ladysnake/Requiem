@@ -7,7 +7,6 @@
     "MinecraftClientMixin",
     "gui.SplashScreenMixin",
     "gui.hud.InGameHudMixin",
-    "gui.ingame.PlayerInventoryScreenMixin",
     "network.ClientPlayerEntityMixin",
     "render.GameRendererMixin",
     "render.entity.AccessibleTextureEntityRenderer",
