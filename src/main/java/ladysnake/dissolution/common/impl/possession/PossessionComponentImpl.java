@@ -119,6 +119,8 @@ public class PossessionComponentImpl implements PossessionComponent {
                 for(EquipmentSlot slot : EquipmentSlot.values()) {
                     ItemStack stack = possessedEntity.getEquippedStack(slot);
                     if (!stack.isEmpty()) {
+                        // for some reason the entity disappears at this point
+                        ((ServerPlayerEntity) player).networkHandler.sendPacket(possessedEntity.createSpawnPacket());
                         ((ServerPlayerEntity) player).networkHandler.sendPacket(new EntityEquipmentUpdateS2CPacket(possessedEntity.getEntityId(), slot, stack));
                     }
                 }
