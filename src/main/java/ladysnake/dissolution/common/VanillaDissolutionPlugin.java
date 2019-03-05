@@ -83,11 +83,12 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
     private void registerPossessionEventHandlers() {
         // Start possession on right click
         UseEntityCallback.EVENT.register((player, world, hand, target, hitPosition) -> {
-            if (((DissolutionPlayer)player).getRemnantState().isIncorporeal()) {
-                if (target instanceof MobEntity && target.world.isClient) {
+            RemnantState state = ((DissolutionPlayer) player).getRemnantState();
+            if (state.isSoul()) {
+                if (state.isIncorporeal() && target instanceof MobEntity && target.world.isClient) {
                     DissolutionFx.INSTANCE.beginFishEyeAnimation(target);
                 }
-                return ActionResult.FAIL;
+                return ActionResult.SUCCESS;
             }
             return ActionResult.PASS;
         });
