@@ -4,7 +4,7 @@ import ladysnake.dissolution.api.v1.possession.Possessable;
 import net.minecraft.entity.ai.goal.Goal;
 
 public class InertGoal extends Goal {
-    private Possessable owner;
+    private final Possessable owner;
 
     public InertGoal(Possessable owner) {
         super();

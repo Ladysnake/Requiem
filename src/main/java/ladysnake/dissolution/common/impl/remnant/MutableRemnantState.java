@@ -15,7 +15,7 @@ public abstract class MutableRemnantState implements RemnantState {
     public static final String INCORPOREAL_TAG = "incorporeal";
 
     private final RemnantType type;
-    protected PlayerEntity player;
+    protected final PlayerEntity player;
     protected boolean incorporeal;
 
     public MutableRemnantState(RemnantType type, PlayerEntity player) {

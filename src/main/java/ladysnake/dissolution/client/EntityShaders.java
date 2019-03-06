@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 public final class EntityShaders {
 
-    public static void pickShader(Entity camera, Consumer<Identifier> loadShaderFunc, Supplier<ShaderEffect> appliedShaderGetter) {
+    public static void pickShader(Entity camera, Consumer<Identifier> loadShaderFunc, @SuppressWarnings("unused") Supplier<ShaderEffect> appliedShaderGetter) {
         if (camera instanceof DissolutionPlayer) {
             Entity possessed = (Entity) ((DissolutionPlayer)camera).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {

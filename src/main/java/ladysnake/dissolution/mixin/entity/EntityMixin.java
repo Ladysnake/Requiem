@@ -14,6 +14,8 @@ public abstract class EntityMixin {
     private void delegateMaxBreath(CallbackInfoReturnable<Integer> cir) {
         if (this instanceof DissolutionPlayer) {
             PossessionComponent possessionComponent = ((DissolutionPlayer) this).getPossessionComponent();
+            // This method can be called in the constructor
+            //noinspection ConstantConditions
             if (possessionComponent != null) {
                 Entity possessedEntity = (Entity) possessionComponent.getPossessedEntity();
                 if (possessedEntity != null) {
@@ -27,6 +29,8 @@ public abstract class EntityMixin {
     private void delegateBreath(CallbackInfoReturnable<Integer> cir) {
         if (this instanceof DissolutionPlayer) {
             PossessionComponent possessionComponent = ((DissolutionPlayer) this).getPossessionComponent();
+            // This method can be called in the constructor
+            //noinspection ConstantConditions
             if (possessionComponent != null) {
                 Entity possessedEntity = (Entity) ((DissolutionPlayer) this).getPossessionComponent().getPossessedEntity();
                 if (possessedEntity != null) {

@@ -34,9 +34,9 @@ import java.util.UUID;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 
 public class PossessionComponentImpl implements PossessionComponent {
-    private Set<PlayerEntity> attributeUpdated = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
+    private static final Set<PlayerEntity> attributeUpdated = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
 
-    private PlayerEntity player;
+    private final PlayerEntity player;
     @Nullable private UUID possessedUuid;
     private int possessedNetworkId;
 

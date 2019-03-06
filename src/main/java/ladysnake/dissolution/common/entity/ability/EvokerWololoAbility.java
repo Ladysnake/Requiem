@@ -6,7 +6,7 @@ import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity> {
-    private EvokerEntity.WololoGoal wololoGoal;
+    private final EvokerEntity.WololoGoal wololoGoal;
     private boolean started;
 
     public EvokerWololoAbility(EvokerEntity owner) {

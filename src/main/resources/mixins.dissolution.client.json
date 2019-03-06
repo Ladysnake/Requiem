@@ -3,7 +3,6 @@
   "package": "ladysnake.dissolution.mixin.client",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MinecraftClientAccessorMixin",
     "MinecraftClientMixin",
     "gui.SplashScreenMixin",
     "gui.hud.InGameHudMixin",

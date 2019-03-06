@@ -7,7 +7,7 @@ import net.minecraft.entity.mob.MobEntity;
 
 public class LazyDefaultPossessionConversionRegistry extends SimplePossessionConversionRegistry {
 
-    private PossessableConverterProvider defaultConverterProvider;
+    private final PossessableConverterProvider defaultConverterProvider;
 
     public LazyDefaultPossessionConversionRegistry(PossessableConverterProvider defaultConverterProvider) {
         this.defaultConverterProvider = defaultConverterProvider;

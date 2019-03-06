@@ -51,10 +51,6 @@ public class PlayerShellEntity extends MobEntity {
      */
     @Nullable
     protected CompoundTag playerNbt;
-    /**
-     * The fracture origin to update alongside this entity
-     */
-    private @Nullable UUID linkedFracture;
 
     @API(status = MAINTAINED)
     protected PlayerShellEntity(EntityType<? extends PlayerShellEntity> entityType_1, World world_1) {
@@ -87,7 +83,7 @@ public class PlayerShellEntity extends MobEntity {
         return profile;
     }
 
-    @Nullable
+    @CheckForNull
     public Possessable onSoulInteract(@Nullable PlayerEntity possessor) {
         if (possessor != null) {
             if (!world.isClient) {

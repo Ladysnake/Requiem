@@ -5,7 +5,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 
 public class CooldownStrengthAttribute extends DelegatingAttribute {
-    private Possessable owner;
+    private final Possessable owner;
 
     public <T extends LivingEntity & Possessable> CooldownStrengthAttribute(T entity) {
         super(entity.getAttributeContainer(), entity.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE));

@@ -21,7 +21,7 @@ import static ladysnake.dissolution.api.v1.entity.MovementConfig.MovementMode.*;
 public class PlayerMovementAlterer implements MovementAlterer {
     @Nullable
     private MovementConfig config;
-    private PlayerEntity player;
+    private final PlayerEntity player;
     private Vec3d lastVelocity = Vec3d.ZERO;
 
     public PlayerMovementAlterer(PlayerEntity player) {

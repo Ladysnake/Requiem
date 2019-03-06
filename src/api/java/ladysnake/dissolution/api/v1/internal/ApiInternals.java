@@ -19,7 +19,7 @@ public final class ApiInternals {
     @AccessedThroughReflection
     private static Supplier<MobAbilityConfig.Builder<?>> abilityBuilderFactory;
 
-    private static List<DissolutionPlugin> plugins = new ArrayList<>();
+    private static final List<DissolutionPlugin> plugins = new ArrayList<>();
     @AccessedThroughReflection
     private static Consumer<DissolutionPlugin> registerHandler = plugins::add;
 

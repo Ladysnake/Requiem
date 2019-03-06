@@ -34,8 +34,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
     private static final String TAG_REMNANT_DATA = "dissolution:remnant_data";
 
     private RemnantState remnantState = NullRemnantState.NULL_STATE;
-    private PossessionComponent possessionComponent = new PossessionComponentImpl((PlayerEntity) (Object) this);
-    private MovementAlterer movementAlterer = new PlayerMovementAlterer((PlayerEntity)(Object)this);
+    private final PossessionComponent possessionComponent = new PossessionComponentImpl((PlayerEntity) (Object) this);
+    private final MovementAlterer movementAlterer = new PlayerMovementAlterer((PlayerEntity)(Object)this);
 
     @Override
     public RemnantState getRemnantState() {

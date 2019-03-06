@@ -8,7 +8,7 @@ import net.minecraft.server.world.ServerWorld;
 import java.util.UUID;
 
 public class EntityFractureAnchor extends TrackedFractureAnchor {
-    private UUID entityUuid;
+    private final UUID entityUuid;
 
     public EntityFractureAnchor(UUID entityUuid, FractureAnchorManager manager, UUID uuid, int id) {
         super(manager, uuid, id);

@@ -7,7 +7,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class MeleeAbility extends DirectAbilityBase<MobEntity> {
-    private boolean ignoreDamageAttribute;
+    private final boolean ignoreDamageAttribute;
 
     public MeleeAbility(MobEntity owner) {
         this(owner, false);
