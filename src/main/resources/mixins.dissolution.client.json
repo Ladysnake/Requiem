@@ -11,7 +11,8 @@
     "render.GameRendererMixin",
     "render.entity.AccessibleTextureEntityRenderer",
     "render.entity.EntityRenderDispatcherMixin",
-    "render.entity.PlayerEntityRendererMixin"
+    "render.entity.PlayerEntityRendererMixin",
+    "world.ClientWorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1

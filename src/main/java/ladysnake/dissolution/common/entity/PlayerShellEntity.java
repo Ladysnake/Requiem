@@ -38,32 +38,6 @@ import static org.apiguardian.api.API.Status.MAINTAINED;
 public class PlayerShellEntity extends MobEntity {
     public static final TrackedData<Optional<UUID>>PLAYER_UUID = DataTracker.registerData(PlayerShellEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 
-    public static PlayerShellEntity fromPlayer(PlayerEntity player) {
-        PlayerShellEntity shell = new PlayerShellEntity(DissolutionEntities.PLAYER_SHELL, player.world);
-        shell.playerNbt = performNbtCopy(player, shell);
-        int invSize = player.inventory.main.size();
-        shell.inventory = new BasicInventory(invSize);
-        InventoryHelper.transferEquipment(player, shell);
-        shell.transferInventory(player.inventory, shell.inventory, invSize);
-        shell.setPlayerUuid(player.getUuid());
-        shell.setCustomName(new StringTextComponent(player.getEntityName()));
-        return shell;
-    }
-
-    private static CompoundTag performNbtCopy(Entity from, Entity to) {
-        UUID fromUuid = to.getUuid();
-        // Save the complete representation of the player
-        CompoundTag serialized = new CompoundTag();
-        // We write every attribute of the destination entity to the tag, then we override.
-        // That way, attributes that do not exist in the base entity are kept intact during the copy.
-        to.toTag(serialized);
-        from.toTag(serialized);
-        to.fromTag(serialized);
-        // Restore UUID
-        to.setUuid(fromUuid);
-        return serialized;
-    }
-
     /**
      * Saves the content of the inventory the player had when this shell was created
      */
@@ -77,6 +51,10 @@ public class PlayerShellEntity extends MobEntity {
      */
     @Nullable
     protected CompoundTag playerNbt;
+    /**
+     * The fracture origin to update alongside this entity
+     */
+    private @Nullable UUID linkedFracture;
 
     @API(status = MAINTAINED)
     protected PlayerShellEntity(EntityType<? extends PlayerShellEntity> entityType_1, World world_1) {
@@ -87,6 +65,14 @@ public class PlayerShellEntity extends MobEntity {
     protected void initDataTracker() {
         super.initDataTracker();
         this.getDataTracker().startTracking(PLAYER_UUID, Optional.empty());
+    }
+
+    @Override
+    public void onTrackedDataSet(TrackedData<?> key) {
+        if (PLAYER_UUID.equals(key)) {
+            this.getPlayerUuid().ifPresent(uuid -> this.profile = new GameProfile(uuid, getName().getString()));
+        }
+        super.onTrackedDataSet(key);
     }
 
     public Optional<UUID> getPlayerUuid() {
@@ -279,6 +265,34 @@ public class PlayerShellEntity extends MobEntity {
             compound.putInt("InvSize", this.inventory.getInvSize());
         }
         this.getPlayerUuid().ifPresent(uuid -> compound.putUuid("Player", uuid));
+    }
+
+    /* Static Methods */
+
+    public static PlayerShellEntity fromPlayer(PlayerEntity player) {
+        PlayerShellEntity shell = new PlayerShellEntity(DissolutionEntities.PLAYER_SHELL, player.world);
+        shell.playerNbt = performNbtCopy(player, shell);
+        int invSize = player.inventory.main.size();
+        shell.inventory = new BasicInventory(invSize);
+        InventoryHelper.transferEquipment(player, shell);
+        shell.transferInventory(player.inventory, shell.inventory, invSize);
+        shell.setPlayerUuid(player.getUuid());
+        shell.setCustomName(new StringTextComponent(player.getEntityName()));
+        return shell;
+    }
+
+    private static CompoundTag performNbtCopy(Entity from, Entity to) {
+        UUID fromUuid = to.getUuid();
+        // Save the complete representation of the player
+        CompoundTag serialized = new CompoundTag();
+        // We write every attribute of the destination entity to the tag, then we override.
+        // That way, attributes that do not exist in the base entity are kept intact during the copy.
+        to.toTag(serialized);
+        from.toTag(serialized);
+        to.fromTag(serialized);
+        // Restore UUID
+        to.setUuid(fromUuid);
+        return serialized;
     }
 
 }

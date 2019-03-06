@@ -1,17 +1,26 @@
 package ladysnake.dissolution.common.remnant;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.DissolutionWorld;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
+import ladysnake.dissolution.api.v1.remnant.FractureAnchor;
 import ladysnake.dissolution.api.v1.remnant.RemnantType;
 import ladysnake.dissolution.common.entity.PlayerShellEntity;
+import ladysnake.dissolution.common.impl.anchor.AnchorFactories;
 import ladysnake.dissolution.common.impl.remnant.MutableRemnantState;
 import ladysnake.dissolution.common.network.DissolutionNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import javax.annotation.Nullable;
+import java.util.UUID;
+
 import static ladysnake.dissolution.common.network.DissolutionNetworking.createEtherealAnimationMessage;
 
 public class FracturableRemnantState extends MutableRemnantState {
+    @Nullable
+    protected UUID fractureUuid;
+
     public FracturableRemnantState(RemnantType type, PlayerEntity owner) {
         super(type, owner);
     }
@@ -23,10 +32,11 @@ public class FracturableRemnantState extends MutableRemnantState {
             if (!this.isSoul()) {
                 PlayerShellEntity shellEntity = PlayerShellEntity.fromPlayer(player);
                 player.world.spawnEntity(shellEntity);
+                FractureAnchor anchor = ((DissolutionWorld) player.world).getAnchorManager().addAnchor(AnchorFactories.fromEntityUuid(shellEntity.getUuid()));
+                anchor.setPosition(shellEntity.x, shellEntity.y, shellEntity.z);
                 this.setSoul(true);
             } else if (possessionComponent.isPossessing()) {
                 possessionComponent.stopPossessing();
-
             } else {
                 return;
             }

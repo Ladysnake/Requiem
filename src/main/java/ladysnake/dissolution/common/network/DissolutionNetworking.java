@@ -2,6 +2,7 @@ package ladysnake.dissolution.common.network;
 
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.remnant.FractureAnchor;
 import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
@@ -23,6 +24,8 @@ public class DissolutionNetworking {
     public static final Identifier REMNANT_SYNC = Dissolution.id("remnant_sync");
     public static final Identifier POSSESSION_SYNC = Dissolution.id("possession_sync");
     public static final Identifier ETHEREAL_ANIMATION = Dissolution.id("ethereal_animation");
+    public static final Identifier ANCHOR_SYNC = Dissolution.id("anchor_sync_update");
+    public static final Identifier ANCHOR_REMOVE = Dissolution.id("anchor_sync_remove");
 
     // Client -> Server
     public static final Identifier LEFT_CLICK_AIR = Dissolution.id("attack_air");
@@ -74,6 +77,22 @@ public class DissolutionNetworking {
     @Contract(pure = true)
     public static CustomPayloadS2CPacket createEtherealAnimationMessage() {
         return new CustomPayloadS2CPacket(ETHEREAL_ANIMATION, new PacketByteBuf(buffer()));
+    }
+
+    @Contract(pure = true)
+    public static CustomPayloadS2CPacket createAnchorUpdateMessage(FractureAnchor anchor) {
+        PacketByteBuf buf = new PacketByteBuf(buffer());
+        buf.writeInt(anchor.getId());
+        buf.writeDouble(anchor.getX());
+        buf.writeDouble(anchor.getY());
+        buf.writeDouble(anchor.getZ());
+        return new CustomPayloadS2CPacket(ANCHOR_SYNC, buf);
+    }
+
+    public static CustomPayloadS2CPacket createAnchorDeleteMessage(int anchorId) {
+        PacketByteBuf buf = new PacketByteBuf(buffer());
+        buf.writeInt(anchorId);
+        return new CustomPayloadS2CPacket(ANCHOR_REMOVE, buf);
     }
 
     @Contract(pure = true)
