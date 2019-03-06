@@ -29,8 +29,6 @@ public interface FractureAnchorManager {
 
     @Nullable FractureAnchor getAnchor(UUID anchorUuid);
 
-    void removeAnchor(UUID anchorUuid);
-
     Collection<FractureAnchor> getAnchors();
 
     void updateAnchors(long time);

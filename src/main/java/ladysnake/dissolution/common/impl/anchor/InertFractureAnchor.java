@@ -13,6 +13,7 @@ public class InertFractureAnchor implements FractureAnchor {
     protected double z;
     protected double x;
     protected double y;
+    private boolean invalid;
 
     public InertFractureAnchor(FractureAnchorManager manager, UUID uuid, int id) {
         this.manager = manager;
@@ -62,15 +63,21 @@ public class InertFractureAnchor implements FractureAnchor {
     }
 
     @Override
+    public void invalidate() {
+        this.invalid = true;
+    }
+
+    @Override
+    public boolean isInvalid() {
+        return this.invalid;
+    }
+
+    @Override
     public CompoundTag toTag(CompoundTag tag) {
         tag.putUuid("AnchorUuid", this.getUuid());
         tag.putDouble("X", this.x);
         tag.putDouble("Y", this.y);
         tag.putDouble("Z", this.z);
         return tag;
-    }
-
-    protected void invalidate() {
-        this.manager.removeAnchor(this.getUuid());
     }
 }

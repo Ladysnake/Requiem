@@ -7,6 +7,7 @@ import java.util.UUID;
 /**
  * A {@link FractureAnchor} represents the origin of an ethereal player
  * who left their body through {@link RemnantState#fracture()}.
+ * Anchors are tracked regardless of distance and loaded chunks.
  */
 public interface FractureAnchor {
     /**
@@ -36,6 +37,10 @@ public interface FractureAnchor {
     void setPosition(double x, double y, double z);
 
     void update();
+
+    boolean isInvalid();
+
+    void invalidate();
 
     CompoundTag toTag(CompoundTag tag);
 }

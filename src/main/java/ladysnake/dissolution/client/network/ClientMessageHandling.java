@@ -70,7 +70,7 @@ public class ClientMessageHandling {
             FractureAnchorManager manager = ((DissolutionWorld)context.getPlayer().world).getAnchorManager();
             FractureAnchor anchor = manager.getAnchor(id);
             if (anchor != null) {
-                manager.removeAnchor(anchor.getUuid());
+                anchor.invalidate();
             }
         }));
     }

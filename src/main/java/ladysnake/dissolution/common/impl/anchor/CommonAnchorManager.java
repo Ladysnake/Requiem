@@ -38,8 +38,9 @@ public class CommonAnchorManager implements FractureAnchorManager {
 
     private int getNextId() {
         // Guarantee that the next id is unused
-        //noinspection StatementWithEmptyBody
-        while (anchorsById.containsKey(++nextId)) {}
+        while (anchorsById.containsKey(nextId)) {
+            nextId++;
+        }
         return nextId;
     }
 
@@ -50,9 +51,14 @@ public class CommonAnchorManager implements FractureAnchorManager {
 
     @Override
     public void updateAnchors(long time) {
-        for (FractureAnchor anchor : this.getAnchors()) {
+        this.anchorsById.values().removeIf(anchor -> {
             anchor.update();
-        }
+            if (anchor.isInvalid()) {
+                this.anchorsByUuid.remove(anchor.getUuid());
+                return true;
+            }
+            return false;
+        });
     }
 
     @Nullable
@@ -65,12 +71,6 @@ public class CommonAnchorManager implements FractureAnchorManager {
     @Override
     public FractureAnchor getAnchor(UUID anchorUuid) {
         return anchorsByUuid.get(anchorUuid);
-    }
-
-    @Override
-    public void removeAnchor(UUID anchorUuid) {
-        FractureAnchor anchor = this.anchorsByUuid.remove(anchorUuid);
-        this.anchorsById.remove(anchor.getId());
     }
 
     @Override

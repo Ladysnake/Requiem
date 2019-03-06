@@ -29,7 +29,7 @@ public class TrackedFractureAnchor extends InertFractureAnchor {
     }
 
     @Override
-    protected void invalidate() {
+    public void invalidate() {
         super.invalidate();
         syncWithWorld(createAnchorDeleteMessage(this.getId()));
     }

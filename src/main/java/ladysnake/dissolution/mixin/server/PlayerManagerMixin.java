@@ -3,10 +3,12 @@ package ladysnake.dissolution.mixin.server;
 import com.mojang.authlib.GameProfile;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.DissolutionWorld;
 import ladysnake.dissolution.api.v1.event.PlayerCloneCallback;
 import ladysnake.dissolution.api.v1.event.PlayerRespawnCallback;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
+import ladysnake.dissolution.api.v1.remnant.FractureAnchor;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -35,8 +37,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-import static ladysnake.dissolution.common.network.DissolutionNetworking.createCorporealityMessage;
-import static ladysnake.dissolution.common.network.DissolutionNetworking.sendTo;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 import static ladysnake.dissolution.mixin.server.PlayerTagKeys.*;
 import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 
@@ -125,6 +126,13 @@ public abstract class PlayerManagerMixin {
                 serverWorld_1.method_18774(ridden);
             }
             serverWorld_1.method_8497(player.chunkX, player.chunkZ).markDirty();
+        }
+    }
+
+    @Inject(method = "method_14606", at = @At("RETURN"))
+    private void sendWorldJoinMessages(ServerPlayerEntity player, ServerWorld world, CallbackInfo ci) {
+        for (FractureAnchor anchor : ((DissolutionWorld)world).getAnchorManager().getAnchors()) {
+            sendTo(player, createAnchorUpdateMessage(anchor));
         }
     }
 
