@@ -11,6 +11,9 @@ import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelProperties;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.BiFunction;
 
@@ -25,5 +28,13 @@ public abstract class ClientWorldMixin extends World implements DissolutionWorld
     @Override
     public FractureAnchorManager getAnchorManager() {
         return this.anchorManager;
+    }
+
+    @Inject(method = "method_18116", at = @At("TAIL"))
+    private void updateAnchorTracker(CallbackInfo ci) {
+        Profiler profiler = this.getProfiler();
+        profiler.push("dissolution_ethereal_anchors");
+        this.getAnchorManager().updateAnchors(this.properties.getTime());
+        profiler.pop();
     }
 }
