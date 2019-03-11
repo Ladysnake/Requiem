@@ -2,6 +2,7 @@ package ladysnake.dissolution.common.impl.anchor;
 
 import ladysnake.dissolution.api.v1.remnant.FractureAnchorManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 
@@ -25,7 +26,7 @@ public class EntityFractureAnchor extends TrackedFractureAnchor {
         super.update();
         Entity entity = ((ServerWorld)this.manager.getWorld()).getEntity(this.entityUuid);
         if (entity != null) {
-            if (entity.invalid) {
+            if (entity instanceof LivingEntity && ((LivingEntity)entity).getHealth() <= 0.0F) {
                 this.invalidate();
             } else if (entity.x != this.x || entity.y != this.y || entity.z != this.z) {
                 this.setPosition(entity.x, entity.y, entity.z);
