@@ -35,7 +35,7 @@ public class TrackedFractureAnchor extends InertFractureAnchor {
     }
 
     protected void syncWithWorld(CustomPayloadS2CPacket packet) {
-        for (ServerPlayerEntity player : ((ServerWorld) this.manager.getWorld()).method_18456()) {
+        for (ServerPlayerEntity player : ((ServerWorld) this.manager.getWorld()).getPlayers()) {
             sendTo(player, packet);
         }
     }

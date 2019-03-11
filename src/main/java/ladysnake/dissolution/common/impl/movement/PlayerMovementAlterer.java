@@ -86,7 +86,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
 
     private Vec3d applyFallSpeedModifier(Vec3d velocity, float fallSpeedModifier) {
         if (!this.player.onGround && velocity.y < 0) {
-            velocity = velocity.method_18805(1.0, fallSpeedModifier, 1.0);
+            velocity = velocity.multiply(1.0, fallSpeedModifier, 1.0);
         }
         return velocity;
     }

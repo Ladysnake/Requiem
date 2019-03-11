@@ -19,7 +19,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 archivesBaseName = "dissolution"
-version = "1.0.0"
+version = mod_version
 
 sourceSets {
     api {
@@ -73,9 +73,9 @@ dependencies {
 //    modCompile "com.github.Ladysnake:Satin:b513da151c"
     compile files("libs/satin-1.0.0-SNAPSHOT-dev.jar")
 
-    compile "org.jetbrains:annotations:${jb_annotations_version}"
-    compile "com.google.code.findbugs:jsr305:${findbugs_version}"
-    compile "org.apiguardian:apiguardian-api:${apiguardian_version}"
+    compileOnly "org.jetbrains:annotations:${jb_annotations_version}"
+    compileOnly "com.google.code.findbugs:jsr305:${findbugs_version}"
+    compileOnly "org.apiguardian:apiguardian-api:${apiguardian_version}"
 }
 
 compileJava {
@@ -91,6 +91,8 @@ if (JavaVersion.current().isJava8Compatible()) {
 }
 
 jar {
+    from "LICENSE-CODE"
+    from "LICENSE-ART"
     manifest.mainAttributes(
             "Implementation-Title": project.archivesBaseName,
             "Implementation-Version": project.version,

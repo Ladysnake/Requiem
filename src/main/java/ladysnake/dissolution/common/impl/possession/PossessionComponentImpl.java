@@ -71,7 +71,7 @@ public class PossessionComponentImpl implements PossessionComponent {
         // 3- transfer inventory
         // TODO data driven item giving
         if (host.getMainHandStack().getItem() instanceof BowItem) {
-            player.method_7270(new ItemStack(Items.ARROW, host.world.random.nextInt(10) + 2));
+            player.giveItemStack(new ItemStack(Items.ARROW, host.world.random.nextInt(10) + 2));
         }
         if (DissolutionEntityTags.ITEM_USER.contains(host.getType())) {
             InventoryHelper.transferEquipment(host, player);
@@ -83,7 +83,7 @@ public class PossessionComponentImpl implements PossessionComponent {
         syncPossessed();
         // 5- Update some attributes
         this.player.setPositionAndAngles(host);
-        this.player.method_18382(); // update size
+        this.player.refreshSize(); // update size
         ((DissolutionPlayer)this.player).getMovementAlterer().setConfig(Dissolution.getMovementAltererManager().getEntityMovementConfig(host.getType()));
         if (!attributeUpdated.contains(this.player)) {
             swapAttributes(this.player);
@@ -168,7 +168,7 @@ public class PossessionComponentImpl implements PossessionComponent {
     private void resetState() {
         this.possessedNetworkId = -1;
         ((DissolutionPlayer) this.player).getMovementAlterer().setConfig(SerializableMovementConfig.SOUL);
-        this.player.method_18382(); // update size
+        this.player.refreshSize(); // update size
         this.player.setBreath(this.player.getMaxBreath());
         syncPossessed();
     }

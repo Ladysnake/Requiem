@@ -118,11 +118,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
      * Players' sizes are hardcoded in an immutable enum map.
      * This injection delegates the call to the possessed entity, if any.
      */
-    @Inject(method = "getSizeForStatus", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getSize", at = @At("HEAD"), cancellable = true)
     private void adjustSize(EntityPose pose, CallbackInfoReturnable<EntitySize> cir) {
         Entity possessedEntity = (Entity) this.getPossessionComponent().getPossessedEntity();
         if (possessedEntity != null) {
-            cir.setReturnValue(possessedEntity.getSizeForStatus(pose));
+            cir.setReturnValue(possessedEntity.getSize(pose));
         }
     }
 
