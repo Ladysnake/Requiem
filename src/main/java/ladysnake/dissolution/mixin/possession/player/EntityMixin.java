@@ -1,4 +1,4 @@
-package ladysnake.dissolution.mixin.entity;
+package ladysnake.dissolution.mixin.possession.player;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;

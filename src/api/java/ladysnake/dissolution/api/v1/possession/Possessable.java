@@ -1,6 +1,7 @@
 package ladysnake.dissolution.api.v1.possession;
 
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityController;
+import ladysnake.dissolution.api.v1.internal.ProtoPossessable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -14,7 +15,7 @@ import java.util.UUID;
  * When possessed, the entity should stop acting on its own, and act as a delegate body
  * for the possessing player.
  */
-public interface Possessable {
+public interface Possessable extends ProtoPossessable {
     /**
      * Returns an {@link Optional} describing the {@link UUID unique id} of the
      * player possessing this entity, or an empty {@code Optional} if this
@@ -37,11 +38,16 @@ public interface Possessable {
      */
     Optional<PlayerEntity> getPossessor();
 
+    @Nullable
+    @Override
+    PlayerEntity getPossessorEntity();
+
     /**
      * Returns whether this entity has a defined {@link #getPossessorUuid() possessor}.
      *
      * @return {@code true} if this entity has a defined possessor, otherwise {@code false}
      */
+    @Override
     default boolean isBeingPossessed() {
         return this.getPossessorUuid().isPresent();
     }

@@ -34,6 +34,7 @@ import java.util.UUID;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 
 public class PossessionComponentImpl implements PossessionComponent {
+    // Identity weak map. Should probably be made into its own util class.
     private static final Set<PlayerEntity> attributeUpdated = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
 
     private final PlayerEntity player;

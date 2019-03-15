@@ -1,4 +1,4 @@
-package ladysnake.dissolution.mixin.entity;
+package ladysnake.dissolution.mixin.possession.player;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
@@ -69,7 +69,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "doesCollide", at = @At("RETURN"), cancellable = true)
-    private void soulsDontCollide(CallbackInfoReturnable<Boolean> info) {
+    private void preventSoulsCollision(CallbackInfoReturnable<Boolean> info) {
         if (this instanceof DissolutionPlayer && ((DissolutionPlayer) this).getRemnantState().isSoul()) {
             info.setReturnValue(false);
         }

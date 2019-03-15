@@ -86,6 +86,12 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
         return getPossessorUuid().map(world::method_18470);
     }
 
+    @Nullable
+    @Override
+    public PlayerEntity getPossessorEntity() {
+        return getPossessor().orElse(null);
+    }
+
     @Override
     public boolean canBePossessedBy(PlayerEntity player) {
         return !this.isBeingPossessed();
@@ -98,6 +104,9 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
 
     @Override
     public void setPossessor(@CheckForNull PlayerEntity possessor) {
+        if (this.getPossessor().map(p -> ((DissolutionPlayer)p).getPossessionComponent().getPossessedEntity()).filter(this::equals).isPresent()) {
+            throw new IllegalStateException("Players must stop possessing an entity before it can change possessor!");
+        }
         if (possessor != null) {
             this.possessorUuid = possessor.getUuid();
             this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).addModifier(INHERENT_MOB_SLOWNESS);

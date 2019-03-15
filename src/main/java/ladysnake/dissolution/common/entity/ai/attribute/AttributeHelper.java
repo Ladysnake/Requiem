@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.entity.ai.attribute;
 
-import ladysnake.dissolution.mixin.entity.attribute.AbstractEntityAttributeContainerAccessorMixin;
-import ladysnake.dissolution.mixin.entity.attribute.EntityAttributeContainerAccessorMixin;
+import ladysnake.dissolution.mixin.entity.attribute.AbstractEntityAttributeContainerAccessor;
+import ladysnake.dissolution.mixin.entity.attribute.EntityAttributeContainerAccessor;
 import net.minecraft.entity.attribute.*;
 
 import java.util.Map;
@@ -10,10 +10,10 @@ public final class AttributeHelper {
     private AttributeHelper() { throw new AssertionError(); }
 
     public static void substituteAttributeInstance(AbstractEntityAttributeContainer entityAttributeContainer, EntityAttributeInstance replacement) {
-        final Map<EntityAttribute, EntityAttributeInstance> attributes = ((AbstractEntityAttributeContainerAccessorMixin)entityAttributeContainer).getInstancesByKey();
-        final Map<String, EntityAttributeInstance> attributesByName = ((AbstractEntityAttributeContainerAccessorMixin)entityAttributeContainer).getInstancesById();
+        final Map<EntityAttribute, EntityAttributeInstance> attributes = ((AbstractEntityAttributeContainerAccessor)entityAttributeContainer).getInstancesByKey();
+        final Map<String, EntityAttributeInstance> attributesByName = ((AbstractEntityAttributeContainerAccessor)entityAttributeContainer).getInstancesById();
         final Map<String, EntityAttributeInstance> instancesByName = (entityAttributeContainer instanceof EntityAttributeContainer)
-                ? ((EntityAttributeContainerAccessorMixin) entityAttributeContainer).getInstancesByName()
+                ? ((EntityAttributeContainerAccessor) entityAttributeContainer).getInstancesByName()
                 : null;
         EntityAttribute attribute = replacement.getAttribute();
         String name = attribute.getId();
