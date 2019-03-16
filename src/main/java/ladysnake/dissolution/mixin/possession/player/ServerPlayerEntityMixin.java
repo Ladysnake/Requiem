@@ -5,21 +5,18 @@ import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
+import ladysnake.dissolution.mixin.entity.EntityAccessor;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.network.packet.MobSpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -37,8 +34,6 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     @Nullable
     private CompoundTag dissolution$possessedEntityTag;
 
-    @Shadow public ServerPlayNetworkHandler networkHandler;
-
     public ServerPlayerEntityMixin(World world_1, GameProfile gameProfile_1) {
         super(world_1, gameProfile_1);
     }
@@ -49,7 +44,6 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
         if (possessionComponent.isPossessing()) {
             Entity current = (Entity) possessionComponent.getPossessedEntity();
             if (current != null) {
-                possessionComponent.stopPossessing();
                 this.dissolution$possessedEntityTag = new CompoundTag();
                 current.saveSelfToTag(this.dissolution$possessedEntityTag);
                 current.invalidate();
@@ -69,7 +63,6 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
             if (formerPossessed instanceof MobEntity) {
                 formerPossessed.setPositionAndAngles(this);
                 if (world.spawnEntity(formerPossessed)) {
-                    this.networkHandler.sendPacket(new MobSpawnS2CPacket((LivingEntity) formerPossessed));
                     ((DissolutionPlayer)this).getPossessionComponent().startPossessing((MobEntity) formerPossessed);
                 } else {
                     Dissolution.LOGGER.error("Failed to spawn possessed entity {}", formerPossessed);
@@ -82,10 +75,11 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     }
 
     @Inject(method = "method_5623", at=@At("HEAD"), cancellable = true)
-    private void onFall(double double_1, boolean boolean_1, BlockState blockState_1, BlockPos blockPos_1, CallbackInfo info) {
+    private void onFall(double fallY, boolean onGround, BlockState floorBlock, BlockPos floorPos, CallbackInfo info) {
         Possessable possessed = ((DissolutionPlayer)this).getPossessionComponent().getPossessedEntity();
         if (possessed != null) {
-            possessed.onPossessorFalls(this.fallDistance, double_1, boolean_1, blockState_1, blockPos_1);
+            ((Entity) possessed).fallDistance = this.fallDistance;
+            ((EntityAccessor)possessed).onFall(fallY, onGround, floorBlock, floorPos);
         }
     }
 

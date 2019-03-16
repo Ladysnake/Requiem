@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 
 public interface ProtoPossessable {
     @Nullable
-    PlayerEntity getPossessorEntity();
+    PlayerEntity getPossessor();
 
     boolean isBeingPossessed();
 }

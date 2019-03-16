@@ -1,11 +1,11 @@
 package ladysnake.dissolution.mixin.possession.entity;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.annotation.CalledThroughReflection;
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityController;
 import ladysnake.dissolution.api.v1.internal.ProtoPossessable;
 import ladysnake.dissolution.api.v1.possession.Possessable;
-import ladysnake.dissolution.common.impl.ability.DummyMobAbilityController;
-import net.minecraft.block.BlockState;
+import ladysnake.dissolution.common.VanillaDissolutionPlugin;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -18,7 +18,6 @@ import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,10 +30,9 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
-import static ladysnake.dissolution.common.impl.possession.entity.PossessableEntityImpl.INHERENT_MOB_SLOWNESS;
-import static ladysnake.dissolution.common.impl.possession.entity.PossessableEntityImpl.INHERENT_MOB_SLOWNESS_UUID;
+@CalledThroughReflection
+public final class PossessableEntityMixins {
 
-final class PossessableEntityMixins {
     private PossessableEntityMixins() {}
 
     @Mixin(Entity.class)
@@ -42,7 +40,7 @@ final class PossessableEntityMixins {
 
         @Nullable
         @Override
-        public PlayerEntity getPossessorEntity() {
+        public PlayerEntity getPossessor() {
             return null;
         }
 
@@ -58,7 +56,6 @@ final class PossessableEntityMixins {
 
         @Nullable
         private PlayerEntity possessor;
-        protected MobAbilityController abilityController = DummyMobAbilityController.DUMMY;
 
         public LivingEntityMixin(EntityType<?> type, World world) {
             super(type, world);
@@ -66,13 +63,7 @@ final class PossessableEntityMixins {
 
         @Override
         public Optional<UUID> getPossessorUuid() {
-            return getPossessor().map(PlayerEntity::getUuid);
-        }
-
-        @Override
-        public Optional<PlayerEntity> getPossessor() {
-            // method_18470 == getPlayerByUuid
-            return Optional.ofNullable(possessor);
+            return Optional.ofNullable(this.possessor).map(PlayerEntity::getUuid);
         }
 
         @Override
@@ -82,7 +73,7 @@ final class PossessableEntityMixins {
 
         @Nullable
         @Override
-        public PlayerEntity getPossessorEntity() {
+        public PlayerEntity getPossessor() {
             if (this.possessor != null && this.possessor.invalid) {
                 ((DissolutionPlayer)this.possessor).getPossessionComponent().stopPossessing();
                 // Make doubly sure
@@ -98,33 +89,28 @@ final class PossessableEntityMixins {
 
         @Override
         public MobAbilityController getMobAbilityController() {
-            return this.abilityController;
+            return MobAbilityController.DUMMY;
         }
 
         @Override
         public void setPossessor(@CheckForNull PlayerEntity possessor) {
-            if (this.getPossessor().map(p -> ((DissolutionPlayer)p).getPossessionComponent().getPossessedEntity()).filter(this::equals).isPresent()) {
+            if (this.possessor != null && ((DissolutionPlayer) this.possessor).getPossessionComponent().getPossessedEntity() == this) {
                 throw new IllegalStateException("Players must stop possessing an entity before it can change possessor!");
             }
             this.possessor = possessor;
-            this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).removeModifier(INHERENT_MOB_SLOWNESS_UUID);
+            this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).removeModifier(VanillaDissolutionPlugin.INHERENT_MOB_SLOWNESS_UUID);
             if (possessor != null) {
-                this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).addModifier(INHERENT_MOB_SLOWNESS);
+                this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).addModifier(VanillaDissolutionPlugin.INHERENT_MOB_SLOWNESS);
             }
         }
 
-        @Override
-        public void onPossessorFalls(float fallDistance, double double_1, boolean boolean_1, BlockState blockState_1, BlockPos blockPos_1) {
-            this.fallDistance = fallDistance;
-            this.method_5623(double_1, boolean_1, blockState_1, blockPos_1);
-        }
     }
 
     @Mixin({Entity.class, HorseBaseEntity.class, PigEntity.class, RavagerEntity.class})
     private static abstract class ControllableEntityMixin implements ProtoPossessable {
         @Inject(method = "getPrimaryPassenger", at = @At("HEAD"), cancellable = true)
         private void getPrimaryPassenger(CallbackInfoReturnable<Entity> cir) {
-            PlayerEntity possessor = this.getPossessorEntity();
+            PlayerEntity possessor = this.getPossessor();
             if (possessor != null) {
                 cir.setReturnValue(possessor);
             }

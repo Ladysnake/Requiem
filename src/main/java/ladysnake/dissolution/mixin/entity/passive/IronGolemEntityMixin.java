@@ -28,7 +28,7 @@ public class IronGolemEntityMixin extends GolemEntity {
      */
     @Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
     private void knockbackPossessor(Entity target, CallbackInfoReturnable<Boolean> cir) {
-        PlayerEntity possessor = ((ProtoPossessable)target).getPossessorEntity();
+        PlayerEntity possessor = ((ProtoPossessable)target).getPossessor();
         if (possessor != null) {
             possessor.setVelocity(possessor.getVelocity().add(0.0D, 0.4D, 0.0D));
         }

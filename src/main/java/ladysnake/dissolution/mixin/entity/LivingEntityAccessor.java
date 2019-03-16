@@ -8,4 +8,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface LivingEntityAccessor {
     @Invoker
     void invokeDamageShield(float damage);
+
+    @Invoker
+    void invokeDropInventory();
 }

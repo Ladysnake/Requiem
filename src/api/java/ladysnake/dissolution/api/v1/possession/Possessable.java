@@ -2,9 +2,7 @@ package ladysnake.dissolution.api.v1.possession;
 
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityController;
 import ladysnake.dissolution.api.v1.internal.ProtoPossessable;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -14,8 +12,13 @@ import java.util.UUID;
  * A {@link Possessable} entity can be possessed by a player through a {@link PossessionComponent}.
  * When possessed, the entity should stop acting on its own, and act as a delegate body
  * for the possessing player.
+ * <p>
+ * All methods in this interface have defaults so subclasses can omit implementations.
+ * Those default implementations are actually dummies, actual default implementations
+ * are provided by {@link net.minecraft.entity.LivingEntity}.
  */
 public interface Possessable extends ProtoPossessable {
+
     /**
      * Returns an {@link Optional} describing the {@link UUID unique id} of the
      * player possessing this entity, or an empty {@code Optional} if this
@@ -23,24 +26,21 @@ public interface Possessable extends ProtoPossessable {
      *
      * @return an {@code Optional} describing the UUID of the possessor player
      */
-    Optional<UUID> getPossessorUuid();
+    default Optional<UUID> getPossessorUuid() { return Optional.empty(); }
 
     /**
-     * Returns an {@link Optional} describing the {@link PlayerEntity}
-     * possessing this entity, or an empty {@code Optional} if there is
-     * no player possessing this entity.
+     * Returns the {@link PlayerEntity} currently possessing this entity,
+     * or {@code null} if there is no player possessing this entity.
      * <p>
-     * This method can return an empty {@code Optional} if the player
+     * This method can return {@code null} if the player
      * associated with the {@link #getPossessorUuid() possessor uuid}
      * cannot be found in the world this entity is in.
      *
-     * @return an {@code Optional} describing the possessor player
+     * @return the player currently possessing this entity.
      */
-    Optional<PlayerEntity> getPossessor();
-
     @Nullable
     @Override
-    PlayerEntity getPossessorEntity();
+    default PlayerEntity getPossessor() { return null; }
 
     /**
      * Returns whether this entity has a defined {@link #getPossessorUuid() possessor}.
@@ -48,9 +48,7 @@ public interface Possessable extends ProtoPossessable {
      * @return {@code true} if this entity has a defined possessor, otherwise {@code false}
      */
     @Override
-    default boolean isBeingPossessed() {
-        return this.getPossessorUuid().isPresent();
-    }
+    default boolean isBeingPossessed() { return false; }
 
     /**
      * Returns whether this entity is in a state ready to be possessed by the given player.
@@ -59,16 +57,15 @@ public interface Possessable extends ProtoPossessable {
      * @return {@code true} if this entity can be possessed by the given player, otherwise {@code false}
      * @implNote The default implementation checks whether it has no current possessor
      */
-    boolean canBePossessedBy(PlayerEntity player);
+    default boolean canBePossessedBy(PlayerEntity player) { return true; }
 
-    MobAbilityController getMobAbilityController();
+    default MobAbilityController getMobAbilityController() { return MobAbilityController.DUMMY; }
 
     /**
      * Sets the player possessing this entity.
      *
      * @param possessor the new possessor of this entity
      */
-    void setPossessor(@Nullable PlayerEntity possessor);
+    default void setPossessor(@Nullable PlayerEntity possessor) {}
 
-    void onPossessorFalls(float fallDistance, double double_1, boolean boolean_1, BlockState blockState_1, BlockPos blockPos_1);
 }

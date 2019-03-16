@@ -62,7 +62,7 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
 
     @Inject(method = "update", at = @At("RETURN"))
     private void update(CallbackInfo ci) {
-        PlayerEntity player = this.getPossessorEntity();
+        PlayerEntity player = this.getPossessor();
         if (player != null) {
             // Make possessed monsters despawn gracefully
             if (!this.world.isClient) {
@@ -78,7 +78,7 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
 
     @Inject(method = "travel", at = @At("RETURN"))
     private void travel(Vec3d direction, CallbackInfo ci) {
-        PlayerEntity player = this.getPossessorEntity();
+        PlayerEntity player = this.getPossessor();
         if (player != null) {
             this.setRotation(player.yaw, player.pitch);
             this.headYaw = this.field_6283 = this.prevYaw = this.yaw;
@@ -103,7 +103,7 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
     @Inject(method = {"pushAwayFrom", "pushAway"}, at = @At("HEAD"), cancellable = true)
     private void pushAwayFrom(Entity entity, CallbackInfo ci) {
         // Prevent infinite propulsion through self collision
-        if (entity == this.getPossessorEntity()) {
+        if (entity == this.getPossessor()) {
             ci.cancel();
         }
     }
@@ -111,18 +111,15 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
     @Inject(method = "onDeath", at = @At("TAIL"))
     private void onDeath(DamageSource damageSource_1, CallbackInfo ci) {
         // Drop player inventory on death
-        PlayerEntity possessor = this.getPossessorEntity();
+        PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
             ((DissolutionPlayer)possessor).getPossessionComponent().stopPossessing();
-            if (!world.isClient && !possessor.isCreative() && !world.getGameRules().getBoolean("keepInventory")) {
-                possessor.inventory.dropAll();
-            }
         }
     }
 
     @Inject(method = "scheduleVelocityUpdate", at = @At("RETURN"))
     private void scheduleVelocityUpdate(CallbackInfo ci) {
-        PlayerEntity player = this.getPossessorEntity();
+        PlayerEntity player = this.getPossessor();
         if (!world.isClient && this.velocityModified && player != null) {
             player.velocityModified = true;
         }
@@ -144,7 +141,7 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
      */
     @Inject(method = "method_6005", at = @At("HEAD"), cancellable = true)
     private void knockback(Entity entity, float vx, double vy, double vz, CallbackInfo ci) {
-        PlayerEntity possessing = getPossessorEntity();
+        PlayerEntity possessing = getPossessor();
         if (possessing != null) {
             possessing.method_6005(entity, vx, vy, vz);
             ci.cancel();
@@ -159,7 +156,7 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
      */
     @Inject(method = "method_6082", at = @At("HEAD"), cancellable = true)
     private void method_6082(double x, double y, double z, boolean enderTp, CallbackInfoReturnable<Boolean> cir) {
-        PlayerEntity player = this.getPossessorEntity();
+        PlayerEntity player = this.getPossessor();
         if (player != null) {
             cir.setReturnValue(player.method_6082(x, y, z, enderTp));
         }
@@ -167,7 +164,7 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
 
     @Inject(method = "isFallFlying", at = @At("HEAD"), cancellable = true)
     private void isFallFlying(CallbackInfoReturnable<Boolean> cir) {
-        PlayerEntity player = this.getPossessorEntity();
+        PlayerEntity player = this.getPossessor();
         if (player != null) {
             cir.setReturnValue(player.isFallFlying());
         }
@@ -178,7 +175,7 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
      */
     @Inject(method = "method_6039", at = @At("HEAD"), cancellable = true)
     private void method_6039(CallbackInfoReturnable<Boolean> cir) {
-        PlayerEntity possessor = this.getPossessorEntity();
+        PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
             cir.setReturnValue(possessor.method_6039());
         }
@@ -186,7 +183,7 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
 
     @Inject(method = "damageShield", at = @At("HEAD"), cancellable = true)
     private void damageShield(float damage, CallbackInfo ci) {
-        PlayerEntity possessor = this.getPossessorEntity();
+        PlayerEntity possessor = this.getPossessor();
         if (possessor != null && !this.world.isClient) {
             ((LivingEntityAccessor)possessor).invokeDamageShield(damage);
             this.world.summonParticle(possessor, (byte)29);
@@ -196,7 +193,7 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
 
     @Inject(method = "getActiveItem", at = @At("HEAD"), cancellable = true)
     private void getActiveItem(CallbackInfoReturnable<ItemStack> cir) {
-        PlayerEntity possessor = this.getPossessorEntity();
+        PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
             cir.setReturnValue(possessor.getActiveItem());
         }
@@ -204,7 +201,7 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
 
     @Inject(method = "isEquippedStackValid", at = @At("HEAD"), cancellable = true)
     private void isEquippedStackValid(EquipmentSlot slot, CallbackInfoReturnable<Boolean> cir) {
-        PlayerEntity possessor = this.getPossessorEntity();
+        PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
             cir.setReturnValue(possessor.isEquippedStackValid(slot));
         }
@@ -215,7 +212,7 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
      */
     @Inject(method = "isUsingItem", at = @At("HEAD"), cancellable = true)
     private void isUsingItem(CallbackInfoReturnable<Boolean> cir) {
-        PlayerEntity possessor = this.getPossessorEntity();
+        PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
             cir.setReturnValue(possessor.isUsingItem());
         }

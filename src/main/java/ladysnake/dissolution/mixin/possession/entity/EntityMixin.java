@@ -14,7 +14,7 @@ public abstract class EntityMixin implements ProtoPossessable {
 
     @Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
     private void isInvulnerableTo(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
-        PlayerEntity player = this.getPossessorEntity();
+        PlayerEntity player = this.getPossessor();
         if (player != null && (player.isCreative() || player == source.getAttacker())) {
             cir.setReturnValue(source.doesDamageToCreative());
         }
@@ -29,7 +29,7 @@ public abstract class EntityMixin implements ProtoPossessable {
 
     @Inject(method = "startRiding(Lnet/minecraft/entity/Entity;)Z", at = @At("HEAD"), cancellable = true)
     private void startRiding(Entity mount, CallbackInfoReturnable<Boolean> cir) {
-        PlayerEntity player = this.getPossessorEntity();
+        PlayerEntity player = this.getPossessor();
         if (player != null) {
             cir.setReturnValue(player.startRiding(mount));
         }

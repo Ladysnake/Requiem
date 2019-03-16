@@ -3,6 +3,7 @@
   "package": "ladysnake.dissolution.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "entity.EntityAccessor",
     "entity.ItemEntityMixin",
     "entity.LivingEntityAccessor",
     "entity.ai.goal.FollowTargetGoalMixin",

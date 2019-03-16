@@ -2,7 +2,6 @@ package ladysnake.dissolution.common.entity;
 
 import com.mojang.authlib.GameProfile;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
-import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.common.util.InventoryHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -83,8 +82,7 @@ public class PlayerShellEntity extends MobEntity {
         return profile;
     }
 
-    @CheckForNull
-    public Possessable onSoulInteract(@Nullable PlayerEntity possessor) {
+    public void onSoulInteract(@Nullable PlayerEntity possessor) {
         if (possessor != null) {
             if (!world.isClient) {
                 possessor.inventory.dropAll();
@@ -105,7 +103,6 @@ public class PlayerShellEntity extends MobEntity {
                 ((DissolutionPlayer) possessor).getRemnantState().setSoul(false);
             }
         }
-        return null;
     }
 
     public void transferInventory(Inventory from, Inventory to, int size) {

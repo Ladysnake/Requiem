@@ -51,6 +51,5 @@ public class Dissolution implements ModInitializer {
         plugin.onDissolutionInitialize();
         plugin.registerRemnantStates(DissolutionRegistries.REMNANT_STATES);
         plugin.registerMobAbilities(DissolutionRegistries.ABILITIES);
-        plugin.registerPossessedConversions(DissolutionRegistries.CONVERSION);
     }
 }

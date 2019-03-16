@@ -1,10 +1,10 @@
 /**
- * Hacky hacks everywhere
+ * API Internals. Do not touch.
  */
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package ladysnake.dissolution.common.impl.possession.asm;
+package ladysnake.dissolution.api.v1.internal;
 
 import ladysnake.dissolution.api.v1.annotation.FieldsAreNonnullByDefault;
 import ladysnake.dissolution.api.v1.annotation.MethodsReturnNonnullByDefault;

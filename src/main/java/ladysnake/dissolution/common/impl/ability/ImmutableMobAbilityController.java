@@ -23,7 +23,7 @@ public class ImmutableMobAbilityController<T extends MobEntity & Possessable> im
 
     @Override
     public boolean useDirect(AbilityType type, Entity target) {
-        PlayerEntity p = this.owner.getPossessorEntity();
+        PlayerEntity p = this.owner.getPossessor();
         if (type == AbilityType.ATTACK) {
             return p != null && directAttack.trigger(p, target);
         } else if (type == AbilityType.INTERACT) {
@@ -34,7 +34,7 @@ public class ImmutableMobAbilityController<T extends MobEntity & Possessable> im
 
     @Override
     public boolean useIndirect(AbilityType type) {
-        PlayerEntity p = this.owner.getPossessorEntity();
+        PlayerEntity p = this.owner.getPossessor();
         if (type == AbilityType.ATTACK) {
             return p != null && indirectAttack.trigger(p);
         } else if (type == AbilityType.INTERACT) {
