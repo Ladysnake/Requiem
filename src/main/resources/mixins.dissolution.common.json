@@ -10,6 +10,7 @@
     "entity.ai.goal.FollowTargetGoalMixin",
     "entity.attribute.AbstractEntityAttributeContainerAccessorMixin",
     "entity.attribute.EntityAttributeContainerAccessorMixin",
+    "entity.attribute.EntityAttributesMixin",
     "entity.player.PlayerEntityMixin",
     "server.PlayerManagerMixin",
     "server.network.ServerPlayerEntityMixin",
