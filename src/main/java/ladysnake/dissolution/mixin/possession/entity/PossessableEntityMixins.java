@@ -75,6 +75,11 @@ final class PossessableEntityMixins {
             return Optional.ofNullable(possessor);
         }
 
+        @Override
+        public boolean isBeingPossessed() {
+            return this.possessor != null;
+        }
+
         @Nullable
         @Override
         public PlayerEntity getPossessorEntity() {
@@ -102,10 +107,9 @@ final class PossessableEntityMixins {
                 throw new IllegalStateException("Players must stop possessing an entity before it can change possessor!");
             }
             this.possessor = possessor;
+            this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).removeModifier(INHERENT_MOB_SLOWNESS_UUID);
             if (possessor != null) {
                 this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).addModifier(INHERENT_MOB_SLOWNESS);
-            } else {
-                this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).removeModifier(INHERENT_MOB_SLOWNESS_UUID);
             }
         }
 

@@ -18,7 +18,7 @@ public class DummyMobAbilityController implements MobAbilityController {
     }
 
     @Override
-    public void update() {
+    public void updateAbilities() {
         // NO-OP
     }
 }

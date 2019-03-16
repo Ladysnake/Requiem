@@ -142,6 +142,16 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
         return false;
     }
 
+    @Override
+    public void updateAbilities() {
+        if (!this.world.isClient) {
+            this.directAttack.update();
+            this.indirectAttack.update();
+            this.directInteraction.update();
+            this.indirectInteraction.update();
+        }
+    }
+
     /* * * * * * * * * * *
         Entity overrides
     * * * * * * * * * * */
@@ -206,17 +216,6 @@ public class PossessableEntityImpl extends PossessableEntityBase implements Poss
             this.field_6225 = player.field_6225;
         } else {
             super.travel(direction);
-        }
-    }
-
-    @Override
-    public void updateLogic() {
-        super.updateLogic();
-        if (!this.world.isClient) {
-            this.directAttack.update();
-            this.indirectAttack.update();
-            this.directInteraction.update();
-            this.indirectInteraction.update();
         }
     }
 

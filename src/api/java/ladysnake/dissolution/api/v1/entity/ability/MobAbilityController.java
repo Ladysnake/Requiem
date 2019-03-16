@@ -10,5 +10,5 @@ public interface MobAbilityController {
 
     boolean useIndirect(AbilityType type);
 
-    void update();
+    void updateAbilities();
 }

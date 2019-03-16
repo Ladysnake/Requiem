@@ -11,9 +11,7 @@ import ladysnake.dissolution.common.entity.ai.attribute.PossessionDelegatingAttr
 import ladysnake.dissolution.common.impl.movement.SerializableMovementConfig;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import ladysnake.dissolution.common.util.InventoryHelper;
-import net.minecraft.client.network.packet.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -116,14 +114,6 @@ public class PossessionComponentImpl implements PossessionComponent {
                 LivingEntity possessedEntity = (LivingEntity) possessed;
                 if (DissolutionEntityTags.ITEM_USER.contains(possessedEntity.getType())) {
                     InventoryHelper.transferEquipment(player, (LivingEntity) possessed);
-                }
-                for(EquipmentSlot slot : EquipmentSlot.values()) {
-                    ItemStack stack = possessedEntity.getEquippedStack(slot);
-                    if (!stack.isEmpty()) {
-                        // for some reason the entity disappears at this point
-                        ((ServerPlayerEntity) player).networkHandler.sendPacket(possessedEntity.createSpawnPacket());
-                        ((ServerPlayerEntity) player).networkHandler.sendPacket(new EntityEquipmentUpdateS2CPacket(possessedEntity.getEntityId(), slot, stack));
-                    }
                 }
             }
         }

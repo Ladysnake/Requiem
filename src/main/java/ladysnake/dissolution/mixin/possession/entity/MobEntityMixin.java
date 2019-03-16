@@ -25,9 +25,11 @@ public abstract class MobEntityMixin extends PossessableEntityMixins.LivingEntit
         super(type, world);
     }
 
-    @Inject(method = "initGoals", at = @At("RETURN"))
+    @Inject(method = "<init>", at = @At("RETURN"))
     private void initAbilities(CallbackInfo ci) {
-        this.goalSelector.add(99, new InertGoal(this));
-        this.abilityController = new ImmutableMobAbilityController<>(DissolutionRegistries.ABILITIES.getConfig((MobEntity)(Object)this), (MobEntity & Possessable)(Object)this);
+        if (world != null && !world.isClient) {
+            this.goalSelector.add(99, new InertGoal(this));
+            this.abilityController = new ImmutableMobAbilityController<>(DissolutionRegistries.ABILITIES.getConfig((MobEntity)(Object)this), (MobEntity & Possessable)(Object)this);
+        }
     }
 }

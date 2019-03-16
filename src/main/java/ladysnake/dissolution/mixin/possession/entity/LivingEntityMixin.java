@@ -87,6 +87,7 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
             this.fallDistance = 0;
 
             this.setPosition(player.x, player.y, player.z);
+            this.setVelocity(player.getVelocity());
             // update limb movement
             this.field_6249 = player.field_6249;
             this.field_6225 = player.field_6225;
@@ -95,12 +96,12 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
 
     @Inject(method = "updateLogic", at = @At("TAIL"))
     private void updateLogic(CallbackInfo ci) {
-        this.getMobAbilityController().update();
+        this.getMobAbilityController().updateAbilities();
     }
 
     @SuppressWarnings("InvalidMemberReference")
     @Inject(method = {"pushAwayFrom", "pushAway"}, at = @At("HEAD"), cancellable = true)
-    public void pushAwayFrom(Entity entity, CallbackInfo ci) {
+    private void pushAwayFrom(Entity entity, CallbackInfo ci) {
         // Prevent infinite propulsion through self collision
         if (entity == this.getPossessorEntity()) {
             ci.cancel();
@@ -137,6 +138,7 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
     /* * * * * * * * * * * *
         Delegation land
      * * * * * * * * * * * */
+
     /**
      * Knockback
      */
