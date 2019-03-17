@@ -18,7 +18,6 @@ import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,6 +28,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
+
+import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity implements Possessable {
@@ -76,8 +77,8 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
         }
     }
 
-    @Inject(method = "travel", at = @At("RETURN"))
-    private void travel(Vec3d direction, CallbackInfo ci) {
+    @Inject(method = "updateMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;travel(Lnet/minecraft/util/math/Vec3d;)V", shift = AFTER))
+    private void afterTravel(CallbackInfo ci) {
         PlayerEntity player = this.getPossessor();
         if (player != null) {
             this.setRotation(player.yaw, player.pitch);
