@@ -3,6 +3,7 @@ package ladysnake.dissolution.common.entity.ai.attribute;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.player.PlayerEntity;
 
 public class CooldownStrengthAttribute extends DelegatingAttribute {
     private final Possessable owner;
@@ -15,9 +16,11 @@ public class CooldownStrengthAttribute extends DelegatingAttribute {
     @Override
     public double getValue() {
         final double strength = super.getValue();
-        return owner.getPossessor().map(player -> {
-            double attackCharge = player.method_7261(0.5f);
+        PlayerEntity possessor = this.owner.getPossessor();
+        if (possessor != null) {
+            double attackCharge = possessor.method_7261(0.5f);
             return strength * (0.2F + attackCharge * attackCharge * 0.8F);
-        }).orElse(strength);
+        }
+        return strength;
     }
 }

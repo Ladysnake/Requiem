@@ -1,10 +1,10 @@
 /**
- * API classes used for conversions between standard {@link net.minecraft.entity.Entity} and {@link ladysnake.dissolution.api.v1.possession.Possessable} ones
+ * API Internals. Do not touch.
  */
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package ladysnake.dissolution.api.v1.possession.conversion;
+package ladysnake.dissolution.api.v1.internal;
 
 import ladysnake.dissolution.api.v1.annotation.FieldsAreNonnullByDefault;
 import ladysnake.dissolution.api.v1.annotation.MethodsReturnNonnullByDefault;

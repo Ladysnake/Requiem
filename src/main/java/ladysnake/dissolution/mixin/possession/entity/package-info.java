@@ -1,10 +1,10 @@
 /**
- * Hacky hacks everywhere
+ * Mixins allowing entities to be correctly possessed by players
  */
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package ladysnake.dissolution.common.impl.possession.asm;
+package ladysnake.dissolution.mixin.possession.entity;
 
 import ladysnake.dissolution.api.v1.annotation.FieldsAreNonnullByDefault;
 import ladysnake.dissolution.api.v1.annotation.MethodsReturnNonnullByDefault;

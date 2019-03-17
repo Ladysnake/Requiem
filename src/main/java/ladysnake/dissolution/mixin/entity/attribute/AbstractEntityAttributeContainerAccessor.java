@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import java.util.Map;
 
 @Mixin(AbstractEntityAttributeContainer.class)
-public interface AbstractEntityAttributeContainerAccessorMixin {
+public interface AbstractEntityAttributeContainerAccessor {
     @Accessor
     Map<EntityAttribute, EntityAttributeInstance> getInstancesByKey();
     @Accessor

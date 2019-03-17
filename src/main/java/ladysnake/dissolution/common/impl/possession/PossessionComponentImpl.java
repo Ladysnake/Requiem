@@ -3,17 +3,16 @@ package ladysnake.dissolution.common.impl.possession;
 import com.google.common.collect.MapMaker;
 import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
+import ladysnake.dissolution.api.v1.event.PossessionStartCallback;
 import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
-import ladysnake.dissolution.common.DissolutionRegistries;
 import ladysnake.dissolution.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.dissolution.common.entity.ai.attribute.PossessionDelegatingAttribute;
 import ladysnake.dissolution.common.impl.movement.SerializableMovementConfig;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import ladysnake.dissolution.common.util.InventoryHelper;
-import net.minecraft.client.network.packet.EntityEquipmentUpdateS2CPacket;
+import ladysnake.dissolution.mixin.entity.LivingEntityAccessor;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -24,6 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -32,8 +32,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
+import static net.minecraft.util.ActionResult.PASS;
+import static net.minecraft.util.ActionResult.SUCCESS;
 
-public class PossessionComponentImpl implements PossessionComponent {
+public final class PossessionComponentImpl implements PossessionComponent {
+    // Identity weak map. Should probably be made into its own util class.
     private static final Set<PlayerEntity> attributeUpdated = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
 
     private final PlayerEntity player;
@@ -52,24 +55,24 @@ public class PossessionComponentImpl implements PossessionComponent {
     }
 
     @Override
-    public boolean startPossessing(final MobEntity mob) {
+    public boolean startPossessing(final MobEntity host) {
         // 1- check that the player can initiate possession
-        if (!canStartPossessing(mob)) {
+        if (!canStartPossessing(host)) {
             return false;
         }
-        @Nullable Possessable possessable;
-        if (mob instanceof Possessable) {
-            possessable = (Possessable) mob;
-        } else {
-            possessable = DissolutionRegistries.CONVERSION.convert(mob, player);
+
+        ActionResult result = PossessionStartCallback.EVENT.invoker().onPossessionAttempted(host, this.player);
+        if (result != PASS) {
+            return result == SUCCESS;
         }
+
+        Possessable possessable = (Possessable) host;
         // 2- check that the mob can be possessed
-        if (possessable == null || !possessable.canBePossessedBy(player)) {
+        if (!possessable.canBePossessedBy(player)) {
             return false;
         }
-        MobEntity host = (MobEntity) possessable;
         // 3- transfer inventory
-        // TODO data driven item giving
+        // TODO more clever item giving
         if (host.getMainHandStack().getItem() instanceof BowItem) {
             player.giveItemStack(new ItemStack(Items.ARROW, host.world.random.nextInt(10) + 2));
         }
@@ -80,13 +83,13 @@ public class PossessionComponentImpl implements PossessionComponent {
         this.possessedUuid = host.getUuid();
         this.possessedNetworkId = host.getEntityId();
         possessable.setPossessor(this.player);
-        syncPossessed();
+        this.syncPossessed();
         // 5- Update some attributes
         this.player.setPositionAndAngles(host);
         this.player.refreshSize(); // update size
         ((DissolutionPlayer)this.player).getMovementAlterer().setConfig(Dissolution.getMovementAltererManager().getEntityMovementConfig(host.getType()));
         if (!attributeUpdated.contains(this.player)) {
-            swapAttributes(this.player);
+            this.swapAttributes(this.player);
             attributeUpdated.add(this.player);
         }
 
@@ -111,19 +114,12 @@ public class PossessionComponentImpl implements PossessionComponent {
             this.possessedUuid = null;
             resetState();
             possessed.setPossessor(null);
-            if (player instanceof ServerPlayerEntity) {
+            if (player instanceof ServerPlayerEntity && !player.isCreative()) {
                 LivingEntity possessedEntity = (LivingEntity) possessed;
                 if (DissolutionEntityTags.ITEM_USER.contains(possessedEntity.getType())) {
                     InventoryHelper.transferEquipment(player, (LivingEntity) possessed);
                 }
-                for(EquipmentSlot slot : EquipmentSlot.values()) {
-                    ItemStack stack = possessedEntity.getEquippedStack(slot);
-                    if (!stack.isEmpty()) {
-                        // for some reason the entity disappears at this point
-                        ((ServerPlayerEntity) player).networkHandler.sendPacket(possessedEntity.createSpawnPacket());
-                        ((ServerPlayerEntity) player).networkHandler.sendPacket(new EntityEquipmentUpdateS2CPacket(possessedEntity.getEntityId(), slot, stack));
-                    }
-                }
+                ((LivingEntityAccessor)player).invokeDropInventory();
             }
         }
     }

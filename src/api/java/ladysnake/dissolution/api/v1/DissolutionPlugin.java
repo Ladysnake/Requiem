@@ -1,7 +1,6 @@
 package ladysnake.dissolution.api.v1;
 
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.dissolution.api.v1.possession.conversion.PossessionConversionRegistry;
 import ladysnake.dissolution.api.v1.remnant.RemnantType;
 import net.minecraft.util.registry.Registry;
 
@@ -29,17 +28,6 @@ public interface DissolutionPlugin {
      * @param registry Dissolution's ability registry
      */
     default void registerMobAbilities(MobAbilityRegistry registry) {}
-
-    /**
-     * Register {@link ladysnake.dissolution.api.v1.possession.conversion.PossessableSubstitutionHandler custom handlers}
-     * to control how an entity supports possession.
-     * <p>
-     * The passed in {@link PossessionConversionRegistry} can be safely reused outside of this method.
-     * Stored instances should be refreshed each time this method is called.
-     *
-     * @param registry Dissolution's conversion registry
-     */
-    default void registerPossessedConversions(PossessionConversionRegistry registry) {}
 
     /**
      * Register {@link RemnantType} to provide custom {@link ladysnake.dissolution.api.v1.remnant.RemnantState} players

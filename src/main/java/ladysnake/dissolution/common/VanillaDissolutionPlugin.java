@@ -9,12 +9,11 @@ import ladysnake.dissolution.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.dissolution.api.v1.event.ItemPickupCallback;
 import ladysnake.dissolution.api.v1.event.PlayerCloneCallback;
 import ladysnake.dissolution.api.v1.event.PlayerRespawnCallback;
+import ladysnake.dissolution.api.v1.event.PossessionStartCallback;
 import ladysnake.dissolution.api.v1.possession.Possessable;
-import ladysnake.dissolution.api.v1.possession.conversion.PossessionConversionRegistry;
 import ladysnake.dissolution.api.v1.remnant.RemnantState;
 import ladysnake.dissolution.api.v1.remnant.RemnantType;
 import ladysnake.dissolution.client.DissolutionFx;
-import ladysnake.dissolution.common.entity.DissolutionEntities;
 import ladysnake.dissolution.common.entity.PlayerShellEntity;
 import ladysnake.dissolution.common.entity.ability.*;
 import ladysnake.dissolution.common.tag.DissolutionEntityTags;
@@ -25,17 +24,31 @@ import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.SnowmanEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.registry.Registry;
 
+import java.util.UUID;
+
 import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 import static ladysnake.dissolution.common.remnant.RemnantStates.LARVA;
 import static ladysnake.dissolution.common.remnant.RemnantStates.YOUNG;
 
 public class VanillaDissolutionPlugin implements DissolutionPlugin {
+
+    public static final UUID INHERENT_MOB_SLOWNESS_UUID = UUID.fromString("a2ebbb6b-fd10-4a30-a0c7-dadb9700732e");
+    /**
+     * Mobs do not use 100% of their movement speed attribute, so we compensate with this modifier when they are possessed
+     */
+    public static final EntityAttributeModifier INHERENT_MOB_SLOWNESS = new EntityAttributeModifier(
+            INHERENT_MOB_SLOWNESS_UUID,
+            "Inherent Mob Slowness",
+            -0.66,
+            EntityAttributeModifier.Operation.MULTIPLY_TOTAL
+    ).setSerialize(false);
 
     @Override
     public void onDissolutionInitialize() {
@@ -103,6 +116,13 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
             }
             return ActionResult.PASS;
         });
+        PossessionStartCallback.EVENT.register((target, possessor) -> {
+            if (target instanceof PlayerShellEntity) {
+                ((PlayerShellEntity) target).onSoulInteract(possessor);
+                return ActionResult.SUCCESS;
+            }
+            return ActionResult.PASS;
+        });
     }
 
     @Override
@@ -124,11 +144,6 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
         abilityRegistry.register(EntityType.SNOW_GOLEM, MobAbilityConfig.<SnowmanEntity>builder().indirectAttack(RangedAttackAbility::new).build());
         abilityRegistry.register(EntityType.TRADER_LLAMA, MobAbilityConfig.<LlamaEntity>builder().indirectAttack(RangedAttackAbility::new).build());
         abilityRegistry.register(EntityType.WITCH, MobAbilityConfig.<WitchEntity>builder().indirectAttack(RangedAttackAbility::new).build());
-    }
-
-    @Override
-    public void registerPossessedConversions(PossessionConversionRegistry registry) {
-        registry.registerPossessedConverter(DissolutionEntities.PLAYER_SHELL, PlayerShellEntity::onSoulInteract);
     }
 
     @Override

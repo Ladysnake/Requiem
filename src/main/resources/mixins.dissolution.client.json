@@ -4,7 +4,6 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MinecraftClientMixin",
-    "gui.SplashScreenMixin",
     "gui.hud.InGameHudMixin",
     "network.ClientPlayerEntityMixin",
     "render.GameRendererMixin",
