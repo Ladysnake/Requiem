@@ -119,7 +119,6 @@ public abstract class PlayerManagerMixin {
     private void logOutPossessedEntity(ServerPlayerEntity player, CallbackInfo info) {
         Possessable possessedEntity = ((DissolutionPlayer) player).getPossessionComponent().getPossessedEntity();
         if (possessedEntity != null) {
-            ((DissolutionPlayer) player).getPossessionComponent().stopPossessing();
             ServerWorld serverWorld_1 = player.getServerWorld();
             serverWorld_1.method_18774((Entity) possessedEntity);
             for (Entity ridden : ((Entity) possessedEntity).getPassengersDeep()) {
