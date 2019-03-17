@@ -7,6 +7,7 @@ import ladysnake.dissolution.api.v1.possession.Possessable;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
 import ladysnake.dissolution.mixin.entity.EntityAccessor;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
@@ -25,8 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.annotation.Nullable;
 import java.util.function.Function;
 
-import static ladysnake.dissolution.common.network.DissolutionNetworking.createCorporealityMessage;
-import static ladysnake.dissolution.common.network.DissolutionNetworking.sendTo;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 import static ladysnake.dissolution.mixin.server.PlayerTagKeys.*;
 
 @Mixin(ServerPlayerEntity.class)
@@ -43,7 +43,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
         PossessionComponent possessionComponent = ((DissolutionPlayer) this).getPossessionComponent();
         if (possessionComponent.isPossessing()) {
             Entity current = (Entity) possessionComponent.getPossessedEntity();
-            if (current != null) {
+            if (current != null && !current.invalid) {
                 this.dissolution$possessedEntityTag = new CompoundTag();
                 current.saveSelfToTag(this.dissolution$possessedEntityTag);
                 current.invalidate();
@@ -51,9 +51,16 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
         }
     }
 
+    @Inject(method = "method_14203", at = @At("RETURN"))
+    private void clonePlayer(ServerPlayerEntity original, boolean fromEnd, CallbackInfo ci) {
+        this.dissolution$possessedEntityTag = ((ServerPlayerEntityMixin) (Object) original).dissolution$possessedEntityTag;
+    }
+
     @Inject(method = "onTeleportationDone", at = @At("HEAD"))
     private void onTeleportDone(CallbackInfo info) {
-        sendTo((ServerPlayerEntity)(Object)this, createCorporealityMessage(this));
+        CustomPayloadS2CPacket message = createCorporealityMessage(this);
+        sendTo((ServerPlayerEntity) (Object) this, message);
+        sendToAllTracking(this, message);
         if (this.dissolution$possessedEntityTag != null) {
             Entity formerPossessed = EntityType.loadEntityWithPassengers(
                     this.dissolution$possessedEntityTag,
@@ -63,7 +70,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
             if (formerPossessed instanceof MobEntity) {
                 formerPossessed.setPositionAndAngles(this);
                 if (world.spawnEntity(formerPossessed)) {
-                    ((DissolutionPlayer)this).getPossessionComponent().startPossessing((MobEntity) formerPossessed);
+                    ((DissolutionPlayer) this).getPossessionComponent().startPossessing((MobEntity) formerPossessed);
                 } else {
                     Dissolution.LOGGER.error("Failed to spawn possessed entity {}", formerPossessed);
                 }
@@ -74,18 +81,18 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
         }
     }
 
-    @Inject(method = "method_5623", at=@At("HEAD"), cancellable = true)
+    @Inject(method = "method_5623", at = @At("HEAD"), cancellable = true)
     private void onFall(double fallY, boolean onGround, BlockState floorBlock, BlockPos floorPos, CallbackInfo info) {
-        Possessable possessed = ((DissolutionPlayer)this).getPossessionComponent().getPossessedEntity();
+        Possessable possessed = ((DissolutionPlayer) this).getPossessionComponent().getPossessedEntity();
         if (possessed != null) {
             ((Entity) possessed).fallDistance = this.fallDistance;
-            ((EntityAccessor)possessed).onFall(fallY, onGround, floorBlock, floorPos);
+            ((EntityAccessor) possessed).onFall(fallY, onGround, floorBlock, floorPos);
         }
     }
 
     @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
     private void writePossessedMobToTag(CompoundTag tag, CallbackInfo info) {
-        Entity possessedEntity = (Entity) ((DissolutionPlayer)this).getPossessionComponent().getPossessedEntity();
+        Entity possessedEntity = (Entity) ((DissolutionPlayer) this).getPossessionComponent().getPossessedEntity();
         if (possessedEntity != null) {
             Entity possessedEntityVehicle = possessedEntity.getTopmostRiddenEntity();
             CompoundTag possessedRoot = new CompoundTag();

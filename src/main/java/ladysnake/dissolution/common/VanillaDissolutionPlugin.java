@@ -20,7 +20,6 @@ import ladysnake.dissolution.common.tag.DissolutionEntityTags;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
-import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -33,7 +32,6 @@ import net.minecraft.util.registry.Registry;
 
 import java.util.UUID;
 
-import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 import static ladysnake.dissolution.common.remnant.RemnantStates.LARVA;
 import static ladysnake.dissolution.common.remnant.RemnantStates.YOUNG;
 
@@ -83,14 +81,7 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
             return ActionResult.PASS;
         });
         PlayerCloneCallback.EVENT.register(((original, clone, returnFromEnd) -> ((DissolutionPlayer)original).getRemnantState().onPlayerClone(clone, !returnFromEnd)));
-        PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> {
-            CustomPayloadS2CPacket corporealityMessage = createCorporealityMessage(player);
-            sendTo(player, corporealityMessage);
-            sendToAllTracking(player, corporealityMessage);
-            CustomPayloadS2CPacket possessionMessage = createPossessionMessage(player.getUuid(), -1);
-            sendTo(player, possessionMessage);
-            sendToAllTracking(player, possessionMessage);
-        }));
+        PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> player.onTeleportationDone()));
     }
 
     private void registerPossessionEventHandlers() {
