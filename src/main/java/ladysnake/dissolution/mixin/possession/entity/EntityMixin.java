@@ -9,8 +9,29 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.annotation.Nullable;
+
 @Mixin(Entity.class)
 public abstract class EntityMixin implements ProtoPossessable {
+
+    /* * * * * * * * * * * * * * * * *
+      ProtoPossessable implementation
+     * * * * * * * * * * * * * * * * */
+
+    @Nullable
+    @Override
+    public PlayerEntity getPossessor() {
+        return null;
+    }
+
+    @Override
+    public boolean isBeingPossessed() {
+        return false;
+    }
+
+    /* * * * * * *
+      Injections
+     * * * * * * */
 
     @Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
     private void isInvulnerableTo(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
