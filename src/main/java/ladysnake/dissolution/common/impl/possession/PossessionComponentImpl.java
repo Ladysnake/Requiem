@@ -18,9 +18,6 @@ import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BowItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -72,10 +69,6 @@ public final class PossessionComponentImpl implements PossessionComponent {
             return false;
         }
         // 3- transfer inventory
-        // TODO more clever item giving
-        if (host.getMainHandStack().getItem() instanceof BowItem) {
-            player.giveItemStack(new ItemStack(Items.ARROW, host.world.random.nextInt(10) + 2));
-        }
         if (DissolutionEntityTags.ITEM_USER.contains(host.getType())) {
             InventoryHelper.transferEquipment(host, player);
         }
