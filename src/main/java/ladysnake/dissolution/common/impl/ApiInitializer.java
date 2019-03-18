@@ -5,7 +5,7 @@ import ladysnake.dissolution.api.v1.DissolutionApi;
 import ladysnake.dissolution.api.v1.DissolutionPlugin;
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.dissolution.api.v1.internal.ApiInternals;
-import ladysnake.dissolution.common.impl.ability.SimpleMobAbilityConfig;
+import ladysnake.dissolution.common.impl.ability.ImmutableMobAbilityConfig;
 import ladysnake.reflectivefabric.reflection.UncheckedReflectionException;
 import org.apiguardian.api.API;
 
@@ -19,7 +19,7 @@ import static org.apiguardian.api.API.Status.INTERNAL;
 public class ApiInitializer {
     public static void init() {
         try {
-            setAbilityBuilderFactory(SimpleMobAbilityConfig.Builder::new);
+            setAbilityBuilderFactory(ImmutableMobAbilityConfig.Builder::new);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             Dissolution.LOGGER.error("Could not initialize the mod's API");
             throw new UncheckedReflectionException(e);

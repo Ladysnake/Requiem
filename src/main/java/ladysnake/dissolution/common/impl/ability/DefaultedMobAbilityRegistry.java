@@ -2,9 +2,12 @@ package ladysnake.dissolution.common.impl.ability;
 
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityRegistry;
+import ladysnake.dissolution.common.entity.ability.RangedAttackAbility;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.mob.MobEntity;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,15 +19,33 @@ public class DefaultedMobAbilityRegistry implements MobAbilityRegistry {
         this.defaultConfig = defaultConfig;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <E extends MobEntity> MobAbilityConfig<? super E> getConfig(E entity) {
-        @SuppressWarnings("unchecked") EntityType<E> entityType = (EntityType<E>) entity.getType();
-        return getConfig(entityType);
+        EntityType<E> entityType = (EntityType<E>) entity.getType();
+        MobAbilityConfig<? super E> registered = getRegisteredConfig(entityType);
+        if (registered == null) {
+            MobAbilityConfig.Builder builder = MobAbilityConfig.builder();
+            if (entity instanceof RangedAttacker) {
+                builder.indirectAttack(e -> new RangedAttackAbility<>((MobEntity & RangedAttacker)e));
+            }
+            return builder.build();
+        }
+        return registered;
     }
 
     @Override
     public <E extends MobEntity> MobAbilityConfig<? super E> getConfig(EntityType<E> entityType) {
-        @SuppressWarnings("unchecked") MobAbilityConfig<? super E> ret = (MobAbilityConfig<E>) this.configs.getOrDefault(entityType, defaultConfig);
+        MobAbilityConfig<? super E> registered = getRegisteredConfig(entityType);
+        if (registered == null) {
+            return defaultConfig;
+        }
+        return registered;
+    }
+
+    @Nullable
+    private <E extends MobEntity> MobAbilityConfig<? super E> getRegisteredConfig(EntityType<?> entityType) {
+        @SuppressWarnings({"unchecked", "SuspiciousMethodCalls"}) MobAbilityConfig<E> ret = (MobAbilityConfig<E>) this.configs.get(entityType);
         return ret;
     }
 

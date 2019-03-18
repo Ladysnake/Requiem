@@ -10,7 +10,7 @@ import org.apiguardian.api.API;
 
 import java.util.function.Function;
 
-public class SimpleMobAbilityConfig<E extends MobEntity> implements MobAbilityConfig<E> {
+public class ImmutableMobAbilityConfig<E extends MobEntity> implements MobAbilityConfig<E> {
 
     @API(status = API.Status.EXPERIMENTAL)
     public static <T extends MobEntity> Function<T, DirectAbility<? super T>> noneDirect(){
@@ -22,7 +22,7 @@ public class SimpleMobAbilityConfig<E extends MobEntity> implements MobAbilityCo
         return (mob) -> (p) -> false;
     }
 
-    public static final MobAbilityConfig<MobEntity> DEFAULT = new SimpleMobAbilityConfig<>(MeleeAbility::new, noneIndirect(), noneDirect(), noneIndirect());
+    public static final MobAbilityConfig<MobEntity> DEFAULT = MobAbilityConfig.builder().build();
 
     private final Function<E, DirectAbility<? super E>> directAttackFactory;
     private final Function<E, IndirectAbility<? super E>> indirectAttackFactory;
@@ -30,12 +30,12 @@ public class SimpleMobAbilityConfig<E extends MobEntity> implements MobAbilityCo
     private final Function<E, IndirectAbility<? super E>> indirectInteractionFactory;
 
     @API(status = API.Status.EXPERIMENTAL)
-    public SimpleMobAbilityConfig(Function<E, DirectAbility<? super E>> directAttackFactory, Function<E, IndirectAbility<? super E>> indirectAttackFactory) {
+    public ImmutableMobAbilityConfig(Function<E, DirectAbility<? super E>> directAttackFactory, Function<E, IndirectAbility<? super E>> indirectAttackFactory) {
         this(directAttackFactory, indirectAttackFactory, noneDirect(), noneIndirect());
     }
 
     @API(status = API.Status.EXPERIMENTAL)
-    public SimpleMobAbilityConfig(Function<E, DirectAbility<? super E>> directAttackFactory, Function<E, IndirectAbility<? super E>> indirectAttackFactory, Function<E, DirectAbility<? super E>> directInteractionFactory, Function<E, IndirectAbility<? super E>> indirectInteractionFactory) {
+    public ImmutableMobAbilityConfig(Function<E, DirectAbility<? super E>> directAttackFactory, Function<E, IndirectAbility<? super E>> indirectAttackFactory, Function<E, DirectAbility<? super E>> directInteractionFactory, Function<E, IndirectAbility<? super E>> indirectInteractionFactory) {
         this.directAttackFactory = directAttackFactory;
         this.indirectAttackFactory = indirectAttackFactory;
         this.directInteractionFactory = directInteractionFactory;
@@ -78,7 +78,7 @@ public class SimpleMobAbilityConfig<E extends MobEntity> implements MobAbilityCo
 
         @Override
         public MobAbilityConfig<E> build() {
-            return new SimpleMobAbilityConfig<>(directAttackFactory, indirectAttackFactory, directInteractionFactory, indirectInteractionFactory);
+            return new ImmutableMobAbilityConfig<>(directAttackFactory, indirectAttackFactory, directInteractionFactory, indirectInteractionFactory);
         }
     }
 }
