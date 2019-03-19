@@ -65,13 +65,12 @@ repositories {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${mc_version}"
+    minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings "net.fabricmc:yarn:${yarn_mappings}"
     modCompile "net.fabricmc:fabric-loader:${loader_version}"
     // Fabric API. This is technically optional, but you probably want it anyway.
     modCompile "net.fabricmc:fabric:${fabric_version}"
-//    modCompile "com.github.Ladysnake:Satin:b513da151c"
-    compile files("libs/satin-1.0.0-SNAPSHOT-dev.jar")
+    modCompile "com.github.Ladysnake:Satin:f75e6ac7cd"
 
     compileOnly "org.jetbrains:annotations:${jb_annotations_version}"
     compileOnly "com.google.code.findbugs:jsr305:${findbugs_version}"
@@ -97,7 +96,7 @@ jar {
             "Implementation-Title": project.archivesBaseName,
             "Implementation-Version": project.version,
             "Maven-Artifact": "${project.group}:${project.name}:${project.version}".toLowerCase(Locale.ROOT),
-            "Built-On-Minecraft": "${mc_version}",
+            "Built-On-Minecraft": "${minecraft_version}",
             "Built-On-Java": "${System.getProperty("java.vm.version")} (${System.getProperty("java.vm.vendor")})"
     )
 }
@@ -150,7 +149,7 @@ curseforge {
         project {
             id = findProperty("curseforge_id")
             mainArtifact(jar) {
-                displayName = "${project.archivesBaseName} MC${mc_version} v${mod_version}"
+                displayName = "${project.archivesBaseName} MC${minecraft_version} v${mod_version}"
             }
             releaseType = project.release_type
 

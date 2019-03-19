@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BowItem.class)
-public class BowItemMixin extends BaseBowItem {
+public abstract class BowItemMixin extends BaseBowItem {
     private static final ThreadLocal<LivingEntity> DISSOLUTION$CURRENT_USER = new ThreadLocal<>();
     public BowItemMixin(Settings settings) {
         super(settings);
