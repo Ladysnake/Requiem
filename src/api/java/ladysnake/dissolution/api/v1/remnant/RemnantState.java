@@ -34,6 +34,10 @@ public interface RemnantState {
 
     void fromTag(CompoundTag tag);
 
+    default void update() {
+        // NO-OP
+    }
+
     /**
      * A predicate matching entities that are remnant
      */
@@ -53,5 +57,4 @@ public interface RemnantState {
         }
         return Optional.empty();
     }
-
 }

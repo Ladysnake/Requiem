@@ -91,6 +91,11 @@ public class DissolutionNetworking {
     }
 
     @Contract(pure = true)
+    public static CustomPayloadS2CPacket createAnchorDamageMessage() {
+        return new CustomPayloadS2CPacket(ANCHOR_DAMAGE, createEmptyBuffer());
+    }
+
+    @Contract(pure = true)
     public static CustomPayloadS2CPacket createAnchorUpdateMessage(FractureAnchor anchor) {
         PacketByteBuf buf = createEmptyBuffer();
         buf.writeInt(anchor.getId());

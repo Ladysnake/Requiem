@@ -78,6 +78,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
     @Inject(method = "updateMovement", at = @At("HEAD"))
     private void updateMovementAlterer(CallbackInfo info) {
         this.movementAlterer.update();
+        this.remnantState.update();
     }
 
     /* NBT (de)serialization of added fields */

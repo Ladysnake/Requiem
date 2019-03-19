@@ -6,6 +6,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class EntityFractureAnchor extends TrackedFractureAnchor {
@@ -24,7 +25,7 @@ public class EntityFractureAnchor extends TrackedFractureAnchor {
     @Override
     public void update() {
         super.update();
-        Entity entity = ((ServerWorld)this.manager.getWorld()).getEntity(this.entityUuid);
+        Entity entity = this.getEntity();
         if (entity != null) {
             if (entity instanceof LivingEntity && ((LivingEntity)entity).getHealth() <= 0.0F) {
                 this.invalidate();
@@ -35,6 +36,11 @@ public class EntityFractureAnchor extends TrackedFractureAnchor {
             // chunk is loaded but entity not found -- assume dead
             this.invalidate();
         }
+    }
+
+    @Nullable
+    public Entity getEntity() {
+        return ((ServerWorld)this.manager.getWorld()).getEntity(this.entityUuid);
     }
 
     @Override
