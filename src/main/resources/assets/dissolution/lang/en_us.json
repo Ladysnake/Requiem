@@ -14,5 +14,7 @@
   "dissolution:commands.possession.stop.success.other": "%s stopped possessing %s",
   "dissolution:commands.possession.stop.success.target": "You were made to stop possessing %s",
   "dissolution:commands.possession.stop.success.self": "Stopped possessing %s",
+  "dissolution:tooltip.skeletal_efficiency": "Skeletal Efficiency",
+  "dissolution:tooltip.witch_brew_base": "Witch's Brew Base",
   "key.dissolution.ethereal_fracture": "Ethereal Fracture"
 }

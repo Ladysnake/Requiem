@@ -5,6 +5,7 @@ import ladysnake.dissolution.Dissolution;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.satin.api.event.EntitiesPostRenderCallback;
 import ladysnake.satin.api.event.ResolutionChangeCallback;
+import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
 import net.minecraft.client.MinecraftClient;
@@ -23,7 +24,7 @@ import java.lang.ref.WeakReference;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.createPossessionRequestMessage;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.sendToServer;
 
-public final class DissolutionFx implements EntitiesPostRenderCallback, ResolutionChangeCallback {
+public final class DissolutionFx implements EntitiesPostRenderCallback, ResolutionChangeCallback, ShaderEffectRenderCallback {
     public static final Identifier SPECTRE_SHADER_ID = Dissolution.id("shaders/post/spectre.json");
     public static final Identifier FISH_EYE_SHADER_ID = Dissolution.id("shaders/post/fish_eye.json");
 
@@ -96,7 +97,8 @@ public final class DissolutionFx implements EntitiesPostRenderCallback, Resoluti
         mc.player.world.playSound(mc.player, mc.player.x, mc.player.y, mc.player.z, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYER, 2, 0.6f);
     }
 
-    public void renderShaders(float tickDelta) {
+    @Override
+    public void renderShaderEffects(float tickDelta) {
         if (this.possessed != null && this.possessed.get() != null) {
             fishEyeShader.setUniformValue("Slider", (fishEyeAnimation - tickDelta) / 40 + 0.25f);
             fishEyeShader.render(tickDelta);

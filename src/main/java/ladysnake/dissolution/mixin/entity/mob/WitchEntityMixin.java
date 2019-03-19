@@ -1,6 +1,7 @@
 package ladysnake.dissolution.mixin.entity.mob;
 
 import ladysnake.dissolution.api.v1.possession.Possessable;
+import ladysnake.dissolution.common.item.ItemUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.HostileEntity;
@@ -8,8 +9,6 @@ import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtil;
-import net.minecraft.potion.Potions;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,7 +37,7 @@ public class WitchEntityMixin extends HostileEntity {
     @Nullable
     @ModifyVariable(method = "updateMovement", ordinal = 0, at = @At("STORE"))
     private Potion preventPotionOverride(final Potion selectedPotion) {
-        if (((Possessable)this).isBeingPossessed() && !dissolution$isWaterBottle(this.getMainHandStack())) {
+        if (((Possessable)this).isBeingPossessed() && !ItemUtil.isWaterBottle(this.getMainHandStack())) {
             return null;
         }
         return selectedPotion;
@@ -57,9 +56,5 @@ public class WitchEntityMixin extends HostileEntity {
         if (((Possessable)this).isBeingPossessed()) {
             this.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.GLASS_BOTTLE));
         }
-    }
-
-    private static boolean dissolution$isWaterBottle(ItemStack item) {
-        return item.getItem() == Items.POTION && PotionUtil.getPotion(item) == Potions.WATER;
     }
 }
