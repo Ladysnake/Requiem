@@ -57,5 +57,10 @@
   },
   "minecraft:vex": {
     "flightMode": "FORCED"
+  },
+  "minecraft:wither": {
+    "flightMode": "ENABLED",
+    "fallSpeedModifier": 0.8,
+    "gravity": 0.01
   }
 }

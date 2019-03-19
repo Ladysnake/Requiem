@@ -47,7 +47,10 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     @Override
     public boolean canStartPossessing(final MobEntity mob) {
-        DissolutionPlayer dp = (DissolutionPlayer) player;
+        if (DissolutionEntityTags.POSSESSION_BLACKLIST.contains(mob.getType())) {
+            return false;
+        }
+        DissolutionPlayer dp = (DissolutionPlayer) this.player;
         return player.world.isClient || (!player.isSpectator() && dp.isRemnant() && dp.getRemnantState().isIncorporeal());
     }
 
