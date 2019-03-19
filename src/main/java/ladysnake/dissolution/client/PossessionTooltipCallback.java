@@ -2,7 +2,7 @@ package ladysnake.dissolution.client;
 
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.event.ItemTooltipCallback;
-import ladysnake.dissolution.common.item.ItemUtil;
+import ladysnake.dissolution.common.util.ItemUtil;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;

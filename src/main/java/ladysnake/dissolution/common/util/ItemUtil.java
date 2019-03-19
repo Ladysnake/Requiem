@@ -1,4 +1,4 @@
-package ladysnake.dissolution.common.item;
+package ladysnake.dissolution.common.util;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;

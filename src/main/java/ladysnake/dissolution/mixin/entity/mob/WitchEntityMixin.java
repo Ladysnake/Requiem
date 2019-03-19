@@ -1,7 +1,7 @@
 package ladysnake.dissolution.mixin.entity.mob;
 
 import ladysnake.dissolution.api.v1.possession.Possessable;
-import ladysnake.dissolution.common.item.ItemUtil;
+import ladysnake.dissolution.common.util.ItemUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.HostileEntity;
