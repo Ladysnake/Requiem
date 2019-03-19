@@ -28,7 +28,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
-import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.createPossessionMessage;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.sendToAllTrackingIncluding;
 import static net.minecraft.util.ActionResult.PASS;
 import static net.minecraft.util.ActionResult.SUCCESS;
 
@@ -122,8 +123,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     private void syncPossessed() {
         if (!this.player.world.isClient) {
-            sendTo((ServerPlayerEntity)this.player, createPossessionMessage(this.player.getUuid(), this.possessedNetworkId));
-            sendToAllTracking(this.player, createPossessionMessage(this.player.getUuid(), this.possessedNetworkId));
+            sendToAllTrackingIncluding(this.player, createPossessionMessage(this.player.getUuid(), this.possessedNetworkId));
         }
     }
 

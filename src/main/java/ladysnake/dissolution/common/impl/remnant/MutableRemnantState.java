@@ -9,7 +9,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.createCorporealityMessage;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.sendToAllTrackingIncluding;
 
 public abstract class MutableRemnantState implements RemnantState {
     public static final String INCORPOREAL_TAG = "incorporeal";
@@ -52,8 +53,7 @@ public abstract class MutableRemnantState implements RemnantState {
             ((DissolutionPlayer)this.player).getMovementAlterer().setConfig(config);
             if (!this.player.world.isClient) {
                 // Synchronizes with all players tracking the owner
-                sendTo((ServerPlayerEntity) this.player, createCorporealityMessage(this.player));
-                sendToAllTracking(this.player, createCorporealityMessage(this.player));
+                sendToAllTrackingIncluding(this.player, createCorporealityMessage(this.player));
             }
         }
     }

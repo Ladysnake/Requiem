@@ -24,7 +24,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.createCorporealityMessage;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.sendToAllTrackingIncluding;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity implements DissolutionPlayer {
@@ -70,8 +71,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Dissolut
         this.remnantState = handler;
         if (!this.world.isClient) {
             ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
-            sendTo(player, createCorporealityMessage(player));
-            sendToAllTracking(player, createCorporealityMessage(player));
+            sendToAllTrackingIncluding(player, createCorporealityMessage(player));
         }
     }
 

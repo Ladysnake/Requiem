@@ -39,16 +39,24 @@ public class DissolutionNetworking {
         data.release();
     }
 
-    public static void sendTo(ServerPlayerEntity player, CustomPayloadS2CPacket packet) {
-        if (player.networkHandler != null) {
-            player.networkHandler.sendPacket(packet);
-        }
-        packet.getData().release();
+    public static void sendTo(ServerPlayerEntity player, CustomPayloadS2CPacket message) {
+        sendToPlayer(player, message);
+        message.getData().release();
     }
 
-    public static void sendToAllTracking(Entity tracked, CustomPayloadS2CPacket packet) {
+    public static void sendToAllTrackingIncluding(Entity tracked, CustomPayloadS2CPacket message) {
         if (tracked.world instanceof ServerWorld) {
-            PlayerStream.watching(tracked).forEach(p -> sendTo((ServerPlayerEntity) p, packet));
+            PlayerStream.watching(tracked).forEach(p -> sendToPlayer((ServerPlayerEntity) p, message));
+            if (tracked instanceof ServerPlayerEntity) {
+                sendToPlayer((ServerPlayerEntity) tracked, message);
+            }
+        }
+        message.getData().release();
+    }
+
+    private static void sendToPlayer(ServerPlayerEntity player, CustomPayloadS2CPacket message) {
+        if (player.networkHandler != null) {
+            player.networkHandler.sendPacket(message);
         }
     }
 
@@ -61,8 +69,8 @@ public class DissolutionNetworking {
     }
 
     @Contract(pure = true)
-    public static CustomPayloadS2CPacket createCorporealityMessage(UUID playerUuid, boolean remnant, boolean incorporeal) {
-        PacketByteBuf buf = new PacketByteBuf(buffer());
+    private static CustomPayloadS2CPacket createCorporealityMessage(UUID playerUuid, boolean remnant, boolean incorporeal) {
+        PacketByteBuf buf = createEmptyBuffer();
         buf.writeUuid(playerUuid);
         buf.writeBoolean(remnant);
         buf.writeBoolean(incorporeal);
@@ -71,7 +79,7 @@ public class DissolutionNetworking {
 
     @Contract(pure = true)
     public static CustomPayloadS2CPacket createPossessionMessage(UUID playerUuid, int possessedId) {
-        PacketByteBuf buf = new PacketByteBuf(buffer());
+        PacketByteBuf buf = createEmptyBuffer();
         buf.writeUuid(playerUuid);
         buf.writeInt(possessedId);
         return new CustomPayloadS2CPacket(POSSESSION_SYNC, buf);
@@ -79,12 +87,12 @@ public class DissolutionNetworking {
 
     @Contract(pure = true)
     public static CustomPayloadS2CPacket createEtherealAnimationMessage() {
-        return new CustomPayloadS2CPacket(ETHEREAL_ANIMATION, new PacketByteBuf(buffer()));
+        return new CustomPayloadS2CPacket(ETHEREAL_ANIMATION, createEmptyBuffer());
     }
 
     @Contract(pure = true)
     public static CustomPayloadS2CPacket createAnchorUpdateMessage(FractureAnchor anchor) {
-        PacketByteBuf buf = new PacketByteBuf(buffer());
+        PacketByteBuf buf = createEmptyBuffer();
         buf.writeInt(anchor.getId());
         buf.writeDouble(anchor.getX());
         buf.writeDouble(anchor.getY());
@@ -92,8 +100,9 @@ public class DissolutionNetworking {
         return new CustomPayloadS2CPacket(ANCHOR_SYNC, buf);
     }
 
+    @Contract(pure = true)
     public static CustomPayloadS2CPacket createAnchorDeleteMessage(int anchorId) {
-        PacketByteBuf buf = new PacketByteBuf(buffer());
+        PacketByteBuf buf = createEmptyBuffer();
         buf.writeInt(anchorId);
         return new CustomPayloadS2CPacket(ANCHOR_REMOVE, buf);
     }

@@ -26,7 +26,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.annotation.Nullable;
 import java.util.function.Function;
 
-import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.createCorporealityMessage;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.sendToAllTrackingIncluding;
 import static ladysnake.dissolution.mixin.server.PlayerTagKeys.*;
 
 @Mixin(ServerPlayerEntity.class)
@@ -59,8 +60,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     @Inject(method = "onTeleportationDone", at = @At("HEAD"))
     private void onTeleportDone(CallbackInfo info) {
         CustomPayloadS2CPacket message = createCorporealityMessage(this);
-        sendTo((ServerPlayerEntity) (Object) this, message);
-        sendToAllTracking(this, message);
+        sendToAllTrackingIncluding(this, message);
         if (this.dissolution$possessedEntityTag != null) {
             Entity formerPossessed = EntityType.loadEntityWithPassengers(
                     this.dissolution$possessedEntityTag,
