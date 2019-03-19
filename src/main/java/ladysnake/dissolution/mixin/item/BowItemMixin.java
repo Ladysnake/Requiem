@@ -39,7 +39,10 @@ public class BowItemMixin extends BaseBowItem {
 
     @ModifyVariable(method = "onItemStopUsing", ordinal = 0, at = @At("STORE"))
     private boolean giveSkeletonInfinity(boolean infinity) {
-        return infinity || (DISSOLUTION$CURRENT_USER.get() instanceof AbstractSkeletonEntity);
+        if (DISSOLUTION$CURRENT_USER.get() instanceof AbstractSkeletonEntity) {
+            return infinity || random.nextFloat() < 0.8f;
+        }
+        return infinity;
     }
 
     @ModifyVariable(method = "onItemStopUsing", ordinal = 0, at = @At("STORE"))
