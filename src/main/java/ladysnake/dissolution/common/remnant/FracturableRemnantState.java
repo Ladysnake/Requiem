@@ -4,6 +4,7 @@ import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.api.v1.DissolutionWorld;
 import ladysnake.dissolution.api.v1.possession.PossessionComponent;
 import ladysnake.dissolution.api.v1.remnant.FractureAnchor;
+import ladysnake.dissolution.api.v1.remnant.FractureAnchorManager;
 import ladysnake.dissolution.api.v1.remnant.RemnantType;
 import ladysnake.dissolution.common.entity.PlayerShellEntity;
 import ladysnake.dissolution.common.impl.anchor.AnchorFactories;
@@ -29,18 +30,24 @@ public class FracturableRemnantState extends MutableRemnantState {
     public void fracture() {
         if (!player.world.isClient) {
             PossessionComponent possessionComponent = ((DissolutionPlayer) this.player).getPossessionComponent();
+            FractureAnchorManager anchorManager = ((DissolutionWorld) player.world).getAnchorManager();
             if (!this.isSoul()) {
                 PlayerShellEntity shellEntity = PlayerShellEntity.fromPlayer(player);
                 player.world.spawnEntity(shellEntity);
-                FractureAnchor anchor = ((DissolutionWorld) player.world).getAnchorManager().addAnchor(AnchorFactories.fromEntityUuid(shellEntity.getUuid()));
+                FractureAnchor anchor = anchorManager.addAnchor(AnchorFactories.fromEntityUuid(shellEntity.getUuid()));
                 anchor.setPosition(shellEntity.x, shellEntity.y, shellEntity.z);
+                this.fractureUuid = anchor.getUuid();
                 this.setSoul(true);
-            } else if (possessionComponent.isPossessing()) {
+            } else if (possessionComponent.isPossessing() && isAnchorValid()) {
                 possessionComponent.stopPossessing();
             } else {
                 return;
             }
             DissolutionNetworking.sendTo((ServerPlayerEntity)this.player, createEtherealAnimationMessage());
         }
+    }
+
+    private boolean isAnchorValid() {
+        return this.fractureUuid != null && ((DissolutionWorld) player.world).getAnchorManager().getAnchor(this.fractureUuid) != null;
     }
 }

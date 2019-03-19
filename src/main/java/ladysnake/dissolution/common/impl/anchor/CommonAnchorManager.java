@@ -64,13 +64,18 @@ public class CommonAnchorManager implements FractureAnchorManager {
     @Nullable
     @Override
     public FractureAnchor getAnchor(int anchorId) {
-        return anchorsById.get(anchorId);
+        return checkValidity(anchorsById.get(anchorId));
     }
 
     @Nullable
     @Override
     public FractureAnchor getAnchor(UUID anchorUuid) {
-        return anchorsByUuid.get(anchorUuid);
+        return checkValidity(anchorsByUuid.get(anchorUuid));
+    }
+
+    @Nullable
+    private static FractureAnchor checkValidity(@Nullable FractureAnchor anchor) {
+        return anchor == null || anchor.isInvalid() ? null : anchor;
     }
 
     @Override
