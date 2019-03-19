@@ -21,11 +21,12 @@ import static io.netty.buffer.Unpooled.buffer;
 
 public class DissolutionNetworking {
     // Server -> Client
-    public static final Identifier REMNANT_SYNC = Dissolution.id("remnant_sync");
-    public static final Identifier POSSESSION_SYNC = Dissolution.id("possession_sync");
-    public static final Identifier ETHEREAL_ANIMATION = Dissolution.id("ethereal_animation");
+    public static final Identifier ANCHOR_DAMAGE = Dissolution.id("anchor_damage");
     public static final Identifier ANCHOR_SYNC = Dissolution.id("anchor_sync_update");
     public static final Identifier ANCHOR_REMOVE = Dissolution.id("anchor_sync_remove");
+    public static final Identifier ETHEREAL_ANIMATION = Dissolution.id("ethereal_animation");
+    public static final Identifier POSSESSION_SYNC = Dissolution.id("possession_sync");
+    public static final Identifier REMNANT_SYNC = Dissolution.id("remnant_sync");
 
     // Client -> Server
     public static final Identifier LEFT_CLICK_AIR = Dissolution.id("attack_air");
@@ -33,14 +34,16 @@ public class DissolutionNetworking {
     public static final Identifier POSSESSION_REQUEST = Dissolution.id("possession_request");
     public static final Identifier ETHEREAL_FRACTURE = Dissolution.id("ethereal_fracture");
 
-    public static void sendToServer(CustomPayloadC2SPacket packet) {
-        MinecraftClient.getInstance().player.networkHandler.sendPacket(packet);
+    public static void sendToServer(Identifier identifier, PacketByteBuf data) {
+        MinecraftClient.getInstance().player.networkHandler.sendPacket(new CustomPayloadC2SPacket(identifier, data));
+        data.release();
     }
 
     public static void sendTo(ServerPlayerEntity player, CustomPayloadS2CPacket packet) {
         if (player.networkHandler != null) {
             player.networkHandler.sendPacket(packet);
         }
+        packet.getData().release();
     }
 
     public static void sendToAllTracking(Entity tracked, CustomPayloadS2CPacket packet) {
@@ -96,24 +99,14 @@ public class DissolutionNetworking {
     }
 
     @Contract(pure = true)
-    public static CustomPayloadC2SPacket createLeftClickMessage() {
-        return new CustomPayloadC2SPacket(LEFT_CLICK_AIR, new PacketByteBuf(buffer()));
+    public static PacketByteBuf createEmptyBuffer() {
+        return new PacketByteBuf(buffer());
     }
 
     @Contract(pure = true)
-    public static CustomPayloadC2SPacket createRightClickMessage() {
-        return new CustomPayloadC2SPacket(RIGHT_CLICK_AIR, new PacketByteBuf(buffer()));
-    }
-
-    @Contract(pure = true)
-    public static CustomPayloadC2SPacket createEtherealFractureMessage() {
-        return new CustomPayloadC2SPacket(ETHEREAL_FRACTURE, new PacketByteBuf(buffer()));
-    }
-
-    @Contract(pure = true)
-    public static CustomPayloadC2SPacket createPossessionRequestMessage(Entity entity) {
+    public static PacketByteBuf createPossessionRequestBuffer(Entity entity) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeInt(entity.getEntityId());
-        return new CustomPayloadC2SPacket(POSSESSION_REQUEST, buf);
+        return buf;
     }
 }

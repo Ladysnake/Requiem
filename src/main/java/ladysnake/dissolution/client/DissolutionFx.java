@@ -21,8 +21,7 @@ import net.minecraft.util.math.MathHelper;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 
-import static ladysnake.dissolution.common.network.DissolutionNetworking.createPossessionRequestMessage;
-import static ladysnake.dissolution.common.network.DissolutionNetworking.sendToServer;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 
 public final class DissolutionFx implements EntitiesPostRenderCallback, ResolutionChangeCallback, ShaderEffectRenderCallback {
     public static final Identifier SPECTRE_SHADER_ID = Dissolution.id("shaders/post/spectre.json");
@@ -52,7 +51,7 @@ public final class DissolutionFx implements EntitiesPostRenderCallback, Resoluti
         if (possessed != null) {
             turnToFace(possessed);
             if (--fishEyeAnimation == 2) {
-                sendToServer(createPossessionRequestMessage(possessed));
+                sendToServer(POSSESSION_REQUEST, createPossessionRequestBuffer(possessed));
             }
             if (!((DissolutionPlayer) client.player).getRemnantState().isIncorporeal()) {
                 this.possessed = null;

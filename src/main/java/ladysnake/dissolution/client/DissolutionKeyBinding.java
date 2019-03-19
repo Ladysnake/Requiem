@@ -8,7 +8,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
-import static ladysnake.dissolution.common.network.DissolutionNetworking.createEtherealFractureMessage;
+import static ladysnake.dissolution.common.network.DissolutionNetworking.createEmptyBuffer;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.sendToServer;
 
 public class DissolutionKeyBinding {
@@ -28,7 +28,7 @@ public class DissolutionKeyBinding {
 
     public static void update(MinecraftClient client) {
         if (client.player != null && etherealFractureKey.wasPressed()) {
-            sendToServer(createEtherealFractureMessage());
+            sendToServer(ETHEREAL_FRACTURE, createEmptyBuffer());
         }
     }
 }
