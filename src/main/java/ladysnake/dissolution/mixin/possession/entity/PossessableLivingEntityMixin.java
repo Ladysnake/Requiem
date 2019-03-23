@@ -28,6 +28,8 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     @Shadow
     public abstract EntityAttributeInstance getAttributeInstance(EntityAttribute entityAttribute_1);
 
+    @Shadow public abstract float getHealth();
+
     @Nullable
     private PlayerEntity possessor;
 
@@ -58,7 +60,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
     @Override
     public boolean canBePossessedBy(PlayerEntity player) {
-        return !this.isBeingPossessed();
+        return !this.invalid && this.getHealth() > 0 && !this.isBeingPossessed();
     }
 
     @Override

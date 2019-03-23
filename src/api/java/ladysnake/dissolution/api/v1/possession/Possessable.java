@@ -55,7 +55,7 @@ public interface Possessable extends ProtoPossessable {
      *
      * @param player the {@link PlayerEntity} wishing to initiate the possession
      * @return {@code true} if this entity can be possessed by the given player, otherwise {@code false}
-     * @implNote The default implementation checks whether it has no current possessor
+     * @implNote The default implementation checks whether it has no current possessor and it is alive
      */
     default boolean canBePossessedBy(PlayerEntity player) { return true; }
 
