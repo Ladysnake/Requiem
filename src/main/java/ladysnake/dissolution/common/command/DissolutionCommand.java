@@ -40,7 +40,7 @@ public class DissolutionCommand {
                         .then(literal("query")
                                 .executes(context -> queryRemnant(context.getSource(), context.getSource().getPlayer()))
                                 .then(argument("target", EntityArgumentType.onePlayer())
-                                        .executes(context -> queryRemnant(context.getSource(), EntityArgumentType.method_9315(context, "target")))
+                                        .executes(context -> queryRemnant(context.getSource(), EntityArgumentType.getServerPlayerArgument(context, "target")))
                                 )
                         )
                         .then(literal("set")

@@ -61,8 +61,8 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
         }
     }
 
-    @Inject(method = "update", at = @At("RETURN"))
-    private void update(CallbackInfo ci) {
+    @Inject(method = "tick", at = @At("RETURN"))
+    private void tick(CallbackInfo ci) {
         PlayerEntity player = this.getPossessor();
         if (player != null) {
             // Make possessed monsters despawn gracefully
@@ -95,8 +95,8 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
         }
     }
 
-    @Inject(method = "updateLogic", at = @At("TAIL"))
-    private void updateLogic(CallbackInfo ci) {
+    @Inject(method = "baseTick", at = @At("TAIL"))
+    private void baseTick(CallbackInfo ci) {
         this.getMobAbilityController().updateAbilities();
     }
 

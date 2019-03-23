@@ -53,7 +53,7 @@ public final class DissolutionFx implements EntitiesPostRenderCallback, Resoluti
     public void update(@SuppressWarnings("unused") MinecraftClient client) {
         ++ticks;
         --etherealAnimation;
-        if (--damageAnimation < 0) {
+        if (--damageAnimation < 0 && spectreShader.isInitialized()) {
             intenseDamage = false;
             spectreShader.setUniformValue("OverlayColor", ETHEREAL_COLOR[0], ETHEREAL_COLOR[1], ETHEREAL_COLOR[2]);
         }

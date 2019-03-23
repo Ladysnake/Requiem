@@ -69,7 +69,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
         if (getActualFlightMode(config, getPlayerOrPossessed(player)) == FORCED) {
             this.player.abilities.flying = true;
         }
-        if (this.player.onGround && config.shouldFlopOnLand() && this.player.world.getBlockState(this.player.getPos()).isAir()) {
+        if (this.player.onGround && config.shouldFlopOnLand() && this.player.world.getBlockState(this.player.getBlockPos()).isAir()) {
             this.player.jump();
         }
         Vec3d velocity = this.player.getVelocity();

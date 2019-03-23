@@ -42,7 +42,7 @@ public abstract class MinecraftClientMixin {
     @Inject(method = "doItemUse", at=@At("TAIL"))
     private void onInteractWithAir(CallbackInfo info) {
         // Check that the player is qualified to interact with something
-        if (!this.interactionManager.isBreakingBlock() && !this.player.method_3144()) {
+        if (!this.interactionManager.isBreakingBlock() && !this.player.isRiding()) {
             if (((DissolutionPlayer) player).getPossessionComponent().isPossessing() && player.getMainHandStack().isEmpty()) {
                 sendToServer(RIGHT_CLICK_AIR, createEmptyBuffer());
             }

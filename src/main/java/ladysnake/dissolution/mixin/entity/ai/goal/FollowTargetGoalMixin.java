@@ -1,8 +1,8 @@
 package ladysnake.dissolution.mixin.entity.ai.goal;
 
 import ladysnake.dissolution.common.entity.PlayerShellEntity;
-import net.minecraft.class_4051;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.TrackTargetGoal;
 import net.minecraft.entity.mob.MobEntity;
@@ -22,7 +22,7 @@ import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 public abstract class FollowTargetGoalMixin extends TrackTargetGoal {
     @Shadow @Nullable protected LivingEntity field_6644;
 
-    @Shadow protected class_4051 field_6642;
+    @Shadow protected TargetPredicate field_6642;
 
     @Shadow protected abstract BoundingBox getSearchBox(double double_1);
 

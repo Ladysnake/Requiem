@@ -40,8 +40,8 @@ public class DelegatingAttribute extends EntityAttributeInstanceImpl {
     }
 
     @Override
-    public Collection<EntityAttributeModifier> method_6193(EntityAttributeModifier.Operation operation) {
-        return getDelegateAttributeInstance().method_6193(operation);
+    public Collection<EntityAttributeModifier> getModifiers(EntityAttributeModifier.Operation operation) {
+        return getDelegateAttributeInstance().getModifiers(operation);
     }
 
     @Override
