@@ -14,6 +14,7 @@ import ladysnake.dissolution.common.network.DissolutionNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import javax.annotation.Nullable;
@@ -76,5 +77,22 @@ public class FracturableRemnantState extends MutableRemnantState {
         return this.anchorUuid != null
                 ? ((DissolutionWorld) player.world).getAnchorManager().getAnchor(this.anchorUuid)
                 : null;
+    }
+
+    @Override
+    public CompoundTag toTag(CompoundTag tag) {
+        super.toTag(tag);
+        if (this.anchorUuid != null) {
+            tag.putUuid("AnchorUuid", this.anchorUuid);
+        }
+        return tag;
+    }
+
+    @Override
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
+        if (tag.hasUuid("AnchorUuid")) {
+            this.anchorUuid = tag.getUuid("AnchorUuid");
+        }
     }
 }
