@@ -36,7 +36,6 @@ public class DissolutionNetworking {
 
     public static void sendToServer(Identifier identifier, PacketByteBuf data) {
         MinecraftClient.getInstance().player.networkHandler.sendPacket(new CustomPayloadC2SPacket(identifier, data));
-        data.release();
     }
 
     public static void sendTo(ServerPlayerEntity player, CustomPayloadS2CPacket message) {
@@ -91,8 +90,10 @@ public class DissolutionNetworking {
     }
 
     @Contract(pure = true)
-    public static CustomPayloadS2CPacket createAnchorDamageMessage() {
-        return new CustomPayloadS2CPacket(ANCHOR_DAMAGE, createEmptyBuffer());
+    public static CustomPayloadS2CPacket createAnchorDamageMessage(boolean dead) {
+        PacketByteBuf buf = createEmptyBuffer();
+        buf.writeBoolean(dead);
+        return new CustomPayloadS2CPacket(ANCHOR_DAMAGE, buf);
     }
 
     @Contract(pure = true)

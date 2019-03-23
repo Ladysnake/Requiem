@@ -57,6 +57,10 @@ public class ClientMessageHandling {
             }
         }));
         register(ETHEREAL_ANIMATION, ((context, buf) -> DissolutionFx.INSTANCE.beginEtherealAnimation()));
+        register(ANCHOR_DAMAGE, ((context, buf) -> {
+            boolean dead = buf.readBoolean();
+            DissolutionFx.INSTANCE.beginEtherealDamageAnimation(dead);
+        }));
         register(ANCHOR_SYNC, ((context, buf) -> {
             int id = buf.readInt();
             double x = buf.readDouble();
@@ -78,7 +82,10 @@ public class ClientMessageHandling {
     private static void register(Identifier id, BiConsumer<PacketContext, PacketByteBuf> handler) {
         ClientSidePacketRegistry.INSTANCE.register(
                 id,
-                (context, packet) -> context.getTaskQueue().execute(() -> handler.accept(context, packet))
+                (context, packet) -> context.getTaskQueue().execute(() -> {
+                    handler.accept(context, packet);
+                    packet.release();
+                })
         );
     }
 }

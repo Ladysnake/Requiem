@@ -54,14 +54,19 @@ public class FracturableRemnantState extends MutableRemnantState {
     @Override
     public void update() {
         FractureAnchor anchor = this.getAnchor();
-        if (this.player instanceof ServerPlayerEntity && anchor instanceof EntityFractureAnchor) {
-            Entity anchorEntity = ((EntityFractureAnchor) anchor).getEntity();
-            if (anchorEntity instanceof LivingEntity) {
-                float health = ((LivingEntity) anchorEntity).getHealth();
-                if (health < this.previousAnchorHealth) {
-                    sendTo((ServerPlayerEntity) this.player, createAnchorDamageMessage());
+        if (this.player instanceof ServerPlayerEntity) {
+            if (anchor instanceof EntityFractureAnchor) {
+                Entity anchorEntity = ((EntityFractureAnchor) anchor).getEntity();
+                if (anchorEntity instanceof LivingEntity) {
+                    float health = ((LivingEntity) anchorEntity).getHealth();
+                    if (health < this.previousAnchorHealth) {
+                        sendTo((ServerPlayerEntity) this.player, createAnchorDamageMessage(false));
+                    }
+                    this.previousAnchorHealth = health;
                 }
-                this.previousAnchorHealth = health;
+            } else if (this.previousAnchorHealth > 0) {
+                sendTo((ServerPlayerEntity) this.player, createAnchorDamageMessage(true));
+                this.previousAnchorHealth = -1;
             }
         }
     }

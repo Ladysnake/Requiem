@@ -10,8 +10,10 @@ uniform float STime;
 // Screen dimensions
 uniform vec2 OutSize;
 // Intensity modifier
-uniform float Intensity;
+uniform float SolidIntensity;
+uniform float RaysIntensity;
 uniform float Zoom;
+uniform vec3 OverlayColor;
 
 varying vec2 texCoord;
 
@@ -58,9 +60,9 @@ void main() {
   vec3 tex = texture2D(DiffuseSampler, st).rgb;
   st = (vec2(0.5)-st) * Zoom;
   float a = atan(st.y, st.x);
-  float intensity = shape(st, a, 0.8) * Intensity;
-  vec3 color = mix(tex, vec3(0, 0.7, 1.), intensity * 0.6);
-  color += streaks(st, a, 0.8) * intensity;
+  float value = shape(st, a, 0.8);
+  vec3 color = mix(tex, OverlayColor, value * SolidIntensity);
+  color += streaks(st, a, 0.8) * value * RaysIntensity;
 
   gl_FragColor = vec4(color, 1.0 );
 }

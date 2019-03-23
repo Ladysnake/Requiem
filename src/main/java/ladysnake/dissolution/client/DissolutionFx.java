@@ -21,13 +21,17 @@ import net.minecraft.util.math.MathHelper;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 
+import static ladysnake.dissolution.client.FxHelper.impulse;
 import static ladysnake.dissolution.common.network.DissolutionNetworking.*;
 
 public final class DissolutionFx implements EntitiesPostRenderCallback, ResolutionChangeCallback, ShaderEffectRenderCallback {
     public static final Identifier SPECTRE_SHADER_ID = Dissolution.id("shaders/post/spectre.json");
     public static final Identifier FISH_EYE_SHADER_ID = Dissolution.id("shaders/post/fish_eye.json");
+    private static final float[] ETHEREAL_COLOR = {0.0f, 0.7f, 1.0f};
+    private static final float[] ETHEREAL_DAMAGE_COLOR = {0.5f, 0.0f, 0.0f};
 
     public static final DissolutionFx INSTANCE = new DissolutionFx();
+    public static final int DAMAGE_ANIMATION_TIME = 20;
 
     private final MinecraftClient mc = MinecraftClient.getInstance();
     private final ManagedShaderEffect spectreShader = ShaderEffectManager.getInstance().manage(SPECTRE_SHADER_ID);
@@ -37,6 +41,8 @@ public final class DissolutionFx implements EntitiesPostRenderCallback, Resoluti
 
     private int fishEyeAnimation = -1;
     private int etherealAnimation = 0;
+    private int damageAnimation = 0;
+    private boolean intenseDamage;
     /**
      * Incremented every tick for animations
      */
@@ -45,8 +51,12 @@ public final class DissolutionFx implements EntitiesPostRenderCallback, Resoluti
     private WeakReference<Entity> possessed;
 
     public void update(@SuppressWarnings("unused") MinecraftClient client) {
-        ticks++;
-        etherealAnimation--;
+        ++ticks;
+        --etherealAnimation;
+        if (--damageAnimation < 0) {
+            intenseDamage = false;
+            spectreShader.setUniformValue("OverlayColor", ETHEREAL_COLOR[0], ETHEREAL_COLOR[1], ETHEREAL_COLOR[2]);
+        }
         Entity possessed = getAnimationEntity();
         if (possessed != null) {
             turnToFace(possessed);
@@ -96,6 +106,15 @@ public final class DissolutionFx implements EntitiesPostRenderCallback, Resoluti
         mc.player.world.playSound(mc.player, mc.player.x, mc.player.y, mc.player.z, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYER, 2, 0.6f);
     }
 
+    public void beginEtherealDamageAnimation(boolean intense) {
+        this.damageAnimation = DAMAGE_ANIMATION_TIME;
+        spectreShader.setUniformValue("OverlayColor", ETHEREAL_DAMAGE_COLOR[0], ETHEREAL_DAMAGE_COLOR[1], ETHEREAL_DAMAGE_COLOR[2]);
+        if (intense) {
+            this.damageAnimation *= 4;
+            this.intenseDamage = true;
+        }
+    }
+
     @Override
     public void renderShaderEffects(float tickDelta) {
         if (this.possessed != null && this.possessed.get() != null) {
@@ -108,10 +127,30 @@ public final class DissolutionFx implements EntitiesPostRenderCallback, Resoluti
                 MinecraftClient.getInstance().worldRenderer.drawEntityOutlinesFramebuffer();
             }
         }
-        if (((DissolutionPlayer)mc.player).getRemnantState().isIncorporeal() || this.etherealAnimation > 0) {
+        boolean incorporeal = ((DissolutionPlayer) mc.player).getRemnantState().isIncorporeal();
+        if (incorporeal || this.etherealAnimation > 0 || this.damageAnimation >= 0) {
+            // 10 -> 1
+            float zoom = Math.max(1, (etherealAnimation - tickDelta));
+            float intensity = (incorporeal ? 0.6f : 0f) / zoom;
             spectreShader.setUniformValue("STime", (ticks + tickDelta) / 20f);
             // 10 -> 1
-            spectreShader.setUniformValue("Zoom", Math.max(1, (etherealAnimation - tickDelta)));
+            if (damageAnimation >= 0) {
+                // 10 -> 0 => 0 -> 1
+                float progress = 1 - Math.max(0, damageAnimation - tickDelta) / (DAMAGE_ANIMATION_TIME * (this.intenseDamage ? 4 : 1));
+                float value = impulse(8, progress);
+                intensity += value;
+                zoom += value / 2f;
+                if (incorporeal) {
+                    float r = ETHEREAL_COLOR[0] * (1 - value) + ETHEREAL_DAMAGE_COLOR[0] * value;
+                    float g = ETHEREAL_COLOR[1] * (1 - value) + ETHEREAL_DAMAGE_COLOR[1] * value;
+                    float b = ETHEREAL_COLOR[2] * (1 - value) + ETHEREAL_DAMAGE_COLOR[2] * value;
+                    spectreShader.setUniformValue("OverlayColor", r, g, b);
+                } else {
+                    spectreShader.setUniformValue("RaysIntensity", value);
+                }
+            }
+            spectreShader.setUniformValue("Zoom", zoom);
+            spectreShader.setUniformValue("SolidIntensity", intensity);
             spectreShader.render(tickDelta);
         }
     }
