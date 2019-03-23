@@ -59,7 +59,6 @@ public abstract class MobEntityMixin extends LivingEntity implements Possessable
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null && !world.isClient) {
             possessor.setEquippedStack(slot, item);
-            ci.cancel();
         }
     }
 }

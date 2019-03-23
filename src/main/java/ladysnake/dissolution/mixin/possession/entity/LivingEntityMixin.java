@@ -7,7 +7,6 @@ import ladysnake.dissolution.common.entity.ai.attribute.CooldownStrengthAttribut
 import ladysnake.dissolution.mixin.entity.LivingEntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -197,14 +196,6 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
             cir.setReturnValue(possessor.getActiveItem());
-        }
-    }
-
-    @Inject(method = "isEquippedStackValid", at = @At("HEAD"), cancellable = true)
-    private void isEquippedStackValid(EquipmentSlot slot, CallbackInfoReturnable<Boolean> cir) {
-        PlayerEntity possessor = this.getPossessor();
-        if (possessor != null) {
-            cir.setReturnValue(possessor.isEquippedStackValid(slot));
         }
     }
 
