@@ -30,8 +30,8 @@ public class CommonAnchorManager implements FractureAnchorManager {
 
     protected FractureAnchor addAnchor(FractureAnchorFactory anchorFactory, UUID uuid, int id) {
         FractureAnchor anchor = anchorFactory.create(this, uuid, id);
-        anchorsByUuid.put(uuid, anchor);
-        anchorsById.put(id, anchor);
+        anchorsByUuid.put(anchor.getUuid(), anchor);
+        anchorsById.put(anchor.getId(), anchor);
 
         return anchor;
     }
