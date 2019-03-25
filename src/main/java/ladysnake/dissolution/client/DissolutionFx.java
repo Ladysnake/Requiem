@@ -10,6 +10,7 @@ import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlFramebuffer;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VisibleRegion;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -156,7 +157,7 @@ public final class DissolutionFx implements EntitiesPostRenderCallback, Resoluti
     }
 
     @Override
-    public void onEntitiesRendered(Entity camera, VisibleRegion frustum, float tickDelta) {
+    public void onEntitiesRendered(Camera camera, VisibleRegion frustum, float tickDelta) {
         Entity possessed = getAnimationEntity();
         if (possessed != null) {
             if (this.framebuffer == null) {
