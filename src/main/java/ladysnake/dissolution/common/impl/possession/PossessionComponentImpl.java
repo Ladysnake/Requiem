@@ -72,9 +72,14 @@ public final class PossessionComponentImpl implements PossessionComponent {
         if (!possessable.canBePossessedBy(player)) {
             return false;
         }
-        // 3- transfer inventory
+        // 3- transfer inventory and mount
         if (DissolutionEntityTags.ITEM_USER.contains(host.getType())) {
             InventoryHelper.transferEquipment(host, player);
+        }
+        Entity ridden = ((Entity)possessable).getRiddenEntity();
+        if (ridden != null) {
+            ((MobEntity) possessable).stopRiding();
+            player.startRiding(ridden);
         }
         // 4- Actually set the possessed entity
         this.possessedUuid = host.getUuid();
@@ -117,6 +122,11 @@ public final class PossessionComponentImpl implements PossessionComponent {
                     InventoryHelper.transferEquipment(player, (LivingEntity) possessed);
                 }
                 ((LivingEntityAccessor)player).invokeDropInventory();
+            }
+            Entity ridden = player.getRiddenEntity();
+            if (ridden != null) {
+                player.stopRiding();
+                ((Entity)possessed).startRiding(ridden);
             }
         }
     }

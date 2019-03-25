@@ -48,11 +48,11 @@ public abstract class EntityMixin implements ProtoPossessable {
         }
     }
 
-    @Inject(method = "startRiding(Lnet/minecraft/entity/Entity;)Z", at = @At("HEAD"), cancellable = true)
-    private void startRiding(Entity mount, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "startRiding(Lnet/minecraft/entity/Entity;Z)Z", at = @At("HEAD"), cancellable = true)
+    private void startRiding(Entity mount, boolean force, CallbackInfoReturnable<Boolean> cir) {
         PlayerEntity player = this.getPossessor();
         if (player != null) {
-            cir.setReturnValue(player.startRiding(mount));
+            cir.setReturnValue(player.startRiding(mount, force));
         }
     }
 }

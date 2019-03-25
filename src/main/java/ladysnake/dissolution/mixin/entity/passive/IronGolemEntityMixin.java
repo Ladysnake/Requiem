@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(IronGolemEntity.class)
-public class IronGolemEntityMixin extends GolemEntity {
+public abstract class IronGolemEntityMixin extends GolemEntity {
     protected IronGolemEntityMixin(EntityType<? extends GolemEntity> type, World world) {
         super(type, world);
     }
