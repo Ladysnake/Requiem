@@ -165,8 +165,9 @@ public class EventHandlerClient {
     public static void onRenderLiving(RenderLivingEvent.Pre event) {
         if (event.getEntity() instanceof IPossessable) {
             IPossessable possessable = (IPossessable) event.getEntity();
-            if (possessable.isBeingPossessed()) {
-                possessable.setDummyRidingEntity(possessable.getPossessingEntity().getRidingEntity());
+            EntityPlayer possessor = possessable.getPossessingEntity();
+            if (possessor != null) {
+                possessable.setDummyRidingEntity(possessor.getRidingEntity());
             }
         }
     }

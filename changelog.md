@@ -1,3 +1,9 @@
+##### Version 1.12.2-0.3.8 - BUILT
+- Fixed crash when killed by a player possessing a mob
+
+##### Version 1.12.2-0.3.7 - BUILT
+- Disabled the skipDeathScreen option by default, fixing entities becoming invisible after death.
+
 ##### Version 1.12.2-0.3.6 - BUILT
 - ADDED A WHITELIST CONFIG OPTION FOR POSSESSING MOBS. THERE.
 - Fixed offhand items never getting transferred between bodies

@@ -167,8 +167,9 @@ public class PossessionEventHandler {
             messingWithPotions = true;
             if (entity instanceof IPossessable) {
                 IPossessable possessable = (IPossessable) entity;
-                if (possessable.isBeingPossessed()) {
-                    possessable.getPossessingEntity().addPotionEffect(new PotionEffect(event.getPotionEffect()));
+                EntityPlayer possessor = possessable.getPossessingEntity();
+                if (possessor != null) {
+                    possessor.addPotionEffect(new PotionEffect(event.getPotionEffect()));
                 }
             } else {
                 CapabilityIncorporealHandler.getHandler(entity)
@@ -186,8 +187,9 @@ public class PossessionEventHandler {
             messingWithPotions = true;
             if (entity instanceof IPossessable) {
                 IPossessable possessable = (IPossessable) entity;
-                if (possessable.isBeingPossessed()) {
-                    possessable.getPossessingEntity().removePotionEffect(event.getPotion());
+                EntityPlayer possessor = possessable.getPossessingEntity();
+                if (possessor != null) {
+                    possessor.removePotionEffect(event.getPotion());
                 }
             } else {
                 CapabilityIncorporealHandler.getHandler(entity)

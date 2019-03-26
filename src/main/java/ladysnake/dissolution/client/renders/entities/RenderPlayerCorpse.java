@@ -44,17 +44,13 @@ public class RenderPlayerCorpse extends RenderBiped<EntityPlayerShell> {
         ResourceLocation resourcelocation = DefaultPlayerSkin.getDefaultSkinLegacy();
 
         GameProfile profile = entity.getProfile();
-        if (profile != null)
-        {
+        if (profile != null) {
             Minecraft minecraft = Minecraft.getMinecraft();
             Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = minecraft.getSkinManager().loadSkinFromCache(profile);
 
-            if (map.containsKey(MinecraftProfileTexture.Type.SKIN))
-            {
+            if (map.containsKey(MinecraftProfileTexture.Type.SKIN)) {
                 resourcelocation = minecraft.getSkinManager().loadSkin(map.get(MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN);
-            }
-            else
-            {
+            } else {
                 UUID uuid = EntityPlayer.getUUID(profile);
                 resourcelocation = DefaultPlayerSkin.getDefaultSkin(uuid);
             }
