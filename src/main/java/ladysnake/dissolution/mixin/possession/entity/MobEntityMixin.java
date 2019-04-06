@@ -8,7 +8,7 @@ import ladysnake.dissolution.common.impl.ability.ImmutableMobAbilityController;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goals;
+import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MobEntityMixin extends LivingEntity implements Possessable {
     @Shadow
     @Final
-    protected Goals goalSelector;
+    protected GoalSelector goalSelector;
 
     private MobAbilityController abilityController = MobAbilityController.DUMMY;
 

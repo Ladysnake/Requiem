@@ -44,15 +44,15 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
         PossessionComponent possessionComponent = ((DissolutionPlayer) this).getPossessionComponent();
         if (possessionComponent.isPossessing()) {
             Entity current = (Entity) possessionComponent.getPossessedEntity();
-            if (current != null && !current.invalid) {
+            if (current != null && !current.removed) {
                 this.dissolution$possessedEntityTag = new CompoundTag();
                 current.saveSelfToTag(this.dissolution$possessedEntityTag);
-                current.invalidate();
+                current.remove();
             }
         }
     }
 
-    @Inject(method = "method_14203", at = @At("RETURN"))
+    @Inject(method = "copyFrom", at = @At("RETURN"))
     private void clonePlayer(ServerPlayerEntity original, boolean fromEnd, CallbackInfo ci) {
         this.dissolution$possessedEntityTag = ((ServerPlayerEntityMixin) (Object) original).dissolution$possessedEntityTag;
     }
@@ -81,7 +81,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
         }
     }
 
-    @Inject(method = "method_5623", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "fall", at = @At("HEAD"), cancellable = true)
     private void onFall(double fallY, boolean onGround, BlockState floorBlock, BlockPos floorPos, CallbackInfo info) {
         Possessable possessed = ((DissolutionPlayer) this).getPossessionComponent().getPossessedEntity();
         if (possessed != null) {

@@ -62,9 +62,9 @@ public class PlayerMovementAlterer implements MovementAlterer {
         }
         MovementConfig.MovementMode swimMode = getActualSwimMode(config, getPlayerOrPossessed(player));
         if (swimMode == FORCED) {
-            player.method_5796(true);
+            player.setSwimming(true);
         } else if (swimMode == DISABLED) {
-            player.method_5796(false);
+            player.setSwimming(false);
         }
         if (getActualFlightMode(config, getPlayerOrPossessed(player)) == FORCED) {
             this.player.abilities.flying = true;

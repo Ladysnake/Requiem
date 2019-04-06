@@ -20,9 +20,9 @@ import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 
 @Mixin(FollowTargetGoal.class)
 public abstract class FollowTargetGoalMixin extends TrackTargetGoal {
-    @Shadow @Nullable protected LivingEntity field_6644;
+    @Shadow @Nullable protected LivingEntity targetEntity;
 
-    @Shadow protected TargetPredicate field_6642;
+    @Shadow protected TargetPredicate targetPredicate;
 
     @Shadow protected abstract BoundingBox getSearchBox(double double_1);
 
@@ -31,18 +31,18 @@ public abstract class FollowTargetGoalMixin extends TrackTargetGoal {
     }
 
     @Inject(
-            method = "method_18415",
+            method = "findClosestTarget",
             at = @At(
                     value = "FIELD",
                     opcode = Opcodes.PUTFIELD,
-                    target = "Lnet/minecraft/entity/ai/goal/FollowTargetGoal;field_6644:Lnet/minecraft/entity/LivingEntity;",
+                    target = "Lnet/minecraft/entity/ai/goal/FollowTargetGoal;targetEntity:Lnet/minecraft/entity/LivingEntity;",
                     ordinal = 1,
                     shift = AFTER
             )
     )
     private void addShellsAsTargets(CallbackInfo ci) {
-        if (this.field_6644 == null) {
-            this.field_6644 = this.entity.world.method_18465(PlayerShellEntity.class, this.field_6642, this.entity, this.entity.x, this.entity.y + (double)this.entity.getStandingEyeHeight(), this.entity.z, this.getSearchBox(this.getFollowRange()));
+        if (this.targetEntity == null) {
+            this.targetEntity = this.entity.world.getClosestEntity(PlayerShellEntity.class, this.targetPredicate, this.entity, this.entity.x, this.entity.y + (double)this.entity.getStandingEyeHeight(), this.entity.z, this.getSearchBox(this.getFollowRange()));
         }
     }
 }

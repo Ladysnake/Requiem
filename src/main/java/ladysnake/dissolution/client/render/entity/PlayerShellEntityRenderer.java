@@ -32,7 +32,7 @@ public class PlayerShellEntityRenderer extends BipedEntityRenderer<PlayerShellEn
      * Called before render
      */
     @Override
-    protected void method_4042(PlayerShellEntity entitylivingbaseIn, float partialTickTime) {
+    protected void scale(PlayerShellEntity entitylivingbaseIn, float partialTickTime) {
         GlStateManager.scalef(0.9375F, 0.9375F, 0.9375F);
     }
 

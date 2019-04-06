@@ -50,7 +50,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     @Nullable
     @Override
     public PlayerEntity getPossessor() {
-        if (this.possessor != null && this.possessor.invalid) {
+        if (this.possessor != null && this.possessor.removed) {
             ((DissolutionPlayer)this.possessor).getPossessionComponent().stopPossessing();
             // Make doubly sure
             this.setPossessor(null);
@@ -60,7 +60,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
     @Override
     public boolean canBePossessedBy(PlayerEntity player) {
-        return !this.invalid && this.getHealth() > 0 && !this.isBeingPossessed();
+        return !this.removed && this.getHealth() > 0 && !this.isBeingPossessed();
     }
 
     @Override

@@ -9,6 +9,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(AbstractSkeletonEntity.class)
 public abstract class AbstractSkeletonEntityAccessor implements ArrowShooter {
-    @Invoker("method_6996")
+    @Invoker("createArrowProjectile")
     public abstract ProjectileEntity invokeGetArrow(ItemStack arrowStack, float charge);
 }

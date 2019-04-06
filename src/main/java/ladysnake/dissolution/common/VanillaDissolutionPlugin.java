@@ -100,7 +100,7 @@ public class VanillaDissolutionPlugin implements DissolutionPlugin {
         // Proxy melee attacks
         AttackEntityCallback.EVENT.register((playerEntity, world, hand, target, hitResult) -> {
             LivingEntity possessed = (LivingEntity) ((DissolutionPlayer)playerEntity).getPossessionComponent().getPossessedEntity();
-            if (possessed != null && !possessed.invalid) {
+            if (possessed != null && !possessed.removed) {
                 if (possessed.world.isClient || ((Possessable)possessed).getMobAbilityController().useDirect(AbilityType.ATTACK, target)) {
                     return ActionResult.SUCCESS;
                 }

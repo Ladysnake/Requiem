@@ -75,7 +75,7 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
-    @Inject(method = "canClimb", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "isClimbing", at = @At("HEAD"), cancellable = true)
     private void canClimb(CallbackInfoReturnable<Boolean> info) {
         if (this instanceof DissolutionPlayer && this.horizontalCollision) {
             LivingEntity possessed = (LivingEntity) ((DissolutionPlayer) this).getPossessionComponent().getPossessedEntity();

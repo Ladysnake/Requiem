@@ -3,6 +3,7 @@ package ladysnake.dissolution.common.entity;
 import com.mojang.authlib.GameProfile;
 import ladysnake.dissolution.api.v1.DissolutionPlayer;
 import ladysnake.dissolution.common.util.InventoryHelper;
+import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -28,6 +29,7 @@ import org.apiguardian.api.API;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -93,13 +95,13 @@ public class PlayerShellEntity extends MobEntity {
                 // override common data that may have been altered during this shell's existence
                 possessor.inventory.clear();
                 performNbtCopy(this, possessor);
-                ((ServerPlayerEntity)possessor).networkHandler.teleportRequest(this.x, this.y, this.z, this.yaw, this.pitch);
+                ((ServerPlayerEntity)possessor).networkHandler.teleportRequest(this.x, this.y, this.z, this.yaw, this.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
                 if (this.inventory != null) {
                     transferInventory(this.inventory, possessor.inventory, Math.min(possessor.inventory.main.size(), this.inventory.getInvSize()));
                     this.dropInventory();
                 }
                 InventoryHelper.transferEquipment(this, possessor);
-                this.invalidate();
+                this.remove();
                 ((DissolutionPlayer) possessor).getRemnantState().setSoul(false);
             }
         }
@@ -213,7 +215,7 @@ public class PlayerShellEntity extends MobEntity {
      * Gets the drop chance of the item in the given slot. > 1 means it must drop with no durability loss.
      */
     @Override
-    protected float method_5929(EquipmentSlot slot) {
+    protected float getDropChance(EquipmentSlot slot) {
         return 2.0F;
     }
 

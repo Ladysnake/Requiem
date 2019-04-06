@@ -6,7 +6,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.ScoreboardEntry;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.util.Identifier;
 
@@ -37,7 +37,7 @@ public class DissolutionSkinManager {
             return loc;
         }
         ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
-        ScoreboardEntry playerInfo = networkHandler == null ? null : networkHandler.getScoreboardEntry(profile.getName());
+        PlayerListEntry playerInfo = networkHandler == null ? null : networkHandler.getScoreboardEntry(profile.getName());
         if (playerInfo != null) { //load from network player
             loc = playerInfo.getSkinTexture();
             if (loc != DefaultSkinHelper.getTexture(playerInfo.getProfile().getId())) {

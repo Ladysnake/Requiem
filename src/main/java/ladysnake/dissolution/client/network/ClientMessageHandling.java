@@ -26,8 +26,7 @@ public class ClientMessageHandling {
             UUID playerUuid = buf.readUuid();
             boolean remnant = buf.readBoolean();
             boolean incorporeal = buf.readBoolean();
-            // method_18470 == EntityView#getPlayerByUuid
-            PlayerEntity player = context.getPlayer().world.method_18470(playerUuid);
+            PlayerEntity player = context.getPlayer().world.getPlayerByUuid(playerUuid);
             if (player != null) {
                 if (remnant) {
                     ((DissolutionPlayer)player).setRemnant(true);
@@ -40,8 +39,7 @@ public class ClientMessageHandling {
         register(POSSESSION_SYNC, ((context, buf) -> {
             UUID playerUuid = buf.readUuid();
             int possessedId = buf.readInt();
-            // method_18470 == EntityView#getPlayerByUuid
-            PlayerEntity player = context.getPlayer().world.method_18470(playerUuid);
+            PlayerEntity player = context.getPlayer().world.getPlayerByUuid(playerUuid);
             MinecraftClient client = MinecraftClient.getInstance();
             if (player != null) {
                 Entity entity = player.world.getEntityById(possessedId);

@@ -42,8 +42,8 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
 
     @Shadow public float headYaw;
     @Shadow public float field_6283;
-    @Shadow public float field_6249;
-    @Shadow public float field_6225;
+    @Shadow public float limbAngle;
+    @Shadow public float limbDistance;
 
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -82,15 +82,15 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
         if (player != null) {
             this.setRotation(player.yaw, player.pitch);
             this.headYaw = this.field_6283 = this.prevYaw = this.yaw;
-            this.method_5796(player.isSwimming());
+            this.setSwimming(player.isSwimming());
             // Prevent this entity from taking fall damage unless triggered by the possessor
             this.fallDistance = 0;
 
             this.setPosition(player.x, player.y, player.z);
             this.setVelocity(player.getVelocity());
             // update limb movement
-            this.field_6249 = player.field_6249;
-            this.field_6225 = player.field_6225;
+            this.limbAngle = player.limbAngle;
+            this.limbDistance = player.limbDistance;
         }
     }
 
@@ -139,11 +139,11 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
     /**
      * Knockback
      */
-    @Inject(method = "method_6005", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "takeKnockback", at = @At("HEAD"), cancellable = true)
     private void knockback(Entity entity, float vx, double vy, double vz, CallbackInfo ci) {
         PlayerEntity possessing = getPossessor();
         if (possessing != null) {
-            possessing.method_6005(entity, vx, vy, vz);
+            possessing.takeKnockback(entity, vx, vy, vz);
             ci.cancel();
         }
     }
@@ -154,11 +154,11 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
      *
      * @param enderTp <code>true</code> for ender particles and sound effect
      */
-    @Inject(method = "method_6082", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "teleport", at = @At("HEAD"), cancellable = true)
     private void method_6082(double x, double y, double z, boolean enderTp, CallbackInfoReturnable<Boolean> cir) {
         PlayerEntity player = this.getPossessor();
         if (player != null) {
-            cir.setReturnValue(player.method_6082(x, y, z, enderTp));
+            cir.setReturnValue(player.teleport(x, y, z, enderTp));
         }
     }
 
@@ -186,7 +186,7 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null && !this.world.isClient) {
             ((LivingEntityAccessor)possessor).invokeDamageShield(damage);
-            this.world.summonParticle(possessor, (byte)29);
+            this.world.sendEntityStatus(possessor, (byte)29);
             ci.cancel();
         }
     }

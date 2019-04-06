@@ -112,7 +112,7 @@ public class RayHelper {
                             default: //should never happen, but better safe than sorry
                                 throw new RaytraceException("hit result had wrong value: " + result.getSide());
                         }
-                        if (!world.isEntityColliding(null, entity.getBoundingBox().offset(testPos.getX() - entity.x, testPos.getY() - entity.y, testPos.getZ() - entity.z))) {
+                        if (!world.doesNotCollide(null, entity.getBoundingBox().offset(testPos.getX() - entity.x, testPos.getY() - entity.y, testPos.getZ() - entity.z))) {
                             toTarget = toTarget.multiply(Math.max((toTarget.length() + 0.8D) / toTarget.length(), 1.0D));
                             pos = new Vec3d(entityPos.x + toTarget.x, testPos.getY() + 0.1D, entityPos.z + toTarget.z);
                             HitResult result1 = rayTrace(world, entity, pos, pos.subtract(0.0D, 1.0D, 0.0D), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.SOURCE_ONLY);

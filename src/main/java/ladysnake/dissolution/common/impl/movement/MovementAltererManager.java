@@ -39,6 +39,11 @@ public class MovementAltererManager implements SimpleResourceReloadListener<Map<
     }
 
     @Override
+    public CompletableFuture<Void> reload(Helper var1, ResourceManager var2, Profiler var3, Profiler var4, Executor var5, Executor var6) {
+        return apply(var1, var2, var3, var4, var5, var6);
+    }
+
+    @Override
     public CompletableFuture<Map<EntityType<?>, SerializableMovementConfig>> load(ResourceManager manager, Profiler profiler, Executor executor) {
         return CompletableFuture.supplyAsync(() -> {
             Map<EntityType<?>, SerializableMovementConfig> ret = new HashMap<>();

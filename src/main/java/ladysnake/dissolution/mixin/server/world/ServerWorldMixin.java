@@ -51,7 +51,7 @@ public abstract class ServerWorldMixin extends World implements DissolutionWorld
         return this.anchorTracker;
     }
 
-    @Inject(method = "method_18765", at = @At("TAIL"))
+    @Inject(method = "tick", at = @At("TAIL"))
     private void updateAnchorTracker(BooleanSupplier shouldKeepTicking, CallbackInfo ci) {
         Profiler profiler = this.getProfiler();
         profiler.push("dissolution_ethereal_anchors");

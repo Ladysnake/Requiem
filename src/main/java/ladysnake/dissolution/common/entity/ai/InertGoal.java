@@ -11,7 +11,7 @@ public class InertGoal extends Goal {
     public InertGoal(Possessable owner) {
         super();
         this.owner = owner;
-        this.setControlBits(EnumSet.allOf(Goal.class_4134.class));
+        this.setControls(EnumSet.allOf(Goal.Control.class));
     }
 
     @Override

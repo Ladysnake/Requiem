@@ -18,7 +18,7 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Di
         super(world_1, gameProfile_1);
     }
 
-    @Inject(method = "method_3150", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
+    @Inject(method = "cannotFitAt", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
     private void stopPushingOutOfBlocks(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValue()) {
             Entity possessed = (Entity) this.getPossessionComponent().getPossessedEntity();

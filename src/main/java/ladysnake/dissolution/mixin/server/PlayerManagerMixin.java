@@ -99,10 +99,10 @@ public abstract class PlayerManagerMixin {
 
         if (!player.isPossessing()) {
             Dissolution.LOGGER.warn("Couldn't reattach possessed entity to player");
-            world.method_18774(possessedEntityMount);
+            world.removeEntity(possessedEntityMount);
 
             for (Entity entity : possessedEntityMount.getPassengersDeep()) {
-                world.method_18774(entity);
+                world.removeEntity(entity);
             }
         }
     }
@@ -120,9 +120,9 @@ public abstract class PlayerManagerMixin {
         Possessable possessedEntity = ((DissolutionPlayer) player).getPossessionComponent().getPossessedEntity();
         if (possessedEntity != null) {
             ServerWorld serverWorld_1 = player.getServerWorld();
-            serverWorld_1.method_18774((Entity) possessedEntity);
+            serverWorld_1.removeEntity((Entity) possessedEntity);
             for (Entity ridden : ((Entity) possessedEntity).getPassengersDeep()) {
-                serverWorld_1.method_18774(ridden);
+                serverWorld_1.removeEntity(ridden);
             }
             serverWorld_1.method_8497(player.chunkX, player.chunkZ).markDirty();
         }
@@ -136,8 +136,8 @@ public abstract class PlayerManagerMixin {
     }
 
     @Inject(
-            method = "method_14556",
-            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;method_17892(Lnet/minecraft/entity/Entity;)Z")),
+            method = "respawnPlayer",
+            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;doesNotCollide(Lnet/minecraft/entity/Entity;)Z")),
             at = @At(
                     value = "FIELD",
                     opcode = Opcodes.GETFIELD,
@@ -160,8 +160,8 @@ public abstract class PlayerManagerMixin {
     }
 
     @Inject(
-            method = "method_14556",
-            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;method_17892(Lnet/minecraft/entity/Entity;)Z")),
+            method = "respawnPlayer",
+            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;doesNotCollide(Lnet/minecraft/entity/Entity;)Z")),
             at = @At("RETURN"),
             locals = LocalCapture.CAPTURE_FAILHARD
     )

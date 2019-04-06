@@ -99,7 +99,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                             BipedEntityModel playerEntityModel_1 = (BipedEntityModel) model;
                             this.setModelPose(renderedPlayer);
                             GlStateManager.enableBlend();
-                            playerEntityModel_1.swingProgress = 0.0F;
+                            playerEntityModel_1.handSwingProgress = 0.0F;
                             playerEntityModel_1.isSneaking = false;
                             playerEntityModel_1.field_3396 = 0.0F;
                             //noinspection unchecked
