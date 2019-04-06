@@ -7,7 +7,9 @@ import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.registry.Registry;
 
-public class DissolutionEntities {
+public final class DissolutionEntities {
+    private DissolutionEntities() { throw new AssertionError(); }
+
     public static EntityType<PlayerShellEntity> PLAYER_SHELL;
 
     public static void init() {

@@ -54,8 +54,8 @@ public class PlayerShellEntity extends MobEntity {
     protected CompoundTag playerNbt;
 
     @API(status = MAINTAINED)
-    protected PlayerShellEntity(EntityType<? extends PlayerShellEntity> entityType_1, World world_1) {
-        super(entityType_1, world_1);
+    protected PlayerShellEntity(EntityType<? extends PlayerShellEntity> type, World world) {
+        super(type, world);
     }
 
     @Override
