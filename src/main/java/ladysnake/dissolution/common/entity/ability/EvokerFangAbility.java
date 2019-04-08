@@ -1,23 +1,31 @@
 package ladysnake.dissolution.common.entity.ability;
 
-import ladysnake.reflectivefabric.reflection.ReflectionHelper;
-import ladysnake.reflectivefabric.reflection.UncheckedReflectionException;
-import ladysnake.reflectivefabric.reflection.typed.TypedMethod0;
-import ladysnake.reflectivefabric.reflection.typed.TypedMethodHandles;
+import ladysnake.dissolution.common.util.reflection.ReflectionHelper;
+import ladysnake.dissolution.common.util.reflection.UncheckedReflectionException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
-import static ladysnake.reflectivefabric.reflection.ReflectionHelper.pick;
+import static ladysnake.dissolution.common.util.reflection.ReflectionHelper.pick;
 
 public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity> {
-    public static final Function<EvokerEntity, ? extends SpellcastingIllagerEntity.CastSpellGoal> FANGS_GOAL_FACTORY;
-    public static final TypedMethod0<SpellcastingIllagerEntity.CastSpellGoal, Void> CAST_SPELL_GOAL$CAST_SPELL = TypedMethodHandles.findVirtual(SpellcastingIllagerEntity.CastSpellGoal.class, pick("method_7148", "castSpell"), void.class);
+    private static final Function<EvokerEntity, ? extends SpellcastingIllagerEntity.CastSpellGoal> FANGS_GOAL_FACTORY;
+    private static final MethodHandle CAST_SPELL_GOAL$CAST_SPELL;
+
+    static {
+        try {
+            CAST_SPELL_GOAL$CAST_SPELL = MethodHandles.lookup().findVirtual(SpellcastingIllagerEntity.CastSpellGoal.class, pick("method_7148", "castSpell"), MethodType.methodType(void.class));
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new UncheckedReflectionException(e);
+        }
+    }
 
     private final SpellcastingIllagerEntity.CastSpellGoal conjureFangsGoal;
 
@@ -33,7 +41,11 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity> {
             LivingEntity target = (LivingEntity) entity;
             owner.setTarget(target);
             if (conjureFangsGoal.canStart()) {
-                CAST_SPELL_GOAL$CAST_SPELL.invoke(conjureFangsGoal);
+                try {
+                    CAST_SPELL_GOAL$CAST_SPELL.invokeExact(conjureFangsGoal);
+                } catch (Throwable throwable) {
+                    throw new UncheckedReflectionException("Failed to trigger evoker fang ability", throwable);
+                }
                 success = true;
             }
             owner.setTarget(null);

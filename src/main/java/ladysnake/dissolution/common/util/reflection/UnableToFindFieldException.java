@@ -1,4 +1,4 @@
-package ladysnake.reflectivefabric.reflection;
+package ladysnake.dissolution.common.util.reflection;
 
 public class UnableToFindFieldException extends UncheckedReflectionException {
     public UnableToFindFieldException(String message, Throwable cause) {

@@ -1,4 +1,4 @@
-package ladysnake.reflectivefabric.reflection;
+package ladysnake.dissolution.common.util.reflection;
 
 public class UnableToFindMethodException extends UncheckedReflectionException {
     public UnableToFindMethodException(NoSuchMethodException cause) {

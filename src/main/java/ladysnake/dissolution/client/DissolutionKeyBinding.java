@@ -17,7 +17,7 @@ public class DissolutionKeyBinding {
 
     public static final FabricKeyBinding etherealFractureKey = FabricKeyBinding.Builder.create(
             ETHEREAL_FRACTURE,
-            InputUtil.Type.KEY_KEYBOARD,
+            InputUtil.Type.KEYSYM,
             GLFW.GLFW_KEY_WORLD_2,
             "key.categories.gameplay"
     ).build();

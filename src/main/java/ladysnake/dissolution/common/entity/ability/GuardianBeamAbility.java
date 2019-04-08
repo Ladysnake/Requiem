@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.entity.ability;
 
-import ladysnake.reflectivefabric.reflection.ReflectionHelper;
-import ladysnake.reflectivefabric.reflection.UncheckedReflectionException;
+import ladysnake.dissolution.common.util.reflection.ReflectionHelper;
+import ladysnake.dissolution.common.util.reflection.UncheckedReflectionException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -11,10 +11,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
-import static ladysnake.reflectivefabric.reflection.ReflectionHelper.pick;
+import static ladysnake.dissolution.common.util.reflection.ReflectionHelper.pick;
 
 public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity> {
-    public static final Function<GuardianEntity, ? extends Goal> BEAM_GOAL_FACTORY;
+    private static final Function<GuardianEntity, ? extends Goal> BEAM_GOAL_FACTORY;
 
     private final Goal fireBeamGoal;
     private boolean started;

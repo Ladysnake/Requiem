@@ -1,12 +1,11 @@
-package ladysnake.reflectivefabric.reflection;
+package ladysnake.dissolution.common.util.reflection;
 
-import ladysnake.reflectivefabric.reflection.typed.TypedMethodHandles;
+import net.fabricmc.loader.launch.common.FabricLauncherBase;
 import org.apiguardian.api.API;
 
 import java.lang.invoke.*;
 import java.lang.reflect.Field;
 
-import static ladysnake.reflectivefabric.misc.DebugUtil.isDevEnv;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
 
@@ -27,6 +26,10 @@ public class ReflectionHelper {
         }
     }
 
+    public static boolean isDevEnv() {
+        return FabricLauncherBase.getLauncher().isDevelopment();
+    }
+
     public static String pick(String obfName, String mappedName) {
         return isDevEnv() ? mappedName : obfName;
     }
@@ -45,7 +48,6 @@ public class ReflectionHelper {
      * @return A handle for the method with the specified name and parameters in the given class.
      * @throws UnableToFindMethodException if an issue prevents the method from being reflected
      *
-     * @see TypedMethodHandles#findVirtual(Class, String, Class)
      */
     @API(status = STABLE, since = "2.6.2")
     public static MethodHandle findMethodHandleFromObfName(Class<?> clazz, String methodObfName, Class<?> returnType, Class<?>... parameterTypes) {

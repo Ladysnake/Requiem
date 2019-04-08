@@ -1,8 +1,9 @@
-[
-  {
-    "id": "dissolutionapi",
-    "name": "Dissolution-API",
-    "version": "1.0.0",
-    "side": "universal"
-  }
-]
+{
+  "schemaVersion": 1,
+  "id": "dissolutionapi",
+  "version": "${version}",
+
+  "environment": "*",
+
+  "name": "Dissolution-API"
+}

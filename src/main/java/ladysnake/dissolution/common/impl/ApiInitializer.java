@@ -6,7 +6,7 @@ import ladysnake.dissolution.api.v1.DissolutionPlugin;
 import ladysnake.dissolution.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.dissolution.api.v1.internal.ApiInternals;
 import ladysnake.dissolution.common.impl.ability.ImmutableMobAbilityConfig;
-import ladysnake.reflectivefabric.reflection.UncheckedReflectionException;
+import ladysnake.dissolution.common.util.reflection.UncheckedReflectionException;
 import org.apiguardian.api.API;
 
 import java.lang.reflect.Field;

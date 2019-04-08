@@ -1,16 +1,46 @@
-[
-  {
-    "id": "dissolution",
-    "name": "Dissolution",
-    "version": "1.0.0",
-    "side": "universal",
-    "initializers": [
-      "ladysnake.dissolution.Dissolution",
+{
+  "schemaVersion": 1,
+  "id": "dissolution",
+  "version": "${version}",
+
+  "environment": "*",
+  "entrypoints": {
+    "client": [
       "ladysnake.dissolution.client.DissolutionClient"
     ],
-    "mixins": {
-      "client": "mixins.dissolution.client.json",
-      "common": "mixins.dissolution.common.json"
+    "main": [
+      "ladysnake.dissolution.Dissolution"
+    ]
+  },
+  "mixins": [
+    {
+      "environment": "client",
+      "config": "mixins.dissolution.client.json"
+    },
+    {
+      "environment": "*",
+      "config": "mixins.dissolution.common.json"
     }
-  }
-]
+  ],
+
+  "depends": {
+    "dissolutionapi": "${version}",
+    "satin": "^1.1.0"
+  },
+
+  "name": "Dissolution",
+  "description": "Death revamped and ethereal powers",
+  "authors": [
+    "Pyrofab",
+    "Doctor4t"
+  ],
+  "contributors": [
+    "UpcraftLP"
+  ],
+  "contact": {
+    "sources": "https://github.com/Ladysnake/Dissolution",
+    "issues": "https://github.com/Ladysnake/Dissolution/issues",
+    "discord": "ladysnake.glitch.me/discord"
+  },
+  "licence": "ARR"
+}

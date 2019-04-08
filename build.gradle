@@ -26,15 +26,9 @@ sourceSets {
         compileClasspath = main.compileClasspath
         runtimeClasspath = main.runtimeClasspath
     }
-    reflective_fabric {
-        compileClasspath = main.compileClasspath
-        runtimeClasspath = main.runtimeClasspath
-    }
     main {
         compileClasspath += api.output
         runtimeClasspath += api.output
-        compileClasspath += reflective_fabric.output
-        runtimeClasspath += reflective_fabric.output
     }
 }
 

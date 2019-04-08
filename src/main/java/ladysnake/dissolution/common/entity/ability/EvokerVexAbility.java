@@ -1,7 +1,7 @@
 package ladysnake.dissolution.common.entity.ability;
 
-import ladysnake.reflectivefabric.reflection.ReflectionHelper;
-import ladysnake.reflectivefabric.reflection.UncheckedReflectionException;
+import ladysnake.dissolution.common.util.reflection.ReflectionHelper;
+import ladysnake.dissolution.common.util.reflection.UncheckedReflectionException;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,7 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
-import static ladysnake.reflectivefabric.reflection.ReflectionHelper.pick;
+import static ladysnake.dissolution.common.util.reflection.ReflectionHelper.pick;
 
 public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
     private static final Function<EvokerEntity, ? extends SpellcastingIllagerEntity.CastSpellGoal> VEX_GOAL_FACTORY;

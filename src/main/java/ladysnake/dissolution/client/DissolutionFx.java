@@ -99,12 +99,12 @@ public final class DissolutionFx implements EntitiesPostRenderCallback, Resoluti
     public void beginFishEyeAnimation(Entity possessed) {
         this.fishEyeAnimation = 10;
         this.possessed = new WeakReference<>(possessed);
-        possessed.world.playSound(mc.player, possessed.x, possessed.y, possessed.z, SoundEvents.ENTITY_VEX_AMBIENT, SoundCategory.PLAYER, 2, 0.6f);
+        possessed.world.playSound(mc.player, possessed.x, possessed.y, possessed.z, SoundEvents.ENTITY_VEX_AMBIENT, SoundCategory.PLAYERS, 2, 0.6f);
     }
 
     public void beginEtherealAnimation() {
         this.etherealAnimation = 10;
-        mc.player.world.playSound(mc.player, mc.player.x, mc.player.y, mc.player.z, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYER, 2, 0.6f);
+        mc.player.world.playSound(mc.player, mc.player.x, mc.player.y, mc.player.z, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2, 0.6f);
     }
 
     public void beginEtherealDamageAnimation(boolean intense) {
