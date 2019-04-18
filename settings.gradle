@@ -3,8 +3,15 @@ pluginManagement {
         jcenter()
         maven {
             name = 'Fabric'
-            url = 'http://maven.fabricmc.net/'
+            url = 'https://maven.fabricmc.net/'
         }
         gradlePluginPortal()
     }
+}
+
+rootProject.name = 'Requiem'
+
+['pandaemonium'].forEach {
+    include it
+    project(":$it").projectDir = file("expansions/" + it)
 }

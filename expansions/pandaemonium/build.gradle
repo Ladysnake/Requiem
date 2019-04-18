@@ -1,0 +1,4 @@
+dependencies {
+    compile rootProject.sourceSets.api.output
+    compile rootProject.sourceSets.main.output
+}

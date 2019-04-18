@@ -1,11 +1,13 @@
 // Credits to UpcraftLP for the base build script
 
+
 import net.fabricmc.loom.task.RemapJar
 
-import java.nio.charset.StandardCharsets
+import java.time.Year
 
 plugins {
-    id "fabric-loom" version "0.2.0-SNAPSHOT"
+    id "fabric-loom" version "0.2.1-SNAPSHOT"
+    id "net.minecrell.licenser" version "0.4.1"
     id "com.matthewprenger.cursegradle" version "1.1.2"
     id "maven-publish"
 }
@@ -14,170 +16,122 @@ plugins {
 apply from: 'https://raw.githubusercontent.com/Ladysnake/LadyLib/master/update_json.gradle'
 build.finalizedBy updateJson
 
-group = "io.github.Ladysnake"
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-archivesBaseName = "requiem"
+group = rootProject.maven_group
+archivesBaseName = rootProject.name.toLowerCase(Locale.ROOT)
 version = mod_version
 
-sourceSets {
-    api {
-        compileClasspath = main.compileClasspath
-        runtimeClasspath = main.runtimeClasspath
-    }
-    main {
-        compileClasspath += api.output
-        runtimeClasspath += api.output
-    }
+subprojects {
+    apply plugin: 'fabric-loom'
+    apply plugin: 'com.matthewprenger.cursegradle'
+    apply plugin: 'maven-publish'
+
+    archivesBaseName = "${rootProject.archivesBaseName}-${project.name.toLowerCase(Locale.ROOT)}"
+    group = "${rootProject.group}.${rootProject.archivesBaseName}"
 }
 
-minecraft {
-}
+allprojects {
 
-processResources {
-    // this will ensure that this task is redone when there"s a change
-    inputs.property "version", project.version
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 
-    def sources = sourceSets.stream().flatMap { ss -> ss.resources.srcDirs.stream() }.toArray()
-    // replace stuff in fabric.mod.json, nothing else
-    from(sources) {
-        include "fabric.mod.json"
+    version = rootProject.mod_version
 
-        // add mod metadata
-        expand "version": project.version
+    /*
+     Adds a JavadocJar task, javax annotations, manifest attributes, curseforge and maven configuration
+     */
+    apply from: "https://raw.githubusercontent.com/NerdHubMC/Gradle-Scripts/master/scripts/fabric/basic_project.gradle"
+
+    processResources {
+        inputs.property "version", project.version
+
+        from(sourceSets.main.resources.srcDirs) {
+            include "fabric.mod.json"
+            expand "version": project.version
+        }
+
+        from(sourceSets.main.resources.srcDirs) {
+            exclude "fabric.mod.json"
+        }
     }
 
-    // copy everything else, that"s not the fabric.mod.json
-    from(sources) {
-        exclude "fabric.mod.json"
+    repositories {
+        maven {
+            url "http://maven.fabricmc.net/"
+            name "Fabric"
+        }
+        maven {
+            url "https://jitpack.io"
+            name "JitPack"
+        }
     }
-}
 
-repositories {
-    maven { url 'https://jitpack.io' }
+    dependencies {
+        //to change the versions see the gradle.properties file
+        minecraft "com.mojang:minecraft:${project.minecraft_version}"
+        mappings "net.fabricmc:yarn:${project.yarn_mappings}"
+        modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
+
+        // Fabric API. This is technically optional, but you probably want it anyway.
+        modCompile "net.fabricmc:fabric:${project.fabric_version}"
+
+        modCompile "io.github.prospector.modmenu:ModMenu:${rootProject.modmenu_version}"
+        modCompile "com.github.Ladysnake:Satin:${rootProject.satin_version}"
+
+        compileOnly "org.jetbrains:annotations:${jb_annotations_version}"
+        compileOnly "org.apiguardian:apiguardian-api:${apiguardian_version}"
+
+        testImplementation "org.junit.jupiter:junit-jupiter-api:5.4.0-M1"
+    }
+
+    sourceSets {
+        api {
+            compileClasspath = main.compileClasspath
+            runtimeClasspath = main.runtimeClasspath
+        }
+        main {
+            compileClasspath += api.output
+            runtimeClasspath += api.output
+        }
+    }
+
+    task apiJar(type: Jar, dependsOn: classes) {
+        classifier = 'api'
+        from sourceSets.api.allSource
+        from sourceSets.api.output
+    }
+
+    task remapApiJar(type: RemapJar, dependsOn: apiJar) {
+        jar = apiJar.archivePath
+    }
+
+    license {
+        header = rootProject.file("code_quality/${project.license_header}_HEADER.txt")
+
+        // Apply licenses only to main source set
+        include "**/*.java"
+        exclude "**/package-info.java"
+
+        //export variables
+        ext {
+            year = Year.now()
+            projectDisplayName = rootProject.name
+            projectOwners = rootProject.owners
+            gplVersion = rootProject.gpl_version
+        }
+
+        newLine = false // Disables the empty line between the header and package name
+    }
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings "net.fabricmc:yarn:${yarn_mappings}"
-    modCompile "net.fabricmc:fabric-loader:${loader_version}"
-    // Fabric API. This is technically optional, but you probably want it anyway.
-    modCompile "net.fabricmc:fabric:${fabric_version}"
-    modCompile "com.github.Ladysnake:Satin:${satin_version}"
-
-    compileOnly "org.jetbrains:annotations:${jb_annotations_version}"
-    compileOnly "com.google.code.findbugs:jsr305:${findbugs_version}"
-    compileOnly "org.apiguardian:apiguardian-api:${apiguardian_version}"
-}
-
-compileJava {
-    options.encoding = StandardCharsets.UTF_8.name()
-}
-
-if (JavaVersion.current().isJava8Compatible()) {
-    allprojects {
-        tasks.withType(Javadoc) {
-            options.addStringOption("Xdoclint:none", "-quiet")
-        }
-    }
+    include "com.github.Ladysnake:Satin:${satin_version}"
 }
 
 jar {
     from "LICENSE-CODE"
     from "LICENSE-ART"
-    manifest.mainAttributes(
-            "Implementation-Title": project.archivesBaseName,
-            "Implementation-Version": project.version,
-            "Maven-Artifact": "${project.group}:${project.name}:${project.version}".toLowerCase(Locale.ROOT),
-            "Built-On-Minecraft": "${minecraft_version}",
-            "Built-On-Java": "${System.getProperty("java.vm.version")} (${System.getProperty("java.vm.vendor")})"
-    )
 }
 
-task apiJar(type: Jar, dependsOn: classes) {
-    classifier = 'api'
-    from sourceSets.api.allSource
-    from sourceSets.api.output
-}
-
-task remapApiJar(type: RemapJar, dependsOn: apiJar) {
-    jar = apiJar.archivePath
-}
-
-// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-// if it is present.
-// If you remove this task, sources will not be generated.
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    from javadoc.destinationDir
-    from "LICENSE.md"
-    classifier = "javadoc"
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
-            artifact apiJar
-            artifact javadocJar
-            artifact sourcesJar
-        }
-    }
-
-    repositories {
-        mavenLocal()
-    }
-}
-
-curseforge {
-    if (project.hasProperty("curse_key")) {
-        apiKey = findProperty("curse_key")
-    }
-
-    if (project.hasProperty("curseforge_id")) {
-        project {
-            id = findProperty("curseforge_id")
-            mainArtifact(jar) {
-                displayName = "${project.archivesBaseName} MC${minecraft_version} v${mod_version}"
-            }
-            releaseType = project.release_type
-
-            //TODO remove when MC 1.14 releases
-            //usually automatically determined by the CurseGradle plugin
-            addGameVersion '1.14-Snapshot'
-
-            changelogType = "markdown"
-            changelog = new File("changelog.md") //TODO generate changelog
-
-            relations {
-
-            }
-
-            addArtifact javadocJar
-            addArtifact sourcesJar
-        }
-        options {
-            forgeGradleIntegration = false
-        }
-
-    }
-}
-
-tasks.publish.dependsOn build
-
-afterEvaluate {
-    //make curseforge task depend on build
-    if (project.hasProperty("curseforge_id")) {
-        tasks.each {
-            if (it.name == "curseforge" + findProperty(curseforge_id)) {
-                it.dependsOn build
-                it.mustRunAfter build
-            }
-        }
-    }
+license {
+    exclude "**/RayHelper.java"
 }
