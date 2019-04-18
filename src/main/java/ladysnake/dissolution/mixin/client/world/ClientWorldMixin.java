@@ -30,7 +30,7 @@ public abstract class ClientWorldMixin extends World implements DissolutionWorld
         return this.anchorManager;
     }
 
-    @Inject(method = "method_18116", at = @At("TAIL"))
+    @Inject(method = "tickEntities", at = @At("TAIL"))
     private void updateAnchorTracker(CallbackInfo ci) {
         Profiler profiler = this.getProfiler();
         profiler.push("dissolution_ethereal_anchors");

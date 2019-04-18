@@ -68,7 +68,7 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
-    @Inject(method = "doesCollide", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "collides", at = @At("RETURN"), cancellable = true)
     private void preventSoulsCollision(CallbackInfoReturnable<Boolean> info) {
         if (this instanceof DissolutionPlayer && ((DissolutionPlayer) this).getRemnantState().isSoul()) {
             info.setReturnValue(false);

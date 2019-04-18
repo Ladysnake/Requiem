@@ -37,7 +37,7 @@ public class DissolutionSkinManager {
             return loc;
         }
         ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
-        PlayerListEntry playerInfo = networkHandler == null ? null : networkHandler.getScoreboardEntry(profile.getName());
+        PlayerListEntry playerInfo = networkHandler == null ? null : networkHandler.getPlayerListEntry(profile.getId());
         if (playerInfo != null) { //load from network player
             loc = playerInfo.getSkinTexture();
             if (loc != DefaultSkinHelper.getTexture(playerInfo.getProfile().getId())) {
@@ -48,7 +48,7 @@ public class DissolutionSkinManager {
         synchronized (queriedSkins) {
             if (!queriedSkins.contains(profile.getId())) {
                 //Make one call per user - again rate limit protection
-                MinecraftClient.getInstance().getSkinProvider().method_4652(profile, (type, location, profileTexture) -> {
+                MinecraftClient.getInstance().getSkinProvider().loadSkin(profile, (type, location, profileTexture) -> {
                     if (type == MinecraftProfileTexture.Type.SKIN) {
                         skinCache.put(profile.getId(), location);
                         synchronized (queriedSkins) {

@@ -15,8 +15,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
-import static net.minecraft.server.command.ServerCommandManager.argument;
-import static net.minecraft.server.command.ServerCommandManager.literal;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
 
 public class DissolutionCommand {
 
@@ -31,23 +31,23 @@ public class DissolutionCommand {
                 .then(literal(POSSESSION_SUBCOMMAND)
                         .then(literal("stop")
                                 .executes(context -> stopPossession(context.getSource(), Collections.singleton(context.getSource().getPlayer())))
-                                .then(argument("target", EntityArgumentType.multiplePlayer())
-                                        .executes(context -> stopPossession(context.getSource(), EntityArgumentType.method_9312(context, "target")))
+                                .then(argument("target", EntityArgumentType.players())
+                                        .executes(context -> stopPossession(context.getSource(), EntityArgumentType.getPlayers(context, "target")))
                                 )
                         )
                 )
                 .then(literal(REMNANT_SUBCOMMAND)
                         .then(literal("query")
                                 .executes(context -> queryRemnant(context.getSource(), context.getSource().getPlayer()))
-                                .then(argument("target", EntityArgumentType.onePlayer())
-                                        .executes(context -> queryRemnant(context.getSource(), EntityArgumentType.getServerPlayerArgument(context, "target")))
+                                .then(argument("target", EntityArgumentType.player())
+                                        .executes(context -> queryRemnant(context.getSource(), EntityArgumentType.getPlayer(context, "target")))
                                 )
                         )
                         .then(literal("set")
                                 .then(argument("remnant", BoolArgumentType.bool())
                                         .executes(context -> setRemnant(context.getSource(), Collections.singleton(context.getSource().getPlayer()), BoolArgumentType.getBool(context, "remnant")))
-                                        .then(argument("target", EntityArgumentType.multiplePlayer())
-                                                .executes(context -> setRemnant(context.getSource(), EntityArgumentType.method_9312(context, "target"), BoolArgumentType.getBool(context, "remnant")))
+                                        .then(argument("target", EntityArgumentType.players())
+                                                .executes(context -> setRemnant(context.getSource(), EntityArgumentType.getPlayers(context, "target"), BoolArgumentType.getBool(context, "remnant")))
                                         )
                                 )
                         )
@@ -59,8 +59,8 @@ public class DissolutionCommand {
                         .then(literal("set")
                                 .then(argument("ethereal", BoolArgumentType.bool())
                                         .executes(context -> setEthereal(context.getSource(), Collections.singleton(context.getSource().getPlayer()), BoolArgumentType.getBool(context, "ethereal")))
-                                        .then(argument("target", EntityArgumentType.multiplePlayer())
-                                                .executes(context -> setEthereal(context.getSource(), EntityArgumentType.method_9312(context, "target"), BoolArgumentType.getBool(context, "ethereal")))
+                                        .then(argument("target", EntityArgumentType.players())
+                                                .executes(context -> setEthereal(context.getSource(), EntityArgumentType.getPlayers(context, "target"), BoolArgumentType.getBool(context, "ethereal")))
                                         )
                                 )
                         )

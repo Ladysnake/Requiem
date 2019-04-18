@@ -29,7 +29,7 @@ public class PossessionTooltipCallback implements ItemTooltipCallback {
             } else {
                 break addPossessionTooltip;
             }
-            lines.add(TextFormatter.addStyle(
+            lines.add(TextFormatter.style(
                     new TranslatableTextComponent(translationKey),
                     new Style().setColor(TextFormat.DARK_GRAY)
             ));

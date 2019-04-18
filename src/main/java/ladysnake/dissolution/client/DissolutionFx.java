@@ -93,7 +93,7 @@ public final class DissolutionFx implements EntitiesPostRenderCallback, Resoluti
         double distance = player.distanceTo(entity);
         float rYaw = MathHelper.wrapDegrees((float)(angle - player.yaw)) + 90F;
         float rPitch = (float) pitch - (float)(10.0F / Math.sqrt(distance)) + (float)(distance * Math.PI / 90);
-        player.method_5872(rYaw, -(rPitch - player.pitch));
+        player.changeLookDirection(rYaw, -(rPitch - player.pitch));
     }
 
     public void beginFishEyeAnimation(Entity possessed) {
