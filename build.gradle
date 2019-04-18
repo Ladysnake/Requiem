@@ -18,7 +18,7 @@ group = "io.github.Ladysnake"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-archivesBaseName = "dissolution"
+archivesBaseName = "requiem"
 version = mod_version
 
 sourceSets {

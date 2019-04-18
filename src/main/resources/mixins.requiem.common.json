@@ -1,0 +1,36 @@
+{
+  "required": true,
+  "package": "ladysnake.requiem.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "entity.EntityAccessor",
+    "entity.ItemEntityMixin",
+    "entity.LivingEntityAccessor",
+    "entity.ai.goal.FollowTargetGoalMixin",
+    "entity.attribute.AbstractEntityAttributeContainerAccessor",
+    "entity.attribute.EntityAttributeContainerAccessor",
+    "entity.attribute.EntityAttributesMixin",
+    "entity.mob.AbstractSkeletonEntityAccessor",
+    "entity.mob.WitchEntityMixin",
+    "entity.passive.HorseBaseEntityMixin",
+    "entity.passive.IronGolemEntityMixin",
+    "entity.player.PlayerEntityMixin",
+    "entity.projectile.ProjectileEntityAccessor",
+    "item.BowItemMixin",
+    "item.ItemStackMixin",
+    "possession.entity.EntityMixin",
+    "possession.entity.LivingEntityMixin",
+    "possession.entity.MobEntityMixin",
+    "possession.entity.PossessableLivingEntityMixin",
+    "possession.player.EntityMixin",
+    "possession.player.LivingEntityMixin",
+    "possession.player.ServerPlayerEntityMixin",
+    "server.PlayerManagerMixin",
+    "server.network.ServerPlayerEntityMixin",
+    "server.network.ServerPlayerInteractionManagerMixin",
+    "server.world.ServerWorldMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

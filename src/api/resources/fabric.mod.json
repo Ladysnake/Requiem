@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "dissolutionapi",
+  "id": "requiemapi",
   "version": "${version}",
 
   "environment": "*",
 
-  "name": "Dissolution-API"
+  "name": "Requiem-API"
 }
