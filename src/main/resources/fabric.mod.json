@@ -29,6 +29,7 @@
   },
 
   "name": "Requiem",
+  "icon": "assets/requiem/skull_logo.png",
   "description": "Death revamped and ethereal powers",
   "authors": [
     "Pyrofab",
