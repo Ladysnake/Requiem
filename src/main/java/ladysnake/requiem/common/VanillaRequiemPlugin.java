@@ -31,6 +31,8 @@ import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.entity.ability.MeleeAbility;
+import ladysnake.requiem.common.entity.ability.ShulkerPeekAbility;
+import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
 import ladysnake.requiem.mixin.entity.mob.EndermanEntityAccessor;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
@@ -152,6 +154,10 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
     @Override
     public void registerMobAbilities(MobAbilityRegistry abilityRegistry) {
         abilityRegistry.register(EntityType.IRON_GOLEM, MobAbilityConfig.builder().directAttack(e -> new MeleeAbility(e, true)).build());
+        abilityRegistry.register(EntityType.SHULKER, MobAbilityConfig.<ShulkerEntity>builder()
+                .directAttack(ShulkerShootAbility::new)
+                .indirectAttack(ShulkerShootAbility::new)
+                .indirectInteract(ShulkerPeekAbility::new).build());
     }
 
     @Override

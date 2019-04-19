@@ -58,10 +58,13 @@ public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity> {
 
     @Override
     public void update() {
-        if (started && fireBeamGoal.shouldContinue()) {
-            fireBeamGoal.tick();
-        } else {
-            started = false;
+        if (started) {
+            if (fireBeamGoal.shouldContinue()) {
+                fireBeamGoal.tick();
+            } else {
+                started = false;
+                fireBeamGoal.stop();
+            }
         }
     }
 

@@ -47,10 +47,13 @@ public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity> {
 
     @Override
     public void update() {
-        if (started && wololoGoal.shouldContinue()) {
-            wololoGoal.tick();
-        } else {
-            started = false;
+        if (started) {
+            if (wololoGoal.shouldContinue()) {
+                wololoGoal.tick();
+            } else {
+                started = false;
+                wololoGoal.stop();
+            }
         }
     }
 
