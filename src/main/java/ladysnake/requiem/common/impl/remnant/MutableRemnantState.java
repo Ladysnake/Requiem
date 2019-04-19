@@ -81,7 +81,7 @@ public class MutableRemnantState implements RemnantState {
     public void onPlayerClone(ServerPlayerEntity clone, boolean dead) {
         ((RequiemPlayer)clone).setRemnant(true);
         RemnantState cloneState = ((RequiemPlayer) clone).getRemnantState();
-        if (dead) {
+        if (dead && !this.isSoul()) {
             clone.setPositionAndAngles(this.player);
             cloneState.setSoul(true);
         } else {
