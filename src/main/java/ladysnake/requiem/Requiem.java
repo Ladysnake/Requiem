@@ -23,7 +23,6 @@ import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.command.RequiemCommand;
-import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.impl.ApiInitializer;
 import ladysnake.requiem.common.impl.movement.MovementAltererManager;
 import ladysnake.requiem.common.item.RequiemItems;
@@ -54,7 +53,6 @@ public class Requiem implements ModInitializer {
     public void onInitialize() {
         ApiInitializer.init();
         RequiemBlocks.init();
-        RequiemEntities.init();
         RequiemItems.init();
         RequiemRegistries.init();
         ServerMessageHandling.init();

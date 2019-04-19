@@ -37,7 +37,6 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.ActionResult;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -65,9 +64,6 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     @Override
     public boolean canStartPossessing(final MobEntity mob) {
-        if (RequiemEntityTags.POSSESSION_BLACKLIST.contains(mob.getType())) {
-            return false;
-        }
         RequiemPlayer dp = (RequiemPlayer) this.player;
         return player.world.isClient || (!player.isSpectator() && dp.isRemnant() && dp.getRemnantState().isIncorporeal());
     }
@@ -79,9 +75,9 @@ public final class PossessionComponentImpl implements PossessionComponent {
             return false;
         }
 
-        ActionResult result = PossessionStartCallback.EVENT.invoker().onPossessionAttempted(host, this.player);
-        if (result != PASS) {
-            return result == SUCCESS;
+        PossessionStartCallback.Result result = PossessionStartCallback.EVENT.invoker().onPossessionAttempted(host, this.player);
+        if (result != PossessionStartCallback.Result.ALLOW) {
+            return result.isSuccess();
         }
 
         Possessable possessable = (Possessable) host;

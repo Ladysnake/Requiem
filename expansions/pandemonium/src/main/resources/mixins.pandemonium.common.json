@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "ladysnake.pandemonium.mixin.common",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "entity.mob.WitchEntityMixin",
+    "entity.ai.goal.FollowTargetGoalMixin",
+    "server.PlayerManagerMixin",
+    "server.world.ServerWorldMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

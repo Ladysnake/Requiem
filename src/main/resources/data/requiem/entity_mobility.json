@@ -1,62 +1,10 @@
 {
-  "minecraft:bat": {
-    "fallSpeedModifier": 0.9,
-    "flightMode": "ENABLED",
-    "swimMode": "DISABLED"
-  },
-  "minecraft:blaze":  {
-    "flightMode": "FORCED",
-    "inertia": 0.4,
-    "gravity": 0.03
-  },
-  "minecraft:chicken": {
-    "fallSpeedModifier": 0.6
-  },
-  "minecraft:cod": {
-    "swimMode": "FORCED",
-    "flopsOnLand": true
-  },
-  "minecraft:dolphin": {
-    "swimMode": "FORCED"
-  },
   "minecraft:drowned": {
     "swimMode": "ENABLED"
-  },
-  "minecraft:elder_guardian": {
-    "swimMode": "FORCED",
-    "flopsOnLand": true
-  },
-  "minecraft:ghast": {
-    "flightMode": "FORCED"
-  },
-  "minecraft:guardian": {
-    "swimMode": "FORCED",
-    "flopsOnLand": true
-  },
-  "minecraft:parrot": {
-    "flightMode": "ENABLED"
   },
   "minecraft:phantom": {
     "flightMode": "FORCED",
     "inertia": 0.8
-  },
-  "minecraft:pufferfish": {
-    "swimMode": "FORCED",
-    "flopsOnLand": true
-  },
-  "minecraft:salmon": {
-    "swimMode": "FORCED",
-    "flopsOnLand": true
-  },
-  "minecraft:squid": {
-    "swimMode": "FORCED"
-  },
-  "minecraft:tropical_fish": {
-    "swimMode": "FORCED",
-    "flopsOnLand": true
-  },
-  "minecraft:vex": {
-    "flightMode": "FORCED"
   },
   "minecraft:wither": {
     "flightMode": "ENABLED",

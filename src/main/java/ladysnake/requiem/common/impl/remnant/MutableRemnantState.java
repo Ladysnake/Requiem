@@ -29,7 +29,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import static ladysnake.requiem.common.network.RequiemNetworking.createCorporealityMessage;
 import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTrackingIncluding;
 
-public abstract class MutableRemnantState implements RemnantState {
+public class MutableRemnantState implements RemnantState {
     public static final String INCORPOREAL_TAG = "incorporeal";
 
     private final RemnantType type;

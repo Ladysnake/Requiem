@@ -10,8 +10,7 @@
     "render.entity.AccessibleTextureEntityRenderer",
     "render.entity.EntityRenderDispatcherMixin",
     "render.entity.LivingEntityRendererMixin",
-    "render.entity.PlayerEntityRendererMixin",
-    "world.ClientWorldMixin"
+    "render.entity.PlayerEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

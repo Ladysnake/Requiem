@@ -20,12 +20,10 @@ package ladysnake.requiem.mixin.server;
 import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.api.v1.RequiemWorld;
 import ladysnake.requiem.api.v1.event.PlayerCloneCallback;
 import ladysnake.requiem.api.v1.event.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.api.v1.remnant.FractureAnchor;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -54,7 +52,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-import static ladysnake.requiem.common.network.RequiemNetworking.*;
+import static ladysnake.requiem.common.network.RequiemNetworking.createCorporealityMessage;
+import static ladysnake.requiem.common.network.RequiemNetworking.sendTo;
 import static ladysnake.requiem.mixin.server.PlayerTagKeys.*;
 import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 
@@ -142,13 +141,6 @@ public abstract class PlayerManagerMixin {
                 serverWorld_1.removeEntity(ridden);
             }
             serverWorld_1.method_8497(player.chunkX, player.chunkZ).markDirty();
-        }
-    }
-
-    @Inject(method = "method_14606", at = @At("RETURN"))
-    private void sendWorldJoinMessages(ServerPlayerEntity player, ServerWorld world, CallbackInfo ci) {
-        for (FractureAnchor anchor : ((RequiemWorld)world).getAnchorManager().getAnchors()) {
-            sendTo(player, createAnchorUpdateMessage(anchor));
         }
     }
 

@@ -43,11 +43,6 @@ public final class NullRemnantState implements RemnantState {
     }
 
     @Override
-    public void fracture() {
-        // NO-OP
-    }
-
-    @Override
     public RemnantType getType() {
         return RemnantStates.MORTAL;
     }

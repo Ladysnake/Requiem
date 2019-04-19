@@ -18,10 +18,6 @@
 package ladysnake.requiem.client.network;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.api.v1.RequiemWorld;
-import ladysnake.requiem.api.v1.remnant.FractureAnchor;
-import ladysnake.requiem.api.v1.remnant.FractureAnchorManager;
-import ladysnake.requiem.client.ClientAnchorManager;
 import ladysnake.requiem.client.RequiemFx;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.network.PacketContext;
@@ -72,26 +68,6 @@ public class ClientMessageHandling {
             }
         }));
         register(ETHEREAL_ANIMATION, ((context, buf) -> RequiemFx.INSTANCE.beginEtherealAnimation()));
-        register(ANCHOR_DAMAGE, ((context, buf) -> {
-            boolean dead = buf.readBoolean();
-            RequiemFx.INSTANCE.beginEtherealDamageAnimation(dead);
-        }));
-        register(ANCHOR_SYNC, ((context, buf) -> {
-            int id = buf.readInt();
-            double x = buf.readDouble();
-            double y = buf.readDouble();
-            double z = buf.readDouble();
-            ((ClientAnchorManager)((RequiemWorld)context.getPlayer().world).getAnchorManager())
-                    .getOrCreate(id).setPosition(x, y, z);
-        }));
-        register(ANCHOR_REMOVE, ((context, buf) -> {
-            int id = buf.readInt();
-            FractureAnchorManager manager = ((RequiemWorld)context.getPlayer().world).getAnchorManager();
-            FractureAnchor anchor = manager.getAnchor(id);
-            if (anchor != null) {
-                anchor.invalidate();
-            }
-        }));
     }
 
     private static void register(Identifier id, BiConsumer<PacketContext, PacketByteBuf> handler) {

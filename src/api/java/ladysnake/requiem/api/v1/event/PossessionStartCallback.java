@@ -28,11 +28,8 @@ public interface PossessionStartCallback {
     /**
      * Called when a player attempts to possess a mob.
      * <p>
-     * Returning either {@link ActionResult#SUCCESS} {@link ActionResult#FAIL}
-     * indicates that this callback has processed the possession attempt,
-     * cancelling any further processing. <br>
      * The return value of {@link PossessionComponent#startPossessing(MobEntity)}
-     * will be {@code true} if the callback returns {@code SUCCESS}, {@code false} otherwise.
+     * will be {@code true} if the callback returns {@code ALLOW}, {@code false} otherwise.
      * <p>
      * Returning {@link ActionResult#PASS} lets processing continue as normal,
      * calling the next listener. If no callback handles the attempt,
@@ -42,16 +39,51 @@ public interface PossessionStartCallback {
      * @param possessor a player triggering a possession attempt
      * @return An {@link ActionResult} describing how the attempt has been handled
      */
-    ActionResult onPossessionAttempted(MobEntity target, PlayerEntity possessor);
+    Result onPossessionAttempted(MobEntity target, PlayerEntity possessor);
 
     Event<PossessionStartCallback> EVENT = EventFactory.createArrayBacked(PossessionStartCallback.class,
             (listeners) -> (target, possessor) -> {
+                Result ret = Result.PASS;
                 for (PossessionStartCallback listener : listeners) {
-                    ActionResult result = listener.onPossessionAttempted(target, possessor);
-                    if (result != ActionResult.PASS) {
-                        return result;
+                    Result result = listener.onPossessionAttempted(target, possessor);
+                    if (result != Result.PASS) {
+                        ret = result;
+                    }
+                    if (result.shortCircuits()) {
+                        break;
                     }
                 }
-                return ActionResult.PASS;
+                return ret;
             });
+
+    enum Result {
+        /**
+         * Indicates that this possession attempt cannot succeed.
+         * This cancels immediately any further processing.
+         */
+        DENY,
+        /**
+         * Let another handler decide.
+         * If all handlers return {@code PASS}, the attempt will fail.
+         */
+        PASS,
+        /**
+         * Indicates that this possession attempt can succeed.
+         * If no handler {@link #DENY denies} the attempt, possession will start.
+         */
+        ALLOW,
+        /**
+         * Indicates that this possession attempt has been fully handled by the callback.
+         * This cancels immediately any further processing.
+         */
+        HANDLED;
+
+        public boolean shortCircuits() {
+            return this == DENY || this == HANDLED;
+        }
+
+        public boolean isSuccess() {
+            return this == ALLOW || this == HANDLED;
+        }
+    }
 }

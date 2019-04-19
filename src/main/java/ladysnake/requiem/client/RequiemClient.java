@@ -21,19 +21,22 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.client.HotbarRenderCallback;
+import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.client.network.ClientMessageHandling;
-import ladysnake.requiem.client.render.entity.PlayerShellEntityRenderer;
-import ladysnake.requiem.common.entity.PlayerShellEntity;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
-import ladysnake.satin.api.event.EntitiesPostRenderCallback;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
-import ladysnake.satin.api.event.ResolutionChangeCallback;
-import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.render.EntityRendererRegistry;
-import net.fabricmc.fabric.api.event.client.ClientTickCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.AbstractSkeletonEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.item.BowItem;
+import net.minecraft.text.Style;
+import net.minecraft.text.TextFormat;
+import net.minecraft.text.TextFormatter;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
 
 @CalledThroughReflection
@@ -42,18 +45,30 @@ public class RequiemClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientMessageHandling.init();
-        RequiemKeyBinding.init();
-        EntityRendererRegistry.INSTANCE.register(PlayerShellEntity.class, (r, it) -> new PlayerShellEntityRenderer(r));
         registerCallbacks();
     }
 
     private void registerCallbacks() {
-        ShaderEffectRenderCallback.EVENT.register(RequiemFx.INSTANCE);
-        EntitiesPostRenderCallback.EVENT.register(RequiemFx.INSTANCE);
-        ResolutionChangeCallback.EVENT.register(RequiemFx.INSTANCE);
-        PickEntityShaderCallback.EVENT.register(EntityShaders::pickShader);
-        ClientTickCallback.EVENT.register(RequiemFx.INSTANCE::update);
-        ClientTickCallback.EVENT.register(RequiemKeyBinding::update);
+        RequiemFx.INSTANCE.registerCallbacks();
+        PickEntityShaderCallback.EVENT.register((camera, loadShaderFunc, appliedShaderGetter) -> {
+            if (camera instanceof RequiemPlayer) {
+                Entity possessed = (Entity) ((RequiemPlayer)camera).getPossessionComponent().getPossessedEntity();
+                if (possessed != null) {
+                    MinecraftClient.getInstance().gameRenderer.onCameraEntitySet(possessed);
+                }
+            }
+        });
+        // Start possession on right click
+        UseEntityCallback.EVENT.register((player, world, hand, target, hitPosition) -> {
+            RemnantState state = ((RequiemPlayer) player).getRemnantState();
+            if (state.isIncorporeal()) {
+                if (target instanceof MobEntity && target.world.isClient) {
+                    RequiemFx.INSTANCE.beginFishEyeAnimation(target);
+                }
+                return ActionResult.SUCCESS;
+            }
+            return ActionResult.PASS;
+        });
         // Prevents the hotbar from being rendered when the player cannot use items
         HotbarRenderCallback.EVENT.register(tickDelta -> {
             MinecraftClient client = MinecraftClient.getInstance();
@@ -67,6 +82,16 @@ public class RequiemClient implements ClientModInitializer {
             return ActionResult.PASS;
         });
         // Add custom tooltips to items when the player is possessing certain entities
-        ItemTooltipCallback.EVENT.register(new PossessionTooltipCallback());
+        ItemTooltipCallback.EVENT.register((item, player, context, lines) -> {
+            if (player != null) {
+                LivingEntity possessed = (LivingEntity) ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
+                if (possessed instanceof AbstractSkeletonEntity && item.getItem() instanceof BowItem) {
+                    lines.add(TextFormatter.style(
+                            new TranslatableTextComponent("requiem:tooltip.skeletal_efficiency"),
+                            new Style().setColor(TextFormat.DARK_GRAY)
+                    ));
+                }
+            }
+        });
     }
 }

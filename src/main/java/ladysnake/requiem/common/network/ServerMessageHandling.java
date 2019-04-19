@@ -49,8 +49,6 @@ public class ServerMessageHandling {
                 possessed.getMobAbilityController().useIndirect(AbilityType.INTERACT);
             }
         });
-        register(ETHEREAL_FRACTURE, (context, buf) -> ((RequiemPlayer) context.getPlayer()).getRemnantState().fracture());
-
         ServerSidePacketRegistry.INSTANCE.register(POSSESSION_REQUEST, (context, buf) -> {
             int requestedId = buf.readInt();
             context.getTaskQueue().execute(() -> {

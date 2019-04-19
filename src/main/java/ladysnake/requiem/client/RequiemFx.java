@@ -25,6 +25,7 @@ import ladysnake.satin.api.event.ResolutionChangeCallback;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
+import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.render.Camera;
@@ -67,6 +68,13 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
     private int ticks = 0;
     @Nullable
     private WeakReference<Entity> possessed;
+
+    void registerCallbacks() {
+        ShaderEffectRenderCallback.EVENT.register(this);
+        EntitiesPostRenderCallback.EVENT.register(this);
+        ResolutionChangeCallback.EVENT.register(this);
+        ClientTickCallback.EVENT.register(this::update);
+    }
 
     public void update(@SuppressWarnings("unused") MinecraftClient client) {
         ++ticks;

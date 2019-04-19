@@ -19,7 +19,6 @@ package ladysnake.requiem.common.network;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.api.v1.remnant.FractureAnchor;
 import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
@@ -38,9 +37,6 @@ import static io.netty.buffer.Unpooled.buffer;
 
 public class RequiemNetworking {
     // Server -> Client
-    public static final Identifier ANCHOR_DAMAGE = Requiem.id("anchor_damage");
-    public static final Identifier ANCHOR_SYNC = Requiem.id("anchor_sync_update");
-    public static final Identifier ANCHOR_REMOVE = Requiem.id("anchor_sync_remove");
     public static final Identifier ETHEREAL_ANIMATION = Requiem.id("ethereal_animation");
     public static final Identifier POSSESSION_SYNC = Requiem.id("possession_sync");
     public static final Identifier REMNANT_SYNC = Requiem.id("remnant_sync");
@@ -104,30 +100,6 @@ public class RequiemNetworking {
     @Contract(pure = true)
     public static CustomPayloadS2CPacket createEtherealAnimationMessage() {
         return new CustomPayloadS2CPacket(ETHEREAL_ANIMATION, createEmptyBuffer());
-    }
-
-    @Contract(pure = true)
-    public static CustomPayloadS2CPacket createAnchorDamageMessage(boolean dead) {
-        PacketByteBuf buf = createEmptyBuffer();
-        buf.writeBoolean(dead);
-        return new CustomPayloadS2CPacket(ANCHOR_DAMAGE, buf);
-    }
-
-    @Contract(pure = true)
-    public static CustomPayloadS2CPacket createAnchorUpdateMessage(FractureAnchor anchor) {
-        PacketByteBuf buf = createEmptyBuffer();
-        buf.writeInt(anchor.getId());
-        buf.writeDouble(anchor.getX());
-        buf.writeDouble(anchor.getY());
-        buf.writeDouble(anchor.getZ());
-        return new CustomPayloadS2CPacket(ANCHOR_SYNC, buf);
-    }
-
-    @Contract(pure = true)
-    public static CustomPayloadS2CPacket createAnchorDeleteMessage(int anchorId) {
-        PacketByteBuf buf = createEmptyBuffer();
-        buf.writeInt(anchorId);
-        return new CustomPayloadS2CPacket(ANCHOR_REMOVE, buf);
     }
 
     @Contract(pure = true)

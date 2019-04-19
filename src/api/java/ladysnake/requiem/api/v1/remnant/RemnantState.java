@@ -35,8 +35,6 @@ public interface RemnantState {
 
     void setSoul(boolean incorporeal);
 
-    void fracture();
-
     RemnantType getType();
 
     /**

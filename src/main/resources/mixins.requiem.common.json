@@ -6,12 +6,10 @@
     "entity.EntityAccessor",
     "entity.ItemEntityMixin",
     "entity.LivingEntityAccessor",
-    "entity.ai.goal.FollowTargetGoalMixin",
     "entity.attribute.AbstractEntityAttributeContainerAccessor",
     "entity.attribute.EntityAttributeContainerAccessor",
     "entity.attribute.EntityAttributesMixin",
     "entity.mob.AbstractSkeletonEntityAccessor",
-    "entity.mob.WitchEntityMixin",
     "entity.passive.HorseBaseEntityMixin",
     "entity.passive.IronGolemEntityMixin",
     "entity.player.PlayerEntityMixin",
@@ -27,8 +25,7 @@
     "possession.player.ServerPlayerEntityMixin",
     "server.PlayerManagerMixin",
     "server.network.ServerPlayerEntityMixin",
-    "server.network.ServerPlayerInteractionManagerMixin",
-    "server.world.ServerWorldMixin"
+    "server.network.ServerPlayerInteractionManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

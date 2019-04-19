@@ -11,7 +11,7 @@ pluginManagement {
 
 rootProject.name = 'Requiem'
 
-['pandaemonium'].forEach {
+['pandemonium'].forEach {
     include it
     project(":$it").projectDir = file("expansions/" + it)
 }
