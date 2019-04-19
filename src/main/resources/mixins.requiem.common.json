@@ -10,6 +10,7 @@
     "entity.attribute.EntityAttributeContainerAccessor",
     "entity.attribute.EntityAttributesMixin",
     "entity.mob.AbstractSkeletonEntityAccessor",
+    "entity.mob.EndermanEntityAccessor",
     "entity.passive.HorseBaseEntityMixin",
     "entity.passive.IronGolemEntityMixin",
     "entity.player.PlayerEntityMixin",

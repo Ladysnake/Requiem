@@ -1,6 +1,7 @@
 package ladysnake.pandemonium;
 
 import ladysnake.pandemonium.common.entity.ability.*;
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
@@ -11,6 +12,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.GuardianEntity;
+import net.minecraft.util.Identifier;
 
 public class PandemoniumRequiemPlugin implements RequiemPlugin {
 
@@ -23,6 +25,8 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
             }
             return PossessionStartCallback.Result.PASS;
         });
+        // Enderman specific behaviour is unneeded now that players can possess them
+        PossessionStartCallback.EVENT.unregister(new Identifier(Requiem.MOD_ID, "enderman"));
         PossessionStartCallback.EVENT.register(Pandemonium.id("allow_everything"), (target, possessor) -> PossessionStartCallback.Result.ALLOW);
     }
 

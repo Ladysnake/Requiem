@@ -32,13 +32,20 @@ import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.entity.ability.MeleeAbility;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
+import ladysnake.requiem.mixin.entity.mob.EndermanEntityAccessor;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.mob.EndermanEntity;
+import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.passive.GolemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.registry.Registry;
 
@@ -97,14 +104,35 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
 
     private void registerPossessionEventHandlers() {
         PossessionStartCallback.EVENT.register(Requiem.id("blacklist"), (target, possessor) -> {
-            if (RequiemEntityTags.POSSESSION_BLACKLIST.contains(target.getType())) {
+            if (!target.world.isClient && RequiemEntityTags.POSSESSION_BLACKLIST.contains(target.getType())) {
                 return PossessionStartCallback.Result.DENY;
             }
             return PossessionStartCallback.Result.PASS;
         });
-        PossessionStartCallback.EVENT.register(Requiem.id("allow_base_mobs"), (target, possessor) -> {
-            if (target.isUndead() || target instanceof GolemEntity) {
+        PossessionStartCallback.EVENT.register(Requiem.id("base_mobs"), (target, possessor) -> {
+            if (!target.world.isClient && target.isUndead() || target instanceof GolemEntity) {
                 return PossessionStartCallback.Result.ALLOW;
+            }
+            return PossessionStartCallback.Result.PASS;
+        });
+        PossessionStartCallback.EVENT.register(Requiem.id("enderman"), (target, possessor) -> {
+            if (!target.world.isClient && target instanceof EndermanEntity) {
+                // Retry a few times
+                for (int i = 0; i < 20; i++) {
+                    if (((EndermanEntityAccessor)target).invokeTeleportRandomly()) {
+                        possessor.world.playSound(null, target.x, target.y, target.z, SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
+                        break;
+                    }
+                }
+                possessor.teleport(target.x, target.y, target.z, true);
+                return PossessionStartCallback.Result.HANDLED;
+            }
+            return PossessionStartCallback.Result.PASS;
+        });
+        PossessionStartCallback.EVENT.register(Requiem.id("shulker"), (target, possessor) -> {
+            if (target instanceof ShulkerEntity && target.world.isClient) {
+                MinecraftClient client = MinecraftClient.getInstance();
+                client.inGameHud.setOverlayMessage(I18n.translate("requiem:shulker.onboard", client.options.keySneak.getLocalizedName()), false);
             }
             return PossessionStartCallback.Result.PASS;
         });
