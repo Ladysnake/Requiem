@@ -20,7 +20,7 @@ package ladysnake.requiem.common.impl.possession;
 import com.google.common.collect.MapMaker;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.api.v1.event.PossessionStartCallback;
+import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.entity.ai.attribute.AttributeHelper;
@@ -46,8 +46,6 @@ import java.util.UUID;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.createPossessionMessage;
 import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTrackingIncluding;
-import static net.minecraft.util.ActionResult.PASS;
-import static net.minecraft.util.ActionResult.SUCCESS;
 
 public final class PossessionComponentImpl implements PossessionComponent {
     // Identity weak map. Should probably be made into its own util class.

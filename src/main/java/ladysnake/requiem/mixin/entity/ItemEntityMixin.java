@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.mixin.entity;
 
-import ladysnake.requiem.api.v1.event.ItemPickupCallback;
+import ladysnake.requiem.api.v1.event.minecraft.ItemPickupCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;

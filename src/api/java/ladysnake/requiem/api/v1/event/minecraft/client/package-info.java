@@ -4,7 +4,7 @@
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package ladysnake.requiem.api.v1.event.client;
+package ladysnake.requiem.api.v1.event.minecraft.client;
 
 import ladysnake.requiem.api.v1.annotation.FieldsAreNonnullByDefault;
 import ladysnake.requiem.api.v1.annotation.MethodsReturnNonnullByDefault;

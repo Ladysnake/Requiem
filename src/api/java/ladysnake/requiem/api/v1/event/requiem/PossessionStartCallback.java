@@ -15,11 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.api.v1.event;
+package ladysnake.requiem.api.v1.event.requiem;
 
+import ladysnake.requiem.api.v1.event.IdentifyingEvent;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
@@ -29,11 +28,10 @@ public interface PossessionStartCallback {
      * Called when a player attempts to possess a mob.
      * <p>
      * The return value of {@link PossessionComponent#startPossessing(MobEntity)}
-     * will be {@code true} if the callback returns {@code ALLOW}, {@code false} otherwise.
+     * will be {@code true} if the callback returns {@code ALLOW} or {@code HANDLED}, {@code false} otherwise.
      * <p>
-     * Returning {@link ActionResult#PASS} lets processing continue as normal,
-     * calling the next listener. If no callback handles the attempt,
-     * the default behaviour of actually possessing the entity takes place.
+     * Returning {@link Result#PASS PASS} lets processing continue as normal,
+     * calling the next listener. If no callback handles the attempt, nothing happens.
      *
      * @param target    the possessed entity
      * @param possessor a player triggering a possession attempt
@@ -41,7 +39,7 @@ public interface PossessionStartCallback {
      */
     Result onPossessionAttempted(MobEntity target, PlayerEntity possessor);
 
-    Event<PossessionStartCallback> EVENT = EventFactory.createArrayBacked(PossessionStartCallback.class,
+    IdentifyingEvent<PossessionStartCallback> EVENT = new IdentifyingEvent<>(
             (listeners) -> (target, possessor) -> {
                 Result ret = Result.PASS;
                 for (PossessionStartCallback listener : listeners) {

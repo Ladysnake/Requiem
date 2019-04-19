@@ -15,27 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.api.v1.event;
+package ladysnake.requiem.api.v1.event.minecraft.client;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 
-@FunctionalInterface
-public interface ItemPickupCallback {
+public interface HotbarRenderCallback {
 
-    ActionResult onItemPickup(PlayerEntity player, ItemEntity pickedUp);
+    ActionResult onHotbarRendered(float tickDelta);
 
-    Event<ItemPickupCallback> EVENT = EventFactory.createArrayBacked(ItemPickupCallback.class,
-            (listeners) -> (player, pickedUp) -> {
-                for (ItemPickupCallback handler : listeners) {
-                    ActionResult actionResult = handler.onItemPickup(player, pickedUp);
+    Event<HotbarRenderCallback> EVENT = EventFactory.createArrayBacked(HotbarRenderCallback.class,
+            (listeners) -> (tickDelta) -> {
+                for (HotbarRenderCallback handler : listeners) {
+                    ActionResult actionResult = handler.onHotbarRendered(tickDelta);
                     if (actionResult != ActionResult.PASS) {
                         return actionResult;
                     }
                 }
                 return ActionResult.PASS;
             });
+
 }

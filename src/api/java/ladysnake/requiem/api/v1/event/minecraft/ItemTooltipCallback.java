@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.api.v1.event;
+package ladysnake.requiem.api.v1.event.minecraft;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

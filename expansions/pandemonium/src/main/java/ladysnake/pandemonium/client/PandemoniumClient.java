@@ -2,7 +2,7 @@ package ladysnake.pandemonium.client;
 
 import ladysnake.pandemonium.client.render.entity.PlayerShellEntityRenderer;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
-import ladysnake.requiem.api.v1.event.ItemTooltipCallback;
+import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.client.RequiemFx;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.satin.api.event.PickEntityShaderCallback;

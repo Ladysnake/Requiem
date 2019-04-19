@@ -4,7 +4,7 @@ import ladysnake.pandemonium.common.entity.ability.*;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.api.v1.event.PossessionStartCallback;
+import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.requiem.common.entity.ability.*;
 import net.minecraft.entity.EntityType;
@@ -16,13 +16,14 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
 
     @Override
     public void onRequiemInitialize() {
-        PossessionStartCallback.EVENT.register((target, possessor) -> {
+        PossessionStartCallback.EVENT.register(Pandemonium.id("shell_interaction"), (target, possessor) -> {
             if (target instanceof PlayerShellEntity) {
                 ((PlayerShellEntity) target).onSoulInteract(possessor);
                 return PossessionStartCallback.Result.HANDLED;
             }
-            return PossessionStartCallback.Result.ALLOW;
+            return PossessionStartCallback.Result.PASS;
         });
+        PossessionStartCallback.EVENT.register(Pandemonium.id("allow_everything"), (target, possessor) -> PossessionStartCallback.Result.ALLOW);
     }
 
     @Override

@@ -19,7 +19,7 @@ package ladysnake.requiem.mixin.client.gui.hud;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.api.v1.event.client.HotbarRenderCallback;
+import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;

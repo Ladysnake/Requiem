@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.mixin.item;
 
-import ladysnake.requiem.api.v1.event.ItemTooltipCallback;
+import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;

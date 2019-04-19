@@ -15,25 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.api.v1.event.client;
+package ladysnake.requiem.api.v1.event.minecraft;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.util.ActionResult;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-public interface HotbarRenderCallback {
+@FunctionalInterface
+public interface PlayerCloneCallback {
+    void onPlayerClone(ServerPlayerEntity original, ServerPlayerEntity clone, boolean returnFromEnd);
 
-    ActionResult onHotbarRendered(float tickDelta);
-
-    Event<HotbarRenderCallback> EVENT = EventFactory.createArrayBacked(HotbarRenderCallback.class,
-            (listeners) -> (tickDelta) -> {
-                for (HotbarRenderCallback handler : listeners) {
-                    ActionResult actionResult = handler.onHotbarRendered(tickDelta);
-                    if (actionResult != ActionResult.PASS) {
-                        return actionResult;
-                    }
+    Event<PlayerCloneCallback> EVENT = EventFactory.createArrayBacked(PlayerCloneCallback.class,
+            (listeners) -> (original, clone, returnFromEnd) -> {
+                for (PlayerCloneCallback handler : listeners) {
+                    handler.onPlayerClone(original, clone, returnFromEnd);
                 }
-                return ActionResult.PASS;
             });
-
 }

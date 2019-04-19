@@ -19,8 +19,8 @@ package ladysnake.requiem.client;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
-import ladysnake.requiem.api.v1.event.ItemTooltipCallback;
-import ladysnake.requiem.api.v1.event.client.HotbarRenderCallback;
+import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
+import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.client.network.ClientMessageHandling;
 import ladysnake.requiem.common.tag.RequiemEntityTags;

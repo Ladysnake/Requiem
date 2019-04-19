@@ -15,20 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.api.v1.event;
+package ladysnake.requiem.api.v1.event.minecraft;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 @FunctionalInterface
-public interface PlayerCloneCallback {
-    void onPlayerClone(ServerPlayerEntity original, ServerPlayerEntity clone, boolean returnFromEnd);
+public interface PlayerRespawnCallback {
+    void onPlayerRespawn(ServerPlayerEntity player, boolean returnFromEnd);
 
-    Event<PlayerCloneCallback> EVENT = EventFactory.createArrayBacked(PlayerCloneCallback.class,
-            (listeners) -> (original, clone, returnFromEnd) -> {
-                for (PlayerCloneCallback handler : listeners) {
-                    handler.onPlayerClone(original, clone, returnFromEnd);
+    Event<PlayerRespawnCallback> EVENT = EventFactory.createArrayBacked(PlayerRespawnCallback.class,
+            (listeners) -> (player, returnFromEnd) -> {
+                for (PlayerRespawnCallback handler : listeners) {
+                    handler.onPlayerRespawn(player, returnFromEnd);
                 }
             });
 }

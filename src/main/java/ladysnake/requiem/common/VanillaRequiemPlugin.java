@@ -23,10 +23,10 @@ import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.api.v1.event.ItemPickupCallback;
-import ladysnake.requiem.api.v1.event.PlayerCloneCallback;
-import ladysnake.requiem.api.v1.event.PlayerRespawnCallback;
-import ladysnake.requiem.api.v1.event.PossessionStartCallback;
+import ladysnake.requiem.api.v1.event.minecraft.ItemPickupCallback;
+import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
+import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
+import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
@@ -96,10 +96,13 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     private void registerPossessionEventHandlers() {
-        PossessionStartCallback.EVENT.register((target, possessor) -> {
+        PossessionStartCallback.EVENT.register(Requiem.id("blacklist"), (target, possessor) -> {
             if (RequiemEntityTags.POSSESSION_BLACKLIST.contains(target.getType())) {
                 return PossessionStartCallback.Result.DENY;
             }
+            return PossessionStartCallback.Result.PASS;
+        });
+        PossessionStartCallback.EVENT.register(Requiem.id("allow_base_mobs"), (target, possessor) -> {
             if (target.isUndead() || target instanceof GolemEntity) {
                 return PossessionStartCallback.Result.ALLOW;
             }
