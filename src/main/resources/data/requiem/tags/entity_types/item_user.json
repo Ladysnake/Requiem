@@ -3,13 +3,7 @@
   "values": [
     "minecraft:enderman",
 
-    "minecraft:drowned",
-    "minecraft:giant",
-    "minecraft:husk",
-    "minecraft:zombie",
-    "minecraft:zombie_pigman",
-    "minecraft:zombie_villager",
-
+    "#c:zombies",
     "#minecraft:skeletons",
 
     "minecraft:pillager",
