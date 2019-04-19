@@ -18,16 +18,23 @@
 package ladysnake.requiem.mixin.client.render;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
+
+    @Shadow @Final private Camera camera;
 
     @SuppressWarnings("UnresolvedMixinReference") // Synthetic method
     @Inject(
@@ -43,5 +50,10 @@ public abstract class GameRendererMixin {
         if (camera instanceof RequiemPlayer && ((RequiemPlayer) camera).getPossessionComponent().getPossessedEntity() == tested) {
             info.setReturnValue(false);
         }
+    }
+
+    @Inject(method = "applyCameraTransformations", at = @At("TAIL"))
+    private void applyCameraTransformations(float tickDelta, CallbackInfo ci) {
+        ApplyCameraTransformsCallback.EVENT.invoker().applyCameraTransformations(this.camera, tickDelta);
     }
 }

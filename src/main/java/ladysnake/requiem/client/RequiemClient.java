@@ -20,18 +20,27 @@ package ladysnake.requiem.client;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
+import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
+import ladysnake.requiem.client.handler.HeadDownTransformHandler;
 import ladysnake.requiem.client.network.ClientMessageHandling;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
+import ladysnake.satin.api.event.EntitiesPostRenderCallback;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.ShulkerEntityRenderer;
+import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.text.Style;
 import net.minecraft.text.TextFormat;
@@ -50,6 +59,25 @@ public class RequiemClient implements ClientModInitializer {
 
     private void registerCallbacks() {
         RequiemFx.INSTANCE.registerCallbacks();
+        ApplyCameraTransformsCallback.EVENT.register(new HeadDownTransformHandler());
+        EntitiesPostRenderCallback.EVENT.register((camera, frustum, tickDelta) -> {
+            if (!camera.isThirdPerson()) {
+                MinecraftClient client = MinecraftClient.getInstance();
+                Possessable possessed = ((RequiemPlayer)client.player).getPossessionComponent().getPossessedEntity();
+                if (possessed instanceof ShulkerEntity) {
+                    ShulkerEntity shulker = (ShulkerEntity) possessed;
+                    EntityRenderDispatcher renderManager = client.getEntityRenderManager();
+                    ShulkerEntityRenderer renderer = renderManager.getRenderer(shulker);
+                    if (renderer != null) {
+                        ShulkerEntityModel<?> model = renderer.getModel();
+                        Cuboid nerdFace = model.method_2830();
+                        nerdFace.visible = false;
+                        renderManager.render(shulker, tickDelta, true);
+                        nerdFace.visible = true;
+                    }
+                }
+            }
+        });
         PickEntityShaderCallback.EVENT.register((camera, loadShaderFunc, appliedShaderGetter) -> {
             if (camera instanceof RequiemPlayer) {
                 Entity possessed = (Entity) ((RequiemPlayer)camera).getPossessionComponent().getPossessedEntity();

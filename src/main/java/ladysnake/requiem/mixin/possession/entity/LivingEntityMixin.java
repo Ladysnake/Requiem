@@ -113,18 +113,20 @@ public abstract class LivingEntityMixin extends Entity implements Possessable, V
     private void afterTravel(CallbackInfo ci) {
         PlayerEntity player = this.getPossessor();
         // If anyone has a better idea for immovable mobs, tell me
-        if (player != null && !this.requiem_immovable) {
+        if (player != null) {
             this.setRotation(player.yaw, player.pitch);
             this.headYaw = this.field_6283 = this.prevYaw = this.yaw;
-            this.setSwimming(player.isSwimming());
-            // Prevent this entity from taking fall damage unless triggered by the possessor
-            this.fallDistance = 0;
+            if (!this.requiem_immovable) {
+                this.setSwimming(player.isSwimming());
+                // Prevent this entity from taking fall damage unless triggered by the possessor
+                this.fallDistance = 0;
 
-            this.setPosition(player.x, player.y, player.z);
-            this.setVelocity(player.getVelocity());
-            // update limb movement
-            this.limbAngle = player.limbAngle;
-            this.limbDistance = player.limbDistance;
+                this.setPosition(player.x, player.y, player.z);
+                this.setVelocity(player.getVelocity());
+                // update limb movement
+                this.limbAngle = player.limbAngle;
+                this.limbDistance = player.limbDistance;
+            }
         }
     }
 

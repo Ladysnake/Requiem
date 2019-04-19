@@ -28,23 +28,23 @@ import ladysnake.requiem.common.impl.movement.PlayerMovementAlterer;
 import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.remnant.NullRemnantState;
 import ladysnake.requiem.common.remnant.RemnantStates;
-import ladysnake.requiem.common.tag.RequiemEntityTags;
+import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.EnumSet;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.createCorporealityMessage;
 import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTrackingIncluding;
@@ -54,7 +54,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     /* Implementation of RequiemPlayer */
 
-    @Shadow @Final public PlayerInventory inventory;
     private static final String TAG_REMNANT_DATA = "requiem:remnant_data";
 
     private RemnantState remnantState = NullRemnantState.NULL_STATE;
@@ -107,7 +106,12 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
     private void travel(CallbackInfo info) {
         Entity possessed = (Entity) this.getPossessionComponent().getPossessedEntity();
-        if (possessed != null && ((VariableMobilityEntity)possessed).requiem_isImmovable()) {
+        if (possessed != null && ((VariableMobilityEntity) possessed).requiem_isImmovable()) {
+            if (!world.isClient && (this.x != possessed.x || this.y != possessed.y || this.z != possessed.z)) {
+                ServerPlayNetworkHandler networkHandler = ((ServerPlayerEntity) (Object) this).networkHandler;
+                networkHandler.teleportRequest(possessed.x, possessed.y, possessed.z, this.yaw, this.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
+                networkHandler.syncWithPlayerPosition();
+            }
             info.cancel();
         }
     }
