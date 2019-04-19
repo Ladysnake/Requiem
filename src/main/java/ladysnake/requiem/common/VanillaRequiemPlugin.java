@@ -38,6 +38,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.registry.Registry;
 
@@ -90,20 +91,20 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
             }
             return ActionResult.PASS;
         });
-        PossessionStartCallback.EVENT.register((target, possessor) -> {
-            if (RequiemEntityTags.POSSESSION_BLACKLIST.contains(target.getType())) {
-                return PossessionStartCallback.Result.DENY;
-            }
-            if (target.isUndead()) {
-                return PossessionStartCallback.Result.ALLOW;
-            }
-            return PossessionStartCallback.Result.PASS;
-        });
         PlayerCloneCallback.EVENT.register(((original, clone, returnFromEnd) -> ((RequiemPlayer)original).getRemnantState().onPlayerClone(clone, !returnFromEnd)));
         PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> player.onTeleportationDone()));
     }
 
     private void registerPossessionEventHandlers() {
+        PossessionStartCallback.EVENT.register((target, possessor) -> {
+            if (RequiemEntityTags.POSSESSION_BLACKLIST.contains(target.getType())) {
+                return PossessionStartCallback.Result.DENY;
+            }
+            if (target.isUndead() || target instanceof GolemEntity) {
+                return PossessionStartCallback.Result.ALLOW;
+            }
+            return PossessionStartCallback.Result.PASS;
+        });
         // Proxy melee attacks
         AttackEntityCallback.EVENT.register((playerEntity, world, hand, target, hitResult) -> {
             LivingEntity possessed = (LivingEntity) ((RequiemPlayer)playerEntity).getPossessionComponent().getPossessedEntity();
