@@ -45,7 +45,7 @@ public interface MovementConfig {
      * Returns the inertia that should be applied by movement alterers using this config.
      * Inertia here is the amount of motion from the previous tick that should be kept,
      * according to the following formula: <pre>
-     * <tt>motion * (1 - inertia) + lastMotion * inertia</tt>
+     * <tt>motion * (1 - inertia) + lastMotion * inertia</tt></pre>
      *
      * @return the inertia that should be applied by movement alterers using this config
      */

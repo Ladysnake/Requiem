@@ -25,6 +25,7 @@ import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 
@@ -57,6 +58,7 @@ public class ServerMessageHandling {
                 if (entity instanceof MobEntity && entity.distanceTo(player) < 20) {
                     ((RequiemPlayer) player).getPossessionComponent().startPossessing((MobEntity) entity);
                 }
+                sendTo((ServerPlayerEntity) player, createEmptyMessage(POSSESSION_ACK));
             });
         });
     }

@@ -40,6 +40,7 @@ public class RequiemNetworking {
     public static final Identifier ETHEREAL_ANIMATION = Requiem.id("ethereal_animation");
     public static final Identifier POSSESSION_SYNC = Requiem.id("possession_sync");
     public static final Identifier REMNANT_SYNC = Requiem.id("remnant_sync");
+    public static final Identifier POSSESSION_ACK = Requiem.id("possession_ack");
 
     // Client -> Server
     public static final Identifier LEFT_CLICK_AIR = Requiem.id("attack_air");
@@ -98,8 +99,8 @@ public class RequiemNetworking {
     }
 
     @Contract(pure = true)
-    public static CustomPayloadS2CPacket createEtherealAnimationMessage() {
-        return new CustomPayloadS2CPacket(ETHEREAL_ANIMATION, createEmptyBuffer());
+    public static CustomPayloadS2CPacket createEmptyMessage(Identifier id) {
+        return new CustomPayloadS2CPacket(id, createEmptyBuffer());
     }
 
     @Contract(pure = true)

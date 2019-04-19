@@ -3,6 +3,7 @@ package ladysnake.requiem.api.v1.event;
 import net.fabricmc.fabric.api.event.Event;
 import net.minecraft.util.Identifier;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -13,10 +14,12 @@ import java.util.function.Function;
  * @param <T> The listener type.
  */
 public class IdentifyingEvent<T> extends Event<T> {
+    private final Class<T> type;
     private final Map<Identifier, T> handlers = new HashMap<>();
     private final Function<T[], T> invokerFactory;
 
-    public IdentifyingEvent(Function<T[], T> invokerFactory) {
+    public IdentifyingEvent(Class<T> type, Function<T[], T> invokerFactory) {
+        this.type = type;
         this.invokerFactory = invokerFactory;
     }
 
@@ -24,7 +27,7 @@ public class IdentifyingEvent<T> extends Event<T> {
         if (handlers.size() == 1) {
             this.invoker = handlers.values().iterator().next();
         } else {
-            @SuppressWarnings("unchecked") T[] arr = (T[]) handlers.values().toArray();
+            @SuppressWarnings("unchecked") T[] arr = handlers.values().toArray((T[]) Array.newInstance(type, 0));
             this.invoker = this.invokerFactory.apply(arr);
         }
     }

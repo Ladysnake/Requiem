@@ -67,7 +67,7 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
      */
     private int ticks = 0;
     @Nullable
-    private WeakReference<Entity> possessed;
+    private WeakReference<Entity> possessionTarget;
 
     void registerCallbacks() {
         ShaderEffectRenderCallback.EVENT.register(this);
@@ -85,19 +85,23 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
         }
         Entity possessed = getAnimationEntity();
         if (possessed != null) {
-            turnToFace(possessed);
+//            turnToFace(possessed);
             if (--fishEyeAnimation == 2) {
                 sendToServer(POSSESSION_REQUEST, createPossessionRequestBuffer(possessed));
             }
             if (!((RequiemPlayer) client.player).getRemnantState().isIncorporeal()) {
-                this.possessed = null;
+                this.possessionTarget = null;
             }
         }
     }
 
+    public void onPossessionAck() {
+        this.possessionTarget = null;
+    }
+
     @Nullable
     public Entity getAnimationEntity() {
-        return this.possessed != null ? this.possessed.get() : null;
+        return this.possessionTarget != null ? this.possessionTarget.get() : null;
     }
 
     /**
@@ -123,7 +127,7 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
 
     public void beginFishEyeAnimation(Entity possessed) {
         this.fishEyeAnimation = 10;
-        this.possessed = new WeakReference<>(possessed);
+        this.possessionTarget = new WeakReference<>(possessed);
         possessed.world.playSound(mc.player, possessed.x, possessed.y, possessed.z, SoundEvents.ENTITY_VEX_AMBIENT, SoundCategory.PLAYERS, 2, 0.6f);
     }
 
@@ -143,10 +147,10 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
 
     @Override
     public void renderShaderEffects(float tickDelta) {
-        if (this.possessed != null && this.possessed.get() != null) {
+        if (this.possessionTarget != null && this.possessionTarget.get() != null) {
             fishEyeShader.setUniformValue("Slider", (fishEyeAnimation - tickDelta) / 40 + 0.25f);
             fishEyeShader.render(tickDelta);
-            if (this.possessed != null && this.framebuffer != null) {
+            if (this.possessionTarget != null && this.framebuffer != null) {
                 GlStateManager.enableBlend();
                 GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
                 this.framebuffer.draw(this.mc.window.getWidth(), this.mc.window.getHeight(), false);

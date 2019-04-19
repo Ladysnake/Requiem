@@ -49,6 +49,7 @@ public class ClientMessageHandling {
                 }
             }
         });
+        register(POSSESSION_ACK, (context, buf) -> RequiemFx.INSTANCE.onPossessionAck());
         register(POSSESSION_SYNC, ((context, buf) -> {
             UUID playerUuid = buf.readUuid();
             int possessedId = buf.readInt();

@@ -30,18 +30,22 @@ public interface PossessionStartCallback {
      * The return value of {@link PossessionComponent#startPossessing(MobEntity)}
      * will be {@code true} if the callback returns {@code ALLOW} or {@code HANDLED}, {@code false} otherwise.
      * <p>
-     * Returning {@link Result#PASS PASS} lets processing continue as normal,
-     * calling the next listener. If no callback handles the attempt, nothing happens.
+     * <strong>WARNING</strong>: suppressing the possession attempt on a client world
+     * (by returning {@code DENY} or {@code HANDLED}) can cause major desynchronization issues.
+     * <p>
+     * Returning {@code PASS} lets processing continue as normal,
+     * calling the next listener. If no callback handles the attempt, the result depends on the logical side.
+     * On a client world, the possession attempt will be allowed by default. On a server world, it will be rejected.
      *
      * @param target    the possessed entity
      * @param possessor a player triggering a possession attempt
-     * @return An {@link ActionResult} describing how the attempt has been handled
+     * @return A {@link Result} describing how the attempt has been handled
      */
     Result onPossessionAttempted(MobEntity target, PlayerEntity possessor);
 
-    IdentifyingEvent<PossessionStartCallback> EVENT = new IdentifyingEvent<>(
+    IdentifyingEvent<PossessionStartCallback> EVENT = new IdentifyingEvent<>(PossessionStartCallback.class,
             (listeners) -> (target, possessor) -> {
-                Result ret = Result.PASS;
+                Result ret = target.world.isClient ? Result.ALLOW : Result.PASS;
                 for (PossessionStartCallback listener : listeners) {
                     Result result = listener.onPossessionAttempted(target, possessor);
                     if (result != Result.PASS) {
@@ -62,7 +66,7 @@ public interface PossessionStartCallback {
         DENY,
         /**
          * Let another handler decide.
-         * If all handlers return {@code PASS}, the attempt will fail.
+         * If all handlers return {@code PASS}, the default behaviour will take place.
          */
         PASS,
         /**
