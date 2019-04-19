@@ -23,18 +23,23 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.RequiemRegistries;
+import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.impl.movement.PlayerMovementAlterer;
 import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.remnant.NullRemnantState;
 import ladysnake.requiem.common.remnant.RemnantStates;
+import ladysnake.requiem.common.tag.RequiemEntityTags;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -49,6 +54,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     /* Implementation of RequiemPlayer */
 
+    @Shadow @Final public PlayerInventory inventory;
     private static final String TAG_REMNANT_DATA = "requiem:remnant_data";
 
     private RemnantState remnantState = NullRemnantState.NULL_STATE;
@@ -96,6 +102,14 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private void updateMovementAlterer(CallbackInfo info) {
         this.movementAlterer.update();
         this.remnantState.update();
+    }
+
+    @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
+    private void travel(CallbackInfo info) {
+        Entity possessed = (Entity) this.getPossessionComponent().getPossessedEntity();
+        if (possessed != null && ((VariableMobilityEntity)possessed).requiem_isImmovable()) {
+            info.cancel();
+        }
     }
 
     /* NBT (de)serialization of added fields */

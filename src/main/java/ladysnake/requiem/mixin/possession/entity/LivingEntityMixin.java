@@ -21,6 +21,8 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.requiem.common.entity.ai.attribute.CooldownStrengthAttribute;
+import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
+import ladysnake.requiem.common.tag.RequiemEntityTags;
 import ladysnake.requiem.mixin.entity.LivingEntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -48,7 +50,9 @@ import javax.annotation.Nullable;
 import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity implements Possessable {
+public abstract class LivingEntityMixin extends Entity implements Possessable, VariableMobilityEntity {
+    private boolean requiem_immovable = RequiemEntityTags.IMMOVABLE.contains(this.getType());
+
     @Nullable
     @Shadow
     public abstract EntityAttributeInstance getAttributeInstance(EntityAttribute entityAttribute_1);
@@ -66,9 +70,21 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
         super(type, world);
     }
 
+    @Override
+    public boolean requiem_isImmovable() {
+        return requiem_immovable;
+    }
+
     /* * * * * * * * * * *
         Entity overrides
     * * * * * * * * * * */
+
+    @Inject(method = "canMoveVoluntarily", at = @At("HEAD"), cancellable = true)
+    private void canMoveVoluntarily(CallbackInfoReturnable<Boolean> cir) {
+        if (this.isBeingPossessed()) {
+            cir.setReturnValue(false);
+        }
+    }
 
     @Inject(method = "initAttributes", at = @At("TAIL"))
     private void initAttributes(CallbackInfo ci) {
@@ -96,7 +112,8 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
     @Inject(method = "updateMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;travel(Lnet/minecraft/util/math/Vec3d;)V", shift = AFTER))
     private void afterTravel(CallbackInfo ci) {
         PlayerEntity player = this.getPossessor();
-        if (player != null) {
+        // If anyone has a better idea for immovable mobs, tell me
+        if (player != null && !this.requiem_immovable) {
             this.setRotation(player.yaw, player.pitch);
             this.headYaw = this.field_6283 = this.prevYaw = this.yaw;
             this.setSwimming(player.isSwimming());

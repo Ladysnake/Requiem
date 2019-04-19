@@ -19,6 +19,8 @@ package ladysnake.requiem.mixin.client.render.entity;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
+import ladysnake.requiem.common.tag.RequiemEntityTags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.model.Model;
@@ -57,12 +59,17 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     private void cancelRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
         LivingEntity possessedEntity = (LivingEntity) ((RequiemPlayer) renderedPlayer).getPossessionComponent().getPossessedEntity();
         if (possessedEntity != null) {
-            possessedEntity.field_6283 = renderedPlayer.field_6283;
-            possessedEntity.yaw = renderedPlayer.yaw;
-            possessedEntity.pitch = renderedPlayer.pitch;
-            possessedEntity.headYaw = renderedPlayer.headYaw;
-            possessedEntity.prevHeadYaw = renderedPlayer.prevHeadYaw;
-            MinecraftClient.getInstance().getEntityRenderManager().render(possessedEntity, x, y, z, yaw, tickDelta, true);
+            EntityRenderDispatcher renderManager = MinecraftClient.getInstance().getEntityRenderManager();
+            if (((VariableMobilityEntity)possessedEntity).requiem_isImmovable()) {
+                renderManager.render(possessedEntity, tickDelta, true);
+            } else {
+                possessedEntity.field_6283 = renderedPlayer.field_6283;
+                possessedEntity.yaw = renderedPlayer.yaw;
+                possessedEntity.pitch = renderedPlayer.pitch;
+                possessedEntity.headYaw = renderedPlayer.headYaw;
+                possessedEntity.prevHeadYaw = renderedPlayer.prevHeadYaw;
+                renderManager.render(possessedEntity, x, y, z, yaw, tickDelta, true);
+            }
             info.cancel();
         }
     }

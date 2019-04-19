@@ -16,5 +16,6 @@
   "requiem:commands.possession.stop.success.self": "Stopped possessing %s",
   "requiem:tooltip.skeletal_efficiency": "Skeletal Efficiency",
   "requiem:tooltip.witch_brew_base": "Witch's Brew Base",
-  "key.requiem.ethereal_fracture": "Ethereal Fracture"
+  "key.requiem.ethereal_fracture": "Ethereal Fracture",
+  "requiem:shulker.onboard": "Press %1$s to leave"
 }
