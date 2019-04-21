@@ -4,7 +4,7 @@
         "srcrgb": "srcalpha",
         "dstrgb": "1-srcalpha"
     },
-    "vertex": "requiem:spectre",
+    "vertex": "blit",
     "fragment": "requiem:spectre",
     "attributes": [ "Position" ],
     "samplers": [

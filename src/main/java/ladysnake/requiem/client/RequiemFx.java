@@ -85,7 +85,6 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
         }
         Entity possessed = getAnimationEntity();
         if (possessed != null) {
-//            turnToFace(possessed);
             if (--fishEyeAnimation == 2) {
                 sendToServer(POSSESSION_REQUEST, createPossessionRequestBuffer(possessed));
             }
@@ -102,27 +101,6 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
     @Nullable
     public Entity getAnimationEntity() {
         return this.possessionTarget != null ? this.possessionTarget.get() : null;
-    }
-
-    /**
-     * This method has been adapted from
-     * <a href=https://github.com/coolAlias/DynamicSwordSkills/blob/master/src/main/java/dynamicswordskills/skills/SwordBasic.java>
-     * Dynamic Sword Skills' source code
-     * </a> under the terms of the GNU General Public License v3.
-     *
-     * @param entity the targeted entity
-     * @author coolAlias
-     */
-    private void turnToFace(Entity entity) {
-        PlayerEntity player = mc.player;
-        double dx = player.x - entity.x;
-        double dz = player.z - entity.z;
-        double angle = Math.atan2(dz, dx) * 180 / Math.PI;
-        double pitch = Math.atan2((player.y + player.getEyeHeight(player.getPose())) - (entity.y + (entity.getHeight() / 2.0F)), Math.sqrt(dx * dx + dz * dz)) * 180 / Math.PI;
-        double distance = player.distanceTo(entity);
-        float rYaw = MathHelper.wrapDegrees((float)(angle - player.yaw)) + 90F;
-        float rPitch = (float) pitch - (float)(10.0F / Math.sqrt(distance)) + (float)(distance * Math.PI / 90);
-        player.changeLookDirection(rYaw, -(rPitch - player.pitch));
     }
 
     public void beginFishEyeAnimation(Entity possessed) {

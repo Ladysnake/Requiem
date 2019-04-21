@@ -59,6 +59,8 @@ public class RequiemClient implements ClientModInitializer {
 
     private void registerCallbacks() {
         RequiemFx.INSTANCE.registerCallbacks();
+        ShadowPlayerFx.INSTANCE.registerCallbacks();
+
         ApplyCameraTransformsCallback.EVENT.register(new HeadDownTransformHandler());
         EntitiesPostRenderCallback.EVENT.register((camera, frustum, tickDelta) -> {
             if (!camera.isThirdPerson()) {

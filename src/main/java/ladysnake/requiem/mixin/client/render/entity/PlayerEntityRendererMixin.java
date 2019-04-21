@@ -19,6 +19,7 @@ package ladysnake.requiem.mixin.client.render.entity;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.client.ShadowPlayerFx;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
 import net.minecraft.client.MinecraftClient;
@@ -50,6 +51,10 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         super(entityRenderDispatcher_1, entityModel_1, float_1);
     }
 
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     * Player rendering hijack part 1
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
     /**
      * Prevents players possessing something from being rendered, and renders their possessed entity
      * instead. This both prevents visual stuttering from position desync and lets mods render the player
@@ -74,6 +79,13 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         }
     }
 
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     * Player rendering hijack part 2
+     * We render incorporeal players on a different framebuffer for reuse.
+     * The main framebuffer's depth has been previously copied to the alternate's,
+     * so rendering should be visually equivalent.
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
     @Inject(
             method = "method_4215",
             at = @At(
@@ -85,8 +97,10 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         if (((RequiemPlayer) renderedPlayer).getRemnantState().isIncorporeal()) {
             Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
             boolean isObserverRemnant = cameraEntity instanceof RequiemPlayer && ((RequiemPlayer) cameraEntity).isRemnant();
-            float alpha = isObserverRemnant ? 0.8f : 0.05f;
-            GlStateManager.color4f(0.9f, 0.9f, 1.0f, alpha); // Tints souls blue and transparent
+            float alpha = isObserverRemnant ? 1.0f : 0.05f;
+            GlStateManager.color4f(1.0f, 1.0f, 1.0f, alpha);
+            GlStateManager.depthMask(false);
+            ShadowPlayerFx.INSTANCE.beginPlayersFbWrite();
         }
     }
 
@@ -99,8 +113,14 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
             )
     )
     private void postRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
-        GlStateManager.color4f(1f, 1f, 1f, 1f);
+        MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+        GlStateManager.depthMask(true);
+        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     * Hand rendering hijack
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     @Shadow
     protected abstract void setModelPose(AbstractClientPlayerEntity player);

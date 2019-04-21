@@ -20,6 +20,7 @@ package ladysnake.requiem.common.item;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
+import ladysnake.requiem.client.ShadowPlayerFx;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -47,14 +48,8 @@ public class DebugItem extends Item {
         } else {
             switch (debugMode) {
                 case 0:
-                    RemnantState cap = ((RequiemPlayer)player).getRemnantState();
-                    Requiem.LOGGER.info("Player was {}", cap.isSoul() ? "incorporeal" : "corporeal");
-                    if (!world.isClient) {
-                        if (!((RequiemPlayer) player).isRemnant()) {
-                            Requiem.LOGGER.info("Turned {} into a remnant", player);
-                            ((RequiemPlayer)player).setRemnant(true);
-                        }
-                        cap.setSoul(!cap.isSoul());
+                    if (world.isClient) {
+                        ShadowPlayerFx.INSTANCE.shadowPlayerEffect.release();
                     }
                     break;
                 case 1:
