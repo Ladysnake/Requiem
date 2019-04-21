@@ -43,10 +43,12 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
     private void assignDepthTexture(ManagedShaderEffect shader) {
         client.getFramebuffer().beginWrite(false);
         int depthTexture = ((ReadableDepthFramebuffer)client.getFramebuffer()).getCurrentDepthTexture();
-        this.playersFramebuffer = Objects.requireNonNull(shader.getShaderEffect()).getSecondaryTarget("players");
-        this.playersFramebuffer.beginWrite(false);
-        // Use the same depth texture for our framebuffer as the main one
-        GLX.glFramebufferTexture2D(GLX.GL_FRAMEBUFFER, GLX.GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+        if (depthTexture > -1) {
+            this.playersFramebuffer = Objects.requireNonNull(shader.getShaderEffect()).getSecondaryTarget("players");
+            this.playersFramebuffer.beginWrite(false);
+            // Use the same depth texture for our framebuffer as the main one
+            GLX.glFramebufferTexture2D(GLX.GL_FRAMEBUFFER, GLX.GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+        }
     }
 
     public void beginPlayersFbWrite() {
