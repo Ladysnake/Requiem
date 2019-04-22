@@ -87,7 +87,9 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
     @Override
     public void setPossessor(@CheckForNull PlayerEntity possessor) {
-        if (this.possessor != null && ((RequiemPlayer) this.possessor).getPossessionComponent().getPossessedEntity() == this) {
+        // we need a cast here to trick the compiler
+        //noinspection RedundantCast
+        if (this.possessor != null && ((RequiemPlayer) this.possessor).getPossessionComponent().getPossessedEntity() == (Entity)this) {
             throw new IllegalStateException("Players must stop possessing an entity before it can change possessor!");
         }
         this.possessor = possessor;

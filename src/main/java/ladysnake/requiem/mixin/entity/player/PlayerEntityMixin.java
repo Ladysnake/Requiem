@@ -105,7 +105,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
     private void travel(CallbackInfo info) {
-        Entity possessed = (Entity) this.getPossessionComponent().getPossessedEntity();
+        Entity possessed = this.getPossessionComponent().getPossessedEntity();
         if (possessed != null && ((VariableMobilityEntity) possessed).requiem_isImmovable()) {
             if (!world.isClient && (this.x != possessed.x || this.y != possessed.y || this.z != possessed.z)) {
                 ServerPlayNetworkHandler networkHandler = ((ServerPlayerEntity) (Object) this).networkHandler;
@@ -156,7 +156,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
      */
     @Inject(method = "getSize", at = @At("HEAD"), cancellable = true)
     private void adjustSize(EntityPose pose, CallbackInfoReturnable<EntitySize> cir) {
-        Entity possessedEntity = (Entity) this.getPossessionComponent().getPossessedEntity();
+        Entity possessedEntity = this.getPossessionComponent().getPossessedEntity();
         if (possessedEntity != null) {
             cir.setReturnValue(possessedEntity.getSize(pose));
         }

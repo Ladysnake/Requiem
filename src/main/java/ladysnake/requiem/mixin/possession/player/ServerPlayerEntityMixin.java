@@ -20,7 +20,6 @@ package ladysnake.requiem.mixin.possession.player;
 import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.mixin.entity.EntityAccessor;
 import net.minecraft.block.BlockState;
@@ -60,7 +59,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     private void changePossessedDimension(DimensionType dim, CallbackInfoReturnable<Entity> info) {
         PossessionComponent possessionComponent = ((RequiemPlayer) this).getPossessionComponent();
         if (possessionComponent.isPossessing()) {
-            Entity current = (Entity) possessionComponent.getPossessedEntity();
+            Entity current = possessionComponent.getPossessedEntity();
             if (current != null && !current.removed) {
                 this.requiem_possessedEntityTag = new CompoundTag();
                 current.saveSelfToTag(this.requiem_possessedEntityTag);
@@ -100,16 +99,16 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
     @Inject(method = "fall", at = @At("HEAD"), cancellable = true)
     private void onFall(double fallY, boolean onGround, BlockState floorBlock, BlockPos floorPos, CallbackInfo info) {
-        Possessable possessed = ((RequiemPlayer) this).getPossessionComponent().getPossessedEntity();
+        Entity possessed = ((RequiemPlayer) this).getPossessionComponent().getPossessedEntity();
         if (possessed != null) {
-            ((Entity) possessed).fallDistance = this.fallDistance;
+            possessed.fallDistance = this.fallDistance;
             ((EntityAccessor) possessed).onFall(fallY, onGround, floorBlock, floorPos);
         }
     }
 
     @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
     private void writePossessedMobToTag(CompoundTag tag, CallbackInfo info) {
-        Entity possessedEntity = (Entity) ((RequiemPlayer) this).getPossessionComponent().getPossessedEntity();
+        Entity possessedEntity = ((RequiemPlayer) this).getPossessionComponent().getPossessedEntity();
         if (possessedEntity != null) {
             Entity possessedEntityVehicle = possessedEntity.getTopmostRiddenEntity();
             CompoundTag possessedRoot = new CompoundTag();

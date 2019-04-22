@@ -31,7 +31,8 @@ public interface PossessionComponent {
 
     void stopPossessing();
 
-    @CheckForNull Possessable getPossessedEntity();
+    @CheckForNull
+    MobEntity getPossessedEntity();
 
     boolean isPossessing();
 }

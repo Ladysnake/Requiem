@@ -22,7 +22,6 @@ import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
-import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.client.handler.HeadDownTransformHandler;
 import ladysnake.requiem.client.network.ClientMessageHandling;
@@ -67,7 +66,7 @@ public class RequiemClient implements ClientModInitializer {
         EntitiesPostRenderCallback.EVENT.register((camera, frustum, tickDelta) -> {
             if (!camera.isThirdPerson()) {
                 MinecraftClient client = MinecraftClient.getInstance();
-                Possessable possessed = ((RequiemPlayer)client.player).getPossessionComponent().getPossessedEntity();
+                Entity possessed = ((RequiemPlayer)client.player).getPossessionComponent().getPossessedEntity();
                 if (possessed instanceof ShulkerEntity) {
                     ShulkerEntity shulker = (ShulkerEntity) possessed;
                     EntityRenderDispatcher renderManager = client.getEntityRenderManager();
@@ -84,7 +83,7 @@ public class RequiemClient implements ClientModInitializer {
         });
         PickEntityShaderCallback.EVENT.register((camera, loadShaderFunc, appliedShaderGetter) -> {
             if (camera instanceof RequiemPlayer) {
-                Entity possessed = (Entity) ((RequiemPlayer)camera).getPossessionComponent().getPossessedEntity();
+                Entity possessed = ((RequiemPlayer)camera).getPossessionComponent().getPossessedEntity();
                 if (possessed != null) {
                     MinecraftClient.getInstance().gameRenderer.onCameraEntitySet(possessed);
                 }
@@ -106,7 +105,7 @@ public class RequiemClient implements ClientModInitializer {
             MinecraftClient client = MinecraftClient.getInstance();
             RequiemPlayer player = (RequiemPlayer) client.player;
             if (!client.player.isCreative() && player.getRemnantState().isSoul()) {
-                Entity possessed = (Entity) player.getPossessionComponent().getPossessedEntity();
+                Entity possessed = player.getPossessionComponent().getPossessedEntity();
                 if (possessed == null || !RequiemEntityTags.ITEM_USER.contains(possessed.getType())) {
                     return ActionResult.SUCCESS;
                 }
@@ -116,7 +115,7 @@ public class RequiemClient implements ClientModInitializer {
         // Add custom tooltips to items when the player is possessing certain entities
         ItemTooltipCallback.EVENT.register((item, player, context, lines) -> {
             if (player != null) {
-                LivingEntity possessed = (LivingEntity) ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
+                LivingEntity possessed = ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
                 if (possessed instanceof AbstractSkeletonEntity && item.getItem() instanceof BowItem) {
                     lines.add(TextFormatter.style(
                             new TranslatableTextComponent("requiem:tooltip.skeletal_efficiency"),

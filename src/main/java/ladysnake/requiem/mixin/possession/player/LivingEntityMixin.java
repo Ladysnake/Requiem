@@ -70,7 +70,7 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     private void proxyDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
         if (source.getAttacker() instanceof RequiemPlayer) {
-            Entity possessed = (Entity) ((RequiemPlayer) source.getAttacker()).getPossessionComponent().getPossessedEntity();
+            Entity possessed = ((RequiemPlayer) source.getAttacker()).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {
                 DamageSource newSource = null;
                 if (source instanceof ProjectileDamageSource)
@@ -95,7 +95,7 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "isClimbing", at = @At("HEAD"), cancellable = true)
     private void canClimb(CallbackInfoReturnable<Boolean> info) {
         if (this instanceof RequiemPlayer && this.horizontalCollision) {
-            LivingEntity possessed = (LivingEntity) ((RequiemPlayer) this).getPossessionComponent().getPossessedEntity();
+            LivingEntity possessed = ((RequiemPlayer) this).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {
                 info.setReturnValue(RequiemEntityTags.CLIMBER.contains(possessed.getType()));
             }
@@ -109,7 +109,7 @@ public abstract class LivingEntityMixin extends Entity {
             // This method can be called before the possession component is set
             //noinspection ConstantConditions
             if (possessionComponent != null) {
-                LivingEntity possessed = (LivingEntity) possessionComponent.getPossessedEntity();
+                LivingEntity possessed = possessionComponent.getPossessedEntity();
                 if (possessed != null) {
                     cir.setReturnValue(possessed.getEyeHeight(pose));
                 }

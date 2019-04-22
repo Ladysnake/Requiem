@@ -22,7 +22,6 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
-import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;
@@ -133,14 +132,14 @@ public abstract class PlayerManagerMixin {
             )
     )
     private void logOutPossessedEntity(ServerPlayerEntity player, CallbackInfo info) {
-        Possessable possessedEntity = ((RequiemPlayer) player).getPossessionComponent().getPossessedEntity();
+        Entity possessedEntity = ((RequiemPlayer) player).getPossessionComponent().getPossessedEntity();
         if (possessedEntity != null) {
-            ServerWorld serverWorld_1 = player.getServerWorld();
-            serverWorld_1.removeEntity((Entity) possessedEntity);
-            for (Entity ridden : ((Entity) possessedEntity).getPassengersDeep()) {
-                serverWorld_1.removeEntity(ridden);
+            ServerWorld world = player.getServerWorld();
+            world.removeEntity(possessedEntity);
+            for (Entity ridden : possessedEntity.getPassengersDeep()) {
+                world.removeEntity(ridden);
             }
-            serverWorld_1.method_8497(player.chunkX, player.chunkZ).markDirty();
+            world.method_8497(player.chunkX, player.chunkZ).markDirty();
         }
     }
 

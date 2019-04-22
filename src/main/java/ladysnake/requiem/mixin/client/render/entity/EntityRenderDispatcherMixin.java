@@ -44,7 +44,7 @@ public abstract class EntityRenderDispatcherMixin {
         MinecraftClient client = MinecraftClient.getInstance();
         Entity camera = client.getCameraEntity();
         if (camera instanceof RequiemPlayer) {
-            requiem_camerasPossessed = (Entity) ((RequiemPlayer) camera).getPossessionComponent().getPossessedEntity();
+            requiem_camerasPossessed = ((RequiemPlayer) camera).getPossessionComponent().getPossessedEntity();
             if (requiem_camerasPossessed == null) {
                 requiem_camerasPossessed = RequiemFx.INSTANCE.getAnimationEntity();
             }

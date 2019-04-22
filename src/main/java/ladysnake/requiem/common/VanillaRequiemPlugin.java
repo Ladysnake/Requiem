@@ -75,7 +75,7 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
         // Prevent incorporeal players from picking up anything
         ItemPickupCallback.EVENT.register((player, pickedUp) -> {
             if (!player.isCreative() && RemnantState.getIfRemnant(player).filter(RemnantState::isSoul).isPresent()) {
-                Entity possessed = (Entity) ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
+                Entity possessed = ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
                 if (possessed == null || !RequiemEntityTags.ITEM_USER.contains(possessed.getType())) {
                     return ActionResult.FAIL;
                 }
@@ -105,7 +105,7 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
         BasePossessionHandlers.register();
         // Proxy melee attacks
         AttackEntityCallback.EVENT.register((playerEntity, world, hand, target, hitResult) -> {
-            LivingEntity possessed = (LivingEntity) ((RequiemPlayer)playerEntity).getPossessionComponent().getPossessedEntity();
+            LivingEntity possessed = ((RequiemPlayer)playerEntity).getPossessionComponent().getPossessedEntity();
             if (possessed != null && !possessed.removed) {
                 if (possessed.world.isClient || ((Possessable)possessed).getMobAbilityController().useDirect(AbilityType.ATTACK, target)) {
                     return ActionResult.SUCCESS;
@@ -118,7 +118,7 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
             ItemStack heldItem = player.getStackInHand(hand);
             if (RequiemItemTags.BONES.contains(heldItem.getItem())) {
                 if (!world.isClient) {
-                    LivingEntity possessedEntity = (LivingEntity) ((RequiemPlayer) player).getPossessionComponent().getPossessedEntity();
+                    LivingEntity possessedEntity = ((RequiemPlayer) player).getPossessionComponent().getPossessedEntity();
                     if (possessedEntity != null && EntityTags.SKELETONS.contains(possessedEntity.getType())) {
                         if (possessedEntity.getHealth() < possessedEntity.getHealthMaximum()) {
                             possessedEntity.heal(4.0f);

@@ -122,22 +122,21 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     @Override
     public void stopPossessing() {
-        Possessable possessed = this.getPossessedEntity();
+        LivingEntity possessed = this.getPossessedEntity();
         if (possessed != null) {
             this.possessedUuid = null;
             resetState();
-            possessed.setPossessor(null);
+            ((Possessable)possessed).setPossessor(null);
             if (player instanceof ServerPlayerEntity && !player.isCreative()) {
-                LivingEntity possessedEntity = (LivingEntity) possessed;
-                if (RequiemEntityTags.ITEM_USER.contains(possessedEntity.getType())) {
-                    InventoryHelper.transferEquipment(player, (LivingEntity) possessed);
+                if (RequiemEntityTags.ITEM_USER.contains(possessed.getType())) {
+                    InventoryHelper.transferEquipment(player, possessed);
                 }
                 ((LivingEntityAccessor)player).invokeDropInventory();
             }
             Entity ridden = player.getRiddenEntity();
             if (ridden != null) {
                 player.stopRiding();
-                ((Entity)possessed).startRiding(ridden);
+                possessed.startRiding(ridden);
             }
         }
     }
@@ -150,7 +149,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     @CheckForNull
     @Override
-    public Possessable getPossessedEntity() {
+    public MobEntity getPossessedEntity() {
         if (!isPossessing()) {
             return null;
         }
@@ -175,7 +174,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 host = null;
             }
         }
-        return (Possessable) host;
+        return (MobEntity) host;
     }
 
     private void resetState() {

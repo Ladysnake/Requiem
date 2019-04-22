@@ -38,14 +38,14 @@ public class ServerMessageHandling {
     public static void init() {
         register(LEFT_CLICK_AIR, (context, buf) -> {
             PlayerEntity player = context.getPlayer();
-            Possessable possessed = ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
+            Possessable possessed = (Possessable) ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {
                 possessed.getMobAbilityController().useIndirect(AbilityType.ATTACK);
             }
         });
         register(RIGHT_CLICK_AIR, (context, buf) -> {
             PlayerEntity player = context.getPlayer();
-            Possessable possessed = ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
+            Possessable possessed = (Possessable) ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {
                 possessed.getMobAbilityController().useIndirect(AbilityType.INTERACT);
             }

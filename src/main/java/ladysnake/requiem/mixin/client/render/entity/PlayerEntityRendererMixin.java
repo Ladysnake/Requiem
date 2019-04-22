@@ -21,7 +21,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.client.ShadowPlayerFx;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
-import ladysnake.requiem.common.tag.RequiemEntityTags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.model.Model;
@@ -62,7 +61,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
      */
     @Inject(method = "method_4215", at = @At("HEAD"), cancellable = true)
     private void cancelRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
-        LivingEntity possessedEntity = (LivingEntity) ((RequiemPlayer) renderedPlayer).getPossessionComponent().getPossessedEntity();
+        LivingEntity possessedEntity = ((RequiemPlayer) renderedPlayer).getPossessionComponent().getPossessedEntity();
         if (possessedEntity != null) {
             EntityRenderDispatcher renderManager = MinecraftClient.getInstance().getEntityRenderManager();
             if (((VariableMobilityEntity)possessedEntity).requiem_isImmovable()) {
@@ -130,7 +129,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     private void renderPossessedHand(AbstractClientPlayerEntity renderedPlayer, CallbackInfo info) {
         if (((RequiemPlayer) renderedPlayer).getRemnantState().isSoul()) {
             if (((RequiemPlayer) renderedPlayer).getPossessionComponent().isPossessing()) {
-                LivingEntity possessed = (LivingEntity) ((RequiemPlayer) renderedPlayer).getPossessionComponent().getPossessedEntity();
+                LivingEntity possessed = ((RequiemPlayer) renderedPlayer).getPossessionComponent().getPossessedEntity();
                 if (possessed != null) {
                     EntityRenderer renderer = MinecraftClient.getInstance().getEntityRenderManager().getRenderer(possessed);
                     // If the mob has an arm, render it instead of the player's

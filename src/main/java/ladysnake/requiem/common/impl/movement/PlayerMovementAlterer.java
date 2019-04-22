@@ -109,7 +109,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
     }
 
     private static LivingEntity getPlayerOrPossessed(PlayerEntity player) {
-        LivingEntity possessed = (LivingEntity) ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
+        LivingEntity possessed = ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
         return possessed == null ? player : possessed;
     }
 

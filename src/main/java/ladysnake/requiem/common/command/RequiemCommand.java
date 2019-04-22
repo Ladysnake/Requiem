@@ -123,7 +123,7 @@ public class RequiemCommand {
         for (ServerPlayerEntity player : players) {
             PossessionComponent possessionComponent = ((RequiemPlayer) player).getPossessionComponent();
             if (possessionComponent.isPossessing()) {
-                Entity possessed = (Entity) Objects.requireNonNull(possessionComponent.getPossessedEntity());
+                Entity possessed = Objects.requireNonNull(possessionComponent.getPossessedEntity());
                 possessionComponent.stopPossessing();
                 sendStopPossessionFeedback(source, player, possessed);
                 ++count;

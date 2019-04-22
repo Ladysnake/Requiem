@@ -36,7 +36,7 @@ public class PossessionDelegatingAttribute extends DelegatingAttribute {
     @Override
     protected EntityAttributeInstance getDelegateAttributeInstance() {
         if (handler.isPossessing()) {
-            LivingEntity possessed = (LivingEntity) handler.getPossessedEntity();
+            LivingEntity possessed = handler.getPossessedEntity();
             if (possessed != null) {
                 EntityAttributeInstance ret = possessed.getAttributeInstance(this.getAttribute());
                 // the attribute can be null if it is not registered in the possessed entity
