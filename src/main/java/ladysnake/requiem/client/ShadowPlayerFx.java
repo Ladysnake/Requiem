@@ -27,7 +27,7 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 
 public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEffectRenderCallback {
     public static final Identifier SHADOW_PLAYER_SHADER_ID = Requiem.id("shaders/post/shadow_player.json");
-    public static final Identifier DESATURATE_SHADER_ID = new Identifier("minecraft:desaturate.json");
+    public static final Identifier DESATURATE_SHADER_ID = new Identifier("minecraft", "shaders/post/desaturate.json");
 
     public static final ShadowPlayerFx INSTANCE = new ShadowPlayerFx();
     public static final int ETHEREAL_DESATURATE_RANGE = 16;
