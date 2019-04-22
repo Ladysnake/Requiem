@@ -22,6 +22,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.FoodItemSetting;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.util.registry.Registry;
 
 public class RequiemItems {
@@ -37,7 +38,7 @@ public class RequiemItems {
 
     public static void init() {
         DEBUG_ITEM = registerItem(new DebugItem(new Item.Settings()), "debug_item");
-        HUMAN_FLESH = registerItem(new Item(new Item.Settings().food(HUMAN_FOOD)), "human_flesh");
+        HUMAN_FLESH = registerItem(new Item(new Item.Settings().food(HUMAN_FOOD).itemGroup(ItemGroup.FOOD)), "human_flesh");
     }
 
     public static <T extends Item> T registerItem(T item, String name) {
