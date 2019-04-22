@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -43,6 +44,8 @@ public static void register() {
                 tpDest = target;
             } else {
                 possessor.world.playSound(null, target.x, target.y, target.z, SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
+                // Set the variable in advance to avoid game credits
+                ((ServerPlayerEntity)possessor).notInAnyWorld = true;
                 possessor.changeDimension(DimensionType.OVERWORLD);
                 tpDest = target.changeDimension(DimensionType.OVERWORLD);
             }
