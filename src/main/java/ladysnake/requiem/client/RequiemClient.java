@@ -29,6 +29,7 @@ import ladysnake.requiem.client.network.ClientMessageHandling;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
 import ladysnake.satin.api.event.EntitiesPostRenderCallback;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
+import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.MinecraftClient;
@@ -58,6 +59,7 @@ public class RequiemClient implements ClientModInitializer {
     }
 
     private void registerCallbacks() {
+        ReadableDepthFramebuffer.useFeature();
         RequiemFx.INSTANCE.registerCallbacks();
         ShadowPlayerFx.INSTANCE.registerCallbacks();
 

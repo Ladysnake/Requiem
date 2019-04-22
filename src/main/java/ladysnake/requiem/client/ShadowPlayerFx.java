@@ -35,7 +35,6 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
     private boolean renderedSoulPlayers;
 
     void registerCallbacks() {
-        ReadableDepthFramebuffer.useFeature();
         EntitiesPreRenderCallback.EVENT.register(this);
         ShaderEffectRenderCallback.EVENT.register(this);
     }
