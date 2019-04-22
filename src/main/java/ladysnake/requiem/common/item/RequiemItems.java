@@ -18,17 +18,29 @@
 package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.Requiem;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.FoodItemSetting;
 import net.minecraft.item.Item;
 import net.minecraft.util.registry.Registry;
 
 public class RequiemItems {
-    public static Item DEBUG_ITEM;
+    public static final FoodItemSetting HUMAN_FOOD = new FoodItemSetting.Builder()
+            .hunger(6)
+            .saturationModifier(0.3F)
+            .statusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 600, 0), 0.5F)
+            .wolfFood()
+            .build();
+
+    public static DebugItem DEBUG_ITEM;
+    public static Item HUMAN_FLESH;
 
     public static void init() {
         DEBUG_ITEM = registerItem(new DebugItem(new Item.Settings()), "debug_item");
+        HUMAN_FLESH = registerItem(new Item(new Item.Settings().food(HUMAN_FOOD)), "human_flesh");
     }
 
-    public static Item registerItem(Item item, String name) {
+    public static <T extends Item> T registerItem(T item, String name) {
         Registry.register(Registry.ITEM, Requiem.id(name), item);
         return item;
     }
