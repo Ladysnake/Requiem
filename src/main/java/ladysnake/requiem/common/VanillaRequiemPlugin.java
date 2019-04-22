@@ -21,7 +21,6 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.event.minecraft.ItemPickupCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
@@ -29,9 +28,6 @@ import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.entity.ability.MeleeAbility;
-import ladysnake.requiem.common.entity.ability.ShulkerPeekAbility;
-import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
@@ -39,10 +35,9 @@ import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.mob.ShulkerEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tag.EntityTags;
 import net.minecraft.util.ActionResult;
@@ -118,10 +113,11 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
             ItemStack heldItem = player.getStackInHand(hand);
             if (RequiemItemTags.BONES.contains(heldItem.getItem())) {
                 if (!world.isClient) {
-                    LivingEntity possessedEntity = ((RequiemPlayer) player).getPossessionComponent().getPossessedEntity();
+                    MobEntity possessedEntity = ((RequiemPlayer) player).getPossessionComponent().getPossessedEntity();
                     if (possessedEntity != null && EntityTags.SKELETONS.contains(possessedEntity.getType())) {
                         if (possessedEntity.getHealth() < possessedEntity.getHealthMaximum()) {
                             possessedEntity.heal(4.0f);
+                            possessedEntity.playAmbientSound();
                             heldItem.subtractAmount(1);
                         }
                     }
@@ -134,11 +130,6 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
 
     @Override
     public void registerMobAbilities(MobAbilityRegistry abilityRegistry) {
-        abilityRegistry.register(EntityType.IRON_GOLEM, MobAbilityConfig.builder().directAttack(e -> new MeleeAbility(e, true)).build());
-        abilityRegistry.register(EntityType.SHULKER, MobAbilityConfig.<ShulkerEntity>builder()
-                .directAttack(ShulkerShootAbility::new)
-                .indirectAttack(ShulkerShootAbility::new)
-                .indirectInteract(ShulkerPeekAbility::new).build());
     }
 
     @Override

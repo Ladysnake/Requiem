@@ -15,8 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.common.entity.ability;
+package ladysnake.pandemonium.common.entity.ability;
 
+import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 

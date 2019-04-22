@@ -15,15 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.common.entity.ability;
+package ladysnake.pandemonium.common.entity.ability;
 
 import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
-import ladysnake.requiem.common.util.reflection.ReflectionHelper;
-import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
+import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
@@ -31,10 +29,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BoundingBox;
 
 import javax.annotation.Nullable;
-import java.lang.invoke.MethodType;
-import java.util.function.Function;
-
-import static ladysnake.requiem.common.util.reflection.ReflectionHelper.pick;
 
 public class ShulkerShootAbility extends IndirectAbilityBase<ShulkerEntity> implements DirectAbility<ShulkerEntity> {
     private int bulletCooldown = 20;

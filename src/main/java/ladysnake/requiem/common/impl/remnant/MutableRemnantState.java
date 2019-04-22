@@ -18,11 +18,9 @@
 package ladysnake.requiem.common.impl.remnant;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
-import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -87,17 +85,6 @@ public class MutableRemnantState implements RemnantState {
         } else {
             // Copy state
             cloneState.setSoul(this.isSoul());
-        }
-    }
-
-    @Override
-    public void update() {
-        // TODO remove when we have a player tick event
-        if (!this.player.world.isClient && this.player.isSneaking()) {
-            PossessionComponent poss = ((RequiemPlayer)this.player).getPossessionComponent();
-            if (poss.getPossessedEntity() instanceof ShulkerEntity) {
-                poss.stopPossessing();
-            }
         }
     }
 

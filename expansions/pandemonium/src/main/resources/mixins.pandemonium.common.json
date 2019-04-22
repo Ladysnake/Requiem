@@ -3,8 +3,9 @@
   "package": "ladysnake.pandemonium.mixin.common",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "entity.mob.WitchEntityMixin",
     "entity.ai.goal.FollowTargetGoalMixin",
+    "entity.mob.WitchEntityMixin",
+    "entity.player.PlayerEntityMixin",
     "server.PlayerManagerMixin",
     "server.world.ServerWorldMixin"
   ],

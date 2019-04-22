@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.client.handler;
+package ladysnake.pandemonium.client.handler;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.requiem.api.v1.RequiemPlayer;
