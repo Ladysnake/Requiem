@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.common.util.reflection;
 
-public class UnableToFindMethodException extends UncheckedReflectionException {
+public class UnableToFindMethodException extends ReflectionException {
     public UnableToFindMethodException(NoSuchMethodException cause) {
         super(cause);
     }

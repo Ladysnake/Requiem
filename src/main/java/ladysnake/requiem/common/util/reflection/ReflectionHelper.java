@@ -17,42 +17,48 @@
  */
 package ladysnake.requiem.common.util.reflection;
 
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.MappingResolver;
 import net.fabricmc.loader.launch.common.FabricLauncherBase;
 import org.apiguardian.api.API;
+import org.objectweb.asm.Type;
 
 import java.lang.invoke.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
 
 public class ReflectionHelper {
 
-    private static final MethodHandles.Lookup TRUSTED_LOOKUP;
+    private static MethodHandles.Lookup TRUSTED_LOOKUP;
 
-    static {
-        try {
-            // Define black magic.
-            // Source: https://gist.github.com/Andrei-Pozolotin/dc8b448dc590183f5459
-            final MethodHandles.Lookup original = MethodHandles.lookup();
-            final Field internal = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
-            internal.setAccessible(true);
-            TRUSTED_LOOKUP = (MethodHandles.Lookup) internal.get(original);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new UncheckedReflectionException("Could not access trusted lookup", e);
-        }
-    }
+    public static final String INTERMEDIARY = "intermediary";
 
+    @API(status = MAINTAINED, since = "1.0.0")
     public static boolean isDevEnv() {
         return FabricLauncherBase.getLauncher().isDevelopment();
     }
 
-    public static String pick(String obfName, String mappedName) {
-        return isDevEnv() ? mappedName : obfName;
+    @API(status = MAINTAINED, since = "1.0.0")
+    public static String getMethodDescriptor(Class<?> returnType, Class<?>... parameterTypes) {
+        return Type.getMethodDescriptor(Type.getType(returnType), Arrays.stream(parameterTypes).map(Type::getType).toArray(Type[]::new));
+    }
+
+    @API(status = MAINTAINED, since = "1.0.0")
+    public static String getFieldDescriptor(Class<?> type) {
+        return Type.getType(type).getDescriptor();
+    }
+
+    @API(status = STABLE, since = "1.0.0")
+    public static Class<?> findClass(String obfClassName) throws ClassNotFoundException {
+        return Class.forName(getMappingResolver().mapClassName(INTERMEDIARY, obfClassName));
     }
 
     /**
-     * Finds a method with the specified SRG name and parameters in the given class and generates a {@link MethodHandle method handle} for it. <br>
+     * Finds a method with the specified Intermediary name and parameters in the given class and generates a {@link MethodHandle method handle} for it. <br>
      * Note: for performance, store the returned value and avoid calling this repeatedly.
      * <p>
      * Throws an exception if the method is not found.
@@ -64,13 +70,14 @@ public class ReflectionHelper {
      * @param parameterTypes The parameter types of the method to find.
      * @return A handle for the method with the specified name and parameters in the given class.
      * @throws UnableToFindMethodException if an issue prevents the method from being reflected
-     *
      */
-    @API(status = STABLE, since = "2.6.2")
-    public static MethodHandle findMethodHandleFromObfName(Class<?> clazz, String methodObfName, Class<?> returnType, Class<?>... parameterTypes) {
+    @API(status = MAINTAINED, since = "1.0.0")
+    public static MethodHandle findMethodHandleFromObfName(Class<?> clazz, String methodObfName, Class<?> returnType, Class<?>... parameterTypes) throws UnableToFindMethodException {
         try {
-            // FIXME THIS WILL NOT WORK IN AN OBFUSCATED ENVIRONMENT
-            return getTrustedLookup(clazz).unreflect(clazz.getDeclaredMethod(methodObfName, parameterTypes));
+            String methodDesc = getMethodDescriptor(returnType, parameterTypes);
+            String deobfName = getMappingResolver().mapMethodName(INTERMEDIARY, clazz.getName(), methodObfName, methodDesc);
+            Method m = clazz.getDeclaredMethod(deobfName, parameterTypes);
+            return MethodHandles.lookup().unreflect(m);
         } catch (NoSuchMethodException | IllegalAccessException e) {
             throw new UnableToFindMethodException(e);
         }
@@ -88,11 +95,11 @@ public class ReflectionHelper {
      * @return A handle for the getter of the field with the specified name and type in the given class.
      * @throws UnableToFindFieldException if an issue prevents the field from being reflected
      */
-    @API(status = STABLE, since = "2.6.2")
-    public static MethodHandle findGetterFromObfName(Class<?> clazz, String fieldObfName, Class<?> type) {
+    @API(status = MAINTAINED, since = "1.0.0")
+    public static MethodHandle findGetterFromObfName(Class<?> clazz, String fieldObfName, Class<?> type) throws UnableToFindFieldException {
         try {
-            // FIXME THIS WILL NOT WORK IN AN OBFUSCATED ENVIRONMENT
-            return getTrustedLookup(clazz).unreflectGetter(clazz.getDeclaredField(fieldObfName));
+            String deobfName = getMappingResolver().mapFieldName(INTERMEDIARY, clazz.getName(), fieldObfName, getFieldDescriptor(type));
+            return getTrustedLookup(clazz).unreflectGetter(clazz.getDeclaredField(deobfName));
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new UnableToFindFieldException(e);
         }
@@ -110,11 +117,11 @@ public class ReflectionHelper {
      * @return A handle for the setter of the field with the specified name and type in the given class.
      * @throws UnableToFindFieldException if an issue prevents the field from being reflected
      */
-    @API(status = STABLE, since = "2.6.2")
-    public static MethodHandle findSetterFromObfName(Class<?> clazz, String fieldObfName, Class<?> type) {
+    @API(status = MAINTAINED, since = "1.0.0")
+    public static MethodHandle findSetterFromObfName(Class<?> clazz, String fieldObfName, Class<?> type) throws UnableToFindFieldException {
         try {
-            // FIXME THIS WILL NOT WORK IN AN OBFUSCATED ENVIRONMENT
-            return getTrustedLookup(clazz).unreflectSetter(clazz.getDeclaredField(fieldObfName));
+            String deobfName = getMappingResolver().mapFieldName(INTERMEDIARY, clazz.getName(), fieldObfName, getFieldDescriptor(type));
+            return getTrustedLookup(clazz).unreflectSetter(clazz.getDeclaredField(deobfName));
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new UnableToFindFieldException(e);
         }
@@ -130,7 +137,7 @@ public class ReflectionHelper {
      * @return a factory implementing <tt>lambdaType</tt>
      * @see #createFactory(Class, String, Class, MethodHandles.Lookup, MethodType, Class[])
      */
-    @API(status = STABLE, since = "2.6.2")
+    @API(status = MAINTAINED, since = "1.0.0")
     public static <T> T createFactory(Class<?> clazz, String invokedName, Class<? super T> lambdaType) {
         return createFactory(clazz, invokedName, lambdaType, MethodHandles.lookup(), MethodType.methodType(Object.class));
     }
@@ -146,7 +153,7 @@ public class ReflectionHelper {
      * @param samMethodType Signature and return type of method to be implemented by the function object.
      * @return a factory implementing <tt>lambdaType</tt>
      */
-    @API(status = STABLE, since = "2.6.2")
+    @API(status = MAINTAINED, since = "1.0.0")
     @SuppressWarnings("unchecked")
     public static <T> T createFactory(
             Class<?> clazz,
@@ -175,10 +182,31 @@ public class ReflectionHelper {
     /**
      * @param clazz the class that the returned lookup should report as its own
      * @return a trusted lookup that has all permissions in the given class
+     * @throws UncheckedReflectionException if the black magic does not succeed
      */
-    @API(status = MAINTAINED, since = "2.6.2")
+    @API(status = MAINTAINED, since = "1.0.0")
     public static MethodHandles.Lookup getTrustedLookup(Class clazz) {
+        if (TRUSTED_LOOKUP == null) {
+            findTrustedLookup();
+        }
         // Invoke black magic.
         return TRUSTED_LOOKUP.in(clazz);
+    }
+
+    private static void findTrustedLookup() {
+        try {
+            // Define black magic.
+            // Source: https://gist.github.com/Andrei-Pozolotin/dc8b448dc590183f5459
+            final MethodHandles.Lookup original = MethodHandles.lookup();
+            final Field internal = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+            internal.setAccessible(true);
+            TRUSTED_LOOKUP = (MethodHandles.Lookup) internal.get(original);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new UncheckedReflectionException("Could not access trusted lookup", e);
+        }
+    }
+
+    private static MappingResolver getMappingResolver() {
+        return FabricLoader.getInstance().getMappingResolver();
     }
 }

@@ -29,8 +29,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
-import static ladysnake.requiem.common.util.reflection.ReflectionHelper.pick;
-
 public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity> {
     private static final Function<GuardianEntity, ? extends Goal> BEAM_GOAL_FACTORY;
 
@@ -70,7 +68,7 @@ public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity> {
 
     static {
         try {
-            Class<?> clazz = Class.forName(pick("net.minecraft.class_1577$class_1578", "net.minecraft.entity.mob.GuardianEntity$FireBeamGoal"));
+            Class<?> clazz = ReflectionHelper.findClass("net.minecraft.class_1577$class_1578");
             BEAM_GOAL_FACTORY = ReflectionHelper.createFactory(
                     clazz,
                     "apply",

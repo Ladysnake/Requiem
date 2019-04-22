@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.common.util.reflection;
 
-public class UnableToFindFieldException extends UncheckedReflectionException {
+public class UnableToFindFieldException extends ReflectionException {
     public UnableToFindFieldException(String message, Throwable cause) {
         super(message, cause);
     }

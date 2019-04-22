@@ -27,8 +27,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
-import static ladysnake.requiem.common.util.reflection.ReflectionHelper.pick;
-
 public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
     private static final Function<EvokerEntity, ? extends SpellcastingIllagerEntity.CastSpellGoal> VEX_GOAL_FACTORY;
 
@@ -69,7 +67,7 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
 
     static {
         try {
-            Class<?> clazz = Class.forName(pick("net.minecraft.class_1564$class_1567", "net.minecraft.entity.mob.EvokerEntity$SummonVexGoal"));
+            Class<?> clazz = ReflectionHelper.findClass("net.minecraft.class_1564$class_1567");
             VEX_GOAL_FACTORY = ReflectionHelper.createFactory(
                     clazz,
                     "apply",
