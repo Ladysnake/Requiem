@@ -43,6 +43,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.mob.ShulkerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tag.EntityTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.registry.Registry;
 
@@ -109,6 +111,22 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
                     return ActionResult.SUCCESS;
                 }
                 return ActionResult.FAIL;
+            }
+            return ActionResult.PASS;
+        });
+        UseItemCallback.EVENT.register((player, world, hand) -> {
+            ItemStack heldItem = player.getStackInHand(hand);
+            if (RequiemItemTags.BONES.contains(heldItem.getItem())) {
+                if (!world.isClient) {
+                    LivingEntity possessedEntity = (LivingEntity) ((RequiemPlayer) player).getPossessionComponent().getPossessedEntity();
+                    if (possessedEntity != null && EntityTags.SKELETONS.contains(possessedEntity.getType())) {
+                        if (possessedEntity.getHealth() < possessedEntity.getHealthMaximum()) {
+                            possessedEntity.heal(4.0f);
+                            heldItem.subtractAmount(1);
+                        }
+                    }
+                }
+                return ActionResult.SUCCESS;
             }
             return ActionResult.PASS;
         });
