@@ -40,7 +40,6 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
     @Nullable
     private GlFramebuffer playersFramebuffer;
     private boolean renderedSoulPlayers;
-    private float distanceToEthereal = Float.NaN;
     private boolean nearEthereal;
 
     void registerCallbacks() {
@@ -51,8 +50,9 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
 
     private void update(MinecraftClient client) {
         if (client.player != null) {
-            PlayerEntity closestEtherealPlayer = client.world.getClosestPlayer(client.player.x, client.player.y, client.player.z, ETHEREAL_DESATURATE_RANGE, p -> ((RequiemPlayer)p).getRemnantState().isIncorporeal());
-            if (closestEtherealPlayer != null) {
+            PlayerEntity closestEtherealPlayer = client.world.getClosestPlayer(client.player.x, client.player.y, client.player.z, ETHEREAL_DESATURATE_RANGE, p -> p != client.player && ((RequiemPlayer)p).getRemnantState().isIncorporeal());
+             this.nearEthereal = closestEtherealPlayer != null;
+            if (nearEthereal) {
                 float distanceSqToEthereal = (float) client.player.squaredDistanceTo(closestEtherealPlayer.x, closestEtherealPlayer.y, closestEtherealPlayer.z);
                 this.desaturateEffect.setUniformValue("Saturation", 0.8f * (distanceSqToEthereal / ETHEREAL_DESATURATE_RANGE_SQ));
             }
