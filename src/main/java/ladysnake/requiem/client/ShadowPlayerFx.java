@@ -30,7 +30,7 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
     public static final Identifier DESATURATE_SHADER_ID = new Identifier("minecraft", "shaders/post/desaturate.json");
 
     public static final ShadowPlayerFx INSTANCE = new ShadowPlayerFx();
-    public static final int ETHEREAL_DESATURATE_RANGE = 16;
+    public static final int ETHEREAL_DESATURATE_RANGE = 12;
     public static final int ETHEREAL_DESATURATE_RANGE_SQ = ETHEREAL_DESATURATE_RANGE * ETHEREAL_DESATURATE_RANGE;
 
     private final MinecraftClient client = MinecraftClient.getInstance();
