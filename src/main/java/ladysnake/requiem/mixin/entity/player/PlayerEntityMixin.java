@@ -78,7 +78,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     @Override
     public void setRemnant(boolean remnant) {
         if (remnant != this.isRemnant()) {
-            RemnantState state = remnant ? RemnantStates.LARVA.create((PlayerEntity) (Object) this) : NullRemnantState.NULL_STATE;
+            RemnantState state = remnant ? RemnantStates.REMNANT.create((PlayerEntity) (Object) this) : NullRemnantState.NULL_STATE;
             this.setRemnantState(state);
         }
     }

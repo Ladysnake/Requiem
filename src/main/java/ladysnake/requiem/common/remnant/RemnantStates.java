@@ -25,5 +25,5 @@ public final class RemnantStates {
     private RemnantStates() { throw new AssertionError(); }
 
     public static final RemnantType MORTAL = p -> NullRemnantState.NULL_STATE;
-    public static final RemnantType LARVA = owner -> new MutableRemnantState(RemnantStates.LARVA, owner);
+    public static final RemnantType REMNANT = owner -> new MutableRemnantState(RemnantStates.REMNANT, owner);
 }

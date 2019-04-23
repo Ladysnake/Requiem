@@ -45,7 +45,7 @@ import net.minecraft.util.registry.Registry;
 
 import java.util.UUID;
 
-import static ladysnake.requiem.common.remnant.RemnantStates.LARVA;
+import static ladysnake.requiem.common.remnant.RemnantStates.REMNANT;
 
 public class VanillaRequiemPlugin implements RequiemPlugin {
 
@@ -134,6 +134,6 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
 
     @Override
     public void registerRemnantStates(Registry<RemnantType> registry) {
-        Registry.register(registry, Requiem.id("larva"), LARVA);
+        Registry.register(registry, Requiem.id("remnant"), REMNANT);
     }
 }
