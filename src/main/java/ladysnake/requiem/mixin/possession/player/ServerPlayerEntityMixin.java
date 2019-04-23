@@ -19,11 +19,11 @@ package ladysnake.requiem.mixin.possession.player;
 
 import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.MobResurrectable;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.mixin.entity.EntityAccessor;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
@@ -47,7 +47,7 @@ import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTracki
 import static ladysnake.requiem.mixin.server.PlayerTagKeys.*;
 
 @Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin extends PlayerEntity {
+public abstract class ServerPlayerEntityMixin extends PlayerEntity implements MobResurrectable {
     @Nullable
     private CompoundTag requiem_possessedEntityTag;
 
@@ -55,28 +55,18 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
         super(world_1, gameProfile_1);
     }
 
-    @Inject(method = "changeDimension", at = @At("HEAD"))
-    private void changePossessedDimension(DimensionType dim, CallbackInfoReturnable<Entity> info) {
-        PossessionComponent possessionComponent = ((RequiemPlayer) this).getPossessionComponent();
-        if (possessionComponent.isPossessing()) {
-            Entity current = possessionComponent.getPossessedEntity();
-            if (current != null && !current.removed) {
-                this.requiem_possessedEntityTag = new CompoundTag();
-                current.saveSelfToTag(this.requiem_possessedEntityTag);
-                current.remove();
-            }
+    @Override
+    public void setResurrectionEntity(MobEntity secondLife) {
+        CompoundTag tag = new CompoundTag();
+        if (secondLife.saveSelfToTag(tag)) {
+            setResurrectionEntity(tag);
+        } else {
+            Requiem.LOGGER.warn("Could not serialize possessed entity {} !", secondLife);
         }
     }
 
-    @Inject(method = "copyFrom", at = @At("RETURN"))
-    private void clonePlayer(ServerPlayerEntity original, boolean fromEnd, CallbackInfo ci) {
-        this.requiem_possessedEntityTag = ((ServerPlayerEntityMixin) (Object) original).requiem_possessedEntityTag;
-    }
-
-    @Inject(method = "onTeleportationDone", at = @At("HEAD"))
-    private void onTeleportDone(CallbackInfo info) {
-        CustomPayloadS2CPacket message = createCorporealityMessage(this);
-        sendToAllTrackingIncluding(this, message);
+    @Override
+    public void spawnResurrectionEntity() {
         if (this.requiem_possessedEntityTag != null) {
             Entity formerPossessed = EntityType.loadEntityWithPassengers(
                     this.requiem_possessedEntityTag,
@@ -95,6 +85,36 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
             }
             this.requiem_possessedEntityTag = null;
         }
+    }
+
+    private void setResurrectionEntity(@Nullable CompoundTag serializedSecondLife) {
+        this.requiem_possessedEntityTag = serializedSecondLife;
+    }
+
+    @Inject(method = "changeDimension", at = @At("HEAD"))
+    private void changePossessedDimension(DimensionType dim, CallbackInfoReturnable<Entity> info) {
+        PossessionComponent possessionComponent = ((RequiemPlayer) this).getPossessionComponent();
+        if (possessionComponent.isPossessing()) {
+            MobEntity current = possessionComponent.getPossessedEntity();
+            if (current != null && !current.removed) {
+                this.setResurrectionEntity(current);
+                current.remove();
+            }
+        }
+    }
+
+    @Inject(method = "copyFrom", at = @At("RETURN"))
+    private void clonePlayer(ServerPlayerEntity original, boolean fromEnd, CallbackInfo ci) {
+        this.requiem_possessedEntityTag = ((ServerPlayerEntityMixin) (Object) original).requiem_possessedEntityTag;
+        if (this.requiem_possessedEntityTag != null) {
+            this.inventory.clone(original.inventory);
+        }
+    }
+
+    @Inject(method = "onTeleportationDone", at = @At("HEAD"))
+    private void onTeleportDone(CallbackInfo info) {
+        sendToAllTrackingIncluding(this, createCorporealityMessage(this));
+        spawnResurrectionEntity();
     }
 
     @Inject(method = "fall", at = @At("HEAD"), cancellable = true)

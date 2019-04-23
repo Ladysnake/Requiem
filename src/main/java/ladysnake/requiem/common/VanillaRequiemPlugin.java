@@ -18,11 +18,13 @@
 package ladysnake.requiem.common;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.MobResurrectable;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.event.minecraft.ItemPickupCallback;
+import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
@@ -35,16 +37,24 @@ import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.EntityTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.dimension.DimensionType;
 
 import java.util.UUID;
 
+import static ladysnake.requiem.common.network.RequiemNetworking.createCorporealityMessage;
+import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTrackingIncluding;
 import static ladysnake.requiem.common.remnant.RemnantStates.REMNANT;
 
 public class VanillaRequiemPlugin implements RequiemPlugin {
@@ -64,6 +74,33 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
     public void onRequiemInitialize() {
         registerEtherealEventHandlers();
         registerPossessionEventHandlers();
+        LivingEntityDropCallback.EVENT.register((lazarus, deathCause) -> {
+            if (!(lazarus instanceof ServerPlayerEntity)) {
+                return false;
+            }
+            EntityType<? extends MobEntity> body;
+            if (deathCause.getAttacker() instanceof ZombieEntity) {
+                body = EntityType.ZOMBIE;
+            } else if (deathCause == DamageSource.DROWN) {
+                body = EntityType.DROWNED;
+            } else if (deathCause == DamageSource.LAVA && lazarus.dimension == DimensionType.THE_NETHER) {
+                body = EntityType.WITHER_SKELETON;
+            } else if (deathCause == DamageSource.IN_WALL && BlockTags.SAND.contains(lazarus.world.getBlockState(lazarus.getBlockPos().add(0, lazarus.getEyeHeight(lazarus.getPose()), 0)).getBlock())) {
+                body = EntityType.HUSK;
+            } else {
+                return false;
+            }
+            MobEntity secondLife = body.create(lazarus.world);
+            if (secondLife != null) {
+                if (((RequiemPlayer) lazarus).isRemnant()) {
+                    ((MobResurrectable) lazarus).setResurrectionEntity(secondLife);
+                } else {
+                    secondLife.setPositionAndAngles(lazarus);
+                    lazarus.world.spawnEntity(secondLife);
+                }
+            }
+            return true;
+        });
     }
 
     private void registerEtherealEventHandlers() {
@@ -92,8 +129,11 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
             }
             return ActionResult.PASS;
         });
-        PlayerCloneCallback.EVENT.register(((original, clone, returnFromEnd) -> ((RequiemPlayer)original).getRemnantState().onPlayerClone(clone, !returnFromEnd)));
-        PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> player.onTeleportationDone()));
+        PlayerCloneCallback.EVENT.register((original, clone, returnFromEnd) -> ((RequiemPlayer)original).getRemnantState().onPlayerClone(clone, !returnFromEnd));
+        PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> {
+            sendToAllTrackingIncluding(player, createCorporealityMessage(player));
+            ((MobResurrectable)player).spawnResurrectionEntity();
+        }));
     }
 
     private void registerPossessionEventHandlers() {

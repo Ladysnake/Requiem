@@ -6,6 +6,7 @@
     "entity.EntityAccessor",
     "entity.ItemEntityMixin",
     "entity.LivingEntityAccessor",
+    "entity.LivingEntityMixin",
     "entity.attribute.AbstractEntityAttributeContainerAccessor",
     "entity.attribute.EntityAttributeContainerAccessor",
     "entity.attribute.EntityAttributesMixin",
