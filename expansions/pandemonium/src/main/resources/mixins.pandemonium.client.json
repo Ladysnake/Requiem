@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "ladysnake.pandemonium.mixin.client",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "world.ClientWorldMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

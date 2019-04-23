@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:enderman",
+
+    "#c:zombies",
+    "#minecraft:skeletons",
+
+    "minecraft:pillager",
+    "minecraft:vex",
+    "minecraft:villager",
+    "minecraft:vindicator",
+    "minecraft:witch"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "package": "ladysnake.requiem.mixin.client",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MinecraftClientMixin",
+    "gui.hud.InGameHudMixin",
+    "network.ClientPlayerEntityMixin",
+    "render.GameRendererMixin",
+    "render.entity.AccessibleTextureEntityRenderer",
+    "render.entity.EntityRenderDispatcherMixin",
+    "render.entity.EntityRendererMixin",
+    "render.entity.LivingEntityRendererMixin",
+    "render.entity.PlayerEntityRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

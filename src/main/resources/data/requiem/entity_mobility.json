@@ -1,0 +1,14 @@
+{
+  "minecraft:drowned": {
+    "swimMode": "ENABLED"
+  },
+  "minecraft:phantom": {
+    "flightMode": "FORCED",
+    "inertia": 0.8
+  },
+  "minecraft:wither": {
+    "flightMode": "ENABLED",
+    "fallSpeedModifier": 0.8,
+    "gravity": 0.01
+  }
+}

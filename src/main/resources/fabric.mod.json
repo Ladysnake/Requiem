@@ -1,34 +1,35 @@
 {
   "schemaVersion": 1,
-  "id": "dissolution",
+  "id": "requiem",
   "version": "${version}",
 
   "environment": "*",
   "entrypoints": {
     "client": [
-      "ladysnake.dissolution.client.DissolutionClient"
+      "ladysnake.requiem.client.RequiemClient"
     ],
     "main": [
-      "ladysnake.dissolution.Dissolution"
+      "ladysnake.requiem.Requiem"
     ]
   },
   "mixins": [
     {
       "environment": "client",
-      "config": "mixins.dissolution.client.json"
+      "config": "mixins.requiem.client.json"
     },
     {
       "environment": "*",
-      "config": "mixins.dissolution.common.json"
+      "config": "mixins.requiem.common.json"
     }
   ],
 
   "depends": {
-    "dissolutionapi": "${version}",
-    "satin": "^1.1.0"
+    "requiemapi": "${version}",
+    "satin": "^1.2.0"
   },
 
-  "name": "Dissolution",
+  "name": "Requiem",
+  "icon": "assets/requiem/skull_logo.png",
   "description": "Death revamped and ethereal powers",
   "authors": [
     "Pyrofab",
@@ -38,8 +39,8 @@
     "UpcraftLP"
   ],
   "contact": {
-    "sources": "https://github.com/Ladysnake/Dissolution",
-    "issues": "https://github.com/Ladysnake/Dissolution/issues",
+    "sources": "https://github.com/Ladysnake/Requiem",
+    "issues": "https://github.com/Ladysnake/Requiem/issues",
     "discord": "ladysnake.glitch.me/discord"
   },
   "licence": "ARR"
