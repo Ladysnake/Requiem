@@ -81,6 +81,10 @@ public class MutableRemnantState implements RemnantState {
         RemnantState cloneState = ((RequiemPlayer) clone).getRemnantState();
         if (dead && !this.isSoul()) {
             clone.setPositionAndAngles(this.player);
+            // Prevent souls from respawning in fairly bad conditions
+            while(!clone.world.doesNotCollide(clone) && clone.y < 256.0D) {
+                clone.setPosition(clone.x, clone.y + 1.0D, clone.z);
+            }
             cloneState.setSoul(true);
         } else {
             // Copy state
