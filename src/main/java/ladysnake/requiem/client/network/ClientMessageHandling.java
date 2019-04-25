@@ -18,7 +18,10 @@
 package ladysnake.requiem.client.network;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.remnant.RemnantState;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.client.RequiemFx;
+import ladysnake.requiem.common.remnant.RemnantStates;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.network.PacketContext;
 import net.minecraft.client.MinecraftClient;
@@ -37,16 +40,12 @@ public class ClientMessageHandling {
     public static void init() {
         register(REMNANT_SYNC, (context, buf) -> {
             UUID playerUuid = buf.readUuid();
-            boolean remnant = buf.readBoolean();
+            int remnantId = buf.readVarInt();
             boolean incorporeal = buf.readBoolean();
             PlayerEntity player = context.getPlayer().world.getPlayerByUuid(playerUuid);
             if (player != null) {
-                if (remnant) {
-                    ((RequiemPlayer)player).setRemnant(true);
-                    ((RequiemPlayer) player).getRemnantState().setSoul(incorporeal);
-                } else {
-                    ((RequiemPlayer)player).setRemnant(false);
-                }
+                ((RequiemPlayer)player).setRemnantState(RemnantStates.get(remnantId).create(player));
+                ((RequiemPlayer) player).getRemnantState().setSoul(incorporeal);
             }
         });
         register(POSSESSION_ACK, (context, buf) -> RequiemFx.INSTANCE.onPossessionAck());

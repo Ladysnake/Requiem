@@ -20,12 +20,18 @@ package ladysnake.requiem.common.network;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.common.item.OpusDemoniumItem;
+import ladysnake.requiem.common.item.RequiemItems;
 import net.fabricmc.fabric.api.network.PacketContext;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 
@@ -59,6 +65,29 @@ public class ServerMessageHandling {
                     ((RequiemPlayer) player).getPossessionComponent().startPossessing((MobEntity) entity);
                 }
                 sendTo((ServerPlayerEntity) player, createEmptyMessage(POSSESSION_ACK));
+            });
+        });
+        ServerSidePacketRegistry.INSTANCE.register(OPUS_UPDATE, (context, buf) -> {
+            String content = buf.readString();
+            boolean sign = buf.readBoolean();
+            Hand hand = buf.readEnumConstant(Hand.class);
+            context.getTaskQueue().execute(() -> {
+                PlayerEntity player = context.getPlayer();
+                ItemStack book = player.getStackInHand(hand);
+                if (book.getItem() != RequiemItems.OPUS_DEMONIUM) {
+                    return;
+                }
+                if (sign) {
+                    if (content.equals(OpusDemoniumItem.CURSE_SENTENCE)) {
+                        player.setStackInHand(hand, new ItemStack(RequiemItems.OPUS_DEMONIUM_CURSE));
+                    } else if (content.equals(OpusDemoniumItem.CURE_SENTENCE)) {
+                        player.setStackInHand(hand, new ItemStack(RequiemItems.OPUS_DEMONIUM_CURE));
+                    }
+                } else {
+                    ListTag pages = new ListTag();
+                    pages.add(new StringTag(content));
+                    book.setChildTag("pages", pages);
+                }
             });
         });
     }

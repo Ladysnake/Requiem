@@ -5,6 +5,7 @@
   "mixins": [
     "MinecraftClientMixin",
     "gui.hud.InGameHudMixin",
+    "gui.ingame.EditBookScreenAccessor",
     "network.ClientPlayerEntityMixin",
     "render.GameRendererMixin",
     "render.entity.AccessibleTextureEntityRenderer",

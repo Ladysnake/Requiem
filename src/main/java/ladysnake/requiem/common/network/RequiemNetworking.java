@@ -19,6 +19,8 @@ package ladysnake.requiem.common.network;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.remnant.RemnantStates;
 import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
@@ -27,6 +29,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.packet.CustomPayloadC2SPacket;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 import org.jetbrains.annotations.Contract;
@@ -47,9 +50,14 @@ public class RequiemNetworking {
     public static final Identifier RIGHT_CLICK_AIR = Requiem.id("interact_air");
     public static final Identifier POSSESSION_REQUEST = Requiem.id("possession_request");
     public static final Identifier ETHEREAL_FRACTURE = Requiem.id("ethereal_fracture");
+    public static final Identifier OPUS_UPDATE = Requiem.id("opus_update");
 
     public static void sendToServer(Identifier identifier, PacketByteBuf data) {
-        MinecraftClient.getInstance().player.networkHandler.sendPacket(new CustomPayloadC2SPacket(identifier, data));
+        sendToServer(new CustomPayloadC2SPacket(identifier, data));
+    }
+
+    public static void sendToServer(CustomPayloadC2SPacket message) {
+        MinecraftClient.getInstance().player.networkHandler.sendPacket(message);
     }
 
     public static void sendTo(ServerPlayerEntity player, CustomPayloadS2CPacket message) {
@@ -75,17 +83,17 @@ public class RequiemNetworking {
 
     @Contract(pure = true)
     public static CustomPayloadS2CPacket createCorporealityMessage(PlayerEntity synchronizedPlayer) {
-        boolean remnant = ((RequiemPlayer) synchronizedPlayer).isRemnant();
-        boolean incorporeal = remnant && ((RequiemPlayer)synchronizedPlayer).getRemnantState().isSoul();
+        RemnantType remnantType = ((RequiemPlayer) synchronizedPlayer).getRemnantState().getType();
+        boolean incorporeal = ((RequiemPlayer)synchronizedPlayer).getRemnantState().isSoul();
         UUID playerUuid = synchronizedPlayer.getUuid();
-        return createCorporealityMessage(playerUuid, remnant, incorporeal);
+        return createCorporealityMessage(playerUuid, remnantType, incorporeal);
     }
 
     @Contract(pure = true)
-    private static CustomPayloadS2CPacket createCorporealityMessage(UUID playerUuid, boolean remnant, boolean incorporeal) {
+    private static CustomPayloadS2CPacket createCorporealityMessage(UUID playerUuid, RemnantType remnantType, boolean incorporeal) {
         PacketByteBuf buf = createEmptyBuffer();
         buf.writeUuid(playerUuid);
-        buf.writeBoolean(remnant);
+        buf.writeVarInt(RemnantStates.getRawId(remnantType));
         buf.writeBoolean(incorporeal);
         return new CustomPayloadS2CPacket(REMNANT_SYNC, buf);
     }
@@ -113,5 +121,13 @@ public class RequiemNetworking {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeInt(entity.getEntityId());
         return buf;
+    }
+
+    public static CustomPayloadC2SPacket createOpusUpdateBuffer(String content, boolean sign, Hand hand) {
+        PacketByteBuf buf = new PacketByteBuf(buffer());
+        buf.writeString(content);
+        buf.writeBoolean(sign);
+        buf.writeEnumConstant(hand);
+        return new CustomPayloadC2SPacket(OPUS_UPDATE, buf);
     }
 }
