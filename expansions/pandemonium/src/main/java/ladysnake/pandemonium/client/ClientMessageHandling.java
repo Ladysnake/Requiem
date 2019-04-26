@@ -14,10 +14,12 @@ import java.util.function.BiConsumer;
 import static ladysnake.pandemonium.common.network.PandemoniumNetworking.*;
 
 public class ClientMessageHandling {
+    private static final float[] ETHEREAL_DAMAGE_COLOR = {0.5f, 0.0f, 0.0f};
+
     public static void init() {
         register(ANCHOR_DAMAGE, ((context, buf) -> {
             boolean dead = buf.readBoolean();
-            RequiemFx.INSTANCE.beginEtherealDamageAnimation(dead);
+            RequiemFx.INSTANCE.playEtherealPulseAnimation(dead ? 4 : 1, ETHEREAL_DAMAGE_COLOR[0], ETHEREAL_DAMAGE_COLOR[1], ETHEREAL_DAMAGE_COLOR[2]);
         }));
         register(ANCHOR_SYNC, ((context, buf) -> {
             int id = buf.readInt();

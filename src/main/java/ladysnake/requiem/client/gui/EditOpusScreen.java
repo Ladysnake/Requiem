@@ -94,9 +94,9 @@ public class EditOpusScreen extends EditBookScreen {
             x += (this.width - 192) / 2 + 36;
             y += 32;
             if (((EditBookScreenAccessor) this).getCursorIndex() < page.length()) {
-                DrawableHelper.fill(x, y - 1, x + 1, y + 9, 0x000000);
+                DrawableHelper.fill(x, y - 1, x + 1, y + 9, 0xFF000000);
             } else {
-                this.font.draw("_", x, y, 0);
+                this.font.draw("_", x, y, 0xFF000000);
             }
         }
         for (AbstractButtonWidget button : this.buttons) {

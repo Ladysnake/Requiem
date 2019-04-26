@@ -44,6 +44,7 @@ public class RequiemNetworking {
     public static final Identifier POSSESSION_SYNC = Requiem.id("possession_sync");
     public static final Identifier REMNANT_SYNC = Requiem.id("remnant_sync");
     public static final Identifier POSSESSION_ACK = Requiem.id("possession_ack");
+    public static final Identifier OPUS_USE = Requiem.id("opus_use");
 
     // Client -> Server
     public static final Identifier LEFT_CLICK_AIR = Requiem.id("attack_air");
@@ -104,6 +105,12 @@ public class RequiemNetworking {
         buf.writeUuid(playerUuid);
         buf.writeInt(possessedId);
         return new CustomPayloadS2CPacket(POSSESSION_SYNC, buf);
+    }
+
+    public static CustomPayloadS2CPacket createOpusUsePacket(boolean cure) {
+        PacketByteBuf buf = createEmptyBuffer();
+        buf.writeBoolean(cure);
+        return new CustomPayloadS2CPacket(OPUS_USE, buf);
     }
 
     @Contract(pure = true)

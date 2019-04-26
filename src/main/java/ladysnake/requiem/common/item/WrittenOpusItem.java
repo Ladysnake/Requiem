@@ -2,6 +2,7 @@ package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
@@ -9,6 +10,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
@@ -44,13 +47,17 @@ public class WrittenOpusItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
         if (!world.isClient && stack.getItem() == this) {
-            RemnantType currentState = ((RequiemPlayer)player).getRemnantState().getType();
+            RemnantType currentState = ((RequiemPlayer) player).getRemnantState().getType();
             if (currentState != this.remnantType && !((RequiemPlayer) player).getPossessionComponent().isPossessing()) {
                 ((RequiemPlayer) player).setRemnantState(remnantType.create(player));
                 player.incrementStat(Stats.USED.getOrCreateStat(this));
                 stack.subtractAmount(1);
-                return new TypedActionResult<>(ActionResult.SUCCESS, stack);
+                boolean cure = this == RequiemItems.OPUS_DEMONIUM_CURE;
+                world.playSound(null, player.x, player.y, player.z, SoundEvents.ITEM_TOTEM_USE, player.getSoundCategory(), 1.0F, 0.1F);
+                world.playSound(null, player.x, player.y, player.z, cure ? SoundEvents.BLOCK_BEACON_DEACTIVATE : SoundEvents.BLOCK_BEACON_ACTIVATE, player.getSoundCategory(), 1.4F, 0.1F);
+                RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(cure));
             }
+            return new TypedActionResult<>(ActionResult.SUCCESS, stack);
         }
         return super.use(world, player, hand);
     }

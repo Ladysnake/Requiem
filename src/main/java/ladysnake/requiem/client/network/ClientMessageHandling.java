@@ -18,9 +18,8 @@
 package ladysnake.requiem.client.network;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.api.v1.remnant.RemnantState;
-import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.client.RequiemFx;
+import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantStates;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.network.PacketContext;
@@ -28,6 +27,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 
@@ -68,6 +69,19 @@ public class ClientMessageHandling {
             }
         }));
         register(ETHEREAL_ANIMATION, ((context, buf) -> RequiemFx.INSTANCE.beginEtherealAnimation()));
+        register(OPUS_USE, ((context, buf) -> {
+            boolean cure = buf.readBoolean();
+            PlayerEntity player = context.getPlayer();
+            MinecraftClient mc = MinecraftClient.getInstance();
+            mc.particleManager.addEmitter(player, ParticleTypes.PORTAL, 120);
+            if (cure) {
+                mc.gameRenderer.showFloatingItem(new ItemStack(RequiemItems.OPUS_DEMONIUM_CURE));
+                RequiemFx.INSTANCE.playEtherealPulseAnimation(16, 0.0f, 0.8f, 0.6f);
+            } else {
+                mc.gameRenderer.showFloatingItem(new ItemStack(RequiemItems.OPUS_DEMONIUM_CURSE));
+                RequiemFx.INSTANCE.playEtherealPulseAnimation(16, 1.0f, 0.25f, 0.27f);
+            }
+        }));
     }
 
     private static void register(Identifier id, BiConsumer<PacketContext, PacketByteBuf> handler) {

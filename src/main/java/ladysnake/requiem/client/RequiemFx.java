@@ -31,11 +31,9 @@ import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VisibleRegion;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
@@ -47,21 +45,23 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
     public static final Identifier SPECTRE_SHADER_ID = Requiem.id("shaders/post/spectre.json");
     public static final Identifier FISH_EYE_SHADER_ID = Requiem.id("shaders/post/fish_eye.json");
     private static final float[] ETHEREAL_COLOR = {0.0f, 0.7f, 1.0f};
-    private static final float[] ETHEREAL_DAMAGE_COLOR = {0.5f, 0.0f, 0.0f};
 
     public static final RequiemFx INSTANCE = new RequiemFx();
-    public static final int DAMAGE_ANIMATION_TIME = 20;
+    public static final int PULSE_ANIMATION_TIME = 20;
 
     private final MinecraftClient mc = MinecraftClient.getInstance();
     private final ManagedShaderEffect spectreShader = ShaderEffectManager.getInstance().manage(SPECTRE_SHADER_ID);
     private final ManagedShaderEffect fishEyeShader = ShaderEffectManager.getInstance().manage(FISH_EYE_SHADER_ID);
+    private float accentColorR;
+    private float accentColorG;
+    private float accentColorB;
     @Nullable
     private GlFramebuffer framebuffer;
 
     private int fishEyeAnimation = -1;
     private int etherealAnimation = 0;
-    private int damageAnimation = 0;
-    private boolean intenseDamage;
+    private int pulseAnimation;
+    private int pulseIntensity;
     /**
      * Incremented every tick for animations
      */
@@ -79,8 +79,8 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
     public void update(@SuppressWarnings("unused") MinecraftClient client) {
         ++ticks;
         --etherealAnimation;
-        if (--damageAnimation < 0 && spectreShader.isInitialized()) {
-            intenseDamage = false;
+        if (--pulseAnimation < 0 && spectreShader.isInitialized()) {
+            pulseIntensity = 1;
             spectreShader.setUniformValue("OverlayColor", ETHEREAL_COLOR[0], ETHEREAL_COLOR[1], ETHEREAL_COLOR[2]);
         }
         Entity possessed = getAnimationEntity();
@@ -106,7 +106,6 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
     public void beginFishEyeAnimation(Entity possessed) {
         this.fishEyeAnimation = 10;
         this.possessionTarget = new WeakReference<>(possessed);
-        possessed.world.playSound(mc.player, possessed.x, possessed.y, possessed.z, SoundEvents.ENTITY_VEX_AMBIENT, SoundCategory.PLAYERS, 2, 0.6f);
     }
 
     public void beginEtherealAnimation() {
@@ -114,13 +113,13 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
         mc.player.world.playSound(mc.player, mc.player.x, mc.player.y, mc.player.z, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2, 0.6f);
     }
 
-    public void beginEtherealDamageAnimation(boolean intense) {
-        this.damageAnimation = DAMAGE_ANIMATION_TIME;
-        spectreShader.setUniformValue("OverlayColor", ETHEREAL_DAMAGE_COLOR[0], ETHEREAL_DAMAGE_COLOR[1], ETHEREAL_DAMAGE_COLOR[2]);
-        if (intense) {
-            this.damageAnimation *= 4;
-            this.intenseDamage = true;
-        }
+    public void playEtherealPulseAnimation(int intensity, float accentColorR, float accentColorG, float accentColorB) {
+        this.pulseAnimation = PULSE_ANIMATION_TIME * intensity;
+        this.accentColorR = accentColorR;
+        this.accentColorG = accentColorG;
+        this.accentColorB = accentColorB;
+        spectreShader.setUniformValue("OverlayColor", accentColorR, accentColorG, accentColorB);
+        this.pulseIntensity = intensity;
     }
 
     @Override
@@ -136,22 +135,22 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
             }
         }
         boolean incorporeal = ((RequiemPlayer) mc.player).getRemnantState().isIncorporeal();
-        if (incorporeal || this.etherealAnimation > 0 || this.damageAnimation >= 0) {
+        if (incorporeal || this.etherealAnimation > 0 || this.pulseAnimation >= 0) {
             // 10 -> 1
             float zoom = Math.max(1, (etherealAnimation - tickDelta));
             float intensity = (incorporeal ? 0.6f : 0f) / zoom;
             spectreShader.setUniformValue("STime", (ticks + tickDelta) / 20f);
             // 10 -> 1
-            if (damageAnimation >= 0) {
+            if (pulseAnimation >= 0) {
                 // 10 -> 0 => 0 -> 1
-                float progress = 1 - Math.max(0, damageAnimation - tickDelta) / (DAMAGE_ANIMATION_TIME * (this.intenseDamage ? 4 : 1));
+                float progress = 1 - Math.max(0, pulseAnimation - tickDelta) / (PULSE_ANIMATION_TIME * this.pulseIntensity);
                 float value = impulse(8, progress);
                 intensity += value;
                 zoom += value / 2f;
                 if (incorporeal) {
-                    float r = ETHEREAL_COLOR[0] * (1 - value) + ETHEREAL_DAMAGE_COLOR[0] * value;
-                    float g = ETHEREAL_COLOR[1] * (1 - value) + ETHEREAL_DAMAGE_COLOR[1] * value;
-                    float b = ETHEREAL_COLOR[2] * (1 - value) + ETHEREAL_DAMAGE_COLOR[2] * value;
+                    float r = ETHEREAL_COLOR[0] * (1 - value) + this.accentColorR * value;
+                    float g = ETHEREAL_COLOR[1] * (1 - value) + this.accentColorG * value;
+                    float b = ETHEREAL_COLOR[2] * (1 - value) + this.accentColorB * value;
                     spectreShader.setUniformValue("OverlayColor", r, g, b);
                 } else {
                     spectreShader.setUniformValue("RaysIntensity", value);
