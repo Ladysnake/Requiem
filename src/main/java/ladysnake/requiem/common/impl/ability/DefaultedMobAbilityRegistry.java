@@ -19,9 +19,7 @@ package ladysnake.requiem.common.impl.ability;
 
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.common.entity.ability.RangedAttackAbility;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.mob.MobEntity;
 
 import javax.annotation.Nullable;
@@ -42,11 +40,7 @@ public class DefaultedMobAbilityRegistry implements MobAbilityRegistry {
         EntityType<E> entityType = (EntityType<E>) entity.getType();
         MobAbilityConfig<? super E> registered = getRegisteredConfig(entityType);
         if (registered == null) {
-            MobAbilityConfig.Builder builder = MobAbilityConfig.builder();
-            if (entity instanceof RangedAttacker) {
-                builder.indirectAttack(e -> new RangedAttackAbility<>((MobEntity & RangedAttacker)e));
-            }
-            return builder.build();
+            return MobAbilityConfig.builder().build();
         }
         return registered;
     }

@@ -45,7 +45,7 @@ public class RangedAttackAbility<T extends MobEntity & RangedAttacker> extends I
         if (trace != null) {
             Entity traced = trace.getEntity();
             if (traced instanceof LivingEntity) {
-                this.owner.attack((LivingEntity) traced, 10f);
+                this.owner.attack((LivingEntity) traced, 1f);
             }
         }
         return false;
