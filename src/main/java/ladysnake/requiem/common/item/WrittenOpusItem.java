@@ -64,7 +64,7 @@ public class WrittenOpusItem extends Item {
 
     @Environment(EnvType.CLIENT)
     public void buildTooltip(ItemStack stack, @Nullable World world, List<TextComponent> lines, TooltipContext ctx) {
-        lines.add(new TranslatableTextComponent(this.getRemnantType().getConversionBookSentence())
+        lines.add(new TranslatableTextComponent(this == RequiemItems.OPUS_DEMONIUM_CURE ? "requiem.opus_daemonium.cure" : "requiem.opus_daemonium.curse")
                 .applyFormat(this.getTooltipColor()));
         if (stack.hasTag()) {
             CompoundTag tag = stack.getTag();

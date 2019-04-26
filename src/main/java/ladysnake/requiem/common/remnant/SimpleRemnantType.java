@@ -5,7 +5,6 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.StringTag;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
@@ -35,10 +34,6 @@ public class SimpleRemnantType implements RemnantType {
 
     @Override
     public ItemStack getConversionBook(@Nullable PlayerEntity player) {
-        ItemStack ret = new ItemStack(this.conversionBook.get());
-        if (player != null) {
-            ret.setChildTag("author", new StringTag(player.getGameProfile().getName()));
-        }
-        return ret;
+        return new ItemStack(this.conversionBook.get());
     }
 }

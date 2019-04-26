@@ -38,8 +38,8 @@ public class RequiemItems {
     public static DebugItem DEBUG_ITEM;
     public static Item HUMAN_FLESH;
     public static OpusDemoniumItem OPUS_DEMONIUM;
-    public static Item OPUS_DEMONIUM_CURE;
-    public static Item OPUS_DEMONIUM_CURSE;
+    public static WrittenOpusItem OPUS_DEMONIUM_CURE;
+    public static WrittenOpusItem OPUS_DEMONIUM_CURSE;
 
     public static void init() {
         DEBUG_ITEM = registerItem(new DebugItem(new Item.Settings()), "debug_item");

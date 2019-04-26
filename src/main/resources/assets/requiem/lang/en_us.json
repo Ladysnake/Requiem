@@ -22,5 +22,7 @@
   "key.requiem.ethereal_fracture": "Ethereal Fracture",
   "item.requiem.opus_daemonium": "Opus Daemonium",
   "item.requiem.opus_daemonium_cure": "Opus Daemonium",
-  "item.requiem.opus_daemonium_curse": "Opus Daemonium"
+  "item.requiem.opus_daemonium_curse": "Opus Daemonium",
+  "requiem.opus_daemonium.curse": "Curse",
+  "requiem.opus_daemonium.cure": "Cure"
 }
