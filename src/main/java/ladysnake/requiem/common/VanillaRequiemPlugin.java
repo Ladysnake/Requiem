@@ -142,7 +142,7 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
         AttackEntityCallback.EVENT.register((playerEntity, world, hand, target, hitResult) -> {
             LivingEntity possessed = ((RequiemPlayer)playerEntity).getPossessionComponent().getPossessedEntity();
             if (possessed != null && !possessed.removed) {
-                if (possessed.world.isClient || ((Possessable)possessed).getMobAbilityController().useDirect(AbilityType.ATTACK, target)) {
+                if (possessed.world.isClient || target != possessed && ((Possessable)possessed).getMobAbilityController().useDirect(AbilityType.ATTACK, target)) {
                     return ActionResult.SUCCESS;
                 }
                 return ActionResult.FAIL;
