@@ -18,6 +18,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -31,7 +32,8 @@ public class EditOpusScreen extends EditBookScreen {
         for (RemnantType type : RequiemRegistries.REMNANT_STATES) {
             String incantation = type.getConversionBookSentence();
             if (incantation != null) {
-                this.incantations.put(I18n.translate(incantation), type);
+                // User locale can theoretically cause incompatibilities, but english locale does not support accents
+                this.incantations.put(I18n.translate(incantation).toLowerCase(Locale.getDefault()), type);
             }
         }
     }
@@ -158,6 +160,7 @@ public class EditOpusScreen extends EditBookScreen {
     }
 
     private void checkMagicSentence() {
-        ((EditBookScreenAccessor) this).getButtonSign().active = this.incantations.containsKey(this.getFirstPage());
+        // Strings are lowercase in the map to make the check case insensitive
+        ((EditBookScreenAccessor) this).getButtonSign().active = this.incantations.containsKey(this.getFirstPage().toLowerCase(Locale.getDefault()));
     }
 }
