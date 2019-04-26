@@ -123,10 +123,13 @@ public class RequiemNetworking {
         return buf;
     }
 
-    public static CustomPayloadC2SPacket createOpusUpdateBuffer(String content, boolean sign, Hand hand) {
+    public static CustomPayloadC2SPacket createOpusUpdateBuffer(String content, boolean sign, RemnantType resultingBook, Hand hand) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeString(content);
         buf.writeBoolean(sign);
+        if (sign) {
+            buf.writeString(RemnantStates.getId(resultingBook).toString());
+        }
         buf.writeEnumConstant(hand);
         return new CustomPayloadC2SPacket(OPUS_UPDATE, buf);
     }

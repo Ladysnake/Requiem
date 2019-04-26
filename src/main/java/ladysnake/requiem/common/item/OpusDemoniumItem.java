@@ -2,7 +2,6 @@ package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.client.gui.EditOpusScreen;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.ingame.EditBookScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.WritableBookItem;
@@ -13,8 +12,6 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class OpusDemoniumItem extends WritableBookItem {
-    public static final String CURSE_SENTENCE = "Make me eternal";
-    public static final String CURE_SENTENCE = "Make me a mortal";
 
     public OpusDemoniumItem(Settings settings) {
         super(settings);

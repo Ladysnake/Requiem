@@ -21,13 +21,14 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.impl.remnant.MutableRemnantState;
 import ladysnake.requiem.common.impl.remnant.NullRemnantState;
+import ladysnake.requiem.common.item.RequiemItems;
 import net.minecraft.util.Identifier;
 
 public final class RemnantStates {
     private RemnantStates() { throw new AssertionError(); }
 
-    public static final RemnantType MORTAL = p -> NullRemnantState.NULL_STATE;
-    public static final RemnantType REMNANT = owner -> new MutableRemnantState(RemnantStates.REMNANT, owner);
+    public static final RemnantType MORTAL = new SimpleRemnantType(p -> NullRemnantState.NULL_STATE, "requiem:opus.mortal_sentence", () -> RequiemItems.OPUS_DEMONIUM_CURE);
+    public static final RemnantType REMNANT = new SimpleRemnantType(owner -> new MutableRemnantState(RemnantStates.REMNANT, owner), "requiem:opus.remnant_sentence", () -> RequiemItems.OPUS_DEMONIUM_CURSE);
 
     public static RemnantType get(Identifier id) {
         return RequiemRegistries.REMNANT_STATES.get(id);

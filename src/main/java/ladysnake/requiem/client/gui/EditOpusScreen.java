@@ -1,22 +1,39 @@
 package ladysnake.requiem.client.gui;
 
-import ladysnake.requiem.common.item.OpusDemoniumItem;
+import com.mojang.blaze3d.platform.GlStateManager;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.mixin.client.gui.ingame.EditBookScreenAccessor;
-import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.WrittenBookScreen;
 import net.minecraft.client.gui.ingame.EditBookScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.TextFormat;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class EditOpusScreen extends EditBookScreen {
+    public static final Identifier BOOK_TEXTURE = WrittenBookScreen.BOOK_TEXTURE;
+    private Map<String, RemnantType> incantations;
+
     public EditOpusScreen(PlayerEntity player, ItemStack book, Hand hand) {
         super(player, book, hand);
+        this.incantations = new HashMap<>();
+        for (RemnantType type : RequiemRegistries.REMNANT_STATES) {
+            String incantation = type.getConversionBookSentence();
+            if (incantation != null) {
+                this.incantations.put(I18n.translate(incantation), type);
+            }
+        }
     }
 
     protected <T extends AbstractButtonWidget> void removeButton(T button) {
@@ -52,8 +69,70 @@ public class EditOpusScreen extends EditBookScreen {
         if (((EditBookScreenAccessor)this).isDirty()) {
             String firstPage = getFirstPage();   // it's the only one we accept
             Hand hand = ((EditBookScreenAccessor) this).getHand();
-            RequiemNetworking.sendToServer(RequiemNetworking.createOpusUpdateBuffer(firstPage, sign, hand));
+            RequiemNetworking.sendToServer(RequiemNetworking.createOpusUpdateBuffer(firstPage, sign, this.incantations.get(firstPage), hand));
         }
+    }
+
+    public void render(int mouseX, int mouseY, float tickDelta) {
+        this.renderBackground();
+        this.setFocused(null);
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        this.minecraft.getTextureManager().bindTexture(BOOK_TEXTURE);
+        int bgX = (this.width - 192) / 2;
+        this.blit(bgX, 2, 0, 0, 192, 192);
+        String page = this.getFirstPage();
+        this.font.drawStringBounded(page, bgX + 36, 32, 114, 0);
+        ((EditBookScreenAccessor)this).invokeDrawHighlight(page);
+        if (((EditBookScreenAccessor)this).getTickCounter() / 6 % 2 == 0) {
+            Point2D cursorPosition = this.getCursorPositionForIndex(page, ((EditBookScreenAccessor)this).getCursorIndex());
+            int x = cursorPosition.x;
+            int y = cursorPosition.y;
+            if (this.font.isRightToLeft()) {
+                x = 110 - x;
+            }
+
+            x += (this.width - 192) / 2 + 36;
+            y += 32;
+            if (((EditBookScreenAccessor) this).getCursorIndex() < page.length()) {
+                DrawableHelper.fill(x, y - 1, x + 1, y + 9, 0x000000);
+            } else {
+                this.font.draw("_", x, y, 0);
+            }
+        }
+        for (AbstractButtonWidget button : this.buttons) {
+            button.render(mouseX, mouseY, tickDelta);
+        }
+    }
+
+    private Point2D getCursorPositionForIndex(String content, int cursorIndex) {
+        int x = 0;
+        int y = 0;
+        int lineLength = 0;
+        int int_3 = 0;
+
+        for(String str = content; !str.isEmpty(); int_3 = lineLength) {
+            int charCount = this.font.getCharacterCountForWidth(str, 114);
+            if (str.length() <= charCount) {
+                String lastLine = str.substring(0, Math.min(Math.max(cursorIndex - int_3, 0), str.length()));
+                x = x + this.font.getStringWidth(lastLine);
+                break;
+            }
+
+            String line = str.substring(0, charCount);
+            char lastChar = str.charAt(charCount);
+            boolean empty = lastChar == ' ' || lastChar == '\n';
+            str = TextFormat.getFormatAtEnd(line) + str.substring(charCount + (empty ? 1 : 0));
+            lineLength += line.length() + (empty ? 1 : 0);
+            if (lineLength - 1 >= cursorIndex) {
+                String substr = line.substring(0, Math.min(Math.max(cursorIndex - int_3, 0), line.length()));
+                x += this.font.getStringWidth(substr);
+                break;
+            }
+
+            y += 9;
+        }
+
+        return new Point2D(x, y);
     }
 
     private String getFirstPage() {
@@ -69,9 +148,16 @@ public class EditOpusScreen extends EditBookScreen {
         return false;
     }
 
+    @Override
+    public boolean charTyped(char char_1, int int_1) {
+        if (super.charTyped(char_1, int_1)) {
+            checkMagicSentence();
+            return true;
+        }
+        return false;
+    }
+
     private void checkMagicSentence() {
-        String firstPage = this.getFirstPage();
-        ((EditBookScreenAccessor) this).getButtonSign().active = firstPage.equals(OpusDemoniumItem.CURE_SENTENCE)
-                || firstPage.equals(OpusDemoniumItem.CURSE_SENTENCE);
+        ((EditBookScreenAccessor) this).getButtonSign().active = this.incantations.containsKey(this.getFirstPage());
     }
 }

@@ -20,8 +20,9 @@ package ladysnake.requiem.common.network;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.common.item.OpusDemoniumItem;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.item.RequiemItems;
+import ladysnake.requiem.common.remnant.RemnantStates;
 import net.fabricmc.fabric.api.network.PacketContext;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.entity.Entity;
@@ -70,6 +71,7 @@ public class ServerMessageHandling {
         ServerSidePacketRegistry.INSTANCE.register(OPUS_UPDATE, (context, buf) -> {
             String content = buf.readString();
             boolean sign = buf.readBoolean();
+            RemnantType type = sign ? RemnantStates.get(new Identifier(buf.readString())) : null;
             Hand hand = buf.readEnumConstant(Hand.class);
             context.getTaskQueue().execute(() -> {
                 PlayerEntity player = context.getPlayer();
@@ -78,11 +80,7 @@ public class ServerMessageHandling {
                     return;
                 }
                 if (sign) {
-                    if (content.equals(OpusDemoniumItem.CURSE_SENTENCE)) {
-                        player.setStackInHand(hand, new ItemStack(RequiemItems.OPUS_DEMONIUM_CURSE));
-                    } else if (content.equals(OpusDemoniumItem.CURE_SENTENCE)) {
-                        player.setStackInHand(hand, new ItemStack(RequiemItems.OPUS_DEMONIUM_CURE));
-                    }
+                    player.setStackInHand(hand, type.getConversionBook(player));
                 } else {
                     ListTag pages = new ListTag();
                     pages.add(new StringTag(content));

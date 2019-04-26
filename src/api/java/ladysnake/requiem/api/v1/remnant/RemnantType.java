@@ -18,7 +18,42 @@
 package ladysnake.requiem.api.v1.remnant;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nullable;
+
+/**
+ * A {@link RemnantType} contains information about a specific kind
+ * of {@link RemnantState}.
+ *
+ * @see net.minecraft.entity.EntityType
+ * @see net.minecraft.block.entity.BlockEntityType
+ */
 public interface RemnantType {
+    /**
+     * Creates a new remnant state of this type, for the given player
+     */
     RemnantState create(PlayerEntity player);
+
+    /**
+     * Gets the unlocalized string corresponding to the sentence the player
+     * should input in an Opus Daemonium to change it into a conversion item
+     *
+     * @return a localization key
+     */
+    @Nullable
+    default String getConversionBookSentence() {
+        return null;
+    }
+
+    /**
+     * Gets the conversion item making a player into this remnant type.
+     * The returned itemstack should always be a new instance.
+     *
+     * @return a new stack of the conversion item for this remnant type
+     * @param player the player triggering the conversion, if any
+     */
+    default ItemStack getConversionBook(@Nullable PlayerEntity player) {
+        return ItemStack.EMPTY; // The empty stack is a singleton
+    }
 }
