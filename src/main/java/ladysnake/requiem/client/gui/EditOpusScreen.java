@@ -1,12 +1,12 @@
 package ladysnake.requiem.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.mixin.client.gui.ingame.EditBookScreenAccessor;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.WrittenBookScreen;
 import net.minecraft.client.gui.ingame.EditBookScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class EditOpusScreen extends EditBookScreen {
-    public static final Identifier BOOK_TEXTURE = WrittenBookScreen.BOOK_TEXTURE;
+    public static final Identifier BOOK_TEXTURE = Requiem.id("textures/gui/opus_daemonium.png");
     private Map<String, RemnantType> incantations;
 
     public EditOpusScreen(PlayerEntity player, ItemStack book, Hand hand) {

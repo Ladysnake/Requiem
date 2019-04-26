@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
     "textures": {
-        "layer0": "requiem:item/watashi_wa_debuggo_desu"
+        "layer0": "requiem:item/opus_debogium"
     }
 }
