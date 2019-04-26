@@ -88,7 +88,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         return !(this.remnantState instanceof NullRemnantState);
     }
 
-    private void setRemnantState(RemnantState handler) {
+    @Override
+    public void setRemnantState(RemnantState handler) {
         this.remnantState.setSoul(false);
         this.remnantState = handler;
         if (!this.world.isClient) {
@@ -121,14 +122,14 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     @Inject(at = @At("TAIL"), method = "writeCustomDataToTag")
     private void writeCustomDataToTag(CompoundTag tag, CallbackInfo info) {
         CompoundTag remnantData = new CompoundTag();
-        remnantData.putString("id", RequiemRegistries.REMNANT_STATES.getId(this.getRemnantState().getType()).toString());
+        remnantData.putString("id", RemnantStates.getId(this.getRemnantState().getType()).toString());
         tag.put(TAG_REMNANT_DATA, this.remnantState.toTag(remnantData));
     }
 
     @Inject(at = @At("TAIL"), method = "readCustomDataFromTag")
     private void readCustomDataFromTag(CompoundTag tag, CallbackInfo info) {
         CompoundTag remnantTag = tag.getCompound(TAG_REMNANT_DATA);
-        RemnantType remnantType = RequiemRegistries.REMNANT_STATES.get(new Identifier(remnantTag.getString("id")));
+        RemnantType remnantType = RemnantStates.get(new Identifier(remnantTag.getString("id")));
         RemnantState handler = remnantType.create((PlayerEntity) (Object) this);
         handler.fromTag(remnantTag);
         this.setRemnantState(handler);

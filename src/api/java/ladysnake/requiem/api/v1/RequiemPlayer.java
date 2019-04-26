@@ -32,6 +32,8 @@ public interface RequiemPlayer {
      */
     RemnantState getRemnantState();
 
+    void setRemnantState(RemnantState state);
+
     /**
      * @return the player's movement alterer
      */

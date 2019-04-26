@@ -18,12 +18,31 @@
 package ladysnake.requiem.common.remnant;
 
 import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.impl.remnant.MutableRemnantState;
 import ladysnake.requiem.common.impl.remnant.NullRemnantState;
+import net.minecraft.util.Identifier;
 
 public final class RemnantStates {
     private RemnantStates() { throw new AssertionError(); }
 
     public static final RemnantType MORTAL = p -> NullRemnantState.NULL_STATE;
     public static final RemnantType REMNANT = owner -> new MutableRemnantState(RemnantStates.REMNANT, owner);
+
+    public static RemnantType get(Identifier id) {
+        return RequiemRegistries.REMNANT_STATES.get(id);
+    }
+
+    public static RemnantType get(int rawId) {
+        return RequiemRegistries.REMNANT_STATES.get(rawId);
+    }
+
+    public static Identifier getId(RemnantType type) {
+        return RequiemRegistries.REMNANT_STATES.getId(type);
+    }
+
+    public static int getRawId(RemnantType type) {
+        return RequiemRegistries.REMNANT_STATES.getRawId(type);
+    }
+
 }
