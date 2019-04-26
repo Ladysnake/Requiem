@@ -31,8 +31,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
+import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.BowItem;
+import net.minecraft.item.TridentItem;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Style;
@@ -90,12 +92,18 @@ public class RequiemClient implements ClientModInitializer {
         ItemTooltipCallback.EVENT.register((item, player, context, lines) -> {
             if (player != null) {
                 LivingEntity possessed = ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
+                String key;
                 if (possessed instanceof AbstractSkeletonEntity && item.getItem() instanceof BowItem) {
-                    lines.add(TextFormatter.style(
-                            new TranslatableTextComponent("requiem:tooltip.skeletal_efficiency"),
-                            new Style().setColor(TextFormat.DARK_GRAY)
-                    ));
+                    key = "requiem:tooltip.skeletal_efficiency";
+                } else if (possessed instanceof DrownedEntity && item.getItem() instanceof TridentItem) {
+                    key = "requiem:tooltip.drowned_grip";
+                } else {
+                    return;
                 }
+                lines.add(TextFormatter.style(
+                        new TranslatableTextComponent(key),
+                        new Style().setColor(TextFormat.DARK_GRAY)
+                ));
             }
         });
     }
