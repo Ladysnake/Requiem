@@ -24,6 +24,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.FoodItemSetting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.text.TextFormat;
 import net.minecraft.util.registry.Registry;
 
 public class RequiemItems {
@@ -44,8 +45,8 @@ public class RequiemItems {
         DEBUG_ITEM = registerItem(new DebugItem(new Item.Settings()), "debug_item");
         HUMAN_FLESH = registerItem(new Item(new Item.Settings().food(HUMAN_FOOD).itemGroup(ItemGroup.FOOD)), "human_flesh");
         OPUS_DEMONIUM = registerItem(new OpusDemoniumItem(new Item.Settings().itemGroup(ItemGroup.MISC)), "opus_daemonium");
-        OPUS_DEMONIUM_CURE = registerItem(new WrittenOpusItem(RemnantStates.MORTAL, new Item.Settings().itemGroup(ItemGroup.MISC)), "opus_daemonium_cure");
-        OPUS_DEMONIUM_CURSE = registerItem(new WrittenOpusItem(RemnantStates.REMNANT, new Item.Settings().itemGroup(ItemGroup.MISC)), "opus_daemonium_curse");
+        OPUS_DEMONIUM_CURE = registerItem(new WrittenOpusItem(RemnantStates.MORTAL, TextFormat.AQUA, new Item.Settings().itemGroup(ItemGroup.MISC)), "opus_daemonium_cure");
+        OPUS_DEMONIUM_CURSE = registerItem(new WrittenOpusItem(RemnantStates.REMNANT, TextFormat.RED, new Item.Settings().itemGroup(ItemGroup.MISC)), "opus_daemonium_curse");
     }
 
     public static <T extends Item> T registerItem(T item, String name) {

@@ -24,10 +24,20 @@ import java.util.List;
 
 public class WrittenOpusItem extends Item {
     private final RemnantType remnantType;
+    private final TextFormat color;
 
-    public WrittenOpusItem(RemnantType remnantType, Settings settings) {
+    public WrittenOpusItem(RemnantType remnantType, TextFormat color, Settings settings) {
         super(settings);
         this.remnantType = remnantType;
+        this.color = color;
+    }
+
+    public RemnantType getRemnantType() {
+        return remnantType;
+    }
+
+    public TextFormat getTooltipColor() {
+        return color;
     }
 
     @Override
@@ -47,6 +57,8 @@ public class WrittenOpusItem extends Item {
 
     @Environment(EnvType.CLIENT)
     public void buildTooltip(ItemStack stack, @Nullable World world, List<TextComponent> lines, TooltipContext ctx) {
+        lines.add(new TranslatableTextComponent(this.getRemnantType().getConversionBookSentence())
+                .applyFormat(this.getTooltipColor()));
         if (stack.hasTag()) {
             CompoundTag tag = stack.getTag();
             String author = tag.getString("author");

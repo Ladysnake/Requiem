@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MinecraftClientMixin",
+    "gui.container.WrittenBookScreenContentsMixin",
     "gui.hud.InGameHudMixin",
     "gui.ingame.EditBookScreenAccessor",
     "network.ClientPlayerEntityMixin",

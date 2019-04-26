@@ -3,6 +3,7 @@
   "package": "ladysnake.requiem.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "block.entity.LecternBlockEntityMixin",
     "entity.EntityAccessor",
     "entity.ItemEntityMixin",
     "entity.LivingEntityAccessor",
