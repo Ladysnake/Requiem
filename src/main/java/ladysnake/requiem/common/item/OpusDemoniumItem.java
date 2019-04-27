@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class OpusDemoniumItem extends WritableBookItem {
+    public static final int REQUIRED_CONVERSION_XP = 3;
 
     public OpusDemoniumItem(Settings settings) {
         super(settings);
@@ -35,7 +36,11 @@ public class OpusDemoniumItem extends WritableBookItem {
 
     @Override
     public void buildTooltip(ItemStack stack, @Nullable World world, List<TextComponent> lines, TooltipContext ctx) {
-        lines.add(new TranslatableTextComponent("requiem.opus_daemonium.curse").applyFormat(RequiemItems.OPUS_DEMONIUM_CURSE.getTooltipColor()));
-        lines.add(new TranslatableTextComponent("requiem.opus_daemonium.cure").applyFormat(RequiemItems.OPUS_DEMONIUM_CURE.getTooltipColor()));
+        addTooltipLine(lines, RequiemItems.OPUS_DEMONIUM_CURSE);
+        addTooltipLine(lines, RequiemItems.OPUS_DEMONIUM_CURE);
+    }
+
+    private void addTooltipLine(List<TextComponent> lines, WrittenOpusItem version) {
+        lines.add(new TranslatableTextComponent(version.getRemnantType().getConversionBookSentence()).applyFormat(version.getTooltipColor()));
     }
 }

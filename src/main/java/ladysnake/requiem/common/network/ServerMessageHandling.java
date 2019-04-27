@@ -21,6 +21,7 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.item.OpusDemoniumItem;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantStates;
 import net.fabricmc.fabric.api.network.PacketContext;
@@ -79,8 +80,14 @@ public class ServerMessageHandling {
                 if (book.getItem() != RequiemItems.OPUS_DEMONIUM) {
                     return;
                 }
-                if (sign) {
+                if (sign && player.experience >= OpusDemoniumItem.REQUIRED_CONVERSION_XP) {
                     player.setStackInHand(hand, type.getConversionBook(player));
+                    player.experience -= OpusDemoniumItem.REQUIRED_CONVERSION_XP;
+                    if (player.experience < 0) {
+                        player.experience = 0;
+                        player.experienceLevelProgress = 0.0F;
+                        player.experienceLevel = 0;
+                    }
                 } else {
                     ListTag pages = new ListTag();
                     pages.add(new StringTag(content));

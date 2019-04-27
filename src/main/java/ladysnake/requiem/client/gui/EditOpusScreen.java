@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.RequiemRegistries;
+import ladysnake.requiem.common.item.OpusDemoniumItem;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.mixin.client.gui.ingame.EditBookScreenAccessor;
 import net.minecraft.client.gui.DrawableHelper;
@@ -24,7 +25,11 @@ import java.util.Objects;
 
 public class EditOpusScreen extends EditBookScreen {
     public static final Identifier BOOK_TEXTURE = Requiem.id("textures/gui/opus_daemonium.png");
+    public static final Identifier ENCHANTING_TEXTURE = new Identifier("textures/gui/container/enchanting_table.png");
+    public static final int REQUIRED_XP = OpusDemoniumItem.REQUIRED_CONVERSION_XP;
+
     private Map<String, RemnantType> incantations;
+    private boolean validSentence;
 
     public EditOpusScreen(PlayerEntity player, ItemStack book, Hand hand) {
         super(player, book, hand);
@@ -104,6 +109,17 @@ public class EditOpusScreen extends EditBookScreen {
         for (AbstractButtonWidget button : this.buttons) {
             button.render(mouseX, mouseY, tickDelta);
         }
+        ButtonWidget signButton = ((EditBookScreenAccessor) this).getButtonSign();
+        int x = signButton.x + signButton.getWidth() - 22;
+        int y = signButton.y - 13;
+        this.minecraft.getTextureManager().bindTexture(ENCHANTING_TEXTURE);
+        if (this.validSentence) {
+            if (this.minecraft.player.experience < REQUIRED_XP && !this.minecraft.player.abilities.creativeMode) {
+                this.blit(x + 1, y + 15, 16 * 2, 239, 16, 16);
+            } else {
+                this.blit(x + 1, y + 15, 16 * 2, 223, 16, 16);
+            }
+        }
     }
 
     private Point2D getCursorPositionForIndex(String content, int cursorIndex) {
@@ -161,6 +177,7 @@ public class EditOpusScreen extends EditBookScreen {
 
     private void checkMagicSentence() {
         // Strings are lowercase in the map to make the check case insensitive
-        ((EditBookScreenAccessor) this).getButtonSign().active = this.incantations.containsKey(this.getFirstPage().toLowerCase(Locale.getDefault()));
+        this.validSentence = this.incantations.containsKey(this.getFirstPage().toLowerCase(Locale.getDefault()));
+        ((EditBookScreenAccessor) this).getButtonSign().active = this.validSentence && (this.minecraft.player.experience >= REQUIRED_XP || this.minecraft.player.isCreative());
     }
 }
