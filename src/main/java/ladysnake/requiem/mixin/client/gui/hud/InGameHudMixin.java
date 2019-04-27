@@ -18,17 +18,21 @@
 package ladysnake.requiem.mixin.client.gui.hud;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.EndermanEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Final;
@@ -42,27 +46,32 @@ import javax.annotation.Nullable;
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin extends DrawableHelper {
 
+    private static final Identifier POSSESSION_ICON = Requiem.id("textures/gui/possession_icon.png");
+
     @Shadow @Final private MinecraftClient client;
 
     @Shadow @Nullable protected abstract PlayerEntity getCameraPlayer();
 
     @Shadow protected abstract int method_1744(LivingEntity livingEntity_1);
 
-    private boolean requiem_focusingEnderman;
+    @Shadow private int scaledWidth;
+    @Shadow private int scaledHeight;
 
-    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$SourceFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DestFactor;Lcom/mojang/blaze3d/platform/GlStateManager$SourceFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DestFactor;)V"))
+    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$SourceFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DestFactor;Lcom/mojang/blaze3d/platform/GlStateManager$SourceFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DestFactor;)V"), cancellable = true)
     private void colorCrosshair(CallbackInfo ci) {
-        if (this.client.targetedEntity instanceof EndermanEntity && this.client.player.dimension == DimensionType.THE_END && ((RequiemPlayer)this.client.player).getRemnantState().isIncorporeal()) {
-            GlStateManager.color3f(0.8f, 0.0f, 0.6f);
-            this.requiem_focusingEnderman = true;
-        }
-    }
-
-    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$SourceFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DestFactor;Lcom/mojang/blaze3d/platform/GlStateManager$SourceFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DestFactor;)V"))
-    private void resetCrosshairColor(CallbackInfo ci) {
-        if (this.requiem_focusingEnderman) {
-            GlStateManager.color3f(1.0f, 1.0f, 1.0f);
-            this.requiem_focusingEnderman = false;
+        if (((RequiemPlayer) this.client.player).getRemnantState().isIncorporeal()) {
+            Entity targetedEntity = this.client.targetedEntity;
+            if (targetedEntity instanceof MobEntity) {
+                if (targetedEntity instanceof EndermanEntity && this.client.player.dimension == DimensionType.THE_END) {
+                    GlStateManager.color3f(0.4f, 0.0f, 1.0f);
+                }
+                int x = (this.scaledWidth - 32) / 2;
+                int y = (this.scaledHeight - 16) / 2;
+                this.client.getTextureManager().bindTexture(POSSESSION_ICON);
+                DrawableHelper.blit(x, y, 32, 32, 0, 0, 16, 16, 16, 16);
+                this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
+                ci.cancel();
+            }
         }
     }
 
