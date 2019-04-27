@@ -22,7 +22,6 @@ import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.impl.movement.PlayerMovementAlterer;
 import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
@@ -90,6 +89,9 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     @Override
     public void setRemnantState(RemnantState handler) {
+        if (handler.getType() == this.remnantState.getType()) {
+            return;
+        }
         this.remnantState.setSoul(false);
         this.remnantState = handler;
         if (!this.world.isClient) {

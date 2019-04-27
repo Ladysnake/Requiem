@@ -4,6 +4,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
 import ladysnake.requiem.mixin.entity.mob.EndermanEntityAccessor;
+import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -47,6 +48,7 @@ public static void register() {
                 // Set the variable in advance to avoid game credits
                 ((ServerPlayerEntity)possessor).notInAnyWorld = true;
                 possessor.changeDimension(DimensionType.OVERWORLD);
+                ((ServerPlayerEntity) possessor).networkHandler.sendPacket(new GameStateChangeS2CPacket(4, 0.0F));
                 tpDest = target.changeDimension(DimensionType.OVERWORLD);
             }
             if (tpDest != null) {
