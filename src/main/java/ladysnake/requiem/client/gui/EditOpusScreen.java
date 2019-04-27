@@ -73,7 +73,7 @@ public class EditOpusScreen extends EditBookScreen {
 
     private void finalizeOpus(boolean sign) {
         Objects.requireNonNull(this.minecraft).openScreen(null);
-        if (((EditBookScreenAccessor)this).isDirty()) {
+        if (((EditBookScreenAccessor)this).isDirty() || sign) {
             String firstPage = getFirstPage();   // it's the only one we accept
             Hand hand = ((EditBookScreenAccessor) this).getHand();
             RequiemNetworking.sendToServer(RequiemNetworking.createOpusUpdateBuffer(firstPage, sign, this.incantations.get(firstPage.toLowerCase(Locale.getDefault())), hand));
