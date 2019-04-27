@@ -31,6 +31,7 @@ import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -39,6 +40,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -144,11 +146,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     /* Actual modifications of vanilla behaviour */
 
-    @Inject(method = "eatFood", at = @At(value = "RETURN"))
+    @Inject(method = "eatFood", at = @At(value = "HEAD"))
     private void eatZombieFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
         MobEntity possessedEntity = this.getPossessionComponent().getPossessedEntity();
         if (possessedEntity instanceof ZombieEntity && stack.getItem().isFood()) {
-            if (RequiemItemTags.RAW_MEATS.contains(stack.getItem())) {
+            if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || ItemTags.FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
                 FoodItemSetting food = stack.getItem().getFoodSetting();
                 possessedEntity.heal(food.getHunger());
             }
