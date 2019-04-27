@@ -18,23 +18,18 @@
 package ladysnake.requiem.mixin.client.gui.hud;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.EndermanEntity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -45,8 +40,6 @@ import javax.annotation.Nullable;
 
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin extends DrawableHelper {
-
-    private static final Identifier POSSESSION_ICON = Requiem.id("textures/gui/possession_icon.png");
 
     @Shadow @Final private MinecraftClient client;
 
@@ -59,20 +52,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
 
     @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$SourceFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DestFactor;Lcom/mojang/blaze3d/platform/GlStateManager$SourceFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DestFactor;)V"), cancellable = true)
     private void colorCrosshair(CallbackInfo ci) {
-        if (((RequiemPlayer) this.client.player).getRemnantState().isIncorporeal()) {
-            Entity targetedEntity = this.client.targetedEntity;
-            if (targetedEntity instanceof MobEntity) {
-                if (targetedEntity instanceof EndermanEntity && this.client.player.dimension == DimensionType.THE_END) {
-                    GlStateManager.color3f(0.4f, 0.0f, 1.0f);
-                }
-                int x = (this.scaledWidth - 32) / 2;
-                int y = (this.scaledHeight - 16) / 2;
-                this.client.getTextureManager().bindTexture(POSSESSION_ICON);
-                DrawableHelper.blit(x, y, 32, 32, 0, 0, 16, 16, 16, 16);
-                this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
-                ci.cancel();
-            }
-        }
+        CrosshairRenderCallback.EVENT.invoker().onCrosshairRender(this.scaledWidth, this.scaledHeight);
     }
 
     @Inject(
@@ -130,7 +110,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
 
     @Inject(method = "renderHotbar", at = @At("HEAD"), cancellable = true)
     private void fireHotBarRenderEvent(float tickDelta, CallbackInfo info) {
-        if (HotbarRenderCallback.EVENT.invoker().onHotbarRendered(tickDelta) != ActionResult.PASS) {
+        if (HotbarRenderCallback.EVENT.invoker().onHotbarRender(tickDelta) != ActionResult.PASS) {
             info.cancel();
         }
     }

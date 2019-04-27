@@ -7,6 +7,7 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
+import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.client.RequiemFx;
 import ladysnake.satin.api.event.EntitiesPostRenderCallback;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
@@ -21,6 +22,7 @@ import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.WaterCreatureEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
+import net.minecraft.util.Identifier;
 
 @CalledThroughReflection
 public class PandemoniumClient implements ClientModInitializer {
@@ -42,6 +44,7 @@ public class PandemoniumClient implements ClientModInitializer {
                 loadShaderFunc.accept(RequiemFx.FISH_EYE_SHADER_ID);
             }
         });
+        CrosshairRenderCallback.EVENT.unregister(new Identifier("requiem:enderman_color"));
         EntitiesPostRenderCallback.EVENT.register((camera, frustum, tickDelta) -> {
             if (!camera.isThirdPerson()) {
                 MinecraftClient client = MinecraftClient.getInstance();

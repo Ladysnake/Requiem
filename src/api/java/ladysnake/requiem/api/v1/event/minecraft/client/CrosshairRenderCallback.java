@@ -17,23 +17,18 @@
  */
 package ladysnake.requiem.api.v1.event.minecraft.client;
 
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.util.ActionResult;
+import ladysnake.requiem.api.v1.event.IdentifyingEvent;
 
-public interface HotbarRenderCallback {
+@FunctionalInterface
+public interface CrosshairRenderCallback {
 
-    ActionResult onHotbarRender(float tickDelta);
+    void onCrosshairRender(int scaledWidth, int scaledHeight);
 
-    Event<HotbarRenderCallback> EVENT = EventFactory.createArrayBacked(HotbarRenderCallback.class,
-            (listeners) -> (tickDelta) -> {
-                for (HotbarRenderCallback handler : listeners) {
-                    ActionResult actionResult = handler.onHotbarRender(tickDelta);
-                    if (actionResult != ActionResult.PASS) {
-                        return actionResult;
-                    }
+    IdentifyingEvent<CrosshairRenderCallback> EVENT = new IdentifyingEvent<>(CrosshairRenderCallback.class,
+            (listeners) -> (int scaledWidth, int scaledHeight) -> {
+                for (CrosshairRenderCallback handler : listeners) {
+                    handler.onCrosshairRender(scaledWidth, scaledHeight);
                 }
-                return ActionResult.PASS;
             });
 
 }

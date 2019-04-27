@@ -17,9 +17,12 @@
  */
 package ladysnake.requiem.client;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
+import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
 import ladysnake.requiem.client.network.ClientMessageHandling;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
@@ -28,10 +31,12 @@ import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.DrownedEntity;
+import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.TridentItem;
@@ -42,9 +47,15 @@ import net.minecraft.text.TextFormat;
 import net.minecraft.text.TextFormatter;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.dimension.DimensionType;
+
+import static net.minecraft.client.gui.DrawableHelper.GUI_ICONS_LOCATION;
 
 @CalledThroughReflection
 public class RequiemClient implements ClientModInitializer {
+
+    private static final Identifier POSSESSION_ICON = Requiem.id("textures/gui/possession_icon.png");
 
     @Override
     public void onInitializeClient() {
@@ -75,6 +86,25 @@ public class RequiemClient implements ClientModInitializer {
                 return ActionResult.SUCCESS;
             }
             return ActionResult.PASS;
+        });
+        CrosshairRenderCallback.EVENT.register(Requiem.id("possession_indicator"), (scaledWidth, scaledHeight) -> {
+            MinecraftClient client = MinecraftClient.getInstance();
+            if (((RequiemPlayer) client.player).getRemnantState().isIncorporeal()) {
+                if (client.targetedEntity instanceof MobEntity) {
+                    int x = (scaledWidth - 32) / 2 + 8;
+                    int y = (scaledHeight - 16) / 2 + 16;
+                    GlStateManager.color3f(1.0f, 1.0f, 1.0f);
+                    client.getTextureManager().bindTexture(POSSESSION_ICON);
+                    DrawableHelper.blit(x, y, 16, 16, 0, 0, 16, 16, 16, 16);
+                    client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
+                }
+            }
+        });
+        CrosshairRenderCallback.EVENT.register(Requiem.id("enderman_color"), (scaledWidth, scaledHeight) -> {
+            MinecraftClient client = MinecraftClient.getInstance();
+            if (client.targetedEntity instanceof EndermanEntity && client.player.dimension == DimensionType.THE_END) {
+                GlStateManager.color3f(0.4f, 0.0f, 1.0f);
+            }
         });
         // Prevents the hotbar from being rendered when the player cannot use items
         HotbarRenderCallback.EVENT.register(tickDelta -> {
