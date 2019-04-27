@@ -26,6 +26,7 @@ import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantStates;
 import net.fabricmc.fabric.api.network.PacketContext;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.minecraft.client.network.packet.ExperienceBarUpdateS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -88,6 +89,7 @@ public class ServerMessageHandling {
                         player.experienceLevelProgress = 0.0F;
                         player.experienceLevel = 0;
                     }
+                    ((ServerPlayerEntity)player).networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(player.experienceLevelProgress, player.experienceLevel, player.experience));
                 } else {
                     ListTag pages = new ListTag();
                     pages.add(new StringTag(content));

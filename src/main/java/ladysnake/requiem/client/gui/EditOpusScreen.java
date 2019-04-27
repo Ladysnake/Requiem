@@ -76,7 +76,7 @@ public class EditOpusScreen extends EditBookScreen {
         if (((EditBookScreenAccessor)this).isDirty()) {
             String firstPage = getFirstPage();   // it's the only one we accept
             Hand hand = ((EditBookScreenAccessor) this).getHand();
-            RequiemNetworking.sendToServer(RequiemNetworking.createOpusUpdateBuffer(firstPage, sign, this.incantations.get(firstPage), hand));
+            RequiemNetworking.sendToServer(RequiemNetworking.createOpusUpdateBuffer(firstPage, sign, this.incantations.get(firstPage.toLowerCase(Locale.getDefault())), hand));
         }
     }
 
