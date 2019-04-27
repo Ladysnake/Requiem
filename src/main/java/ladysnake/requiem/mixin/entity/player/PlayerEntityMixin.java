@@ -27,10 +27,15 @@ import ladysnake.requiem.common.impl.movement.PlayerMovementAlterer;
 import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.remnant.NullRemnantState;
 import ladysnake.requiem.common.remnant.RemnantStates;
+import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.FoodItemSetting;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -138,6 +143,17 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     }
 
     /* Actual modifications of vanilla behaviour */
+
+    @Inject(method = "eatFood", at = @At(value = "RETURN"))
+    private void eatZombieFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
+        MobEntity possessedEntity = this.getPossessionComponent().getPossessedEntity();
+        if (possessedEntity instanceof ZombieEntity && stack.getItem().isFood()) {
+            if (RequiemItemTags.RAW_MEATS.contains(stack.getItem())) {
+                FoodItemSetting food = stack.getItem().getFoodSetting();
+                possessedEntity.heal(food.getHunger());
+            }
+        }
+    }
 
     /**
      * Players' base movement speed is reset each tick to their walking speed.
