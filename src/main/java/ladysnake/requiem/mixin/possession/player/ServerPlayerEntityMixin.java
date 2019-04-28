@@ -130,7 +130,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Mo
     private void writePossessedMobToTag(CompoundTag tag, CallbackInfo info) {
         Entity possessedEntity = ((RequiemPlayer) this).getPossessionComponent().getPossessedEntity();
         if (possessedEntity != null) {
-            Entity possessedEntityVehicle = possessedEntity.getTopmostRiddenEntity();
+            Entity possessedEntityVehicle = possessedEntity.getTopmostVehicle();
             CompoundTag possessedRoot = new CompoundTag();
             CompoundTag serializedPossessed = new CompoundTag();
             possessedEntityVehicle.saveToTag(serializedPossessed);

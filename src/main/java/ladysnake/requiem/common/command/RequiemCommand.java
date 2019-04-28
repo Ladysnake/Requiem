@@ -110,7 +110,7 @@ public class RequiemCommand {
             source.sendFeedback(new TranslatableTextComponent("requiem:commands.ethereal.set.success.self", name), true);
         } else {
             if (source.getWorld().getGameRules().getBoolean("sendCommandFeedback")) {
-                player.appendCommandFeedback(new TranslatableTextComponent("requiem:commands.ethereal.set.target", name));
+                player.sendMessage(new TranslatableTextComponent("requiem:commands.ethereal.set.target", name));
             }
 
             source.sendFeedback(new TranslatableTextComponent("requiem:commands.ethereal.set.success.other", player.getDisplayName(), name), true);
@@ -138,7 +138,7 @@ public class RequiemCommand {
             source.sendFeedback(new TranslatableTextComponent("requiem:commands.possession.stop.success.self", name), true);
         } else {
             if (source.getWorld().getGameRules().getBoolean("sendCommandFeedback")) {
-                player.appendCommandFeedback(new TranslatableTextComponent("requiem:commands.possession.stop.target", name));
+                player.sendMessage(new TranslatableTextComponent("requiem:commands.possession.stop.target", name));
             }
 
             source.sendFeedback(new TranslatableTextComponent("requiem:commands.possession.stop.success.other", player.getDisplayName(), name), true);
@@ -170,7 +170,7 @@ public class RequiemCommand {
             source.sendFeedback(new TranslatableTextComponent("requiem:commands.remnant.set.success.self", name), true);
         } else {
             if (source.getWorld().getGameRules().getBoolean("sendCommandFeedback")) {
-                player.appendCommandFeedback(new TranslatableTextComponent("requiem:commands.remnant.set.target", name));
+                player.sendMessage(new TranslatableTextComponent("requiem:commands.remnant.set.target", name));
             }
 
             source.sendFeedback(new TranslatableTextComponent("requiem:commands.remnant.set.success.other", player.getDisplayName(), name), true);

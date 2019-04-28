@@ -43,7 +43,7 @@ public abstract class IronGolemEntityMixin extends GolemEntity {
      * the small amount of external changes to velocity and all the pitfalls
      * associated with a generic approach, special casing is currently preferred.
      */
-    @Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
+    @Inject(method = "tryAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
     private void knockbackPossessor(Entity target, CallbackInfoReturnable<Boolean> cir) {
         PlayerEntity possessor = ((ProtoPossessable)target).getPossessor();
         if (possessor != null) {

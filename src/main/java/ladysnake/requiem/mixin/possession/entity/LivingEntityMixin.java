@@ -109,7 +109,7 @@ public abstract class LivingEntityMixin extends Entity implements Possessable, V
         }
     }
 
-    @Inject(method = "updateMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;travel(Lnet/minecraft/util/math/Vec3d;)V", shift = AFTER))
+    @Inject(method = "updateState", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;travel(Lnet/minecraft/util/math/Vec3d;)V", shift = AFTER))
     private void afterTravel(CallbackInfo ci) {
         PlayerEntity player = this.getPossessor();
         // If anyone has a better idea for immovable mobs, tell me

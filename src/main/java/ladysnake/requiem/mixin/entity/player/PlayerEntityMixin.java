@@ -114,7 +114,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         }
     }
 
-    @Inject(method = "updateMovement", at = @At("HEAD"))
+    @Inject(method = "updateState", at = @At("HEAD"))
     private void updateMovementAlterer(CallbackInfo info) {
         this.movementAlterer.update();
         this.remnantState.update();
@@ -159,6 +159,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         if (possessedEntity instanceof ZombieEntity && stack.getItem().isFood()) {
             if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || ItemTags.FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
                 FoodItemSetting food = stack.getItem().getFoodSetting();
+                assert food != null;
                 possessedEntity.heal(food.getHunger());
             }
         }
@@ -171,7 +172,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
      * @param attr the {@code this} attribute reference
      * @param value the value that is supposed to be assigned
      */
-    @Redirect(method = "updateMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/attribute/EntityAttributeInstance;setBaseValue(D)V"))
+    @Redirect(method = "updateState", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/attribute/EntityAttributeInstance;setBaseValue(D)V"))
     private void ignoreSpeedResetDuringPossession(EntityAttributeInstance attr, double value) {
         if (!this.getPossessionComponent().isPossessing()) {
             attr.setBaseValue(value);

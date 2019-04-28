@@ -87,7 +87,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
         if (RequiemEntityTags.ITEM_USER.contains(host.getType())) {
             InventoryHelper.transferEquipment(host, player);
         }
-        Entity ridden = ((Entity)possessable).getRiddenEntity();
+        Entity ridden = ((Entity)possessable).getVehicle();
         if (ridden != null) {
             ((MobEntity) possessable).stopRiding();
             player.startRiding(ridden);
@@ -133,7 +133,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 }
                 ((LivingEntityAccessor)player).invokeDropInventory();
             }
-            Entity ridden = player.getRiddenEntity();
+            Entity ridden = player.getVehicle();
             if (ridden != null) {
                 player.stopRiding();
                 possessed.startRiding(ridden);

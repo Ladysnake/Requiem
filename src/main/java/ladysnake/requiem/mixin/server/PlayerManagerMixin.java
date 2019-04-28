@@ -123,7 +123,7 @@ public abstract class PlayerManagerMixin {
     }
 
     @Inject(
-            method = "method_14611",
+            method = "remove",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/server/PlayerManager;savePlayerData(Lnet/minecraft/server/network/ServerPlayerEntity;)V",
