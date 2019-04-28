@@ -19,18 +19,24 @@ package ladysnake.requiem.mixin.client.network;
 
 import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import net.minecraft.client.input.Input;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClientPlayerEntity.class)
 public abstract class ClientPlayerEntityMixin extends PlayerEntity implements RequiemPlayer {
+    @Shadow public Input input;
+
     public ClientPlayerEntityMixin(World world_1, GameProfile gameProfile_1) {
         super(world_1, gameProfile_1);
     }
@@ -43,6 +49,18 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Re
                 cir.setReturnValue(false);
             }
         }
+    }
+
+    @ModifyArg(
+            method = "updateMovement",
+            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;isSwimming()Z", ordinal = 0)),
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;setSprinting(Z)V", ordinal = 0)
+    )
+    private boolean continueFlyingLikeSuperman(boolean value) {
+        if (this.abilities.flying && this.input.movementForward > 0F && this.isSprinting() && this.getRemnantState().isIncorporeal()) {
+            return true;
+        }
+        return value;
     }
 
 }

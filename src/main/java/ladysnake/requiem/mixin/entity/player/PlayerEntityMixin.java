@@ -43,6 +43,8 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -176,6 +178,24 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         }
     }
 
+    @Inject(method = "isSwimming", at = @At("HEAD"), cancellable = true)
+    private void flyLikeSuperman(CallbackInfoReturnable<Boolean> cir) {
+        if (this.abilities.flying && this.isSprinting() && this.remnantState.isIncorporeal()) {
+            cir.setReturnValue(true);
+        }
+    }
+
+    @Inject(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getRotationVector()Lnet/minecraft/util/math/Vec3d;"))
+    private void flySwimVertically(Vec3d motion, CallbackInfo ci) {
+        double yMotion = this.getRotationVector().y;
+        double modifier = yMotion < -0.2D ? 0.085D : 0.06D;
+        // If the motion change would not be applied, apply it ourselves
+        if (yMotion > 0.0D && !this.jumping && this.world.getBlockState(new BlockPos(this.x, this.y + 1.0D - 0.1D, this.z)).getFluidState().isEmpty() && this.remnantState.isIncorporeal()) {
+            Vec3d velocity = this.getVelocity();
+            this.setVelocity(velocity.add(0.0D, (yMotion - velocity.y) * modifier, 0.0D));
+        }
+    }
+
     /**
      * Players' sizes are hardcoded in an immutable enum map.
      * This injection delegates the call to the possessed entity, if any.
@@ -186,22 +206,17 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
             Entity possessedEntity = this.getPossessionComponent().getPossessedEntity();
             if (possessedEntity != null) {
                 cir.setReturnValue(possessedEntity.getSize(pose));
-            } else if (pose == EntityPose.SNEAKING || this.abilities.flying) {
+            } else if (pose == EntityPose.SNEAKING) {
                 cir.setReturnValue(REQUIEM$SOUL_SNEAKING_SIZE);
             }
         }
     }
 
     // 1.27 is the sneaking eye height
-    @Inject(method = "getActiveEyeHeight", at = {
-            @At(value = "CONSTANT", args = "floatValue=1.27"),
-            @At(value = "CONSTANT", args = "floatValue=1.62")
-    }, cancellable = true)
+    @Inject(method = "getActiveEyeHeight", at = {@At(value = "CONSTANT", args = "floatValue=1.27")}, cancellable = true)
     private void adjustSoulSneakingEyeHeight(EntityPose pose, EntitySize size, CallbackInfoReturnable<Float> cir) {
-        if (this.remnantState != null && this.remnantState.isIncorporeal()) {
-            if (pose == EntityPose.SNEAKING || this.abilities.flying) {
-                cir.setReturnValue(0.4f);
-            }
+        if (this.remnantState.isIncorporeal()) {
+            cir.setReturnValue(0.4f);
         }
     }
 

@@ -38,7 +38,6 @@ public class MutableRemnantState implements RemnantState {
     protected final ClosedSpaceDetector closedSpaceDetector;
     protected boolean ethereal;
     private boolean lastTickIncorporeal;
-    private boolean lastTickFlying;
 
     public MutableRemnantState(RemnantType type, PlayerEntity player) {
         this.type = type;
@@ -89,15 +88,6 @@ public class MutableRemnantState implements RemnantState {
                     this.closedSpaceDetector.reset(false);
                 }
                 this.closedSpaceDetector.tick();
-            }
-            if (this.player.abilities.flying != this.lastTickFlying) {
-                this.player.refreshSize();
-                if (this.player.world.isClient && player.abilities.flying) {
-                    float prevEyeHeight = this.player.getStandingEyeHeight();
-                    this.player.y += prevEyeHeight - this.player.getEyeHeight(this.player.getPose());
-                    this.player.prevY = this.player.y;
-                }
-                this.lastTickFlying = player.abilities.flying;
             }
         }
         this.lastTickIncorporeal = incorporeal;
