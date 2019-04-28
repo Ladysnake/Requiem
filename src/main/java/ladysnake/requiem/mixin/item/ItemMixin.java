@@ -19,6 +19,7 @@ package ladysnake.requiem.mixin.item;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.common.tag.RequiemItemTags;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -40,8 +41,11 @@ public abstract class ItemMixin {
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(World world, PlayerEntity player, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
         MobEntity possessedEntity = ((RequiemPlayer) player).getPossessionComponent().getPossessedEntity();
-        if (possessedEntity instanceof ZombieEntity) {
-            ItemStack stack = player.getStackInHand(hand);
+        ItemStack stack = player.getStackInHand(hand);
+        if (possessedEntity != null && possessedEntity.isUndead() && RequiemItemTags.UNDEAD_CURES.contains(stack.getItem()) && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)) {
+            player.setCurrentHand(hand);
+            cir.setReturnValue(new TypedActionResult<>(ActionResult.SUCCESS, stack));
+        } else if (possessedEntity instanceof ZombieEntity) {
             if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || ItemTags.FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
                 player.setCurrentHand(hand);
                 cir.setReturnValue(new TypedActionResult<>(ActionResult.SUCCESS, stack));

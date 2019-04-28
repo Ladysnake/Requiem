@@ -31,6 +31,8 @@ import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -41,6 +43,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -162,6 +166,13 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
                 assert food != null;
                 possessedEntity.heal(food.getHunger());
             }
+        }
+        if (possessedEntity != null && possessedEntity.isUndead() && RequiemItemTags.UNDEAD_CURES.contains(stack.getItem()) && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)) {
+            this.remnantState.setSoul(false);
+            possessedEntity.remove();
+            world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_ZOMBIE_VILLAGER_CONVERTED, SoundCategory.PLAYERS, 1.0F, 0.1F);
+            this.removePotionEffect(StatusEffects.WEAKNESS);
+            this.addPotionEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 5));
         }
     }
 
