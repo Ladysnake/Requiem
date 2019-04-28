@@ -21,6 +21,7 @@ import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.command.RequiemCommand;
 import ladysnake.requiem.common.impl.ApiInitializer;
@@ -52,6 +53,7 @@ public class Requiem implements ModInitializer {
     @Override
     public void onInitialize() {
         ApiInitializer.init();
+        RequiemCriteria.init();
         RequiemBlocks.init();
         RequiemItems.init();
         RequiemRegistries.init();
