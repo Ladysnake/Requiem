@@ -82,11 +82,13 @@ public class MutableRemnantState implements RemnantState {
     @Override
     public void update() {
         boolean incorporeal = this.isIncorporeal();
-        if (incorporeal && !player.world.isClient) {
-            if (!this.lastTickIncorporeal) {
-                this.closedSpaceDetector.reset(false);
+        if (incorporeal) {
+            if (!player.world.isClient) {
+                if (!this.lastTickIncorporeal) {
+                    this.closedSpaceDetector.reset(false);
+                }
+                this.closedSpaceDetector.tick();
             }
-            this.closedSpaceDetector.tick();
         }
         this.lastTickIncorporeal = incorporeal;
     }

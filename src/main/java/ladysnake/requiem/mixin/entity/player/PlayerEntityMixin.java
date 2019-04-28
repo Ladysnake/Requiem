@@ -34,6 +34,7 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodItemSetting;
 import net.minecraft.item.ItemStack;
@@ -42,8 +43,12 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -60,7 +65,9 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     /* Implementation of RequiemPlayer */
 
+    @Shadow @Final public PlayerAbilities abilities;
     private static final String TAG_REMNANT_DATA = "requiem:remnant_data";
+    private static final EntitySize REQUIEM$SOUL_SNEAKING_SIZE = EntitySize.resizeable(0.6f, 0.6f);
 
     private RemnantState remnantState = NullRemnantState.NULL_STATE;
     private final PossessionComponent possessionComponent = new PossessionComponentImpl((PlayerEntity) (Object) this);
@@ -171,15 +178,45 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         }
     }
 
+    @Inject(method = "isSwimming", at = @At("HEAD"), cancellable = true)
+    private void flyLikeSuperman(CallbackInfoReturnable<Boolean> cir) {
+        if (this.abilities.flying && this.isSprinting() && this.remnantState.isIncorporeal()) {
+            cir.setReturnValue(true);
+        }
+    }
+
+    @Inject(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getRotationVector()Lnet/minecraft/util/math/Vec3d;"))
+    private void flySwimVertically(Vec3d motion, CallbackInfo ci) {
+        double yMotion = this.getRotationVector().y;
+        double modifier = yMotion < -0.2D ? 0.085D : 0.06D;
+        // If the motion change would not be applied, apply it ourselves
+        if (yMotion > 0.0D && !this.jumping && this.world.getBlockState(new BlockPos(this.x, this.y + 1.0D - 0.1D, this.z)).getFluidState().isEmpty() && this.remnantState.isIncorporeal()) {
+            Vec3d velocity = this.getVelocity();
+            this.setVelocity(velocity.add(0.0D, (yMotion - velocity.y) * modifier, 0.0D));
+        }
+    }
+
     /**
      * Players' sizes are hardcoded in an immutable enum map.
      * This injection delegates the call to the possessed entity, if any.
      */
     @Inject(method = "getSize", at = @At("HEAD"), cancellable = true)
     private void adjustSize(EntityPose pose, CallbackInfoReturnable<EntitySize> cir) {
-        Entity possessedEntity = this.getPossessionComponent().getPossessedEntity();
-        if (possessedEntity != null) {
-            cir.setReturnValue(possessedEntity.getSize(pose));
+        if (this.remnantState.isSoul()) {
+            Entity possessedEntity = this.getPossessionComponent().getPossessedEntity();
+            if (possessedEntity != null) {
+                cir.setReturnValue(possessedEntity.getSize(pose));
+            } else if (pose == EntityPose.SNEAKING) {
+                cir.setReturnValue(REQUIEM$SOUL_SNEAKING_SIZE);
+            }
+        }
+    }
+
+    // 1.27 is the sneaking eye height
+    @Inject(method = "getActiveEyeHeight", at = {@At(value = "CONSTANT", args = "floatValue=1.27")}, cancellable = true)
+    private void adjustSoulSneakingEyeHeight(EntityPose pose, EntitySize size, CallbackInfoReturnable<Float> cir) {
+        if (this.remnantState.isIncorporeal()) {
+            cir.setReturnValue(0.4f);
         }
     }
 
