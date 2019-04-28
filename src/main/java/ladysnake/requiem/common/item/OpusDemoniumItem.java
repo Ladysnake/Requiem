@@ -18,6 +18,8 @@
 package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.client.gui.EditOpusScreen;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -45,10 +47,15 @@ public class OpusDemoniumItem extends WritableBookItem {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
         if (world.isClient()) {
-            MinecraftClient.getInstance().openScreen(new EditOpusScreen(player, stack, hand));
+            openScreen(player, hand, stack);
         }
         player.incrementStat(Stats.USED.getOrCreateStat(this));
         return new TypedActionResult<>(ActionResult.SUCCESS, stack);
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void openScreen(PlayerEntity player, Hand hand, ItemStack stack) {
+        MinecraftClient.getInstance().openScreen(new EditOpusScreen(player, stack, hand));
     }
 
     @Override

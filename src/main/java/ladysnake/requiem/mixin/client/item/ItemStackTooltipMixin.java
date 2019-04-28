@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.mixin.item;
+package ladysnake.requiem.mixin.client.item;
 
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import net.minecraft.client.item.TooltipContext;
@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.List;
 
 @Mixin(ItemStack.class)
-public abstract class ItemStackMixin {
+public abstract class ItemStackTooltipMixin {
     @Inject(
             method = "getTooltipText",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;hasTag()Z", ordinal = 0),
