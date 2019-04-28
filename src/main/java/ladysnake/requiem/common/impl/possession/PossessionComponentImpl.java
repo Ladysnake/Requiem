@@ -33,6 +33,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -87,6 +88,9 @@ public final class PossessionComponentImpl implements PossessionComponent {
         if (RequiemEntityTags.ITEM_USER.contains(host.getType())) {
             InventoryHelper.transferEquipment(host, player);
         }
+        for (StatusEffectInstance effect : host.getStatusEffects()) {
+            player.addPotionEffect(new StatusEffectInstance(effect));
+        }
         Entity ridden = ((Entity)possessable).getVehicle();
         if (ridden != null) {
             ((MobEntity) possessable).stopRiding();
@@ -122,21 +126,27 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     @Override
     public void stopPossessing() {
+        this.stopPossessing(!this.player.isCreative());
+    }
+
+    @Override
+    public void stopPossessing(boolean transfer) {
         LivingEntity possessed = this.getPossessedEntity();
         if (possessed != null) {
             this.possessedUuid = null;
-            resetState();
+            this.resetState();
             ((Possessable)possessed).setPossessor(null);
-            if (player instanceof ServerPlayerEntity && !player.isCreative()) {
+            if (player instanceof ServerPlayerEntity && transfer) {
                 if (RequiemEntityTags.ITEM_USER.contains(possessed.getType())) {
                     InventoryHelper.transferEquipment(player, possessed);
                 }
                 ((LivingEntityAccessor)player).invokeDropInventory();
-            }
-            Entity ridden = player.getVehicle();
-            if (ridden != null) {
-                player.stopRiding();
-                possessed.startRiding(ridden);
+                player.clearPotionEffects();
+                Entity ridden = player.getVehicle();
+                if (ridden != null) {
+                    player.stopRiding();
+                    possessed.startRiding(ridden);
+                }
             }
         }
     }

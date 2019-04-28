@@ -32,9 +32,11 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
@@ -145,8 +147,7 @@ public abstract class LivingEntityMixin extends Entity implements Possessable, V
     }
 
     @Inject(method = "onDeath", at = @At("TAIL"))
-    private void onDeath(DamageSource damageSource_1, CallbackInfo ci) {
-        // Drop player inventory on death
+    private void onDeath(DamageSource deathCause, CallbackInfo ci) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
             ((RequiemPlayer)possessor).getPossessionComponent().stopPossessing();
@@ -165,6 +166,30 @@ public abstract class LivingEntityMixin extends Entity implements Possessable, V
     private void updateHeldItem(CallbackInfo ci) {
         if (this.isBeingPossessed()) {
             ci.cancel();
+        }
+    }
+
+    @Inject(method = "method_6020", at = @At("RETURN"))
+    private void onStatusEffectAdded(StatusEffectInstance effect, CallbackInfo ci) {
+        PlayerEntity possessor = this.getPossessor();
+        if (possessor instanceof ServerPlayerEntity) {
+            possessor.addPotionEffect(new StatusEffectInstance(effect));
+        }
+    }
+    @Inject(method = "method_6009", at = @At("RETURN"))
+    private void onStatusEffectUpdated(StatusEffectInstance effect, boolean upgrade, CallbackInfo ci) {
+        if (upgrade) {
+            PlayerEntity possessor = this.getPossessor();
+            if (possessor instanceof ServerPlayerEntity) {
+                possessor.addPotionEffect(new StatusEffectInstance(effect));
+            }
+        }
+    }
+    @Inject(method = "method_6129", at = @At("RETURN"))
+    private void onStatusEffectRemoved(StatusEffectInstance effect, CallbackInfo ci) {
+        PlayerEntity possessor = this.getPossessor();
+        if (possessor instanceof ServerPlayerEntity) {
+            possessor.removeStatusEffect(effect.getEffectType());
         }
     }
 

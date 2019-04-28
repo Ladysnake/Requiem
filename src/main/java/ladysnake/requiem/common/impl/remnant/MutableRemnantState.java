@@ -69,7 +69,7 @@ public class MutableRemnantState implements RemnantState {
                 abilities.allowFlying = this.player.isCreative();
                 abilities.flying &= abilities.allowFlying;
                 abilities.invulnerable = this.player.isCreative();
-                ((RequiemPlayer)this.player).getPossessionComponent().stopPossessing();
+                ((RequiemPlayer)this.player).getPossessionComponent().stopPossessing(false);
             }
             ((RequiemPlayer)this.player).getMovementAlterer().setConfig(config);
             if (!this.player.world.isClient) {

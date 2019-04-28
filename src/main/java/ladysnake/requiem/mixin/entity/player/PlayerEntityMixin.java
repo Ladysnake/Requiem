@@ -171,7 +171,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
             this.remnantState.setSoul(false);
             possessedEntity.remove();
             world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_ZOMBIE_VILLAGER_CONVERTED, SoundCategory.PLAYERS, 1.0F, 0.1F);
-            this.removePotionEffect(StatusEffects.WEAKNESS);
             this.addPotionEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 5));
         }
     }

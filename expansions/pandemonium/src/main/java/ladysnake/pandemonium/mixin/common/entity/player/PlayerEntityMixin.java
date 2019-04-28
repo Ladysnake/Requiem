@@ -19,7 +19,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         super(type, world);
     }
 
-    @Inject(method = "updateMovement", at = @At("HEAD"))
+    @Inject(method = "updateState", at = @At("HEAD"))
     private void update(CallbackInfo info) {
         // TODO move to a player tick event when we have one
         if (!this.world.isClient && this.isSneaking()) {
