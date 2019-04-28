@@ -17,9 +17,9 @@
  */
 package ladysnake.pandemonium.client;
 
+import ladysnake.pandemonium.common.util.ItemUtil;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
-import ladysnake.pandemonium.common.util.ItemUtil;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.WitchEntity;
@@ -33,14 +33,16 @@ import java.util.List;
 public class PossessionTooltipCallback implements ItemTooltipCallback {
     @Override
     public void onTooltipBuilt(ItemStack item, @Nullable PlayerEntity player, TooltipContext context, List<TextComponent> lines) {
-        addPossessionTooltip:
         if (player != null) {
-            LivingEntity possessed = (LivingEntity) ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
+            LivingEntity possessed = ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
+            if (possessed == null) {
+                return;
+            }
             String translationKey;
             if (possessed instanceof WitchEntity && ItemUtil.isWaterBottle(item)) {
                 translationKey = "pandemonium:tooltip.witch_brew_base";
             } else {    // More tooltips can easily be added here
-                break addPossessionTooltip;
+                return;
             }
             lines.add(TextFormatter.style(
                     new TranslatableTextComponent(translationKey),

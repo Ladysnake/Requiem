@@ -16,8 +16,13 @@
   "requiem:commands.possession.stop.success.self": "Stopped possessing %s",
   "requiem:opus.mortal_sentence": "Make me Mortal",
   "requiem:opus.remnant_sentence": "Make me Eternal",
+
+  "requiem:tooltip.bony_prosthesis": "Bony Prosthesis",
   "requiem:tooltip.drowned_grip": "Drowned Grip",
   "requiem:tooltip.skeletal_efficiency": "Skeletal Efficiency",
+  "requiem:tooltip.zombie_food": "Zombie Snack",
+  "requiem:tooltip.drowned_food": "Drowned Delicacy",
+
   "item.requiem.opus_daemonium": "Opus Daemonium",
   "item.requiem.opus_daemonium_cure": "Opus Daemonium",
   "item.requiem.opus_daemonium_curse": "Opus Daemonium",

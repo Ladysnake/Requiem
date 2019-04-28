@@ -26,6 +26,7 @@ import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
 import ladysnake.requiem.client.network.ClientMessageHandling;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
+import ladysnake.requiem.common.tag.RequiemItemTags;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
 import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
 import net.fabricmc.api.ClientModInitializer;
@@ -34,14 +35,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.AbstractSkeletonEntity;
-import net.minecraft.entity.mob.DrownedEntity;
-import net.minecraft.entity.mob.EndermanEntity;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.*;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.TridentItem;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Style;
 import net.minecraft.text.TextFormat;
 import net.minecraft.text.TextFormatter;
@@ -122,11 +121,20 @@ public class RequiemClient implements ClientModInitializer {
         ItemTooltipCallback.EVENT.register((item, player, context, lines) -> {
             if (player != null) {
                 LivingEntity possessed = ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
+                if (possessed == null) {
+                    return;
+                }
                 String key;
                 if (possessed instanceof AbstractSkeletonEntity && item.getItem() instanceof BowItem) {
                     key = "requiem:tooltip.skeletal_efficiency";
+                } else if (possessed instanceof AbstractSkeletonEntity && RequiemItemTags.BONES.contains(item.getItem())) {
+                    key = "requiem:tooltip.bony_prosthesis";
                 } else if (possessed instanceof DrownedEntity && item.getItem() instanceof TridentItem) {
                     key = "requiem:tooltip.drowned_grip";
+                } else if (possessed instanceof ZombieEntity && RequiemItemTags.RAW_MEATS.contains(item.getItem())) {
+                    key = "requiem:tooltip.zombie_food";
+                } else if (possessed instanceof DrownedEntity && ItemTags.FISHES.contains(item.getItem())) {
+                    key = "requiem:tooltip.drowned_food";
                 } else {
                     return;
                 }
