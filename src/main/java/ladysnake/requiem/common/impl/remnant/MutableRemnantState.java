@@ -21,6 +21,7 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
+import ladysnake.requiem.common.remnant.ClosedSpaceDetector;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -30,15 +31,18 @@ import static ladysnake.requiem.common.network.RequiemNetworking.createCorporeal
 import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTrackingIncluding;
 
 public class MutableRemnantState implements RemnantState {
-    public static final String INCORPOREAL_TAG = "incorporeal";
+    public static final String ETHEREAL_TAG = "ethereal";
 
     private final RemnantType type;
     protected final PlayerEntity player;
-    protected boolean incorporeal;
+    protected final ClosedSpaceDetector closedSpaceDetector;
+    protected boolean ethereal;
+    private boolean lastTickIncorporeal;
 
     public MutableRemnantState(RemnantType type, PlayerEntity player) {
         this.type = type;
         this.player = player;
+        this.closedSpaceDetector = new ClosedSpaceDetector(player);
     }
 
     @Override
@@ -48,13 +52,13 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public boolean isSoul() {
-        return this.incorporeal;
+        return this.ethereal;
     }
 
     @Override
     public void setSoul(boolean incorporeal) {
-        if (this.incorporeal != incorporeal) {
-            this.incorporeal = incorporeal;
+        if (this.ethereal != incorporeal) {
+            this.ethereal = incorporeal;
             PlayerAbilities abilities = this.player.abilities;
             SerializableMovementConfig config;
             if (incorporeal) {
@@ -73,6 +77,18 @@ public class MutableRemnantState implements RemnantState {
                 sendToAllTrackingIncluding(this.player, createCorporealityMessage(this.player));
             }
         }
+    }
+
+    @Override
+    public void update() {
+        boolean incorporeal = this.isIncorporeal();
+        if (incorporeal && !player.world.isClient) {
+            if (!this.lastTickIncorporeal) {
+                this.closedSpaceDetector.reset(false);
+            }
+            this.closedSpaceDetector.tick();
+        }
+        this.lastTickIncorporeal = incorporeal;
     }
 
     @Override
@@ -99,12 +115,12 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public CompoundTag toTag(CompoundTag tag) {
-        tag.putBoolean(INCORPOREAL_TAG, this.isSoul());
+        tag.putBoolean(ETHEREAL_TAG, this.isSoul());
         return tag;
     }
 
     @Override
     public void fromTag(CompoundTag tag) {
-        this.setSoul(tag.getBoolean(INCORPOREAL_TAG));
+        this.setSoul(tag.getBoolean(ETHEREAL_TAG));
     }
 }
