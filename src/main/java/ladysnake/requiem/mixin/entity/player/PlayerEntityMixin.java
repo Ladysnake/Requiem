@@ -34,6 +34,7 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodItemSetting;
 import net.minecraft.item.ItemStack;
@@ -43,7 +44,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -60,7 +63,9 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     /* Implementation of RequiemPlayer */
 
+    @Shadow @Final public PlayerAbilities abilities;
     private static final String TAG_REMNANT_DATA = "requiem:remnant_data";
+    private static final EntitySize REQUIEM$SOUL_SNEAKING_SIZE = EntitySize.resizeable(0.6f, 0.6f);
 
     private RemnantState remnantState = NullRemnantState.NULL_STATE;
     private final PossessionComponent possessionComponent = new PossessionComponentImpl((PlayerEntity) (Object) this);
@@ -177,9 +182,26 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
      */
     @Inject(method = "getSize", at = @At("HEAD"), cancellable = true)
     private void adjustSize(EntityPose pose, CallbackInfoReturnable<EntitySize> cir) {
-        Entity possessedEntity = this.getPossessionComponent().getPossessedEntity();
-        if (possessedEntity != null) {
-            cir.setReturnValue(possessedEntity.getSize(pose));
+        if (this.remnantState.isSoul()) {
+            Entity possessedEntity = this.getPossessionComponent().getPossessedEntity();
+            if (possessedEntity != null) {
+                cir.setReturnValue(possessedEntity.getSize(pose));
+            } else if (pose == EntityPose.SNEAKING || this.abilities.flying) {
+                cir.setReturnValue(REQUIEM$SOUL_SNEAKING_SIZE);
+            }
+        }
+    }
+
+    // 1.27 is the sneaking eye height
+    @Inject(method = "getActiveEyeHeight", at = {
+            @At(value = "CONSTANT", args = "floatValue=1.27"),
+            @At(value = "CONSTANT", args = "floatValue=1.62")
+    }, cancellable = true)
+    private void adjustSoulSneakingEyeHeight(EntityPose pose, EntitySize size, CallbackInfoReturnable<Float> cir) {
+        if (this.remnantState != null && this.remnantState.isIncorporeal()) {
+            if (pose == EntityPose.SNEAKING || this.abilities.flying) {
+                cir.setReturnValue(0.4f);
+            }
         }
     }
 
