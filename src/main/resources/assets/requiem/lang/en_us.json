@@ -14,8 +14,9 @@
   "requiem:commands.possession.stop.success.other": "%s stopped possessing %s",
   "requiem:commands.possession.stop.success.target": "You were made to stop possessing %s",
   "requiem:commands.possession.stop.success.self": "Stopped possessing %s",
-  "requiem:opus.mortal_sentence": "Make me Mortal",
-  "requiem:opus.remnant_sentence": "Make me Eternal",
+
+  "requiem:opus.mortal_sentence": "Ad Vitam Aeternam",
+  "requiem:opus.remnant_sentence": "Ad Vitam Mortale",
 
   "requiem:tooltip.bony_prosthesis": "Bony Prosthesis",
   "requiem:tooltip.drowned_grip": "Drowned Grip",
@@ -26,6 +27,6 @@
   "item.requiem.opus_daemonium": "Opus Daemonium",
   "item.requiem.opus_daemonium_cure": "Opus Daemonium",
   "item.requiem.opus_daemonium_curse": "Opus Daemonium",
-  "requiem.opus_daemonium.curse": "Curse",
-  "requiem.opus_daemonium.cure": "Cure"
+  "requiem:opus_daemonium.curse": "Curse",
+  "requiem:opus_daemonium.cure": "Cure"
 }
