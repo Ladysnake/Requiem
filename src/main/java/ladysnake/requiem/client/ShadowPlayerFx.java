@@ -29,6 +29,7 @@ import ladysnake.satin.api.managed.ShaderEffectManager;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlFramebuffer;
+import net.minecraft.client.gl.JsonGlProgram;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VisibleRegion;
 import net.minecraft.entity.player.PlayerEntity;
@@ -51,13 +52,16 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
     public static final int ETHEREAL_DESATURATE_RANGE_SQ = ETHEREAL_DESATURATE_RANGE * ETHEREAL_DESATURATE_RANGE;
 
     private final MinecraftClient client = MinecraftClient.getInstance();
-    public final ManagedShaderEffect shadowPlayerEffect = ShaderEffectManager.getInstance().manage(SHADOW_PLAYER_SHADER_ID, this::assignDepthTexture);
+    private final ManagedShaderEffect shadowPlayerEffect = ShaderEffectManager.getInstance().manage(SHADOW_PLAYER_SHADER_ID, this::assignDepthTexture);
     private final ManagedShaderEffect desaturateEffect = ShaderEffectManager.getInstance().manage(DESATURATE_SHADER_ID);
 
     @Nullable
     private GlFramebuffer playersFramebuffer;
     private boolean renderedSoulPlayers;
     private boolean nearEthereal;
+    @Nullable
+    private JsonGlProgram grayscaleProgram;
+    private boolean grayscaleEnabled;
 
     void registerCallbacks() {
         EntitiesPreRenderCallback.EVENT.register(this);
@@ -91,6 +95,26 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
         if (this.playersFramebuffer != null) {
             this.renderedSoulPlayers = true;
             this.playersFramebuffer.beginWrite(false);
+        }
+    }
+
+    public void enableGrayscale() {
+        if (grayscaleProgram == null) {
+            try {
+                grayscaleProgram = new JsonGlProgram(MinecraftClient.getInstance().getResourceManager(), "color_convolve");
+                grayscaleProgram.getUniformByNameOrDummy("Saturation").set(0f);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+        grayscaleProgram.enable();
+        grayscaleEnabled = true;
+    }
+
+    public void disableGrayscale() {
+        if (grayscaleEnabled && grayscaleProgram != null) {
+            grayscaleProgram.disable();
+            grayscaleEnabled = false;
         }
     }
 

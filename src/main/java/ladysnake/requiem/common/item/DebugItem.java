@@ -17,12 +17,12 @@
  */
 package ladysnake.requiem.common.item;
 
-import ladysnake.requiem.client.ShadowPlayerFx;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -46,7 +46,7 @@ public class DebugItem extends Item {
             switch (debugMode) {
                 case 0:
                     if (world.isClient) {
-                        ShadowPlayerFx.INSTANCE.shadowPlayerEffect.release();
+                        player.addChatMessage(new StringTextComponent("Hi"), true);
                     }
                     break;
                 case 1:
