@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.mixin.client;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Screen;

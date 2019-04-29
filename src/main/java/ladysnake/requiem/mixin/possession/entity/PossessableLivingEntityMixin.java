@@ -17,8 +17,8 @@
  */
 package ladysnake.requiem.mixin.possession.entity;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
+import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.entity.ai.attribute.AttributeHelper;

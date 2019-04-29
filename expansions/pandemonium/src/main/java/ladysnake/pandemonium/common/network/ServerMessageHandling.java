@@ -5,7 +5,7 @@ import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.impl.anchor.AnchorFactories;
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.common.impl.remnant.MutableRemnantState;

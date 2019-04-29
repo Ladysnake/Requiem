@@ -20,7 +20,7 @@ package ladysnake.requiem.client;
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import ladysnake.satin.api.event.EntitiesPreRenderCallback;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;

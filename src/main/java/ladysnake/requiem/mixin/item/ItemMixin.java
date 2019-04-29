@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.mixin.item;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.DrownedEntity;

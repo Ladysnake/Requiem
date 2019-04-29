@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.common.item;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.fabricmc.api.EnvType;
@@ -88,7 +88,7 @@ public class WrittenOpusItem extends Item {
                 boolean cure = this == RequiemItems.OPUS_DEMONIUM_CURE;
                 world.playSound(null, player.x, player.y, player.z, SoundEvents.ITEM_TOTEM_USE, player.getSoundCategory(), 1.0F, 0.1F);
                 world.playSound(null, player.x, player.y, player.z, cure ? SoundEvents.BLOCK_BEACON_DEACTIVATE : SoundEvents.BLOCK_BEACON_ACTIVATE, player.getSoundCategory(), 1.4F, 0.1F);
-                RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(cure));
+                RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(cure, true));
             }
             return new TypedActionResult<>(ActionResult.SUCCESS, stack);
         }

@@ -19,9 +19,9 @@ package ladysnake.requiem.mixin.server;
 
 import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
+import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;
@@ -61,11 +61,11 @@ import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 public abstract class PlayerManagerMixin {
     private static final ThreadLocal<ServerWorld> REQUIEM$RESPAWN_WORLD = new ThreadLocal<>();
     @Shadow @Final private MinecraftServer server;
-
-    @Inject(method = "onPlayerConnect", at = @At("RETURN"))
-    private void onPlayerConnect(ClientConnection connection, ServerPlayerEntity createdPlayer, CallbackInfo info) {
-        sendTo(createdPlayer, createCorporealityMessage(createdPlayer));
-    }
+//
+//    @Inject(method = "onPlayerConnect", at = @At("RETURN"))
+//    private void onPlayerConnect(ClientConnection connection, ServerPlayerEntity createdPlayer, CallbackInfo info) {
+//        sendTo(createdPlayer, createCorporealityMessage(createdPlayer));
+//    }
 
     @Inject(
             method = "onPlayerConnect",

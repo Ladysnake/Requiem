@@ -17,9 +17,6 @@
  */
 package ladysnake.requiem.common.item;
 
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.client.ShadowPlayerFx;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;

@@ -19,8 +19,8 @@ package ladysnake.requiem.mixin.possession.player;
 
 import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.MobResurrectable;
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.player.MobResurrectable;
+import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.mixin.possession.entity.PossessableEntityAccessor;

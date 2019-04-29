@@ -17,8 +17,8 @@
  */
 package ladysnake.requiem.common.network;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
+import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.item.OpusDemoniumItem;

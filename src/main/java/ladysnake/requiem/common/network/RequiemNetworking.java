@@ -18,7 +18,7 @@
 package ladysnake.requiem.common.network;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.remnant.RemnantStates;
 import net.fabricmc.fabric.api.server.PlayerStream;
@@ -107,9 +107,10 @@ public class RequiemNetworking {
         return new CustomPayloadS2CPacket(POSSESSION_SYNC, buf);
     }
 
-    public static CustomPayloadS2CPacket createOpusUsePacket(boolean cure) {
+    public static CustomPayloadS2CPacket createOpusUsePacket(boolean cure, boolean showBook) {
         PacketByteBuf buf = createEmptyBuffer();
         buf.writeBoolean(cure);
+        buf.writeBoolean(showBook);
         return new CustomPayloadS2CPacket(OPUS_USE, buf);
     }
 

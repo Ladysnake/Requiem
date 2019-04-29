@@ -18,7 +18,7 @@
 package ladysnake.pandemonium.common.entity;
 
 import com.mojang.authlib.GameProfile;
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import ladysnake.requiem.common.util.InventoryHelper;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.entity.Entity;

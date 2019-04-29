@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.common.impl.remnant;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;

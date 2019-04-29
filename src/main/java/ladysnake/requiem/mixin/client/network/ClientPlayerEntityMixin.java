@@ -18,7 +18,7 @@
 package ladysnake.requiem.mixin.client.network;
 
 import com.mojang.authlib.GameProfile;
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;

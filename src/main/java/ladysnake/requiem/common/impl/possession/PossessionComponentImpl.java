@@ -19,8 +19,8 @@ package ladysnake.requiem.common.impl.possession;
 
 import com.google.common.collect.MapMaker;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
+import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.entity.ai.attribute.AttributeHelper;

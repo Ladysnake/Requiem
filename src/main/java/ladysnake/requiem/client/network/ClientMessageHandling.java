@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.client.network;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import ladysnake.requiem.client.RequiemFx;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantStates;
@@ -71,14 +71,16 @@ public class ClientMessageHandling {
         register(ETHEREAL_ANIMATION, ((context, buf) -> RequiemFx.INSTANCE.beginEtherealAnimation()));
         register(OPUS_USE, ((context, buf) -> {
             boolean cure = buf.readBoolean();
+            boolean showBook = buf.readBoolean();
             PlayerEntity player = context.getPlayer();
             MinecraftClient mc = MinecraftClient.getInstance();
             mc.particleManager.addEmitter(player, ParticleTypes.PORTAL, 120);
+            if (showBook) {
+                mc.gameRenderer.showFloatingItem(new ItemStack(cure ? RequiemItems.OPUS_DEMONIUM_CURE : RequiemItems.OPUS_DEMONIUM_CURSE));
+            }
             if (cure) {
-                mc.gameRenderer.showFloatingItem(new ItemStack(RequiemItems.OPUS_DEMONIUM_CURE));
                 RequiemFx.INSTANCE.playEtherealPulseAnimation(16, 0.0f, 0.8f, 0.6f);
             } else {
-                mc.gameRenderer.showFloatingItem(new ItemStack(RequiemItems.OPUS_DEMONIUM_CURSE));
                 RequiemFx.INSTANCE.playEtherealPulseAnimation(16, 1.0f, 0.25f, 0.27f);
             }
         }));
