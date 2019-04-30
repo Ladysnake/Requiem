@@ -189,7 +189,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     private void resetState() {
         this.possessedNetworkId = -1;
-        ((RequiemPlayer) this.player).getMovementAlterer().setConfig(SerializableMovementConfig.SOUL);
+        ((RequiemPlayer) this.player).getMovementAlterer().setConfig(((RequiemPlayer)player).getRemnantState().isSoul() ? SerializableMovementConfig.SOUL : null);
         this.player.refreshSize(); // update size
         this.player.setBreath(this.player.getMaxBreath());
         syncPossessed();
