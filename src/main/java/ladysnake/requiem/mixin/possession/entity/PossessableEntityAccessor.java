@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.mixin.entity;
+package ladysnake.requiem.mixin.possession.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Entity.class)
-public interface EntityAccessor {
+public interface PossessableEntityAccessor {
     @Invoker("fall")
     void onFall(double fallY, boolean onGround, BlockState floorBlock, BlockPos floorPos);
 }

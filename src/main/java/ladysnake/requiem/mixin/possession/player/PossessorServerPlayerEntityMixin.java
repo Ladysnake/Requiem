@@ -22,7 +22,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.MobResurrectable;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.mixin.entity.EntityAccessor;
+import ladysnake.requiem.mixin.possession.entity.PossessableEntityAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -123,7 +123,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
         Entity possessed = this.getPossessionComponent().getPossessedEntity();
         if (possessed != null) {
             possessed.fallDistance = this.fallDistance;
-            ((EntityAccessor) possessed).onFall(fallY, onGround, floorBlock, floorPos);
+            ((PossessableEntityAccessor) possessed).onFall(fallY, onGround, floorBlock, floorPos);
         }
     }
 

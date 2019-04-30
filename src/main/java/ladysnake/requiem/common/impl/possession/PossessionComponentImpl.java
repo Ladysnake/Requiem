@@ -28,7 +28,7 @@ import ladysnake.requiem.common.entity.ai.attribute.PossessionDelegatingAttribut
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
 import ladysnake.requiem.common.util.InventoryHelper;
-import ladysnake.requiem.mixin.entity.LivingEntityAccessor;
+import ladysnake.requiem.mixin.possession.player.LivingEntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;

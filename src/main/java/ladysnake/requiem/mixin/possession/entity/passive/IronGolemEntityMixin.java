@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.mixin.entity.passive;
+package ladysnake.requiem.mixin.possession.entity.passive;
 
 import ladysnake.requiem.api.v1.internal.ProtoPossessable;
 import net.minecraft.entity.Entity;

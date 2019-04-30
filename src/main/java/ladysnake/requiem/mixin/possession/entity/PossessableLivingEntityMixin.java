@@ -25,7 +25,7 @@ import ladysnake.requiem.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.requiem.common.entity.ai.attribute.CooldownStrengthAttribute;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
-import ladysnake.requiem.mixin.entity.LivingEntityAccessor;
+import ladysnake.requiem.mixin.possession.player.LivingEntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;

@@ -22,10 +22,14 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.LecternBlock;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
@@ -37,6 +41,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -58,6 +63,17 @@ public class WrittenOpusItem extends Item {
 
     public TextFormat getTooltipColor() {
         return color;
+    }
+
+    public ActionResult useOnBlock(ItemUsageContext ctx) {
+        World world = ctx.getWorld();
+        BlockPos pos = ctx.getBlockPos();
+        BlockState state = world.getBlockState(pos);
+        if (state.getBlock() == Blocks.LECTERN) {
+            return LecternBlock.putBookIfAbsent(world, pos, state, ctx.getItemStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
+        } else {
+            return ActionResult.PASS;
+        }
     }
 
     @Override

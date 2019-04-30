@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.mixin.entity;
+package ladysnake.requiem.mixin.possession.player;
 
 import net.minecraft.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;

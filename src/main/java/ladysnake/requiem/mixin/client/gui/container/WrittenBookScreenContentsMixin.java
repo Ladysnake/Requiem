@@ -17,12 +17,21 @@
  */
 package ladysnake.requiem.mixin.client.gui.container;
 
+import ladysnake.requiem.client.gui.WrittenOpusContents;
+import ladysnake.requiem.common.item.OpusDemoniumItem;
+import ladysnake.requiem.common.item.WrittenOpusItem;
 import net.minecraft.client.gui.WrittenBookScreen;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(WrittenBookScreen.Contents.class)
 public interface WrittenBookScreenContentsMixin {
-/* TODO enable when mixin supports injection into interface static methods
+    // Interface mixins must be public
+    @SuppressWarnings("PublicStaticMixinMember")
     @Inject(method = "create", at = @At("TAIL"), cancellable = true)
     static void handleOpiDaemonium(ItemStack book, CallbackInfoReturnable<WrittenBookScreen.Contents> cir) {
         Item item = book.getItem();
@@ -32,5 +41,4 @@ public interface WrittenBookScreenContentsMixin {
             cir.setReturnValue(new WrittenOpusContents((WrittenOpusItem) item));
         }
     }
-*/
 }
