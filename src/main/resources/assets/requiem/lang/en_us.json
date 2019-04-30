@@ -15,8 +15,8 @@
   "requiem:commands.possession.stop.success.target": "You were made to stop possessing %s",
   "requiem:commands.possession.stop.success.self": "Stopped possessing %s",
 
-  "requiem:opus.mortal_sentence": "Ad Vitam Aeternam",
-  "requiem:opus.remnant_sentence": "Ad Vitam Mortale",
+  "requiem:opus.mortal_sentence": "Ad Vitam Mortale",
+  "requiem:opus.remnant_sentence": "Ad Vitam Aeternam",
 
   "requiem:tooltip.bony_prosthesis": "Bony Prosthesis",
   "requiem:tooltip.drowned_grip": "Drowned Grip",
