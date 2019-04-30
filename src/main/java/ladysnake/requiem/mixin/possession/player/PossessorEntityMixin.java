@@ -26,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
-public abstract class EntityMixin {
+public abstract class PossessorEntityMixin {
     @Inject(method = "getMaxBreath", at = @At("HEAD"), cancellable = true)
     private void delegateMaxBreath(CallbackInfoReturnable<Integer> cir) {
         if (this instanceof RequiemPlayer) {

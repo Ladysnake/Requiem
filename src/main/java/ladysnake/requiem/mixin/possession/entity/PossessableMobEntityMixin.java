@@ -24,28 +24,22 @@ import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityController;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MobEntity.class)
-public abstract class MobEntityMixin extends LivingEntity implements Possessable {
-    @Shadow
-    @Final
-    protected GoalSelector goalSelector;
+public abstract class PossessableMobEntityMixin extends LivingEntity implements Possessable {
 
     private MobAbilityController abilityController = MobAbilityController.DUMMY;
 
-    public MobEntityMixin(EntityType<? extends MobEntity> type, World world) {
+    public PossessableMobEntityMixin(EntityType<? extends MobEntity> type, World world) {
         super(type, world);
     }
 

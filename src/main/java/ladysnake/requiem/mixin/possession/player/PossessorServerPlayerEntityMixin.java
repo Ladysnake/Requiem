@@ -48,11 +48,11 @@ import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTracki
 import static ladysnake.requiem.mixin.server.PlayerTagKeys.*;
 
 @Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin extends PlayerEntity implements MobResurrectable, RequiemPlayer {
+public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity implements MobResurrectable, RequiemPlayer {
     @Nullable
     private CompoundTag requiem_possessedEntityTag;
 
-    public ServerPlayerEntityMixin(World world_1, GameProfile gameProfile_1) {
+    public PossessorServerPlayerEntityMixin(World world_1, GameProfile gameProfile_1) {
         super(world_1, gameProfile_1);
     }
 
@@ -106,7 +106,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Mo
 
     @Inject(method = "copyFrom", at = @At("RETURN"))
     private void clonePlayer(ServerPlayerEntity original, boolean fromEnd, CallbackInfo ci) {
-        this.requiem_possessedEntityTag = ((ServerPlayerEntityMixin) (Object) original).requiem_possessedEntityTag;
+        this.requiem_possessedEntityTag = ((PossessorServerPlayerEntityMixin) (Object) original).requiem_possessedEntityTag;
         if (this.requiem_possessedEntityTag != null) {
             this.inventory.clone(original.inventory);
         }

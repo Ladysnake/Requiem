@@ -16,7 +16,7 @@ import static ladysnake.requiem.common.network.RequiemNetworking.sendTo;
 @Mixin(PlayerManager.class)
 public abstract class PlayerManagerMixin {
 
-    @Inject(method = "method_14606", at = @At("RETURN"))
+    @Inject(method = "sendWorldInfo", at = @At("RETURN"))
     private void sendWorldJoinMessages(ServerPlayerEntity player, ServerWorld world, CallbackInfo ci) {
         for (FractureAnchor anchor : ((PandemoniumWorld)world).getAnchorManager().getAnchors()) {
             sendTo(player, createAnchorUpdateMessage(anchor));

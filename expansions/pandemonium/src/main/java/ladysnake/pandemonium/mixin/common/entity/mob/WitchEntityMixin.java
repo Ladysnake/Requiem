@@ -17,8 +17,8 @@
  */
 package ladysnake.pandemonium.mixin.common.entity.mob;
 
-import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.pandemonium.common.util.ItemUtil;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.HostileEntity;
@@ -52,7 +52,7 @@ public class WitchEntityMixin extends HostileEntity {
     }
 
     @Nullable
-    @ModifyVariable(method = "updateMovement", ordinal = 0, at = @At("STORE"))
+    @ModifyVariable(method = "updateState", ordinal = 0, at = @At("STORE"))
     private Potion preventPotionOverride(final Potion selectedPotion) {
         if (((Possessable)this).isBeingPossessed() && !ItemUtil.isWaterBottle(this.getMainHandStack())) {
             return null;
@@ -61,7 +61,7 @@ public class WitchEntityMixin extends HostileEntity {
     }
 
     @Inject(
-            method = "updateMovement",
+            method = "updateState",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/entity/mob/WitchEntity;setEquippedStack(Lnet/minecraft/entity/EquipmentSlot;Lnet/minecraft/item/ItemStack;)V",

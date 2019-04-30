@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.annotation.Nullable;
 
 @Mixin(Entity.class)
-public abstract class EntityMixin implements ProtoPossessable {
+public abstract class PossessableEntityMixin implements ProtoPossessable {
 
     /* * * * * * * * * * * * * * * * *
       ProtoPossessable implementation

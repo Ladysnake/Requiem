@@ -33,8 +33,8 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity {
-    public LivingEntityMixin(EntityType<?> entityType_1, World world_1) {
+public abstract class PossessorLivingEntityMixin extends Entity {
+    public PossessorLivingEntityMixin(EntityType<?> entityType_1, World world_1) {
         super(entityType_1, world_1);
     }
 
