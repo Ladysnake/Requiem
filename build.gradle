@@ -41,6 +41,17 @@ allprojects {
      */
     apply from: "https://raw.githubusercontent.com/NerdHubMC/Gradle-Scripts/master/scripts/fabric/basic_project.gradle"
 
+    sourceSets {
+        api {
+            compileClasspath = main.compileClasspath
+            runtimeClasspath = main.runtimeClasspath
+        }
+        main {
+            compileClasspath += api.output
+            runtimeClasspath += api.output
+        }
+    }
+
     processResources {
         inputs.property "version", project.version
 
@@ -83,26 +94,22 @@ allprojects {
         testImplementation "org.junit.jupiter:junit-jupiter-api:5.4.0-M1"
     }
 
-    sourceSets {
-        api {
-            compileClasspath = main.compileClasspath
-            runtimeClasspath = main.runtimeClasspath
-        }
-        main {
-            compileClasspath += api.output
-            runtimeClasspath += api.output
-        }
-    }
-
     task apiJar(type: Jar, dependsOn: classes) {
         classifier = 'api'
-        from sourceSets.api.allSource
-        from sourceSets.api.output
+        from (sourceSets.api.output) {
+            include "fabric.mod.json"
+            expand "version": project.version
+        }
+        from (sourceSets.api.output) {
+            exclude "fabric.mod.json"
+        }
     }
 
     task remapApiJar(type: RemapJar, dependsOn: apiJar) {
         jar = apiJar.archivePath
     }
+
+    build.dependsOn(remapApiJar)
 
     license {
         header = rootProject.file("code_quality/${project.license_header}_HEADER.txt")
