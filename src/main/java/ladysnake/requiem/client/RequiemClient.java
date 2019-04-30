@@ -37,6 +37,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.*;
 import net.minecraft.item.BowItem;
+import net.minecraft.item.MilkBucketItem;
 import net.minecraft.item.TridentItem;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -129,6 +130,8 @@ public class RequiemClient implements ClientModInitializer {
                     key = "requiem:tooltip.skeletal_efficiency";
                 } else if (possessed instanceof AbstractSkeletonEntity && RequiemItemTags.BONES.contains(item.getItem())) {
                     key = "requiem:tooltip.bony_prosthesis";
+                } else if (possessed instanceof AbstractSkeletonEntity && item.getItem() instanceof MilkBucketItem) {
+                    key = "requiem:tooltip.calcium_bucket";
                 } else if (possessed instanceof DrownedEntity && item.getItem() instanceof TridentItem) {
                     key = "requiem:tooltip.drowned_grip";
                 } else if (possessed instanceof ZombieEntity && RequiemItemTags.RAW_MEATS.contains(item.getItem())) {

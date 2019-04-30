@@ -19,10 +19,11 @@
   "requiem:opus.remnant_sentence": "Ad Vitam Aeternam",
 
   "requiem:tooltip.bony_prosthesis": "Bony Prosthesis",
+  "requiem:tooltip.calcium_bucket": "Calcium Goodness",
+  "requiem:tooltip.drowned_food": "Drowned Delicacy",
   "requiem:tooltip.drowned_grip": "Drowned Grip",
   "requiem:tooltip.skeletal_efficiency": "Skeletal Efficiency",
   "requiem:tooltip.zombie_food": "Zombie Snack",
-  "requiem:tooltip.drowned_food": "Drowned Delicacy",
 
   "item.requiem.opus_daemonium": "Opus Daemonium",
   "item.requiem.opus_daemonium_cure": "Opus Daemonium",

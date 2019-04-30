@@ -16,6 +16,7 @@
     "entity.projectile.ProjectileEntityAccessor",
     "item.BowItemMixin",
     "item.ItemMixin",
+    "item.MilkBucketItemMixin",
     "item.TridentItemMixin",
     "possession.entity.PossessableEntityAccessor",
     "possession.entity.PossessableEntityMixin",
