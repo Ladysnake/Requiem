@@ -28,14 +28,11 @@ import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
-import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
-import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.fabric.api.event.player.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -43,6 +40,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.BlockTags;
@@ -106,7 +104,7 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
     private void registerEtherealEventHandlers() {
         // Prevent incorporeal players from picking up anything
         ItemPickupCallback.EVENT.register((player, pickedUp) -> {
-            if (!player.isCreative() && RemnantState.getIfRemnant(player).filter(RemnantState::isSoul).isPresent()) {
+            if (isInteractionForbidden(player)) {
                 Entity possessed = ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
                 if (possessed == null || !RequiemEntityTags.ITEM_USER.contains(possessed.getType())) {
                     return ActionResult.FAIL;
@@ -116,7 +114,7 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
         });
         // Prevent incorporeal players from breaking anything
         AttackBlockCallback.EVENT.register((player, world, hand, blockPos, facing) -> {
-            if (!player.isCreative() && RemnantState.getIfRemnant(player).filter(RemnantState::isIncorporeal).isPresent()) {
+            if (isInteractionForbidden(player)) {
                 return ActionResult.FAIL;
             } else {
                 return ActionResult.PASS;
@@ -124,16 +122,23 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
         });
         // Prevent incorporeal players from hitting anything
         AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-            if (!player.isCreative() && RemnantState.getIfRemnant(player).filter(RemnantState::isIncorporeal).isPresent()) {
+            if (isInteractionForbidden(player)) {
                 return ActionResult.FAIL;
             }
             return ActionResult.PASS;
         });
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.SUCCESS);
+        UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> !player.world.isClient && isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
+        UseItemCallback.EVENT.register((player, world, hand) -> isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
         PlayerCloneCallback.EVENT.register((original, clone, returnFromEnd) -> ((RequiemPlayer)original).getRemnantState().onPlayerClone(clone, !returnFromEnd));
         PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> {
             sendToAllTrackingIncluding(player, createCorporealityMessage(player));
             ((MobResurrectable)player).spawnResurrectionEntity();
         }));
+    }
+
+    private boolean isInteractionForbidden(PlayerEntity player) {
+        return !player.isCreative() && ((RequiemPlayer) player).getRemnantState().isIncorporeal();
     }
 
     private void registerPossessionEventHandlers() {
