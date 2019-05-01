@@ -11,6 +11,7 @@
     "entity.attribute.AbstractEntityAttributeContainerAccessor",
     "entity.attribute.EntityAttributeContainerAccessor",
     "entity.attribute.EntityAttributesMixin",
+    "entity.damage.DamageTrackerMixin",
     "entity.mob.AbstractSkeletonEntityAccessor",
     "entity.mob.EndermanEntityAccessor",
     "entity.player.PlayerEntityMixin",
