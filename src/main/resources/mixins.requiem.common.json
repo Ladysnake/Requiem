@@ -22,6 +22,7 @@
     "possession.entity.PossessableEntityMixin",
     "possession.entity.PossessableLivingEntityMixin",
     "possession.entity.PossessableMobEntityMixin",
+    "possession.entity.mob.ZombieEntityMixin",
     "possession.entity.passive.HorseBaseEntityMixin",
     "possession.entity.passive.IronGolemEntityMixin",
     "possession.player.LivingEntityAccessor",
