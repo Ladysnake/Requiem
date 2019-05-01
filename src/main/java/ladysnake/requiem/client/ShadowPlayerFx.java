@@ -96,7 +96,7 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
 
     @Override
     public void beforeEntitiesRender(Camera camera, VisibleRegion frustum, float tickDelta) {
-        if (this.playersFramebuffer == null) {
+        if (!this.shadowPlayerEffect.isInitialized()) {
             try {
                 this.shadowPlayerEffect.initialize();
             } catch (IOException e) {
