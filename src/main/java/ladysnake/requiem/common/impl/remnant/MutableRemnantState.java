@@ -26,6 +26,7 @@ import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.createCorporealityMessage;
 import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTrackingIncluding;
@@ -98,6 +99,10 @@ public class MutableRemnantState implements RemnantState {
         ((RequiemPlayer)clone).setRemnant(true);
         RemnantState cloneState = ((RequiemPlayer) clone).getRemnantState();
         if (dead && !this.isSoul()) {
+            clone.dimension = this.player.world.dimension.getType();
+            ServerWorld previousWorld = clone.server.getWorld(clone.dimension);
+            clone.setWorld(previousWorld);
+            clone.interactionManager.setWorld(previousWorld);
             clone.setPositionAndAngles(this.player);
             // Prevent souls from respawning in fairly bad conditions
             while(!clone.world.doesNotCollide(clone) && clone.y < 256.0D) {
