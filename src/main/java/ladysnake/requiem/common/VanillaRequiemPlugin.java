@@ -113,23 +113,14 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
             return ActionResult.PASS;
         });
         // Prevent incorporeal players from breaking anything
-        AttackBlockCallback.EVENT.register((player, world, hand, blockPos, facing) -> {
-            if (isInteractionForbidden(player)) {
-                return ActionResult.FAIL;
-            } else {
-                return ActionResult.PASS;
-            }
-        });
+        AttackBlockCallback.EVENT.register((player, world, hand, blockPos, facing) -> isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
         // Prevent incorporeal players from hitting anything
-        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-            if (isInteractionForbidden(player)) {
-                return ActionResult.FAIL;
-            }
-            return ActionResult.PASS;
-        });
-        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
+        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
+        // Prevent incorporeal players from interacting with anything
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.SUCCESS);
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> !player.world.isClient && isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
         UseItemCallback.EVENT.register((player, world, hand) -> isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
+        // Make players respawn in the right place with the right state
         PlayerCloneCallback.EVENT.register((original, clone, returnFromEnd) -> ((RequiemPlayer)original).getRemnantState().onPlayerClone(clone, !returnFromEnd));
         PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> {
             sendToAllTrackingIncluding(player, createCorporealityMessage(player));
@@ -138,7 +129,7 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     private boolean isInteractionForbidden(PlayerEntity player) {
-        return !player.isCreative() && ((RequiemPlayer) player).getRemnantState().isIncorporeal();
+        return !player.isCreative() && ((RequiemPlayer) player).getRemnantState().isIncorporeal() || ((RequiemPlayer) player).getDeathSuspender().isLifeTransient();
     }
 
     private void registerPossessionEventHandlers() {
