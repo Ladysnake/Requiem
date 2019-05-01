@@ -21,6 +21,7 @@ import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.item.OpusDemoniumItem;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantStates;
@@ -90,6 +91,7 @@ public class ServerMessageHandling {
                         player.experienceLevel = 0;
                     }
                     ((ServerPlayerEntity)player).networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(player.experienceLevelProgress, player.experienceLevel, player.experience));
+                    RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, type);
                 } else {
                     ListTag pages = new ListTag();
                     pages.add(new StringTag(content));

@@ -17,12 +17,15 @@
  */
 package ladysnake.requiem.common.item;
 
+import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
+import ladysnake.requiem.common.remnant.RemnantStates;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.StringTextComponent;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -45,8 +48,9 @@ public class DebugItem extends Item {
         } else {
             switch (debugMode) {
                 case 0:
-                    if (world.isClient) {
-                        player.addChatMessage(new StringTextComponent("Hi"), true);
+                    if (!world.isClient && ((RequiemPlayer)player).getDeathSuspender().isLifeTransient()) {
+                        RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, RemnantStates.REMNANT);
+                        ((RequiemPlayer) player).getDeathSuspender().resumeDeath();
                     }
                     break;
                 case 1:

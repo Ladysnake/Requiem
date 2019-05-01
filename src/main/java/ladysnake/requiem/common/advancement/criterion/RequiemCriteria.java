@@ -23,11 +23,13 @@ import net.minecraft.advancement.criterion.Criterions;
 
 public class RequiemCriteria {
     public static final OnResurrectCriterion PLAYER_RESURRECTED_AS_ENTITY = new OnResurrectCriterion(Requiem.id("player_resurrected_as_entity"));
+    public static final OnRemnantChoiceCriterion MADE_REMNANT_CHOICE = new OnRemnantChoiceCriterion(Requiem.id("made_remnant_choice"));
 
     public static void init() {
         // the class may not have been loaded at this point, so we need to classload it ourselves
         // before calling the accessor
         Criterions.getAllCriterions();
         CriterionsAccessor.invokeRegister(PLAYER_RESURRECTED_AS_ENTITY);
+        CriterionsAccessor.invokeRegister(MADE_REMNANT_CHOICE);
     }
 }

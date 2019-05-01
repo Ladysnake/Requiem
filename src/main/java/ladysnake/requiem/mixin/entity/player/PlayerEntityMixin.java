@@ -18,6 +18,7 @@
 package ladysnake.requiem.mixin.entity.player;
 
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
+import ladysnake.requiem.api.v1.player.DeathSuspender;
 import ladysnake.requiem.api.v1.player.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
@@ -26,6 +27,7 @@ import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.impl.movement.PlayerMovementAlterer;
 import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.remnant.NullRemnantState;
+import ladysnake.requiem.common.impl.remnant.RevivingDeathSuspender;
 import ladysnake.requiem.common.remnant.RemnantStates;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
@@ -75,7 +77,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     private RemnantState remnantState = NullRemnantState.NULL_STATE;
     private final PossessionComponent possessionComponent = new PossessionComponentImpl((PlayerEntity) (Object) this);
-    private final MovementAlterer movementAlterer = new PlayerMovementAlterer((PlayerEntity)(Object)this);
+    private final MovementAlterer movementAlterer = new PlayerMovementAlterer((PlayerEntity)(Object) this);
+    private final DeathSuspender deathSuspender = new RevivingDeathSuspender((PlayerEntity)(Object) this);
 
     @Override
     public RemnantState getRemnantState() {
@@ -90,6 +93,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     @Override
     public MovementAlterer getMovementAlterer() {
         return this.movementAlterer;
+    }
+
+    @Override
+    public DeathSuspender getDeathSuspender() {
+        return this.deathSuspender;
     }
 
     @Override

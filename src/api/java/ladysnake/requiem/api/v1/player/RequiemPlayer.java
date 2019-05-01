@@ -48,5 +48,5 @@ public interface RequiemPlayer {
 
     boolean isRemnant();
 
-    DeathSuspender getDeathInterrupter();
+    DeathSuspender getDeathSuspender();
 }

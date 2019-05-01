@@ -100,7 +100,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
             GlStateManager.color4f(1.0f, 1.0f, 1.0f, alpha);
             GlStateManager.depthMask(false);
             ShadowPlayerFx.INSTANCE.beginPlayersFbWrite();
-        } else if (((RequiemPlayer) renderedPlayer).getDeathInterrupter().isLifeTransient()) {
+        } else if (((RequiemPlayer) renderedPlayer).getDeathSuspender().isLifeTransient()) {
             ShadowPlayerFx.INSTANCE.enableGrayscale();
         }
     }

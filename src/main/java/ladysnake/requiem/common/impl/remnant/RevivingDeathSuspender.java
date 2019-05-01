@@ -21,6 +21,9 @@ public class RevivingDeathSuspender implements DeathSuspender {
 
     @Override
     public void suspendDeath(DamageSource deathCause) {
+        if (this.isLifeTransient()) {
+            return;
+        }
         this.player.setHealth(1f);
         this.player.setInvulnerable(true);
         this.player.abilities.invulnerable = true;
@@ -43,6 +46,7 @@ public class RevivingDeathSuspender implements DeathSuspender {
         this.player.setInvulnerable(false);
         this.player.abilities.invulnerable = false;
         this.player.setHealth(0f);
+        this.setLifeTransient(false);
         this.player.onDeath(this.deathCause);
     }
 
