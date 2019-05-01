@@ -22,6 +22,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.MobResurrectable;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.mixin.possession.entity.PossessableEntityAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -78,6 +79,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
                 formerPossessed.setPositionAndAngles(this);
                 if (world.spawnEntity(formerPossessed)) {
                     this.getPossessionComponent().startPossessing((MobEntity) formerPossessed);
+                    RequiemCriteria.PLAYER_RESURRECTED_AS_ENTITY.handle((ServerPlayerEntity)(Object) this, formerPossessed);
                 } else {
                     Requiem.LOGGER.error("Failed to spawn possessed entity {}", formerPossessed);
                 }

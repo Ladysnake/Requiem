@@ -25,6 +25,8 @@ public class RequiemCriteria {
     public static final OnResurrectCriterion PLAYER_RESURRECTED_AS_ENTITY = new OnResurrectCriterion(Requiem.id("player_resurrected_as_entity"));
 
     public static void init() {
+        // the class may not have been loaded at this point, so we need to classload it ourselves
+        // before calling the accessor
         Criterions.getAllCriterions();
         CriterionsAccessor.invokeRegister(PLAYER_RESURRECTED_AS_ENTITY);
     }

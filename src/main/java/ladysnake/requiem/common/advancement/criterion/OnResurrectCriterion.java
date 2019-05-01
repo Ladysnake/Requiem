@@ -22,9 +22,16 @@ import com.google.gson.JsonObject;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.Criterion;
+import net.minecraft.entity.Entity;
+import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
+import javax.annotation.Nullable;
+import java.util.*;
+
 public class OnResurrectCriterion implements Criterion<OnResurrectCriterion.Conditions> {
+    private final Map<PlayerAdvancementTracker, OnResurrectCriterion.Handler> handlers = new HashMap<>();
     private final Identifier id;
 
     public OnResurrectCriterion(Identifier id) {
@@ -37,28 +44,96 @@ public class OnResurrectCriterion implements Criterion<OnResurrectCriterion.Cond
     }
 
     @Override
-    public void beginTrackingCondition(PlayerAdvancementTracker var1, ConditionsContainer<Conditions> var2) {
+    public void beginTrackingCondition(PlayerAdvancementTracker tracker, ConditionsContainer<Conditions> container) {
+        OnResurrectCriterion.Handler handler = this.handlers.get(tracker);
+        if (handler == null) {
+            handler = new OnResurrectCriterion.Handler(tracker);
+            this.handlers.put(tracker, handler);
+        }
+
+        handler.addCondition(container);
 
     }
 
     @Override
-    public void endTrackingCondition(PlayerAdvancementTracker var1, ConditionsContainer<Conditions> var2) {
-
+    public void endTrackingCondition(PlayerAdvancementTracker tracker, ConditionsContainer<Conditions> container) {
+        Handler handler = this.handlers.get(tracker);
+        if (handler != null) {
+            handler.removeCondition(container);
+            if (handler.isEmpty()) {
+                this.handlers.remove(tracker);
+            }
+        }
     }
 
     @Override
-    public void endTracking(PlayerAdvancementTracker var1) {
+    public void endTracking(PlayerAdvancementTracker tracker) {
+        this.handlers.remove(tracker);
+    }
 
+    public void handle(ServerPlayerEntity player, Entity body) {
+        Handler handler = this.handlers.get(player.getAdvancementManager());
+        if (handler != null) {
+            handler.handle(player, body);
+        }
     }
 
     @Override
-    public Conditions conditionsFromJson(JsonObject var1, JsonDeserializationContext var2) {
-        return null;
+    public Conditions conditionsFromJson(JsonObject json, JsonDeserializationContext ctx) {
+        return new Conditions(this.id, EntityPredicate.deserialize(json.get("body")));
     }
 
     public static class Conditions extends AbstractCriterionConditions {
-        public Conditions(Identifier id) {
+        private final EntityPredicate entity;
+
+        public Conditions(Identifier id, EntityPredicate entity) {
             super(id);
+            this.entity = entity;
+        }
+
+        public boolean test(ServerPlayerEntity player, @Nullable Entity body) {
+            return this.entity.test(player, body);
+        }
+    }
+
+    private class Handler {
+        private final PlayerAdvancementTracker tracker;
+        private final Set<ConditionsContainer<Conditions>> conditions = new HashSet<>();
+
+        public Handler(PlayerAdvancementTracker tracker) {
+            this.tracker = tracker;
+        }
+
+        public void addCondition(ConditionsContainer<Conditions> conditionContainer) {
+            this.conditions.add(conditionContainer);
+        }
+
+        public void removeCondition(Criterion.ConditionsContainer<Conditions> conditionContainer) {
+            this.conditions.remove(conditionContainer);
+        }
+        
+        public boolean isEmpty() {
+            return this.conditions.isEmpty();
+        }
+
+        public void handle(ServerPlayerEntity player, Entity body) {
+            List<ConditionsContainer<Conditions>> conditionsContainers = null;
+
+            for (ConditionsContainer<Conditions> condition : this.conditions) {
+                if (condition.getConditions().test(player, body)) {
+                    if (conditionsContainers == null) {
+                        conditionsContainers = new ArrayList<>();
+                    }
+
+                    conditionsContainers.add(condition);
+                }
+            }
+
+            if (conditionsContainers != null) {
+                for (ConditionsContainer<Conditions> container : conditionsContainers) {
+                    container.apply(this.tracker);
+                }
+            }
         }
     }
 }
