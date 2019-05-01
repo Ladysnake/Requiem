@@ -43,6 +43,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -58,6 +59,7 @@ import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 
 @Mixin(PlayerManager.class)
 public abstract class PlayerManagerMixin {
+    private static final ThreadLocal<ServerWorld> REQUIEM$RESPAWN_WORLD = new ThreadLocal<>();
     @Shadow @Final private MinecraftServer server;
 
     @Inject(method = "onPlayerConnect", at = @At("RETURN"))
@@ -165,6 +167,22 @@ public abstract class PlayerManagerMixin {
             ServerPlayerEntity clone
     ) {
         PlayerCloneCallback.EVENT.invoker().onPlayerClone(original, clone, returnFromEnd);
+        REQUIEM$RESPAWN_WORLD.set(clone.getServerWorld());
+    }
+
+    @ModifyVariable(
+            method = "respawnPlayer",
+            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;doesNotCollide(Lnet/minecraft/entity/Entity;)Z")),
+            at = @At(
+                    value = "FIELD",
+                    opcode = Opcodes.GETFIELD,
+                    target = "Lnet/minecraft/server/network/ServerPlayerEntity;networkHandler:Lnet/minecraft/server/network/ServerPlayNetworkHandler;",
+                    ordinal = 0,
+                    shift = AFTER
+            )
+    )
+    private ServerWorld fixRespawnWorld(ServerWorld respawnWorld) {
+        return REQUIEM$RESPAWN_WORLD.get();
     }
 
     @Inject(
