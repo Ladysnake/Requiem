@@ -18,8 +18,8 @@
 package ladysnake.requiem.mixin.entity.player;
 
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
-import ladysnake.requiem.api.v1.player.DeathSuspender;
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;

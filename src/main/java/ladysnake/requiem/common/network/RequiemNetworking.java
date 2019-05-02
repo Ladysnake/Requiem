@@ -18,7 +18,7 @@
 package ladysnake.requiem.common.network;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.remnant.RemnantStates;
 import net.fabricmc.fabric.api.server.PlayerStream;
@@ -52,6 +52,7 @@ public class RequiemNetworking {
     public static final Identifier POSSESSION_REQUEST = Requiem.id("possession_request");
     public static final Identifier ETHEREAL_FRACTURE = Requiem.id("ethereal_fracture");
     public static final Identifier OPUS_UPDATE = Requiem.id("opus_update");
+    public static final Identifier DIALOGUE_CHOICE = Requiem.id("dialogue_choice");
 
     public static void sendToServer(Identifier identifier, PacketByteBuf data) {
         sendToServer(new CustomPayloadC2SPacket(identifier, data));
@@ -140,5 +141,11 @@ public class RequiemNetworking {
         }
         buf.writeEnumConstant(hand);
         return new CustomPayloadC2SPacket(OPUS_UPDATE, buf);
+    }
+
+    public static CustomPayloadC2SPacket createDialogueChoiceMessage(int choice) {
+        PacketByteBuf buf = new PacketByteBuf(buffer());
+        buf.writeVarInt(choice);
+        return new CustomPayloadC2SPacket(DIALOGUE_CHOICE, buf);
     }
 }

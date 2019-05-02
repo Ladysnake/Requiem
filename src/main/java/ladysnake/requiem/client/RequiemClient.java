@@ -23,7 +23,7 @@ import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.client.network.ClientMessageHandling;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;

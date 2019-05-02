@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.mixin.item;
 
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.common.entity.internal.ArrowShooter;
 import ladysnake.requiem.common.entity.internal.ItemStackConvertible;
 import net.minecraft.entity.LivingEntity;

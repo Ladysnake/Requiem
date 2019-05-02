@@ -1,4 +1,4 @@
-package ladysnake.requiem.api.v1.player;
+package ladysnake.requiem.api.v1.remnant;
 
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.CompoundTag;

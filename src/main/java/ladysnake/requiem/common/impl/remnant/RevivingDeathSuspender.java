@@ -1,6 +1,6 @@
 package ladysnake.requiem.common.impl.remnant;
 
-import ladysnake.requiem.api.v1.player.DeathSuspender;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.common.util.DamageSourceSerialization;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;

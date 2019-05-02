@@ -19,7 +19,7 @@ package ladysnake.requiem.mixin.server.network;
 
 import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;

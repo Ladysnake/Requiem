@@ -15,8 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.api.v1.player;
+package ladysnake.requiem.api.v1.remnant;
 
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import net.minecraft.entity.mob.MobEntity;
 
 /**

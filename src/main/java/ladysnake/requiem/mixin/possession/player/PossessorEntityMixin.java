@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.mixin.possession.player;
 
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;

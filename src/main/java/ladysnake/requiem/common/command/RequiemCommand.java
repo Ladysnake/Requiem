@@ -19,7 +19,7 @@ package ladysnake.requiem.common.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.entity.Entity;

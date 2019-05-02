@@ -1,6 +1,6 @@
 package ladysnake.pandemonium.mixin.common.entity.player;
 
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;

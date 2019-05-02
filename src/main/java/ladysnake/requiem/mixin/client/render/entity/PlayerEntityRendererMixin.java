@@ -18,7 +18,7 @@
 package ladysnake.requiem.mixin.client.render.entity;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.client.ShadowPlayerFx;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import net.minecraft.client.MinecraftClient;

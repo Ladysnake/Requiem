@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.mixin.client.render.entity;
 
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.client.RequiemFx;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VisibleRegion;

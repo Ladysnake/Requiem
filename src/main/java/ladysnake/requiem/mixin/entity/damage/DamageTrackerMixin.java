@@ -1,6 +1,6 @@
 package ladysnake.requiem.mixin.entity.damage;
 
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageTracker;
 import org.spongepowered.asm.mixin.Final;

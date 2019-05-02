@@ -21,7 +21,7 @@ import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;

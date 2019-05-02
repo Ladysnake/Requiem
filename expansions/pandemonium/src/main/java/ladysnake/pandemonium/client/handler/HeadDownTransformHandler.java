@@ -19,7 +19,7 @@ package ladysnake.pandemonium.client.handler;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.ShulkerEntity;

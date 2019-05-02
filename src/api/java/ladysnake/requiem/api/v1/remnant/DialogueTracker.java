@@ -1,4 +1,4 @@
-package ladysnake.requiem.api.v1.player;
+package ladysnake.requiem.api.v1.remnant;
 
 public interface DialogueTracker {
     void checkFirstConnection();

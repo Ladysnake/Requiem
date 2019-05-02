@@ -7,7 +7,7 @@ import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.client.RequiemFx;
 import ladysnake.satin.api.event.EntitiesPostRenderCallback;
 import ladysnake.satin.api.event.PickEntityShaderCallback;

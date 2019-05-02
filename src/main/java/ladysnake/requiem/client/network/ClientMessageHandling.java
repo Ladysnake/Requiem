@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.client.network;
 
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.client.RequiemFx;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantStates;

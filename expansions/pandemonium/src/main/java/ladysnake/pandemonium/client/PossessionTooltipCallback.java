@@ -19,7 +19,7 @@ package ladysnake.pandemonium.client;
 
 import ladysnake.pandemonium.common.util.ItemUtil;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.WitchEntity;

@@ -19,7 +19,7 @@ package ladysnake.requiem.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.player.RequiemPlayer;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.satin.api.event.EntitiesPostRenderCallback;
 import ladysnake.satin.api.event.ResolutionChangeCallback;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
