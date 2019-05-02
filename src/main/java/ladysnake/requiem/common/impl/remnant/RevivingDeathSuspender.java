@@ -38,7 +38,7 @@ public class RevivingDeathSuspender implements DeathSuspender {
 
     @Override
     public void setLifeTransient(boolean lifeTransient) {
-        this.lifeTransient = true;
+        this.lifeTransient = lifeTransient;
     }
 
     @Override

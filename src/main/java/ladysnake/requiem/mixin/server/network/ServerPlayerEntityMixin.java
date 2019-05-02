@@ -50,6 +50,13 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
         super(world, profile);
     }
 
+    @Inject(method = "method_14226", at = @At("HEAD"), cancellable = true)
+    private void stopTicking(CallbackInfo ci) {
+        if (this.getDeathSuspender().isLifeTransient()) {
+            ci.cancel();
+        }
+    }
+
     @Inject(method = "onDeath", at = @At("HEAD"), cancellable = true)
     private void suspendDeath(DamageSource killingBlow, CallbackInfo ci) {
         Identifier advancementId = Requiem.id("adventure/the_choice");
