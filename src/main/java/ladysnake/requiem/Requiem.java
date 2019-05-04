@@ -19,6 +19,7 @@ package ladysnake.requiem;
 
 import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.RequiemPlugin;
+import ladysnake.requiem.api.v1.event.minecraft.SyncServerResourcesCallback;
 import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
@@ -26,6 +27,7 @@ import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.command.RequiemCommand;
 import ladysnake.requiem.common.impl.ApiInitializer;
 import ladysnake.requiem.common.impl.movement.MovementAltererManager;
+import ladysnake.requiem.common.impl.remnant.dialogue.ReloadableDialogueManager;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.network.ServerMessageHandling;
 import net.fabricmc.api.ModInitializer;
@@ -41,6 +43,7 @@ public class Requiem implements ModInitializer {
     public static final Logger LOGGER = LogManager.getLogger("Requiem");
 
     private static final MovementAltererManager MOVEMENT_ALTERER_MANAGER = new MovementAltererManager();
+    private static final ReloadableDialogueManager DIALOGUE_MANAGER = new ReloadableDialogueManager();
 
     public static Identifier id(String path) {
         return new Identifier(MOD_ID, path);
@@ -48,6 +51,10 @@ public class Requiem implements ModInitializer {
 
     public static MovementAltererManager getMovementAltererManager() {
         return MOVEMENT_ALTERER_MANAGER;
+    }
+
+    public static ReloadableDialogueManager getDialogueManager() {
+        return DIALOGUE_MANAGER;
     }
 
     @Override
@@ -61,6 +68,9 @@ public class Requiem implements ModInitializer {
         RequiemApi.registerPlugin(new VanillaRequiemPlugin());
         CommandRegistry.INSTANCE.register(false, RequiemCommand::register);
         ResourceManagerHelper.get(ResourceType.DATA).registerReloadListener(MOVEMENT_ALTERER_MANAGER);
+        ResourceManagerHelper.get(ResourceType.DATA).registerReloadListener(DIALOGUE_MANAGER);
+        SyncServerResourcesCallback.EVENT.register(DIALOGUE_MANAGER);
+        SyncServerResourcesCallback.EVENT.register(MOVEMENT_ALTERER_MANAGER);
         ApiInitializer.setPluginCallback(Requiem::registerPlugin);
     }
 

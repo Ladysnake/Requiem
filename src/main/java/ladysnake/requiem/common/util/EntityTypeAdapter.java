@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.common.impl.movement;
+package ladysnake.requiem.common.util;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;

@@ -17,8 +17,11 @@
  */
 package ladysnake.requiem.client.network;
 
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.client.RequiemFx;
+import ladysnake.requiem.common.impl.remnant.dialogue.DialogueStateMachine;
+import ladysnake.requiem.common.impl.remnant.dialogue.ReloadableDialogueManager;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantStates;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
@@ -32,6 +35,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
@@ -84,6 +88,10 @@ public class ClientMessageHandling {
                 RequiemFx.INSTANCE.playEtherealPulseAnimation(16, 1.0f, 0.25f, 0.27f);
             }
         }));
+        ClientSidePacketRegistry.INSTANCE.register(DIALOGUE_SYNC, (context, buffer) -> {
+            Map<Identifier, DialogueStateMachine> dialogues = ReloadableDialogueManager.fromPacket(buffer);
+            context.getTaskQueue().execute(() -> Requiem.getDialogueManager().applyDialogues(dialogues));
+        });
     }
 
     private static void register(Identifier id, BiConsumer<PacketContext, PacketByteBuf> handler) {

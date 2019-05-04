@@ -24,10 +24,13 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.MovementConfig;
+import ladysnake.requiem.api.v1.event.minecraft.SyncServerResourcesCallback;
+import ladysnake.requiem.common.util.EntityTypeAdapter;
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
 import net.minecraft.entity.EntityType;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
@@ -39,7 +42,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class MovementAltererManager implements SimpleResourceReloadListener<Map<EntityType<?>, SerializableMovementConfig>> {
+public class MovementAltererManager implements SimpleResourceReloadListener<Map<EntityType<?>, SerializableMovementConfig>>, SyncServerResourcesCallback {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(new TypeToken<EntityType<?>>() {}.getType(), new EntityTypeAdapter()).create();
     public static final Identifier LOCATION = Requiem.id("entity_mobility.json");
     private static final Type TYPE = new TypeToken<Map<EntityType<?>, SerializableMovementConfig>>() {}.getType();
@@ -81,5 +84,10 @@ public class MovementAltererManager implements SimpleResourceReloadListener<Map<
 
     public MovementConfig getEntityMovementConfig(EntityType<?> type) {
         return this.entityMovementConfigs.getOrDefault(type, new SerializableMovementConfig());
+    }
+
+    @Override
+    public void onServerSync(ServerPlayerEntity player) {
+        // TODO sync movement configs with the server
     }
 }

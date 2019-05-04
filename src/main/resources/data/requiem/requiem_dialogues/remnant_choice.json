@@ -1,0 +1,27 @@
+{
+  "start_at": "introduction",
+  "states": {
+    "introduction": {
+      "text": "requiem:dialogue.introduction.text",
+      "choices": {
+        "requiem:dialogue.first_contact.introduction.explain": "explanation",
+        "requiem:dialogue.first_contact.introduction.yes": "accept",
+        "requiem:dialogue.first_contact.introduction.no": "refuse"
+      }
+    },
+    "explanation": {
+      "text": "requiem:dialogue.explanation.text",
+      "choices": {
+        "requiem:dialogue.first_contact.explanation.ok": "introduction"
+      }
+    },
+    "accept": {
+      "end": true,
+      "action": "requiem:become_remnant"
+    },
+    "refuse": {
+      "end": true,
+      "action": "requiem:stay_mortal"
+    }
+  }
+}

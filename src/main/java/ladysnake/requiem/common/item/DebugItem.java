@@ -17,6 +17,7 @@
  */
 package ladysnake.requiem.common.item;
 
+import ladysnake.requiem.common.impl.remnant.dialogue.DialogueTrackerImpl;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
@@ -46,7 +47,7 @@ public class DebugItem extends Item {
             switch (debugMode) {
                 case 0:
                     if (world.isClient) {
-                        RequiemNetworking.sendToServer(RequiemNetworking.createDialogueChoiceMessage(0));
+                        RequiemNetworking.sendToServer(RequiemNetworking.createDialogueActionMessage(DialogueTrackerImpl.BECOME_REMNANT));
                     }
                     break;
                 case 1:

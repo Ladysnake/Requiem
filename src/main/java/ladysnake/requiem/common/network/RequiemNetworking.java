@@ -20,6 +20,7 @@ package ladysnake.requiem.common.network;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.impl.remnant.dialogue.ReloadableDialogueManager;
 import ladysnake.requiem.common.remnant.RemnantStates;
 import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.client.MinecraftClient;
@@ -45,6 +46,7 @@ public class RequiemNetworking {
     public static final Identifier REMNANT_SYNC = Requiem.id("remnant_sync");
     public static final Identifier POSSESSION_ACK = Requiem.id("possession_ack");
     public static final Identifier OPUS_USE = Requiem.id("opus_use");
+    public static final Identifier DIALOGUE_SYNC = Requiem.id("dialogue_sync");
 
     // Client -> Server
     public static final Identifier LEFT_CLICK_AIR = Requiem.id("attack_air");
@@ -52,7 +54,7 @@ public class RequiemNetworking {
     public static final Identifier POSSESSION_REQUEST = Requiem.id("possession_request");
     public static final Identifier ETHEREAL_FRACTURE = Requiem.id("ethereal_fracture");
     public static final Identifier OPUS_UPDATE = Requiem.id("opus_update");
-    public static final Identifier DIALOGUE_CHOICE = Requiem.id("dialogue_choice");
+    public static final Identifier DIALOGUE_ACTION = Requiem.id("dialogue_action");
 
     public static void sendToServer(Identifier identifier, PacketByteBuf data) {
         sendToServer(new CustomPayloadC2SPacket(identifier, data));
@@ -120,6 +122,12 @@ public class RequiemNetworking {
         return new CustomPayloadS2CPacket(id, createEmptyBuffer());
     }
 
+    public static CustomPayloadS2CPacket createDialogueSyncMessage(ReloadableDialogueManager dialogueManager) {
+        PacketByteBuf buf = createEmptyBuffer();
+        dialogueManager.toPacket(buf);
+        return new CustomPayloadS2CPacket(DIALOGUE_SYNC, buf);
+    }
+
     @Contract(pure = true)
     public static PacketByteBuf createEmptyBuffer() {
         return new PacketByteBuf(buffer());
@@ -143,9 +151,10 @@ public class RequiemNetworking {
         return new CustomPayloadC2SPacket(OPUS_UPDATE, buf);
     }
 
-    public static CustomPayloadC2SPacket createDialogueChoiceMessage(int choice) {
+    public static CustomPayloadC2SPacket createDialogueActionMessage(Identifier action) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
-        buf.writeVarInt(choice);
-        return new CustomPayloadC2SPacket(DIALOGUE_CHOICE, buf);
+        buf.writeIdentifier(action);
+        return new CustomPayloadC2SPacket(DIALOGUE_ACTION, buf);
     }
+
 }
