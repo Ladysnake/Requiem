@@ -29,7 +29,7 @@ public abstract class ClientEntityMixin {
     @Inject(method = "method_20448", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isInsideWater()Z"), cancellable = true)
     private void isCrawling(CallbackInfoReturnable<Boolean> cir) {
         if (this instanceof RequiemPlayer && ((RequiemPlayer) this).getRemnantState().isIncorporeal()) {
-            cir.setReturnValue(true);
+            cir.setReturnValue(false);
         }
     }
 }
