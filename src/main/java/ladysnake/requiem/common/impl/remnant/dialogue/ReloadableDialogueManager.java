@@ -5,13 +5,10 @@ import com.google.gson.GsonBuilder;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.api.v1.dialogue.DialogueManager;
-import ladysnake.requiem.api.v1.event.minecraft.SyncServerResourcesCallback;
-import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.common.util.IdentifierAdapter;
-import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.profiler.Profiler;
@@ -24,7 +21,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class ReloadableDialogueManager implements SimpleResourceReloadListener<Map<Identifier, DialogueStateMachine>>, DialogueManager, SyncServerResourcesCallback {
+public class ReloadableDialogueManager implements SubDataManager<Map<Identifier, DialogueStateMachine>>, DialogueManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().registerTypeAdapter(Identifier.class, new IdentifierAdapter()).create();
     public static final int PREFIX_LENGTH = "requiem_dialogues/".length();
     public static final int SUFFIX_LENGTH = ".json".length();
@@ -32,13 +29,19 @@ public class ReloadableDialogueManager implements SimpleResourceReloadListener<M
     private final Map<Identifier, DialogueStateMachine> dialogues = new HashMap<>();
 
     @Override
-    public void onServerSync(ServerPlayerEntity player) {
-        RequiemNetworking.sendTo(player, RequiemNetworking.createDialogueSyncMessage(this));
-    }
-
-    public void applyDialogues(Map<Identifier, DialogueStateMachine> dialogues) {
+    public void apply(Map<Identifier, DialogueStateMachine> dialogues) {
         this.dialogues.clear();
         this.dialogues.putAll(dialogues);
+    }
+
+    @Override
+    public Map<Identifier, DialogueStateMachine> loadFromPacket(PacketByteBuf buf) {
+        Map<Identifier, DialogueStateMachine> dialogues = new HashMap<>();
+        int nbDialogues = buf.readVarInt();
+        for (int i = 0; i < nbDialogues; i++) {
+            dialogues.put(Identifier.create(buf.readString()), new DialogueStateMachine().readFromPacket(buf));
+        }
+        return dialogues;
     }
 
     public void toPacket(PacketByteBuf buf) {
@@ -77,20 +80,6 @@ public class ReloadableDialogueManager implements SimpleResourceReloadListener<M
             }
             return dialogues;
         }, executor);
-    }
-
-    @Override
-    public CompletableFuture<Void> apply(Map<Identifier, DialogueStateMachine> data, ResourceManager manager, Profiler profiler, Executor executor) {
-        return CompletableFuture.runAsync(() -> this.applyDialogues(data), executor);
-    }
-
-    public static Map<Identifier, DialogueStateMachine> fromPacket(PacketByteBuf buf) {
-        Map<Identifier, DialogueStateMachine> dialogues = new HashMap<>();
-        int nbDialogues = buf.readVarInt();
-        for (int i = 0; i < nbDialogues; i++) {
-            dialogues.put(Identifier.create(buf.readString()), new DialogueStateMachine().readFromPacket(buf));
-        }
-        return dialogues;
     }
 
 }

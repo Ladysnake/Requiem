@@ -17,6 +17,7 @@
  */
 package ladysnake.requiem.api.v1;
 
+import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
@@ -50,4 +51,6 @@ public interface RequiemPlayer {
     boolean isRemnant();
 
     DeathSuspender getDeathSuspender();
+
+    DialogueTracker getDialogueTracker();
 }

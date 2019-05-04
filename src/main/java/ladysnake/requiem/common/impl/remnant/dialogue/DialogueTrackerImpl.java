@@ -1,9 +1,11 @@
 package ladysnake.requiem.common.impl.remnant.dialogue;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.api.v1.dialogue.DialogueManager;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.remnant.RemnantStates;
@@ -22,8 +24,8 @@ public class DialogueTrackerImpl implements DialogueTracker {
     private CutsceneDialogue currentDialogue;
     private PlayerEntity player;
 
-    public DialogueTrackerImpl(DialogueManager manager, PlayerEntity player) {
-        this.manager = manager;
+    public DialogueTrackerImpl(PlayerEntity player) {
+        this.manager = Requiem.getDialogueManager(player.world.isClient);
         this.player = player;
     }
 
@@ -32,7 +34,12 @@ public class DialogueTrackerImpl implements DialogueTracker {
         if (BECOME_REMNANT.equals(action) || STAY_MORTAL.equals(action)) {
             RemnantType chosenType = BECOME_REMNANT.equals(action) ? RemnantStates.REMNANT : RemnantStates.MORTAL;
             if (!this.player.world.isClient) {
-                RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) this.player, chosenType);
+                DeathSuspender deathSuspender = ((RequiemPlayer) player).getDeathSuspender();
+                if (deathSuspender.isLifeTransient()) {
+                    ((RequiemPlayer) this.player).setRemnantState(chosenType.create(player));
+                    RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, chosenType);
+                    deathSuspender.resumeDeath();
+                }
             }
         }
         Requiem.LOGGER.warn("[DialogueTracker] Unknown action {}", action);

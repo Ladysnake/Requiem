@@ -20,6 +20,7 @@ package ladysnake.requiem.api.v1.internal;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
+import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import net.minecraft.entity.mob.MobEntity;
 import org.apiguardian.api.API;
 
@@ -34,6 +35,8 @@ import static org.apiguardian.api.API.Status.INTERNAL;
 
 @API(status = INTERNAL)
 public final class ApiInternals {
+    private ApiInternals() { throw new AssertionError(); }
+
     @Nullable
     @AccessedThroughReflection
     private static Supplier<MobAbilityConfig.Builder<?>> abilityBuilderFactory;
@@ -41,6 +44,10 @@ public final class ApiInternals {
     private static final List<RequiemPlugin> plugins = new ArrayList<>();
     @AccessedThroughReflection
     private static Consumer<RequiemPlugin> registerHandler = plugins::add;
+    @AccessedThroughReflection
+    private static SubDataManagerHelper clientSubDataManagerHelper;
+    @AccessedThroughReflection
+    private static SubDataManagerHelper serverSubDataManagerHelper;
 
     @SuppressWarnings("unchecked")
     public static <T extends MobEntity> MobAbilityConfig.Builder<T> mobAbilityConfig$builderImpl() {
@@ -56,5 +63,13 @@ public final class ApiInternals {
 
     public static Stream<RequiemPlugin> streamRegisteredPlugins() {
         return plugins.stream();
+    }
+
+    public static SubDataManagerHelper getClientSubDataManagerHelper() {
+        return clientSubDataManagerHelper;
+    }
+
+    public static SubDataManagerHelper getServerSubDataManagerHelper() {
+        return serverSubDataManagerHelper;
     }
 }

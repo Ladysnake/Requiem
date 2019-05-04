@@ -19,11 +19,12 @@ package ladysnake.requiem.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.network.ClientMessageHandling;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
@@ -60,6 +61,8 @@ public class RequiemClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientMessageHandling.init();
+        SubDataManagerHelper.getClientHelper().registerSubDataManager(Requiem.getDialogueManager(true));
+        SubDataManagerHelper.getClientHelper().registerSubDataManager(Requiem.getMovementAltererManager(true));
         registerCallbacks();
     }
 

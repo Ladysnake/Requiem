@@ -20,9 +20,7 @@ package ladysnake.requiem.common.network;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.item.OpusDemoniumItem;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantStates;
@@ -101,14 +99,7 @@ public class ServerMessageHandling {
         });
         ServerSidePacketRegistry.INSTANCE.register(DIALOGUE_ACTION, (context, buffer) -> {
             Identifier choice = buffer.readIdentifier();
-            context.getTaskQueue().execute(() -> {
-                PlayerEntity player = context.getPlayer();
-                DeathSuspender deathSuspender = ((RequiemPlayer) player).getDeathSuspender();
-                if (deathSuspender.isLifeTransient() && choice.toString().equals("requiem:")) {
-                    RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, RemnantStates.REMNANT);
-                    deathSuspender.resumeDeath();
-                }
-            });
+            context.getTaskQueue().execute(() -> ((RequiemPlayer) context.getPlayer()).getDialogueTracker().handleAction(choice));
         });
     }
 

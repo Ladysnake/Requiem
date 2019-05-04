@@ -17,10 +17,11 @@
  */
 package ladysnake.requiem.mixin.entity.player;
 
-import ladysnake.requiem.api.v1.entity.MovementAlterer;
-import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
+import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
@@ -28,6 +29,7 @@ import ladysnake.requiem.common.impl.movement.PlayerMovementAlterer;
 import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.remnant.NullRemnantState;
 import ladysnake.requiem.common.impl.remnant.RevivingDeathSuspender;
+import ladysnake.requiem.common.impl.remnant.dialogue.DialogueTrackerImpl;
 import ladysnake.requiem.common.remnant.RemnantStates;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
@@ -79,6 +81,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private final PossessionComponent possessionComponent = new PossessionComponentImpl((PlayerEntity) (Object) this);
     private final MovementAlterer movementAlterer = new PlayerMovementAlterer((PlayerEntity)(Object) this);
     private final DeathSuspender deathSuspender = new RevivingDeathSuspender((PlayerEntity)(Object) this);
+    private final DialogueTracker dialogueTracker = new DialogueTrackerImpl((PlayerEntity)(Object) this);
 
     @Override
     public RemnantState getRemnantState() {
@@ -98,6 +101,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     @Override
     public DeathSuspender getDeathSuspender() {
         return this.deathSuspender;
+    }
+
+    @Override
+    public DialogueTracker getDialogueTracker() {
+        return this.dialogueTracker;
     }
 
     @Override

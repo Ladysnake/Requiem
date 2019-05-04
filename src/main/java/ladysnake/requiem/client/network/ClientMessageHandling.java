@@ -17,15 +17,15 @@
  */
 package ladysnake.requiem.client.network;
 
-import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.util.SubDataManager;
+import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.RequiemFx;
-import ladysnake.requiem.common.impl.remnant.dialogue.DialogueStateMachine;
-import ladysnake.requiem.common.impl.remnant.dialogue.ReloadableDialogueManager;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantStates;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.network.PacketContext;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
@@ -34,10 +34,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.ThreadExecutor;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
@@ -88,10 +92,20 @@ public class ClientMessageHandling {
                 RequiemFx.INSTANCE.playEtherealPulseAnimation(16, 1.0f, 0.25f, 0.27f);
             }
         }));
-        ClientSidePacketRegistry.INSTANCE.register(DIALOGUE_SYNC, (context, buffer) -> {
-            Map<Identifier, DialogueStateMachine> dialogues = ReloadableDialogueManager.fromPacket(buffer);
-            context.getTaskQueue().execute(() -> Requiem.getDialogueManager().applyDialogues(dialogues));
+        ClientSidePacketRegistry.INSTANCE.register(DATA_SYNC, (context, buffer) -> {
+            Map<Identifier, SubDataManager<?>> map = SubDataManagerHelper.getClientHelper().streamDataManagers().collect(Collectors.toMap(IdentifiableResourceReloadListener::getFabricId, Function.identity()));
+            int nbManagers = buffer.readVarInt();
+            for (int i = 0; i < nbManagers; i++) {
+                Identifier id = buffer.readIdentifier();
+                SubDataManager<?> manager = Objects.requireNonNull(map.get(id), "Unknown sub data manager " + id);
+                syncSubDataManager(buffer, manager, context.getTaskQueue());
+            }
         });
+    }
+
+    private static <T> void syncSubDataManager(PacketByteBuf buffer, SubDataManager<T> subManager, ThreadExecutor taskQueue) {
+        T data = subManager.loadFromPacket(buffer);
+        taskQueue.execute(() -> subManager.apply(data));
     }
 
     private static void register(Identifier id, BiConsumer<PacketContext, PacketByteBuf> handler) {

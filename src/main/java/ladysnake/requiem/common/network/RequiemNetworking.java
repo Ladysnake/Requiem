@@ -20,7 +20,8 @@ package ladysnake.requiem.common.network;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.impl.remnant.dialogue.ReloadableDialogueManager;
+import ladysnake.requiem.api.v1.util.SubDataManager;
+import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.common.remnant.RemnantStates;
 import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.client.MinecraftClient;
@@ -35,7 +36,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 import org.jetbrains.annotations.Contract;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static io.netty.buffer.Unpooled.buffer;
 
@@ -46,7 +49,7 @@ public class RequiemNetworking {
     public static final Identifier REMNANT_SYNC = Requiem.id("remnant_sync");
     public static final Identifier POSSESSION_ACK = Requiem.id("possession_ack");
     public static final Identifier OPUS_USE = Requiem.id("opus_use");
-    public static final Identifier DIALOGUE_SYNC = Requiem.id("dialogue_sync");
+    public static final Identifier DATA_SYNC = Requiem.id("data_sync");
 
     // Client -> Server
     public static final Identifier LEFT_CLICK_AIR = Requiem.id("attack_air");
@@ -122,10 +125,15 @@ public class RequiemNetworking {
         return new CustomPayloadS2CPacket(id, createEmptyBuffer());
     }
 
-    public static CustomPayloadS2CPacket createDialogueSyncMessage(ReloadableDialogueManager dialogueManager) {
+    public static CustomPayloadS2CPacket createDataSyncMessage(SubDataManagerHelper helper) {
         PacketByteBuf buf = createEmptyBuffer();
-        dialogueManager.toPacket(buf);
-        return new CustomPayloadS2CPacket(DIALOGUE_SYNC, buf);
+        List<SubDataManager<?>> managers = helper.streamDataManagers().collect(Collectors.toList());
+        buf.writeVarInt(managers.size());
+        for (SubDataManager<?> manager : managers) {
+            buf.writeIdentifier(manager.getFabricId());
+            manager.toPacket(buf);
+        }
+        return new CustomPayloadS2CPacket(DATA_SYNC, buf);
     }
 
     @Contract(pure = true)

@@ -20,6 +20,7 @@ package ladysnake.requiem.common.impl.movement;
 import com.google.gson.Gson;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.entity.MovementConfig;
+import net.minecraft.util.PacketByteBuf;
 import org.apiguardian.api.API;
 
 /**
@@ -49,6 +50,24 @@ public class SerializableMovementConfig implements MovementConfig {
         this.gravity = gravity;
         this.fallSpeedModifier = fallSpeedModifier;
         this.inertia = inertia;
+    }
+
+    public void toPacket(PacketByteBuf buf) {
+        buf.writeEnumConstant(this.flightMode);
+        buf.writeEnumConstant(this.swimMode);
+        buf.writeBoolean(this.flopsOnLand);
+        buf.writeFloat(this.gravity);
+        buf.writeFloat(this.fallSpeedModifier);
+        buf.writeFloat(this.inertia);
+    }
+
+    public void fromPacket(PacketByteBuf buf) {
+        this.flightMode = buf.readEnumConstant(MovementMode.class);
+        this.swimMode = buf.readEnumConstant(MovementMode.class);
+        this.flopsOnLand = buf.readBoolean();
+        this.gravity = buf.readFloat();
+        this.fallSpeedModifier = buf.readFloat();
+        this.inertia = buf.readFloat();
     }
 
     @Override
