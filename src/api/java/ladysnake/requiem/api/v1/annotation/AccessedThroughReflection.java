@@ -29,7 +29,7 @@ import static org.apiguardian.api.API.Status.MAINTAINED;
 /**
  * A simple annotation to tell static analysis tools (and other people) to shut up about "unused" code
  */
-@API(status = MAINTAINED, since = "2.6.2")
+@API(status = MAINTAINED, since = "1.0.0")
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.FIELD})
 public @interface AccessedThroughReflection { }
