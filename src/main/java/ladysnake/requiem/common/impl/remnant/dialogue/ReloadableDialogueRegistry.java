@@ -4,7 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
-import ladysnake.requiem.api.v1.dialogue.DialogueManager;
+import ladysnake.requiem.api.v1.dialogue.DialogueAction;
+import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.common.util.IdentifierAdapter;
 import net.minecraft.resource.Resource;
@@ -21,12 +22,13 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class ReloadableDialogueManager implements SubDataManager<Map<Identifier, DialogueStateMachine>>, DialogueManager {
+public class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier, DialogueStateMachine>>, DialogueRegistry {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().registerTypeAdapter(Identifier.class, new IdentifierAdapter()).create();
     public static final int PREFIX_LENGTH = "requiem_dialogues/".length();
     public static final int SUFFIX_LENGTH = ".json".length();
 
     private final Map<Identifier, DialogueStateMachine> dialogues = new HashMap<>();
+    private final Map<Identifier, DialogueAction> actions = new HashMap<>();
 
     @Override
     public void apply(Map<Identifier, DialogueStateMachine> dialogues) {
@@ -58,6 +60,20 @@ public class ReloadableDialogueManager implements SubDataManager<Map<Identifier,
             throw new IllegalArgumentException("Unknown dialogue " + id);
         }
         return this.dialogues.get(id);
+    }
+
+    @Override
+    public void registerAction(Identifier actionId, DialogueAction action) {
+        this.actions.put(actionId, action);
+    }
+
+    @Override
+    public DialogueAction getAction(Identifier actionId) {
+        if (!this.actions.containsKey(actionId)) {
+            Requiem.LOGGER.warn("[DialogueTracker] Unknown action {}", actionId);
+            return DialogueAction.NONE;
+        }
+        return this.actions.get(actionId);
     }
 
     @Override

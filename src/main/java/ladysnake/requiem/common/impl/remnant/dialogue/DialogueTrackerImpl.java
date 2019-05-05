@@ -1,14 +1,9 @@
 package ladysnake.requiem.common.impl.remnant.dialogue;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
-import ladysnake.requiem.api.v1.dialogue.DialogueManager;
+import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
-import ladysnake.requiem.api.v1.remnant.DeathSuspender;
-import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
-import ladysnake.requiem.common.remnant.RemnantStates;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -19,7 +14,7 @@ public class DialogueTrackerImpl implements DialogueTracker {
     public static final Identifier BECOME_REMNANT = Requiem.id("become_remnant");
     public static final Identifier STAY_MORTAL = Requiem.id("stay_mortal");
 
-    private DialogueManager manager;
+    private DialogueRegistry manager;
     @Nullable
     private CutsceneDialogue currentDialogue;
     private PlayerEntity player;
@@ -31,18 +26,11 @@ public class DialogueTrackerImpl implements DialogueTracker {
 
     @Override
     public void handleAction(Identifier action) {
-        if (BECOME_REMNANT.equals(action) || STAY_MORTAL.equals(action)) {
-            RemnantType chosenType = BECOME_REMNANT.equals(action) ? RemnantStates.REMNANT : RemnantStates.MORTAL;
-            if (!this.player.world.isClient) {
-                DeathSuspender deathSuspender = ((RequiemPlayer) player).getDeathSuspender();
-                if (deathSuspender.isLifeTransient()) {
-                    ((RequiemPlayer) this.player).setRemnantState(chosenType.create(player));
-                    RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, chosenType);
-                    deathSuspender.resumeDeath();
-                }
-            }
+        if (!this.player.world.isClient) {
+            this.manager.getAction(action).handle((ServerPlayerEntity) this.player);
+        } else {
+            Requiem.LOGGER.warn("DialogueTrackerImpl#handleAction called on the wrong side !");
         }
-        Requiem.LOGGER.warn("[DialogueTracker] Unknown action {}", action);
     }
 
     @Override

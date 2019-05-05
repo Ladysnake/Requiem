@@ -18,17 +18,21 @@
 package ladysnake.requiem.common;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.RequiemPlugin;
+import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.event.minecraft.ItemPickupCallback;
 import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
-import ladysnake.requiem.api.v1.remnant.MobResurrectable;
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.api.v1.remnant.MobResurrectable;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
+import ladysnake.requiem.common.impl.remnant.dialogue.DialogueTrackerImpl;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
@@ -53,6 +57,7 @@ import java.util.UUID;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.createCorporealityMessage;
 import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTrackingIncluding;
+import static ladysnake.requiem.common.remnant.RemnantStates.MORTAL;
 import static ladysnake.requiem.common.remnant.RemnantStates.REMNANT;
 
 public class VanillaRequiemPlugin implements RequiemPlugin {
@@ -172,4 +177,20 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
     public void registerRemnantStates(Registry<RemnantType> registry) {
         Registry.register(registry, Requiem.id("remnant"), REMNANT);
     }
+
+    @Override
+    public void registerDialogueActions(DialogueRegistry serverRegistry) {
+        serverRegistry.registerAction(DialogueTrackerImpl.BECOME_REMNANT, p -> handleRemnantChoiceAction(p, REMNANT));
+        serverRegistry.registerAction(DialogueTrackerImpl.STAY_MORTAL, p -> handleRemnantChoiceAction(p, MORTAL));
+    }
+
+    private static void handleRemnantChoiceAction(ServerPlayerEntity player, RemnantType chosenType) {
+        DeathSuspender deathSuspender = ((RequiemPlayer) player).getDeathSuspender();
+        if (deathSuspender.isLifeTransient()) {
+            ((RequiemPlayer) player).setRemnantState(chosenType.create(player));
+            RequiemCriteria.MADE_REMNANT_CHOICE.handle(player, chosenType);
+            deathSuspender.resumeDeath();
+        }
+    }
+
 }

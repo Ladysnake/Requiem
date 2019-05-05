@@ -28,7 +28,7 @@ import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.command.RequiemCommand;
 import ladysnake.requiem.common.impl.ApiInitializer;
 import ladysnake.requiem.common.impl.movement.MovementAltererManager;
-import ladysnake.requiem.common.impl.remnant.dialogue.ReloadableDialogueManager;
+import ladysnake.requiem.common.impl.remnant.dialogue.ReloadableDialogueRegistry;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.network.ServerMessageHandling;
@@ -44,8 +44,8 @@ public class Requiem implements ModInitializer {
 
     private static final MovementAltererManager MOVEMENT_ALTERER_MANAGER = new MovementAltererManager();
     private static final MovementAltererManager CLIENT_MOVEMENT_ALTERER_MANAGER = new MovementAltererManager();
-    private static final ReloadableDialogueManager DIALOGUE_MANAGER = new ReloadableDialogueManager();
-    private static final ReloadableDialogueManager CLIENT_DIALOGUE_MANAGER = new ReloadableDialogueManager();
+    private static final ReloadableDialogueRegistry DIALOGUE_MANAGER = new ReloadableDialogueRegistry();
+    private static final ReloadableDialogueRegistry CLIENT_DIALOGUE_MANAGER = new ReloadableDialogueRegistry();
 
     public static Identifier id(String path) {
         return new Identifier(MOD_ID, path);
@@ -55,7 +55,7 @@ public class Requiem implements ModInitializer {
         return isClient ? CLIENT_MOVEMENT_ALTERER_MANAGER : MOVEMENT_ALTERER_MANAGER;
     }
 
-    public static ReloadableDialogueManager getDialogueManager(boolean isClient) {
+    public static ReloadableDialogueRegistry getDialogueManager(boolean isClient) {
         return isClient ? CLIENT_DIALOGUE_MANAGER : DIALOGUE_MANAGER;
     }
 
@@ -79,5 +79,6 @@ public class Requiem implements ModInitializer {
         plugin.onRequiemInitialize();
         plugin.registerRemnantStates(RequiemRegistries.REMNANT_STATES);
         plugin.registerMobAbilities(RequiemRegistries.ABILITIES);
+        plugin.registerDialogueActions(DIALOGUE_MANAGER);
     }
 }
