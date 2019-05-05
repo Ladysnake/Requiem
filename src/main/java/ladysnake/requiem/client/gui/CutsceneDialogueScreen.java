@@ -6,6 +6,7 @@ import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TextComponent;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
 
@@ -25,11 +26,30 @@ public class CutsceneDialogueScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double x, double y, int button) {
+        confirmCurrentChoice();
+        return true;
+    }
+
+    private void confirmCurrentChoice() {
         if (this.dialogue.choose(this.dialogue.getCurrentChoices().get(selectedChoice))) {
             Objects.requireNonNull(this.minecraft).openScreen(null);
             ((RequiemPlayer)this.minecraft.player).getDialogueTracker().endDialogue();
             ((RequiemPlayer) this.minecraft.player).getDeathSuspender().setLifeTransient(false);
         }
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int int_2, int int_3) {
+        if (keyCode == GLFW.GLFW_KEY_ENTER) {
+            confirmCurrentChoice();
+            return true;
+        }
+        return super.keyPressed(keyCode, int_2, int_3);
+    }
+
+    @Override
+    public boolean changeFocus(boolean shiftPressed) {
+        this.selectedChoice = Math.floorMod(this.selectedChoice + (shiftPressed ? -1 : 1), this.dialogue.getCurrentChoices().size());
         return true;
     }
 
