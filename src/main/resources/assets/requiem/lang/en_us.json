@@ -23,6 +23,13 @@
   "requiem:opus.mortal_sentence": "Ad Vitam Mortale",
   "requiem:opus.remnant_sentence": "Ad Vitam Aeternam",
 
+  "requiem:dialogue.first_contact.introduction.text": "You hear a voice talking to you, but you can't quite put your finger on where it's coming from",
+  "requiem:dialogue.first_contact.introduction.explain": "What is going on?",
+  "requiem:dialogue.first_contact.introduction.yes": "Make me a demon already",
+  "requiem:dialogue.first_contact.introduction.no": "I do not want anything to do with this",
+  "requiem:dialogue.first_contact.explanation.text": "Reject your humanity, and become cursed with eternity. Refuse, and keep to your ordinary lives among others.",
+  "requiem:dialogue.first_contact.explanation.ok": "I see.",
+
   "requiem:tooltip.bony_prosthesis": "Bony Prosthesis",
   "requiem:tooltip.calcium_bucket": "Calcium Goodness",
   "requiem:tooltip.drowned_food": "Drowned Delicacy",

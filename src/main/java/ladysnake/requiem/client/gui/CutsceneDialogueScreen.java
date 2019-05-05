@@ -43,14 +43,14 @@ public class CutsceneDialogueScreen extends Screen {
         this.renderBackground();
         int y = 40;
         String title = I18n.translate(this.dialogue.getCurrentText());
-        final int width = 100;
-        this.font.drawStringBounded(title, 10, y, width, 0x0);
-        y += this.font.getStringBoundedHeight(title, width);
+        final int width = 200;
+        this.font.drawStringBounded(title, 10, y, width, 0xFFFFFF);
+        y += this.font.getStringBoundedHeight(title, width) + 20;
         ImmutableList<String> choices = this.dialogue.getCurrentChoices();
         for (int i = 0; i < choices.size(); i++) {
-            String choice = choices.get(i);
-            this.font.drawStringBounded(choice, 10, y, width, i == selectedChoice ? 0xFF00FF : 0x0);
-            y += this.font.getStringBoundedHeight(choice, width);
+            String choice = I18n.translate(choices.get(i));
+            this.font.drawStringBounded(choice, 10, y, width, i == selectedChoice ? 0xE0E044 : 0xA0A0A0);
+            y += this.font.getStringBoundedHeight(choice, width) + 5;
         }
         super.render(mouseX, mouseY, tickDelta);
     }

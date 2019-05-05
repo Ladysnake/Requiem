@@ -2,7 +2,7 @@
   "start_at": "introduction",
   "states": {
     "introduction": {
-      "text": "requiem:dialogue.introduction.text",
+      "text": "requiem:dialogue.first_contact.introduction.text",
       "choices": {
         "requiem:dialogue.first_contact.introduction.explain": "explanation",
         "requiem:dialogue.first_contact.introduction.yes": "accept",
@@ -10,7 +10,7 @@
       }
     },
     "explanation": {
-      "text": "requiem:dialogue.explanation.text",
+      "text": "requiem:dialogue.first_contact.explanation.text",
       "choices": {
         "requiem:dialogue.first_contact.explanation.ok": "introduction"
       }
