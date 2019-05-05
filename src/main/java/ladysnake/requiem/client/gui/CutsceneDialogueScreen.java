@@ -28,6 +28,7 @@ public class CutsceneDialogueScreen extends Screen {
         if (this.dialogue.choose(this.dialogue.getCurrentChoices().get(selectedChoice))) {
             Objects.requireNonNull(this.minecraft).openScreen(null);
             ((RequiemPlayer)this.minecraft.player).getDialogueTracker().endDialogue();
+            ((RequiemPlayer) this.minecraft.player).getDeathSuspender().setLifeTransient(false);
         }
         return true;
     }

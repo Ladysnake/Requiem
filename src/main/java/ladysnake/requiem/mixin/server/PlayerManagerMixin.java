@@ -63,11 +63,11 @@ import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 public abstract class PlayerManagerMixin {
     private static final ThreadLocal<ServerWorld> REQUIEM$RESPAWN_WORLD = new ThreadLocal<>();
     @Shadow @Final private MinecraftServer server;
-//
-//    @Inject(method = "onPlayerConnect", at = @At("RETURN"))
-//    private void onPlayerConnect(ClientConnection connection, ServerPlayerEntity createdPlayer, CallbackInfo info) {
-//        sendTo(createdPlayer, createCorporealityMessage(createdPlayer));
-//    }
+
+    @Inject(method = "onPlayerConnect", at = @At("RETURN"))
+    private void onPlayerConnect(ClientConnection connection, ServerPlayerEntity createdPlayer, CallbackInfo info) {
+        sendTo(createdPlayer, createCorporealityMessage(createdPlayer));
+    }
 
     @Shadow @Final private List<ServerPlayerEntity> players;
 

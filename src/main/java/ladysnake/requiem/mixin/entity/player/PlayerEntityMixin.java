@@ -74,7 +74,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     /* Implementation of RequiemPlayer */
 
     @Shadow @Final public PlayerAbilities abilities;
-    private static final String TAG_REMNANT_DATA = "requiem:remnant_data";
+    private static final String REQUIEM$TAG_REMNANT_DATA = "requiem:remnant_data";
+    private static final String REQUIEM$TAG_SUSPENDED_DEATH = "requiem:suspended_death";
     private static final EntitySize REQUIEM$SOUL_SNEAKING_SIZE = EntitySize.resizeable(0.6f, 0.6f);
 
     private RemnantState remnantState = NullRemnantState.NULL_STATE;
@@ -159,16 +160,18 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private void writeCustomDataToTag(CompoundTag tag, CallbackInfo info) {
         CompoundTag remnantData = new CompoundTag();
         remnantData.putString("id", RemnantStates.getId(this.getRemnantState().getType()).toString());
-        tag.put(TAG_REMNANT_DATA, this.remnantState.toTag(remnantData));
+        tag.put(REQUIEM$TAG_REMNANT_DATA, this.remnantState.toTag(remnantData));
+        tag.put(REQUIEM$TAG_SUSPENDED_DEATH, this.deathSuspender.toTag(new CompoundTag()));
     }
 
     @Inject(at = @At("TAIL"), method = "readCustomDataFromTag")
     private void readCustomDataFromTag(CompoundTag tag, CallbackInfo info) {
-        CompoundTag remnantTag = tag.getCompound(TAG_REMNANT_DATA);
+        CompoundTag remnantTag = tag.getCompound(REQUIEM$TAG_REMNANT_DATA);
         RemnantType remnantType = RemnantStates.get(new Identifier(remnantTag.getString("id")));
         RemnantState handler = remnantType.create((PlayerEntity) (Object) this);
         handler.fromTag(remnantTag);
         this.setRemnantState(handler);
+        this.deathSuspender.fromTag(tag.getCompound(REQUIEM$TAG_SUSPENDED_DEATH));
     }
 
     /* Actual modifications of vanilla behaviour */

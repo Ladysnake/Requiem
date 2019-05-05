@@ -51,7 +51,7 @@ public class RevivingDeathSuspender implements DeathSuspender {
         this.player.abilities.invulnerable = false;
         this.player.setHealth(0f);
         this.setLifeTransient(false);
-        this.player.onDeath(this.deathCause);
+        this.player.onDeath(this.deathCause != null ? deathCause : DamageSource.GENERIC);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class RevivingDeathSuspender implements DeathSuspender {
 
     @Override
     public void fromTag(CompoundTag tag) {
-        this.lifeTransient = tag.getBoolean("lifeTransient");
+        this.setLifeTransient(tag.getBoolean("lifeTransient"));
         if (tag.containsKey("deathCause") && this.player.world.isClient) {
             this.deathCause = DamageSourceSerialization.fromTag(tag.getCompound("deathCause"), (ServerWorld)this.player.world);
         }

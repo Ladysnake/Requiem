@@ -21,7 +21,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
-import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
+import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
@@ -76,9 +76,10 @@ public class RequiemClient implements ClientModInitializer {
 
         ClientTickCallback.EVENT.register(client -> {
             if (client.player != null && client.currentScreen == null) {
-                CutsceneDialogue d = ((RequiemPlayer)client.player).getDialogueTracker().getCurrentDialogue();
-                if (d != null) {
-                    client.openScreen(new CutsceneDialogueScreen(new TranslatableTextComponent("requiem:dialogue_screen"), d));
+                if (((RequiemPlayer)client.player).getDeathSuspender().isLifeTransient()) {
+                    DialogueTracker dialogueTracker = ((RequiemPlayer) client.player).getDialogueTracker();
+                    dialogueTracker.startDialogue(Requiem.id("remnant_choice"));
+                    client.openScreen(new CutsceneDialogueScreen(new TranslatableTextComponent("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue()));
                 }
             }
         });
