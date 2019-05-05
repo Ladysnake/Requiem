@@ -31,8 +31,8 @@ public class DialogueStateMachine implements CutsceneDialogue {
     }
 
     @Override
-    public void init() {
-        this.choose(this.start);
+    public void start() {
+        this.selectState(this.start);
     }
 
     private DialogueState getCurrentState() {
@@ -41,7 +41,7 @@ public class DialogueStateMachine implements CutsceneDialogue {
 
     @Override
     public @Unlocalized String getCurrentText() {
-        return this.currentState.getText();
+        return this.getCurrentState().getText();
     }
 
     @Override
@@ -50,16 +50,21 @@ public class DialogueStateMachine implements CutsceneDialogue {
     }
 
     @Override
-    public void choose(String choice) {
-        if (!this.states.containsKey(choice)) {
-            throw new IllegalArgumentException(choice + " is not an available dialogue option");
+    public boolean choose(String choice) {
+        return this.selectState(this.getCurrentState().getNextState(choice));
+    }
+
+    private boolean selectState(String state) {
+        if (!this.states.containsKey(state)) {
+            throw new IllegalArgumentException(state + " is not an available dialogue state");
         }
-        this.currentState = this.states.get(choice);
+        this.currentState = this.states.get(state);
         this.currentChoices = this.currentState.getAvailableChoices();
         Identifier action = currentState.getAction();
         if (action != null) {
             RequiemNetworking.sendToServer(RequiemNetworking.createDialogueActionMessage(action));
         }
+        return this.currentState.isEnd();
     }
 
     public DialogueStateMachine readFromPacket(PacketByteBuf buf) {

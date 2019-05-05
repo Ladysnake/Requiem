@@ -1,6 +1,7 @@
 package ladysnake.requiem.common.impl.remnant;
 
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.util.DamageSourceSerialization;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,7 +29,7 @@ public class RevivingDeathSuspender implements DeathSuspender {
         this.player.setInvulnerable(true);
         this.player.abilities.invulnerable = true;
         this.deathCause = deathCause;
-        this.lifeTransient = true;
+        this.setLifeTransient(true);
     }
 
     @Override
@@ -39,6 +40,9 @@ public class RevivingDeathSuspender implements DeathSuspender {
     @Override
     public void setLifeTransient(boolean lifeTransient) {
         this.lifeTransient = lifeTransient;
+        if (!this.player.world.isClient) {
+            RequiemNetworking.sendToAllTrackingIncluding(player, RequiemNetworking.createCorporealityMessage(player));
+        }
     }
 
     @Override

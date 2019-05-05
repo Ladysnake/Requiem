@@ -36,6 +36,12 @@ public class DialogueTrackerImpl implements DialogueTracker {
     @Override
     public void startDialogue(Identifier id) {
         this.currentDialogue = this.manager.getDialogue(id);
+        this.currentDialogue.start();
+    }
+
+    @Override
+    public void endDialogue() {
+        this.currentDialogue = null;
     }
 
     @Nullable

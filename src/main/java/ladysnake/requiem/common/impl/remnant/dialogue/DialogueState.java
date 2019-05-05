@@ -36,6 +36,10 @@ public class DialogueState {
         return ImmutableList.copyOf(choices.keySet());
     }
 
+    public String getNextState(String choice) {
+        return this.choices.get(choice);
+    }
+
     public boolean isEnd() {
         return end;
     }

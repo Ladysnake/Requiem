@@ -17,6 +17,7 @@
  */
 package ladysnake.requiem.client.network;
 
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
@@ -51,10 +52,15 @@ public class ClientMessageHandling {
             UUID playerUuid = buf.readUuid();
             int remnantId = buf.readVarInt();
             boolean incorporeal = buf.readBoolean();
+            boolean lifeTransient = buf.readBoolean();
             PlayerEntity player = context.getPlayer().world.getPlayerByUuid(playerUuid);
             if (player != null) {
                 ((RequiemPlayer)player).setRemnantState(RemnantStates.get(remnantId).create(player));
                 ((RequiemPlayer) player).getRemnantState().setSoul(incorporeal);
+                ((RequiemPlayer) player).getDeathSuspender().setLifeTransient(lifeTransient);
+                if (lifeTransient && player == MinecraftClient.getInstance().player) {
+                    ((RequiemPlayer) player).getDialogueTracker().startDialogue(Requiem.id("remnant_choice"));
+                }
             }
         });
         register(POSSESSION_ACK, (context, buf) -> RequiemFx.INSTANCE.onPossessionAck());

@@ -9,6 +9,8 @@ public interface DialogueTracker {
 
     void startDialogue(Identifier dialogue);
 
+    void endDialogue();
+
     @Nullable
     CutsceneDialogue getCurrentDialogue();
 }

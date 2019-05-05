@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import ladysnake.requiem.api.v1.annotation.Unlocalized;
 
 public interface CutsceneDialogue {
-    void init();
+    void start();
 
     @Unlocalized String getCurrentText();
 
@@ -14,6 +14,7 @@ public interface CutsceneDialogue {
      * Chooses an option in an initialized
      * @param choice the selected choice
      * @throws IllegalArgumentException if the given choice is not part of the {@link #getCurrentChoices() current choices}
+     * @return true if the new state is an end state
      */
-    void choose(String choice);
+    boolean choose(String choice);
 }
