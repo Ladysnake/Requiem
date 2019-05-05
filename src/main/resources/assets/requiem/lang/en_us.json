@@ -23,6 +23,7 @@
   "requiem:opus.mortal_sentence": "Ad Vitam Mortale",
   "requiem:opus.remnant_sentence": "Ad Vitam Aeternam",
 
+  "requiem:dialogue.instructions": "Scroll or press [Tab] to select a choice, then click or press [Enter] to confirm it",
   "requiem:dialogue.first_contact.introduction.text": "You hear a voice talking to you, but you can't quite put your finger on where it's coming from",
   "requiem:dialogue.first_contact.introduction.explain": "What is going on?",
   "requiem:dialogue.first_contact.introduction.yes": "Make me a demon already",

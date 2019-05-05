@@ -73,6 +73,8 @@ public class CutsceneDialogueScreen extends Screen {
             this.font.drawStringBounded(choice, 10, y, width, i == selectedChoice ? 0xE0E044 : 0xA0A0A0);
             y += this.font.getStringBoundedHeight(choice, width) + 5;
         }
+        String tip = I18n.translate("requiem:dialogue.instructions");
+        this.font.draw(tip, (this.width - font.getStringWidth(tip)) * 0.5f, this.height - 30, 0x808080);
         super.render(mouseX, mouseY, tickDelta);
     }
 }
