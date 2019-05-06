@@ -1,3 +1,6 @@
+##### Version 1.12.2-0.3.9 - BUILT
+- Fixed crash when two mods have a possessable entity with the same class name
+
 ##### Version 1.12.2-0.3.8 - BUILT
 - Fixed crash when killed by a player possessing a mob
 

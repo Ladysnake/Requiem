@@ -2,15 +2,14 @@
   {
     "modid": "dissolution",
     "name": "Dissolution",
-    "description": "A mod aimed at making death more interesting",
+    "description": "A mod aimed at making death more interesting. **This is an unsupported beta version of the mod, further development takes place on the Fabric version: Requiem.**",
     "version": "${version}",
     "mcversion": "${mcversion}",
-    "url": "https://minecraft.curseforge.com/projects/dissolution",
-    "updateJSON": "https://github.com/Ladysnake/Dissolution/blob/1.12.2/changelog.json",
+    "url": "https://minecraft.curseforge.com/projects/requiem",
+    "updateJSON": "https://raw.githubusercontent.com/Ladysnake/Dissolution/79f2bb0d2a22ce572cf1d568e47d11de5f4bef5a/changelog.json",
     "authorList": [
       "Pyrofab",
-      "CobraDarkPoney",
-      "Noprotox"
+      "doctor4t"
     ],
     "credits": "JanisX11 for Blockbench, without which we wouldn't have those fancy models.",
     "logoFile": "/assets/dissolution/textures/tartaros_ico.png",
@@ -20,7 +19,6 @@
     ],
     "dependencies": [
       "ladylib",
-      "albedo",
       "baubles",
       "thaumcraft"
     ]
