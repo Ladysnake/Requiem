@@ -40,7 +40,7 @@ dependencies {
     compileOnly     "potion-core:PotionCore:1.6_for_${mc_version}:src"
     compileOnly     "epic-siege-mod:EpicSiegeMod:13.163:sources"
     deobfProvided   "journeymap:journeymap:1.12.2:5.5.3"
-    deobfProvided   "aether-legacy:aether_legacy:${mc_version}:${aether_version}"
+    deobfProvided   "the-aether:aether_legacy:${mc_version}:${aether_version}"
     deobfCompile    "com.jamieswhiteshirt:clothesline-hooks:1.12.2-0.0.1.0"
     compileOnly     "ichunutil:iChunUtil:${mc_version}:${ichunutil_version}"
     compileOnly     "sync:Sync:${mc_version}:${sync_version}"

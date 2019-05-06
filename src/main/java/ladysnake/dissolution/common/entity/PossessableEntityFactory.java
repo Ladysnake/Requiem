@@ -108,7 +108,7 @@ public class PossessableEntityFactory {
     }
 
     private static String getName(Class baseClass) {
-        return String.format("%s_%s", EntityPossessableImpl.class.getName(), baseClass.getSimpleName());
+        return String.format("%s_%s_%d", EntityPossessableImpl.class.getName(), baseClass.getSimpleName(), baseClass.getName().hashCode());
     }
 
     /**
