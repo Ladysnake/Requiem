@@ -19,6 +19,7 @@
     "item.BowItemMixin",
     "item.ItemMixin",
     "item.MilkBucketItemMixin",
+    "item.PotionItemMixin",
     "item.TridentItemMixin",
     "possession.entity.PossessableEntityAccessor",
     "possession.entity.PossessableEntityMixin",
