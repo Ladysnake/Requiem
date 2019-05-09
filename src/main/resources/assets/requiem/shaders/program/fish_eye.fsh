@@ -42,7 +42,7 @@ void main(void)
 
   //Second part of cheat
   //for round effect, not elliptical
-  vec3 col = texture2D(DiffuseSampler, vec2(uv.x, uv.y * prop)).xyz;
+  vec3 col = texture2D(DiffuseSampler, vec2(uv.x, uv.y * prop)).rgb;
 
   gl_FragColor = vec4(col, 1.0);
 }

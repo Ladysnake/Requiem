@@ -17,6 +17,7 @@
  */
 package ladysnake.requiem.common.item;
 
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.common.impl.remnant.dialogue.DialogueTrackerImpl;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.block.BlockState;
@@ -47,7 +48,12 @@ public class DebugItem extends Item {
             switch (debugMode) {
                 case 0:
                     if (world.isClient) {
-                        RequiemNetworking.sendToServer(RequiemNetworking.createDialogueActionMessage(DialogueTrackerImpl.BECOME_REMNANT));
+                        if (((RequiemPlayer) player).getDeathSuspender().isLifeTransient()) {
+                            RequiemNetworking.sendToServer(RequiemNetworking.createDialogueActionMessage(DialogueTrackerImpl.BECOME_REMNANT));
+                            ((RequiemPlayer) player).getDeathSuspender().setLifeTransient(false);
+                        } else {
+                            ((RequiemPlayer) player).getDeathSuspender().setLifeTransient(true);
+                        }
                     }
                     break;
                 case 1:

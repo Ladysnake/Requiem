@@ -3,6 +3,7 @@ package ladysnake.requiem.client.gui;
 import com.google.common.collect.ImmutableList;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
+import ladysnake.requiem.client.ZaWorldFx;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TextComponent;
@@ -61,6 +62,9 @@ public class CutsceneDialogueScreen extends Screen {
 
     @Override
     public void render(int mouseX, int mouseY, float tickDelta) {
+        if (!ZaWorldFx.INSTANCE.hasFinishedAnimation()) {
+            return;
+        }
         this.renderBackground();
         int y = 40;
         String title = I18n.translate(this.dialogue.getCurrentText());

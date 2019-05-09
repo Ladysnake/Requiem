@@ -73,6 +73,7 @@ public class RequiemClient implements ClientModInitializer {
         ReadableDepthFramebuffer.useFeature();
         RequiemFx.INSTANCE.registerCallbacks();
         ShadowPlayerFx.INSTANCE.registerCallbacks();
+        ZaWorldFx.INSTANCE.registerCallbacks();
 
         ClientTickCallback.EVENT.register(client -> {
             if (client.player != null && client.currentScreen == null) {
