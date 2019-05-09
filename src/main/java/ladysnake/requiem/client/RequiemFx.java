@@ -139,6 +139,7 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
             // 10 -> 1
             float zoom = Math.max(1, (etherealAnimation - tickDelta));
             float intensity = (incorporeal ? 0.6f : 0f) / zoom;
+            float rayIntensity = 1.0f;
             spectreShader.setUniformValue("STime", (ticks + tickDelta) / 20f);
             // 10 -> 1
             if (pulseAnimation >= 0) {
@@ -153,10 +154,11 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
                     float b = ETHEREAL_COLOR[2] * (1 - value) + this.accentColorB * value;
                     spectreShader.setUniformValue("OverlayColor", r, g, b);
                 } else {
-                    spectreShader.setUniformValue("RaysIntensity", value);
+                    rayIntensity = value;
                 }
             }
             spectreShader.setUniformValue("Zoom", zoom);
+            spectreShader.setUniformValue("RaysIntensity", rayIntensity);
             spectreShader.setUniformValue("SolidIntensity", intensity);
             spectreShader.render(tickDelta);
         }
