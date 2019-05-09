@@ -17,8 +17,8 @@
  */
 package ladysnake.requiem.mixin.possession.entity;
 
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.entity.ai.attribute.AttributeHelper;
@@ -151,8 +151,10 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         }
     }
 
-    @Inject(method = "initAttributes", at = @At("TAIL"))
+    @Inject(method = "<init>", at = @At("RETURN"))
     private void initAttributes(CallbackInfo ci) {
+        // Entities may or may not register ATTACK_DAMAGE
+        //noinspection ConstantConditions
         if (this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE) != null) {
             AttributeHelper.substituteAttributeInstance(this.getAttributeContainer(), new CooldownStrengthAttribute((LivingEntity & Possessable)(Object)this));
         }

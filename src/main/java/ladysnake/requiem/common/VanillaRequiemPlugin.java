@@ -146,6 +146,7 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
             LivingEntity possessed = ((RequiemPlayer)playerEntity).getPossessionComponent().getPossessedEntity();
             if (possessed != null && !possessed.removed) {
                 if (possessed.world.isClient || target != possessed && ((Possessable)possessed).getMobAbilityController().useDirect(AbilityType.ATTACK, target)) {
+                    playerEntity.method_7350();
                     return ActionResult.SUCCESS;
                 }
                 return ActionResult.FAIL;

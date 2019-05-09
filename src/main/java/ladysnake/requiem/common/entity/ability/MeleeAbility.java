@@ -41,6 +41,8 @@ public class MeleeAbility extends DirectAbilityBase<MobEntity> {
         boolean success = (ignoreDamageAttribute || owner.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE) != null) && owner.tryAttack(target);
         if (success && target instanceof LivingEntity) {
             player.getMainHandStack().onEntityDamaged((LivingEntity) target, player);
+            // Reset cooldown
+            player.method_7350();
         }
         return success;
     }
