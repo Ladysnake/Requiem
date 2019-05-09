@@ -50,7 +50,7 @@ public class CutsceneDialogueScreen extends Screen {
 
     @Override
     public boolean changeFocus(boolean shiftPressed) {
-        this.selectedChoice = Math.floorMod(this.selectedChoice + (shiftPressed ? -1 : 1), this.dialogue.getCurrentChoices().size());
+        this.selectedChoice = Math.floorMod(this.selectedChoice + (shiftPressed ? 1 : -1), this.dialogue.getCurrentChoices().size());
         return true;
     }
 
