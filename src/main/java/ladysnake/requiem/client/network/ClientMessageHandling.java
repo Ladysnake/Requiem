@@ -18,11 +18,14 @@
 package ladysnake.requiem.client.network;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.util.SubDataManager;
+import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.RequiemFx;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantStates;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.network.PacketContext;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
@@ -31,9 +34,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.ThreadExecutor;
 
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
@@ -43,10 +51,12 @@ public class ClientMessageHandling {
             UUID playerUuid = buf.readUuid();
             int remnantId = buf.readVarInt();
             boolean incorporeal = buf.readBoolean();
+            boolean lifeTransient = buf.readBoolean();
             PlayerEntity player = context.getPlayer().world.getPlayerByUuid(playerUuid);
             if (player != null) {
                 ((RequiemPlayer)player).setRemnantState(RemnantStates.get(remnantId).create(player));
                 ((RequiemPlayer) player).getRemnantState().setSoul(incorporeal);
+                ((RequiemPlayer) player).getDeathSuspender().setLifeTransient(lifeTransient);
             }
         });
         register(POSSESSION_ACK, (context, buf) -> RequiemFx.INSTANCE.onPossessionAck());
@@ -71,17 +81,33 @@ public class ClientMessageHandling {
         register(ETHEREAL_ANIMATION, ((context, buf) -> RequiemFx.INSTANCE.beginEtherealAnimation()));
         register(OPUS_USE, ((context, buf) -> {
             boolean cure = buf.readBoolean();
+            boolean showBook = buf.readBoolean();
             PlayerEntity player = context.getPlayer();
             MinecraftClient mc = MinecraftClient.getInstance();
-            mc.particleManager.addEmitter(player, ParticleTypes.PORTAL, 120);
+            if (showBook) {
+                mc.particleManager.addEmitter(player, ParticleTypes.PORTAL, 120);
+                mc.gameRenderer.showFloatingItem(new ItemStack(cure ? RequiemItems.OPUS_DEMONIUM_CURE : RequiemItems.OPUS_DEMONIUM_CURSE));
+            }
             if (cure) {
-                mc.gameRenderer.showFloatingItem(new ItemStack(RequiemItems.OPUS_DEMONIUM_CURE));
                 RequiemFx.INSTANCE.playEtherealPulseAnimation(16, 0.0f, 0.8f, 0.6f);
             } else {
-                mc.gameRenderer.showFloatingItem(new ItemStack(RequiemItems.OPUS_DEMONIUM_CURSE));
                 RequiemFx.INSTANCE.playEtherealPulseAnimation(16, 1.0f, 0.25f, 0.27f);
             }
         }));
+        ClientSidePacketRegistry.INSTANCE.register(DATA_SYNC, (context, buffer) -> {
+            Map<Identifier, SubDataManager<?>> map = SubDataManagerHelper.getClientHelper().streamDataManagers().collect(Collectors.toMap(IdentifiableResourceReloadListener::getFabricId, Function.identity()));
+            int nbManagers = buffer.readVarInt();
+            for (int i = 0; i < nbManagers; i++) {
+                Identifier id = buffer.readIdentifier();
+                SubDataManager<?> manager = Objects.requireNonNull(map.get(id), "Unknown sub data manager " + id);
+                syncSubDataManager(buffer, manager, context.getTaskQueue());
+            }
+        });
+    }
+
+    private static <T> void syncSubDataManager(PacketByteBuf buffer, SubDataManager<T> subManager, ThreadExecutor taskQueue) {
+        T data = subManager.loadFromPacket(buffer);
+        taskQueue.execute(() -> subManager.apply(data));
     }
 
     private static void register(Identifier id, BiConsumer<PacketContext, PacketByteBuf> handler) {

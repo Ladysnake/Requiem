@@ -97,6 +97,10 @@ public class ServerMessageHandling {
                 }
             });
         });
+        ServerSidePacketRegistry.INSTANCE.register(DIALOGUE_ACTION, (context, buffer) -> {
+            Identifier choice = buffer.readIdentifier();
+            context.getTaskQueue().execute(() -> ((RequiemPlayer) context.getPlayer()).getDialogueTracker().handleAction(choice));
+        });
     }
 
     private static void register(Identifier id, BiConsumer<PacketContext, PacketByteBuf> handler) {

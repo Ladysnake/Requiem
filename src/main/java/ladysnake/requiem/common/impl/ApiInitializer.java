@@ -22,7 +22,10 @@ import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.internal.ApiInternals;
+import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityConfig;
+import ladysnake.requiem.common.impl.data.CommonSubDataManagerHelper;
+import ladysnake.requiem.common.impl.data.ServerSubDataManagerHelper;
 import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
 import org.apiguardian.api.API;
 
@@ -37,16 +40,24 @@ public class ApiInitializer {
     public static void init() {
         try {
             setAbilityBuilderFactory(ImmutableMobAbilityConfig.Builder::new);
+            setSubDataManagerHelper(new ServerSubDataManagerHelper(), true);
+            setSubDataManagerHelper(new CommonSubDataManagerHelper(), false);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             Requiem.LOGGER.error("Could not initialize the mod's API");
             throw new UncheckedReflectionException(e);
         }
     }
 
-    public static void setAbilityBuilderFactory(Supplier<MobAbilityConfig.Builder<?>> factory) throws IllegalAccessException, NoSuchFieldException {
+    private static void setAbilityBuilderFactory(Supplier<MobAbilityConfig.Builder<?>> factory) throws IllegalAccessException, NoSuchFieldException {
         Field f = ApiInternals.class.getDeclaredField("abilityBuilderFactory");
         f.setAccessible(true);
         f.set(null, factory);
+    }
+
+    private static void setSubDataManagerHelper(SubDataManagerHelper helper, boolean server) throws IllegalAccessException, NoSuchFieldException {
+        Field f = server ? ApiInternals.class.getDeclaredField("serverSubDataManagerHelper") : ApiInternals.class.getDeclaredField("clientSubDataManagerHelper");
+        f.setAccessible(true);
+        f.set(null, helper);
     }
 
     public static void setPluginCallback(Consumer<RequiemPlugin> callback) {

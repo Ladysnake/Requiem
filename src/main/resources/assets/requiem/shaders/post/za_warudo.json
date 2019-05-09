@@ -1,0 +1,17 @@
+{
+  "targets": [
+    "swap"
+  ],
+  "passes": [
+    {
+      "name": "requiem:za_warudo",
+      "intarget": "minecraft:main",
+      "outtarget": "swap"
+    },
+    {
+      "name": "requiem:fish_eye",
+      "intarget": "swap",
+      "outtarget": "minecraft:main"
+    }
+  ]
+}

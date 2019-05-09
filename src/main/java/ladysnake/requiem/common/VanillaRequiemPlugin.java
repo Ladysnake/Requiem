@@ -18,9 +18,9 @@
 package ladysnake.requiem.common;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.MobResurrectable;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.RequiemPlugin;
+import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.event.minecraft.ItemPickupCallback;
@@ -28,7 +28,12 @@ import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.api.v1.remnant.MobResurrectable;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
+import ladysnake.requiem.common.impl.remnant.dialogue.DialogueTrackerImpl;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
@@ -43,6 +48,7 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.EntityTags;
 import net.minecraft.util.ActionResult;
@@ -53,6 +59,7 @@ import java.util.UUID;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.createCorporealityMessage;
 import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTrackingIncluding;
+import static ladysnake.requiem.common.remnant.RemnantStates.MORTAL;
 import static ladysnake.requiem.common.remnant.RemnantStates.REMNANT;
 
 public class VanillaRequiemPlugin implements RequiemPlugin {
@@ -113,23 +120,14 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
             return ActionResult.PASS;
         });
         // Prevent incorporeal players from breaking anything
-        AttackBlockCallback.EVENT.register((player, world, hand, blockPos, facing) -> {
-            if (isInteractionForbidden(player)) {
-                return ActionResult.FAIL;
-            } else {
-                return ActionResult.PASS;
-            }
-        });
+        AttackBlockCallback.EVENT.register((player, world, hand, blockPos, facing) -> isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
         // Prevent incorporeal players from hitting anything
-        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-            if (isInteractionForbidden(player)) {
-                return ActionResult.FAIL;
-            }
-            return ActionResult.PASS;
-        });
+        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
+        // Prevent incorporeal players from interacting with anything
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> !player.world.isClient && isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
         UseItemCallback.EVENT.register((player, world, hand) -> isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
+        // Make players respawn in the right place with the right state
         PlayerCloneCallback.EVENT.register((original, clone, returnFromEnd) -> ((RequiemPlayer)original).getRemnantState().onPlayerClone(clone, !returnFromEnd));
         PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> {
             sendToAllTrackingIncluding(player, createCorporealityMessage(player));
@@ -138,7 +136,7 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     private boolean isInteractionForbidden(PlayerEntity player) {
-        return !player.isCreative() && ((RequiemPlayer) player).getRemnantState().isIncorporeal();
+        return !player.isCreative() && ((RequiemPlayer) player).getRemnantState().isIncorporeal() || ((RequiemPlayer) player).getDeathSuspender().isLifeTransient();
     }
 
     private void registerPossessionEventHandlers() {
@@ -181,4 +179,24 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
     public void registerRemnantStates(Registry<RemnantType> registry) {
         Registry.register(registry, Requiem.id("remnant"), REMNANT);
     }
+
+    @Override
+    public void registerDialogueActions(DialogueRegistry serverRegistry) {
+        serverRegistry.registerAction(DialogueTrackerImpl.BECOME_REMNANT, p -> handleRemnantChoiceAction(p, REMNANT));
+        serverRegistry.registerAction(DialogueTrackerImpl.STAY_MORTAL, p -> handleRemnantChoiceAction(p, MORTAL));
+    }
+
+    private static void handleRemnantChoiceAction(ServerPlayerEntity player, RemnantType chosenType) {
+        DeathSuspender deathSuspender = ((RequiemPlayer) player).getDeathSuspender();
+        if (deathSuspender.isLifeTransient()) {
+            ((RequiemPlayer) player).setRemnantState(chosenType.create(player));
+            if (chosenType != MORTAL) {
+                player.world.playSound(null, player.x, player.y, player.z, SoundEvents.BLOCK_BEACON_ACTIVATE, player.getSoundCategory(), 1.4F, 0.1F);
+                RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(false, false));
+            }
+            RequiemCriteria.MADE_REMNANT_CHOICE.handle(player, chosenType);
+            deathSuspender.resumeDeath();
+        }
+    }
+
 }

@@ -2,6 +2,7 @@
   "required": true,
   "package": "ladysnake.requiem.mixin",
   "compatibilityLevel": "JAVA_8",
+  "minVersion": "0.7.11-SNAPSHOT",
   "mixins": [
     "advancement.criterion.CriterionsAccessor",
     "block.entity.LecternBlockEntityMixin",
@@ -10,6 +11,7 @@
     "entity.attribute.AbstractEntityAttributeContainerAccessor",
     "entity.attribute.EntityAttributeContainerAccessor",
     "entity.attribute.EntityAttributesMixin",
+    "entity.damage.DamageTrackerMixin",
     "entity.mob.AbstractSkeletonEntityAccessor",
     "entity.mob.EndermanEntityAccessor",
     "entity.player.PlayerEntityMixin",

@@ -17,8 +17,10 @@
  */
 package ladysnake.requiem.api.v1;
 
+import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import net.minecraft.entity.player.PlayerEntity;
 
@@ -47,4 +49,8 @@ public interface RequiemPlayer {
     void setRemnant(boolean remnant);
 
     boolean isRemnant();
+
+    DeathSuspender getDeathSuspender();
+
+    DialogueTracker getDialogueTracker();
 }

@@ -17,6 +17,8 @@
  */
 package ladysnake.requiem.api.v1;
 
+import ladysnake.requiem.api.v1.dialogue.DialogueAction;
+import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import net.minecraft.util.registry.Registry;
@@ -56,4 +58,16 @@ public interface RequiemPlugin {
      * @param registry Requiem's remnant type registry
      */
     default void registerRemnantStates(Registry<RemnantType> registry) {}
+
+    /**
+     * Register {@link DialogueAction} to handle dialogue choices.
+     * This method is called before {@link ladysnake.requiem.api.v1.dialogue.CutsceneDialogue dialogues themselves}
+     * are registered.
+     * <p>
+     * The passed in {@link DialogueRegistry} can be safely reused outside of this method.
+     * Stored instances should be refreshed each time this method is called.
+     *
+     * @param serverRegistry Requiem's dialogue registry
+     */
+    default void registerDialogueActions(DialogueRegistry serverRegistry) {}
 }

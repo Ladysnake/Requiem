@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:adventure/root",
+  "parent": "requiem:adventure/the_choice",
   "display": {
     "icon": {
       "item": "minecraft:sand"

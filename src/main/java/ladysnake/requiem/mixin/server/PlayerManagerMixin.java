@@ -22,6 +22,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
+import ladysnake.requiem.api.v1.event.minecraft.SyncServerResourcesCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;
@@ -50,6 +51,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.UUID;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.createCorporealityMessage;
@@ -65,6 +67,20 @@ public abstract class PlayerManagerMixin {
     @Inject(method = "onPlayerConnect", at = @At("RETURN"))
     private void onPlayerConnect(ClientConnection connection, ServerPlayerEntity createdPlayer, CallbackInfo info) {
         sendTo(createdPlayer, createCorporealityMessage(createdPlayer));
+    }
+
+    @Shadow @Final private List<ServerPlayerEntity> players;
+
+    @Inject(method = "onPlayerConnect", at = @At(value = "NEW", target = "net/minecraft/client/network/packet/SynchronizeTagsS2CPacket"))
+    private void synchronizeServerData(ClientConnection conn, ServerPlayerEntity player, CallbackInfo ci) {
+        SyncServerResourcesCallback.EVENT.invoker().onServerSync(player);
+    }
+
+    @Inject(method = "onDataPacksReloaded", at = @At(value = "NEW", target = "net/minecraft/client/network/packet/SynchronizeTagsS2CPacket"))
+    private void synchronizeServerData(CallbackInfo ci) {
+        for (ServerPlayerEntity player : this.players) {
+            SyncServerResourcesCallback.EVENT.invoker().onServerSync(player);
+        }
     }
 
     @Inject(
