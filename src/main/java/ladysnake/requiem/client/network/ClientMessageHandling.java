@@ -84,8 +84,8 @@ public class ClientMessageHandling {
             boolean showBook = buf.readBoolean();
             PlayerEntity player = context.getPlayer();
             MinecraftClient mc = MinecraftClient.getInstance();
-            mc.particleManager.addEmitter(player, ParticleTypes.PORTAL, 120);
             if (showBook) {
+                mc.particleManager.addEmitter(player, ParticleTypes.PORTAL, 120);
                 mc.gameRenderer.showFloatingItem(new ItemStack(cure ? RequiemItems.OPUS_DEMONIUM_CURE : RequiemItems.OPUS_DEMONIUM_CURSE));
             }
             if (cure) {
