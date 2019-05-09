@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Contract;
 import static ladysnake.requiem.common.network.RequiemNetworking.createEmptyBuffer;
 
 public class PandemoniumNetworking {
+    public static final Identifier ETHEREAL_ANIMATION = Requiem.id("ethereal_animation");
     public static final Identifier ANCHOR_DAMAGE = Requiem.id("anchor_damage");
     public static final Identifier ANCHOR_SYNC = Requiem.id("anchor_sync_update");
     public static final Identifier ANCHOR_REMOVE = Requiem.id("anchor_sync_remove");

@@ -78,7 +78,6 @@ public class ClientMessageHandling {
                 }
             }
         }));
-        register(ETHEREAL_ANIMATION, ((context, buf) -> RequiemFx.INSTANCE.beginEtherealAnimation()));
         register(OPUS_USE, ((context, buf) -> {
             boolean cure = buf.readBoolean();
             boolean showBook = buf.readBoolean();

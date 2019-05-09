@@ -31,8 +31,6 @@ import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VisibleRegion;
 import net.minecraft.entity.Entity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
@@ -110,7 +108,6 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
 
     public void beginEtherealAnimation() {
         this.etherealAnimation = 10;
-        mc.player.world.playSound(mc.player, mc.player.x, mc.player.y, mc.player.z, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2, 0.6f);
     }
 
     public void playEtherealPulseAnimation(int intensity, float accentColorR, float accentColorG, float accentColorB) {

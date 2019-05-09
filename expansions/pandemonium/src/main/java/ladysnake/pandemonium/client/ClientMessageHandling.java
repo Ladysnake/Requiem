@@ -6,6 +6,9 @@ import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.requiem.client.RequiemFx;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.network.PacketContext;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 
@@ -36,6 +39,11 @@ public class ClientMessageHandling {
             if (anchor != null) {
                 anchor.invalidate();
             }
+        }));
+        register(ETHEREAL_ANIMATION, ((context, buf) -> {
+            MinecraftClient mc = MinecraftClient.getInstance();
+            mc.player.world.playSound(mc.player, mc.player.x, mc.player.y, mc.player.z, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2, 0.6f);
+            RequiemFx.INSTANCE.beginEtherealAnimation();
         }));
     }
 

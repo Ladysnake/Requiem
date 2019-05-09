@@ -36,7 +36,7 @@ public class ServerMessageHandling {
                 } else {
                     return;
                 }
-                RequiemNetworking.sendTo((ServerPlayerEntity)player, createEmptyMessage(RequiemNetworking.ETHEREAL_ANIMATION));
+                RequiemNetworking.sendTo((ServerPlayerEntity)player, createEmptyMessage(PandemoniumNetworking.ETHEREAL_ANIMATION));
             }
         }));
     }

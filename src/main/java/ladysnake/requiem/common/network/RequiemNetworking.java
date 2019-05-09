@@ -44,7 +44,6 @@ import static io.netty.buffer.Unpooled.buffer;
 
 public class RequiemNetworking {
     // Server -> Client
-    public static final Identifier ETHEREAL_ANIMATION = Requiem.id("ethereal_animation");
     public static final Identifier POSSESSION_SYNC = Requiem.id("possession_sync");
     public static final Identifier REMNANT_SYNC = Requiem.id("remnant_sync");
     public static final Identifier POSSESSION_ACK = Requiem.id("possession_ack");
