@@ -81,9 +81,10 @@ public class ServerMessageHandling {
                 if (book.getItem() != RequiemItems.OPUS_DEMONIUM) {
                     return;
                 }
-                if (sign && player.experience >= OpusDemoniumItem.REQUIRED_CONVERSION_XP) {
+                int requiredXp = player.isCreative() ? 0 : OpusDemoniumItem.REQUIRED_CONVERSION_XP;
+                if (sign && player.experience >= requiredXp) {
                     player.setStackInHand(hand, type.getConversionBook(player));
-                    player.experience -= OpusDemoniumItem.REQUIRED_CONVERSION_XP;
+                    player.experience -= requiredXp;
                     if (player.experience < 0) {
                         player.experience = 0;
                         player.experienceLevelProgress = 0.0F;
