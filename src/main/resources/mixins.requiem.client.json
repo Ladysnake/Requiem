@@ -6,6 +6,7 @@
   "mixins": [
     "MinecraftClientMixin",
     "entity.ClientEntityMixin",
+    "gui.container.LecternScreenMixin",
     "gui.container.WrittenBookScreenContentsMixin",
     "gui.container.WrittenBookScreenMixin",
     "gui.hud.InGameHudMixin",
