@@ -88,8 +88,6 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
             EntityType<? extends MobEntity> body;
             if (deathCause.getAttacker() instanceof ZombieEntity) {
                 body = EntityType.ZOMBIE;
-            } else if (deathCause == DamageSource.DROWN) {
-                body = EntityType.DROWNED;
             } else if (deathCause == DamageSource.LAVA && lazarus.dimension == DimensionType.THE_NETHER) {
                 body = EntityType.WITHER_SKELETON;
             } else if (deathCause == DamageSource.IN_WALL && BlockTags.SAND.contains(lazarus.world.getBlockState(lazarus.getBlockPos().add(0, lazarus.getEyeHeight(lazarus.getPose()), 0)).getBlock())) {
