@@ -17,19 +17,33 @@
  */
 package ladysnake.requiem.mixin.entity;
 
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
+    @Shadow public abstract ItemStack getActiveItem();
+
+    @Shadow public abstract boolean isUsingItem();
+
+    @Shadow public abstract ItemStack getStackInHand(Hand hand_1);
+
+    @Shadow public abstract Hand getActiveHand();
+
+    @Shadow public abstract void setStackInHand(Hand hand_1, ItemStack itemStack_1);
+
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
@@ -39,9 +53,21 @@ public abstract class LivingEntityMixin extends Entity {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;dropInventory()V"),
             cancellable = true
     )
-    private void drop(DamageSource deathCause, CallbackInfo ci) {
+    private void fireDropEvent(DamageSource deathCause, CallbackInfo ci) {
         if (LivingEntityDropCallback.EVENT.invoker().onEntityDrop((LivingEntity)(Object)this, deathCause)) {
             ci.cancel();
+        }
+    }
+
+    /**
+     * Fixes a bug in vanilla minecraft that gives back {@link ItemStack#onItemFinishedUsing(World, LivingEntity)}'s result
+     * even after an inventory drop
+     */
+    @Inject(method = "method_6040", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;clearActiveItem()V"))
+    private void dropUsedItemAsSoul(CallbackInfo ci) {
+        if (this instanceof RequiemPlayer && ((RequiemPlayer) this).getRemnantState().isIncorporeal()&& !world.getGameRules().getBoolean("keepInventory")) {
+            this.dropStack(this.getStackInHand(this.getActiveHand()));
+            this.setStackInHand(this.getActiveHand(), ItemStack.EMPTY);
         }
     }
 }
