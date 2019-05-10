@@ -45,6 +45,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.SkeletonEntity;
+import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -167,6 +169,18 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
                     }
                 }
                 return ActionResult.SUCCESS;
+            }
+            return ActionResult.PASS;
+        });
+        UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            if (entity instanceof SpiderEntity) {
+                LivingEntity possessed = ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
+                if (possessed instanceof SkeletonEntity) {
+                    if (!world.isClient) {
+                        possessed.startRiding(entity);
+                    }
+                    return ActionResult.SUCCESS;
+                }
             }
             return ActionResult.PASS;
         });
