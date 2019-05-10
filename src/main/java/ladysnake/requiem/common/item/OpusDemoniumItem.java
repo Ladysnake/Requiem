@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class OpusDemoniumItem extends WritableBookItem {
-    public static final int REQUIRED_CONVERSION_XP = 3;
+    public static final int REQUIRED_CONVERSION_XP = 5;
 
     public OpusDemoniumItem(Settings settings) {
         super(settings);

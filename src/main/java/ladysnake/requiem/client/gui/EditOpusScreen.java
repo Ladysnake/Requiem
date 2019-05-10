@@ -42,7 +42,7 @@ import java.util.Objects;
 
 public class EditOpusScreen extends EditBookScreen {
     public static final Identifier BOOK_TEXTURE = Requiem.id("textures/gui/opus_daemonium.png");
-    public static final Identifier ENCHANTING_TEXTURE = new Identifier("textures/gui/container/enchanting_table.png");
+    public static final Identifier XP_COST_TEXTURE = Requiem.id("textures/gui/required_xp_5.png");
     public static final int REQUIRED_XP = OpusDemoniumItem.REQUIRED_CONVERSION_XP;
 
     private Map<String, RemnantType> incantations;
@@ -129,12 +129,12 @@ public class EditOpusScreen extends EditBookScreen {
         ButtonWidget signButton = ((EditBookScreenAccessor) this).getButtonSign();
         int x = signButton.x + signButton.getWidth() - 22;
         int y = signButton.y - 13;
-        this.minecraft.getTextureManager().bindTexture(ENCHANTING_TEXTURE);
+        this.minecraft.getTextureManager().bindTexture(XP_COST_TEXTURE);
         if (this.validSentence) {
             if (this.minecraft.player.experience < REQUIRED_XP && !this.minecraft.player.abilities.creativeMode) {
-                this.blit(x + 1, y + 15, 16 * 2, 239, 16, 16);
+                blit(x + 1, y + 15, 0, 16, 16, 16, 32, 32);
             } else {
-                this.blit(x + 1, y + 15, 16 * 2, 223, 16, 16);
+                blit(x + 1, y + 15, 0, 0, 16, 16, 32, 32);
             }
         }
     }
