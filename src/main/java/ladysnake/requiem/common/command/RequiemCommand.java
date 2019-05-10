@@ -21,6 +21,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
@@ -96,6 +97,9 @@ public class RequiemCommand {
         int count = 0;
         for (ServerPlayerEntity player : players) {
             if (((RequiemPlayer) player).getRemnantState().isSoul() != ethereal) {
+                if (!((RequiemPlayer) player).isRemnant()) {
+                    throw new CommandException(new TranslatableTextComponent("requiem:commands.ethereal.set.fail", player.getDisplayName()));
+                }
                 ((RequiemPlayer) player).getRemnantState().setSoul(ethereal);
                 sendSetEtherealFeedback(source, player, ethereal);
                 ++count;
