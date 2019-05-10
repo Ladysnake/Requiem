@@ -28,6 +28,7 @@ import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.network.ClientMessageHandling;
+import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
@@ -44,7 +45,6 @@ import net.minecraft.item.BowItem;
 import net.minecraft.item.MilkBucketItem;
 import net.minecraft.item.TridentItem;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Style;
 import net.minecraft.text.TextFormat;
@@ -96,7 +96,7 @@ public class RequiemClient implements ClientModInitializer {
         UseEntityCallback.EVENT.register((player, world, hand, target, hitPosition) -> {
             if (player == MinecraftClient.getInstance().cameraEntity && ((RequiemPlayer) player).getRemnantState().isIncorporeal()) {
                 if (target instanceof MobEntity && target.world.isClient) {
-                    target.world.playSound(player, target.x, target.y, target.z, SoundEvents.ENTITY_VEX_AMBIENT, SoundCategory.PLAYERS, 2, 0.6f);
+                    target.world.playSound(player, target.x, target.y, target.z, RequiemSoundEvents.EFFECT_POSSESSION_ATTEMPT, SoundCategory.PLAYERS, 2, 0.6f);
                     RequiemFx.INSTANCE.beginFishEyeAnimation(target);
                 }
                 return ActionResult.SUCCESS;

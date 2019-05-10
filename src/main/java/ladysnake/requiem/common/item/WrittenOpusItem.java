@@ -21,6 +21,7 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -33,7 +34,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
@@ -87,8 +87,8 @@ public class WrittenOpusItem extends Item {
                 player.incrementStat(Stats.USED.getOrCreateStat(this));
                 stack.subtractAmount(1);
                 boolean cure = this == RequiemItems.OPUS_DEMONIUM_CURE;
-                world.playSound(null, player.x, player.y, player.z, SoundEvents.ITEM_TOTEM_USE, player.getSoundCategory(), 1.0F, 0.1F);
-                world.playSound(null, player.x, player.y, player.z, cure ? SoundEvents.BLOCK_BEACON_DEACTIVATE : SoundEvents.BLOCK_BEACON_ACTIVATE, player.getSoundCategory(), 1.4F, 0.1F);
+                world.playSound(null, player.x, player.y, player.z, RequiemSoundEvents.ITEM_OPUS_USE, player.getSoundCategory(), 1.0F, 0.1F);
+                world.playSound(null, player.x, player.y, player.z, cure ? RequiemSoundEvents.EFFECT_BECOME_MORTAL : RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
                 RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(cure, true));
                 RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, this.remnantType);
             }

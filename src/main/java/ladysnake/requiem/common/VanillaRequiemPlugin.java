@@ -35,6 +35,7 @@ import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.impl.remnant.dialogue.DialogueTrackerImpl;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
+import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.fabricmc.fabric.api.event.player.*;
@@ -48,7 +49,6 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.EntityTags;
 import net.minecraft.util.ActionResult;
@@ -192,7 +192,7 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
         if (deathSuspender.isLifeTransient()) {
             ((RequiemPlayer) player).setRemnantState(chosenType.create(player));
             if (chosenType != MORTAL) {
-                player.world.playSound(null, player.x, player.y, player.z, SoundEvents.BLOCK_BEACON_ACTIVATE, player.getSoundCategory(), 1.4F, 0.1F);
+                player.world.playSound(null, player.x, player.y, player.z, RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
                 RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(false, false));
             }
             RequiemCriteria.MADE_REMNANT_CHOICE.handle(player, chosenType);

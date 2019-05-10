@@ -31,6 +31,12 @@
   "requiem:dialogue.first_contact.explanation.text": "Reject your humanity, and become cursed with eternity. Refuse, and keep to your ordinary lives among others.",
   "requiem:dialogue.first_contact.explanation.ok": "I see.",
 
+  "requiem:subtitles.effect.become.mortal": "Becoming mortal",
+  "requiem:subtitles.effect.become.remnant": "Acquiring a demon",
+  "requiem:subtitles.effect.possession.attempt": "Possession Attempt",
+  "requiem:subtitles.effect.time.stop": "ZA WARUDO! TOKI WO TOMARE",
+  "requiem:subtitles.item.opus.use": "Opus Daemonium Activates",
+
   "requiem:tooltip.bony_prosthesis": "Bony Prosthesis",
   "requiem:tooltip.calcium_bucket": "Calcium Goodness",
   "requiem:tooltip.drowned_food": "Drowned Delicacy",

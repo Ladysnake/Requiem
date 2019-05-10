@@ -1,0 +1,49 @@
+{
+  "effect.become.remnant": {
+    "subtitle": "requiem:subtitles.effect.become.remnant",
+    "sounds": [
+      "block/beacon/activate"
+    ]
+  },
+  "effect.become.mortal": {
+    "subtitle": "requiem:subtitles.effect.become.mortal",
+    "sounds": [
+      "block/beacon/deactivate"
+    ]
+  },
+  "effect.possession.attempt": {
+    "subtitle": "requiem:subtitles.effect.possession.attempt",
+    "sounds": [
+      "mob/vex/idle1",
+      "mob/vex/idle2",
+      "mob/vex/idle3",
+      "mob/vex/idle4"
+    ]
+  },
+  "effect.time.stop": {
+    "subtitle": "requiem:subtitles.effect.time.stop",
+    "sounds": [
+      {
+        "name": "block/bell/resonate",
+        "volume": 1,
+        "pitch": 1
+      },
+      {
+        "name": "block/bell/resonate",
+        "volume": 1,
+        "pitch": 0.9
+      },
+      {
+        "name": "block/bell/resonate",
+        "volume": 1,
+        "pitch": 0.85
+      }
+    ]
+  },
+  "item.opus.use": {
+    "subtitle": "requiem:subtitles.item.opus.use",
+    "sounds": [
+      "item/totem/use_totem"
+    ]
+  }
+}

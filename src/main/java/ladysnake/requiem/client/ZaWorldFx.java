@@ -2,6 +2,7 @@ package ladysnake.requiem.client;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.satin.api.event.PostWorldRenderCallback;
 import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
@@ -13,7 +14,6 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -46,7 +46,7 @@ public class ZaWorldFx implements PostWorldRenderCallback {
                 this.ticks = 0;
                 this.prevRadius = this.radius = 0;
                 this.renderingEffect = true;
-                client.player.world.playSound(client.player.x, client.player.y, client.player.z, SoundEvents.BLOCK_BELL_RESONATE, SoundCategory.PLAYERS, 1.0F, 1.0F, false);
+                client.player.world.playSound(client.player.x, client.player.y, client.player.z, RequiemSoundEvents.EFFECT_TIME_STOP, SoundCategory.PLAYERS, 1.0F, 1.0F, false);
             }
             this.ticks++;
             this.prevRadius = this.radius;

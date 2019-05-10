@@ -33,6 +33,7 @@ import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelProperties;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -43,6 +44,8 @@ import java.util.function.BooleanSupplier;
 
 @Mixin(ServerWorld.class)
 public abstract class ServerWorldMixin extends World implements PandemoniumWorld {
+    @Shadow public abstract PersistentStateManager getPersistentStateManager();
+
     private static final String PERSISTENT_STATE_KEY = "requiem_anchor_provider";
 
     private final FractureAnchorManager anchorTracker = new CommonAnchorManager(this);
@@ -59,7 +62,7 @@ public abstract class ServerWorldMixin extends World implements PandemoniumWorld
             method = "<init>(Lnet/minecraft/server/MinecraftServer;Ljava/util/concurrent/Executor;Lnet/minecraft/world/WorldSaveHandler;Lnet/minecraft/world/level/LevelProperties;Lnet/minecraft/world/dimension/DimensionType;Lnet/minecraft/util/profiler/Profiler;Lnet/minecraft/server/WorldGenerationProgressListener;)V"
     )
     private void constructor(MinecraftServer server, Executor executor, WorldSaveHandler oldWorldSaveHandler, LevelProperties levelProperties, DimensionType dimensionType, Profiler profiler, WorldGenerationProgressListener worldGenerationProgressListener, CallbackInfo ci) {
-        PersistentStateManager persistentStateManager = ((ServerWorld) (Object) this).getPersistentStateManager();
+        PersistentStateManager persistentStateManager = this.getPersistentStateManager();
         persistentStateManager.getOrCreate(() -> new FractureAnchorPersistentState(PERSISTENT_STATE_KEY, anchorTracker), PERSISTENT_STATE_KEY);
     }
 
