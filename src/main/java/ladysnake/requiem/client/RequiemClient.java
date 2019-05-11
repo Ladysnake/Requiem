@@ -82,6 +82,10 @@ public class RequiemClient implements ClientModInitializer {
                     dialogueTracker.startDialogue(Requiem.id("remnant_choice"));
                     client.openScreen(new CutsceneDialogueScreen(new TranslatableTextComponent("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue()));
                 }
+                MobEntity possessedEntity = ((RequiemPlayer) client.player).getPossessionComponent().getPossessedEntity();
+                if (possessedEntity != null && possessedEntity.isOnFire()) {
+                    client.player.setOnFireFor(1);
+                }
             }
         });
         PickEntityShaderCallback.EVENT.register((camera, loadShaderFunc, appliedShaderGetter) -> {
