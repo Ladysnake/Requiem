@@ -1,11 +1,11 @@
 ------------------------------------------------------
-Version 0.1.0
+Version 1.0.0
 ------------------------------------------------------
 Additions
-- None
+- Rewrote everything
 
 Changes
-- None
+- Human flesh does not cure undeads anymore
 
 Bug Fixes
-- None
+- Lots

@@ -12,10 +12,6 @@ plugins {
     id "maven-publish"
 }
 
-// Update JSON generation
-apply from: 'https://raw.githubusercontent.com/Ladysnake/LadyLib/master/update_json.gradle'
-build.finalizedBy updateJson
-
 group = rootProject.maven_group
 archivesBaseName = rootProject.name.toLowerCase(Locale.ROOT)
 version = mod_version
