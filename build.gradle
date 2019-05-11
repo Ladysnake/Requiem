@@ -71,6 +71,7 @@ allprojects {
 
     task apiJar(type: Jar, dependsOn: classes) {
         classifier = 'api'
+        from sourceSets.api.allJava
         from (sourceSets.api.output) {
             include "fabric.mod.json"
             expand "version": project.version
@@ -140,4 +141,14 @@ jar {
 
 license {
     exclude "**/RayHelper.java"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact(apiJar) {
+                builtBy remapApiJar
+            }
+        }
+    }
 }
