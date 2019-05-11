@@ -2,14 +2,23 @@
 
 ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/requiem-logo-200x125.png)
 
-![](https://img.shields.io/github/stars/ladysnake/dissolution.svg) ![](https://img.shields.io/github/forks/ladysnake/dissolution.svg) ![](https://jitpack.io/v/ladysnake/dissolution.svg) ![](https://img.shields.io/github/issues/ladysnake/dissolution.svg)
+[![Download](https://curse.nikky.moe/api/img/265729?logo)](https://curse.nikky.moe/api/url/265729) ![](https://jitpack.io/v/ladysnake/dissolution.svg) ![](https://img.shields.io/github/issues/ladysnake/requiem.svg)
 
 
 **Table of Contents**
 
-[TOCM]
-
-[TOC]
+- Introduction
+  - What is Requiem?
+  - Why would you want to use it?
+  - Getting started
+- Wiki
+  - Gameplay Mechanics
+    - First death
+    - Soul State
+    - Resurrection
+    - Undead Gameplay
+    - Special Item Behaviour
+    - Regaining your humanity
 
 
 # Introduction
