@@ -1,12 +1,12 @@
 // Credits to UpcraftLP for the base build script
 
 
-import net.fabricmc.loom.task.RemapJar
+import net.fabricmc.loom.task.RemapJarTask
 
 import java.time.Year
 
 plugins {
-    id "fabric-loom" version "0.2.1-SNAPSHOT"
+    id "fabric-loom" version "0.2.3-SNAPSHOT"
     id "net.minecrell.licenser" version "0.4.1"
     id "com.matthewprenger.cursegradle" version "1.1.2"
     id "maven-publish"
@@ -77,8 +77,10 @@ allprojects {
         }
     }
 
-    task remapApiJar(type: RemapJar, dependsOn: apiJar) {
-        jar = apiJar.archivePath
+    task remapApiJar(type: RemapJarTask, dependsOn: project.apiJar) {
+        input = apiJar.archivePath
+        output = apiJar.archivePath
+        addNestedDependencies = false
     }
 
     dependencies {
@@ -94,7 +96,7 @@ allprojects {
         sourceSets.api.compileClasspath += files({sourceSets.main.compileClasspath.toList()})
 
         compile sourceSets.api.output
-        include files(remapApiJar.getJar())
+        include files(remapApiJar.output)
         
         modCompile "io.github.prospector.modmenu:ModMenu:${rootProject.modmenu_version}"
         modCompile "com.github.Ladysnake:Satin:${rootProject.satin_version}"
@@ -105,7 +107,7 @@ allprojects {
         testImplementation "org.junit.jupiter:junit-jupiter-api:5.4.0-M1"
     }
 
-    build.dependsOn(remapApiJar)
+    remapJar.dependsOn(remapApiJar)
 
     license {
         header = rootProject.file("code_quality/${project.license_header}_HEADER.txt")
@@ -124,6 +126,17 @@ allprojects {
 
         newLine = false // Disables the empty line between the header and package name
     }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifact remapJar.output
+                artifact(remapApiJar.output) {
+                    classifier = "api"
+                }
+            }
+        }
+    }
 }
 
 dependencies {
@@ -137,14 +150,4 @@ jar {
 
 license {
     exclude "**/RayHelper.java"
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact(apiJar) {
-                builtBy remapApiJar
-            }
-        }
-    }
 }
