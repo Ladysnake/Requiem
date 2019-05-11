@@ -94,7 +94,7 @@ public class WrittenOpusItem extends Item {
             }
             return new TypedActionResult<>(ActionResult.SUCCESS, stack);
         }
-        return super.use(world, player, hand);
+        return new TypedActionResult<>(ActionResult.FAIL, stack);
     }
 
     @Environment(EnvType.CLIENT)
