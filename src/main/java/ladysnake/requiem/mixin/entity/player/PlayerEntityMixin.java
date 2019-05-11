@@ -49,7 +49,6 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -180,7 +179,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private void eatZombieFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
         MobEntity possessedEntity = this.getPossessionComponent().getPossessedEntity();
         if (possessedEntity instanceof ZombieEntity && stack.getItem().isFood()) {
-            if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || ItemTags.FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
+            if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || RequiemItemTags.RAW_FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
                 FoodItemSetting food = stack.getItem().getFoodSetting();
                 assert food != null;
                 possessedEntity.heal(food.getHunger());
