@@ -73,9 +73,9 @@ public class ServerMessageHandling {
             });
         });
         ServerSidePacketRegistry.INSTANCE.register(OPUS_UPDATE, (context, buf) -> {
-            String content = buf.readString();
+            String content = buf.readString(32767);
             boolean sign = buf.readBoolean();
-            RemnantType type = sign ? RemnantStates.get(new Identifier(buf.readString())) : null;
+            RemnantType type = sign ? RemnantStates.get(new Identifier(buf.readString(32767))) : null;
             Hand hand = buf.readEnumConstant(Hand.class);
             context.getTaskQueue().execute(() -> {
                 PlayerEntity player = context.getPlayer();

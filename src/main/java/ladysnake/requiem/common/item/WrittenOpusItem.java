@@ -83,13 +83,13 @@ public class WrittenOpusItem extends Item {
         if (!world.isClient && stack.getItem() == this) {
             RemnantType currentState = ((RequiemPlayer) player).getRemnantState().getType();
             if (currentState != this.remnantType && !((RequiemPlayer) player).getPossessionComponent().isPossessing()) {
-                ((RequiemPlayer) player).setRemnantState(remnantType.create(player));
-                player.incrementStat(Stats.USED.getOrCreateStat(this));
-                stack.subtractAmount(1);
                 boolean cure = this == RequiemItems.OPUS_DEMONIUM_CURE;
                 world.playSound(null, player.x, player.y, player.z, RequiemSoundEvents.ITEM_OPUS_USE, player.getSoundCategory(), 1.0F, 0.1F);
                 world.playSound(null, player.x, player.y, player.z, cure ? RequiemSoundEvents.EFFECT_BECOME_MORTAL : RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
                 RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(cure, true));
+                ((RequiemPlayer) player).setRemnantState(remnantType.create(player));
+                player.incrementStat(Stats.USED.getOrCreateStat(this));
+                stack.subtractAmount(1);
                 RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, this.remnantType);
             }
             return new TypedActionResult<>(ActionResult.SUCCESS, stack);

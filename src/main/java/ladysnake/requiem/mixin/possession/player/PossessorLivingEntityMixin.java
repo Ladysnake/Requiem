@@ -26,6 +26,7 @@ import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -34,6 +35,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class PossessorLivingEntityMixin extends Entity {
+    @Shadow protected abstract float getEyeHeight(EntityPose pose, EntitySize size);
+
     public PossessorLivingEntityMixin(EntityType<?> entityType_1, World world_1) {
         super(entityType_1, world_1);
     }
@@ -111,7 +114,8 @@ public abstract class PossessorLivingEntityMixin extends Entity {
             if (possessionComponent != null) {
                 LivingEntity possessed = possessionComponent.getPossessedEntity();
                 if (possessed != null) {
-                    cir.setReturnValue(possessed.getEyeHeight(pose));
+                    //noinspection ConstantConditions
+                    cir.setReturnValue(((PossessorLivingEntityMixin)(Object)possessed).getEyeHeight(pose, possessed.getSize(pose)));
                 }
             }
         }

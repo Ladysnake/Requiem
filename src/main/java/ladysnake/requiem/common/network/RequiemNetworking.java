@@ -68,7 +68,7 @@ public class RequiemNetworking {
 
     public static void sendTo(ServerPlayerEntity player, CustomPayloadS2CPacket message) {
         sendToPlayer(player, message);
-        message.getData().release();
+        // FIXME free memory
     }
 
     public static void sendToAllTrackingIncluding(Entity tracked, CustomPayloadS2CPacket message) {
@@ -78,7 +78,7 @@ public class RequiemNetworking {
                 sendToPlayer((ServerPlayerEntity) tracked, message);
             }
         }
-        message.getData().release();
+        // FIXME free memory
     }
 
     private static void sendToPlayer(ServerPlayerEntity player, CustomPayloadS2CPacket message) {
