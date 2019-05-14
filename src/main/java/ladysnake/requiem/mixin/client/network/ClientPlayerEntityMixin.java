@@ -52,7 +52,7 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Re
     }
 
     @ModifyArg(
-            method = "updateState",
+            method = "tickMovement",
             slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;isSwimming()Z", ordinal = 0)),
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;setSprinting(Z)V", ordinal = 0)
     )

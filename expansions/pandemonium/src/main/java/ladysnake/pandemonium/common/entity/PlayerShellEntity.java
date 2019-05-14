@@ -35,8 +35,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.StringTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -171,8 +171,8 @@ public class PlayerShellEntity extends MobEntity {
      * @return the targeted equipment slot
      */
     protected EquipmentSlot getClickedSlot(Vec3d rayTrace) {
-        EquipmentSlot slot = EquipmentSlot.HAND_MAIN;
-        boolean flag = this.isChild();
+        EquipmentSlot slot = EquipmentSlot.MAINHAND;
+        boolean flag = this.isBaby();
         double d0 = (rayTrace.y) * (flag ? 2.0D : 1.0D);
 
         if (d0 >= 0.1D && d0 < 0.1D + (flag ? 0.8D : 0.45D) && this.isEquippedStackValid(EquipmentSlot.FEET)) {
@@ -289,7 +289,7 @@ public class PlayerShellEntity extends MobEntity {
         InventoryHelper.transferEquipment(player, shell);
         shell.transferInventory(player.inventory, shell.inventory, invSize);
         shell.setPlayerUuid(player.getUuid());
-        shell.setCustomName(new StringTextComponent(player.getEntityName()));
+        shell.setCustomName(new TextComponent(player.getEntityName()));
         return shell;
     }
 

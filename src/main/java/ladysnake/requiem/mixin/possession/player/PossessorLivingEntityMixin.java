@@ -19,7 +19,7 @@ package ladysnake.requiem.mixin.possession.player;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.common.tag.RequiemEntityTags;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
@@ -100,7 +100,7 @@ public abstract class PossessorLivingEntityMixin extends Entity {
         if (this instanceof RequiemPlayer && this.horizontalCollision) {
             LivingEntity possessed = ((RequiemPlayer) this).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {
-                info.setReturnValue(RequiemEntityTags.CLIMBER.contains(possessed.getType()));
+                info.setReturnValue(RequiemEntityTypeTags.CLIMBER.contains(possessed.getType()));
             }
         }
     }

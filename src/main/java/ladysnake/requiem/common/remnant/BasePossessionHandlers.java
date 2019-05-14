@@ -19,7 +19,7 @@ package ladysnake.requiem.common.remnant;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
-import ladysnake.requiem.common.tag.RequiemEntityTags;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.mixin.entity.mob.EndermanEntityAccessor;
 import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.Entity;
@@ -34,13 +34,13 @@ public class BasePossessionHandlers {
 
 public static void register() {
         PossessionStartCallback.EVENT.register(Requiem.id("blacklist"), (target, possessor) -> {
-            if (!target.world.isClient && RequiemEntityTags.POSSESSION_BLACKLIST.contains(target.getType())) {
+            if (!target.world.isClient && RequiemEntityTypeTags.POSSESSION_BLACKLIST.contains(target.getType())) {
                 return PossessionStartCallback.Result.DENY;
             }
             return PossessionStartCallback.Result.PASS;
         });
         PossessionStartCallback.EVENT.register(Requiem.id("base_mobs"), (target, possessor) -> {
-            if (!target.world.isClient && target.isUndead() && RequiemEntityTags.ITEM_USER.contains(target.getType())) {
+            if (!target.world.isClient && target.isUndead() && RequiemEntityTypeTags.ITEM_USER.contains(target.getType())) {
                 return PossessionStartCallback.Result.ALLOW;
             }
             return PossessionStartCallback.Result.PASS;

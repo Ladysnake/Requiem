@@ -44,7 +44,7 @@ public abstract class MinecraftClientMixin {
             method = "doAttack",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/network/ClientPlayerEntity;method_7350()V"
+                    target = "Lnet/minecraft/client/network/ClientPlayerEntity;resetLastAttackedTicks()V"
             )
     )
     private void onShakeFistAtAir(CallbackInfo info) {

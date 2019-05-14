@@ -19,9 +19,9 @@ package ladysnake.requiem.mixin.possession.player;
 
 import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.remnant.MobResurrectable;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.MobResurrectable;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.mixin.possession.entity.PossessableEntityAccessor;
 import net.minecraft.block.BlockState;
@@ -76,7 +76,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
                     Function.identity()
             );
             if (formerPossessed instanceof MobEntity) {
-                formerPossessed.setPositionAndAngles(this);
+                formerPossessed.copyPositionAndRotation(this);
                 if (world.spawnEntity(formerPossessed)) {
                     this.getPossessionComponent().startPossessing((MobEntity) formerPossessed);
                     RequiemCriteria.PLAYER_RESURRECTED_AS_ENTITY.handle((ServerPlayerEntity)(Object) this, formerPossessed);

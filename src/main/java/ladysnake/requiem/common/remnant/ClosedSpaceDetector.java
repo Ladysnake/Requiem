@@ -22,7 +22,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.StringTextComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -111,8 +111,8 @@ public class ClosedSpaceDetector {
         EndermanEntity bart = this.player.world.getClosestEntity(EndermanEntity.class, TargetPredicate.DEFAULT, player, player.x, player.y, player.z, new BoundingBox(player.getBlockPos()).expand(20));
         if (bart == null) {
             bart = new EndermanEntity(EntityType.ENDERMAN, this.player.world);
-            bart.setPositionAndAngles(this.player);
-            bart.setCustomName(new StringTextComponent("Bart"));
+            bart.copyPositionAndRotation(this.player);
+            bart.setCustomName(new TextComponent("Bart"));
             this.player.world.spawnEntity(bart);
         }
         bart.teleport(player.x, player.y, player.z, true);

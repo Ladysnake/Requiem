@@ -35,7 +35,7 @@ public class CooldownStrengthAttribute extends DelegatingAttribute {
         final double strength = super.getValue();
         PlayerEntity possessor = this.owner.getPossessor();
         if (possessor != null) {
-            double attackCharge = possessor.method_7261(0.5f);
+            double attackCharge = possessor.getAttackCooldownProgress(0.5f);
             return strength * (0.2F + attackCharge * attackCharge * 0.8F);
         }
         return strength;

@@ -36,7 +36,7 @@ import ladysnake.requiem.common.impl.remnant.dialogue.DialogueTrackerImpl;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
-import ladysnake.requiem.common.tag.RequiemEntityTags;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.fabricmc.fabric.api.event.player.*;
 import net.minecraft.entity.Entity;
@@ -52,7 +52,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.EntityTags;
+import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
@@ -100,7 +100,7 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
                 if (((RequiemPlayer) lazarus).isRemnant()) {
                     ((MobResurrectable) lazarus).setResurrectionEntity(secondLife);
                 } else {
-                    secondLife.setPositionAndAngles(lazarus);
+                    secondLife.copyPositionAndRotation(lazarus);
                     lazarus.world.spawnEntity(secondLife);
                 }
             }
@@ -113,7 +113,7 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
         ItemPickupCallback.EVENT.register((player, pickedUp) -> {
             if (isInteractionForbidden(player)) {
                 Entity possessed = ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
-                if (possessed == null || !RequiemEntityTags.ITEM_USER.contains(possessed.getType())) {
+                if (possessed == null || !RequiemEntityTypeTags.ITEM_USER.contains(possessed.getType())) {
                     return ActionResult.FAIL;
                 }
             }
@@ -146,7 +146,7 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
             LivingEntity possessed = ((RequiemPlayer)playerEntity).getPossessionComponent().getPossessedEntity();
             if (possessed != null && !possessed.removed) {
                 if (possessed.world.isClient || target != possessed && ((Possessable)possessed).getMobAbilityController().useDirect(AbilityType.ATTACK, target)) {
-                    playerEntity.method_7350();
+                    playerEntity.resetLastAttackedTicks();
                     return ActionResult.SUCCESS;
                 }
                 return ActionResult.FAIL;
@@ -158,7 +158,7 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
             if (RequiemItemTags.BONES.contains(heldItem.getItem())) {
                 if (!world.isClient) {
                     MobEntity possessedEntity = ((RequiemPlayer) player).getPossessionComponent().getPossessedEntity();
-                    if (possessedEntity != null && EntityTags.SKELETONS.contains(possessedEntity.getType())) {
+                    if (possessedEntity != null && EntityTypeTags.SKELETONS.contains(possessedEntity.getType())) {
                         if (possessedEntity.getHealth() < possessedEntity.getHealthMaximum()) {
                             possessedEntity.heal(4.0f);
                             possessedEntity.playAmbientSound();

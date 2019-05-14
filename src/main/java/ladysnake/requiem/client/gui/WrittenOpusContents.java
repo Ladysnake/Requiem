@@ -19,14 +19,14 @@ package ladysnake.requiem.client.gui;
 
 import ladysnake.requiem.common.item.WrittenOpusItem;
 import net.minecraft.client.gui.WrittenBookScreen;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class WrittenOpusContents implements WrittenBookScreen.Contents {
-    private final TextComponent magicSentence;
+    private final Component magicSentence;
 
     public WrittenOpusContents(WrittenOpusItem book) {
-        this.magicSentence = new TranslatableTextComponent(book.getRemnantType().getConversionBookSentence())
+        this.magicSentence = new TranslatableComponent(book.getRemnantType().getConversionBookSentence())
                 .applyFormat(book.getTooltipColor());
     }
 
@@ -36,7 +36,7 @@ public class WrittenOpusContents implements WrittenBookScreen.Contents {
     }
 
     @Override
-    public TextComponent getLine(int lineNo) {
+    public Component getLine(int lineNo) {
         if (lineNo == 0) {
             return this.magicSentence;
         }

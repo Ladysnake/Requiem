@@ -25,9 +25,9 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.WritableBookItem;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -59,12 +59,12 @@ public class OpusDemoniumItem extends WritableBookItem {
     }
 
     @Override
-    public void buildTooltip(ItemStack stack, @Nullable World world, List<TextComponent> lines, TooltipContext ctx) {
+    public void buildTooltip(ItemStack stack, @Nullable World world, List<Component> lines, TooltipContext ctx) {
         addTooltipLine(lines, RequiemItems.OPUS_DEMONIUM_CURSE);
         addTooltipLine(lines, RequiemItems.OPUS_DEMONIUM_CURE);
     }
 
-    private void addTooltipLine(List<TextComponent> lines, WrittenOpusItem version) {
-        lines.add(new TranslatableTextComponent(version.getRemnantType().getConversionBookSentence()).applyFormat(version.getTooltipColor()));
+    private void addTooltipLine(List<Component> lines, WrittenOpusItem version) {
+        lines.add(new TranslatableComponent(version.getRemnantType().getConversionBookSentence()).applyFormat(version.getTooltipColor()));
     }
 }

@@ -26,6 +26,6 @@ public class ServerSubDataManagerHelper extends CommonSubDataManagerHelper {
     @Override
     public void registerSubDataManager(SubDataManager<?> serverManager) {
         super.registerSubDataManager(serverManager);
-        ResourceManagerHelper.get(ResourceType.DATA).registerReloadListener(serverManager);
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(serverManager);
     }
 }

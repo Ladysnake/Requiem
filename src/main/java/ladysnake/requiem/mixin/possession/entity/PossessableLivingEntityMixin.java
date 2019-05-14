@@ -24,7 +24,7 @@ import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.requiem.common.entity.ai.attribute.CooldownStrengthAttribute;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
-import ladysnake.requiem.common.tag.RequiemEntityTags;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.mixin.possession.player.LivingEntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -39,8 +39,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
@@ -63,7 +63,7 @@ import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
  */
 @Mixin(LivingEntity.class)
 abstract class PossessableLivingEntityMixin extends Entity implements Possessable, VariableMobilityEntity {
-    private boolean requiem_immovable = RequiemEntityTags.IMMOVABLE.contains(this.getType());
+    private boolean requiem_immovable = RequiemEntityTypeTags.IMMOVABLE.contains(this.getType());
 
     @Shadow
     public abstract EntityAttributeInstance getAttributeInstance(EntityAttribute entityAttribute_1);
@@ -167,7 +167,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
             // Make possessed monsters despawn gracefully
             if (!this.world.isClient) {
                 if (this instanceof Monster && this.world.getDifficulty() == Difficulty.PEACEFUL) {
-                    player.addChatMessage(new TranslatableTextComponent("requiem.message.peaceful_despawn"), true);
+                    player.addChatMessage(new TranslatableComponent("requiem.message.peaceful_despawn"), true);
                 }
             }
             // Set the player's hit timer for damage animation and stuff
@@ -176,7 +176,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         }
     }
 
-    @Inject(method = "updateState", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;travel(Lnet/minecraft/util/math/Vec3d;)V", shift = AFTER))
+    @Inject(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;travel(Lnet/minecraft/util/math/Vec3d;)V", shift = AFTER))
     private void afterTravel(CallbackInfo ci) {
         PlayerEntity player = this.getPossessor();
         // If anyone has a better idea for immovable mobs, tell me

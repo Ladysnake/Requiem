@@ -29,13 +29,14 @@ import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.network.ClientMessageHandling;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
-import ladysnake.requiem.common.tag.RequiemEntityTags;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
 import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.entity.Entity;
@@ -44,12 +45,11 @@ import net.minecraft.entity.mob.*;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.MilkBucketItem;
 import net.minecraft.item.TridentItem;
+import net.minecraft.network.chat.Components;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.tag.ItemTags;
-import net.minecraft.text.Style;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TextFormatter;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.dimension.DimensionType;
@@ -80,7 +80,7 @@ public class RequiemClient implements ClientModInitializer {
                 if (((RequiemPlayer)client.player).getDeathSuspender().isLifeTransient()) {
                     DialogueTracker dialogueTracker = ((RequiemPlayer) client.player).getDialogueTracker();
                     dialogueTracker.startDialogue(Requiem.id("remnant_choice"));
-                    client.openScreen(new CutsceneDialogueScreen(new TranslatableTextComponent("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue()));
+                    client.openScreen(new CutsceneDialogueScreen(new TranslatableComponent("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue()));
                 }
                 MobEntity possessedEntity = ((RequiemPlayer) client.player).getPossessionComponent().getPossessedEntity();
                 if (possessedEntity != null && possessedEntity.isOnFire()) {
@@ -132,7 +132,7 @@ public class RequiemClient implements ClientModInitializer {
             RequiemPlayer player = (RequiemPlayer) client.player;
             if (!client.player.isCreative() && player.getRemnantState().isSoul()) {
                 Entity possessed = player.getPossessionComponent().getPossessedEntity();
-                if (possessed == null || !RequiemEntityTags.ITEM_USER.contains(possessed.getType())) {
+                if (possessed == null || !RequiemEntityTypeTags.ITEM_USER.contains(possessed.getType())) {
                     return ActionResult.SUCCESS;
                 }
             }
@@ -161,9 +161,9 @@ public class RequiemClient implements ClientModInitializer {
                 } else {
                     return;
                 }
-                lines.add(TextFormatter.style(
-                        new TranslatableTextComponent(key),
-                        new Style().setColor(TextFormat.DARK_GRAY)
+                lines.add(Components.style(
+                        new TranslatableComponent(key),
+                        new Style().setColor(ChatFormat.DARK_GRAY)
                 ));
             }
         });

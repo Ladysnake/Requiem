@@ -58,7 +58,7 @@ public class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier
         Map<Identifier, DialogueStateMachine> dialogues = new HashMap<>();
         int nbDialogues = buf.readVarInt();
         for (int i = 0; i < nbDialogues; i++) {
-            dialogues.put(Identifier.create(buf.readString()), new DialogueStateMachine().readFromPacket(buf));
+            dialogues.put(Identifier.ofNullable(buf.readString()), new DialogueStateMachine().readFromPacket(buf));
         }
         return dialogues;
     }

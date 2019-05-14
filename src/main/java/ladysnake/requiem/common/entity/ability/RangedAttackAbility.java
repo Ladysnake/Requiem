@@ -20,14 +20,14 @@ package ladysnake.requiem.common.entity.ability;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ProjectileUtil;
-import net.minecraft.entity.ai.RangedAttacker;
+import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Vec3d;
 
-public class RangedAttackAbility<T extends MobEntity & RangedAttacker> extends IndirectAbilityBase<T> {
+public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> extends IndirectAbilityBase<T> {
 
     public RangedAttackAbility(T owner) {
         super(owner);

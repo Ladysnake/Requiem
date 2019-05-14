@@ -103,7 +103,7 @@ public class MutableRemnantState implements RemnantState {
             ServerWorld previousWorld = clone.server.getWorld(clone.dimension);
             clone.setWorld(previousWorld);
             clone.interactionManager.setWorld(previousWorld);
-            clone.setPositionAndAngles(this.player);
+            clone.copyPositionAndRotation(this.player);
             // Prevent souls from respawning in fairly bad conditions
             while(!clone.world.doesNotCollide(clone) && clone.y < 256.0D) {
                 clone.setPosition(clone.x, clone.y + 1.0D, clone.z);

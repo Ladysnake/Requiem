@@ -18,21 +18,25 @@
 package ladysnake.pandemonium.client;
 
 import ladysnake.pandemonium.common.util.ItemUtil;
-import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
+import net.minecraft.ChatFormat;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Components;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class PossessionTooltipCallback implements ItemTooltipCallback {
     @Override
-    public void onTooltipBuilt(ItemStack item, @Nullable PlayerEntity player, TooltipContext context, List<TextComponent> lines) {
+    public void onTooltipBuilt(ItemStack item, @Nullable PlayerEntity player, TooltipContext context, List<Component> lines) {
         if (player != null) {
             LivingEntity possessed = ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
             if (possessed == null) {
@@ -44,9 +48,9 @@ public class PossessionTooltipCallback implements ItemTooltipCallback {
             } else {    // More tooltips can easily be added here
                 return;
             }
-            lines.add(TextFormatter.style(
-                    new TranslatableTextComponent(translationKey),
-                    new Style().setColor(TextFormat.DARK_GRAY)
+            lines.add(Components.style(
+                    new TranslatableComponent(translationKey),
+                    new Style().setColor(ChatFormat.DARK_GRAY)
             ));
         }
     }
