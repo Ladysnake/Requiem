@@ -52,7 +52,7 @@ public class WitchEntityMixin extends HostileEntity {
     }
 
     @Nullable
-    @ModifyVariable(method = "updateState", ordinal = 0, at = @At("STORE"))
+    @ModifyVariable(method = "tickMovement", ordinal = 0, at = @At("STORE"))
     private Potion preventPotionOverride(final Potion selectedPotion) {
         if (((Possessable)this).isBeingPossessed() && !ItemUtil.isWaterBottle(this.getMainHandStack())) {
             return null;
@@ -61,7 +61,7 @@ public class WitchEntityMixin extends HostileEntity {
     }
 
     @Inject(
-            method = "updateState",
+            method = "tickMovement",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/entity/mob/WitchEntity;setEquippedStack(Lnet/minecraft/entity/EquipmentSlot;Lnet/minecraft/item/ItemStack;)V",
@@ -71,7 +71,7 @@ public class WitchEntityMixin extends HostileEntity {
     )
     private void giveBottleBack(CallbackInfo ci) {
         if (((Possessable)this).isBeingPossessed()) {
-            this.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.GLASS_BOTTLE));
+            this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GLASS_BOTTLE));
         }
     }
 }
