@@ -37,7 +37,6 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
 public class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier, DialogueStateMachine>>, DialogueRegistry {
@@ -45,11 +44,11 @@ public class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier
     public static final int PREFIX_LENGTH = "requiem_dialogues/".length();
     public static final int SUFFIX_LENGTH = ".json".length();
 
-    private final Map<Identifier, DialogueStateMachine> dialogues = new ConcurrentHashMap<>();
+    private final Map<Identifier, DialogueStateMachine> dialogues = new HashMap<>();
     private final Map<Identifier, DialogueAction> actions = new HashMap<>();
 
     @Override
-    public void apply(Map<Identifier, DialogueStateMachine> dialogues) {
+    public synchronized void apply(Map<Identifier, DialogueStateMachine> dialogues) {
         this.dialogues.clear();
         this.dialogues.putAll(dialogues);
         Requiem.LOGGER.info("[Requiem] Added dialogues {}", dialogues.keySet());
@@ -65,7 +64,7 @@ public class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier
         return dialogues;
     }
 
-    public void toPacket(PacketByteBuf buf) {
+    public synchronized void toPacket(PacketByteBuf buf) {
         buf.writeVarInt(this.dialogues.size());
         for (Map.Entry<Identifier, DialogueStateMachine> entry : this.dialogues.entrySet()) {
             buf.writeString(entry.getKey().toString());
@@ -74,7 +73,7 @@ public class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier
     }
 
     @Override
-    public CutsceneDialogue getDialogue(Identifier id) {
+    public synchronized CutsceneDialogue getDialogue(Identifier id) {
         if (!this.dialogues.containsKey(id)) {
             throw new IllegalArgumentException("Unknown dialogue " + id);
         }
