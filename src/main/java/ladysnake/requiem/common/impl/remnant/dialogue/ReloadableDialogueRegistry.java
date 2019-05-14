@@ -37,6 +37,7 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
 public class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier, DialogueStateMachine>>, DialogueRegistry {
@@ -44,13 +45,14 @@ public class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier
     public static final int PREFIX_LENGTH = "requiem_dialogues/".length();
     public static final int SUFFIX_LENGTH = ".json".length();
 
-    private final Map<Identifier, DialogueStateMachine> dialogues = new HashMap<>();
+    private final Map<Identifier, DialogueStateMachine> dialogues = new ConcurrentHashMap<>();
     private final Map<Identifier, DialogueAction> actions = new HashMap<>();
 
     @Override
     public void apply(Map<Identifier, DialogueStateMachine> dialogues) {
         this.dialogues.clear();
         this.dialogues.putAll(dialogues);
+        Requiem.LOGGER.info("[Requiem] Added dialogues {}", dialogues.keySet());
     }
 
     @Override
@@ -111,8 +113,18 @@ public class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier
                     Requiem.LOGGER.error("Could not read dialogue {}", dialogueLocation);
                 }
             }
+            Requiem.LOGGER.info("[Requiem] Parsed dialogues {}", dialogues.keySet());
+            // FIXME apply never gets called normally in production, this is a hotfix
+            apply(dialogues);
             return dialogues;
         }, executor);
     }
 
+    @Override
+    public String toString() {
+        return "ReloadableDialogueRegistry{" +
+                "dialogues=" + dialogues.keySet() +
+                ", actions=" + actions.keySet() +
+                '}';
+    }
 }
