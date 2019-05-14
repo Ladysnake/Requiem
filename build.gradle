@@ -112,7 +112,6 @@ allprojects {
     license {
         header = rootProject.file("code_quality/${project.license_header}_HEADER.txt")
 
-        // Apply licenses only to main source set
         include "**/*.java"
         exclude "**/package-info.java"
 
