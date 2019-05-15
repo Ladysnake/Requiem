@@ -19,6 +19,7 @@ package ladysnake.requiem.common.sound;
 
 import ladysnake.requiem.Requiem;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class RequiemSoundEvents {
@@ -29,6 +30,7 @@ public class RequiemSoundEvents {
     public static final SoundEvent ITEM_OPUS_USE = register("item.opus.use");
 
     private static SoundEvent register(String name) {
-        return Registry.register(Registry.SOUND_EVENT, name, new SoundEvent(Requiem.id(name)));
+        Identifier id = Requiem.id(name);
+        return Registry.register(Registry.SOUND_EVENT, id, new SoundEvent(id));
     }
 }
