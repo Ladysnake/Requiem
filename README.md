@@ -6,20 +6,29 @@
 
 
 **Table of Contents**
-
-=======
-- Introduction
-  - What is Requiem?
-  - Why would you want to use it?
-  - Getting started
-- Wiki
-  - Gameplay Mechanics
-    - First death
-    - Soul State
-    - Resurrection
-    - Undead Gameplay
-    - Special Item Behaviour
-    - Regaining your humanity
+- [Requiem](#requiem)
+- [Introduction](#introduction)
+  - [What is Requiem?](#what-is-requiem)
+  - [Why would you want to use it?](#why-would-you-want-to-use-it)
+  - [Getting started](#getting-started)
+- [Wiki](#wiki)
+  - [Gameplay mechanics](#gameplay-mechanics)
+    - [First death](#first-death)
+    - [Soul state](#soul-state)
+    - [Body transformation after death](#body-transformation-after-death)
+    - [Undead gameplay](#undead-gameplay)
+    - [Special item uses for Undead](#special-item-uses-for-undead)
+      - [Raw meat ("Zombie Snack")](#raw-meat-zombie-snack)
+      - [Raw fish ("Drowned Delicacy")](#raw-fish-drowned-delicacy)
+      - [Bones ("Bony Prosthesis")](#bones-bony-prosthesis)
+      - [Milk buckets ("Calcium Goodness")](#milk-buckets-calcium-goodness)
+      - [Bows ("Skeletal Efficiency")](#bows-skeletal-efficiency)
+      - [Tridents ("Drowned Grip")](#tridents-drowned-grip)
+    - [Becoming human again](#becoming-human-again)
+  - [Items](#items)
+    - [Opus Daemonium ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium.png) ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_curse.png) ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_cure.png)](#opus-daemonium-httpsrawgithubusercontentcomladysnakerequiemfabricreadmeopus_daemoniumpng-httpsrawgithubusercontentcomladysnakerequiemfabricreadmeopus_daemonium_cursepng-httpsrawgithubusercontentcomladysnakerequiemfabricreadmeopus_daemonium_curepng)
+      - [Variants](#variants)
+      - [Recipe](#recipe)
 
 # Introduction
 
@@ -83,16 +92,22 @@ All undead players:
 
 ### Special item uses for Undead
 Depending on the undead possessed, the player is able to use items differently from how he would if he was human.
+
 #### Raw meat ("Zombie Snack")
 Raw meat can be eaten by Zombie players (all sub-types included) to regenerate health. A piece of meat regenerates as much health as it would recover food for a human player.
+
 #### Raw fish ("Drowned Delicacy")
 Raw fish can eaten by Drowned exclusively, and serves the same purpose raw meat does.
+
 #### Bones ("Bony Prosthesis")
 Skeletons (all sub-types included) can replace their damaged bones by new ones. To do so, just use a bone and it will regenerate 4 health points (2 hearts).
+
 #### Milk buckets ("Calcium Goodness")
 Skeletons (all sub-types included) can drink milk for extra bone resistance. Drinking a milk bucket grants the player Resistance for 30 seconds.
+
 #### Bows ("Skeletal Efficiency")
 Using a bow as a Skeleton (all sub-types included) has a chance to not consume an arrow when shooting. Resulting arrows are not recoverable.
+
 #### Tridents ("Drowned Grip")
 Throwing a trident as a Drowned has a chance to keep it in hand and duplicate it. Resulting tridents are not recoverable.
 
@@ -102,12 +117,14 @@ To recover their humanity and get rid of their rotting body, an undead player ha
 ## Items
 Below can be found all the items added by Requiem, their uses and how to obtain them.
 
-### Opus Daemonium
+### Opus Daemonium ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium.png) ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_curse.png) ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_cure.png)
 The Opus Daemonium is an item that allows a Player to activate or deactivate Requiem's death mechanics (for himself only), by respectively awakening or destroying a Player's demon soul.
-There are 3 variants of Opus Daemoniums:
-- Neutral: The base Opus Daemonium to obtain the two other variants. Can be opened to write inside it. If the phrase is a valid incantation, the player can sign it and use 5 experience levels in order to convert the Opus into either a Curse or Cure Opus.
-- Curse: Activates the mod's death system when used. Obtained by writing "Ad Vitam Aeternam" inside a neutral Opus Daemonium.
-- Cure: Deactivates the mod's death system when used. Obtained by writing "Ad Vitam Mortale" inside a neutral Opus Daemonium.
 
-**Recipe (shapeless):**
-=======
+#### Variants
+There are 3 variants of Opus Daemoniums:
+- Neutral  ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium.png) : The base Opus Daemonium to obtain the two other variants. Can be opened to write inside it. If the phrase is a valid incantation, the player can sign it and use 5 experience levels in order to convert the Opus into either a Curse or Cure Opus.
+- Curse ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_curse.png) : Activates the mod's death system when used. Obtained by writing "Ad Vitam Aeternam" inside a neutral Opus Daemonium.
+- Cure ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_cure.png) : Deactivates the mod's death system when used. Obtained by writing "Ad Vitam Mortale" inside a neutral Opus Daemonium.
+
+#### Recipe
+![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_recipe.png)
