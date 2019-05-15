@@ -26,7 +26,7 @@
       - [Tridents ("Drowned Grip")](#tridents-drowned-grip)
     - [Becoming human again](#becoming-human-again)
   - [Items](#items)
-    - [Opus Daemonium ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium.png) ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_curse.png) ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_cure.png)](#opus-daemonium-httpsrawgithubusercontentcomladysnakerequiemfabricreadmeopus_daemoniumpng-httpsrawgithubusercontentcomladysnakerequiemfabricreadmeopus_daemonium_cursepng-httpsrawgithubusercontentcomladysnakerequiemfabricreadmeopus_daemonium_curepng)
+    - [Opus Daemonium](#opus-daemonium)
       - [Variants](#variants)
       - [Recipe (shapeless)](#recipe-shapeless)
 
@@ -117,7 +117,7 @@ To recover their humanity and get rid of their rotting body, an undead player ha
 ## Items
 Below can be found all the items added by Requiem, their uses and how to obtain them.
 
-### Opus Daemonium ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium.png) ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_curse.png) ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_cure.png)
+### Opus Daemonium
 The Opus Daemonium is an item that allows a Player to activate or deactivate Requiem's death mechanics (for himself only), by respectively awakening or destroying a Player's demon soul.
 
 #### Variants
