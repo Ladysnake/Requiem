@@ -77,7 +77,7 @@ public class RayHelper {
         World world = entity.world;
         HitResult trace = rayTraceEntity(entity, range, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.SOURCE_ONLY, deltaTime);
         boolean secondPass;
-        if (trace.getType() == HitResult.Type.NONE) {
+        if (trace.getType() == HitResult.Type.MISS) {
             trace = rayTrace(world, entity, trace.getPos(), trace.getPos().subtract(0, 1, 0), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.SOURCE_ONLY);
             secondPass = false;
         } else {

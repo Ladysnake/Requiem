@@ -24,6 +24,7 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormat;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LecternBlock;
@@ -33,11 +34,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormat;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Hand;
@@ -50,9 +50,9 @@ import java.util.List;
 
 public class WrittenOpusItem extends Item {
     private final RemnantType remnantType;
-    private final TextFormat color;
+    private final ChatFormat color;
 
-    public WrittenOpusItem(RemnantType remnantType, TextFormat color, Settings settings) {
+    public WrittenOpusItem(RemnantType remnantType, ChatFormat color, Settings settings) {
         super(settings);
         this.remnantType = remnantType;
         this.color = color;
@@ -62,7 +62,7 @@ public class WrittenOpusItem extends Item {
         return remnantType;
     }
 
-    public TextFormat getTooltipColor() {
+    public ChatFormat getTooltipColor() {
         return color;
     }
 
@@ -83,13 +83,13 @@ public class WrittenOpusItem extends Item {
         if (!world.isClient && stack.getItem() == this) {
             RemnantType currentState = ((RequiemPlayer) player).getRemnantState().getType();
             if (currentState != this.remnantType && !((RequiemPlayer) player).getPossessionComponent().isPossessing()) {
-                ((RequiemPlayer) player).setRemnantState(remnantType.create(player));
-                player.incrementStat(Stats.USED.getOrCreateStat(this));
-                stack.subtractAmount(1);
                 boolean cure = this == RequiemItems.OPUS_DEMONIUM_CURE;
                 world.playSound(null, player.x, player.y, player.z, RequiemSoundEvents.ITEM_OPUS_USE, player.getSoundCategory(), 1.0F, 0.1F);
                 world.playSound(null, player.x, player.y, player.z, cure ? RequiemSoundEvents.EFFECT_BECOME_MORTAL : RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
                 RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(cure, true));
+                ((RequiemPlayer) player).setRemnantState(remnantType.create(player));
+                player.incrementStat(Stats.USED.getOrCreateStat(this));
+                stack.subtractAmount(1);
                 RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, this.remnantType);
             }
             return new TypedActionResult<>(ActionResult.SUCCESS, stack);
@@ -98,14 +98,14 @@ public class WrittenOpusItem extends Item {
     }
 
     @Environment(EnvType.CLIENT)
-    public void buildTooltip(ItemStack stack, @Nullable World world, List<TextComponent> lines, TooltipContext ctx) {
-        lines.add(new TranslatableTextComponent(this == RequiemItems.OPUS_DEMONIUM_CURE ? "requiem:opus_daemonium.cure" : "requiem:opus_daemonium.curse")
+    public void buildTooltip(ItemStack stack, @Nullable World world, List<Component> lines, TooltipContext ctx) {
+        lines.add(new TranslatableComponent(this == RequiemItems.OPUS_DEMONIUM_CURE ? "requiem:opus_daemonium.cure" : "requiem:opus_daemonium.curse")
                 .applyFormat(this.getTooltipColor()));
         if (stack.hasTag()) {
             CompoundTag tag = stack.getTag();
             String author = tag.getString("author");
             if (!ChatUtil.isEmpty(author)) {
-                lines.add((new TranslatableTextComponent("book.byAuthor", author)).applyFormat(TextFormat.GRAY));
+                lines.add((new TranslatableComponent("book.byAuthor", author)).applyFormat(ChatFormat.GRAY));
             }
         }
     }

@@ -73,9 +73,9 @@ public class ServerMessageHandling {
             });
         });
         ServerSidePacketRegistry.INSTANCE.register(OPUS_UPDATE, (context, buf) -> {
-            String content = buf.readString();
+            String content = buf.readString(32767);
             boolean sign = buf.readBoolean();
-            RemnantType type = sign ? RemnantStates.get(new Identifier(buf.readString())) : null;
+            RemnantType type = sign ? RemnantStates.get(new Identifier(buf.readString(32767))) : null;
             Hand hand = buf.readEnumConstant(Hand.class);
             context.getTaskQueue().execute(() -> {
                 PlayerEntity player = context.getPlayer();
@@ -84,16 +84,16 @@ public class ServerMessageHandling {
                     return;
                 }
                 int requiredXp = player.isCreative() ? 0 : OpusDemoniumItem.REQUIRED_CONVERSION_XP;
-                if (sign && player.experience >= requiredXp) {
+                if (sign && player.experienceLevel >= requiredXp) {
                     player.setStackInHand(hand, type.getConversionBook(player));
                     player.world.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, player.world.random.nextFloat() * 0.1F + 0.9F);
-                    player.experience -= requiredXp;
-                    if (player.experience < 0) {
-                        player.experience = 0;
-                        player.experienceLevelProgress = 0.0F;
+                    player.experienceLevel -= requiredXp;
+                    if (player.experienceLevel < 0) {
                         player.experienceLevel = 0;
+                        player.experienceProgress = 0.0F;
+                        player.totalExperience = 0;
                     }
-                    ((ServerPlayerEntity)player).networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(player.experienceLevelProgress, player.experienceLevel, player.experience));
+                    ((ServerPlayerEntity)player).networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(player.experienceProgress, player.experienceLevel, player.experienceLevel));
                 } else {
                     ListTag pages = new ListTag();
                     pages.add(new StringTag(content));

@@ -105,4 +105,11 @@ public class MovementAltererManager implements SubDataManager<Map<EntityType<?>,
     public MovementConfig getEntityMovementConfig(EntityType<?> type) {
         return this.entityMovementConfigs.getOrDefault(type, new SerializableMovementConfig());
     }
+
+    @Override
+    public String toString() {
+        return "MovementAltererManager{" +
+                "entityMovementConfigs=" + entityMovementConfigs.keySet() +
+                '}';
+    }
 }

@@ -42,7 +42,7 @@ public class MeleeAbility extends DirectAbilityBase<MobEntity> {
         if (success && target instanceof LivingEntity) {
             player.getMainHandStack().onEntityDamaged((LivingEntity) target, player);
             // Reset cooldown
-            player.method_7350();
+            player.resetLastAttackedTicks();
         }
         return success;
     }

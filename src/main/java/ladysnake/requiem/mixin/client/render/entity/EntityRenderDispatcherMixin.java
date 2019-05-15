@@ -56,7 +56,7 @@ public abstract class EntityRenderDispatcherMixin {
     /**
      * Prevents the camera's possessed entity from rendering
      */
-    @Inject(method = "method_3950", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true)
     private void preventPossessedRender(Entity entity, VisibleRegion visibleRegion, double x, double y, double z, CallbackInfoReturnable<Boolean> info) {
         if (requiem_camerasPossessed == entity) {
             info.setReturnValue(false);

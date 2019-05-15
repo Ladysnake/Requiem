@@ -24,6 +24,7 @@ import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.item.OpusDemoniumItem;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.mixin.client.gui.ingame.EditBookScreenAccessor;
+import net.minecraft.ChatFormat;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.ingame.EditBookScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -31,7 +32,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.TextFormat;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 
@@ -131,7 +131,7 @@ public class EditOpusScreen extends EditBookScreen {
         int y = signButton.y - 13;
         this.minecraft.getTextureManager().bindTexture(XP_COST_TEXTURE);
         if (this.validSentence) {
-            if (this.minecraft.player.experience < REQUIRED_XP && !this.minecraft.player.abilities.creativeMode) {
+            if (this.minecraft.player.experienceLevel < REQUIRED_XP && !this.minecraft.player.abilities.creativeMode) {
                 blit(x + 1, y + 15, 0, 16, 16, 16, 32, 32);
             } else {
                 blit(x + 1, y + 15, 0, 0, 16, 16, 32, 32);
@@ -156,7 +156,7 @@ public class EditOpusScreen extends EditBookScreen {
             String line = str.substring(0, charCount);
             char lastChar = str.charAt(charCount);
             boolean empty = lastChar == ' ' || lastChar == '\n';
-            str = TextFormat.getFormatAtEnd(line) + str.substring(charCount + (empty ? 1 : 0));
+            str = ChatFormat.getFormatAtEnd(line) + str.substring(charCount + (empty ? 1 : 0));
             lineLength += line.length() + (empty ? 1 : 0);
             if (lineLength - 1 >= cursorIndex) {
                 String substr = line.substring(0, Math.min(Math.max(cursorIndex - int_3, 0), line.length()));
@@ -195,6 +195,6 @@ public class EditOpusScreen extends EditBookScreen {
     private void checkMagicSentence() {
         // Strings are lowercase in the map to make the check case insensitive
         this.validSentence = this.incantations.containsKey(this.getFirstPage().toLowerCase(Locale.getDefault()));
-        ((EditBookScreenAccessor) this).getButtonSign().active = this.validSentence && (this.minecraft.player.experience >= REQUIRED_XP || this.minecraft.player.isCreative());
+        ((EditBookScreenAccessor) this).getButtonSign().active = this.validSentence && (this.minecraft.player.experienceLevel >= REQUIRED_XP || this.minecraft.player.isCreative());
     }
 }

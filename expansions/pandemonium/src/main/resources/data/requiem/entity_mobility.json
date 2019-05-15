@@ -33,6 +33,10 @@
   "minecraft:parrot": {
     "flightMode": "ENABLED"
   },
+  "minecraft:phantom": {
+    "flightMode": "FORCED",
+    "inertia": 0.8
+  },
   "minecraft:pufferfish": {
     "swimMode": "FORCED",
     "flopsOnLand": true
@@ -50,5 +54,10 @@
   },
   "minecraft:vex": {
     "flightMode": "FORCED"
+  },
+  "minecraft:wither": {
+    "flightMode": "ENABLED",
+    "fallSpeedModifier": 0.8,
+    "gravity": 0.01
   }
 }

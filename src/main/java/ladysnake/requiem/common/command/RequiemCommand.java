@@ -24,10 +24,10 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -88,8 +88,8 @@ public class RequiemCommand {
 
     private static int queryEthereal(ServerCommandSource source, ServerPlayerEntity player) {
         boolean remnant = ((RequiemPlayer) player).getRemnantState().isSoul();
-        TextComponent remnantState = new TranslatableTextComponent("requiem:" + (remnant ? "ethereal" : "not_ethereal"));
-        source.sendFeedback(new TranslatableTextComponent("requiem:commands.query.success." + (source.getEntity() == player ? "self" : "other"), remnantState), true);
+        Component remnantState = new TranslatableComponent("requiem:" + (remnant ? "ethereal" : "not_ethereal"));
+        source.sendFeedback(new TranslatableComponent("requiem:commands.query.success." + (source.getEntity() == player ? "self" : "other"), remnantState), true);
         return remnant ? 1 : 0;
     }
 
@@ -98,7 +98,7 @@ public class RequiemCommand {
         for (ServerPlayerEntity player : players) {
             if (((RequiemPlayer) player).getRemnantState().isSoul() != ethereal) {
                 if (!((RequiemPlayer) player).isRemnant()) {
-                    throw new CommandException(new TranslatableTextComponent("requiem:commands.ethereal.set.fail", player.getDisplayName()));
+                    throw new CommandException(new TranslatableComponent("requiem:commands.ethereal.set.fail", player.getDisplayName()));
                 }
                 ((RequiemPlayer) player).getRemnantState().setSoul(ethereal);
                 sendSetEtherealFeedback(source, player, ethereal);
@@ -109,15 +109,15 @@ public class RequiemCommand {
     }
 
     private static void sendSetEtherealFeedback(ServerCommandSource source, ServerPlayerEntity player, boolean ethereal) {
-        TextComponent name = new TranslatableTextComponent("requiem:" + (ethereal ? "ethereal" : "not_ethereal"));
+        Component name = new TranslatableComponent("requiem:" + (ethereal ? "ethereal" : "not_ethereal"));
         if (source.getEntity() == player) {
-            source.sendFeedback(new TranslatableTextComponent("requiem:commands.ethereal.set.success.self", name), true);
+            source.sendFeedback(new TranslatableComponent("requiem:commands.ethereal.set.success.self", name), true);
         } else {
             if (source.getWorld().getGameRules().getBoolean("sendCommandFeedback")) {
-                player.sendMessage(new TranslatableTextComponent("requiem:commands.ethereal.set.target", name));
+                player.sendMessage(new TranslatableComponent("requiem:commands.ethereal.set.target", name));
             }
 
-            source.sendFeedback(new TranslatableTextComponent("requiem:commands.ethereal.set.success.other", player.getDisplayName(), name), true);
+            source.sendFeedback(new TranslatableComponent("requiem:commands.ethereal.set.success.other", player.getDisplayName(), name), true);
         }
     }
 
@@ -137,22 +137,22 @@ public class RequiemCommand {
     }
 
     private static void sendStopPossessionFeedback(ServerCommandSource source, ServerPlayerEntity player, Entity possessed) {
-        TextComponent name = possessed.getDisplayName();
+        Component name = possessed.getDisplayName();
         if (source.getEntity() == player) {
-            source.sendFeedback(new TranslatableTextComponent("requiem:commands.possession.stop.success.self", name), true);
+            source.sendFeedback(new TranslatableComponent("requiem:commands.possession.stop.success.self", name), true);
         } else {
             if (source.getWorld().getGameRules().getBoolean("sendCommandFeedback")) {
-                player.sendMessage(new TranslatableTextComponent("requiem:commands.possession.stop.target", name));
+                player.sendMessage(new TranslatableComponent("requiem:commands.possession.stop.target", name));
             }
 
-            source.sendFeedback(new TranslatableTextComponent("requiem:commands.possession.stop.success.other", player.getDisplayName(), name), true);
+            source.sendFeedback(new TranslatableComponent("requiem:commands.possession.stop.success.other", player.getDisplayName(), name), true);
         }
     }
 
     private static int queryRemnant(ServerCommandSource source, ServerPlayerEntity player) {
         boolean remnant = ((RequiemPlayer) player).isRemnant();
-        TextComponent remnantState = new TranslatableTextComponent("requiem:" + (remnant ? "remnant" : "not_remnant"));
-        source.sendFeedback(new TranslatableTextComponent("requiem:commands.query.success." + (source.getEntity() == player ? "self" : "other"), remnantState), true);
+        Component remnantState = new TranslatableComponent("requiem:" + (remnant ? "remnant" : "not_remnant"));
+        source.sendFeedback(new TranslatableComponent("requiem:commands.query.success." + (source.getEntity() == player ? "self" : "other"), remnantState), true);
         return remnant ? 1 : 0;
     }
 
@@ -169,15 +169,15 @@ public class RequiemCommand {
     }
 
     private static void sendSetRemnantFeedback(ServerCommandSource source, ServerPlayerEntity player, boolean remnant) {
-        TextComponent name = new TranslatableTextComponent("requiem:" + (remnant ? "remnant" : "not_remnant"));
+        Component name = new TranslatableComponent("requiem:" + (remnant ? "remnant" : "not_remnant"));
         if (source.getEntity() == player) {
-            source.sendFeedback(new TranslatableTextComponent("requiem:commands.remnant.set.success.self", name), true);
+            source.sendFeedback(new TranslatableComponent("requiem:commands.remnant.set.success.self", name), true);
         } else {
             if (source.getWorld().getGameRules().getBoolean("sendCommandFeedback")) {
-                player.sendMessage(new TranslatableTextComponent("requiem:commands.remnant.set.target", name));
+                player.sendMessage(new TranslatableComponent("requiem:commands.remnant.set.target", name));
             }
 
-            source.sendFeedback(new TranslatableTextComponent("requiem:commands.remnant.set.success.other", player.getDisplayName(), name), true);
+            source.sendFeedback(new TranslatableComponent("requiem:commands.remnant.set.success.other", player.getDisplayName(), name), true);
         }
     }
 }

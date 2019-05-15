@@ -23,7 +23,7 @@ import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.client.ZaWorldFx;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
@@ -32,7 +32,7 @@ public class CutsceneDialogueScreen extends Screen {
     private final CutsceneDialogue dialogue;
     private int selectedChoice;
 
-    public CutsceneDialogueScreen(TextComponent title, CutsceneDialogue dialogue) {
+    public CutsceneDialogueScreen(Component title, CutsceneDialogue dialogue) {
         super(title);
         this.dialogue = dialogue;
     }

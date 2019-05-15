@@ -128,7 +128,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     protected abstract void setModelPose(AbstractClientPlayerEntity player);
 
     @SuppressWarnings("InvalidMemberReference") // Method array is unsupported by the plugin
-    @Inject(method = {"method_4220", "method_4221"}, at = @At("HEAD"), cancellable = true)
+    @Inject(method = {"renderRightArm", "renderLeftArm"}, at = @At("HEAD"), cancellable = true)
     private void renderPossessedHand(AbstractClientPlayerEntity renderedPlayer, CallbackInfo info) {
         if (((RequiemPlayer) renderedPlayer).getRemnantState().isSoul()) {
             if (((RequiemPlayer) renderedPlayer).getPossessionComponent().isPossessing()) {
@@ -150,7 +150,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                             playerEntityModel_1.field_3396 = 0.0F;
                             //noinspection unchecked
                             playerEntityModel_1.method_17087(possessed, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-                            Cuboid arm = rightArm ? playerEntityModel_1.armRight : playerEntityModel_1.armLeft;
+                            Cuboid arm = rightArm ? playerEntityModel_1.rightArm : playerEntityModel_1.leftArm;
                             arm.pitch = 0.0F;
                             arm.render(0.0625F);
                             GlStateManager.disableBlend();

@@ -25,7 +25,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -43,7 +43,7 @@ public class DebugItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         if (player.isSneaking() && !world.isClient) {
             debugMode = (debugMode + 1) % 2;
-            player.addChatMessage(new TranslatableTextComponent("Switched mode to %s", debugMode), true);
+            player.addChatMessage(new TranslatableComponent("Switched mode to %s", debugMode), true);
         } else {
             switch (debugMode) {
                 case 0:

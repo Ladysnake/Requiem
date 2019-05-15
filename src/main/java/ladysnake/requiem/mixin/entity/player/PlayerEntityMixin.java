@@ -49,7 +49,6 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -135,7 +134,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         }
     }
 
-    @Inject(method = "updateState", at = @At("HEAD"))
+    @Inject(method = "tickMovement", at = @At("HEAD"))
     private void updateMovementAlterer(CallbackInfo info) {
         this.movementAlterer.update();
         this.remnantState.update();
@@ -180,7 +179,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private void eatZombieFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
         MobEntity possessedEntity = this.getPossessionComponent().getPossessedEntity();
         if (possessedEntity instanceof ZombieEntity && stack.getItem().isFood()) {
-            if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || ItemTags.FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
+            if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || RequiemItemTags.RAW_FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
                 FoodItemSetting food = stack.getItem().getFoodSetting();
                 assert food != null;
                 possessedEntity.heal(food.getHunger());
@@ -201,7 +200,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
      * @param attr the {@code this} attribute reference
      * @param value the value that is supposed to be assigned
      */
-    @Redirect(method = "updateState", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/attribute/EntityAttributeInstance;setBaseValue(D)V"))
+    @Redirect(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/attribute/EntityAttributeInstance;setBaseValue(D)V"))
     private void ignoreSpeedResetDuringPossession(EntityAttributeInstance attr, double value) {
         if (!this.getPossessionComponent().isPossessing()) {
             attr.setBaseValue(value);

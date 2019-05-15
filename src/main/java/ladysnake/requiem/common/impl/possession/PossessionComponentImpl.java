@@ -26,7 +26,7 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.requiem.common.entity.ai.attribute.PossessionDelegatingAttribute;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
-import ladysnake.requiem.common.tag.RequiemEntityTags;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.util.InventoryHelper;
 import ladysnake.requiem.mixin.possession.player.LivingEntityAccessor;
 import net.minecraft.entity.Entity;
@@ -85,7 +85,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
             return false;
         }
         // 3- transfer inventory and mount
-        if (RequiemEntityTags.ITEM_USER.contains(host.getType())) {
+        if (RequiemEntityTypeTags.ITEM_USER.contains(host.getType())) {
             InventoryHelper.transferEquipment(host, player);
         }
         for (StatusEffectInstance effect : host.getStatusEffects()) {
@@ -102,7 +102,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
         possessable.setPossessor(this.player);
         this.syncPossessed();
         // 5- Update some attributes
-        this.player.setPositionAndAngles(host);
+        this.player.copyPositionAndRotation(host);
         this.player.refreshSize(); // update size
         ((RequiemPlayer)this.player).getMovementAlterer().setConfig(Requiem.getMovementAltererManager(player.world.isClient).getEntityMovementConfig(host.getType()));
         if (!attributeUpdated.contains(this.player)) {
@@ -137,7 +137,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
             this.resetState();
             ((Possessable)possessed).setPossessor(null);
             if (player instanceof ServerPlayerEntity && transfer) {
-                if (RequiemEntityTags.ITEM_USER.contains(possessed.getType())) {
+                if (RequiemEntityTypeTags.ITEM_USER.contains(possessed.getType())) {
                     InventoryHelper.transferEquipment(player, possessed);
                 }
                 ((LivingEntityAccessor)player).invokeDropInventory();

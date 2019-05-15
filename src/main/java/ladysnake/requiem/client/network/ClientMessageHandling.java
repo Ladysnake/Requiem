@@ -17,6 +17,7 @@
  */
 package ladysnake.requiem.client.network;
 
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
@@ -99,6 +100,7 @@ public class ClientMessageHandling {
             for (int i = 0; i < nbManagers; i++) {
                 Identifier id = buffer.readIdentifier();
                 SubDataManager<?> manager = Objects.requireNonNull(map.get(id), "Unknown sub data manager " + id);
+                Requiem.LOGGER.info("[Requiem] Received data for {}", manager.getFabricId());
                 syncSubDataManager(buffer, manager, context.getTaskQueue());
             }
         });

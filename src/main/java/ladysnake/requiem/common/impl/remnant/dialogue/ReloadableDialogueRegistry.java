@@ -48,9 +48,10 @@ public class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier
     private final Map<Identifier, DialogueAction> actions = new HashMap<>();
 
     @Override
-    public void apply(Map<Identifier, DialogueStateMachine> dialogues) {
+    public synchronized void apply(Map<Identifier, DialogueStateMachine> dialogues) {
         this.dialogues.clear();
         this.dialogues.putAll(dialogues);
+        Requiem.LOGGER.info("[Requiem] Added dialogues {}", dialogues.keySet());
     }
 
     @Override
@@ -58,12 +59,12 @@ public class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier
         Map<Identifier, DialogueStateMachine> dialogues = new HashMap<>();
         int nbDialogues = buf.readVarInt();
         for (int i = 0; i < nbDialogues; i++) {
-            dialogues.put(Identifier.create(buf.readString()), new DialogueStateMachine().readFromPacket(buf));
+            dialogues.put(Identifier.ofNullable(buf.readString()), new DialogueStateMachine().readFromPacket(buf));
         }
         return dialogues;
     }
 
-    public void toPacket(PacketByteBuf buf) {
+    public synchronized void toPacket(PacketByteBuf buf) {
         buf.writeVarInt(this.dialogues.size());
         for (Map.Entry<Identifier, DialogueStateMachine> entry : this.dialogues.entrySet()) {
             buf.writeString(entry.getKey().toString());
@@ -72,7 +73,7 @@ public class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier
     }
 
     @Override
-    public CutsceneDialogue getDialogue(Identifier id) {
+    public synchronized CutsceneDialogue getDialogue(Identifier id) {
         if (!this.dialogues.containsKey(id)) {
             throw new IllegalArgumentException("Unknown dialogue " + id);
         }
@@ -111,8 +112,18 @@ public class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier
                     Requiem.LOGGER.error("Could not read dialogue {}", dialogueLocation);
                 }
             }
+            Requiem.LOGGER.info("[Requiem] Parsed dialogues {}", dialogues.keySet());
+            // FIXME apply never gets called normally in production, this is a hotfix
+            apply(dialogues);
             return dialogues;
         }, executor);
     }
 
+    @Override
+    public String toString() {
+        return "ReloadableDialogueRegistry{" +
+                "dialogues=" + dialogues.keySet() +
+                ", actions=" + actions.keySet() +
+                '}';
+    }
 }

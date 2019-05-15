@@ -26,7 +26,6 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -46,7 +45,7 @@ public abstract class ItemMixin {
             player.setCurrentHand(hand);
             cir.setReturnValue(new TypedActionResult<>(ActionResult.SUCCESS, stack));
         } else if (possessedEntity instanceof ZombieEntity) {
-            if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || ItemTags.FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
+            if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || RequiemItemTags.RAW_FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
                 player.setCurrentHand(hand);
                 cir.setReturnValue(new TypedActionResult<>(ActionResult.SUCCESS, stack));
             } else {
