@@ -28,7 +28,7 @@
   - [Items](#items)
     - [Opus Daemonium ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium.png) ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_curse.png) ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_cure.png)](#opus-daemonium-httpsrawgithubusercontentcomladysnakerequiemfabricreadmeopus_daemoniumpng-httpsrawgithubusercontentcomladysnakerequiemfabricreadmeopus_daemonium_cursepng-httpsrawgithubusercontentcomladysnakerequiemfabricreadmeopus_daemonium_curepng)
       - [Variants](#variants)
-      - [Recipe](#recipe)
+      - [Recipe (shapeless)](#recipe-shapeless)
 
 # Introduction
 
@@ -126,5 +126,5 @@ There are 3 variants of Opus Daemoniums:
 - Curse ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_curse.png) : Activates the mod's death system when used. Obtained by writing "Ad Vitam Aeternam" inside a neutral Opus Daemonium.
 - Cure ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_cure.png) : Deactivates the mod's death system when used. Obtained by writing "Ad Vitam Mortale" inside a neutral Opus Daemonium.
 
-#### Recipe
+#### Recipe (shapeless)
 ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_recipe.png)
