@@ -7,11 +7,6 @@
 
 **Table of Contents**
 
-[TOCM]
-
-[TOC]
-
-
 # Introduction
 
 ## What is Requiem?
@@ -89,3 +84,15 @@ Throwing a trident as a Drowned has a chance to keep it in hand and duplicate it
 
 ### Becoming human again
 To recover their humanity and get rid of their rotting body, an undead player has to go through the purification progress every Zombie Villager must. By getting the Weakness effect, undead players are able to eat Golden Apples. Doing so results in the player turning back into human form.
+
+## Items
+Below can be found all the items added by Requiem, their uses and how to obtain them.
+
+### Opus Daemonium
+The Opus Daemonium is an item that allows a Player to activate or deactivate Requiem's death mechanics (for himself only), by respectively awakening or destroying a Player's demon soul.
+There are 3 variants of Opus Daemoniums:
+- Neutral: The base Opus Daemonium to obtain the two other variants. Can be opened to write inside it. If the phrase is a valid incantation, the player can sign it and use 5 experience levels in order to convert the Opus into either a Curse or Cure Opus.
+- Curse: Activates the mod's death system when used. Obtained by writing "Ad Vitam Aeternam" inside a neutral Opus Daemonium.
+- Cure: Deactivates the mod's death system when used. Obtained by writing "Ad Vitam Mortale" inside a neutral Opus Daemonium.
+
+**Recipe (shapeless):**
