@@ -32,6 +32,7 @@ import ladysnake.requiem.common.impl.remnant.dialogue.ReloadableDialogueRegistry
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.network.ServerMessageHandling;
+import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.registry.CommandRegistry;
 import net.minecraft.util.Identifier;
@@ -66,6 +67,7 @@ public class Requiem implements ModInitializer {
         RequiemBlocks.init();
         RequiemItems.init();
         RequiemRegistries.init();
+        RequiemSoundEvents.init();
         ServerMessageHandling.init();
         RequiemApi.registerPlugin(new VanillaRequiemPlugin());
         CommandRegistry.INSTANCE.register(false, RequiemCommand::register);

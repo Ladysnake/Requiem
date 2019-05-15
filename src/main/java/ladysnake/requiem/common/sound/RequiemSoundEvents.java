@@ -33,4 +33,8 @@ public class RequiemSoundEvents {
         Identifier id = Requiem.id(name);
         return Registry.register(Registry.SOUND_EVENT, id, new SoundEvent(id));
     }
+
+    public static void init() {
+        // NO-OP
+    }
 }
