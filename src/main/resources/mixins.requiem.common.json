@@ -34,7 +34,8 @@
     "possession.player.PossessorServerPlayerEntityMixin",
     "server.PlayerManagerMixin",
     "server.network.ServerPlayerEntityMixin",
-    "server.network.ServerPlayerInteractionManagerMixin"
+    "server.network.ServerPlayerInteractionManagerMixin",
+    "server.world.ServerWorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1

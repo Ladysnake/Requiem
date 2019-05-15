@@ -113,7 +113,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
     @Override
     public boolean canBePossessedBy(PlayerEntity player) {
-        return !this.removed && this.getHealth() > 0 && !this.isBeingPossessed();
+        return !this.removed && this.getHealth() > 0 && (!this.isBeingPossessed() || this.possessor == player);
     }
 
     @Override
@@ -123,6 +123,9 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
     @Override
     public void setPossessor(@CheckForNull PlayerEntity possessor) {
+        if (possessor == this.possessor) {
+            return;
+        }
         // we need a cast here to trick the compiler
         //noinspection RedundantCast
         if (this.possessor != null && ((RequiemPlayer) this.possessor).getPossessionComponent().getPossessedEntity() == (Entity)this) {
