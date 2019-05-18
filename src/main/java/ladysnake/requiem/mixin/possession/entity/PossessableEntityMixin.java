@@ -53,7 +53,7 @@ public abstract class PossessableEntityMixin implements ProtoPossessable {
     @Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
     private void isInvulnerableTo(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
         PlayerEntity player = this.getPossessor();
-        if (player != null && (player.isCreative() || player == source.getAttacker())) {
+        if (player != null && player.isCreative()) {
             cir.setReturnValue(!source.doesDamageToCreative());
         }
     }
