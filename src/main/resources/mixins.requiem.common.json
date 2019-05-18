@@ -35,7 +35,8 @@
     "server.PlayerManagerMixin",
     "server.network.ServerPlayerEntityMixin",
     "server.network.ServerPlayerInteractionManagerMixin",
-    "server.world.ServerWorldMixin"
+    "server.world.ServerWorldMixin",
+    "world.WorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1
