@@ -215,7 +215,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         }
     }
 
-    @Inject(method = "onDeath", at = @At("TAIL"))
+    @Inject(method = "onDeath", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;drop(Lnet/minecraft/entity/damage/DamageSource;)V"))
     private void onDeath(DamageSource deathCause, CallbackInfo ci) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {

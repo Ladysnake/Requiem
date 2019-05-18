@@ -19,6 +19,7 @@ package ladysnake.requiem.common.util;
 
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
 
 public class InventoryHelper {
@@ -32,6 +33,9 @@ public class InventoryHelper {
                 dest.dropStack(stuff, 0.5f);
             } else {
                 dest.setEquippedStack(slot, stuff);
+                if (dest instanceof MobEntity) {
+                    ((MobEntity) dest).setEquipmentDropChance(slot, 2.0F);
+                }
             }
             source.setEquippedStack(slot, ItemStack.EMPTY);
         }
