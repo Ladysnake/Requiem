@@ -39,20 +39,27 @@ import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.*;
-import net.minecraft.item.BowItem;
-import net.minecraft.item.MilkBucketItem;
-import net.minecraft.item.TridentItem;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.*;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Components;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.potion.PotionUtil;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.dimension.DimensionType;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 import static net.minecraft.client.gui.DrawableHelper.GUI_ICONS_LOCATION;
 
@@ -139,33 +146,48 @@ public class RequiemClient implements ClientModInitializer {
             return ActionResult.PASS;
         });
         // Add custom tooltips to items when the player is possessing certain entities
-        ItemTooltipCallback.EVENT.register((item, player, context, lines) -> {
-            if (player != null) {
-                LivingEntity possessed = ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
-                if (possessed == null) {
-                    return;
-                }
-                String key;
-                if (possessed instanceof AbstractSkeletonEntity && item.getItem() instanceof BowItem) {
-                    key = "requiem:tooltip.skeletal_efficiency";
-                } else if (possessed instanceof AbstractSkeletonEntity && RequiemItemTags.BONES.contains(item.getItem())) {
-                    key = "requiem:tooltip.bony_prosthesis";
-                } else if (possessed instanceof AbstractSkeletonEntity && item.getItem() instanceof MilkBucketItem) {
-                    key = "requiem:tooltip.calcium_bucket";
-                } else if (possessed instanceof DrownedEntity && item.getItem() instanceof TridentItem) {
-                    key = "requiem:tooltip.drowned_grip";
-                } else if (possessed instanceof ZombieEntity && RequiemItemTags.RAW_MEATS.contains(item.getItem())) {
-                    key = "requiem:tooltip.zombie_food";
-                } else if (possessed instanceof DrownedEntity && ItemTags.FISHES.contains(item.getItem())) {
-                    key = "requiem:tooltip.drowned_food";
-                } else {
-                    return;
-                }
-                lines.add(Components.style(
-                        new TranslatableComponent(key),
-                        new Style().setColor(ChatFormat.DARK_GRAY)
-                ));
+        ItemTooltipCallback.EVENT.register(RequiemClient::addPossessionTooltip);
+    }
+
+    private static void addPossessionTooltip(ItemStack item, @Nullable PlayerEntity player, @SuppressWarnings("unused") TooltipContext context, List<Component> lines) {
+        if (player != null) {
+            LivingEntity possessed = ((RequiemPlayer) player).getPossessionComponent().getPossessedEntity();
+            if (possessed == null) {
+                return;
             }
-        });
+            String key;
+            if (possessed instanceof AbstractSkeletonEntity && item.getItem() instanceof BowItem) {
+                key = "requiem:tooltip.skeletal_efficiency";
+            } else if (possessed instanceof AbstractSkeletonEntity && RequiemItemTags.BONES.contains(item.getItem())) {
+                key = "requiem:tooltip.bony_prosthesis";
+            } else if (possessed instanceof AbstractSkeletonEntity && item.getItem() instanceof MilkBucketItem) {
+                key = "requiem:tooltip.calcium_bucket";
+            } else if (possessed instanceof DrownedEntity && item.getItem() instanceof TridentItem) {
+                key = "requiem:tooltip.drowned_grip";
+            } else if (possessed instanceof ZombieEntity && RequiemItemTags.RAW_MEATS.contains(item.getItem())) {
+                key = "requiem:tooltip.zombie_food";
+            } else if (possessed instanceof DrownedEntity && ItemTags.FISHES.contains(item.getItem())) {
+                key = "requiem:tooltip.drowned_food";
+            } else if (possessed.isUndead() && item.getItem() == Items.GOLDEN_APPLE) {
+                key = "requiem:tooltip.cure_reagent";
+            } else if (possessed.isUndead() && item.getItem() == Items.POTION && isWeaknessPotion(item)) {
+                key = "requiem:tooltip.cure_catalyst";
+            } else {
+                return;
+            }
+            lines.add(Components.style(
+                    new TranslatableComponent(key),
+                    new Style().setColor(ChatFormat.DARK_GRAY)
+            ));
+        }
+    }
+
+    private static boolean isWeaknessPotion(ItemStack stack) {
+        for (StatusEffectInstance effect : PotionUtil.getPotionEffects(stack)) {
+            if (effect.getEffectType() == StatusEffects.WEAKNESS) {
+                return true;
+            }
+        }
+        return false;
     }
 }
