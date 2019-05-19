@@ -95,8 +95,13 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
 
     public void beginPlayersFbWrite() {
         if (this.playersFramebuffer != null) {
-            this.renderedSoulPlayers = true;
             this.playersFramebuffer.beginWrite(false);
+            if (!this.renderedSoulPlayers) {
+                GlStateManager.clearColor(this.playersFramebuffer.clearColor[0], this.playersFramebuffer.clearColor[1], this.playersFramebuffer.clearColor[2], this.playersFramebuffer.clearColor[3]);
+                GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
+
+                this.renderedSoulPlayers = true;
+            }
         }
     }
 
@@ -130,11 +135,6 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
             }
         }
         this.renderedSoulPlayers = false;
-        this.playersFramebuffer.beginWrite(false);
-        GlStateManager.clearColor(this.playersFramebuffer.clearColor[0], this.playersFramebuffer.clearColor[1], this.playersFramebuffer.clearColor[2], this.playersFramebuffer.clearColor[3]);
-        GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
-
-        this.client.getFramebuffer().beginWrite(false);
     }
 
     @Override
