@@ -82,7 +82,7 @@ public class CutsceneDialogueScreen extends Screen {
     }
 
     private void onBigChoiceMade(boolean yes) {
-        if (this.confirmChoice(yes ? 1 : 0) == ChoiceResult.DEFAULT) {
+        if (this.confirmChoice(yes ? 0 : 1) == ChoiceResult.DEFAULT) {
             this.minecraft.openScreen(this);
         }
     }
