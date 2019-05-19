@@ -19,18 +19,28 @@ package ladysnake.requiem.client.gui;
 
 import com.google.common.collect.ImmutableList;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.annotation.Unlocalized;
+import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.client.ZaWorldFx;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.menu.YesNoScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
 
 public class CutsceneDialogueScreen extends Screen {
+    public static final int MIN_RENDER_Y = 40;
+    public static final int TITLE_GAP = 20;
+    public static final int CHOICE_GAP = 5;
     private final CutsceneDialogue dialogue;
     private int selectedChoice;
+    private boolean hoveringChoice;
+    public static final int MAX_TEXT_WIDTH = 300;
 
     public CutsceneDialogueScreen(Component title, CutsceneDialogue dialogue) {
         super(title);
@@ -44,22 +54,43 @@ public class CutsceneDialogueScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double x, double y, int button) {
-        confirmCurrentChoice();
+        if (hoveringChoice) {
+            confirmChoice(selectedChoice);
+        }
         return true;
     }
 
-    private void confirmCurrentChoice() {
-        if (this.dialogue.choose(this.dialogue.getCurrentChoices().get(selectedChoice))) {
+    private ChoiceResult confirmChoice(int selectedChoice) {
+        ChoiceResult result = this.dialogue.choose(this.dialogue.getCurrentChoices().get(selectedChoice));
+        if (result == ChoiceResult.END_DIALOGUE) {
             Objects.requireNonNull(this.minecraft).openScreen(null);
             ((RequiemPlayer)this.minecraft.player).getDialogueTracker().endDialogue();
             ((RequiemPlayer) this.minecraft.player).getDeathSuspender().setLifeTransient(false);
+        } else if (result == ChoiceResult.ASK_CONFIRMATION) {
+            ImmutableList<String> choices = this.dialogue.getCurrentChoices();
+            this.minecraft.openScreen(new YesNoScreen(
+                    this::onBigChoiceMade,
+                    new TranslatableComponent(this.dialogue.getCurrentText()),
+                    new TextComponent(""),
+                    I18n.translate(choices.get(0)),
+                    I18n.translate(choices.get(1))
+            ));
+        } else {
+            this.selectedChoice = 0;
+        }
+        return result;
+    }
+
+    private void onBigChoiceMade(boolean yes) {
+        if (this.confirmChoice(yes ? 1 : 0) == ChoiceResult.DEFAULT) {
+            this.minecraft.openScreen(this);
         }
     }
 
     @Override
     public boolean keyPressed(int keyCode, int int_2, int int_3) {
         if (keyCode == GLFW.GLFW_KEY_ENTER) {
-            confirmCurrentChoice();
+            confirmChoice(selectedChoice);
             return true;
         }
         return super.keyPressed(keyCode, int_2, int_3);
@@ -78,21 +109,40 @@ public class CutsceneDialogueScreen extends Screen {
     }
 
     @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        ImmutableList<@Unlocalized String> choices = this.dialogue.getCurrentChoices();
+        String title = I18n.translate(this.dialogue.getCurrentText());
+        int y = MIN_RENDER_Y + this.font.getStringBoundedHeight(title, MAX_TEXT_WIDTH) + TITLE_GAP;
+        for (int i = 0; i < choices.size(); i++) {
+            String choice = I18n.translate(choices.get(i));
+            int strHeight = this.font.getStringBoundedHeight(choice, width);
+            int strWidth = strHeight == 9 ? this.font.getStringWidth(choice) : width;
+            if (mouseX < strWidth && mouseY > y && mouseY < y + strHeight) {
+                this.selectedChoice = i;
+                this.hoveringChoice = true;
+                return;
+            }
+            y += strHeight + CHOICE_GAP;
+            this.hoveringChoice = false;
+        }
+    }
+
+    @Override
     public void render(int mouseX, int mouseY, float tickDelta) {
         if (!ZaWorldFx.INSTANCE.hasFinishedAnimation()) {
             return;
         }
         this.renderBackground();
-        int y = 40;
+        int y = MIN_RENDER_Y;
         String title = I18n.translate(this.dialogue.getCurrentText());
-        final int width = 200;
-        this.font.drawStringBounded(title, 10, y, width, 0xFFFFFF);
-        y += this.font.getStringBoundedHeight(title, width) + 20;
+        this.font.drawStringBounded(title, 10, y, MAX_TEXT_WIDTH, 0xFFFFFF);
+        y += this.font.getStringBoundedHeight(title, MAX_TEXT_WIDTH) + TITLE_GAP;
         ImmutableList<String> choices = this.dialogue.getCurrentChoices();
         for (int i = 0; i < choices.size(); i++) {
             String choice = I18n.translate(choices.get(i));
-            this.font.drawStringBounded(choice, 10, y, width, i == selectedChoice ? 0xE0E044 : 0xA0A0A0);
-            y += this.font.getStringBoundedHeight(choice, width) + 5;
+            int strHeight = this.font.getStringBoundedHeight(choice, MAX_TEXT_WIDTH);
+            this.font.drawStringBounded(choice, 10, y, MAX_TEXT_WIDTH, i == this.selectedChoice ? 0xE0E044 : 0xA0A0A0);
+            y += strHeight + CHOICE_GAP;
         }
         String tip = I18n.translate("requiem:dialogue.instructions");
         this.font.draw(tip, (this.width - font.getStringWidth(tip)) * 0.5f, this.height - 30, 0x808080);

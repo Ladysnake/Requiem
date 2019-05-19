@@ -20,6 +20,7 @@ package ladysnake.requiem.common.impl.remnant.dialogue;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.annotations.SerializedName;
 import ladysnake.requiem.api.v1.annotation.Unlocalized;
+import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.util.Identifier;
@@ -67,11 +68,11 @@ public class DialogueStateMachine implements CutsceneDialogue {
     }
 
     @Override
-    public boolean choose(String choice) {
+    public ChoiceResult choose(String choice) {
         return this.selectState(this.getCurrentState().getNextState(choice));
     }
 
-    private boolean selectState(String state) {
+    private ChoiceResult selectState(String state) {
         if (!this.states.containsKey(state)) {
             throw new IllegalArgumentException(state + " is not an available dialogue state");
         }
@@ -81,7 +82,7 @@ public class DialogueStateMachine implements CutsceneDialogue {
         if (action != null) {
             RequiemNetworking.sendToServer(RequiemNetworking.createDialogueActionMessage(action));
         }
-        return this.currentState.isEnd();
+        return this.currentState.getType();
     }
 
     public DialogueStateMachine readFromPacket(PacketByteBuf buf) {

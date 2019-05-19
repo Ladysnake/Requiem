@@ -28,6 +28,7 @@ import ladysnake.requiem.common.util.IdentifierAdapter;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.profiler.Profiler;
 
@@ -40,7 +41,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier, DialogueStateMachine>>, DialogueRegistry {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().registerTypeAdapter(Identifier.class, new IdentifierAdapter()).create();
+    private static final Gson GSON = new GsonBuilder()
+            .setPrettyPrinting()
+            .disableHtmlEscaping()
+            .registerTypeAdapter(Identifier.class, new IdentifierAdapter())
+            .registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory())
+            .create();
     public static final int PREFIX_LENGTH = "requiem_dialogues/".length();
     public static final int SUFFIX_LENGTH = ".json".length();
 

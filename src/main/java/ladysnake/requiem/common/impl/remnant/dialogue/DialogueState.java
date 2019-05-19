@@ -19,6 +19,7 @@ package ladysnake.requiem.common.impl.remnant.dialogue;
 
 import com.google.common.collect.ImmutableList;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
+import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 
@@ -31,18 +32,18 @@ public class DialogueState {
     private LinkedHashMap<String, String> choices;
     @Nullable
     private Identifier action;
-    private boolean end;
+    private ChoiceResult type;
 
     @CalledThroughReflection
     public DialogueState() {
-        this("", new LinkedHashMap<>(), null, false);
+        this("", new LinkedHashMap<>(), null, ChoiceResult.DEFAULT);
     }
 
-    private DialogueState(String text, LinkedHashMap<String, String> choices, @Nullable Identifier action, boolean end) {
+    private DialogueState(String text, LinkedHashMap<String, String> choices, @Nullable Identifier action, ChoiceResult type) {
         this.text = text;
         this.choices = choices;
         this.action = action;
-        this.end = end;
+        this.type = type;
     }
 
     public String getText() {
@@ -57,8 +58,8 @@ public class DialogueState {
         return this.choices.get(choice);
     }
 
-    public boolean isEnd() {
-        return end;
+    public ChoiceResult getType() {
+        return type;
     }
 
     @Nullable
@@ -77,7 +78,7 @@ public class DialogueState {
         if (!actionStr.isEmpty()) {
             this.action = new Identifier(actionStr);
         }
-        this.end = buf.readBoolean();
+        this.type = buf.readEnumConstant(ChoiceResult.class);
         return this;
     }
 
@@ -89,7 +90,7 @@ public class DialogueState {
             buf.writeString(choice.getValue());
         }
         buf.writeString(this.action == null ? "" : this.action.toString());
-        buf.writeBoolean(this.end);
+        buf.writeEnumConstant(this.type);
     }
 
     @Override
@@ -97,7 +98,7 @@ public class DialogueState {
         String representation = "DialogueState{" +
                 "text='" + text + '\'' +
                 ", choices=" + choices +
-                ", end=" + end;
+                ", type=" + type;
         if (this.action != null) {
             representation += ", action=" + action;
         }

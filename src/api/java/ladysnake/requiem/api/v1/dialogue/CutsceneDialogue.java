@@ -33,5 +33,5 @@ public interface CutsceneDialogue {
      * @throws IllegalArgumentException if the given choice is not part of the {@link #getCurrentChoices() current choices}
      * @return true if the new state is an end state
      */
-    boolean choose(String choice);
+    ChoiceResult choose(String choice);
 }
