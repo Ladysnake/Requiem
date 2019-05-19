@@ -50,6 +50,8 @@ public class ClosedSpaceDetector {
      * All blocks that should be scanned
      */
     private Deque<BlockPos> toScan = new ArrayDeque<>();
+    /** All blocks that should be scanned, but in a set (for faster contains checks) */
+    private Set<BlockPos> toScanSet = new HashSet<>();
     private int counter;
     // We do initialize it
     @SuppressWarnings("NullableProblems")
@@ -67,7 +69,9 @@ public class ClosedSpaceDetector {
         if (scanning) {
             this.scannedBlocks.clear();
             this.toScan.clear();
+            this.toScanSet.clear();
             this.toScan.add(this.player.getBlockPos());
+            this.toScanSet.add(this.player.getBlockPos());
             this.scanDimension = this.player.dimension;
         }
     }
@@ -89,12 +93,13 @@ public class ClosedSpaceDetector {
                 break;
             }
             BlockPos next = toScan.pop();
+            toScanSet.remove(next);
             // If the scannedBlocks set did not already contain the next pos, proceed
             if (this.player.world.getBlockState(next).getCollisionShape(this.player.world, next).isEmpty()) {
                 this.scannedBlocks.add(next);
                 for (Direction direction : DIRECTIONS) {
                     BlockPos neigh = next.offset(direction);
-                    if (!this.scannedBlocks.contains(neigh) && !toScan.contains(neigh)) {
+                    if (!this.scannedBlocks.contains(neigh) && toScanSet.add(neigh)) {
                         toScan.add(neigh);
                     }
                 }
