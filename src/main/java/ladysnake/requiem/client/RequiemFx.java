@@ -23,6 +23,8 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.satin.api.event.EntitiesPostRenderCallback;
 import ladysnake.satin.api.event.ResolutionChangeCallback;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
+import ladysnake.satin.api.experimental.managed.Uniform1f;
+import ladysnake.satin.api.experimental.managed.Uniform3f;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
@@ -66,6 +68,12 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
     private int ticks = 0;
     @Nullable
     private WeakReference<Entity> possessionTarget;
+    private Uniform3f uniformOverlayColor = spectreShader.findUniform3f("OverlayColor");
+    private Uniform1f uniformZoom = spectreShader.findUniform1f("Zoom");
+    private Uniform1f uniformRaysIntensity = spectreShader.findUniform1f("RaysIntensity");
+    private Uniform1f uniformSolidIntensity = spectreShader.findUniform1f("SolidIntensity");
+    private Uniform1f uniformSlider = fishEyeShader.findUniform1f("Slider");
+    private Uniform1f uniformSTime = spectreShader.findUniform1f("STime");
 
     void registerCallbacks() {
         ShaderEffectRenderCallback.EVENT.register(this);
@@ -79,7 +87,7 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
         --etherealAnimation;
         if (--pulseAnimation < 0 && spectreShader.isInitialized()) {
             pulseIntensity = 1;
-            spectreShader.setUniformValue("OverlayColor", ETHEREAL_COLOR[0], ETHEREAL_COLOR[1], ETHEREAL_COLOR[2]);
+            uniformOverlayColor.set(ETHEREAL_COLOR[0], ETHEREAL_COLOR[1], ETHEREAL_COLOR[2]);
         }
         Entity possessed = getAnimationEntity();
         if (possessed != null) {
@@ -115,14 +123,14 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
         this.accentColorR = accentColorR;
         this.accentColorG = accentColorG;
         this.accentColorB = accentColorB;
-        spectreShader.setUniformValue("OverlayColor", accentColorR, accentColorG, accentColorB);
+        uniformOverlayColor.set(accentColorR, accentColorG, accentColorB);
         this.pulseIntensity = intensity;
     }
 
     @Override
     public void renderShaderEffects(float tickDelta) {
         if (this.possessionTarget != null && this.possessionTarget.get() != null) {
-            fishEyeShader.setUniformValue("Slider", (fishEyeAnimation - tickDelta) / 40 + 0.25f);
+            uniformSlider.set((fishEyeAnimation - tickDelta) / 40 + 0.25f);
             fishEyeShader.render(tickDelta);
             if (this.possessionTarget != null && this.framebuffer != null) {
                 GlStateManager.enableBlend();
@@ -137,7 +145,7 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
             float zoom = Math.max(1, (etherealAnimation - tickDelta));
             float intensity = (incorporeal ? 0.6f : 0f) / zoom;
             float rayIntensity = 1.0f;
-            spectreShader.setUniformValue("STime", (ticks + tickDelta) / 20f);
+            uniformSTime.set((ticks + tickDelta) / 20f);
             // 10 -> 1
             if (pulseAnimation >= 0) {
                 // 10 -> 0 => 0 -> 1
@@ -149,14 +157,14 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
                     float r = ETHEREAL_COLOR[0] * (1 - value) + this.accentColorR * value;
                     float g = ETHEREAL_COLOR[1] * (1 - value) + this.accentColorG * value;
                     float b = ETHEREAL_COLOR[2] * (1 - value) + this.accentColorB * value;
-                    spectreShader.setUniformValue("OverlayColor", r, g, b);
+                    uniformOverlayColor.set(r, g, b);
                 } else {
                     rayIntensity = value;
                 }
             }
-            spectreShader.setUniformValue("Zoom", zoom);
-            spectreShader.setUniformValue("RaysIntensity", rayIntensity);
-            spectreShader.setUniformValue("SolidIntensity", intensity);
+            uniformZoom.set(zoom);
+            uniformRaysIntensity.set(rayIntensity);
+            uniformSolidIntensity.set(intensity);
             spectreShader.render(tickDelta);
         }
     }

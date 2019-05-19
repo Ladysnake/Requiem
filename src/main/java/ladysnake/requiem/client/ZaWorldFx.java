@@ -22,6 +22,9 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.satin.api.event.PostWorldRenderCallback;
 import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
+import ladysnake.satin.api.experimental.managed.Uniform1f;
+import ladysnake.satin.api.experimental.managed.Uniform3f;
+import ladysnake.satin.api.experimental.managed.UniformMat4;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
 import ladysnake.satin.api.util.GlMatrices;
@@ -50,6 +53,13 @@ public class ZaWorldFx implements PostWorldRenderCallback {
         shader.setSamplerUniform("DepthSampler", ((ReadableDepthFramebuffer)mc.getFramebuffer()).getStillDepthMap());
         shader.setUniformValue("ViewPort", 0, 0, mc.window.getFramebufferWidth(), mc.window.getFramebufferHeight());
     });
+    private final Uniform1f uniformOuterSat = shader.findUniform1f("OuterSat");
+    private final Uniform1f uniformSTime = shader.findUniform1f("STime");
+    private final UniformMat4 uniformInverseTransformMatrix = shader.findUniformMat4("InverseTransformMatrix");
+    private final Uniform3f uniformCameraPosition = shader.findUniform3f("CameraPosition");
+    private final Uniform3f uniformCenter = shader.findUniform3f("Center");
+    private final Uniform1f uniformRadius = shader.findUniform1f("Radius");
+
 
     void registerCallbacks() {
         PostWorldRenderCallback.EVENT.register(this);
@@ -59,7 +69,7 @@ public class ZaWorldFx implements PostWorldRenderCallback {
     private void update(MinecraftClient client) {
         if (client.player != null && ((RequiemPlayer) client.player).getDeathSuspender().isLifeTransient()) {
             if (!this.renderingEffect) {
-                this.shader.setUniformValue("OuterSat", 1f);
+                this.uniformOuterSat.set(1f);
                 this.ticks = 0;
                 this.prevRadius = this.radius = 0;
                 this.renderingEffect = true;
@@ -70,7 +80,7 @@ public class ZaWorldFx implements PostWorldRenderCallback {
             final float expansionRate = 4f;
             final int inversion = 100 / (int) expansionRate;
             if (ticks == inversion) {
-                this.shader.setUniformValue("OuterSat", 0.3f);
+                this.uniformOuterSat.set(0.3f);
             } else if (ticks < inversion) {
                 this.radius += expansionRate;
             } else if (ticks < 2 * inversion) {
@@ -88,13 +98,13 @@ public class ZaWorldFx implements PostWorldRenderCallback {
     @Override
     public void onWorldRendered(Camera camera, float tickDelta, long nanoTime) {
         if (renderingEffect) {
-            shader.setUniformValue("STime", (ticks + tickDelta) / 20f);
-            shader.setUniformValue("InverseTransformMatrix", GlMatrices.getInverseTransformMatrix(projectionMatrix));
+            uniformSTime.set((ticks + tickDelta) / 20f);
+            uniformInverseTransformMatrix.set(GlMatrices.getInverseTransformMatrix(projectionMatrix));
             Vec3d cameraPos = camera.getPos();
-            shader.setUniformValue("CameraPosition", (float) cameraPos.x, (float) cameraPos.y, (float) cameraPos.z);
+            uniformCameraPosition.set((float) cameraPos.x, (float) cameraPos.y, (float) cameraPos.z);
             Entity e = camera.getFocusedEntity();
-            shader.setUniformValue("Center", lerpf(e.x, e.prevX, tickDelta), lerpf(e.y, e.prevY, tickDelta), lerpf(e.z, e.prevZ, tickDelta));
-            shader.setUniformValue("Radius", lerpf(radius, prevRadius, tickDelta));
+            uniformCenter.set(lerpf(e.x, e.prevX, tickDelta), lerpf(e.y, e.prevY, tickDelta), lerpf(e.z, e.prevZ, tickDelta));
+            uniformRadius.set(lerpf(radius, prevRadius, tickDelta));
             shader.render(tickDelta);
         }
     }

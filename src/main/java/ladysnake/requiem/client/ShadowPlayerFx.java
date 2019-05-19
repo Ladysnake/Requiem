@@ -24,6 +24,7 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.satin.api.event.EntitiesPreRenderCallback;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
+import ladysnake.satin.api.experimental.managed.Uniform1f;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
@@ -62,6 +63,7 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
     @Nullable
     private JsonGlProgram grayscaleProgram;
     private boolean grayscaleEnabled;
+    private Uniform1f uniformSaturation = this.desaturateEffect.findUniform1f("Saturation");
 
     void registerCallbacks() {
         EntitiesPreRenderCallback.EVENT.register(this);
@@ -75,7 +77,7 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
              this.nearEthereal = closestEtherealPlayer != null;
             if (nearEthereal) {
                 float distanceSqToEthereal = (float) client.player.squaredDistanceTo(closestEtherealPlayer.x, closestEtherealPlayer.y, closestEtherealPlayer.z);
-                this.desaturateEffect.setUniformValue("Saturation", 0.8f * (distanceSqToEthereal / ETHEREAL_DESATURATE_RANGE_SQ));
+                uniformSaturation.set(0.8f * (distanceSqToEthereal / ETHEREAL_DESATURATE_RANGE_SQ));
             }
         }
     }
