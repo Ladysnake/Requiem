@@ -22,6 +22,7 @@ import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -32,11 +33,12 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 public abstract class ZombieEntityMixin implements Possessable {
     @Inject(method = "convertTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EquipmentSlot;values()[Lnet/minecraft/entity/EquipmentSlot;"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void possessConvertedZombie(EntityType<? extends ZombieEntity> type, CallbackInfo ci, ZombieEntity converted) {
-        RequiemPlayer possessor = (RequiemPlayer) this.getPossessor();
+        PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
-            PossessionComponent possessionComponent = possessor.getPossessionComponent();
+            PossessionComponent possessionComponent = ((RequiemPlayer)possessor).getPossessionComponent();
             possessionComponent.stopPossessing(false);
-            possessionComponent.startPossessing(converted);
+            // The possession will start when the entity is added to the world
+            ((Possessable)converted).setPossessor(possessor);
         }
     }
 }

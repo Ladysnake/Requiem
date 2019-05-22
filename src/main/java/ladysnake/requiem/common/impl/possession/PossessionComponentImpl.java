@@ -84,6 +84,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
         if (!possessable.canBePossessedBy(player)) {
             return false;
         }
+        possessable.setPossessor(null);
         // 3- transfer inventory and mount
         if (RequiemEntityTypeTags.ITEM_USER.contains(host.getType())) {
             InventoryHelper.transferEquipment(host, player);
