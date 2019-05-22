@@ -17,6 +17,7 @@
  */
 package ladysnake.requiem.mixin.item;
 
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -29,12 +30,17 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
+
 @Mixin(MilkBucketItem.class)
 public abstract class MilkBucketItemMixin {
-    @Inject(method = "onItemFinishedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;clearPotionEffects()Z"))
+    @Inject(method = "onItemFinishedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;clearPotionEffects()Z", shift = AFTER))
     private void regenSkeletons(ItemStack stack, World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
-        if (EntityTypeTags.SKELETONS.contains(user.getType())) {
-            user.addPotionEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 30*20));
+        if (user instanceof RequiemPlayer) {
+            LivingEntity possessed = ((RequiemPlayer) user).getPossessionComponent().getPossessedEntity();
+            if (possessed != null && EntityTypeTags.SKELETONS.contains(possessed.getType())) {
+                possessed.addPotionEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 30*20));
+            }
         }
     }
 }
