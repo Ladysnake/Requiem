@@ -30,7 +30,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(ZombieEntity.class)
 public abstract class ZombieEntityMixin implements Possessable {
-    @Inject(method = "convertTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/ZombieEntity;remove()V", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILSOFT)
+    @Inject(method = "convertTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EquipmentSlot;values()[Lnet/minecraft/entity/EquipmentSlot;"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void possessConvertedZombie(EntityType<? extends ZombieEntity> type, CallbackInfo ci, ZombieEntity converted) {
         RequiemPlayer possessor = (RequiemPlayer) this.getPossessor();
         if (possessor != null) {
