@@ -87,6 +87,10 @@ public class ClosedSpaceDetector {
         if (this.scanDimension != this.player.dimension) {
             this.reset(false);
         }
+        scanSurroundings();
+    }
+
+    private void scanSurroundings() {
         for (int i = 0; i < MAX_BLOCKS_SCANNED_PER_TICK; i++) {
             if (toScan.isEmpty()) {
                 this.onClosedSpaceFound();
