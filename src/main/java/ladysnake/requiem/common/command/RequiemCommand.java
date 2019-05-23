@@ -173,10 +173,6 @@ public class RequiemCommand {
         if (source.getEntity() == player) {
             source.sendFeedback(new TranslatableComponent("requiem:commands.possession.stop.success.self", name), true);
         } else {
-            if (source.getWorld().getGameRules().getBoolean("sendCommandFeedback")) {
-                player.sendMessage(new TranslatableComponent("requiem:commands.possession.stop.target", name));
-            }
-
             source.sendFeedback(new TranslatableComponent("requiem:commands.possession.stop.success.other", player.getDisplayName(), name), true);
         }
     }

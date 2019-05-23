@@ -23,7 +23,6 @@
   "requiem:commands.possession.start.success.self": "Started possessing %s",
   "requiem:commands.possession.stop.success.other": "%s stopped possessing %s",
   "requiem:commands.possession.stop.success.self": "Stopped possessing %s",
-  "requiem:commands.possession.stop.target": "You were made to stop possessing %s",
 
   "requiem:opus.mortal_sentence": "Ad Vitam Mortale",
   "requiem:opus.remnant_sentence": "Ad Vitam Aeternam",
