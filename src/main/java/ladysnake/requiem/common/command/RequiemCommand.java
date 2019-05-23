@@ -24,6 +24,7 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.command.ServerCommandSource;
@@ -47,20 +48,31 @@ public class RequiemCommand {
         dispatcher.register(literal(REQUIEM_ROOT_COMMAND)
                 .requires(s -> s.hasPermissionLevel(2))
                 .then(literal(POSSESSION_SUBCOMMAND)
+                        // requiem possession stop [player]
                         .then(literal("stop")
                                 .executes(context -> stopPossession(context.getSource(), Collections.singleton(context.getSource().getPlayer())))
                                 .then(argument("target", EntityArgumentType.players())
                                         .executes(context -> stopPossession(context.getSource(), EntityArgumentType.getPlayers(context, "target")))
                                 )
                         )
+                        // requiem possession start <possessed> [player]
+                        .then(literal("start")
+                                .then(argument("possessed", EntityArgumentType.entity())
+                                        .executes(context -> startPossession(context.getSource(), EntityArgumentType.getEntity(context, "possessed"), context.getSource().getPlayer()))
+                                        .then(argument("possessor", EntityArgumentType.player())
+                                                .executes(context -> startPossession(context.getSource(), EntityArgumentType.getEntity(context, "possessed"), EntityArgumentType.getPlayer(context, "possessor"))))
+                                )
+                        )
                 )
                 .then(literal(REMNANT_SUBCOMMAND)
+                        // requiem remnant query [player]
                         .then(literal("query")
                                 .executes(context -> queryRemnant(context.getSource(), context.getSource().getPlayer()))
                                 .then(argument("target", EntityArgumentType.player())
                                         .executes(context -> queryRemnant(context.getSource(), EntityArgumentType.getPlayer(context, "target")))
                                 )
                         )
+                        // requiem remnant set <true|false> [player]
                         .then(literal("set")
                                 .then(argument("remnant", BoolArgumentType.bool())
                                         .executes(context -> setRemnant(context.getSource(), Collections.singleton(context.getSource().getPlayer()), BoolArgumentType.getBool(context, "remnant")))
@@ -71,9 +83,11 @@ public class RequiemCommand {
                         )
                 )
                 .then(literal(ETHEREAL_SUBCOMMAND)
+                        // requiem soul query [player]
                         .then(literal("query")
                                 .executes(context -> queryEthereal(context.getSource(), context.getSource().getPlayer()))
                         )
+                        // requiem soul set <true|false> [player]
                         .then(literal("set")
                                 .then(argument("ethereal", BoolArgumentType.bool())
                                         .executes(context -> setEthereal(context.getSource(), Collections.singleton(context.getSource().getPlayer()), BoolArgumentType.getBool(context, "ethereal")))
@@ -84,6 +98,25 @@ public class RequiemCommand {
                         )
                 )
         );
+    }
+
+    private static int startPossession(ServerCommandSource source, Entity possessed, ServerPlayerEntity player) {
+        if (!(possessed instanceof MobEntity)) {
+            throw new CommandException(new TranslatableComponent("requiem:commands.possession.start.fail.not_mob", possessed.getDisplayName()));
+        }
+        boolean success = ((RequiemPlayer) player).getPossessionComponent().startPossessing((MobEntity) possessed);
+        if (!success) {
+            throw new CommandException(new TranslatableComponent("requiem:commands.possession.start.fail", possessed.getDisplayName()));
+        }
+        TranslatableComponent message;
+        String baseKey = "requiem:commands.possession.start.success";
+        if (source.getEntity() == player) {
+            message = new TranslatableComponent(baseKey + ".self", possessed.getDisplayName());
+        } else {
+            message = new TranslatableComponent(baseKey + ".other", player.getDisplayName(), possessed.getDisplayName());
+        }
+        source.sendFeedback(message, true);
+        return 1;
     }
 
     private static int queryEthereal(ServerCommandSource source, ServerPlayerEntity player) {
@@ -120,7 +153,6 @@ public class RequiemCommand {
             source.sendFeedback(new TranslatableComponent("requiem:commands.ethereal.set.success.other", player.getDisplayName(), name), true);
         }
     }
-
 
     private static int stopPossession(ServerCommandSource source, Collection<ServerPlayerEntity> players) {
         int count = 0;
