@@ -18,6 +18,7 @@
   "requiem:remnant": "Remnant",
   "requiem:not_remnant": "Mortal",
   "requiem:commands.possession.start.fail.not_mob": "%s cannot be possessed as it is not a mob entity",
+  "requiem:commands.possession.start.fail.not_incorporeal": "%s is not incorporeal",
   "requiem:commands.possession.start.fail": "Failed to possess %s",
   "requiem:commands.possession.start.success.other": "%s started possessing %s",
   "requiem:commands.possession.start.success.self": "Started possessing %s",

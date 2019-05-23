@@ -100,25 +100,6 @@ public class RequiemCommand {
         );
     }
 
-    private static int startPossession(ServerCommandSource source, Entity possessed, ServerPlayerEntity player) {
-        if (!(possessed instanceof MobEntity)) {
-            throw new CommandException(new TranslatableComponent("requiem:commands.possession.start.fail.not_mob", possessed.getDisplayName()));
-        }
-        boolean success = ((RequiemPlayer) player).getPossessionComponent().startPossessing((MobEntity) possessed);
-        if (!success) {
-            throw new CommandException(new TranslatableComponent("requiem:commands.possession.start.fail", possessed.getDisplayName()));
-        }
-        TranslatableComponent message;
-        String baseKey = "requiem:commands.possession.start.success";
-        if (source.getEntity() == player) {
-            message = new TranslatableComponent(baseKey + ".self", possessed.getDisplayName());
-        } else {
-            message = new TranslatableComponent(baseKey + ".other", player.getDisplayName(), possessed.getDisplayName());
-        }
-        source.sendFeedback(message, true);
-        return 1;
-    }
-
     private static int queryEthereal(ServerCommandSource source, ServerPlayerEntity player) {
         boolean remnant = ((RequiemPlayer) player).getRemnantState().isSoul();
         Component remnantState = new TranslatableComponent("requiem:" + (remnant ? "ethereal" : "not_ethereal"));
@@ -152,6 +133,28 @@ public class RequiemCommand {
 
             source.sendFeedback(new TranslatableComponent("requiem:commands.ethereal.set.success.other", player.getDisplayName(), name), true);
         }
+    }
+
+    private static int startPossession(ServerCommandSource source, Entity possessed, ServerPlayerEntity player) {
+        if (!(possessed instanceof MobEntity)) {
+            throw new CommandException(new TranslatableComponent("requiem:commands.possession.start.fail.not_mob", possessed.getDisplayName()));
+        }
+        if (!((RequiemPlayer) player).getRemnantState().isIncorporeal()) {
+            throw new CommandException(new TranslatableComponent("requiem:commands.possession.start.fail.not_incorporeal", player.getDisplayName()));
+        }
+        boolean success = ((RequiemPlayer) player).getPossessionComponent().startPossessing((MobEntity) possessed);
+        if (!success) {
+            throw new CommandException(new TranslatableComponent("requiem:commands.possession.start.fail", possessed.getDisplayName()));
+        }
+        TranslatableComponent message;
+        String baseKey = "requiem:commands.possession.start.success";
+        if (source.getEntity() == player) {
+            message = new TranslatableComponent(baseKey + ".self", possessed.getDisplayName());
+        } else {
+            message = new TranslatableComponent(baseKey + ".other", player.getDisplayName(), possessed.getDisplayName());
+        }
+        source.sendFeedback(message, true);
+        return 1;
     }
 
     private static int stopPossession(ServerCommandSource source, Collection<ServerPlayerEntity> players) {
