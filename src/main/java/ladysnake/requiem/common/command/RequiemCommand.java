@@ -183,7 +183,7 @@ public class RequiemCommand {
     private static int queryRemnant(ServerCommandSource source, ServerPlayerEntity player) {
         boolean remnant = ((RequiemPlayer) player).isRemnant();
         Component remnantState = new TranslatableComponent("requiem:" + (remnant ? "remnant" : "not_remnant"));
-        source.sendFeedback(new TranslatableComponent("requiem:commands.query.success." + (source.getEntity() == player ? "self" : "other"), remnantState), true);
+        source.sendFeedback(new TranslatableComponent("requiem:commands.query.success." + (source.getEntity() == player ? "self" : "other"), remnantState, player.getDisplayName()), true);
         return remnant ? 1 : 0;
     }
 
