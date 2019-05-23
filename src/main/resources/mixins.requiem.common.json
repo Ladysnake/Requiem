@@ -14,6 +14,7 @@
     "entity.damage.DamageTrackerMixin",
     "entity.mob.AbstractSkeletonEntityAccessor",
     "entity.mob.EndermanEntityAccessor",
+    "entity.mob.WitchEntityMixin",
     "entity.player.PlayerEntityMixin",
     "entity.projectile.ProjectileEntityAccessor",
     "item.BowItemMixin",
