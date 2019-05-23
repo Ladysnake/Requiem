@@ -27,11 +27,13 @@ import ladysnake.requiem.mixin.possession.entity.PossessableEntityAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -108,6 +110,8 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
 
     @Inject(method = "copyFrom", at = @At("RETURN"))
     private void clonePlayer(ServerPlayerEntity original, boolean fromEnd, CallbackInfo ci) {
+        // We can safely cast a class to a mixin from another mixin
+        //noinspection ConstantConditions
         this.requiem_possessedEntityTag = ((PossessorServerPlayerEntityMixin) (Object) original).requiem_possessedEntityTag;
         if (this.requiem_possessedEntityTag != null) {
             this.inventory.clone(original.inventory);
@@ -126,6 +130,14 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
         if (possessed != null) {
             possessed.fallDistance = this.fallDistance;
             ((PossessableEntityAccessor) possessed).onFall(fallY, onGround, floorBlock, floorPos);
+        }
+    }
+
+    @Inject(method = "swingHand", at = @At("HEAD"))
+    private void swingHand(Hand hand, CallbackInfo ci) {
+        LivingEntity possessed = this.getPossessionComponent().getPossessedEntity();
+        if (possessed != null) {
+            possessed.swingHand(hand);
         }
     }
 
