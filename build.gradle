@@ -131,7 +131,6 @@ allprojects {
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                artifact remapJar.output
                 artifact(remapApiJar.output) {
                     classifier = "api"
                 }
