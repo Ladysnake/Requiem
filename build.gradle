@@ -6,7 +6,7 @@ import net.fabricmc.loom.task.RemapJarTask
 import java.time.Year
 
 plugins {
-    id "fabric-loom" version "0.2.3-SNAPSHOT"
+    id "fabric-loom" version "0.2.4-SNAPSHOT"
     id "net.minecrell.licenser" version "0.4.1"
     id "com.matthewprenger.cursegradle" version "1.1.2"
     id "maven-publish"
@@ -87,10 +87,10 @@ allprojects {
         //to change the versions see the gradle.properties file
         minecraft "com.mojang:minecraft:${project.minecraft_version}"
         mappings "net.fabricmc:yarn:${project.yarn_mappings}"
-        modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
+        modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
         // Fabric API. This is technically optional, but you probably want it anyway.
-        modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+        modApi "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
         
         // Lazily evaluated callable returning a non-live (unlike a FileCollection) list of files
         sourceSets.api.compileClasspath += files({sourceSets.main.compileClasspath.toList()})
@@ -98,10 +98,8 @@ allprojects {
         compile sourceSets.api.output
         include files(remapApiJar.output)
         
-        modCompile "io.github.prospector.modmenu:ModMenu:${rootProject.modmenu_version}"
-        modCompile("com.github.Ladysnake:Satin:${rootProject.satin_version}") {
-            transitive = false
-        }
+        modRuntime "io.github.prospector.modmenu:ModMenu:${rootProject.modmenu_version}"
+        modImplementation("com.github.Ladysnake:Satin:${rootProject.satin_version}")
 
         compileOnly "org.jetbrains:annotations:${jb_annotations_version}"
         compileOnly "org.apiguardian:apiguardian-api:${apiguardian_version}"
