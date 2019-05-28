@@ -89,8 +89,8 @@ public class RequiemNetworking {
 
     @Contract(pure = true)
     public static CustomPayloadS2CPacket createCorporealityMessage(PlayerEntity synchronizedPlayer) {
-        RemnantType remnantType = ((RequiemPlayer) synchronizedPlayer).getRemnantState().getType();
-        boolean incorporeal = ((RequiemPlayer)synchronizedPlayer).getRemnantState().isSoul();
+        RemnantType remnantType = ((RequiemPlayer) synchronizedPlayer).asRemnant().getType();
+        boolean incorporeal = ((RequiemPlayer)synchronizedPlayer).asRemnant().isSoul();
         UUID playerUuid = synchronizedPlayer.getUuid();
         boolean lifeTransient = ((RequiemPlayer) synchronizedPlayer).getDeathSuspender().isLifeTransient();
         return createCorporealityMessage(playerUuid, remnantType, incorporeal, lifeTransient);

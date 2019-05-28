@@ -68,7 +68,7 @@ public final class PossessionComponentImpl implements PossessionComponent, Entit
     @Override
     public boolean canStartPossessing(final MobEntity mob) {
         RequiemPlayer dp = (RequiemPlayer) this.player;
-        return player.world.isClient || (!player.isSpectator() && dp.isRemnant() && dp.getRemnantState().isIncorporeal());
+        return player.world.isClient || (!player.isSpectator() && dp.asRemnant().isIncorporeal());
     }
 
     @Override
@@ -196,7 +196,7 @@ public final class PossessionComponentImpl implements PossessionComponent, Entit
 
     private void resetState() {
         this.possessedNetworkId = -1;
-        ((RequiemPlayer) this.player).getMovementAlterer().setConfig(((RequiemPlayer)player).getRemnantState().isSoul() ? SerializableMovementConfig.SOUL : null);
+        ((RequiemPlayer) this.player).getMovementAlterer().setConfig(((RequiemPlayer)player).asRemnant().isSoul() ? SerializableMovementConfig.SOUL : null);
         this.player.refreshSize(); // update size
         this.player.setBreath(this.player.getMaxBreath());
         syncPossessed();

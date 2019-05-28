@@ -21,6 +21,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.remnant.RemnantStates;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.entity.Entity;
@@ -101,7 +103,7 @@ public class RequiemCommand {
     }
 
     private static int queryEthereal(ServerCommandSource source, ServerPlayerEntity player) {
-        boolean remnant = ((RequiemPlayer) player).getRemnantState().isSoul();
+        boolean remnant = ((RequiemPlayer) player).asRemnant().isSoul();
         Component remnantState = new TranslatableComponent("requiem:" + (remnant ? "ethereal" : "not_ethereal"));
         source.sendFeedback(new TranslatableComponent("requiem:commands.query.success." + (source.getEntity() == player ? "self" : "other"), remnantState), true);
         return remnant ? 1 : 0;
@@ -110,11 +112,11 @@ public class RequiemCommand {
     private static int setEthereal(ServerCommandSource source, Collection<ServerPlayerEntity> players, boolean ethereal) {
         int count = 0;
         for (ServerPlayerEntity player : players) {
-            if (((RequiemPlayer) player).getRemnantState().isSoul() != ethereal) {
+            if (((RequiemPlayer) player).asRemnant().isSoul() != ethereal) {
                 if (!((RequiemPlayer) player).isRemnant()) {
                     throw new CommandException(new TranslatableComponent("requiem:commands.ethereal.set.fail", player.getDisplayName()));
                 }
-                ((RequiemPlayer) player).getRemnantState().setSoul(ethereal);
+                ((RequiemPlayer) player).asRemnant().setSoul(ethereal);
                 sendSetEtherealFeedback(source, player, ethereal);
                 ++count;
             }
@@ -139,10 +141,10 @@ public class RequiemCommand {
         if (!(possessed instanceof MobEntity)) {
             throw new CommandException(new TranslatableComponent("requiem:commands.possession.start.fail.not_mob", possessed.getDisplayName()));
         }
-        if (!((RequiemPlayer) player).getRemnantState().isIncorporeal()) {
+        if (!((RequiemPlayer) player).asRemnant().isIncorporeal()) {
             throw new CommandException(new TranslatableComponent("requiem:commands.possession.start.fail.not_incorporeal", player.getDisplayName()));
         }
-        boolean success = ((RequiemPlayer) player).getPossessionComponent().startPossessing((MobEntity) possessed);
+        boolean success = ((RequiemPlayer) player).asPossessor().startPossessing((MobEntity) possessed);
         if (!success) {
             throw new CommandException(new TranslatableComponent("requiem:commands.possession.start.fail", possessed.getDisplayName()));
         }
@@ -160,7 +162,7 @@ public class RequiemCommand {
     private static int stopPossession(ServerCommandSource source, Collection<ServerPlayerEntity> players) {
         int count = 0;
         for (ServerPlayerEntity player : players) {
-            PossessionComponent possessionComponent = ((RequiemPlayer) player).getPossessionComponent();
+            PossessionComponent possessionComponent = ((RequiemPlayer) player).asPossessor();
             if (possessionComponent.isPossessing()) {
                 Entity possessed = Objects.requireNonNull(possessionComponent.getPossessedEntity());
                 possessionComponent.stopPossessing();
@@ -191,7 +193,8 @@ public class RequiemCommand {
         int count = 0;
         for (ServerPlayerEntity player : players) {
             if (((RequiemPlayer) player).isRemnant() != remnant) {
-                ((RequiemPlayer) player).setRemnant(remnant);
+                RemnantType remnance = remnant ? RemnantStates.REMNANT : RemnantStates.MORTAL;
+                ((RequiemPlayer) player).setRemnance(remnance);
                 sendSetRemnantFeedback(source, player, remnant);
                 ++count;
             }

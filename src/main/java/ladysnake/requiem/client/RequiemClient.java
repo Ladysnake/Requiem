@@ -86,7 +86,7 @@ public class RequiemClient implements ClientModInitializer {
                     dialogueTracker.startDialogue(Requiem.id("remnant_choice"));
                     client.openScreen(new CutsceneDialogueScreen(new TranslatableComponent("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue()));
                 }
-                MobEntity possessedEntity = ((RequiemPlayer) client.player).getPossessionComponent().getPossessedEntity();
+                MobEntity possessedEntity = ((RequiemPlayer) client.player).asPossessor().getPossessedEntity();
                 if (possessedEntity != null && possessedEntity.isOnFire()) {
                     client.player.setOnFireFor(1);
                 }
@@ -94,7 +94,7 @@ public class RequiemClient implements ClientModInitializer {
         });
         PickEntityShaderCallback.EVENT.register((camera, loadShaderFunc, appliedShaderGetter) -> {
             if (camera instanceof RequiemPlayer) {
-                Entity possessed = ((RequiemPlayer)camera).getPossessionComponent().getPossessedEntity();
+                Entity possessed = ((RequiemPlayer)camera).asPossessor().getPossessedEntity();
                 if (possessed != null) {
                     MinecraftClient.getInstance().gameRenderer.onCameraEntitySet(possessed);
                 }
@@ -102,7 +102,7 @@ public class RequiemClient implements ClientModInitializer {
         });
         // Start possession on right click
         UseEntityCallback.EVENT.register((player, world, hand, target, hitPosition) -> {
-            if (player == MinecraftClient.getInstance().cameraEntity && ((RequiemPlayer) player).getRemnantState().isIncorporeal()) {
+            if (player == MinecraftClient.getInstance().cameraEntity && ((RequiemPlayer) player).asRemnant().isIncorporeal()) {
                 if (target instanceof MobEntity && target.world.isClient) {
                     target.world.playSound(player, target.x, target.y, target.z, RequiemSoundEvents.EFFECT_POSSESSION_ATTEMPT, SoundCategory.PLAYERS, 2, 0.6f);
                     RequiemFx.INSTANCE.beginFishEyeAnimation(target);
@@ -113,7 +113,7 @@ public class RequiemClient implements ClientModInitializer {
         });
         CrosshairRenderCallback.EVENT.register(Requiem.id("possession_indicator"), (scaledWidth, scaledHeight) -> {
             MinecraftClient client = MinecraftClient.getInstance();
-            if (((RequiemPlayer) client.player).getRemnantState().isIncorporeal()) {
+            if (((RequiemPlayer) client.player).asRemnant().isIncorporeal()) {
                 if (client.targetedEntity instanceof MobEntity) {
                     int x = (scaledWidth - 32) / 2 + 8;
                     int y = (scaledHeight - 16) / 2 + 16;
@@ -134,8 +134,8 @@ public class RequiemClient implements ClientModInitializer {
         HotbarRenderCallback.EVENT.register(tickDelta -> {
             MinecraftClient client = MinecraftClient.getInstance();
             RequiemPlayer player = (RequiemPlayer) client.player;
-            if (!client.player.isCreative() && player.getRemnantState().isSoul()) {
-                Entity possessed = player.getPossessionComponent().getPossessedEntity();
+            if (!client.player.isCreative() && player.asRemnant().isSoul()) {
+                Entity possessed = player.asPossessor().getPossessedEntity();
                 if (possessed == null || !RequiemEntityTypeTags.ITEM_USER.contains(possessed.getType())) {
                     return ActionResult.SUCCESS;
                 }
@@ -148,7 +148,7 @@ public class RequiemClient implements ClientModInitializer {
 
     private static void addPossessionTooltip(ItemStack item, @Nullable PlayerEntity player, @SuppressWarnings("unused") TooltipContext context, List<Component> lines) {
         if (player != null) {
-            LivingEntity possessed = ((RequiemPlayer) player).getPossessionComponent().getPossessedEntity();
+            LivingEntity possessed = ((RequiemPlayer) player).asPossessor().getPossessedEntity();
             if (possessed == null) {
                 return;
             }

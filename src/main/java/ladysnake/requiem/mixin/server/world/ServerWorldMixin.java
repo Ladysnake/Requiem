@@ -36,7 +36,7 @@ public abstract class ServerWorldMixin {
     private void possessLoadedEntities(Entity entity, CallbackInfo ci) {
         PlayerEntity possessor = ((ProtoPossessable) entity).getPossessor();
         if (possessor != null && entity instanceof MobEntity) {
-            ((RequiemPlayer)possessor).getPossessionComponent().startPossessing((MobEntity) entity);
+            ((RequiemPlayer)possessor).asPossessor().startPossessing((MobEntity) entity);
         }
     }
 }

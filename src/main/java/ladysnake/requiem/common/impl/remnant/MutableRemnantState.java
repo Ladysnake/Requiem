@@ -48,7 +48,7 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public boolean isIncorporeal() {
-        return this.isSoul() && !((RequiemPlayer) player).getPossessionComponent().isPossessing();
+        return this.isSoul() && !((RequiemPlayer) player).asPossessor().isPossessing();
     }
 
     @Override
@@ -70,7 +70,7 @@ public class MutableRemnantState implements RemnantState {
                 abilities.allowFlying = this.player.isCreative();
                 abilities.flying &= abilities.allowFlying;
                 abilities.invulnerable = this.player.isCreative();
-                ((RequiemPlayer)this.player).getPossessionComponent().stopPossessing(false);
+                ((RequiemPlayer)this.player).asPossessor().stopPossessing(false);
             }
             ((RequiemPlayer)this.player).getMovementAlterer().setConfig(config);
             if (!this.player.world.isClient) {
@@ -96,8 +96,8 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public void onPlayerClone(ServerPlayerEntity clone, boolean dead) {
-        ((RequiemPlayer)clone).setRemnant(true);
-        RemnantState cloneState = ((RequiemPlayer) clone).getRemnantState();
+        ((RequiemPlayer)clone).setRemnance(this.getType());
+        RemnantState cloneState = ((RequiemPlayer) clone).asRemnant();
         if (dead && !this.isSoul()) {
             clone.dimension = this.player.world.dimension.getType();
             ServerWorld previousWorld = clone.server.getWorld(clone.dimension);

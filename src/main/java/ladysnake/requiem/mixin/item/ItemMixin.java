@@ -39,7 +39,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ItemMixin {
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(World world, PlayerEntity player, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        MobEntity possessedEntity = ((RequiemPlayer) player).getPossessionComponent().getPossessedEntity();
+        MobEntity possessedEntity = ((RequiemPlayer) player).asPossessor().getPossessedEntity();
         ItemStack stack = player.getStackInHand(hand);
         if (possessedEntity != null && possessedEntity.isUndead() && RequiemItemTags.UNDEAD_CURES.contains(stack.getItem()) && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)) {
             player.setCurrentHand(hand);

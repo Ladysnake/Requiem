@@ -22,7 +22,11 @@ import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
 import net.minecraft.entity.player.PlayerEntity;
+
+import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * Implemented by {@link PlayerEntity players}.
@@ -32,25 +36,36 @@ public interface RequiemPlayer {
     /**
      * @return the player's remnant state
      */
-    RemnantState getRemnantState();
+    RemnantState asRemnant();
 
-    void setRemnantState(RemnantState state);
+    /**
+     * @return the player's possession component
+     */
+    PossessionComponent asPossessor();
+
+    PlayerEntity asPlayer();
+
+    void setRemnance(RemnantType type);
 
     /**
      * @return the player's movement alterer
      */
     MovementAlterer getMovementAlterer();
 
-    /**
-     * @return the player's possession component
-     */
-    PossessionComponent getPossessionComponent();
-
-    void setRemnant(boolean remnant);
-
     boolean isRemnant();
 
     DeathSuspender getDeathSuspender();
 
     DialogueTracker getDialogueTracker();
+
+    static RequiemPlayer from(PlayerEntity player) {
+        return (RequiemPlayer) player;
+    }
+
+    static Optional<RequiemPlayer> fromSafely(@Nullable PlayerEntity player) {
+        if (player instanceof RequiemPlayer) {
+            return Optional.of(RequiemPlayer.from(player));
+        }
+        return Optional.empty();
+    }
 }

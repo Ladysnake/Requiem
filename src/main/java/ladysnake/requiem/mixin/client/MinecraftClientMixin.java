@@ -18,7 +18,6 @@
 package ladysnake.requiem.mixin.client;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.api.v1.remnant.RemnantState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.ingame.DeathScreen;
@@ -48,7 +47,7 @@ public abstract class MinecraftClientMixin {
             )
     )
     private void onShakeFistAtAir(CallbackInfo info) {
-        if (((RequiemPlayer) player).getPossessionComponent().isPossessing()) {
+        if (((RequiemPlayer) player).asPossessor().isPossessing()) {
             sendToServer(LEFT_CLICK_AIR, createEmptyBuffer());
         }
     }
@@ -60,7 +59,7 @@ public abstract class MinecraftClientMixin {
     private void onInteractWithAir(CallbackInfo info) {
         // Check that the player is qualified to interact with something
         if (!this.interactionManager.isBreakingBlock() && !this.player.isRiding()) {
-            if (((RequiemPlayer) player).getPossessionComponent().isPossessing() && player.getMainHandStack().isEmpty()) {
+            if (((RequiemPlayer) player).asPossessor().isPossessing() && player.getMainHandStack().isEmpty()) {
                 sendToServer(RIGHT_CLICK_AIR, createEmptyBuffer());
             }
         }
@@ -73,7 +72,7 @@ public abstract class MinecraftClientMixin {
     )
     private void skipDeathScreen(Screen screen, CallbackInfo ci) {
         if (screen instanceof DeathScreen) {
-            if (RemnantState.getIfRemnant(this.player).isPresent()) {
+            if (RequiemPlayer.from(this.player).isRemnant()) {
                 this.player.requestRespawn();
                 ci.cancel();
             }

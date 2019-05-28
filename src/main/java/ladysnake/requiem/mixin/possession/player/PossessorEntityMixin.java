@@ -30,7 +30,7 @@ public abstract class PossessorEntityMixin {
     @Inject(method = "getMaxBreath", at = @At("HEAD"), cancellable = true)
     private void delegateMaxBreath(CallbackInfoReturnable<Integer> cir) {
         if (this instanceof RequiemPlayer) {
-            PossessionComponent possessionComponent = ((RequiemPlayer) this).getPossessionComponent();
+            PossessionComponent possessionComponent = ((RequiemPlayer) this).asPossessor();
             // This method can be called in the constructor
             //noinspection ConstantConditions
             if (possessionComponent != null) {
@@ -45,11 +45,11 @@ public abstract class PossessorEntityMixin {
     @Inject(method = "getBreath", at = @At("HEAD"), cancellable = true)
     private void delegateBreath(CallbackInfoReturnable<Integer> cir) {
         if (this instanceof RequiemPlayer) {
-            PossessionComponent possessionComponent = ((RequiemPlayer) this).getPossessionComponent();
+            PossessionComponent possessionComponent = ((RequiemPlayer) this).asPossessor();
             // This method can be called in the constructor
             //noinspection ConstantConditions
             if (possessionComponent != null) {
-                Entity possessedEntity = ((RequiemPlayer) this).getPossessionComponent().getPossessedEntity();
+                Entity possessedEntity = ((RequiemPlayer) this).asPossessor().getPossessedEntity();
                 if (possessedEntity != null) {
                     cir.setReturnValue(possessedEntity.getBreath());
                 }

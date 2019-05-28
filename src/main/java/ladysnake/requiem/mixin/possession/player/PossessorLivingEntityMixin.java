@@ -78,7 +78,7 @@ public abstract class PossessorLivingEntityMixin extends Entity {
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     private void proxyDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
         if (source.getAttacker() instanceof RequiemPlayer) {
-            Entity possessed = ((RequiemPlayer) source.getAttacker()).getPossessionComponent().getPossessedEntity();
+            Entity possessed = ((RequiemPlayer) source.getAttacker()).asPossessor().getPossessedEntity();
             if (possessed != null) {
                 DamageSource newSource = null;
                 if (source instanceof ProjectileDamageSource)
@@ -95,7 +95,7 @@ public abstract class PossessorLivingEntityMixin extends Entity {
 
     @Inject(method = "collides", at = @At("RETURN"), cancellable = true)
     private void preventSoulsCollision(CallbackInfoReturnable<Boolean> info) {
-        if (this instanceof RequiemPlayer && ((RequiemPlayer) this).getRemnantState().isSoul()) {
+        if (this instanceof RequiemPlayer && ((RequiemPlayer) this).asRemnant().isSoul()) {
             info.setReturnValue(false);
         }
     }
@@ -103,7 +103,7 @@ public abstract class PossessorLivingEntityMixin extends Entity {
     @Inject(method = "isClimbing", at = @At("HEAD"), cancellable = true)
     private void canClimb(CallbackInfoReturnable<Boolean> info) {
         if (this instanceof RequiemPlayer && this.horizontalCollision) {
-            LivingEntity possessed = ((RequiemPlayer) this).getPossessionComponent().getPossessedEntity();
+            LivingEntity possessed = ((RequiemPlayer) this).asPossessor().getPossessedEntity();
             if (possessed != null) {
                 info.setReturnValue(RequiemEntityTypeTags.CLIMBER.contains(possessed.getType()));
             }
@@ -132,7 +132,7 @@ public abstract class PossessorLivingEntityMixin extends Entity {
     @Inject(method = "getEyeHeight", at = @At("HEAD"), cancellable = true)
     private void adjustEyeHeight(EntityPose pose, EntitySize size, CallbackInfoReturnable<Float> cir) {
         if (this instanceof RequiemPlayer) {
-            PossessionComponent possessionComponent = ((RequiemPlayer) this).getPossessionComponent();
+            PossessionComponent possessionComponent = ((RequiemPlayer) this).asPossessor();
             // This method can be called before the possession component is set
             //noinspection ConstantConditions
             if (possessionComponent != null) {

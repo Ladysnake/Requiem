@@ -119,7 +119,7 @@ public class PlayerShellEntity extends MobEntity {
                 }
                 InventoryHelper.transferEquipment(this, possessor);
                 this.remove();
-                ((RequiemPlayer) possessor).getRemnantState().setSoul(false);
+                ((RequiemPlayer) possessor).asRemnant().setSoul(false);
             }
         }
     }

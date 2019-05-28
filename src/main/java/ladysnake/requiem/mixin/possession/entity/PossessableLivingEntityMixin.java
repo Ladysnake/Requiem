@@ -105,7 +105,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     @Override
     public PlayerEntity getPossessor() {
         if (this.possessor != null && this.possessor.removed) {
-            ((RequiemPlayer)this.possessor).getPossessionComponent().stopPossessing();
+            ((RequiemPlayer)this.possessor).asPossessor().stopPossessing();
             // Make doubly sure
             this.setPossessor(null);
         }
@@ -129,7 +129,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         }
         // we need a cast here to trick the compiler
         //noinspection RedundantCast
-        if (this.possessor != null && ((RequiemPlayer) this.possessor).getPossessionComponent().getPossessedEntity() == (Entity)this) {
+        if (this.possessor != null && ((RequiemPlayer) this.possessor).asPossessor().getPossessedEntity() == (Entity)this) {
             throw new IllegalStateException("Players must stop possessing an entity before it can change possessor!");
         }
         this.possessor = possessor;
@@ -220,7 +220,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     private void onDeath(DamageSource deathCause, CallbackInfo ci) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
-            ((RequiemPlayer)possessor).getPossessionComponent().stopPossessing();
+            ((RequiemPlayer)possessor).asPossessor().stopPossessing();
         }
     }
 

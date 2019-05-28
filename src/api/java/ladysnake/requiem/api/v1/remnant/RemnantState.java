@@ -68,7 +68,7 @@ public interface RemnantState {
         if (REMNANT.test(entity)) {
             //The predicate guarantees that the entity is not null
             //noinspection ConstantConditions
-            return Optional.of(((RequiemPlayer) entity).getRemnantState());
+            return Optional.of(((RequiemPlayer) entity).asRemnant());
         }
         return Optional.empty();
     }

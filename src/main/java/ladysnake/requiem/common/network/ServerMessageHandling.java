@@ -49,14 +49,14 @@ public class ServerMessageHandling {
     public static void init() {
         register(LEFT_CLICK_AIR, (context, buf) -> {
             PlayerEntity player = context.getPlayer();
-            Possessable possessed = (Possessable) ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
+            Possessable possessed = (Possessable) ((RequiemPlayer)player).asPossessor().getPossessedEntity();
             if (possessed != null) {
                 possessed.getMobAbilityController().useIndirect(AbilityType.ATTACK);
             }
         });
         register(RIGHT_CLICK_AIR, (context, buf) -> {
             PlayerEntity player = context.getPlayer();
-            Possessable possessed = (Possessable) ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
+            Possessable possessed = (Possessable) ((RequiemPlayer)player).asPossessor().getPossessedEntity();
             if (possessed != null) {
                 possessed.getMobAbilityController().useIndirect(AbilityType.INTERACT);
             }
@@ -67,7 +67,7 @@ public class ServerMessageHandling {
                 PlayerEntity player = context.getPlayer();
                 Entity entity = player.world.getEntityById(requestedId);
                 if (entity instanceof MobEntity && entity.distanceTo(player) < 20) {
-                    ((RequiemPlayer) player).getPossessionComponent().startPossessing((MobEntity) entity);
+                    ((RequiemPlayer) player).asPossessor().startPossessing((MobEntity) entity);
                 }
                 sendTo((ServerPlayerEntity) player, createEmptyMessage(POSSESSION_ACK));
             });

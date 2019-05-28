@@ -35,6 +35,8 @@ public interface RemnantType {
      */
     RemnantState create(PlayerEntity player);
 
+    boolean isRemnant();
+
     /**
      * Gets the unlocalized string corresponding to the sentence the player
      * should input in an Opus Daemonium to change it into a conversion item

@@ -38,7 +38,7 @@ public class PossessionTooltipCallback implements ItemTooltipCallback {
     @Override
     public void onTooltipBuilt(ItemStack item, @Nullable PlayerEntity player, TooltipContext context, List<Component> lines) {
         if (player != null) {
-            LivingEntity possessed = ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
+            LivingEntity possessed = ((RequiemPlayer)player).asPossessor().getPossessedEntity();
             if (possessed == null) {
                 return;
             }

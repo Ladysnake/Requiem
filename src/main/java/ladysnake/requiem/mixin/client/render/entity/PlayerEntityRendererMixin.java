@@ -61,7 +61,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
      */
     @Inject(method = "method_4215", at = @At("HEAD"), cancellable = true)
     private void cancelRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
-        LivingEntity possessedEntity = ((RequiemPlayer) renderedPlayer).getPossessionComponent().getPossessedEntity();
+        LivingEntity possessedEntity = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
         if (possessedEntity != null) {
             EntityRenderDispatcher renderManager = MinecraftClient.getInstance().getEntityRenderManager();
             if (((VariableMobilityEntity)possessedEntity).requiem_isImmovable()) {
@@ -93,7 +93,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
             )
     )
     private void preRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
-        if (((RequiemPlayer) renderedPlayer).getRemnantState().isIncorporeal()) {
+        if (((RequiemPlayer) renderedPlayer).asRemnant().isIncorporeal()) {
             Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
             boolean isObserverRemnant = cameraEntity instanceof RequiemPlayer && ((RequiemPlayer) cameraEntity).isRemnant();
             float alpha = isObserverRemnant ? 1.0f : 0.05f;
@@ -130,9 +130,9 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     @SuppressWarnings("InvalidMemberReference") // Method array is unsupported by the plugin
     @Inject(method = {"renderRightArm", "renderLeftArm"}, at = @At("HEAD"), cancellable = true)
     private void renderPossessedHand(AbstractClientPlayerEntity renderedPlayer, CallbackInfo info) {
-        if (((RequiemPlayer) renderedPlayer).getRemnantState().isSoul()) {
-            if (((RequiemPlayer) renderedPlayer).getPossessionComponent().isPossessing()) {
-                LivingEntity possessed = ((RequiemPlayer) renderedPlayer).getPossessionComponent().getPossessedEntity();
+        if (((RequiemPlayer) renderedPlayer).asRemnant().isSoul()) {
+            if (((RequiemPlayer) renderedPlayer).asPossessor().isPossessing()) {
+                LivingEntity possessed = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
                 if (possessed != null) {
                     EntityRenderer renderer = MinecraftClient.getInstance().getEntityRenderManager().getRenderer(possessed);
                     // If the mob has an arm, render it instead of the player's

@@ -28,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ClientEntityMixin {
     @Inject(method = "shouldLeaveSwimmingPose", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isInsideWater()Z"), cancellable = true)
     private void isCrawling(CallbackInfoReturnable<Boolean> cir) {
-        if (this instanceof RequiemPlayer && ((RequiemPlayer) this).getRemnantState().isIncorporeal()) {
+        if (this instanceof RequiemPlayer && ((RequiemPlayer) this).asRemnant().isIncorporeal()) {
             cir.setReturnValue(false);
         }
     }

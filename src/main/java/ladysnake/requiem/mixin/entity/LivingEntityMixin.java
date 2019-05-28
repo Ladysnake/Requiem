@@ -65,7 +65,7 @@ public abstract class LivingEntityMixin extends Entity {
      */
     @Inject(method = "method_6040", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;clearActiveItem()V"))
     private void dropUsedItemAsSoul(CallbackInfo ci) {
-        if (this instanceof RequiemPlayer && ((RequiemPlayer) this).getRemnantState().isIncorporeal()&& !world.getGameRules().getBoolean("keepInventory")) {
+        if (this instanceof RequiemPlayer && ((RequiemPlayer) this).asRemnant().isIncorporeal()&& !world.getGameRules().getBoolean("keepInventory")) {
             this.dropStack(this.getStackInHand(this.getActiveHand()));
             this.setStackInHand(this.getActiveHand(), ItemStack.EMPTY);
         }

@@ -51,7 +51,7 @@ public abstract class BowItemMixin extends BaseBowItem {
             )
     )
     private void setCurrentUser(ItemStack item, World world, LivingEntity user, int charge, CallbackInfo ci) {
-        REQUIEM__CURRENT_USER.set(((RequiemPlayer) user).getPossessionComponent().getPossessedEntity());
+        REQUIEM__CURRENT_USER.set(((RequiemPlayer) user).asPossessor().getPossessedEntity());
     }
 
     @ModifyVariable(method = "onItemStopUsing", ordinal = 0, at = @At("STORE"))
