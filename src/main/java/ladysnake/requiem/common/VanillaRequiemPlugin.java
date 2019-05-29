@@ -64,7 +64,7 @@ import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTracki
 import static ladysnake.requiem.common.remnant.RemnantStates.MORTAL;
 import static ladysnake.requiem.common.remnant.RemnantStates.REMNANT;
 
-public class VanillaRequiemPlugin implements RequiemPlugin {
+public final class VanillaRequiemPlugin implements RequiemPlugin {
 
     public static final UUID INHERENT_MOB_SLOWNESS_UUID = UUID.fromString("a2ebbb6b-fd10-4a30-a0c7-dadb9700732e");
     /**

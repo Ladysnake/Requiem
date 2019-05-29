@@ -28,6 +28,11 @@ public final class RequiemApi {
     private RequiemApi() { throw new AssertionError(); }
 
     /**
+     * The key used to declare a requiem plugin in a <tt>fabric.mod.json</tt> "entrypoints" block.
+     */
+    public static final String ENTRYPOINT_KEY = "requiem:plugin";
+
+    /**
      * Programmatically registers a new entry point.
      * <p>
      * Calling this method is functionally equivalent to declaring the entry point

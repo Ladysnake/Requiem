@@ -27,6 +27,7 @@ import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityConfig;
 import ladysnake.requiem.common.impl.data.CommonSubDataManagerHelper;
 import ladysnake.requiem.common.impl.data.ServerSubDataManagerHelper;
 import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
+import net.fabricmc.loader.api.FabricLoader;
 import org.apiguardian.api.API;
 
 import java.lang.reflect.Field;
@@ -37,6 +38,7 @@ import static org.apiguardian.api.API.Status.INTERNAL;
 
 @API(status = INTERNAL)
 public class ApiInitializer {
+
     public static void init() {
         try {
             setAbilityBuilderFactory(ImmutableMobAbilityConfig.Builder::new);
@@ -58,6 +60,12 @@ public class ApiInitializer {
         Field f = server ? ApiInternals.class.getDeclaredField("serverSubDataManagerHelper") : ApiInternals.class.getDeclaredField("clientSubDataManagerHelper");
         f.setAccessible(true);
         f.set(null, helper);
+    }
+
+    public static void discoverEntryPoints() {
+        FabricLoader.getInstance()
+                .getEntrypoints(RequiemApi.ENTRYPOINT_KEY, RequiemPlugin.class)
+                .forEach(RequiemApi::registerPlugin);
     }
 
     public static void setPluginCallback(Consumer<RequiemPlugin> callback) {

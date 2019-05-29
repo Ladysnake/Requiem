@@ -17,13 +17,11 @@
  */
 package ladysnake.requiem;
 
-import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.event.minecraft.SyncServerResourcesCallback;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.common.RequiemComponents;
 import ladysnake.requiem.common.RequiemRegistries;
-import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.command.RequiemCommand;
@@ -60,7 +58,7 @@ public class Requiem implements ModInitializer {
         RequiemRegistries.init();
         RequiemSoundEvents.init();
         ServerMessageHandling.init();
-        RequiemApi.registerPlugin(new VanillaRequiemPlugin());
+        ApiInitializer.discoverEntryPoints();
         CommandRegistry.INSTANCE.register(false, RequiemCommand::register);
         this.registerSubDataManagers();
         SyncServerResourcesCallback.EVENT.register(player -> RequiemNetworking.sendTo(player, RequiemNetworking.createDataSyncMessage(SubDataManagerHelper.getServerHelper())));

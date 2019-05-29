@@ -10,6 +10,9 @@
     ],
     "main": [
       "ladysnake.requiem.Requiem"
+    ],
+    "requiem:plugin": [
+      "ladysnake.requiem.common.VanillaRequiemPlugin"
     ]
   },
   "mixins": [
