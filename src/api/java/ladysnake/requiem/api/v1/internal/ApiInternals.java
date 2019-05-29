@@ -25,8 +25,8 @@ import net.minecraft.entity.mob.MobEntity;
 import org.apiguardian.api.API;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -41,9 +41,21 @@ public final class ApiInternals {
     @AccessedThroughReflection
     private static Supplier<MobAbilityConfig.Builder<?>> abilityBuilderFactory;
 
-    private static final List<RequiemPlugin> plugins = new ArrayList<>();
+    /**
+     * The set of all registered plugins
+     */
+    private static final Set<RequiemPlugin> plugins = new HashSet<>();
+    /**
+     * Called whenever a plugin is registered.
+     * When the API provider gets initialized, is replaced by a handler
+     * that also performs plugin initialization.
+     */
     @AccessedThroughReflection
-    private static Consumer<RequiemPlugin> registerHandler = plugins::add;
+    private static Consumer<RequiemPlugin> registerHandler = plugin -> {
+        if (!plugins.add(plugin)) {
+            throw new IllegalStateException(plugin + " has been registered twice!");
+        }
+    };
     @AccessedThroughReflection
     private static SubDataManagerHelper clientSubDataManagerHelper;
     @AccessedThroughReflection
