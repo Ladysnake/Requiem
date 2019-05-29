@@ -30,7 +30,7 @@ import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.remnant.NullRemnantState;
 import ladysnake.requiem.common.impl.remnant.RevivingDeathSuspender;
 import ladysnake.requiem.common.impl.remnant.dialogue.DialogueTrackerImpl;
-import ladysnake.requiem.common.remnant.RemnantStates;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.entity.*;
@@ -78,10 +78,10 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private static final EntitySize REQUIEM$SOUL_SNEAKING_SIZE = EntitySize.resizeable(0.6f, 0.6f);
 
     private RemnantState remnantState = NullRemnantState.NULL_STATE;
-    private final PossessionComponent possessionComponent = new PossessionComponentImpl((PlayerEntity) (Object) this);
-    private final MovementAlterer movementAlterer = new PlayerMovementAlterer((PlayerEntity)(Object) this);
-    private final DeathSuspender deathSuspender = new RevivingDeathSuspender((PlayerEntity)(Object) this);
-    private final DialogueTracker dialogueTracker = new DialogueTrackerImpl((PlayerEntity)(Object) this);
+    private final PossessionComponent possessionComponent = new PossessionComponentImpl(this.asPlayer());
+    private final MovementAlterer movementAlterer = new PlayerMovementAlterer(this.asPlayer());
+    private final DeathSuspender deathSuspender = new RevivingDeathSuspender(this.asPlayer());
+    private final DialogueTracker dialogueTracker = new DialogueTrackerImpl(this.asPlayer());
 
     @Override
     public RemnantState asRemnant() {
@@ -114,16 +114,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     }
 
     @Override
-    public boolean isRemnant() {
-        return !(this.remnantState instanceof NullRemnantState);
-    }
-
-    @Override
-    public void setRemnance(RemnantType type) {
+    public void become(RemnantType type) {
         if (type == this.remnantState.getType()) {
             return;
         }
-        RemnantState handler = type.create((PlayerEntity)(Object) this);
+        RemnantState handler = type.create(this.asPlayer());
         this.remnantState.setSoul(false);
         this.remnantState = handler;
         if (!this.world.isClient) {
@@ -156,7 +151,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     @Inject(at = @At("TAIL"), method = "writeCustomDataToTag")
     private void writeCustomDataToTag(CompoundTag tag, CallbackInfo info) {
         CompoundTag remnantData = new CompoundTag();
-        remnantData.putString("id", RemnantStates.getId(this.asRemnant().getType()).toString());
+        remnantData.putString("id", RemnantTypes.getId(this.asRemnant().getType()).toString());
         tag.put(REQUIEM$TAG_REMNANT_DATA, this.remnantState.toTag(remnantData));
         tag.put(REQUIEM$TAG_SUSPENDED_DEATH, this.deathSuspender.toTag(new CompoundTag()));
     }
@@ -164,8 +159,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     @Inject(at = @At("TAIL"), method = "readCustomDataFromTag")
     private void readCustomDataFromTag(CompoundTag tag, CallbackInfo info) {
         CompoundTag remnantTag = tag.getCompound(REQUIEM$TAG_REMNANT_DATA);
-        RemnantType remnantType = RemnantStates.get(new Identifier(remnantTag.getString("id")));
-        this.setRemnance(remnantType);
+        RemnantType remnantType = RemnantTypes.get(new Identifier(remnantTag.getString("id")));
+        this.become(remnantType);
         this.remnantState.fromTag(remnantTag);
         this.deathSuspender.fromTag(tag.getCompound(REQUIEM$TAG_SUSPENDED_DEATH));
     }

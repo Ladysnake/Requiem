@@ -17,7 +17,6 @@
  */
 package ladysnake.requiem.api.v1.remnant;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import net.minecraft.entity.mob.MobEntity;
 
 /**
@@ -29,7 +28,7 @@ public interface MobResurrectable {
      * Sets the mob that this player will use as its second life.
      * <p>
      * This should not be called with an entity that is already spawned in the world.
-     * If the player is not {@link RequiemPlayer#isRemnant() remnant}, this call will have no effect.
+     * If the player is not {@link RemnantType#isRemnant() remnant}, this call will have no effect.
      */
     void setResurrectionEntity(MobEntity secondLife);
 

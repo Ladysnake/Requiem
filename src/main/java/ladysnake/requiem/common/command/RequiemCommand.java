@@ -22,7 +22,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.remnant.RemnantStates;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.entity.Entity;
@@ -113,7 +113,7 @@ public class RequiemCommand {
         int count = 0;
         for (ServerPlayerEntity player : players) {
             if (((RequiemPlayer) player).asRemnant().isSoul() != ethereal) {
-                if (!((RequiemPlayer) player).isRemnant()) {
+                if (!isRemnant(player)) {
                     throw new CommandException(new TranslatableComponent("requiem:commands.ethereal.set.fail", player.getDisplayName()));
                 }
                 ((RequiemPlayer) player).asRemnant().setSoul(ethereal);
@@ -183,7 +183,7 @@ public class RequiemCommand {
     }
 
     private static int queryRemnant(ServerCommandSource source, ServerPlayerEntity player) {
-        boolean remnant = ((RequiemPlayer) player).isRemnant();
+        boolean remnant = isRemnant(player);
         Component remnantState = new TranslatableComponent("requiem:" + (remnant ? "remnant" : "not_remnant"));
         source.sendFeedback(new TranslatableComponent("requiem:commands.query.success." + (source.getEntity() == player ? "self" : "other"), remnantState, player.getDisplayName()), true);
         return remnant ? 1 : 0;
@@ -192,14 +192,18 @@ public class RequiemCommand {
     private static int setRemnant(ServerCommandSource source, Collection<ServerPlayerEntity> players, boolean remnant) {
         int count = 0;
         for (ServerPlayerEntity player : players) {
-            if (((RequiemPlayer) player).isRemnant() != remnant) {
-                RemnantType remnance = remnant ? RemnantStates.REMNANT : RemnantStates.MORTAL;
-                ((RequiemPlayer) player).setRemnance(remnance);
+            if (isRemnant(player) != remnant) {
+                RemnantType remnance = remnant ? RemnantTypes.REMNANT : RemnantTypes.MORTAL;
+                ((RequiemPlayer) player).become(remnance);
                 sendSetRemnantFeedback(source, player, remnant);
                 ++count;
             }
         }
         return count;
+    }
+
+    private static boolean isRemnant(ServerPlayerEntity player) {
+        return RequiemPlayer.from(player).asRemnant().getType().isRemnant();
     }
 
     private static void sendSetRemnantFeedback(ServerCommandSource source, ServerPlayerEntity player, boolean remnant) {

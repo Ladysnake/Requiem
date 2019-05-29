@@ -18,7 +18,7 @@
 package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.common.remnant.RemnantStates;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.ChatFormat;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -45,8 +45,8 @@ public class RequiemItems {
         DEBUG_ITEM = registerItem(new DebugItem(new Item.Settings()), "debug_item");
         HUMAN_FLESH = registerItem(new Item(new Item.Settings().food(HUMAN_FOOD).itemGroup(ItemGroup.FOOD)), "human_flesh");
         OPUS_DEMONIUM = registerItem(new OpusDemoniumItem(new Item.Settings().itemGroup(ItemGroup.MISC).stackSize(1)), "opus_daemonium");
-        OPUS_DEMONIUM_CURE = registerItem(new WrittenOpusItem(RemnantStates.MORTAL, ChatFormat.AQUA, new Item.Settings().itemGroup(ItemGroup.MISC).stackSize(1)), "opus_daemonium_cure");
-        OPUS_DEMONIUM_CURSE = registerItem(new WrittenOpusItem(RemnantStates.REMNANT, ChatFormat.RED, new Item.Settings().itemGroup(ItemGroup.MISC).stackSize(1)), "opus_daemonium_curse");
+        OPUS_DEMONIUM_CURE = registerItem(new WrittenOpusItem(RemnantTypes.MORTAL, ChatFormat.AQUA, new Item.Settings().itemGroup(ItemGroup.MISC).stackSize(1)), "opus_daemonium_cure");
+        OPUS_DEMONIUM_CURSE = registerItem(new WrittenOpusItem(RemnantTypes.REMNANT, ChatFormat.RED, new Item.Settings().itemGroup(ItemGroup.MISC).stackSize(1)), "opus_daemonium_curse");
     }
 
     public static <T extends Item> T registerItem(T item, String name) {

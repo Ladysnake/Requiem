@@ -72,7 +72,7 @@ public abstract class MinecraftClientMixin {
     )
     private void skipDeathScreen(Screen screen, CallbackInfo ci) {
         if (screen instanceof DeathScreen) {
-            if (RequiemPlayer.from(this.player).isRemnant()) {
+            if (RequiemPlayer.from(this.player).asRemnant().getType().isRemnant()) {
                 this.player.requestRespawn();
                 ci.cancel();
             }

@@ -61,8 +61,8 @@ import java.util.UUID;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.createCorporealityMessage;
 import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTrackingIncluding;
-import static ladysnake.requiem.common.remnant.RemnantStates.MORTAL;
-import static ladysnake.requiem.common.remnant.RemnantStates.REMNANT;
+import static ladysnake.requiem.common.remnant.RemnantTypes.MORTAL;
+import static ladysnake.requiem.common.remnant.RemnantTypes.REMNANT;
 
 public final class VanillaRequiemPlugin implements RequiemPlugin {
 
@@ -81,10 +81,11 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     public void onRequiemInitialize() {
         registerEtherealEventHandlers();
         registerPossessionEventHandlers();
-        LivingEntityDropCallback.EVENT.register((lazarus, deathCause) -> {
-            if (!(lazarus instanceof ServerPlayerEntity)) {
+        LivingEntityDropCallback.EVENT.register((dead, deathCause) -> {
+            if (!(dead instanceof ServerPlayerEntity)) {
                 return false;
             }
+            ServerPlayerEntity lazarus = (ServerPlayerEntity) dead;
             EntityType<? extends MobEntity> body;
             if (deathCause.getAttacker() instanceof ZombieEntity) {
                 body = EntityType.ZOMBIE;
@@ -97,7 +98,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             }
             MobEntity secondLife = body.create(lazarus.world);
             if (secondLife != null) {
-                if (((RequiemPlayer) lazarus).isRemnant()) {
+                if (RequiemPlayer.from(lazarus).asRemnant().getType().isRemnant()) {
                     ((MobResurrectable) lazarus).setResurrectionEntity(secondLife);
                 } else {
                     secondLife.copyPositionAndRotation(lazarus);
@@ -200,9 +201,10 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     private static void handleRemnantChoiceAction(ServerPlayerEntity player, RemnantType chosenType) {
-        DeathSuspender deathSuspender = ((RequiemPlayer) player).getDeathSuspender();
+        RequiemPlayer requiemPlayer = RequiemPlayer.from(player);
+        DeathSuspender deathSuspender = requiemPlayer.getDeathSuspender();
         if (deathSuspender.isLifeTransient()) {
-            ((RequiemPlayer) player).setRemnance(chosenType);
+            requiemPlayer.become(chosenType);
             if (chosenType != MORTAL) {
                 player.world.playSound(null, player.x, player.y, player.z, RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
                 RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(false, false));

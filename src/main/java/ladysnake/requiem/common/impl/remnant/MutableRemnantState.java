@@ -96,7 +96,7 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public void onPlayerClone(ServerPlayerEntity clone, boolean dead) {
-        ((RequiemPlayer)clone).setRemnance(this.getType());
+        ((RequiemPlayer)clone).become(this.getType());
         RemnantState cloneState = ((RequiemPlayer) clone).asRemnant();
         if (dead && !this.isSoul()) {
             clone.dimension = this.player.world.dimension.getType();

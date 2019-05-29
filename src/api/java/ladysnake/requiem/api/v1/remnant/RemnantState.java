@@ -56,7 +56,7 @@ public interface RemnantState {
     /**
      * A predicate matching entities that are remnant
      */
-    Predicate<Entity> REMNANT = e -> e instanceof RequiemPlayer && ((RequiemPlayer) e).isRemnant();
+    Predicate<Entity> REMNANT = e -> e instanceof RequiemPlayer && ((RequiemPlayer) e).asRemnant().getType().isRemnant();
 
     /**
      * Helper method to get the remnant state of an entity if it exists

@@ -22,7 +22,7 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
-import ladysnake.requiem.common.remnant.RemnantStates;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
@@ -100,7 +100,7 @@ public class RequiemNetworking {
     private static CustomPayloadS2CPacket createCorporealityMessage(UUID playerUuid, RemnantType remnantType, boolean incorporeal, boolean lifeTransient) {
         PacketByteBuf buf = createEmptyBuffer();
         buf.writeUuid(playerUuid);
-        buf.writeVarInt(RemnantStates.getRawId(remnantType));
+        buf.writeVarInt(RemnantTypes.getRawId(remnantType));
         buf.writeBoolean(incorporeal);
         buf.writeBoolean(lifeTransient);
         return new CustomPayloadS2CPacket(REMNANT_SYNC, buf);
@@ -155,7 +155,7 @@ public class RequiemNetworking {
         buf.writeString(content);
         buf.writeBoolean(sign);
         if (sign) {
-            buf.writeString(RemnantStates.getId(resultingBook).toString());
+            buf.writeString(RemnantTypes.getId(resultingBook).toString());
         }
         buf.writeEnumConstant(hand);
         return new CustomPayloadC2SPacket(OPUS_UPDATE, buf);

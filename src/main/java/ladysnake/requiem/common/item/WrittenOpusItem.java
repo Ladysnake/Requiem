@@ -87,7 +87,7 @@ public class WrittenOpusItem extends Item {
                 world.playSound(null, player.x, player.y, player.z, RequiemSoundEvents.ITEM_OPUS_USE, player.getSoundCategory(), 1.0F, 0.1F);
                 world.playSound(null, player.x, player.y, player.z, cure ? RequiemSoundEvents.EFFECT_BECOME_MORTAL : RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
                 RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(cure, true));
-                ((RequiemPlayer) player).setRemnance(remnantType);
+                ((RequiemPlayer) player).become(remnantType);
                 player.incrementStat(Stats.USED.getOrCreateStat(this));
                 stack.subtractAmount(1);
                 RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, this.remnantType);
@@ -103,6 +103,7 @@ public class WrittenOpusItem extends Item {
                 .applyFormat(this.getTooltipColor()));
         if (stack.hasTag()) {
             CompoundTag tag = stack.getTag();
+            assert tag != null;
             String author = tag.getString("author");
             if (!ChatUtil.isEmpty(author)) {
                 lines.add((new TranslatableComponent("book.byAuthor", author)).applyFormat(ChatFormat.GRAY));

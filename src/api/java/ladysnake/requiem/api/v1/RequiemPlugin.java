@@ -24,10 +24,13 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import net.minecraft.util.registry.Registry;
 
 /**
- * A {@link RequiemPlugin} is an entry point for API consumers.
+ * An entry point for API consumers.
+ * {@code RequiemPlugin}s are to be registered either through direct calls
+ * to {@link RequiemApi#registerPlugin(RequiemPlugin)} or through FabricLoader's
+ * entry point system.
  *
- * @author Pyrofab
  * @see RequiemApi#registerPlugin(RequiemPlugin)
+ * @since 1.0.0
  */
 public interface RequiemPlugin {
     /**
