@@ -17,6 +17,7 @@
  */
 package ladysnake.requiem.api.v1.internal;
 
+import com.google.common.collect.ImmutableSet;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
@@ -29,10 +30,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import static org.apiguardian.api.API.Status.INTERNAL;
 
+/**
+ * Internal methods used by other API classes to interact actively with the API provider.
+ * This class should never be referenced directly by an API consumer.
+ */
 @API(status = INTERNAL)
 public final class ApiInternals {
     private ApiInternals() { throw new AssertionError(); }
@@ -42,7 +46,7 @@ public final class ApiInternals {
     private static Supplier<MobAbilityConfig.Builder<?>> abilityBuilderFactory;
 
     /**
-     * The set of all registered plugins
+     * The set of all registered plugins.
      */
     private static final Set<RequiemPlugin> plugins = new HashSet<>();
     /**
@@ -69,12 +73,24 @@ public final class ApiInternals {
         return (MobAbilityConfig.Builder<T>) abilityBuilderFactory.get();
     }
 
+    /**
+     * Registers a plugin object. This method is thread-safe.
+     * @param entryPoint a previously unregistered plugin object
+     */
     public static void registerPluginInternal(RequiemPlugin entryPoint) {
-        registerHandler.accept(entryPoint);
+        synchronized (plugins) {
+            registerHandler.accept(entryPoint);
+        }
     }
 
-    public static Stream<RequiemPlugin> streamRegisteredPlugins() {
-        return plugins.stream();
+    /**
+     * Creates a read-only copy of {@link #plugins}. This method is thread-safe.
+     * @return an ImmutableSet containing all currently registered plugins.
+     */
+    public static ImmutableSet<RequiemPlugin> copyRegisteredPlugins() {
+        synchronized (plugins) {
+            return ImmutableSet.copyOf(plugins);
+        }
     }
 
     public static SubDataManagerHelper getClientSubDataManagerHelper() {
