@@ -25,7 +25,6 @@ import ladysnake.requiem.client.RequiemFx;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantStates;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
-import net.fabricmc.fabric.api.network.PacketContext;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
@@ -40,7 +39,6 @@ import net.minecraft.util.ThreadExecutor;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -48,53 +46,61 @@ import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
 public class ClientMessageHandling {
     public static void init() {
-        register(REMNANT_SYNC, (context, buf) -> {
+        ClientSidePacketRegistry.INSTANCE.register(REMNANT_SYNC, (context, buf) -> {
             UUID playerUuid = buf.readUuid();
             int remnantId = buf.readVarInt();
             boolean incorporeal = buf.readBoolean();
             boolean lifeTransient = buf.readBoolean();
-            PlayerEntity player = context.getPlayer().world.getPlayerByUuid(playerUuid);
-            if (player != null) {
-                ((RequiemPlayer)player).setRemnantState(RemnantStates.get(remnantId).create(player));
-                ((RequiemPlayer) player).getRemnantState().setSoul(incorporeal);
-                ((RequiemPlayer) player).getDeathSuspender().setLifeTransient(lifeTransient);
-            }
+            context.getTaskQueue().execute(() -> {
+                PlayerEntity player = context.getPlayer().world.getPlayerByUuid(playerUuid);
+                if (player != null) {
+                    ((RequiemPlayer)player).setRemnantState(RemnantStates.get(remnantId).create(player));
+                    ((RequiemPlayer) player).getRemnantState().setSoul(incorporeal);
+                    ((RequiemPlayer) player).getDeathSuspender().setLifeTransient(lifeTransient);
+                }
+            });
         });
-        register(POSSESSION_ACK, (context, buf) -> RequiemFx.INSTANCE.onPossessionAck());
-        register(POSSESSION_SYNC, ((context, buf) -> {
+        ClientSidePacketRegistry.INSTANCE.register(POSSESSION_ACK, (context, buf) -> context.getTaskQueue().execute(RequiemFx.INSTANCE::onPossessionAck));
+        ClientSidePacketRegistry.INSTANCE.register(POSSESSION_SYNC, (context, buf) -> {
             UUID playerUuid = buf.readUuid();
             int possessedId = buf.readInt();
-            PlayerEntity player = context.getPlayer().world.getPlayerByUuid(playerUuid);
-            MinecraftClient client = MinecraftClient.getInstance();
-            if (player != null) {
-                Entity entity = player.world.getEntityById(possessedId);
-                if (entity instanceof MobEntity) {
-                    ((RequiemPlayer)player).getPossessionComponent().startPossessing((MobEntity) entity);
-                    if (client.options.perspective == 0) {
-                        client.gameRenderer.onCameraEntitySet(entity);
+            context.getTaskQueue().execute(() -> {
+                PlayerEntity player = context.getPlayer().world.getPlayerByUuid(playerUuid);
+                MinecraftClient client = MinecraftClient.getInstance();
+                if (player != null) {
+                    Entity entity = player.world.getEntityById(possessedId);
+                    if (entity instanceof MobEntity) {
+                        ((RequiemPlayer)player).getPossessionComponent().startPossessing((MobEntity) entity);
+                        if (client.options.perspective == 0) {
+                            client.gameRenderer.onCameraEntitySet(entity);
+                        }
+                    } else {
+                        ((RequiemPlayer)player).getPossessionComponent().stopPossessing();
+                        client.gameRenderer.onCameraEntitySet(player);
                     }
-                } else {
-                    ((RequiemPlayer)player).getPossessionComponent().stopPossessing();
-                    client.gameRenderer.onCameraEntitySet(player);
                 }
-            }
-        }));
-        register(OPUS_USE, ((context, buf) -> {
+            });
+        });
+        ClientSidePacketRegistry.INSTANCE.register(OPUS_USE, ((context, buf) -> {
             boolean cure = buf.readBoolean();
             boolean showBook = buf.readBoolean();
-            PlayerEntity player = context.getPlayer();
-            MinecraftClient mc = MinecraftClient.getInstance();
-            if (showBook) {
-                mc.particleManager.addEmitter(player, ParticleTypes.PORTAL, 120);
-                mc.gameRenderer.showFloatingItem(new ItemStack(cure ? RequiemItems.OPUS_DEMONIUM_CURE : RequiemItems.OPUS_DEMONIUM_CURSE));
-            }
-            if (cure) {
-                RequiemFx.INSTANCE.playEtherealPulseAnimation(16, 0.0f, 0.8f, 0.6f);
-            } else {
-                RequiemFx.INSTANCE.playEtherealPulseAnimation(16, 1.0f, 0.25f, 0.27f);
-            }
+            context.getTaskQueue().execute(() -> {
+                PlayerEntity player = context.getPlayer();
+                MinecraftClient mc = MinecraftClient.getInstance();
+                if (showBook) {
+                    mc.particleManager.addEmitter(player, ParticleTypes.PORTAL, 120);
+                    mc.gameRenderer.showFloatingItem(new ItemStack(cure ? RequiemItems.OPUS_DEMONIUM_CURE : RequiemItems.OPUS_DEMONIUM_CURSE));
+                }
+                if (cure) {
+                    RequiemFx.INSTANCE.playEtherealPulseAnimation(16, 0.0f, 0.8f, 0.6f);
+                } else {
+                    RequiemFx.INSTANCE.playEtherealPulseAnimation(16, 1.0f, 0.25f, 0.27f);
+                }
+            });
         }));
         ClientSidePacketRegistry.INSTANCE.register(DATA_SYNC, (context, buffer) -> {
+            // We intentionally do not use the context's task queue directly
+            // First, we make each sub data manager process its data, then we apply it synchronously with the task queue
             Map<Identifier, SubDataManager<?>> map = SubDataManagerHelper.getClientHelper().streamDataManagers().collect(Collectors.toMap(IdentifiableResourceReloadListener::getFabricId, Function.identity()));
             int nbManagers = buffer.readVarInt();
             for (int i = 0; i < nbManagers; i++) {
@@ -111,13 +117,4 @@ public class ClientMessageHandling {
         taskQueue.execute(() -> subManager.apply(data));
     }
 
-    private static void register(Identifier id, BiConsumer<PacketContext, PacketByteBuf> handler) {
-        ClientSidePacketRegistry.INSTANCE.register(
-                id,
-                (context, packet) -> context.getTaskQueue().execute(() -> {
-                    handler.accept(context, packet);
-                    packet.release();
-                })
-        );
-    }
-}
+ }
