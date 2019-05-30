@@ -35,6 +35,7 @@ import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.impl.remnant.dialogue.DialogueTrackerImpl;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
@@ -62,7 +63,6 @@ import java.util.UUID;
 import static ladysnake.requiem.common.network.RequiemNetworking.createCorporealityMessage;
 import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTrackingIncluding;
 import static ladysnake.requiem.common.remnant.RemnantTypes.MORTAL;
-import static ladysnake.requiem.common.remnant.RemnantTypes.REMNANT;
 
 public final class VanillaRequiemPlugin implements RequiemPlugin {
 
@@ -129,7 +129,11 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> !player.world.isClient && isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
         UseItemCallback.EVENT.register((player, world, hand) -> isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
         // Make players respawn in the right place with the right state
-        PlayerCloneCallback.EVENT.register((original, clone, returnFromEnd) -> ((RequiemPlayer)original).asRemnant().onPlayerClone(clone, !returnFromEnd));
+        PlayerCloneCallback.EVENT.register((original, clone, returnFromEnd) -> {
+            RequiemPlayer requiemClone = RequiemPlayer.from(clone);
+            requiemClone.become(RequiemPlayer.from(original).asRemnant().getType());
+            requiemClone.asRemnant().copyFrom(original, returnFromEnd);
+        });
         PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> {
             sendToAllTrackingIncluding(player, createCorporealityMessage(player));
             ((MobResurrectable)player).spawnResurrectionEntity();
@@ -191,12 +195,12 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
     @Override
     public void registerRemnantStates(Registry<RemnantType> registry) {
-        Registry.register(registry, Requiem.id("remnant"), REMNANT);
+        Registry.register(registry, Requiem.id("remnant"), RemnantTypes.REMNANT);
     }
 
     @Override
     public void registerDialogueActions(DialogueRegistry serverRegistry) {
-        serverRegistry.registerAction(DialogueTrackerImpl.BECOME_REMNANT, p -> handleRemnantChoiceAction(p, REMNANT));
+        serverRegistry.registerAction(DialogueTrackerImpl.BECOME_REMNANT, p -> handleRemnantChoiceAction(p, RemnantTypes.REMNANT));
         serverRegistry.registerAction(DialogueTrackerImpl.STAY_MORTAL, p -> handleRemnantChoiceAction(p, MORTAL));
     }
 

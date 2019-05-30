@@ -95,24 +95,24 @@ public class MutableRemnantState implements RemnantState {
     }
 
     @Override
-    public void onPlayerClone(ServerPlayerEntity clone, boolean dead) {
-        ((RequiemPlayer)clone).become(this.getType());
-        RemnantState cloneState = ((RequiemPlayer) clone).asRemnant();
-        if (dead && !this.isSoul()) {
-            clone.dimension = this.player.world.dimension.getType();
-            ServerWorld previousWorld = clone.server.getWorld(clone.dimension);
-            clone.setWorld(previousWorld);
-            clone.interactionManager.setWorld(previousWorld);
-            clone.copyPositionAndRotation(this.player);
-            // Prevent souls from respawning in fairly bad conditions
-            while(!clone.world.doesNotCollide(clone) && clone.y < 256.0D) {
-                clone.setPosition(clone.x, clone.y + 1.0D, clone.z);
-            }
-            cloneState.setSoul(true);
-        } else {
+    public void copyFrom(ServerPlayerEntity original, boolean lossless) {
+        RemnantState ogState = RequiemPlayer.from(original).asRemnant();
+        if (lossless || ogState.isSoul()) {
             // Copy state
-            cloneState.setSoul(this.isSoul());
+            this.setSoul(ogState.isSoul());
+        } else {
+            this.setSoul(true);
+            this.copyGlobalPos(original);
         }
+    }
+
+    protected void copyGlobalPos(ServerPlayerEntity original) {
+        ServerPlayerEntity clone = (ServerPlayerEntity) this.player;
+        clone.dimension = original.world.dimension.getType();
+        ServerWorld previousWorld = clone.server.getWorld(clone.dimension);
+        clone.setWorld(previousWorld);
+        clone.interactionManager.setWorld(previousWorld);
+        clone.copyPositionAndRotation(original);
     }
 
     @Override

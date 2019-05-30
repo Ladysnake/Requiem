@@ -184,6 +184,10 @@ public abstract class PlayerManagerMixin {
     ) {
         PlayerCloneCallback.EVENT.invoker().onPlayerClone(original, clone, returnFromEnd);
         REQUIEM$RESPAWN_WORLD.set(clone.getServerWorld());
+        // Prevent players from respawning in fairly bad conditions
+        while(!clone.world.doesNotCollide(clone) && clone.y < 256.0D) {
+            clone.setPosition(clone.x, clone.y + 1.0D, clone.z);
+        }
     }
 
     @ModifyVariable(
