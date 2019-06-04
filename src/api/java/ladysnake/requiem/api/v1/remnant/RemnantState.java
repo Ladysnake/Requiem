@@ -17,14 +17,8 @@
  */
 package ladysnake.requiem.api.v1.remnant;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
-import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
-
-import javax.annotation.Nullable;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 public interface RemnantState {
     String NULL_STATE_ID = "requiem:mortal";
@@ -53,23 +47,4 @@ public interface RemnantState {
         // NO-OP
     }
 
-    /**
-     * A predicate matching entities that are remnant
-     */
-    Predicate<Entity> REMNANT = e -> e instanceof RequiemPlayer && ((RequiemPlayer) e).asRemnant().getType().isRemnant();
-
-    /**
-     * Helper method to get the remnant state of an entity if it exists
-     *
-     * @param entity a possibly remnant entity
-     * @return the remnant handler of that entity
-     */
-    static Optional<RemnantState> getIfRemnant(@Nullable Entity entity) {
-        if (REMNANT.test(entity)) {
-            //The predicate guarantees that the entity is not null
-            //noinspection ConstantConditions
-            return Optional.of(((RequiemPlayer) entity).asRemnant());
-        }
-        return Optional.empty();
-    }
 }

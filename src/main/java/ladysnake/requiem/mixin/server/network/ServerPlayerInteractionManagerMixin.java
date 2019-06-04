@@ -18,7 +18,6 @@
 package ladysnake.requiem.mixin.server.network;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.api.v1.remnant.RemnantState;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.world.GameMode;
@@ -43,7 +42,7 @@ public abstract class ServerPlayerInteractionManagerMixin {
                     shift = AFTER
             ))
     private void keepSoulAbilities(GameMode newMode, CallbackInfo info) {
-        if (RemnantState.getIfRemnant(this.player).filter(RemnantState::isSoul).isPresent()) {
+        if (RequiemPlayer.from(this.player).asRemnant().isSoul()) {
             this.player.abilities.invulnerable = true;
             ((RequiemPlayer)this.player).getMovementAlterer().applyConfig();
         }

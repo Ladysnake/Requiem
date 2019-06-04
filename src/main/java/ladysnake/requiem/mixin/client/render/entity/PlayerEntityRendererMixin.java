@@ -95,7 +95,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     private void preRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
         if (((RequiemPlayer) renderedPlayer).asRemnant().isIncorporeal()) {
             Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
-            boolean isObserverRemnant = cameraEntity instanceof RequiemPlayer && ((RequiemPlayer) cameraEntity).asRemnant().getType().isRemnant();
+            boolean isObserverRemnant = cameraEntity instanceof RequiemPlayer && ((RequiemPlayer) cameraEntity).asRemnant().getType().isDemon();
             float alpha = isObserverRemnant ? 1.0f : 0.05f;
             GlStateManager.color4f(1.0f, 1.0f, 1.0f, alpha);
             GlStateManager.depthMask(false);

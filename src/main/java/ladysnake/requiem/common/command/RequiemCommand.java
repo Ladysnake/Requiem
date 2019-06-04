@@ -203,7 +203,7 @@ public class RequiemCommand {
     }
 
     private static boolean isRemnant(ServerPlayerEntity player) {
-        return RequiemPlayer.from(player).asRemnant().getType().isRemnant();
+        return RequiemPlayer.from(player).asRemnant().getType().isDemon();
     }
 
     private static void sendSetRemnantFeedback(ServerCommandSource source, ServerPlayerEntity player, boolean remnant) {

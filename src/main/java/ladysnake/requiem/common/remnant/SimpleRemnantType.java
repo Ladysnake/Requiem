@@ -46,7 +46,7 @@ public class SimpleRemnantType implements RemnantType {
     }
 
     @Override
-    public boolean isRemnant() {
+    public boolean isDemon() {
         return remnant;
     }
 

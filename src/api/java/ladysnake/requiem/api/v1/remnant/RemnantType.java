@@ -19,8 +19,11 @@ package ladysnake.requiem.api.v1.remnant;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import org.apiguardian.api.API;
 
 import javax.annotation.Nullable;
+
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 /**
  * A {@link RemnantType} contains information about a specific kind
@@ -35,7 +38,14 @@ public interface RemnantType {
      */
     RemnantState create(PlayerEntity player);
 
-    boolean isRemnant();
+    /**
+     * Controls behaviours external to the remnant state itself, such
+     * as demon rendering effects.
+     *
+     * @return true if players of this type can be considered demons
+     */
+    @API(status = EXPERIMENTAL)
+    boolean isDemon();
 
     /**
      * Gets the unlocalized string corresponding to the sentence the player
