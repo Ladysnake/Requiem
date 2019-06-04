@@ -98,12 +98,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             }
             MobEntity secondLife = body.create(lazarus.world);
             if (secondLife != null) {
-                if (RequiemPlayer.from(lazarus).asRemnant().getType().isRemnant()) {
-                    ((MobResurrectable) lazarus).setResurrectionEntity(secondLife);
-                } else {
-                    secondLife.copyPositionAndRotation(lazarus);
-                    lazarus.world.spawnEntity(secondLife);
-                }
+                ((MobResurrectable) lazarus).setResurrectionEntity(secondLife);
             }
             return ((RequiemPlayer) lazarus).isRemnant();
         });

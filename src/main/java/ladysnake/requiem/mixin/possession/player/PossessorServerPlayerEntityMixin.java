@@ -77,8 +77,9 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
             if (formerPossessed instanceof MobEntity) {
                 formerPossessed.copyPositionAndRotation(this);
                 if (world.spawnEntity(formerPossessed)) {
-                    this.asPossessor().startPossessing((MobEntity) formerPossessed);
-                    RequiemCriteria.PLAYER_RESURRECTED_AS_ENTITY.handle((ServerPlayerEntity)(Object) this, formerPossessed);
+                    if (this.asPossessor().startPossessing((MobEntity) formerPossessed)) {
+                        RequiemCriteria.PLAYER_RESURRECTED_AS_ENTITY.handle((ServerPlayerEntity)(Object) this, formerPossessed);
+                    }
                 } else {
                     Requiem.LOGGER.error("Failed to spawn possessed entity {}", formerPossessed);
                 }

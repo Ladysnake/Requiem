@@ -19,6 +19,7 @@ package ladysnake.requiem.mixin.entity;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
+import ladysnake.requiem.api.v1.remnant.MobResurrectable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -56,6 +57,8 @@ public abstract class LivingEntityMixin extends Entity {
     private void fireDropEvent(DamageSource deathCause, CallbackInfo ci) {
         if (LivingEntityDropCallback.EVENT.invoker().onEntityDrop((LivingEntity)(Object)this, deathCause)) {
             ci.cancel();
+        } else if (this instanceof MobResurrectable) {
+            ((MobResurrectable) this).spawnResurrectionEntity();
         }
     }
 
