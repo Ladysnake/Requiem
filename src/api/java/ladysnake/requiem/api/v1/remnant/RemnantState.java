@@ -23,6 +23,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public interface RemnantState {
     String NULL_STATE_ID = "requiem:mortal";
 
+    /**
+     * Return whether this player is currently incorporeal.
+     * A player is considered incorporeal if its current corporeality
+     * is not tangible and they have no surrogate body.
+     * @return true if the player is currently incorporeal, {@code false} otherwise
+     */
     boolean isIncorporeal();
 
     boolean isSoul();
