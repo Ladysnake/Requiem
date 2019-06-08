@@ -104,7 +104,7 @@ public class VanillaRequiemPlugin implements RequiemPlugin {
                     lazarus.world.spawnEntity(secondLife);
                 }
             }
-            return true;
+            return ((RequiemPlayer) lazarus).isRemnant();
         });
     }
 
