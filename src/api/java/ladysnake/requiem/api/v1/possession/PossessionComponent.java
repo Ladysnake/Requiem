@@ -17,8 +17,10 @@
  */
 package ladysnake.requiem.api.v1.possession;
 
+import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import nerdhub.cardinal.components.api.component.extension.SyncedComponent;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
 
 import javax.annotation.CheckForNull;
 
@@ -26,12 +28,74 @@ import javax.annotation.CheckForNull;
  * A {@link PossessionComponent} handles a player's possession status.
  */
 public interface PossessionComponent extends SyncedComponent {
-    boolean startPossessing(MobEntity mob);
+    /**
+     * Attempts to start possessing a mob.
+     * <p>
+     * Starting possession sets internal state for both the {@link Possessable mob} and the
+     * {@link ladysnake.requiem.api.v1.RequiemPlayer player} represented by this component.
+     * It will also make any necessary change to the global game state (eg. teleporting the
+     * player to the possessed mob, or transferring equipment).
+     * <p>
+     * This method returns <code>true</code> if the <code>mob</code> has been successfully
+     * possessed.
+     * <p>
+     * After this method returns, and if the attempt is successful, further calls to
+     * {@link #getPossessedEntity()} will return <code>mob</code> until either {@link #stopPossessing()} is called,
+     * or <code>mob</code> cannot be found, whichever happens first. Likewise, calling {@link Possessable#getPossessor()}
+     * on <code>mob</code> will return the player represented by this component.
+     * <p>
+     * Calling this method is equivalent to calling <code>startPossessing(mob, false)</code>.
+     *
+     * @param mob      a mob to possess
+     * @return <code>true</code> if the attempt succeeded, <code>false</code> otherwise
+     * @see #startPossessing(MobEntity, boolean)
+     */
+    default boolean startPossessing(MobEntity mob) {
+        return startPossessing(mob, false);
+    }
 
-    boolean canStartPossessing(MobEntity mob);
+    /**
+     * Attempts to start possessing a mob.
+     * <p>
+     * Starting possession sets internal state for both the {@link Possessable mob} and the
+     * {@link ladysnake.requiem.api.v1.RequiemPlayer player} represented by this component.
+     * It will also make any necessary change to the global game state (eg. teleporting the
+     * player to the possessed mob, or transferring equipment).
+     * <p>
+     * This method returns <code>true</code> if the <code>mob</code> has been successfully
+     * possessed.
+     *
+     * <p>
+     * If <code>simulate</code> is true, the attempt is simulated.
+     * When the attempt is simulated, the state of the game is not altered by this method's execution.
+     * This means that this method is effectively pure during simulated possession attempts,
+     * in the following sense:
+     * <em>If its return value is not used, removing its invocation won't
+     * affect program state and change the semantics. Exception throwing is not considered to be a side effect.</em>
+     * <p>
+     * After this method returns, and if the attempt is successful and not simulated, further calls to
+     * {@link #getPossessedEntity()} will return <code>mob</code> until either {@link #stopPossessing()} is called,
+     * or <code>mob</code> cannot be found, whichever happens first. Likewise, calling {@link Possessable#getPossessor()}
+     * on <code>mob</code> will return the player represented by this component.
+     *
+     * @param mob      a mob to possess
+     * @param simulate whether the possession attempt should only be simulated
+     * @return <code>true</code> if the attempt succeeded, <code>false</code> otherwise
+     *
+     * @implSpec implementations of this method should call
+     * {@link PossessionStartCallback#onPossessionAttempted(MobEntity, PlayerEntity, boolean)} before
+     * proceeding with the actual possession.
+     *
+     * @see PossessionStartCallback
+     */
+    boolean startPossessing(MobEntity mob, boolean simulate);
 
     void stopPossessing();
 
+    /**
+     * Stops an ongoing possession.
+     * @param transfer whether equipment should be transferred to the entity
+     */
     void stopPossessing(boolean transfer);
 
     @CheckForNull

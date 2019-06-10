@@ -20,16 +20,18 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
 
     @Override
     public void onRequiemInitialize() {
-        PossessionStartCallback.EVENT.register(Pandemonium.id("shell_interaction"), (target, possessor) -> {
+        PossessionStartCallback.EVENT.register(Pandemonium.id("shell_interaction"), (target, possessor, simulate) -> {
             if (target instanceof PlayerShellEntity) {
-                ((PlayerShellEntity) target).onSoulInteract(possessor);
+                if (!simulate) {
+                    ((PlayerShellEntity) target).onSoulInteract(possessor);
+                }
                 return PossessionStartCallback.Result.HANDLED;
             }
             return PossessionStartCallback.Result.PASS;
         });
         // Shulkers are a specific kind of boring, so we let players leave them regardless of their level
-        PossessionStartCallback.EVENT.register(Requiem.id("shulker"), (target, possessor) -> {
-            if (target instanceof ShulkerEntity && target.world.isClient) {
+        PossessionStartCallback.EVENT.register(Requiem.id("shulker"), (target, possessor, simulate) -> {
+            if (!simulate && target instanceof ShulkerEntity && target.world.isClient) {
                 MinecraftClient client = MinecraftClient.getInstance();
                 client.inGameHud.setOverlayMessage(I18n.translate("requiem:shulker.onboard", client.options.keySneak.getLocalizedName()), false);
             }
@@ -37,7 +39,7 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
         });
         // Enderman specific behaviour is unneeded now that players can possess them
         PossessionStartCallback.EVENT.unregister(new Identifier(Requiem.MOD_ID, "enderman"));
-        PossessionStartCallback.EVENT.register(Pandemonium.id("allow_everything"), (target, possessor) -> PossessionStartCallback.Result.ALLOW);
+        PossessionStartCallback.EVENT.register(Pandemonium.id("allow_everything"), (target, possessor, simulate) -> PossessionStartCallback.Result.ALLOW);
     }
 
     @Override

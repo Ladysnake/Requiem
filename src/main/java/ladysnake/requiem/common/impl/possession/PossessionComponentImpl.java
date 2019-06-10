@@ -65,31 +65,40 @@ public final class PossessionComponentImpl implements PossessionComponent, Entit
         this.possessedNetworkId = -1;
     }
 
-    @Override
-    public boolean canStartPossessing(final MobEntity mob) {
+    private boolean isReadyForPossession() {
         RequiemPlayer dp = (RequiemPlayer) this.player;
         return player.world.isClient || (!player.isSpectator() && dp.asRemnant().isIncorporeal());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean startPossessing(final MobEntity host) {
-        // 1- check that the player can initiate possession
-        if (!canStartPossessing(host)) {
+    public boolean startPossessing(final MobEntity host, boolean simulate) {
+        // Check that the player can initiate possession
+        if (!isReadyForPossession()) {
             return false;
         }
 
-        PossessionStartCallback.Result result = PossessionStartCallback.EVENT.invoker().onPossessionAttempted(host, this.player);
+        PossessionStartCallback.Result result = PossessionStartCallback.EVENT.invoker().onPossessionAttempted(host, this.player, simulate);
         if (result != PossessionStartCallback.Result.ALLOW) {
             return result.isSuccess();
         }
 
         Possessable possessable = (Possessable) host;
-        // 2- check that the mob can be possessed
+        // Check that the mob can be possessed
         if (!possessable.canBePossessedBy(player)) {
             return false;
         }
+        if (!simulate) {
+            startPossessing0(host, possessable);
+        }
+        return true;
+    }
+
+    private void startPossessing0(MobEntity host, Possessable possessable) {
         possessable.setPossessor(null);
-        // 3- transfer inventory and mount
+        // Transfer inventory and mount
         if (!player.world.isClient) {
             if (RequiemEntityTypeTags.ITEM_USER.contains(host.getType())) {
                 InventoryHelper.transferEquipment(host, player);
@@ -97,21 +106,21 @@ public final class PossessionComponentImpl implements PossessionComponent, Entit
             for (StatusEffectInstance effect : host.getStatusEffects()) {
                 player.addPotionEffect(new StatusEffectInstance(effect));
             }
-            Entity ridden = ((Entity)possessable).getVehicle();
+            Entity ridden = ((Entity) possessable).getVehicle();
             if (ridden != null) {
                 ((MobEntity) possessable).stopRiding();
                 player.startRiding(ridden);
             }
         }
-        // 4- Actually set the possessed entity
+        // Actually set the possessed entity
         this.possessedUuid = host.getUuid();
         this.possessedNetworkId = host.getEntityId();
         possessable.setPossessor(this.player);
         this.syncPossessed();
-        // 5- Update some attributes
+        // Update some attributes
         this.player.copyPositionAndRotation(host);
         this.player.refreshSize(); // update size
-        ((RequiemPlayer)this.player).getMovementAlterer().setConfig(RequiemComponents.MOVEMENT_ALTERERS.get(this.player.world).getEntityMovementConfig(host.getType()));
+        ((RequiemPlayer) this.player).getMovementAlterer().setConfig(RequiemComponents.MOVEMENT_ALTERERS.get(this.player.world).getEntityMovementConfig(host.getType()));
         if (!attributeUpdated.contains(this.player)) {
             this.swapAttributes(this.player);
             attributeUpdated.add(this.player);
@@ -119,7 +128,6 @@ public final class PossessionComponentImpl implements PossessionComponent, Entit
 
         // 6- Make the mob react a bit
         host.playAmbientSound();
-        return true;
     }
 
     private void swapAttributes(PlayerEntity player) {
@@ -131,11 +139,17 @@ public final class PossessionComponentImpl implements PossessionComponent, Entit
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void stopPossessing() {
         this.stopPossessing(!this.player.isCreative());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void stopPossessing(boolean transfer) {
         LivingEntity possessed = this.getPossessedEntity();
@@ -164,6 +178,9 @@ public final class PossessionComponentImpl implements PossessionComponent, Entit
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @CheckForNull
     @Override
     public MobEntity getPossessedEntity() {
@@ -202,6 +219,9 @@ public final class PossessionComponentImpl implements PossessionComponent, Entit
         syncPossessed();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isPossessing() {
         return this.possessedUuid != null;
