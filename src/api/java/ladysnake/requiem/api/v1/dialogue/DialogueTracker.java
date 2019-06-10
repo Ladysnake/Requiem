@@ -18,10 +18,14 @@
 package ladysnake.requiem.api.v1.dialogue;
 
 import net.minecraft.util.Identifier;
+import org.apiguardian.api.API;
 
 import javax.annotation.Nullable;
 
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+
 public interface DialogueTracker {
+    @API(status = EXPERIMENTAL)
     void handleAction(Identifier action);
 
     void startDialogue(Identifier dialogue);
