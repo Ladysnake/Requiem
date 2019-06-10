@@ -86,16 +86,18 @@ public final class PossessionComponentImpl implements PossessionComponent {
         }
         possessable.setPossessor(null);
         // 3- transfer inventory and mount
-        if (RequiemEntityTypeTags.ITEM_USER.contains(host.getType())) {
-            InventoryHelper.transferEquipment(host, player);
-        }
-        for (StatusEffectInstance effect : host.getStatusEffects()) {
-            player.addPotionEffect(new StatusEffectInstance(effect));
-        }
-        Entity ridden = ((Entity)possessable).getVehicle();
-        if (ridden != null) {
-            ((MobEntity) possessable).stopRiding();
-            player.startRiding(ridden);
+        if (!player.world.isClient) {
+            if (RequiemEntityTypeTags.ITEM_USER.contains(host.getType())) {
+                InventoryHelper.transferEquipment(host, player);
+            }
+            for (StatusEffectInstance effect : host.getStatusEffects()) {
+                player.addPotionEffect(new StatusEffectInstance(effect));
+            }
+            Entity ridden = ((Entity)possessable).getVehicle();
+            if (ridden != null) {
+                ((MobEntity) possessable).stopRiding();
+                player.startRiding(ridden);
+            }
         }
         // 4- Actually set the possessed entity
         this.possessedUuid = host.getUuid();
