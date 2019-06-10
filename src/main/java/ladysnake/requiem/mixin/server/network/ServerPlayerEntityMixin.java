@@ -72,13 +72,19 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
 
     @Inject(method = "onStartedTracking", at = @At("HEAD"))
     private void onStartedTracking(Entity tracked, CallbackInfo info) {
+        ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
         if (tracked instanceof PlayerEntity) {
             // Synchronize soul players with other players
-            sendTo((ServerPlayerEntity)(Object)this, createCorporealityMessage((PlayerEntity) tracked));
+            sendTo(self, createCorporealityMessage((PlayerEntity) tracked));
+            Entity possessed = ((RequiemPlayer)tracked).getPossessionComponent().getPossessedEntity();
+            if (possessed != null) {
+                // in case the possessed entity gets tracked before its possessor
+                sendTo(self, createPossessionMessage(possessed.getUuid(), tracked.getEntityId()));
+            }
         } else if (tracked instanceof Possessable) {
             // Synchronize possessed entities with their possessor / other players
             ((Possessable) tracked).getPossessorUuid()
-                    .ifPresent(uuid -> sendTo((ServerPlayerEntity)(Object)this, createPossessionMessage(uuid, tracked.getEntityId())));
+                    .ifPresent(uuid -> sendTo(self, createPossessionMessage(uuid, tracked.getEntityId())));
         }
     }
 }
