@@ -65,6 +65,11 @@ public final class PossessionComponentImpl implements PossessionComponent, Entit
         this.possessedNetworkId = -1;
     }
 
+    @Override
+    public RequiemPlayer asRequiemPlayer() {
+        return RequiemPlayer.from(this.player);
+    }
+
     private boolean isReadyForPossession() {
         RequiemPlayer dp = (RequiemPlayer) this.player;
         return player.world.isClient || (!player.isSpectator() && dp.asRemnant().isIncorporeal());
