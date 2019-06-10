@@ -73,6 +73,11 @@ public class PlayerMovementAlterer implements MovementAlterer {
     }
 
     @Override
+    public boolean canClimbWalls() {
+        return this.config != null && this.config.canClimbWalls();
+    }
+
+    @Override
     public void update() {
         if (this.config == null) {
             return;

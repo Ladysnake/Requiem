@@ -32,6 +32,7 @@ public class SerializableMovementConfig implements MovementConfig {
     private MovementMode flightMode;
     private MovementMode swimMode;
     private boolean flopsOnLand;
+    private boolean climbsWalls;
     private float gravity;
     private float fallSpeedModifier;
     private float inertia;
@@ -56,6 +57,7 @@ public class SerializableMovementConfig implements MovementConfig {
         buf.writeEnumConstant(this.flightMode);
         buf.writeEnumConstant(this.swimMode);
         buf.writeBoolean(this.flopsOnLand);
+        buf.writeBoolean(this.climbsWalls);
         buf.writeFloat(this.gravity);
         buf.writeFloat(this.fallSpeedModifier);
         buf.writeFloat(this.inertia);
@@ -65,6 +67,7 @@ public class SerializableMovementConfig implements MovementConfig {
         this.flightMode = buf.readEnumConstant(MovementMode.class);
         this.swimMode = buf.readEnumConstant(MovementMode.class);
         this.flopsOnLand = buf.readBoolean();
+        this.climbsWalls = buf.readBoolean();
         this.gravity = buf.readFloat();
         this.fallSpeedModifier = buf.readFloat();
         this.inertia = buf.readFloat();
@@ -98,5 +101,10 @@ public class SerializableMovementConfig implements MovementConfig {
     @Override
     public boolean shouldFlopOnLand() {
         return flopsOnLand;
+    }
+
+    @Override
+    public boolean canClimbWalls() {
+        return this.climbsWalls;
     }
 }

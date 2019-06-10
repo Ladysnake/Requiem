@@ -59,6 +59,8 @@ public interface MovementConfig {
 
     boolean shouldFlopOnLand();
 
+    boolean canClimbWalls();
+
     enum MovementMode {
         /**
          * The entity cannot use this movement

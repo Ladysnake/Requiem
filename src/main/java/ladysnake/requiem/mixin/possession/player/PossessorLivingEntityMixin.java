@@ -103,10 +103,7 @@ public abstract class PossessorLivingEntityMixin extends Entity {
     @Inject(method = "isClimbing", at = @At("HEAD"), cancellable = true)
     private void canClimb(CallbackInfoReturnable<Boolean> info) {
         if (this instanceof RequiemPlayer && this.horizontalCollision) {
-            LivingEntity possessed = ((RequiemPlayer) this).asPossessor().getPossessedEntity();
-            if (possessed != null) {
-                info.setReturnValue(RequiemEntityTypeTags.CLIMBER.contains(possessed.getType()));
-            }
+            info.setReturnValue(((RequiemPlayer) this).getMovementAlterer().canClimbWalls());
         }
     }
 
