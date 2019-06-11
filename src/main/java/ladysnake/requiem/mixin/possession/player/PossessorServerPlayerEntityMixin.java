@@ -23,8 +23,6 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.MobResurrectable;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
-import ladysnake.requiem.mixin.possession.entity.PossessableEntityAccessor;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -34,7 +32,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Mixin;
@@ -122,15 +119,6 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
     private void onTeleportDone(CallbackInfo info) {
         sendToAllTrackingIncluding(this, createCorporealityMessage(this));
         spawnResurrectionEntity();
-    }
-
-    @Inject(method = "fall", at = @At("HEAD"), cancellable = true)
-    private void onFall(double fallY, boolean onGround, BlockState floorBlock, BlockPos floorPos, CallbackInfo info) {
-        Entity possessed = this.getPossessionComponent().getPossessedEntity();
-        if (possessed != null) {
-            possessed.fallDistance = this.fallDistance;
-            ((PossessableEntityAccessor) possessed).onFall(fallY, onGround, floorBlock, floorPos);
-        }
     }
 
     @Inject(method = "swingHand", at = @At("HEAD"))

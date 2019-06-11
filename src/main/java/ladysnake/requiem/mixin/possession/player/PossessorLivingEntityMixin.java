@@ -20,17 +20,22 @@ package ladysnake.requiem.mixin.possession.player;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.damage.ProjectileDamageSource;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Slice;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
@@ -101,6 +106,25 @@ public abstract class PossessorLivingEntityMixin extends Entity {
             LivingEntity possessed = ((RequiemPlayer) this).getPossessionComponent().getPossessedEntity();
             if (possessed != null) {
                 info.setReturnValue(RequiemEntityTypeTags.CLIMBER.contains(possessed.getType()));
+            }
+        }
+    }
+
+    @Inject(
+            method = "fall",
+            at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/LivingEntity;fallDistance:F", ordinal = 0),
+            cancellable = true
+    )
+    private void onFall(double fallY, boolean onGround, BlockState floorBlock, BlockPos floorPos, CallbackInfo info) {
+        if (this instanceof RequiemPlayer && !world.isClient) {
+            Entity possessed = ((RequiemPlayer) this).getPossessionComponent().getPossessedEntity();
+            if (possessed != null) {
+                possessed.fallDistance = this.fallDistance;
+                possessed.copyPositionAndRotation(this);
+                possessed.move(MovementType.SELF, Vec3d.ZERO);
+                // We know that possessed is a LivingEntity, Mixin will translate to that type automatically
+                //noinspection ConstantConditions
+                ((PossessorLivingEntityMixin)possessed).fall(fallY, onGround, floorBlock, floorPos);
             }
         }
     }
