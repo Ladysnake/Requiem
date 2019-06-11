@@ -41,7 +41,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -193,9 +192,9 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
                 // Prevent this entity from taking fall damage unless triggered by the possessor
                 this.fallDistance = 0;
 
-                this.setPosition(player.x, player.y, player.z);
                 this.setVelocity(player.getVelocity());
-                this.move(MovementType.SELF, Vec3d.ZERO);
+                this.move(MovementType.SELF, this.getVelocity());
+                this.setPosition(player.x, player.y, player.z);
                 // update limb movement
                 this.limbAngle = player.limbAngle;
                 this.limbDistance = player.limbDistance;
