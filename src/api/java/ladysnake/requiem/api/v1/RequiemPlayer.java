@@ -86,6 +86,7 @@ public interface RequiemPlayer {
      * @see #asRemnant()
      * @since 1.0.0
      */
+    // TODO put this in a RemnantComponent and make asRemnant return that.
     void become(RemnantType type);
 
     /**
