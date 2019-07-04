@@ -31,6 +31,10 @@ import java.util.Arrays;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
 
+// TODO remove black magic
+// TODO expose j.l.reflect instead of method handles
+// TODO rename obf -> intermediary, SRG -> intermediary
+// TODO add variants that return null instead of throwing (if (dothrow) throw e ?)
 public class ReflectionHelper {
 
     private static MethodHandles.Lookup TRUSTED_LOOKUP;
