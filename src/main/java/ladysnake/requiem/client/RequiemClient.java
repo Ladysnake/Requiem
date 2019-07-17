@@ -25,7 +25,6 @@ import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
-import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.network.ClientMessageHandling;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
@@ -71,8 +70,6 @@ public class RequiemClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientMessageHandling.init();
-        SubDataManagerHelper.getClientHelper().registerSubDataManager(Requiem.getDialogueManager(true));
-        SubDataManagerHelper.getClientHelper().registerSubDataManager(Requiem.getMovementAltererManager(true));
         registerCallbacks();
     }
 

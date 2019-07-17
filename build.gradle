@@ -143,6 +143,9 @@ allprojects {
 
 dependencies {
     include "com.github.Ladysnake:Satin:${satin_version}"
+    modCompile "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-base:${cca_version}"
+    modCompile "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
+    modCompile "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-world:${cca_version}"
 }
 
 jar {

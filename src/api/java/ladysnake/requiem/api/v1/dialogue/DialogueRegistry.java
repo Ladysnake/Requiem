@@ -17,9 +17,10 @@
  */
 package ladysnake.requiem.api.v1.dialogue;
 
+import ladysnake.requiem.api.v1.util.TransientComponent;
 import net.minecraft.util.Identifier;
 
-public interface DialogueRegistry {
+public interface DialogueRegistry extends TransientComponent {
     CutsceneDialogue getDialogue(Identifier id);
 
     void registerAction(Identifier actionId, DialogueAction action);

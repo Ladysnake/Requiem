@@ -21,6 +21,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
+import ladysnake.requiem.common.RequiemComponents;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -37,7 +38,7 @@ public class DialogueTrackerImpl implements DialogueTracker {
     private PlayerEntity player;
 
     public DialogueTrackerImpl(PlayerEntity player) {
-        this.manager = Requiem.getDialogueManager(player.world.isClient);
+        this.manager = RequiemComponents.DIALOGUES.get(player.world);
         this.player = player;
     }
 
