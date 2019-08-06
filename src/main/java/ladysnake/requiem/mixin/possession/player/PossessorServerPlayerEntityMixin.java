@@ -122,15 +122,6 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
         spawnResurrectionEntity();
     }
 
-    @Inject(method = "fall", at = @At("HEAD"), cancellable = true)
-    private void onFall(double fallY, boolean onGround, BlockState floorBlock, BlockPos floorPos, CallbackInfo info) {
-        Entity possessed = this.asPossessor().getPossessedEntity();
-        if (possessed != null) {
-            possessed.fallDistance = this.fallDistance;
-            ((PossessableEntityAccessor) possessed).onFall(fallY, onGround, floorBlock, floorPos);
-        }
-    }
-
     @Inject(method = "swingHand", at = @At("HEAD"))
     private void swingHand(Hand hand, CallbackInfo ci) {
         LivingEntity possessed = this.asPossessor().getPossessedEntity();

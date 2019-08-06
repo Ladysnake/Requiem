@@ -19,7 +19,6 @@ package ladysnake.requiem.mixin.possession.player;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
@@ -114,7 +113,7 @@ public abstract class PossessorLivingEntityMixin extends Entity {
     )
     private void onFall(double fallY, boolean onGround, BlockState floorBlock, BlockPos floorPos, CallbackInfo info) {
         if (this instanceof RequiemPlayer && !world.isClient) {
-            Entity possessed = ((RequiemPlayer) this).getPossessionComponent().getPossessedEntity();
+            Entity possessed = ((RequiemPlayer) this).asPossessor().getPossessedEntity();
             if (possessed != null) {
                 possessed.fallDistance = this.fallDistance;
                 possessed.copyPositionAndRotation(this);
