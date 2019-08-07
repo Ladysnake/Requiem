@@ -35,7 +35,6 @@ import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.item.TooltipContext;
@@ -46,14 +45,15 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Components;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.tag.ItemTags;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -84,7 +84,7 @@ public class RequiemClient implements ClientModInitializer {
                 if (((RequiemPlayer)client.player).getDeathSuspender().isLifeTransient()) {
                     DialogueTracker dialogueTracker = ((RequiemPlayer) client.player).getDialogueTracker();
                     dialogueTracker.startDialogue(Requiem.id("remnant_choice"));
-                    client.openScreen(new CutsceneDialogueScreen(new TranslatableComponent("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue()));
+                    client.openScreen(new CutsceneDialogueScreen(new TranslatableText("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue()));
                 }
                 MobEntity possessedEntity = ((RequiemPlayer) client.player).asPossessor().getPossessedEntity();
                 if (possessedEntity != null && possessedEntity.isOnFire()) {
@@ -146,7 +146,7 @@ public class RequiemClient implements ClientModInitializer {
         ItemTooltipCallback.EVENT.register(RequiemClient::addPossessionTooltip);
     }
 
-    private static void addPossessionTooltip(ItemStack item, @Nullable PlayerEntity player, @SuppressWarnings("unused") TooltipContext context, List<Component> lines) {
+    private static void addPossessionTooltip(ItemStack item, @Nullable PlayerEntity player, @SuppressWarnings("unused") TooltipContext context, List<Text> lines) {
         if (player != null) {
             LivingEntity possessed = ((RequiemPlayer) player).asPossessor().getPossessedEntity();
             if (possessed == null) {
@@ -172,9 +172,9 @@ public class RequiemClient implements ClientModInitializer {
             } else {
                 return;
             }
-            lines.add(Components.style(
-                    new TranslatableComponent(key),
-                    new Style().setColor(ChatFormat.DARK_GRAY)
+            lines.add(Texts.setStyleIfAbsent(
+                    new TranslatableText(key),
+                    new Style().setColor(Formatting.DARK_GRAY)
             ));
         }
     }

@@ -26,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(PotionItem.class)
 public abstract class PotionItemMixin {
-    @ModifyArg(method = "onItemFinishedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/effect/StatusEffect;applyInstantEffect(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/LivingEntity;ID)V"))
+    @ModifyArg(method = "finishUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/effect/StatusEffect;applyInstantEffect(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/LivingEntity;ID)V"))
     private LivingEntity targetPossessedEntity(LivingEntity entity) {
         if (entity instanceof RequiemPlayer) {
             LivingEntity possessed = ((RequiemPlayer) entity).asPossessor().getPossessedEntity();

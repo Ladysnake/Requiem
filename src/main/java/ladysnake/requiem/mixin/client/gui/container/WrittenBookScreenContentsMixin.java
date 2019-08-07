@@ -17,10 +17,10 @@
  */
 package ladysnake.requiem.mixin.client.gui.container;
 
-import net.minecraft.client.gui.WrittenBookScreen;
+import net.minecraft.client.gui.screen.ingame.BookScreen;
 import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin(WrittenBookScreen.Contents.class)
+@Mixin(BookScreen.Contents.class)
 public interface WrittenBookScreenContentsMixin {
     // Interface mixins must be public
     // FIXME when asie does their magic

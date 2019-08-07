@@ -139,7 +139,7 @@ allprojects {
 dependencies {
     include "com.github.Ladysnake:Satin:${satin_version}"
     include files(remapApiJar.archivePath)
-    modRuntime "io.github.prospector.modmenu:ModMenu:${rootProject.modmenu_version}"
+    modRuntime "io.github.prospector.modmenu:ModMenu:${modmenu_version}"
     modImplementation("com.github.Ladysnake:Satin:${rootProject.satin_version}")
     modApi "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-base:${cca_version}"
     modImplementation "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-entity:${cca_version}"

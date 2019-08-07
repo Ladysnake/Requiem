@@ -97,7 +97,7 @@ public class ServerMessageHandling {
                 } else {
                     ListTag pages = new ListTag();
                     pages.add(new StringTag(content));
-                    book.setChildTag("pages", pages);
+                    book.putSubTag("pages", pages);
                 }
             });
         });

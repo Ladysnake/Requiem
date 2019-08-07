@@ -163,7 +163,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                         if (possessedEntity.getHealth() < possessedEntity.getHealthMaximum()) {
                             possessedEntity.heal(4.0f);
                             possessedEntity.playAmbientSound();
-                            heldItem.subtractAmount(1);
+                            heldItem.decrement(1);
                         }
                     }
                 }

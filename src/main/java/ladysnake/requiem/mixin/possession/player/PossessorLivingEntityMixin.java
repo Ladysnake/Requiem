@@ -39,7 +39,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class PossessorLivingEntityMixin extends Entity {
-    @Shadow protected abstract float getEyeHeight(EntityPose pose, EntitySize size);
+    @Shadow protected abstract float getEyeHeight(EntityPose pose, EntityDimensions size);
 
     public PossessorLivingEntityMixin(EntityType<?> entityType_1, World world_1) {
         super(entityType_1, world_1);
@@ -126,7 +126,7 @@ public abstract class PossessorLivingEntityMixin extends Entity {
     }
 
     @Inject(method = "getEyeHeight", at = @At("HEAD"), cancellable = true)
-    private void adjustEyeHeight(EntityPose pose, EntitySize size, CallbackInfoReturnable<Float> cir) {
+    private void adjustEyeHeight(EntityPose pose, EntityDimensions size, CallbackInfoReturnable<Float> cir) {
         if (this instanceof RequiemPlayer) {
             PossessionComponent possessionComponent = ((RequiemPlayer) this).asPossessor();
             // This method can be called before the possession component is set
@@ -135,7 +135,7 @@ public abstract class PossessorLivingEntityMixin extends Entity {
                 LivingEntity possessed = possessionComponent.getPossessedEntity();
                 if (possessed != null) {
                     //noinspection ConstantConditions
-                    cir.setReturnValue(((PossessorLivingEntityMixin)(Object)possessed).getEyeHeight(pose, possessed.getSize(pose)));
+                    cir.setReturnValue(((PossessorLivingEntityMixin)(Object)possessed).getEyeHeight(pose, possessed.getDimensions(pose)));
                 }
             }
         }

@@ -21,7 +21,7 @@ import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -33,11 +33,11 @@ import java.util.List;
 @Mixin(ItemStack.class)
 public abstract class ItemStackTooltipMixin {
     @Inject(
-            method = "getTooltipText",
+            method = "getTooltip",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;hasTag()Z", ordinal = 0),
             locals = LocalCapture.CAPTURE_FAILSOFT
     )
-    private void fireTooltipEvent(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Component>> cir, List<Component> lines) {
+    private void fireTooltipEvent(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> lines) {
         ItemTooltipCallback.EVENT.invoker().onTooltipBuilt((ItemStack)(Object)this, player, context, lines);
     }
 }

@@ -159,7 +159,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
     private void writePossessedMobToTag(CompoundTag tag, CallbackInfo info) {
         Entity possessedEntity = this.asPossessor().getPossessedEntity();
         if (possessedEntity != null) {
-            Entity possessedEntityVehicle = possessedEntity.getTopmostVehicle();
+            Entity possessedEntityVehicle = possessedEntity.getRootVehicle();
             CompoundTag possessedRoot = new CompoundTag();
             CompoundTag serializedPossessed = new CompoundTag();
             possessedEntityVehicle.saveToTag(serializedPossessed);

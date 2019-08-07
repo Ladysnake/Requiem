@@ -35,8 +35,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -194,14 +194,14 @@ public class PlayerShellEntity extends MobEntity {
         ItemStack equippedStack = this.getEquippedStack(targetedSlot);
         if (player.abilities.creativeMode && equippedStack.isEmpty() && !playerItemStack.isEmpty()) {
             ItemStack copy = playerItemStack.copy();
-            copy.setAmount(1);
+            copy.setCount(1);
             this.setEquippedStack(targetedSlot, copy);
-        } else if (!playerItemStack.isEmpty() && playerItemStack.getAmount() > 1) {
+        } else if (!playerItemStack.isEmpty() && playerItemStack.getCount() > 1) {
             if (equippedStack.isEmpty()) {
                 ItemStack copy = playerItemStack.copy();
-                copy.setAmount(1);
+                copy.setCount(1);
                 this.setEquippedStack(targetedSlot, copy);
-                playerItemStack.subtractAmount(1);
+                playerItemStack.decrement(1);
             }
         } else {
             this.setEquippedStack(targetedSlot, playerItemStack);
@@ -289,7 +289,7 @@ public class PlayerShellEntity extends MobEntity {
         InventoryHelper.transferEquipment(player, shell);
         shell.transferInventory(player.inventory, shell.inventory, invSize);
         shell.setPlayerUuid(player.getUuid());
-        shell.setCustomName(new TextComponent(player.getEntityName()));
+        shell.setCustomName(new LiteralText(player.getEntityName()));
         return shell;
     }
 

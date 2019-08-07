@@ -17,8 +17,8 @@
  */
 package ladysnake.requiem.mixin.client.gui.ingame;
 
-import net.minecraft.client.gui.ingame.EditBookScreen;
-import net.minecraft.client.gui.widget.BookPageButtonWidget;
+import net.minecraft.client.gui.screen.ingame.BookEditScreen;
+import net.minecraft.client.gui.screen.ingame.PageTurnWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,12 +27,12 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.util.List;
 
-@Mixin(EditBookScreen.class)
+@Mixin(BookEditScreen.class)
 public interface EditBookScreenAccessor {
     @Accessor
-    BookPageButtonWidget getButtonPreviousPage();
+    PageTurnWidget getButtonPreviousPage();
     @Accessor
-    BookPageButtonWidget getButtonNextPage();
+    PageTurnWidget getButtonNextPage();
     @Accessor
     ButtonWidget getButtonDone();
     @Accessor

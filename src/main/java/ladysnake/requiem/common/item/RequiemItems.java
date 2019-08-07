@@ -19,20 +19,20 @@ package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.remnant.RemnantTypes;
-import net.minecraft.ChatFormat;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.FoodItemSetting;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.registry.Registry;
 
 public class RequiemItems {
-    public static final FoodItemSetting HUMAN_FOOD = new FoodItemSetting.Builder()
+    public static final FoodComponent HUMAN_FOOD = new FoodComponent.Builder()
             .hunger(6)
             .saturationModifier(0.3F)
             .statusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 600, 0), 0.5F)
-            .wolfFood()
+            .meat()
             .build();
 
     public static DebugItem DEBUG_ITEM;
@@ -43,10 +43,10 @@ public class RequiemItems {
 
     public static void init() {
         DEBUG_ITEM = registerItem(new DebugItem(new Item.Settings()), "debug_item");
-        HUMAN_FLESH = registerItem(new Item(new Item.Settings().food(HUMAN_FOOD).itemGroup(ItemGroup.FOOD)), "human_flesh");
-        OPUS_DEMONIUM = registerItem(new OpusDemoniumItem(new Item.Settings().itemGroup(ItemGroup.MISC).stackSize(1)), "opus_daemonium");
-        OPUS_DEMONIUM_CURE = registerItem(new WrittenOpusItem(RemnantTypes.MORTAL, ChatFormat.AQUA, new Item.Settings().itemGroup(ItemGroup.MISC).stackSize(1)), "opus_daemonium_cure");
-        OPUS_DEMONIUM_CURSE = registerItem(new WrittenOpusItem(RemnantTypes.REMNANT, ChatFormat.RED, new Item.Settings().itemGroup(ItemGroup.MISC).stackSize(1)), "opus_daemonium_curse");
+        HUMAN_FLESH = registerItem(new Item(new Item.Settings().food(HUMAN_FOOD).group(ItemGroup.FOOD)), "human_flesh");
+        OPUS_DEMONIUM = registerItem(new OpusDemoniumItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1)), "opus_daemonium");
+        OPUS_DEMONIUM_CURE = registerItem(new WrittenOpusItem(RemnantTypes.MORTAL, Formatting.AQUA, new Item.Settings().group(ItemGroup.MISC).maxCount(1)), "opus_daemonium_cure");
+        OPUS_DEMONIUM_CURSE = registerItem(new WrittenOpusItem(RemnantTypes.REMNANT, Formatting.RED, new Item.Settings().group(ItemGroup.MISC).maxCount(1)), "opus_daemonium_curse");
     }
 
     public static <T extends Item> T registerItem(T item, String name) {

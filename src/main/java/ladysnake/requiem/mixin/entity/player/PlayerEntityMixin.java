@@ -42,7 +42,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.FoodItemSetting;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -74,8 +74,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     @Shadow @Final public PlayerAbilities abilities;
     private static final String REQUIEM$TAG_REMNANT_DATA = "requiem:remnant_data";
-    private static final String REQUIEM$TAG_SUSPENDED_DEATH = "requiem:suspended_death";
-    private static final EntitySize REQUIEM$SOUL_SNEAKING_SIZE = EntitySize.resizeable(0.6f, 0.6f);
+    private static final EntityDimensions REQUIEM$SOUL_SNEAKING_SIZE = EntityDimensions.changing(0.6f, 0.6f);
 
     private RemnantState remnantState = NullRemnantState.NULL_STATE;
     private final PossessionComponent possessionComponent = new PossessionComponentImpl(this.asPlayer());
@@ -169,7 +168,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         MobEntity possessedEntity = this.asPossessor().getPossessedEntity();
         if (possessedEntity instanceof ZombieEntity && stack.getItem().isFood()) {
             if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || RequiemItemTags.RAW_FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
-                FoodItemSetting food = stack.getItem().getFoodSetting();
+                FoodComponent food = stack.getItem().getFoodComponent();
                 assert food != null;
                 possessedEntity.heal(food.getHunger());
             }
@@ -218,12 +217,12 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
      * Players' sizes are hardcoded in an immutable enum map.
      * This injection delegates the call to the possessed entity, if any.
      */
-    @Inject(method = "getSize", at = @At("HEAD"), cancellable = true)
-    private void adjustSize(EntityPose pose, CallbackInfoReturnable<EntitySize> cir) {
+    @Inject(method = "getDimensions", at = @At("HEAD"), cancellable = true)
+    private void adjustSize(EntityPose pose, CallbackInfoReturnable<EntityDimensions> cir) {
         if (this.remnantState.isSoul()) {
             Entity possessedEntity = this.asPossessor().getPossessedEntity();
             if (possessedEntity != null) {
-                cir.setReturnValue(possessedEntity.getSize(pose));
+                cir.setReturnValue(possessedEntity.getDimensions(pose));
             } else if (pose == EntityPose.SNEAKING) {
                 cir.setReturnValue(REQUIEM$SOUL_SNEAKING_SIZE);
             }
@@ -232,7 +231,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     // 1.27 is the sneaking eye height
     @Inject(method = "getActiveEyeHeight", at = {@At(value = "CONSTANT", args = "floatValue=1.27")}, cancellable = true)
-    private void adjustSoulSneakingEyeHeight(EntityPose pose, EntitySize size, CallbackInfoReturnable<Float> cir) {
+    private void adjustSoulSneakingEyeHeight(EntityPose pose, EntityDimensions size, CallbackInfoReturnable<Float> cir) {
         if (this.remnantState.isIncorporeal()) {
             cir.setReturnValue(0.4f);
         }

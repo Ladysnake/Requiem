@@ -121,7 +121,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
         this.syncPossessed();
         // Update some attributes
         this.player.copyPositionAndRotation(host);
-        this.player.refreshSize(); // update size
+        this.player.calculateDimensions(); // update size
         ((RequiemPlayer) this.player).getMovementAlterer().setConfig(RequiemComponents.MOVEMENT_ALTERER_MANAGER.get(this.player.world).getEntityMovementConfig(host.getType()));
         if (!attributeUpdated.contains(this.player)) {
             this.swapAttributes(this.player);
@@ -216,7 +216,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
     private void resetState() {
         this.possessedNetworkId = -1;
         ((RequiemPlayer) this.player).getMovementAlterer().setConfig(((RequiemPlayer)player).asRemnant().isSoul() ? SerializableMovementConfig.SOUL : null);
-        this.player.refreshSize(); // update size
+        this.player.calculateDimensions(); // update size
         this.player.setBreath(this.player.getMaxBreath());
         syncPossessed();
     }

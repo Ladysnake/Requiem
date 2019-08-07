@@ -24,7 +24,6 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormat;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LecternBlock;
@@ -34,14 +33,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ChatUtil;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -50,9 +46,9 @@ import java.util.List;
 
 public class WrittenOpusItem extends Item {
     private final RemnantType remnantType;
-    private final ChatFormat color;
+    private final Formatting color;
 
-    public WrittenOpusItem(RemnantType remnantType, ChatFormat color, Settings settings) {
+    public WrittenOpusItem(RemnantType remnantType, Formatting color, Settings settings) {
         super(settings);
         this.remnantType = remnantType;
         this.color = color;
@@ -62,7 +58,7 @@ public class WrittenOpusItem extends Item {
         return remnantType;
     }
 
-    public ChatFormat getTooltipColor() {
+    public Formatting getTooltipColor() {
         return color;
     }
 
@@ -71,7 +67,7 @@ public class WrittenOpusItem extends Item {
         BlockPos pos = ctx.getBlockPos();
         BlockState state = world.getBlockState(pos);
         if (state.getBlock() == Blocks.LECTERN) {
-            return LecternBlock.putBookIfAbsent(world, pos, state, ctx.getItemStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
+            return LecternBlock.putBookIfAbsent(world, pos, state, ctx.getStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
         } else {
             return ActionResult.PASS;
         }
@@ -89,7 +85,7 @@ public class WrittenOpusItem extends Item {
                 RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(cure, true));
                 ((RequiemPlayer) player).become(remnantType);
                 player.incrementStat(Stats.USED.getOrCreateStat(this));
-                stack.subtractAmount(1);
+                stack.decrement(1);
                 RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, this.remnantType);
             }
             return new TypedActionResult<>(ActionResult.SUCCESS, stack);
@@ -98,15 +94,16 @@ public class WrittenOpusItem extends Item {
     }
 
     @Environment(EnvType.CLIENT)
-    public void buildTooltip(ItemStack stack, @Nullable World world, List<Component> lines, TooltipContext ctx) {
-        lines.add(new TranslatableComponent(this == RequiemItems.OPUS_DEMONIUM_CURE ? "requiem:opus_daemonium.cure" : "requiem:opus_daemonium.curse")
-                .applyFormat(this.getTooltipColor()));
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> lines, TooltipContext ctx) {
+        lines.add(new TranslatableText(this == RequiemItems.OPUS_DEMONIUM_CURE ? "requiem:opus_daemonium.cure" : "requiem:opus_daemonium.curse")
+                .formatted(this.getTooltipColor()));
         if (stack.hasTag()) {
             CompoundTag tag = stack.getTag();
             assert tag != null;
             String author = tag.getString("author");
             if (!ChatUtil.isEmpty(author)) {
-                lines.add((new TranslatableComponent("book.byAuthor", author)).applyFormat(ChatFormat.GRAY));
+                lines.add((new TranslatableText("book.byAuthor", author)).formatted(Formatting.GRAY));
             }
         }
     }

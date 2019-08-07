@@ -26,7 +26,7 @@ import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 
 import javax.annotation.Nullable;
 
@@ -40,7 +40,8 @@ public class ShulkerShootAbility extends IndirectAbilityBase<ShulkerEntity> impl
     @Override
     public boolean trigger(PlayerEntity player) {
         if (this.bulletCooldown <= 0) {
-            return this.trigger(player, this.owner.world.getClosestEntity(
+            // method_21727 = getClosestEntity
+            return this.trigger(player, this.owner.world.method_21727(
                     LivingEntity.class,
                     new TargetPredicate(),
                     this.owner,
@@ -68,7 +69,7 @@ public class ShulkerShootAbility extends IndirectAbilityBase<ShulkerEntity> impl
         this.bulletCooldown--;
     }
 
-    private BoundingBox getSearchBox(double range) {
+    private Box getSearchBox(double range) {
         return this.owner.getBoundingBox().expand(range, 4.0D, range);
     }
 

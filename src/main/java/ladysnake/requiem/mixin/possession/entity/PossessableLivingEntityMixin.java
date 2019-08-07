@@ -39,8 +39,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -171,11 +171,11 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
             // Make possessed monsters despawn gracefully
             if (!this.world.isClient) {
                 if (this instanceof Monster && this.world.getDifficulty() == Difficulty.PEACEFUL) {
-                    player.addChatMessage(new TranslatableComponent("requiem.message.peaceful_despawn"), true);
+                    player.addChatMessage(new TranslatableText("requiem.message.peaceful_despawn"), true);
                 }
             }
             // Set the player's hit timer for damage animation and stuff
-            player.field_6008 = this.field_6008;
+            player.timeUntilRegen = this.timeUntilRegen;
             player.setAbsorptionAmount(this.getAbsorptionAmount());
         }
     }

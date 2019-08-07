@@ -26,6 +26,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,9 +36,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
-    @Shadow public abstract ItemStack getActiveItem();
-
-    @Shadow public abstract boolean isUsingItem();
 
     @Shadow public abstract ItemStack getStackInHand(Hand hand_1);
 
@@ -63,12 +61,12 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     /**
-     * Fixes a bug in vanilla minecraft that gives back {@link ItemStack#onItemFinishedUsing(World, LivingEntity)}'s result
+     * Fixes a bug in vanilla minecraft that gives back {@link ItemStack#finishUsing(World, LivingEntity)}'s result
      * even after an inventory drop
      */
     @Inject(method = "method_6040", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;clearActiveItem()V"))
     private void dropUsedItemAsSoul(CallbackInfo ci) {
-        if (this instanceof RequiemPlayer && ((RequiemPlayer) this).asRemnant().isIncorporeal()&& !world.getGameRules().getBoolean("keepInventory")) {
+        if (this instanceof RequiemPlayer && ((RequiemPlayer) this).asRemnant().isIncorporeal()&& !world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
             this.dropStack(this.getStackInHand(this.getActiveHand()));
             this.setStackInHand(this.getActiveHand(), ItemStack.EMPTY);
         }

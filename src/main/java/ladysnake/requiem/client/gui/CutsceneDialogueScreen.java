@@ -24,13 +24,13 @@ import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.client.ZaWorldFx;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.menu.YesNoScreen;
+import net.minecraft.client.gui.screen.ConfirmScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
@@ -44,7 +44,7 @@ public class CutsceneDialogueScreen extends Screen {
     private boolean hoveringChoice;
     public static final int MAX_TEXT_WIDTH = 300;
 
-    public CutsceneDialogueScreen(Component title, CutsceneDialogue dialogue) {
+    public CutsceneDialogueScreen(Text title, CutsceneDialogue dialogue) {
         super(title);
         this.dialogue = dialogue;
     }
@@ -70,10 +70,10 @@ public class CutsceneDialogueScreen extends Screen {
             ((RequiemPlayer) this.minecraft.player).getDeathSuspender().setLifeTransient(false);
         } else if (result == ChoiceResult.ASK_CONFIRMATION) {
             ImmutableList<String> choices = this.dialogue.getCurrentChoices();
-            this.minecraft.openScreen(new YesNoScreen(
+            this.minecraft.openScreen(new ConfirmScreen(
                     this::onBigChoiceMade,
-                    new TranslatableComponent(this.dialogue.getCurrentText()),
-                    new TextComponent(""),
+                    new TranslatableText(this.dialogue.getCurrentText()),
+                    new LiteralText(""),
                     I18n.translate(choices.get(0)),
                     I18n.translate(choices.get(1))
             ));

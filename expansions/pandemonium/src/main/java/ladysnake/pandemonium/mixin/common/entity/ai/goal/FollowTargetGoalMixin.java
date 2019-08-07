@@ -23,7 +23,7 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.TrackTargetGoal;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -41,7 +41,7 @@ public abstract class FollowTargetGoalMixin extends TrackTargetGoal {
 
     @Shadow protected TargetPredicate targetPredicate;
 
-    @Shadow protected abstract BoundingBox getSearchBox(double double_1);
+    @Shadow protected abstract Box getSearchBox(double double_1);
 
     public FollowTargetGoalMixin(MobEntity mobEntity_1, boolean boolean_1) {
         super(mobEntity_1, boolean_1);
@@ -59,7 +59,8 @@ public abstract class FollowTargetGoalMixin extends TrackTargetGoal {
     )
     private void addShellsAsTargets(CallbackInfo ci) {
         if (this.targetEntity == null) {
-            this.targetEntity = this.mob.world.getClosestEntity(PlayerShellEntity.class, this.targetPredicate, this.mob, this.mob.x, this.mob.y + (double)this.mob.getStandingEyeHeight(), this.mob.z, this.getSearchBox(this.getFollowRange()));
+            // method_21727 = getClosestEntity
+            this.targetEntity = this.mob.world.method_21727(PlayerShellEntity.class, this.targetPredicate, this.mob, this.mob.x, this.mob.y + (double)this.mob.getStandingEyeHeight(), this.mob.z, this.getSearchBox(this.getFollowRange()));
         }
     }
 }

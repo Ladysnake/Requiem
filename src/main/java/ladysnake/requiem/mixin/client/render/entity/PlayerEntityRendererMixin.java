@@ -34,7 +34,7 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -140,7 +140,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                         Model model = ((LivingEntityRenderer) renderer).getModel();
                         if (model instanceof BipedEntityModel) {
                             renderer.bindTexture(((AccessibleTextureEntityRenderer) renderer).getTexture(possessed));
-                            boolean rightArm = renderedPlayer.getMainHand() == AbsoluteHand.RIGHT;
+                            boolean rightArm = renderedPlayer.getMainArm() == Arm.RIGHT;
                             GlStateManager.color3f(1.0F, 1.0F, 1.0F);
                             BipedEntityModel playerEntityModel_1 = (BipedEntityModel) model;
                             this.setModelPose(renderedPlayer);

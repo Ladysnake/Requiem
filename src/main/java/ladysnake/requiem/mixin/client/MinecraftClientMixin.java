@@ -19,8 +19,8 @@ package ladysnake.requiem.mixin.client;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.ingame.DeathScreen;
+import net.minecraft.client.gui.screen.DeathScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import org.objectweb.asm.Opcodes;
@@ -67,7 +67,7 @@ public abstract class MinecraftClientMixin {
 
     @Inject(
             method = "openScreen",
-            at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;currentScreen:Lnet/minecraft/client/gui/Screen;", ordinal = 0, opcode = Opcodes.PUTFIELD),
+            at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;currentScreen:Lnet/minecraft/client/gui/screen/Screen;", ordinal = 0, opcode = Opcodes.PUTFIELD),
             cancellable = true
     )
     private void skipDeathScreen(Screen screen, CallbackInfo ci) {

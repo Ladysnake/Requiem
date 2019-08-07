@@ -23,9 +23,10 @@ import ladysnake.requiem.common.entity.internal.ItemStackConvertible;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.BaseBowItem;
 import net.minecraft.item.BowItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.world.World;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,14 +36,14 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BowItem.class)
-public abstract class BowItemMixin extends BaseBowItem {
+public abstract class BowItemMixin extends RangedWeaponItem {
     private static final ThreadLocal<LivingEntity> REQUIEM__CURRENT_USER = new ThreadLocal<>();
-    public BowItemMixin(Settings settings) {
+    public BowItemMixin(Item.Settings settings) {
         super(settings);
     }
 
     @Inject(
-            method = "onItemStopUsing",
+            method = "onStoppedUsing",
             at = @At(
                     value = "FIELD",
                     opcode = Opcodes.GETFIELD,
@@ -54,15 +55,15 @@ public abstract class BowItemMixin extends BaseBowItem {
         REQUIEM__CURRENT_USER.set(((RequiemPlayer) user).asPossessor().getPossessedEntity());
     }
 
-    @ModifyVariable(method = "onItemStopUsing", ordinal = 0, at = @At("STORE"))
+    @ModifyVariable(method = "onStoppedUsing", ordinal = 0, at = @At("STORE"))
     private boolean giveSkeletonInfinity(boolean infinity) {
         if (REQUIEM__CURRENT_USER.get() instanceof AbstractSkeletonEntity) {
-            return infinity || random.nextFloat() < 0.8f;
+            return infinity || RANDOM.nextFloat() < 0.8f;
         }
         return infinity;
     }
 
-    @ModifyVariable(method = "onItemStopUsing", ordinal = 0, at = @At("STORE"))
+    @ModifyVariable(method = "onStoppedUsing", ordinal = 0, at = @At("STORE"))
     private ProjectileEntity useSkeletonArrow(ProjectileEntity firedArrow) {
         LivingEntity entity = REQUIEM__CURRENT_USER.get();
         if (entity instanceof ArrowShooter) {

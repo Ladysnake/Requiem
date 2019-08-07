@@ -24,14 +24,14 @@ import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.item.OpusDemoniumItem;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.mixin.client.gui.ingame.EditBookScreenAccessor;
-import net.minecraft.ChatFormat;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.ingame.EditBookScreen;
+import net.minecraft.client.gui.screen.ingame.BookEditScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 
@@ -40,7 +40,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-public class EditOpusScreen extends EditBookScreen {
+public class EditOpusScreen extends BookEditScreen {
     public static final Identifier BOOK_TEXTURE = Requiem.id("textures/gui/opus_daemonium.png");
     public static final Identifier XP_COST_TEXTURE = Requiem.id("textures/gui/required_xp_5.png");
     public static final int REQUIRED_XP = OpusDemoniumItem.REQUIRED_CONVERSION_XP;
@@ -156,7 +156,7 @@ public class EditOpusScreen extends EditBookScreen {
             String line = str.substring(0, charCount);
             char lastChar = str.charAt(charCount);
             boolean empty = lastChar == ' ' || lastChar == '\n';
-            str = ChatFormat.getFormatAtEnd(line) + str.substring(charCount + (empty ? 1 : 0));
+            str = Formatting.getFormatAtEnd(line) + str.substring(charCount + (empty ? 1 : 0));
             lineLength += line.length() + (empty ? 1 : 0);
             if (lineLength - 1 >= cursorIndex) {
                 String substr = line.substring(0, Math.min(Math.max(cursorIndex - int_3, 0), line.length()));

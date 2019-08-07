@@ -24,14 +24,14 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public interface ItemTooltipCallback {
-    void onTooltipBuilt(ItemStack item, @Nullable PlayerEntity player, TooltipContext context, List<Component> lines);
+    void onTooltipBuilt(ItemStack item, @Nullable PlayerEntity player, TooltipContext context, List<Text> lines);
 
     Event<ItemTooltipCallback> EVENT = EventFactory.createArrayBacked(ItemTooltipCallback.class,
             (listeners) -> (item, player, context, lines) -> {
