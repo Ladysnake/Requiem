@@ -9,6 +9,9 @@
     "inertia": 0.4,
     "gravity": 0.03
   },
+  "minecraft:cave_spider": {
+    "climbsWalls": true
+  },
   "minecraft:chicken": {
     "fallSpeedModifier": 0.6
   },
@@ -47,6 +50,9 @@
   },
   "minecraft:squid": {
     "swimMode": "FORCED"
+  },
+  "minecraft:spider": {
+    "climbsWalls": true
   },
   "minecraft:tropical_fish": {
     "swimMode": "FORCED",

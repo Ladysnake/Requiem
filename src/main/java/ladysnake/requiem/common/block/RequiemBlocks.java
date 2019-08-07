@@ -39,8 +39,8 @@ public class RequiemBlocks {
         Registry.register(Registry.BLOCK, Requiem.id(name), block);
 
         if (doItem) {
-            BlockItem item = new BlockItem(block, new Item.Settings().itemGroup(ItemGroup.DECORATIONS));
-            item.registerBlockItemMap(Item.BLOCK_ITEM_MAP, item);
+            BlockItem item = new BlockItem(block, new Item.Settings().group(ItemGroup.DECORATIONS));
+            item.appendBlocks(Item.BLOCK_ITEMS, item);
             RequiemItems.registerItem(item, name);
         }
 

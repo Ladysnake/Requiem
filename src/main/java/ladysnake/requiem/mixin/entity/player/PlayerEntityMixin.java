@@ -24,13 +24,13 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.RequiemComponents;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.impl.movement.PlayerMovementAlterer;
 import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.remnant.NullRemnantState;
-import ladysnake.requiem.common.impl.remnant.RevivingDeathSuspender;
 import ladysnake.requiem.common.impl.remnant.dialogue.DialogueTrackerImpl;
-import ladysnake.requiem.common.remnant.RemnantStates;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.entity.*;
@@ -42,7 +42,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.FoodItemSetting;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -74,22 +74,20 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     @Shadow @Final public PlayerAbilities abilities;
     private static final String REQUIEM$TAG_REMNANT_DATA = "requiem:remnant_data";
-    private static final String REQUIEM$TAG_SUSPENDED_DEATH = "requiem:suspended_death";
-    private static final EntitySize REQUIEM$SOUL_SNEAKING_SIZE = EntitySize.resizeable(0.6f, 0.6f);
+    private static final EntityDimensions REQUIEM$SOUL_SNEAKING_SIZE = EntityDimensions.changing(0.6f, 0.6f);
 
     private RemnantState remnantState = NullRemnantState.NULL_STATE;
-    private final PossessionComponent possessionComponent = new PossessionComponentImpl((PlayerEntity) (Object) this);
-    private final MovementAlterer movementAlterer = new PlayerMovementAlterer((PlayerEntity)(Object) this);
-    private final DeathSuspender deathSuspender = new RevivingDeathSuspender((PlayerEntity)(Object) this);
-    private final DialogueTracker dialogueTracker = new DialogueTrackerImpl((PlayerEntity)(Object) this);
+    private final PossessionComponent possessionComponent = new PossessionComponentImpl(this.asPlayer());
+    private final MovementAlterer movementAlterer = new PlayerMovementAlterer(this.asPlayer());
+    private final DialogueTracker dialogueTracker = new DialogueTrackerImpl(this.asPlayer());
 
     @Override
-    public RemnantState getRemnantState() {
+    public RemnantState asRemnant() {
         return this.remnantState;
     }
 
     @Override
-    public PossessionComponent getPossessionComponent() {
+    public PossessionComponent asPossessor() {
         return possessionComponent;
     }
 
@@ -100,7 +98,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     @Override
     public DeathSuspender getDeathSuspender() {
-        return this.deathSuspender;
+        return RequiemComponents.DEATH_SUSPENDER.get(this);
     }
 
     @Override
@@ -109,23 +107,16 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     }
 
     @Override
-    public void setRemnant(boolean remnant) {
-        if (remnant != this.isRemnant()) {
-            RemnantState state = remnant ? RemnantStates.REMNANT.create((PlayerEntity) (Object) this) : NullRemnantState.NULL_STATE;
-            this.setRemnantState(state);
-        }
+    public PlayerEntity asPlayer() {
+        return (PlayerEntity) (Object) this;
     }
 
     @Override
-    public boolean isRemnant() {
-        return !(this.remnantState instanceof NullRemnantState);
-    }
-
-    @Override
-    public void setRemnantState(RemnantState handler) {
-        if (handler.getType() == this.remnantState.getType()) {
+    public void become(RemnantType type) {
+        if (type == this.remnantState.getType()) {
             return;
         }
+        RemnantState handler = type.create(this.asPlayer());
         this.remnantState.setSoul(false);
         this.remnantState = handler;
         if (!this.world.isClient) {
@@ -142,7 +133,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
     private void travel(CallbackInfo info) {
-        Entity possessed = this.getPossessionComponent().getPossessedEntity();
+        Entity possessed = this.asPossessor().getPossessedEntity();
         if (possessed != null && ((VariableMobilityEntity) possessed).requiem_isImmovable()) {
             if (!world.isClient && (this.x != possessed.x || this.y != possessed.y || this.z != possessed.z)) {
                 ServerPlayNetworkHandler networkHandler = ((ServerPlayerEntity) (Object) this).networkHandler;
@@ -158,29 +149,26 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     @Inject(at = @At("TAIL"), method = "writeCustomDataToTag")
     private void writeCustomDataToTag(CompoundTag tag, CallbackInfo info) {
         CompoundTag remnantData = new CompoundTag();
-        remnantData.putString("id", RemnantStates.getId(this.getRemnantState().getType()).toString());
+        remnantData.putString("id", RemnantTypes.getId(this.asRemnant().getType()).toString());
         tag.put(REQUIEM$TAG_REMNANT_DATA, this.remnantState.toTag(remnantData));
-        tag.put(REQUIEM$TAG_SUSPENDED_DEATH, this.deathSuspender.toTag(new CompoundTag()));
     }
 
     @Inject(at = @At("TAIL"), method = "readCustomDataFromTag")
     private void readCustomDataFromTag(CompoundTag tag, CallbackInfo info) {
         CompoundTag remnantTag = tag.getCompound(REQUIEM$TAG_REMNANT_DATA);
-        RemnantType remnantType = RemnantStates.get(new Identifier(remnantTag.getString("id")));
-        RemnantState handler = remnantType.create((PlayerEntity) (Object) this);
-        handler.fromTag(remnantTag);
-        this.setRemnantState(handler);
-        this.deathSuspender.fromTag(tag.getCompound(REQUIEM$TAG_SUSPENDED_DEATH));
+        RemnantType remnantType = RemnantTypes.get(new Identifier(remnantTag.getString("id")));
+        this.become(remnantType);
+        this.remnantState.fromTag(remnantTag);
     }
 
     /* Actual modifications of vanilla behaviour */
 
     @Inject(method = "eatFood", at = @At(value = "HEAD"))
     private void eatZombieFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
-        MobEntity possessedEntity = this.getPossessionComponent().getPossessedEntity();
+        MobEntity possessedEntity = this.asPossessor().getPossessedEntity();
         if (possessedEntity instanceof ZombieEntity && stack.getItem().isFood()) {
             if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || RequiemItemTags.RAW_FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
-                FoodItemSetting food = stack.getItem().getFoodSetting();
+                FoodComponent food = stack.getItem().getFoodComponent();
                 assert food != null;
                 possessedEntity.heal(food.getHunger());
             }
@@ -202,7 +190,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
      */
     @Redirect(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/attribute/EntityAttributeInstance;setBaseValue(D)V"))
     private void ignoreSpeedResetDuringPossession(EntityAttributeInstance attr, double value) {
-        if (!this.getPossessionComponent().isPossessing()) {
+        if (!this.asPossessor().isPossessing()) {
             attr.setBaseValue(value);
         }
     }
@@ -229,12 +217,12 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
      * Players' sizes are hardcoded in an immutable enum map.
      * This injection delegates the call to the possessed entity, if any.
      */
-    @Inject(method = "getSize", at = @At("HEAD"), cancellable = true)
-    private void adjustSize(EntityPose pose, CallbackInfoReturnable<EntitySize> cir) {
+    @Inject(method = "getDimensions", at = @At("HEAD"), cancellable = true)
+    private void adjustSize(EntityPose pose, CallbackInfoReturnable<EntityDimensions> cir) {
         if (this.remnantState.isSoul()) {
-            Entity possessedEntity = this.getPossessionComponent().getPossessedEntity();
+            Entity possessedEntity = this.asPossessor().getPossessedEntity();
             if (possessedEntity != null) {
-                cir.setReturnValue(possessedEntity.getSize(pose));
+                cir.setReturnValue(possessedEntity.getDimensions(pose));
             } else if (pose == EntityPose.SNEAKING) {
                 cir.setReturnValue(REQUIEM$SOUL_SNEAKING_SIZE);
             }
@@ -243,7 +231,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     // 1.27 is the sneaking eye height
     @Inject(method = "getActiveEyeHeight", at = {@At(value = "CONSTANT", args = "floatValue=1.27")}, cancellable = true)
-    private void adjustSoulSneakingEyeHeight(EntityPose pose, EntitySize size, CallbackInfoReturnable<Float> cir) {
+    private void adjustSoulSneakingEyeHeight(EntityPose pose, EntityDimensions size, CallbackInfoReturnable<Float> cir) {
         if (this.remnantState.isIncorporeal()) {
             cir.setReturnValue(0.4f);
         }

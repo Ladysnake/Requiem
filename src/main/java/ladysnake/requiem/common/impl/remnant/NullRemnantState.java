@@ -19,7 +19,7 @@ package ladysnake.requiem.common.impl.remnant;
 
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.remnant.RemnantStates;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -44,7 +44,7 @@ public final class NullRemnantState implements RemnantState {
 
     @Override
     public RemnantType getType() {
-        return RemnantStates.MORTAL;
+        return RemnantTypes.MORTAL;
     }
 
     @Override
@@ -58,7 +58,7 @@ public final class NullRemnantState implements RemnantState {
     }
 
     @Override
-    public void onPlayerClone(ServerPlayerEntity clone, boolean dead) {
+    public void copyFrom(ServerPlayerEntity original, boolean lossless) {
         // NO-OP
     }
 }

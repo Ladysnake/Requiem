@@ -34,10 +34,10 @@ import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 
 @Mixin(MilkBucketItem.class)
 public abstract class MilkBucketItemMixin {
-    @Inject(method = "onItemFinishedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;clearPotionEffects()Z", shift = AFTER))
+    @Inject(method = "finishUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;clearPotionEffects()Z", shift = AFTER))
     private void regenSkeletons(ItemStack stack, World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
         if (user instanceof RequiemPlayer) {
-            LivingEntity possessed = ((RequiemPlayer) user).getPossessionComponent().getPossessedEntity();
+            LivingEntity possessed = ((RequiemPlayer) user).asPossessor().getPossessedEntity();
             if (possessed != null && EntityTypeTags.SKELETONS.contains(possessed.getType())) {
                 possessed.addPotionEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 30*20));
             }

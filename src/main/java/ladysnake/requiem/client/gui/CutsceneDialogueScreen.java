@@ -23,12 +23,14 @@ import ladysnake.requiem.api.v1.annotation.Unlocalized;
 import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.client.ZaWorldFx;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.menu.YesNoScreen;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ConfirmScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
@@ -42,7 +44,7 @@ public class CutsceneDialogueScreen extends Screen {
     private boolean hoveringChoice;
     public static final int MAX_TEXT_WIDTH = 300;
 
-    public CutsceneDialogueScreen(Component title, CutsceneDialogue dialogue) {
+    public CutsceneDialogueScreen(Text title, CutsceneDialogue dialogue) {
         super(title);
         this.dialogue = dialogue;
     }
@@ -68,10 +70,10 @@ public class CutsceneDialogueScreen extends Screen {
             ((RequiemPlayer) this.minecraft.player).getDeathSuspender().setLifeTransient(false);
         } else if (result == ChoiceResult.ASK_CONFIRMATION) {
             ImmutableList<String> choices = this.dialogue.getCurrentChoices();
-            this.minecraft.openScreen(new YesNoScreen(
+            this.minecraft.openScreen(new ConfirmScreen(
                     this::onBigChoiceMade,
-                    new TranslatableComponent(this.dialogue.getCurrentText()),
-                    new TextComponent(""),
+                    new TranslatableText(this.dialogue.getCurrentText()),
+                    new LiteralText(""),
                     I18n.translate(choices.get(0)),
                     I18n.translate(choices.get(1))
             ));
@@ -88,24 +90,30 @@ public class CutsceneDialogueScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int int_2, int int_3) {
-        if (keyCode == GLFW.GLFW_KEY_ENTER) {
+    public boolean keyPressed(int key, int scancode, int modifiers) {
+        GameOptions options = MinecraftClient.getInstance().options;
+        if (key == GLFW.GLFW_KEY_ENTER || options.keyInventory.matchesKey(key, scancode)) {
             confirmChoice(selectedChoice);
             return true;
         }
-        return super.keyPressed(keyCode, int_2, int_3);
-    }
-
-    @Override
-    public boolean changeFocus(boolean shiftPressed) {
-        this.selectedChoice = Math.floorMod(this.selectedChoice + (shiftPressed ? 1 : -1), this.dialogue.getCurrentChoices().size());
-        return true;
+        boolean tab = GLFW.GLFW_KEY_TAB == key;
+        boolean down = options.keyBack.matchesKey(key, scancode);
+        boolean shift = (GLFW.GLFW_MOD_SHIFT & modifiers) != 0;
+        if (tab || down || options.keyForward.matchesKey(key, scancode)) {
+            scrollDialogueChoice(tab && !shift || down ? -1 : 1);
+            return true;
+        }
+        return super.keyPressed(key, scancode, modifiers);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollAmount) {
-        this.selectedChoice = Math.floorMod((int) (this.selectedChoice - scrollAmount), this.dialogue.getCurrentChoices().size());
+        this.scrollDialogueChoice(scrollAmount);
         return true;
+    }
+
+    private void scrollDialogueChoice(double scrollAmount) {
+        this.selectedChoice = Math.floorMod((int) (this.selectedChoice - scrollAmount), this.dialogue.getCurrentChoices().size());
     }
 
     @Override
@@ -144,7 +152,7 @@ public class CutsceneDialogueScreen extends Screen {
             this.font.drawStringBounded(choice, 10, y, MAX_TEXT_WIDTH, i == this.selectedChoice ? 0xE0E044 : 0xA0A0A0);
             y += strHeight + CHOICE_GAP;
         }
-        String tip = I18n.translate("requiem:dialogue.instructions");
+        String tip = I18n.translate("requiem:dialogue.instructions", minecraft.options.keyForward.getLocalizedName().toUpperCase(), minecraft.options.keyBack.getLocalizedName().toUpperCase(), minecraft.options.keyInventory.getLocalizedName().toUpperCase());
         this.font.draw(tip, (this.width - font.getStringWidth(tip)) * 0.5f, this.height - 30, 0x808080);
         super.render(mouseX, mouseY, tickDelta);
     }

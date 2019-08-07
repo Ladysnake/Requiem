@@ -17,6 +17,7 @@
  */
 package ladysnake.pandemonium.common.entity.ability;
 
+import ladysnake.pandemonium.mixin.common.entity.mob.BlazeEntityAccessor;
 import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
 import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -35,8 +36,8 @@ public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
 
     @Override
     public void update() {
-        if (this.owner instanceof BlazeEntity && ((BlazeEntity) this.owner).isFireActive() && --fireTicks < 0) {
-            ((BlazeEntity) this.owner).setFireActive(false);
+        if (this.owner instanceof BlazeEntity && ((BlazeEntityAccessor) this.owner).invokeIsFireActive() && --fireTicks < 0) {
+            ((BlazeEntityAccessor) this.owner).invokeSetFireActive(false);
         }
     }
 
@@ -49,7 +50,7 @@ public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
         this.owner.world.playLevelEvent(null, 1018, new BlockPos((int)this.owner.x, (int)this.owner.y, (int)this.owner.z), 0);
         if (this.owner instanceof BlazeEntity) {
             this.fireTicks = 200;
-            ((BlazeEntity) this.owner).setFireActive(true);
+            ((BlazeEntityAccessor) this.owner).invokeSetFireActive(true);
         }
         SmallFireballEntity smallFireballEntity_1 = new SmallFireballEntity(
                 this.owner.world,

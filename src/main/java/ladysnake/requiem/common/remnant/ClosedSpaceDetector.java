@@ -17,14 +17,13 @@
  */
 package ladysnake.requiem.common.remnant;
 
-import ladysnake.requiem.Requiem;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -116,12 +115,11 @@ public class ClosedSpaceDetector {
         if (!this.scannedBlocks.contains(player.getBlockPos())) {
             return;
         }
-        Requiem.LOGGER.info("CLOSED SPACE");
-        EndermanEntity bart = this.player.world.getClosestEntity(EndermanEntity.class, TargetPredicate.DEFAULT, player, player.x, player.y, player.z, new BoundingBox(player.getBlockPos()).expand(20));
+        EndermanEntity bart = this.player.world.method_21727(EndermanEntity.class, TargetPredicate.DEFAULT, player, player.x, player.y, player.z, new Box(player.getBlockPos()).expand(20));
         if (bart == null) {
             bart = new EndermanEntity(EntityType.ENDERMAN, this.player.world);
             bart.copyPositionAndRotation(this.player);
-            bart.setCustomName(new TextComponent("Bart"));
+            bart.setCustomName(new LiteralText("Bart"));
             this.player.world.spawnEntity(bart);
         }
         bart.teleport(player.x, player.y, player.z, true);

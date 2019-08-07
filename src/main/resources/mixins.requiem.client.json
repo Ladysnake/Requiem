@@ -6,9 +6,9 @@
   "mixins": [
     "MinecraftClientMixin",
     "entity.ClientEntityMixin",
+    "gui.container.BookScreenMixin",
     "gui.container.LecternScreenMixin",
     "gui.container.WrittenBookScreenContentsMixin",
-    "gui.container.WrittenBookScreenMixin",
     "gui.hud.InGameHudMixin",
     "gui.ingame.EditBookScreenAccessor",
     "item.ItemStackTooltipMixin",

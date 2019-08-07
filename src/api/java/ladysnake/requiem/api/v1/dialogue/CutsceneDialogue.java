@@ -28,7 +28,7 @@ public interface CutsceneDialogue {
     ImmutableList<@Unlocalized String> getCurrentChoices();
 
     /**
-     * Chooses an option in an initialized
+     * Chooses an option in an initialized dialogue
      * @param choice the selected choice
      * @throws IllegalArgumentException if the given choice is not part of the {@link #getCurrentChoices() current choices}
      * @return true if the new state is an end state

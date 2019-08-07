@@ -23,8 +23,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.impl.ability.DefaultedMobAbilityRegistry;
 import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityConfig;
-import ladysnake.requiem.common.impl.remnant.NullRemnantState;
-import ladysnake.requiem.common.remnant.RemnantStates;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
@@ -43,7 +42,7 @@ public final class RequiemRegistries {
 
     public static void init() {
         Registry.register(Registry.REGISTRIES, Requiem.id("remnant_states"), REMNANT_STATES);
-        Registry.register(REMNANT_STATES, new Identifier(RemnantState.NULL_STATE_ID), RemnantStates.MORTAL);
+        Registry.register(REMNANT_STATES, new Identifier(RemnantState.NULL_STATE_ID), RemnantTypes.MORTAL);
     }
 
 }

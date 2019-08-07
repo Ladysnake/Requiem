@@ -19,7 +19,6 @@ package ladysnake.requiem.mixin.possession.player;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
@@ -40,7 +39,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class PossessorLivingEntityMixin extends Entity {
-    @Shadow protected abstract float getEyeHeight(EntityPose pose, EntitySize size);
+    @Shadow protected abstract float getEyeHeight(EntityPose pose, EntityDimensions size);
 
     public PossessorLivingEntityMixin(EntityType<?> entityType_1, World world_1) {
         super(entityType_1, world_1);
@@ -78,7 +77,7 @@ public abstract class PossessorLivingEntityMixin extends Entity {
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     private void proxyDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
         if (source.getAttacker() instanceof RequiemPlayer) {
-            Entity possessed = ((RequiemPlayer) source.getAttacker()).getPossessionComponent().getPossessedEntity();
+            Entity possessed = ((RequiemPlayer) source.getAttacker()).asPossessor().getPossessedEntity();
             if (possessed != null) {
                 DamageSource newSource = null;
                 if (source instanceof ProjectileDamageSource)
@@ -95,18 +94,15 @@ public abstract class PossessorLivingEntityMixin extends Entity {
 
     @Inject(method = "collides", at = @At("RETURN"), cancellable = true)
     private void preventSoulsCollision(CallbackInfoReturnable<Boolean> info) {
-        if (this instanceof RequiemPlayer && ((RequiemPlayer) this).getRemnantState().isSoul()) {
+        if (this instanceof RequiemPlayer && ((RequiemPlayer) this).asRemnant().isSoul()) {
             info.setReturnValue(false);
         }
     }
 
-    @Inject(method = "isClimbing", at = @At("HEAD"), cancellable = true)
-    private void canClimb(CallbackInfoReturnable<Boolean> info) {
-        if (this instanceof RequiemPlayer && this.horizontalCollision) {
-            LivingEntity possessed = ((RequiemPlayer) this).getPossessionComponent().getPossessedEntity();
-            if (possessed != null) {
-                info.setReturnValue(RequiemEntityTypeTags.CLIMBER.contains(possessed.getType()));
-            }
+    @Inject(method = "isClimbing", at = @At("RETURN"), cancellable = true)
+    private void canClimb(CallbackInfoReturnable<Boolean> cir) {
+        if (!cir.getReturnValueZ() && this instanceof RequiemPlayer && this.horizontalCollision) {
+            cir.setReturnValue(((RequiemPlayer) this).getMovementAlterer().canClimbWalls());
         }
     }
 
@@ -117,7 +113,7 @@ public abstract class PossessorLivingEntityMixin extends Entity {
     )
     private void onFall(double fallY, boolean onGround, BlockState floorBlock, BlockPos floorPos, CallbackInfo info) {
         if (this instanceof RequiemPlayer && !world.isClient) {
-            Entity possessed = ((RequiemPlayer) this).getPossessionComponent().getPossessedEntity();
+            Entity possessed = ((RequiemPlayer) this).asPossessor().getPossessedEntity();
             if (possessed != null) {
                 possessed.fallDistance = this.fallDistance;
                 possessed.copyPositionAndRotation(this);
@@ -130,16 +126,16 @@ public abstract class PossessorLivingEntityMixin extends Entity {
     }
 
     @Inject(method = "getEyeHeight", at = @At("HEAD"), cancellable = true)
-    private void adjustEyeHeight(EntityPose pose, EntitySize size, CallbackInfoReturnable<Float> cir) {
+    private void adjustEyeHeight(EntityPose pose, EntityDimensions size, CallbackInfoReturnable<Float> cir) {
         if (this instanceof RequiemPlayer) {
-            PossessionComponent possessionComponent = ((RequiemPlayer) this).getPossessionComponent();
+            PossessionComponent possessionComponent = ((RequiemPlayer) this).asPossessor();
             // This method can be called before the possession component is set
             //noinspection ConstantConditions
             if (possessionComponent != null) {
                 LivingEntity possessed = possessionComponent.getPossessedEntity();
                 if (possessed != null) {
                     //noinspection ConstantConditions
-                    cir.setReturnValue(((PossessorLivingEntityMixin)(Object)possessed).getEyeHeight(pose, possessed.getSize(pose)));
+                    cir.setReturnValue(((PossessorLivingEntityMixin)(Object)possessed).getEyeHeight(pose, possessed.getDimensions(pose)));
                 }
             }
         }

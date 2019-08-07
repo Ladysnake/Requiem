@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier, DialogueStateMachine>>, DialogueRegistry {
+public final class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier, DialogueStateMachine>>, DialogueRegistry {
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .disableHtmlEscaping()
@@ -65,7 +65,7 @@ public class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier
         Map<Identifier, DialogueStateMachine> dialogues = new HashMap<>();
         int nbDialogues = buf.readVarInt();
         for (int i = 0; i < nbDialogues; i++) {
-            dialogues.put(Identifier.ofNullable(buf.readString()), new DialogueStateMachine().readFromPacket(buf));
+            dialogues.put(Identifier.tryParse(buf.readString()), new DialogueStateMachine().readFromPacket(buf));
         }
         return dialogues;
     }

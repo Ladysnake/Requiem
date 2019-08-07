@@ -24,7 +24,7 @@ import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> extends IndirectAbilityBase<T> {
@@ -40,7 +40,7 @@ public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> extends 
         Vec3d lookVec = this.owner.getRotationVec(1.0f);
         Vec3d endPoint = startPoint.add(lookVec.x * range, lookVec.y * range, lookVec.z * range);
         Vec3d vec3d_2 = this.owner.getRotationVec(1.0F);
-        BoundingBox boundingBox_1 = this.owner.getBoundingBox().stretch(vec3d_2.x * range, vec3d_2.y * range, vec3d_2.z * range).expand(1.0D, 1.0D, 1.0D);
+        Box boundingBox_1 = this.owner.getBoundingBox().stretch(vec3d_2.x * range, vec3d_2.y * range, vec3d_2.z * range).expand(1.0D, 1.0D, 1.0D);
         EntityHitResult trace = ProjectileUtil.rayTrace(this.owner, startPoint, endPoint, boundingBox_1, (entity_1x) -> entity_1x != player && !entity_1x.isSpectator() && entity_1x.collides(), range);
         if (trace != null) {
             Entity traced = trace.getEntity();

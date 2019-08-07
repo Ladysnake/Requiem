@@ -18,16 +18,20 @@
 package ladysnake.requiem.common.impl.remnant;
 
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
-import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.common.RequiemComponents;
 import ladysnake.requiem.common.util.DamageSourceSerialization;
+import nerdhub.cardinal.components.api.ComponentType;
+import nerdhub.cardinal.components.api.util.sync.EntitySyncedComponent;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.PacketByteBuf;
 
 import javax.annotation.Nullable;
 
-public class RevivingDeathSuspender implements DeathSuspender {
+public class RevivingDeathSuspender implements DeathSuspender, EntitySyncedComponent {
     private boolean lifeTransient;
     private PlayerEntity player;
     @Nullable
@@ -47,6 +51,7 @@ public class RevivingDeathSuspender implements DeathSuspender {
         this.player.abilities.invulnerable = true;
         this.deathCause = deathCause;
         this.setLifeTransient(true);
+        this.markDirty();
     }
 
     @Override
@@ -57,9 +62,6 @@ public class RevivingDeathSuspender implements DeathSuspender {
     @Override
     public void setLifeTransient(boolean lifeTransient) {
         this.lifeTransient = lifeTransient;
-        if (!this.player.world.isClient) {
-            RequiemNetworking.sendToAllTrackingIncluding(player, RequiemNetworking.createCorporealityMessage(player));
-        }
     }
 
     @Override
@@ -68,7 +70,34 @@ public class RevivingDeathSuspender implements DeathSuspender {
         this.player.abilities.invulnerable = false;
         this.player.setHealth(0f);
         this.setLifeTransient(false);
+        this.markDirty();
         this.player.onDeath(this.deathCause != null ? deathCause : DamageSource.GENERIC);
+    }
+
+    @Override
+    public PlayerEntity getEntity() {
+        return this.player;
+    }
+
+    @Override
+    public ComponentType<?> getComponentType() {
+        return RequiemComponents.DEATH_SUSPENDER;
+    }
+
+    @Override
+    public void markDirty() {
+        EntitySyncedComponent.super.markDirty();
+        this.syncWith((ServerPlayerEntity) this.player);
+    }
+
+    @Override
+    public void writeToPacket(PacketByteBuf buf) {
+        buf.writeBoolean(this.isLifeTransient());
+    }
+
+    @Override
+    public void readFromPacket(PacketByteBuf buf) {
+        this.setLifeTransient(buf.readBoolean());
     }
 
     @Override

@@ -40,7 +40,7 @@ public class MeleeAbility extends DirectAbilityBase<MobEntity> {
         // We actually need to check if the entity has an attack damage attribute, because mojang doesn't.
         boolean success = (ignoreDamageAttribute || owner.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE) != null) && owner.tryAttack(target);
         if (success && target instanceof LivingEntity) {
-            player.getMainHandStack().onEntityDamaged((LivingEntity) target, player);
+            player.getMainHandStack().postHit((LivingEntity) target, player);
             // Reset cooldown
             player.resetLastAttackedTicks();
         }

@@ -30,7 +30,6 @@ import ladysnake.satin.api.managed.ShaderEffectManager;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlFramebuffer;
-import net.minecraft.client.gl.JsonGlProgram;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VisibleRegion;
 import net.minecraft.entity.player.PlayerEntity;
@@ -60,9 +59,6 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
     private GlFramebuffer playersFramebuffer;
     private boolean renderedSoulPlayers;
     private boolean nearEthereal;
-    @Nullable
-    private JsonGlProgram grayscaleProgram;
-    private boolean grayscaleEnabled;
     private Uniform1f uniformSaturation = this.desaturateEffect.findUniform1f("Saturation");
 
     void registerCallbacks() {
@@ -73,7 +69,7 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
 
     private void update(MinecraftClient client) {
         if (client.player != null) {
-            PlayerEntity closestEtherealPlayer = client.world.getClosestPlayer(client.player.x, client.player.y, client.player.z, ETHEREAL_DESATURATE_RANGE, p -> p != client.player && ((RequiemPlayer)p).getRemnantState().isIncorporeal());
+            PlayerEntity closestEtherealPlayer = client.world.getClosestPlayer(client.player.x, client.player.y, client.player.z, ETHEREAL_DESATURATE_RANGE, p -> p != client.player && ((RequiemPlayer)p).asRemnant().isIncorporeal());
              this.nearEthereal = closestEtherealPlayer != null;
             if (nearEthereal) {
                 float distanceSqToEthereal = (float) client.player.squaredDistanceTo(closestEtherealPlayer.x, closestEtherealPlayer.y, closestEtherealPlayer.z);
@@ -102,26 +98,6 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
 
                 this.renderedSoulPlayers = true;
             }
-        }
-    }
-
-    public void enableGrayscale() {
-        if (grayscaleProgram == null) {
-            try {
-                grayscaleProgram = new JsonGlProgram(MinecraftClient.getInstance().getResourceManager(), "color_convolve");
-                grayscaleProgram.getUniformByNameOrDummy("Saturation").set(0f);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        }
-        grayscaleProgram.enable();
-        grayscaleEnabled = true;
-    }
-
-    public void disableGrayscale() {
-        if (grayscaleEnabled && grayscaleProgram != null) {
-            grayscaleProgram.disable();
-            grayscaleEnabled = false;
         }
     }
 

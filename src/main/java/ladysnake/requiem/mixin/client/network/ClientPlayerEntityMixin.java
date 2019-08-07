@@ -44,7 +44,7 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Re
     @Inject(method = "cannotFitAt", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
     private void stopPushingOutOfBlocks(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValue()) {
-            Entity possessed = this.getPossessionComponent().getPossessedEntity();
+            Entity possessed = this.asPossessor().getPossessedEntity();
             if (possessed != null && possessed.getHeight() < 1F) {
                 cir.setReturnValue(false);
             }
@@ -57,7 +57,7 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Re
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;setSprinting(Z)V", ordinal = 0)
     )
     private boolean continueFlyingLikeSuperman(boolean value) {
-        if (this.abilities.flying && this.input.movementForward > 0F && this.isSprinting() && this.getRemnantState().isIncorporeal()) {
+        if (this.abilities.flying && this.input.movementForward > 0F && this.isSprinting() && this.asRemnant().isIncorporeal()) {
             return true;
         }
         return value;

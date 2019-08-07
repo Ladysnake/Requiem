@@ -31,7 +31,7 @@ public abstract class EntityRendererMixin {
     @Inject(method = "postRender", at = @At("HEAD"), cancellable = true)
     private void postRender(Entity rendered, double x, double y, double z, float yaw, float pitch, CallbackInfo ci) {
         if (rendered instanceof PlayerEntity) {
-            if (((RequiemPlayer)rendered).getRemnantState().isSoul()) {
+            if (((RequiemPlayer)rendered).asRemnant().isSoul()) {
                 ci.cancel();
             }
         }

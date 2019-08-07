@@ -18,8 +18,12 @@
 package ladysnake.requiem.api.v1.dialogue;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.apiguardian.api.API;
+
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 @FunctionalInterface
+@API(status = EXPERIMENTAL)
 public interface DialogueAction {
     /**
      * Handles a dialogue action triggered by the given player.

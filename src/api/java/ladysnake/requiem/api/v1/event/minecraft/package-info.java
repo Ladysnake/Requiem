@@ -1,5 +1,7 @@
 /**
- * Events fired by requiem for the base game
+ * Events fired by requiem for the base game.
+ * Events in this package are susceptible to be deprecated in favor of a
+ * more adequate API.
  */
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault

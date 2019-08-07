@@ -21,9 +21,9 @@ public class ServerMessageHandling {
     public static void init() {
         ServerSidePacketRegistry.INSTANCE.register(ETHEREAL_FRACTURE, (context, buf) -> context.getTaskQueue().execute(() -> {
             PlayerEntity player = context.getPlayer();
-            RemnantState remnantState = ((RequiemPlayer)player).getRemnantState();
+            RemnantState remnantState = ((RequiemPlayer)player).asRemnant();
             if (remnantState instanceof MutableRemnantState) {
-                PossessionComponent possessionComponent = ((RequiemPlayer) player).getPossessionComponent();
+                PossessionComponent possessionComponent = ((RequiemPlayer) player).asPossessor();
                 FractureAnchorManager anchorManager = ((PandemoniumWorld) player.world).getAnchorManager();
                 if (!remnantState.isSoul()) {
                     PlayerShellEntity shellEntity = PlayerShellEntity.fromPlayer(player);

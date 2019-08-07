@@ -40,4 +40,6 @@ public interface MovementAlterer {
      * @return the modified acceleration
      */
     float getSwimmingAcceleration(float baseAcceleration);
+
+    boolean canClimbWalls();
 }

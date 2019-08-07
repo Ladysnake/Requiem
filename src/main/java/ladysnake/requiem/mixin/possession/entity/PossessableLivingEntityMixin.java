@@ -39,8 +39,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -105,7 +105,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     @Override
     public PlayerEntity getPossessor() {
         if (this.possessor != null && this.possessor.removed) {
-            ((RequiemPlayer)this.possessor).getPossessionComponent().stopPossessing();
+            ((RequiemPlayer)this.possessor).asPossessor().stopPossessing();
             // Make doubly sure
             this.setPossessor(null);
         }
@@ -129,7 +129,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         }
         // we need a cast here to trick the compiler
         //noinspection RedundantCast
-        if (this.possessor != null && ((RequiemPlayer) this.possessor).getPossessionComponent().getPossessedEntity() == (Entity)this) {
+        if (this.possessor != null && ((RequiemPlayer) this.possessor).asPossessor().getPossessedEntity() == (Entity)this) {
             throw new IllegalStateException("Players must stop possessing an entity before it can change possessor!");
         }
         this.possessor = possessor;
@@ -171,11 +171,11 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
             // Make possessed monsters despawn gracefully
             if (!this.world.isClient) {
                 if (this instanceof Monster && this.world.getDifficulty() == Difficulty.PEACEFUL) {
-                    player.addChatMessage(new TranslatableComponent("requiem.message.peaceful_despawn"), true);
+                    player.addChatMessage(new TranslatableText("requiem.message.peaceful_despawn"), true);
                 }
             }
             // Set the player's hit timer for damage animation and stuff
-            player.field_6008 = this.field_6008;
+            player.timeUntilRegen = this.timeUntilRegen;
             player.setAbsorptionAmount(this.getAbsorptionAmount());
         }
     }
@@ -220,7 +220,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     private void onDeath(DamageSource deathCause, CallbackInfo ci) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
-            ((RequiemPlayer)possessor).getPossessionComponent().stopPossessing();
+            ((RequiemPlayer)possessor).asPossessor().stopPossessing(!possessor.isCreative());
         }
     }
 

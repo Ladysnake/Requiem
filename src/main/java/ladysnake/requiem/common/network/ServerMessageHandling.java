@@ -23,7 +23,7 @@ import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.item.OpusDemoniumItem;
 import ladysnake.requiem.common.item.RequiemItems;
-import ladysnake.requiem.common.remnant.RemnantStates;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.network.PacketContext;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.client.network.packet.ExperienceBarUpdateS2CPacket;
@@ -49,14 +49,14 @@ public class ServerMessageHandling {
     public static void init() {
         register(LEFT_CLICK_AIR, (context, buf) -> {
             PlayerEntity player = context.getPlayer();
-            Possessable possessed = (Possessable) ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
+            Possessable possessed = (Possessable) ((RequiemPlayer)player).asPossessor().getPossessedEntity();
             if (possessed != null) {
                 possessed.getMobAbilityController().useIndirect(AbilityType.ATTACK);
             }
         });
         register(RIGHT_CLICK_AIR, (context, buf) -> {
             PlayerEntity player = context.getPlayer();
-            Possessable possessed = (Possessable) ((RequiemPlayer)player).getPossessionComponent().getPossessedEntity();
+            Possessable possessed = (Possessable) ((RequiemPlayer)player).asPossessor().getPossessedEntity();
             if (possessed != null) {
                 possessed.getMobAbilityController().useIndirect(AbilityType.INTERACT);
             }
@@ -67,7 +67,7 @@ public class ServerMessageHandling {
                 PlayerEntity player = context.getPlayer();
                 Entity entity = player.world.getEntityById(requestedId);
                 if (entity instanceof MobEntity && entity.distanceTo(player) < 20) {
-                    ((RequiemPlayer) player).getPossessionComponent().startPossessing((MobEntity) entity);
+                    ((RequiemPlayer) player).asPossessor().startPossessing((MobEntity) entity);
                 }
                 sendTo((ServerPlayerEntity) player, createEmptyMessage(POSSESSION_ACK));
             });
@@ -75,7 +75,7 @@ public class ServerMessageHandling {
         ServerSidePacketRegistry.INSTANCE.register(OPUS_UPDATE, (context, buf) -> {
             String content = buf.readString(32767);
             boolean sign = buf.readBoolean();
-            RemnantType type = sign ? RemnantStates.get(new Identifier(buf.readString(32767))) : null;
+            RemnantType type = sign ? RemnantTypes.get(new Identifier(buf.readString(32767))) : null;
             Hand hand = buf.readEnumConstant(Hand.class);
             context.getTaskQueue().execute(() -> {
                 PlayerEntity player = context.getPlayer();
@@ -97,7 +97,7 @@ public class ServerMessageHandling {
                 } else {
                     ListTag pages = new ListTag();
                     pages.add(new StringTag(content));
-                    book.setChildTag("pages", pages);
+                    book.putSubTag("pages", pages);
                 }
             });
         });

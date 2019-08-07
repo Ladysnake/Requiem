@@ -35,7 +35,7 @@ public abstract class ZombieEntityMixin implements Possessable {
     private void possessConvertedZombie(EntityType<? extends ZombieEntity> type, CallbackInfo ci, ZombieEntity converted) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
-            PossessionComponent possessionComponent = ((RequiemPlayer)possessor).getPossessionComponent();
+            PossessionComponent possessionComponent = ((RequiemPlayer)possessor).asPossessor();
             possessionComponent.stopPossessing(false);
             // The possession will start when the entity is added to the world
             ((Possessable)converted).setPossessor(possessor);

@@ -94,7 +94,7 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
             if (--fishEyeAnimation == 2) {
                 sendToServer(POSSESSION_REQUEST, createPossessionRequestBuffer(possessed));
             }
-            if (!((RequiemPlayer) client.player).getRemnantState().isIncorporeal()) {
+            if (!((RequiemPlayer) client.player).asRemnant().isIncorporeal()) {
                 this.possessionTarget = null;
             }
         }
@@ -139,7 +139,7 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
                 MinecraftClient.getInstance().worldRenderer.drawEntityOutlinesFramebuffer();
             }
         }
-        boolean incorporeal = ((RequiemPlayer) mc.player).getRemnantState().isIncorporeal();
+        boolean incorporeal = ((RequiemPlayer) mc.player).asRemnant().isIncorporeal();
         if (incorporeal || this.etherealAnimation > 0 || this.pulseAnimation >= 0) {
             // 10 -> 1
             float zoom = Math.max(1, (etherealAnimation - tickDelta));

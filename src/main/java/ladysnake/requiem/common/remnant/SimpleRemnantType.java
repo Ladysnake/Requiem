@@ -31,9 +31,11 @@ public class SimpleRemnantType implements RemnantType {
     protected final Function<PlayerEntity, RemnantState> factory;
     protected final String conversionSentence;
     protected final Supplier<Item> conversionBook;
+    private boolean remnant;
 
-    public SimpleRemnantType(Function<PlayerEntity, RemnantState> factory, String conversionSentence, Supplier<Item> conversionBook) {
+    public SimpleRemnantType(Function<PlayerEntity, RemnantState> factory, boolean remnant, String conversionSentence, Supplier<Item> conversionBook) {
         this.factory = factory;
+        this.remnant = remnant;
         this.conversionSentence = conversionSentence;
         this.conversionBook = conversionBook;
     }
@@ -41,6 +43,11 @@ public class SimpleRemnantType implements RemnantType {
     @Override
     public RemnantState create(PlayerEntity player) {
         return this.factory.apply(player);
+    }
+
+    @Override
+    public boolean isDemon() {
+        return remnant;
     }
 
     @Nullable

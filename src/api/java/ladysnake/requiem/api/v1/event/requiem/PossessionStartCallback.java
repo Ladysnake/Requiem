@@ -21,7 +21,6 @@ import ladysnake.requiem.api.v1.event.IdentifyingEvent;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResult;
 
 public interface PossessionStartCallback {
     /**
@@ -37,17 +36,26 @@ public interface PossessionStartCallback {
      * calling the next listener. If no callback handles the attempt, the result depends on the logical side.
      * On a client world, the possession attempt will be allowed by default. On a server world, it will be rejected.
      *
+     * <p><br>
+     * If <code>simulate</code> is true, the attempt is simulated.
+     * When the attempt is simulated, the state of the game should <strong>NOT</strong> be altered by any listener.
+     * This means that this method is effectively pure during simulated possession attempts,
+     * in the following sense:
+     * <em>If its return value is not used, removing its invocation won't
+     * affect program state and change the semantics. Exception throwing is not considered to be a side effect.</em>
+     *
      * @param target    the possessed entity
      * @param possessor a player triggering a possession attempt
+     * @param simulate  <code>true</code> if the possession attempt is only simulated
      * @return A {@link Result} describing how the attempt has been handled
      */
-    Result onPossessionAttempted(MobEntity target, PlayerEntity possessor);
+    Result onPossessionAttempted(MobEntity target, PlayerEntity possessor, boolean simulate);
 
     IdentifyingEvent<PossessionStartCallback> EVENT = new IdentifyingEvent<>(PossessionStartCallback.class,
-            (listeners) -> (target, possessor) -> {
+            (listeners) -> (target, possessor, simulate) -> {
                 Result ret = target.world.isClient ? Result.ALLOW : Result.PASS;
                 for (PossessionStartCallback listener : listeners) {
-                    Result result = listener.onPossessionAttempted(target, possessor);
+                    Result result = listener.onPossessionAttempted(target, possessor, simulate);
                     if (result != Result.PASS) {
                         ret = result;
                     }

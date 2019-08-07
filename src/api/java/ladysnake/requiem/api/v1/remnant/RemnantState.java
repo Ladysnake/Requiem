@@ -17,18 +17,18 @@
  */
 package ladysnake.requiem.api.v1.remnant;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
-import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
-
-import javax.annotation.Nullable;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 public interface RemnantState {
     String NULL_STATE_ID = "requiem:mortal";
 
+    /**
+     * Return whether this player is currently incorporeal.
+     * A player is considered incorporeal if its current corporeality
+     * is not tangible and they have no surrogate body.
+     * @return true if the player is currently incorporeal, {@code false} otherwise
+     */
     boolean isIncorporeal();
 
     boolean isSoul();
@@ -40,10 +40,10 @@ public interface RemnantState {
     /**
      * Called when this remnant state's player is cloned
      *
-     * @param clone the player's clone
-     * @param dead true if the original player is dead, false otherwise
+     * @param original the player's clone
+     * @param lossless false if the original player is dead, true otherwise
      */
-    void onPlayerClone(ServerPlayerEntity clone, boolean dead);
+    void copyFrom(ServerPlayerEntity original, boolean lossless);
 
     CompoundTag toTag(CompoundTag tag);
 
@@ -53,23 +53,4 @@ public interface RemnantState {
         // NO-OP
     }
 
-    /**
-     * A predicate matching entities that are remnant
-     */
-    Predicate<Entity> REMNANT = e -> e instanceof RequiemPlayer && ((RequiemPlayer) e).isRemnant();
-
-    /**
-     * Helper method to get the remnant state of an entity if it exists
-     *
-     * @param entity a possibly remnant entity
-     * @return the remnant handler of that entity
-     */
-    static Optional<RemnantState> getIfRemnant(@Nullable Entity entity) {
-        if (REMNANT.test(entity)) {
-            //The predicate guarantees that the entity is not null
-            //noinspection ConstantConditions
-            return Optional.of(((RequiemPlayer) entity).getRemnantState());
-        }
-        return Optional.empty();
-    }
 }

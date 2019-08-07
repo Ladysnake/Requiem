@@ -34,7 +34,7 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -61,7 +61,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
      */
     @Inject(method = "method_4215", at = @At("HEAD"), cancellable = true)
     private void cancelRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
-        LivingEntity possessedEntity = ((RequiemPlayer) renderedPlayer).getPossessionComponent().getPossessedEntity();
+        LivingEntity possessedEntity = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
         if (possessedEntity != null) {
             EntityRenderDispatcher renderManager = MinecraftClient.getInstance().getEntityRenderManager();
             if (((VariableMobilityEntity)possessedEntity).requiem_isImmovable()) {
@@ -93,15 +93,16 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
             )
     )
     private void preRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
-        if (((RequiemPlayer) renderedPlayer).getRemnantState().isIncorporeal()) {
+        if (((RequiemPlayer) renderedPlayer).asRemnant().isIncorporeal()) {
             Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
-            boolean isObserverRemnant = cameraEntity instanceof RequiemPlayer && ((RequiemPlayer) cameraEntity).isRemnant();
+            boolean isObserverRemnant = cameraEntity instanceof RequiemPlayer && ((RequiemPlayer) cameraEntity).asRemnant().getType().isDemon();
             float alpha = isObserverRemnant ? 1.0f : 0.05f;
             GlStateManager.color4f(1.0f, 1.0f, 1.0f, alpha);
             GlStateManager.depthMask(false);
             ShadowPlayerFx.INSTANCE.beginPlayersFbWrite();
         } else if (((RequiemPlayer) renderedPlayer).getDeathSuspender().isLifeTransient()) {
-            ShadowPlayerFx.INSTANCE.enableGrayscale();
+            GlStateManager.color4f(1f, 1f, 1f, 0.5f);
+            GlStateManager.depthMask(false);
         }
     }
 
@@ -117,7 +118,6 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
         GlStateManager.depthMask(true);
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        ShadowPlayerFx.INSTANCE.disableGrayscale();
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -130,9 +130,9 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     @SuppressWarnings("InvalidMemberReference") // Method array is unsupported by the plugin
     @Inject(method = {"renderRightArm", "renderLeftArm"}, at = @At("HEAD"), cancellable = true)
     private void renderPossessedHand(AbstractClientPlayerEntity renderedPlayer, CallbackInfo info) {
-        if (((RequiemPlayer) renderedPlayer).getRemnantState().isSoul()) {
-            if (((RequiemPlayer) renderedPlayer).getPossessionComponent().isPossessing()) {
-                LivingEntity possessed = ((RequiemPlayer) renderedPlayer).getPossessionComponent().getPossessedEntity();
+        if (((RequiemPlayer) renderedPlayer).asRemnant().isSoul()) {
+            if (((RequiemPlayer) renderedPlayer).asPossessor().isPossessing()) {
+                LivingEntity possessed = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
                 if (possessed != null) {
                     EntityRenderer renderer = MinecraftClient.getInstance().getEntityRenderManager().getRenderer(possessed);
                     // If the mob has an arm, render it instead of the player's
@@ -140,7 +140,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                         Model model = ((LivingEntityRenderer) renderer).getModel();
                         if (model instanceof BipedEntityModel) {
                             renderer.bindTexture(((AccessibleTextureEntityRenderer) renderer).getTexture(possessed));
-                            boolean rightArm = renderedPlayer.getMainHand() == AbsoluteHand.RIGHT;
+                            boolean rightArm = renderedPlayer.getMainArm() == Arm.RIGHT;
                             GlStateManager.color3f(1.0F, 1.0F, 1.0F);
                             BipedEntityModel playerEntityModel_1 = (BipedEntityModel) model;
                             this.setModelPose(renderedPlayer);

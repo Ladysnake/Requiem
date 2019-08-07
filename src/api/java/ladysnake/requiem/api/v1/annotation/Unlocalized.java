@@ -28,6 +28,7 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 /**
  * Indicates that a String should be used as a translation key
+ * @see net.minecraft.client.resource.language.I18n
  */
 @API(status = EXPERIMENTAL, since = "1.0.0")
 @Retention(RetentionPolicy.SOURCE)

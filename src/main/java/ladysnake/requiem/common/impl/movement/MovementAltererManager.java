@@ -25,7 +25,6 @@ import com.google.gson.reflect.TypeToken;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.MovementConfig;
 import ladysnake.requiem.api.v1.util.SubDataManager;
-import ladysnake.requiem.api.v1.util.TransientComponent;
 import ladysnake.requiem.common.util.EntityTypeAdapter;
 import net.minecraft.entity.EntityType;
 import net.minecraft.resource.Resource;
@@ -43,7 +42,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class MovementAltererManager implements SubDataManager<Map<EntityType<?>, SerializableMovementConfig>>, TransientComponent {
+public final class MovementAltererManager implements SubDataManager<Map<EntityType<?>, SerializableMovementConfig>> {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(new TypeToken<EntityType<?>>() {}.getType(), new EntityTypeAdapter()).create();
     public static final Identifier LOCATION = Requiem.id("entity_mobility.json");
     private static final Type TYPE = new TypeToken<Map<EntityType<?>, SerializableMovementConfig>>() {}.getType();

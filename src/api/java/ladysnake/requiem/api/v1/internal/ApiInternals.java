@@ -17,6 +17,7 @@
  */
 package ladysnake.requiem.api.v1.internal;
 
+import com.google.common.collect.ImmutableSet;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
@@ -25,14 +26,17 @@ import net.minecraft.entity.mob.MobEntity;
 import org.apiguardian.api.API;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import static org.apiguardian.api.API.Status.INTERNAL;
 
+/**
+ * Internal methods used by other API classes to interact actively with the API provider.
+ * This class should never be referenced directly by an API consumer.
+ */
 @API(status = INTERNAL)
 public final class ApiInternals {
     private ApiInternals() { throw new AssertionError(); }
@@ -41,9 +45,21 @@ public final class ApiInternals {
     @AccessedThroughReflection
     private static Supplier<MobAbilityConfig.Builder<?>> abilityBuilderFactory;
 
-    private static final List<RequiemPlugin> plugins = new ArrayList<>();
+    /**
+     * The set of all registered plugins.
+     */
+    private static final Set<RequiemPlugin> plugins = new HashSet<>();
+    /**
+     * Called whenever a plugin is registered.
+     * When the API provider gets initialized, is replaced by a handler
+     * that also performs plugin initialization.
+     */
     @AccessedThroughReflection
-    private static Consumer<RequiemPlugin> registerHandler = plugins::add;
+    private static Consumer<RequiemPlugin> registerHandler = plugin -> {
+        if (!plugins.add(plugin)) {
+            throw new IllegalStateException(plugin + " has been registered twice!");
+        }
+    };
     @AccessedThroughReflection
     private static SubDataManagerHelper clientSubDataManagerHelper;
     @AccessedThroughReflection
@@ -57,12 +73,24 @@ public final class ApiInternals {
         return (MobAbilityConfig.Builder<T>) abilityBuilderFactory.get();
     }
 
+    /**
+     * Registers a plugin object. This method is thread-safe.
+     * @param entryPoint a previously unregistered plugin object
+     */
     public static void registerPluginInternal(RequiemPlugin entryPoint) {
-        registerHandler.accept(entryPoint);
+        synchronized (plugins) {
+            registerHandler.accept(entryPoint);
+        }
     }
 
-    public static Stream<RequiemPlugin> streamRegisteredPlugins() {
-        return plugins.stream();
+    /**
+     * Creates a read-only copy of {@link #plugins}. This method is thread-safe.
+     * @return an ImmutableSet containing all currently registered plugins.
+     */
+    public static ImmutableSet<RequiemPlugin> copyRegisteredPlugins() {
+        synchronized (plugins) {
+            return ImmutableSet.copyOf(plugins);
+        }
     }
 
     public static SubDataManagerHelper getClientSubDataManagerHelper() {

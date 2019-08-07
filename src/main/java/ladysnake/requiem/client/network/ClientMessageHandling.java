@@ -23,7 +23,7 @@ import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.RequiemFx;
 import ladysnake.requiem.common.item.RequiemItems;
-import ladysnake.requiem.common.remnant.RemnantStates;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
@@ -50,13 +50,11 @@ public class ClientMessageHandling {
             UUID playerUuid = buf.readUuid();
             int remnantId = buf.readVarInt();
             boolean incorporeal = buf.readBoolean();
-            boolean lifeTransient = buf.readBoolean();
             context.getTaskQueue().execute(() -> {
                 PlayerEntity player = context.getPlayer().world.getPlayerByUuid(playerUuid);
                 if (player != null) {
-                    ((RequiemPlayer)player).setRemnantState(RemnantStates.get(remnantId).create(player));
-                    ((RequiemPlayer) player).getRemnantState().setSoul(incorporeal);
-                    ((RequiemPlayer) player).getDeathSuspender().setLifeTransient(lifeTransient);
+                    ((RequiemPlayer)player).become(RemnantTypes.get(remnantId));
+                    ((RequiemPlayer) player).asRemnant().setSoul(incorporeal);
                 }
             });
         });
@@ -70,12 +68,12 @@ public class ClientMessageHandling {
                 if (player != null) {
                     Entity entity = player.world.getEntityById(possessedId);
                     if (entity instanceof MobEntity) {
-                        ((RequiemPlayer)player).getPossessionComponent().startPossessing((MobEntity) entity);
+                        ((RequiemPlayer)player).asPossessor().startPossessing((MobEntity) entity);
                         if (client.options.perspective == 0) {
                             client.gameRenderer.onCameraEntitySet(entity);
                         }
                     } else {
-                        ((RequiemPlayer)player).getPossessionComponent().stopPossessing();
+                        ((RequiemPlayer)player).asPossessor().stopPossessing();
                         client.gameRenderer.onCameraEntitySet(player);
                     }
                 }

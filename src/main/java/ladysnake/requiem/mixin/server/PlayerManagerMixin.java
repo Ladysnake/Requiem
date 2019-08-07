@@ -113,7 +113,7 @@ public abstract class PlayerManagerMixin {
             );
             if (possessedEntityMount != null) {
                 UUID possessedEntityUuid = serializedPossessedInfo.getUuid(POSSESSED_UUID_TAG);
-                resumePossession(((RequiemPlayer) player).getPossessionComponent(), world, possessedEntityMount, possessedEntityUuid);
+                resumePossession(((RequiemPlayer) player).asPossessor(), world, possessedEntityMount, possessedEntityUuid);
             }
         }
     }
@@ -150,7 +150,7 @@ public abstract class PlayerManagerMixin {
             )
     )
     private void logOutPossessedEntity(ServerPlayerEntity player, CallbackInfo info) {
-        Entity possessedEntity = ((RequiemPlayer) player).getPossessionComponent().getPossessedEntity();
+        Entity possessedEntity = ((RequiemPlayer) player).asPossessor().getPossessedEntity();
         if (possessedEntity != null) {
             ServerWorld world = player.getServerWorld();
             world.removeEntity(possessedEntity);
@@ -184,6 +184,10 @@ public abstract class PlayerManagerMixin {
     ) {
         PlayerCloneCallback.EVENT.invoker().onPlayerClone(original, clone, returnFromEnd);
         REQUIEM$RESPAWN_WORLD.set(clone.getServerWorld());
+        // Prevent players from respawning in fairly bad conditions
+        while(!clone.world.doesNotCollide(clone) && clone.y < 256.0D) {
+            clone.setPosition(clone.x, clone.y + 1.0D, clone.z);
+        }
     }
 
     @ModifyVariable(

@@ -33,13 +33,13 @@ import net.minecraft.world.dimension.DimensionType;
 public class BasePossessionHandlers {
 
 public static void register() {
-        PossessionStartCallback.EVENT.register(Requiem.id("blacklist"), (target, possessor) -> {
+        PossessionStartCallback.EVENT.register(Requiem.id("blacklist"), (target, possessor, simulate) -> {
             if (!target.world.isClient && RequiemEntityTypeTags.POSSESSION_BLACKLIST.contains(target.getType())) {
                 return PossessionStartCallback.Result.DENY;
             }
             return PossessionStartCallback.Result.PASS;
         });
-        PossessionStartCallback.EVENT.register(Requiem.id("base_mobs"), (target, possessor) -> {
+        PossessionStartCallback.EVENT.register(Requiem.id("base_mobs"), (target, possessor, simulate) -> {
             if (!target.world.isClient && target.isUndead() && RequiemEntityTypeTags.ITEM_USER.contains(target.getType())) {
                 return PossessionStartCallback.Result.ALLOW;
             }
@@ -48,28 +48,30 @@ public static void register() {
         PossessionStartCallback.EVENT.register(Requiem.id("enderman"), BasePossessionHandlers::handleEndermanPossession);
     }
 
-    private static PossessionStartCallback.Result handleEndermanPossession(MobEntity target, PlayerEntity possessor) {
+    private static PossessionStartCallback.Result handleEndermanPossession(MobEntity target, PlayerEntity possessor, boolean simulate) {
         if (!target.world.isClient && target instanceof EndermanEntity) {
-            Entity tpDest;
-            if (possessor.world.dimension.getType() == DimensionType.OVERWORLD) {
-                // Retry a few times
-                for (int i = 0; i < 20; i++) {
-                    if (((EndermanEntityAccessor) target).invokeTeleportRandomly()) {
-                        possessor.world.playSound(null, target.x, target.y, target.z, SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
-                        break;
+            if (!simulate) {
+                Entity tpDest;
+                if (possessor.world.dimension.getType() == DimensionType.OVERWORLD) {
+                    // Retry a few times
+                    for (int i = 0; i < 20; i++) {
+                        if (((EndermanEntityAccessor) target).invokeTeleportRandomly()) {
+                            possessor.world.playSound(null, target.x, target.y, target.z, SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
+                            break;
+                        }
                     }
+                    tpDest = target;
+                } else {
+                    possessor.world.playSound(null, target.x, target.y, target.z, SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
+                    // Set the variable in advance to avoid game credits
+                    ((ServerPlayerEntity)possessor).notInAnyWorld = true;
+                    possessor.changeDimension(DimensionType.OVERWORLD);
+                    ((ServerPlayerEntity) possessor).networkHandler.sendPacket(new GameStateChangeS2CPacket(4, 0.0F));
+                    tpDest = target.changeDimension(DimensionType.OVERWORLD);
                 }
-                tpDest = target;
-            } else {
-                possessor.world.playSound(null, target.x, target.y, target.z, SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
-                // Set the variable in advance to avoid game credits
-                ((ServerPlayerEntity)possessor).notInAnyWorld = true;
-                possessor.changeDimension(DimensionType.OVERWORLD);
-                ((ServerPlayerEntity) possessor).networkHandler.sendPacket(new GameStateChangeS2CPacket(4, 0.0F));
-                tpDest = target.changeDimension(DimensionType.OVERWORLD);
-            }
-            if (tpDest != null) {
-                possessor.teleport(tpDest.x, tpDest.y, tpDest.z, true);
+                if (tpDest != null) {
+                    possessor.teleport(tpDest.x, tpDest.y, tpDest.z, true);
+                }
             }
             return PossessionStartCallback.Result.HANDLED;
         }
