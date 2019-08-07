@@ -23,8 +23,10 @@ import ladysnake.requiem.api.v1.annotation.Unlocalized;
 import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.client.ZaWorldFx;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.menu.YesNoScreen;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -88,24 +90,30 @@ public class CutsceneDialogueScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int int_2, int int_3) {
-        if (keyCode == GLFW.GLFW_KEY_ENTER) {
+    public boolean keyPressed(int key, int scancode, int modifiers) {
+        GameOptions options = MinecraftClient.getInstance().options;
+        if (key == GLFW.GLFW_KEY_ENTER || options.keyInventory.matchesKey(key, scancode)) {
             confirmChoice(selectedChoice);
             return true;
         }
-        return super.keyPressed(keyCode, int_2, int_3);
-    }
-
-    @Override
-    public boolean changeFocus(boolean shiftPressed) {
-        this.selectedChoice = Math.floorMod(this.selectedChoice + (shiftPressed ? 1 : -1), this.dialogue.getCurrentChoices().size());
-        return true;
+        boolean tab = GLFW.GLFW_KEY_TAB == key;
+        boolean down = options.keyBack.matchesKey(key, scancode);
+        boolean shift = (GLFW.GLFW_MOD_SHIFT & modifiers) != 0;
+        if (tab || down || options.keyForward.matchesKey(key, scancode)) {
+            scrollDialogueChoice(tab && !shift || down ? -1 : 1);
+            return true;
+        }
+        return super.keyPressed(key, scancode, modifiers);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollAmount) {
-        this.selectedChoice = Math.floorMod((int) (this.selectedChoice - scrollAmount), this.dialogue.getCurrentChoices().size());
+        this.scrollDialogueChoice(scrollAmount);
         return true;
+    }
+
+    private void scrollDialogueChoice(double scrollAmount) {
+        this.selectedChoice = Math.floorMod((int) (this.selectedChoice - scrollAmount), this.dialogue.getCurrentChoices().size());
     }
 
     @Override
