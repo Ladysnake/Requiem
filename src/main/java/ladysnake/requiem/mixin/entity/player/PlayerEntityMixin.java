@@ -24,11 +24,11 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.RequiemComponents;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.impl.movement.PlayerMovementAlterer;
 import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.remnant.NullRemnantState;
-import ladysnake.requiem.common.impl.remnant.RevivingDeathSuspender;
 import ladysnake.requiem.common.impl.remnant.dialogue.DialogueTrackerImpl;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.tag.RequiemItemTags;
@@ -80,7 +80,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private RemnantState remnantState = NullRemnantState.NULL_STATE;
     private final PossessionComponent possessionComponent = new PossessionComponentImpl(this.asPlayer());
     private final MovementAlterer movementAlterer = new PlayerMovementAlterer(this.asPlayer());
-    private final DeathSuspender deathSuspender = new RevivingDeathSuspender(this.asPlayer());
     private final DialogueTracker dialogueTracker = new DialogueTrackerImpl(this.asPlayer());
 
     @Override
@@ -100,7 +99,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     @Override
     public DeathSuspender getDeathSuspender() {
-        return this.deathSuspender;
+        return RequiemComponents.DEATH_SUSPENDER.get(this);
     }
 
     @Override
@@ -153,7 +152,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         CompoundTag remnantData = new CompoundTag();
         remnantData.putString("id", RemnantTypes.getId(this.asRemnant().getType()).toString());
         tag.put(REQUIEM$TAG_REMNANT_DATA, this.remnantState.toTag(remnantData));
-        tag.put(REQUIEM$TAG_SUSPENDED_DEATH, this.deathSuspender.toTag(new CompoundTag()));
     }
 
     @Inject(at = @At("TAIL"), method = "readCustomDataFromTag")
@@ -162,7 +160,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         RemnantType remnantType = RemnantTypes.get(new Identifier(remnantTag.getString("id")));
         this.become(remnantType);
         this.remnantState.fromTag(remnantTag);
-        this.deathSuspender.fromTag(tag.getCompound(REQUIEM$TAG_SUSPENDED_DEATH));
     }
 
     /* Actual modifications of vanilla behaviour */

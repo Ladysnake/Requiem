@@ -30,8 +30,6 @@ import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.util.InventoryHelper;
 import ladysnake.requiem.mixin.possession.player.LivingEntityAccessor;
-import nerdhub.cardinal.components.api.ComponentType;
-import nerdhub.cardinal.components.api.util.sync.EntitySyncedComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
@@ -39,7 +37,6 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
@@ -52,7 +49,7 @@ import java.util.UUID;
 import static ladysnake.requiem.common.network.RequiemNetworking.createPossessionMessage;
 import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTrackingIncluding;
 
-public final class PossessionComponentImpl implements PossessionComponent, EntitySyncedComponent {
+public final class PossessionComponentImpl implements PossessionComponent {
     // Identity weak map. Should probably be made into its own util class.
     private static final Set<PlayerEntity> attributeUpdated = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
 
@@ -237,24 +234,4 @@ public final class PossessionComponentImpl implements PossessionComponent, Entit
         return this.possessedUuid;
     }
 
-    @Override
-    public PlayerEntity getEntity() {
-        return this.player;
-    }
-
-    @Override
-    public ComponentType<PossessionComponent> getComponentType() {
-        return RequiemComponents.POSSESSION;
-    }
-
-    @Override
-    public void fromTag(CompoundTag tag) {
-        // NO-OP: possession deserialization is special cased (see PlayerManagerMixin)
-    }
-
-    @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        // NO-OP: possession serialization is special cased (see PossessorServerPlayerEntityMixin)
-        return tag;
-    }
 }

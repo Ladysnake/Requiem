@@ -50,13 +50,11 @@ public class ClientMessageHandling {
             UUID playerUuid = buf.readUuid();
             int remnantId = buf.readVarInt();
             boolean incorporeal = buf.readBoolean();
-            boolean lifeTransient = buf.readBoolean();
             context.getTaskQueue().execute(() -> {
                 PlayerEntity player = context.getPlayer().world.getPlayerByUuid(playerUuid);
                 if (player != null) {
                     ((RequiemPlayer)player).become(RemnantTypes.get(remnantId));
                     ((RequiemPlayer) player).asRemnant().setSoul(incorporeal);
-                    ((RequiemPlayer) player).getDeathSuspender().setLifeTransient(lifeTransient);
                 }
             });
         });

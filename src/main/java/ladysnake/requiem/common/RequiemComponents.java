@@ -2,7 +2,7 @@ package ladysnake.requiem.common;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.common.impl.movement.MovementAltererManager;
 import nerdhub.cardinal.components.api.ComponentRegistry;
@@ -26,7 +26,7 @@ public final class RequiemComponents {
             .asComponentPath()
             .compose(ComponentProvider::fromWorld)
             .thenCastTo(MovementAltererManager.class);
-    public static final ComponentType<PossessionComponent> POSSESSION = ComponentRegistry.INSTANCE.registerIfAbsent(
-            Requiem.id("possession"), PossessionComponent.class
+    public static final ComponentType<DeathSuspender> DEATH_SUSPENDER = ComponentRegistry.INSTANCE.registerIfAbsent(
+            Requiem.id("death_suspension"), DeathSuspender.class
     );
 }

@@ -92,17 +92,15 @@ public class RequiemNetworking {
         RemnantType remnantType = ((RequiemPlayer) synchronizedPlayer).asRemnant().getType();
         boolean incorporeal = ((RequiemPlayer)synchronizedPlayer).asRemnant().isSoul();
         UUID playerUuid = synchronizedPlayer.getUuid();
-        boolean lifeTransient = ((RequiemPlayer) synchronizedPlayer).getDeathSuspender().isLifeTransient();
-        return createCorporealityMessage(playerUuid, remnantType, incorporeal, lifeTransient);
+        return createCorporealityMessage(playerUuid, remnantType, incorporeal);
     }
 
     @Contract(pure = true)
-    private static CustomPayloadS2CPacket createCorporealityMessage(UUID playerUuid, RemnantType remnantType, boolean incorporeal, boolean lifeTransient) {
+    private static CustomPayloadS2CPacket createCorporealityMessage(UUID playerUuid, RemnantType remnantType, boolean incorporeal) {
         PacketByteBuf buf = createEmptyBuffer();
         buf.writeUuid(playerUuid);
         buf.writeVarInt(RemnantTypes.getRawId(remnantType));
         buf.writeBoolean(incorporeal);
-        buf.writeBoolean(lifeTransient);
         return new CustomPayloadS2CPacket(REMNANT_SYNC, buf);
     }
 

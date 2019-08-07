@@ -17,10 +17,10 @@
  */
 package ladysnake.requiem.api.v1.remnant;
 
+import nerdhub.cardinal.components.api.component.Component;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.nbt.CompoundTag;
 
-public interface DeathSuspender {
+public interface DeathSuspender extends Component {
     void suspendDeath(DamageSource deathCause);
 
     boolean isLifeTransient();
@@ -29,7 +29,4 @@ public interface DeathSuspender {
 
     void resumeDeath();
 
-    CompoundTag toTag(CompoundTag tag);
-
-    void fromTag(CompoundTag tag);
 }

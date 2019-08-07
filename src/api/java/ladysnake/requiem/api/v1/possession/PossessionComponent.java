@@ -19,7 +19,6 @@ package ladysnake.requiem.api.v1.possession;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
-import nerdhub.cardinal.components.api.component.extension.SyncedComponent;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
@@ -28,7 +27,7 @@ import javax.annotation.CheckForNull;
 /**
  * A {@link PossessionComponent} handles a player's possession status.
  */
-public interface PossessionComponent extends SyncedComponent {
+public interface PossessionComponent {
     /**
      * Attempts to start possessing a mob.
      * <p>
