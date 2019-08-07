@@ -152,7 +152,7 @@ public class CutsceneDialogueScreen extends Screen {
             this.font.drawStringBounded(choice, 10, y, MAX_TEXT_WIDTH, i == this.selectedChoice ? 0xE0E044 : 0xA0A0A0);
             y += strHeight + CHOICE_GAP;
         }
-        String tip = I18n.translate("requiem:dialogue.instructions");
+        String tip = I18n.translate("requiem:dialogue.instructions", minecraft.options.keyForward.getLocalizedName().toUpperCase(), minecraft.options.keyBack.getLocalizedName().toUpperCase(), minecraft.options.keyInventory.getLocalizedName().toUpperCase());
         this.font.draw(tip, (this.width - font.getStringWidth(tip)) * 0.5f, this.height - 30, 0x808080);
         super.render(mouseX, mouseY, tickDelta);
     }
