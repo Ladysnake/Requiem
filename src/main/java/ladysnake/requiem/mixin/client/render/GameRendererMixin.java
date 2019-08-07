@@ -36,6 +36,8 @@ public abstract class GameRendererMixin {
 
     @Shadow @Final private Camera camera;
 
+    @Shadow @Final private MinecraftClient client;
+
     @SuppressWarnings("UnresolvedMixinReference") // Synthetic method
     @Inject(
             // Inject into the synthetic method corresponding to the lambda in updateTargetedEntity
@@ -55,5 +57,13 @@ public abstract class GameRendererMixin {
     @Inject(method = "applyCameraTransformations", at = @At("TAIL"))
     private void applyCameraTransformations(float tickDelta, CallbackInfo ci) {
         ApplyCameraTransformsCallback.EVENT.invoker().applyCameraTransformations(this.camera, tickDelta);
+    }
+
+    @Inject(method = "shouldRenderBlockOutline", at = @At("HEAD"), cancellable = true)
+    private void cancelBlockOutlineRender(CallbackInfoReturnable<Boolean> cir) {
+        Entity camera = this.client.getCameraEntity();
+        if (camera instanceof RequiemPlayer && (((RequiemPlayer) camera).getDeathSuspender().isLifeTransient() || ((RequiemPlayer) camera).asRemnant().isIncorporeal())) {
+            cir.setReturnValue(false);
+        }
     }
 }
