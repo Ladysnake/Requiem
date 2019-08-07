@@ -99,10 +99,10 @@ public abstract class PossessorLivingEntityMixin extends Entity {
         }
     }
 
-    @Inject(method = "isClimbing", at = @At("HEAD"), cancellable = true)
-    private void canClimb(CallbackInfoReturnable<Boolean> info) {
-        if (this instanceof RequiemPlayer && this.horizontalCollision) {
-            info.setReturnValue(((RequiemPlayer) this).getMovementAlterer().canClimbWalls());
+    @Inject(method = "isClimbing", at = @At("RETURN"), cancellable = true)
+    private void canClimb(CallbackInfoReturnable<Boolean> cir) {
+        if (!cir.getReturnValueZ() && this instanceof RequiemPlayer && this.horizontalCollision) {
+            cir.setReturnValue(((RequiemPlayer) this).getMovementAlterer().canClimbWalls());
         }
     }
 
