@@ -17,13 +17,12 @@
  */
 package ladysnake.requiem.api.v1.dialogue;
 
-import ladysnake.requiem.api.v1.util.TransientComponent;
 import net.minecraft.util.Identifier;
 import org.apiguardian.api.API;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
-public interface DialogueRegistry extends TransientComponent {
+public interface DialogueRegistry {
     CutsceneDialogue getDialogue(Identifier id);
 
     @API(status = EXPERIMENTAL)

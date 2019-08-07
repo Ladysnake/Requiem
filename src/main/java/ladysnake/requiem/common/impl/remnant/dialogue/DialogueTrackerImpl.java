@@ -28,7 +28,7 @@ import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
 
-public class DialogueTrackerImpl implements DialogueTracker {
+public final class DialogueTrackerImpl implements DialogueTracker {
     public static final Identifier BECOME_REMNANT = Requiem.id("become_remnant");
     public static final Identifier STAY_MORTAL = Requiem.id("stay_mortal");
 
@@ -38,7 +38,7 @@ public class DialogueTrackerImpl implements DialogueTracker {
     private PlayerEntity player;
 
     public DialogueTrackerImpl(PlayerEntity player) {
-        this.manager = RequiemComponents.DIALOGUES.get(player.world);
+        this.manager = RequiemComponents.DIALOGUE_REGISTRY.get(player.world);
         this.player = player;
     }
 

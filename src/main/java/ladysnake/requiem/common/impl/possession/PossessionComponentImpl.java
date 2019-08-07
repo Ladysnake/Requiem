@@ -125,7 +125,7 @@ public final class PossessionComponentImpl implements PossessionComponent, Entit
         // Update some attributes
         this.player.copyPositionAndRotation(host);
         this.player.refreshSize(); // update size
-        ((RequiemPlayer) this.player).getMovementAlterer().setConfig(RequiemComponents.MOVEMENT_ALTERERS.get(this.player.world).getEntityMovementConfig(host.getType()));
+        ((RequiemPlayer) this.player).getMovementAlterer().setConfig(RequiemComponents.MOVEMENT_ALTERER_MANAGER.get(this.player.world).getEntityMovementConfig(host.getType()));
         if (!attributeUpdated.contains(this.player)) {
             this.swapAttributes(this.player);
             attributeUpdated.add(this.player);
