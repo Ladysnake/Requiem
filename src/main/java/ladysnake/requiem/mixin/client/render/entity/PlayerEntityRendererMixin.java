@@ -101,7 +101,8 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
             GlStateManager.depthMask(false);
             ShadowPlayerFx.INSTANCE.beginPlayersFbWrite();
         } else if (((RequiemPlayer) renderedPlayer).getDeathSuspender().isLifeTransient()) {
-            ShadowPlayerFx.INSTANCE.enableGrayscale();
+            GlStateManager.color4f(1f, 1f, 1f, 0.5f);
+            GlStateManager.depthMask(false);
         }
     }
 
@@ -117,7 +118,6 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
         GlStateManager.depthMask(true);
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        ShadowPlayerFx.INSTANCE.disableGrayscale();
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
