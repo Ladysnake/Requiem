@@ -65,8 +65,8 @@ allprojects {
         }
     }
 
-    task apiJar(type: Jar, dependsOn: classes) {
-        classifier = 'api'
+    task apiJar(type: Jar, dependsOn: apiClasses) {
+        classifier = 'api-dev'
         from sourceSets.api.allJava
         from (sourceSets.api.output) {
             include "fabric.mod.json"
@@ -79,6 +79,7 @@ allprojects {
 
     task remapApiJar(type: RemapJarTask, dependsOn: project.apiJar) {
         input = apiJar.archivePath
+        classifier = 'api'
         addNestedDependencies = false
     }
 
@@ -99,6 +100,7 @@ allprojects {
         sourceSets.api.compileClasspath += files({sourceSets.main.compileClasspath.toList()})
 
         compile sourceSets.api.output
+        include files(remapApiJar.archivePath)
 
         compileOnly "org.jetbrains:annotations:${jb_annotations_version}"
         compileOnly "org.apiguardian:apiguardian-api:${apiguardian_version}"
@@ -128,7 +130,7 @@ allprojects {
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                artifact(remapApiJar.archivePath) {
+                artifact(remapApiJar) {
                     classifier = "api"
                 }
             }
@@ -137,13 +139,15 @@ allprojects {
 }
 
 dependencies {
-    include "com.github.Ladysnake:Satin:${satin_version}"
-    include files(remapApiJar.archivePath)
-    modRuntime "io.github.prospector.modmenu:ModMenu:${modmenu_version}"
     modImplementation("com.github.Ladysnake:Satin:${rootProject.satin_version}")
+    include "com.github.Ladysnake:Satin:${satin_version}"
+    modRuntime "io.github.prospector.modmenu:ModMenu:${modmenu_version}"
     modApi "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-base:${cca_version}"
+    include "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-base:${cca_version}"
     modImplementation "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
+    include "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
     modImplementation "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-world:${cca_version}"
+    include "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-world:${cca_version}"
 }
 
 jar {
