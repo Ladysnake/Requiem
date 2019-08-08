@@ -164,6 +164,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                             possessedEntity.heal(4.0f);
                             possessedEntity.playAmbientSound();
                             heldItem.decrement(1);
+                            player.getItemCooldownManager().set(heldItem.getItem(), 40);
                         }
                     }
                 }
