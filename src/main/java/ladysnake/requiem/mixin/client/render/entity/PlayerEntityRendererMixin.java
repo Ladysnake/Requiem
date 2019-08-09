@@ -34,9 +34,9 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Arm;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -127,9 +127,22 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     @Shadow
     protected abstract void setModelPose(AbstractClientPlayerEntity player);
 
-    @SuppressWarnings("InvalidMemberReference") // Method array is unsupported by the plugin
-    @Inject(method = {"renderRightArm", "renderLeftArm"}, at = @At("HEAD"), cancellable = true)
-    private void renderPossessedHand(AbstractClientPlayerEntity renderedPlayer, CallbackInfo info) {
+    @Inject(method = "renderRightArm", at = @At("HEAD"), cancellable = true)
+    private void renderRightArm(AbstractClientPlayerEntity renderedPlayer, CallbackInfo info) {
+        if (requiem_renderPossessedArm(renderedPlayer, true)) {
+            info.cancel();
+        }
+    }
+
+    @Inject(method = "renderLeftArm", at = @At("HEAD"), cancellable = true)
+    private void renderLeftArm(AbstractClientPlayerEntity renderedPlayer, CallbackInfo info) {
+        if (requiem_renderPossessedArm(renderedPlayer, false)) {
+            info.cancel();
+        }
+    }
+
+    @Unique
+    private boolean requiem_renderPossessedArm(AbstractClientPlayerEntity renderedPlayer, boolean rightArm) {
         if (((RequiemPlayer) renderedPlayer).asRemnant().isSoul()) {
             if (((RequiemPlayer) renderedPlayer).asPossessor().isPossessing()) {
                 LivingEntity possessed = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
@@ -140,7 +153,6 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                         Model model = ((LivingEntityRenderer) renderer).getModel();
                         if (model instanceof BipedEntityModel) {
                             renderer.bindTexture(((AccessibleTextureEntityRenderer) renderer).getTexture(possessed));
-                            boolean rightArm = renderedPlayer.getMainArm() == Arm.RIGHT;
                             GlStateManager.color3f(1.0F, 1.0F, 1.0F);
                             BipedEntityModel playerEntityModel_1 = (BipedEntityModel) model;
                             this.setModelPose(renderedPlayer);
@@ -159,7 +171,8 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                 }
             }
             // prevent rendering a soul's arm regardless
-            info.cancel();
+            return true;
         }
+        return false;
     }
 }

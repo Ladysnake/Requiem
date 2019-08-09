@@ -80,10 +80,11 @@ public abstract class PossessorLivingEntityMixin extends Entity {
             Entity possessed = ((RequiemPlayer) source.getAttacker()).asPossessor().getPossessedEntity();
             if (possessed != null) {
                 DamageSource newSource = null;
-                if (source instanceof ProjectileDamageSource)
+                if (source instanceof ProjectileDamageSource) {
                     newSource = new ProjectileDamageSource(source.getName(), source.getSource(), possessed);
-                else if (source instanceof EntityDamageSource)
+                } else if (source instanceof EntityDamageSource) {
                     newSource = new EntityDamageSource(source.getName(), possessed);
+                }
                 if (newSource != null) {
                     ((LivingEntity) (Object) this).damage(newSource, amount);
                     info.setReturnValue(true);
