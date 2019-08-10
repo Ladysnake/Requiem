@@ -52,7 +52,7 @@ public static void register() {
         if (!target.world.isClient && target instanceof EndermanEntity) {
             if (!simulate) {
                 Entity tpDest;
-                if (possessor.world.dimension.getType() == DimensionType.OVERWORLD) {
+                if (possessor.world.dimension.getType() != DimensionType.THE_END/* == DimensionType.OVERWORLD*/) {
                     // Retry a few times
                     for (int i = 0; i < 20; i++) {
                         if (((EndermanEntityAccessor) target).invokeTeleportRandomly()) {
@@ -62,6 +62,7 @@ public static void register() {
                     }
                     tpDest = target;
                 } else {
+                    // TODO when the dimension API is merged, use a custom teleporter to make the END path work with any dimension
                     possessor.world.playSound(null, target.x, target.y, target.z, SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
                     // Set the variable in advance to avoid game credits
                     ((ServerPlayerEntity)possessor).notInAnyWorld = true;
