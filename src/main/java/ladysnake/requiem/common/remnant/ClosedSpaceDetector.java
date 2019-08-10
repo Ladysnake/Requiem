@@ -27,8 +27,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.dimension.DimensionType;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,16 +39,18 @@ public class ClosedSpaceDetector {
     public static final int MAX_BLOCKS_SCANNED_PER_TICK = 100;
     public static final Direction[] DIRECTIONS = Direction.values();
 
+    /*
+     * Possible improvement: scan a fixed radius rather than a fixed amount of blocks.
+     * This makes the behaviour a lot more predictable, but may not handle weird cave shapes well
+     * https://discordapp.com/channels/507304429255393322/507982478276034570/609441798816923746
+     */
+
     /**The player for which this detector is running*/
     private final PlayerEntity player;
     /**All blocks that have already been scanned*/
     private Set<BlockPos> scannedBlocks = new HashSet<>();
-    /**
-     * All blocks that should be scanned
-     */
-    private Deque<BlockPos> toScan = new ArrayDeque<>();
-    /** All blocks that should be scanned, but in a set (for faster contains checks) */
-    private Set<BlockPos> toScanSet = new HashSet<>();
+    /** All blocks that should be scanned */
+    private FloodfillQueue<BlockPos> toScan = new FloodfillQueue<>();
     private int counter;
     // We do initialize it
     @SuppressWarnings("NullableProblems")
@@ -68,9 +68,7 @@ public class ClosedSpaceDetector {
         if (scanning) {
             this.scannedBlocks.clear();
             this.toScan.clear();
-            this.toScanSet.clear();
             this.toScan.add(this.player.getBlockPos());
-            this.toScanSet.add(this.player.getBlockPos());
             this.scanDimension = this.player.dimension;
         }
     }
@@ -96,14 +94,13 @@ public class ClosedSpaceDetector {
                 break;
             }
             BlockPos next = toScan.pop();
-            toScanSet.remove(next);
             // If the scannedBlocks set did not already contain the next pos, proceed
             if (this.player.world.getBlockState(next).getCollisionShape(this.player.world, next).isEmpty()) {
                 this.scannedBlocks.add(next);
                 for (Direction direction : DIRECTIONS) {
                     BlockPos neigh = next.offset(direction);
-                    if (!this.scannedBlocks.contains(neigh) && toScanSet.add(neigh)) {
-                        toScan.add(neigh);
+                    if (!this.scannedBlocks.contains(neigh)) {
+                        toScan.add(neigh);  // ignored if already in the queue
                     }
                 }
             }
