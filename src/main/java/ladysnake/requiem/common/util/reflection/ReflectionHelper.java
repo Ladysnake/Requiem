@@ -31,13 +31,8 @@ import java.util.Arrays;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
 
-// TODO remove black magic
-// TODO expose j.l.reflect instead of method handles
-// TODO rename obf -> intermediary, SRG -> intermediary
 // TODO add variants that return null instead of throwing (if (dothrow) throw e ?)
 public class ReflectionHelper {
-
-    private static MethodHandles.Lookup TRUSTED_LOOKUP;
 
     public static final String INTERMEDIARY = "intermediary";
 
@@ -56,94 +51,57 @@ public class ReflectionHelper {
         return Type.getType(type).getDescriptor();
     }
 
+    @SuppressWarnings("unchecked")
     @API(status = STABLE, since = "1.0.0")
-    public static Class<?> findClass(String obfClassName) throws ClassNotFoundException {
-        return Class.forName(getMappingResolver().mapClassName(INTERMEDIARY, obfClassName));
+    public static <T> Class<T> findClass(String obfClassName) throws ClassNotFoundException {
+        return (Class<T>) Class.forName(getMappingResolver().mapClassName(INTERMEDIARY, obfClassName));
     }
 
     /**
-     * Finds a method with the specified Intermediary name and parameters in the given class and generates a {@link MethodHandle method handle} for it. <br>
-     * Note: for performance, store the returned value and avoid calling this repeatedly.
-     * <p>
-     * Throws an exception if the method is not found.
+     * Finds a method with the specified Intermediary name and parameters in the given class and generates a {@link Method} for it.
      *
-     * @param clazz          The class to find the method on.
-     * @param methodObfName  The obfuscated name of the method to find (used in obfuscated environments, i.e. "getWorldTime").
-     *                       If the name you are looking for is on a class that is never obfuscated, this should be null.
-     * @param returnType     The return type of the method to find.
-     * @param parameterTypes The parameter types of the method to find.
+     * @param clazz            The class to find the method on.
+     * @param intermediaryName The intermediary name of the method to find (used in obfuscated environments, e.g. "method_1234").
+     *                         If the method has no intermediary name (ie. not obfuscated), the visible name should be used.
+     * @param returnType       The return type of the method to find.
+     * @param parameterTypes   The parameter types of the method to find.
      * @return A handle for the method with the specified name and parameters in the given class.
      * @throws UnableToFindMethodException if an issue prevents the method from being reflected
+     * @apiNote for performance, store the returned value and avoid calling this repeatedly.
      */
     @API(status = MAINTAINED, since = "1.0.0")
-    public static MethodHandle findMethodHandleFromObfName(Class<?> clazz, String methodObfName, Class<?> returnType, Class<?>... parameterTypes) throws UnableToFindMethodException {
+    public static Method findMethodFromIntermediary(Class<?> clazz, String intermediaryName, Class<?> returnType, Class<?>... parameterTypes) throws UnableToFindMethodException {
         try {
             String methodDesc = getMethodDescriptor(returnType, parameterTypes);
-            String deobfName = getMappingResolver().mapMethodName(INTERMEDIARY, clazz.getName(), methodObfName, methodDesc);
-            Method m = clazz.getDeclaredMethod(deobfName, parameterTypes);
-            return MethodHandles.lookup().unreflect(m);
-        } catch (NoSuchMethodException | IllegalAccessException e) {
+            String mappedName = getMappingResolver().mapMethodName(INTERMEDIARY, clazz.getName(), intermediaryName, methodDesc);
+            Method m = clazz.getDeclaredMethod(mappedName, parameterTypes);
+            m.setAccessible(true);
+            return m;
+        } catch (NoSuchMethodException e) {
             throw new UnableToFindMethodException(e);
         }
     }
 
     /**
-     * Finds a field with the specified SRG name and type in the given class and generates a {@link MethodHandle method handle} for its getter.
-     * Note: for performance, store the returned value and avoid calling this repeatedly.
-     * <p>
-     * Throws an exception if the field is not found.
+     * Finds a field with the specified name and type in the given class and returns an accessible {@link Field} object representing it.
      *
      * @param clazz        The class to find the method on.
      * @param fieldObfName The obfuscated name of the method to find (used in obfuscated environments, i.e. "getWorldTime").
      * @param type         The type of the field to find.
      * @return A handle for the getter of the field with the specified name and type in the given class.
      * @throws UnableToFindFieldException if an issue prevents the field from being reflected
+     * @apiNote for performance, store the returned value and avoid calling this repeatedly.
      */
     @API(status = MAINTAINED, since = "1.0.0")
-    public static MethodHandle findGetterFromObfName(Class<?> clazz, String fieldObfName, Class<?> type) throws UnableToFindFieldException {
+    public static Field findFieldFromIntermediary(Class<?> clazz, String fieldObfName, Class<?> type) throws UnableToFindFieldException {
         try {
             String deobfName = getMappingResolver().mapFieldName(INTERMEDIARY, clazz.getName(), fieldObfName, getFieldDescriptor(type));
-            return getTrustedLookup(clazz).unreflectGetter(clazz.getDeclaredField(deobfName));
-        } catch (IllegalAccessException | NoSuchFieldException e) {
+            Field f = clazz.getDeclaredField(deobfName);
+            f.setAccessible(true);
+            return f;
+        } catch (NoSuchFieldException e) {
             throw new UnableToFindFieldException(e);
         }
-    }
-
-    /**
-     * Finds a field with the specified SRG name and type in the given class and generates a {@link MethodHandle method handle} for its setter.
-     * Note: for performance, store the returned value and avoid calling this repeatedly.
-     * <p>
-     * Throws an exception if the field is not found.
-     *
-     * @param clazz        The class to find the method on.
-     * @param fieldObfName The obfuscated name of the method to find (used in obfuscated environments, i.e. "getWorldTime").
-     * @param type         The type of the field to find.
-     * @return A handle for the setter of the field with the specified name and type in the given class.
-     * @throws UnableToFindFieldException if an issue prevents the field from being reflected
-     */
-    @API(status = MAINTAINED, since = "1.0.0")
-    public static MethodHandle findSetterFromObfName(Class<?> clazz, String fieldObfName, Class<?> type) throws UnableToFindFieldException {
-        try {
-            String deobfName = getMappingResolver().mapFieldName(INTERMEDIARY, clazz.getName(), fieldObfName, getFieldDescriptor(type));
-            return getTrustedLookup(clazz).unreflectSetter(clazz.getDeclaredField(deobfName));
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new UnableToFindFieldException(e);
-        }
-    }
-
-    /**
-     * Creates a factory for the given class implementing the given <tt>lambdaType</tt>.
-     * The constructor of the class will be looked up using the default public {@link MethodHandles.Lookup} object.
-     *
-     * @param clazz       the class for which to create a factory
-     * @param invokedName the name of the method to implement in the functional interface
-     * @param lambdaType  the class of a functional interface that the factory will implement
-     * @return a factory implementing <tt>lambdaType</tt>
-     * @see #createFactory(Class, String, Class, MethodHandles.Lookup, MethodType, Class[])
-     */
-    @API(status = MAINTAINED, since = "1.0.0")
-    public static <T> T createFactory(Class<?> clazz, String invokedName, Class<? super T> lambdaType) {
-        return createFactory(clazz, invokedName, lambdaType, MethodHandles.lookup(), MethodType.methodType(Object.class));
     }
 
     /**
@@ -180,33 +138,6 @@ public class ReflectionHelper {
             return (T) metafactory.getTarget().invoke();
         } catch (Throwable throwable) {
             throw new UncheckedReflectionException(throwable);
-        }
-    }
-
-    /**
-     * @param clazz the class that the returned lookup should report as its own
-     * @return a trusted lookup that has all permissions in the given class
-     * @throws UncheckedReflectionException if the black magic does not succeed
-     */
-    @API(status = MAINTAINED, since = "1.0.0")
-    public static MethodHandles.Lookup getTrustedLookup(Class clazz) {
-        if (TRUSTED_LOOKUP == null) {
-            findTrustedLookup();
-        }
-        // Invoke black magic.
-        return TRUSTED_LOOKUP.in(clazz);
-    }
-
-    private static void findTrustedLookup() {
-        try {
-            // Define black magic.
-            // Source: https://gist.github.com/Andrei-Pozolotin/dc8b448dc590183f5459
-            final MethodHandles.Lookup original = MethodHandles.lookup();
-            final Field internal = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
-            internal.setAccessible(true);
-            TRUSTED_LOOKUP = (MethodHandles.Lookup) internal.get(original);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new UncheckedReflectionException("Could not access trusted lookup", e);
         }
     }
 

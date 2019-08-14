@@ -26,18 +26,22 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
-import java.lang.invoke.MethodType;
-import java.util.function.Function;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity> {
-    private static final Function<GuardianEntity, ? extends Goal> BEAM_GOAL_FACTORY;
+    private static final Constructor<? extends Goal> BEAM_GOAL_FACTORY;
 
     private final Goal fireBeamGoal;
     private boolean started;
 
     public GuardianBeamAbility(GuardianEntity owner) {
         super(owner);
-        this.fireBeamGoal = BEAM_GOAL_FACTORY.apply(owner);
+        try {
+            this.fireBeamGoal = BEAM_GOAL_FACTORY.newInstance(owner);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new UncheckedReflectionException("Failed to instanciate FireBeamGoal", e);
+        }
     }
 
     @Override
@@ -68,17 +72,12 @@ public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity> {
 
     static {
         try {
-            Class<?> clazz = ReflectionHelper.findClass("net.minecraft.class_1577$class_1578");
-            BEAM_GOAL_FACTORY = ReflectionHelper.createFactory(
-                    clazz,
-                    "apply",
-                    Function.class,
-                    ReflectionHelper.getTrustedLookup(clazz),
-                    MethodType.methodType(Object.class, Object.class),
-                    GuardianEntity.class
-            );
+            Class<? extends Goal> clazz = ReflectionHelper.findClass("net.minecraft.class_1577$class_1578");
+            BEAM_GOAL_FACTORY = clazz.getConstructor(GuardianEntity.class);
         } catch (ClassNotFoundException e) {
-            throw new UncheckedReflectionException("Could not find the ConjureFangsGoal class", e);
+            throw new UncheckedReflectionException("Could not find the FireBeamGoal class", e);
+        } catch (NoSuchMethodException e) {
+            throw new UncheckedReflectionException("Could not find the FireBeamGoal constructor", e);
         }
     }
 }

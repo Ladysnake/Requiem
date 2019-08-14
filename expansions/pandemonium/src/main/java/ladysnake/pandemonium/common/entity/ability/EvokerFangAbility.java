@@ -27,19 +27,23 @@ import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodType;
-import java.util.function.Function;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity> {
-    private static final Function<EvokerEntity, ? extends SpellcastingIllagerEntity.CastSpellGoal> FANGS_GOAL_FACTORY;
-    private static final MethodHandle CAST_SPELL_GOAL$CAST_SPELL;
+    private static final Constructor<? extends SpellcastingIllagerEntity.CastSpellGoal> FANGS_GOAL_FACTORY;
+    private static final Method CAST_SPELL_GOAL$CAST_SPELL;
 
     private final SpellcastingIllagerEntity.CastSpellGoal conjureFangsGoal;
 
     public EvokerFangAbility(EvokerEntity owner) {
         super(owner);
-        this.conjureFangsGoal = FANGS_GOAL_FACTORY.apply(owner);
+        try {
+            this.conjureFangsGoal = FANGS_GOAL_FACTORY.newInstance(owner);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new UncheckedReflectionException(e);
+        }
     }
 
     @Override
@@ -50,9 +54,9 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity> {
             owner.setTarget(target);
             if (conjureFangsGoal.canStart()) {
                 try {
-                    CAST_SPELL_GOAL$CAST_SPELL.invokeExact(conjureFangsGoal);
-                } catch (Throwable throwable) {
-                    throw new UncheckedReflectionException("Failed to trigger evoker fang ability", throwable);
+                    CAST_SPELL_GOAL$CAST_SPELL.invoke(conjureFangsGoal);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new UncheckedReflectionException("Failed to trigger evoker fang ability", e);
                 }
                 success = true;
             }
@@ -63,20 +67,16 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity> {
 
     static {
         try {
-            CAST_SPELL_GOAL$CAST_SPELL = ReflectionHelper.findMethodHandleFromObfName(SpellcastingIllagerEntity.CastSpellGoal.class, "method_7148", void.class);
-            Class<?> clazz = ReflectionHelper.findClass("net.minecraft.class_1564$class_1565");
-            FANGS_GOAL_FACTORY = ReflectionHelper.createFactory(
-                    clazz,
-                    "apply",
-                    Function.class,
-                    ReflectionHelper.getTrustedLookup(clazz),
-                    MethodType.methodType(Object.class, Object.class),
-                    EvokerEntity.class
-            );
+            CAST_SPELL_GOAL$CAST_SPELL = ReflectionHelper.findMethodFromIntermediary(SpellcastingIllagerEntity.CastSpellGoal.class, "method_7148", void.class);
+            Class<? extends SpellcastingIllagerEntity.CastSpellGoal> clazz = ReflectionHelper.findClass("net.minecraft.class_1564$class_1565");
+            FANGS_GOAL_FACTORY = clazz.getConstructor(EvokerEntity.class);
+            FANGS_GOAL_FACTORY.setAccessible(true);
         } catch (ClassNotFoundException e) {
             throw new UncheckedReflectionException("Could not find the ConjureFangsGoal class", e);
         } catch (UnableToFindMethodException e) {
             throw new UncheckedReflectionException("Could not find the castSpell method", e);
+        } catch (NoSuchMethodException e) {
+            throw new UncheckedReflectionException("Could not find the ConjureFangsGoal constructor", e);
         }
     }
 }

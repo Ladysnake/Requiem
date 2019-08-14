@@ -24,18 +24,22 @@ import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
-import java.lang.invoke.MethodType;
-import java.util.function.Function;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
-    private static final Function<EvokerEntity, ? extends SpellcastingIllagerEntity.CastSpellGoal> VEX_GOAL_FACTORY;
+    private static final Constructor<? extends SpellcastingIllagerEntity.CastSpellGoal> VEX_GOAL_FACTORY;
 
     private final SpellcastingIllagerEntity.CastSpellGoal summonVexGoal;
     private boolean started;
 
     public EvokerVexAbility(EvokerEntity owner) {
         super(owner);
-        summonVexGoal = VEX_GOAL_FACTORY.apply(owner);
+        try {
+            summonVexGoal = VEX_GOAL_FACTORY.newInstance(owner);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new UncheckedReflectionException("Failed to instanciate SummonVexGoal", e);
+        }
     }
 
     @Override
@@ -67,17 +71,13 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
 
     static {
         try {
-            Class<?> clazz = ReflectionHelper.findClass("net.minecraft.class_1564$class_1567");
-            VEX_GOAL_FACTORY = ReflectionHelper.createFactory(
-                    clazz,
-                    "apply",
-                    Function.class,
-                    ReflectionHelper.getTrustedLookup(clazz),
-                    MethodType.methodType(Object.class, Object.class),
-                    EvokerEntity.class
-            );
+            Class<? extends SpellcastingIllagerEntity.CastSpellGoal> clazz = ReflectionHelper.findClass("net.minecraft.class_1564$class_1567");
+            VEX_GOAL_FACTORY = clazz.getConstructor(EvokerEntity.class);
+            VEX_GOAL_FACTORY.setAccessible(true);
         } catch (ClassNotFoundException e) {
-            throw new UncheckedReflectionException("Could not find the ConjureFangsGoal class", e);
+            throw new UncheckedReflectionException("Could not find the SummonVexGoal class", e);
+        } catch (NoSuchMethodException e) {
+            throw new UncheckedReflectionException("Could not get the SummonVexGoal constructor", e);
         }
     }
 }
