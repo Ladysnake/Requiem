@@ -85,17 +85,17 @@ public class ReflectionHelper {
     /**
      * Finds a field with the specified name and type in the given class and returns an accessible {@link Field} object representing it.
      *
-     * @param clazz        The class to find the method on.
-     * @param fieldObfName The obfuscated name of the method to find (used in obfuscated environments, i.e. "getWorldTime").
-     * @param type         The type of the field to find.
+     * @param clazz            The class to find the method on.
+     * @param intermediaryName The intermediary name of the field to find (used in obfuscated environments, i.e. "field_1234").
+     * @param type             The type of the field to find.
      * @return A handle for the getter of the field with the specified name and type in the given class.
      * @throws UnableToFindFieldException if an issue prevents the field from being reflected
      * @apiNote for performance, store the returned value and avoid calling this repeatedly.
      */
     @API(status = MAINTAINED, since = "1.0.0")
-    public static Field findFieldFromIntermediary(Class<?> clazz, String fieldObfName, Class<?> type) throws UnableToFindFieldException {
+    public static Field findFieldFromIntermediary(Class<?> clazz, String intermediaryName, Class<?> type) throws UnableToFindFieldException {
         try {
-            String deobfName = getMappingResolver().mapFieldName(INTERMEDIARY, clazz.getName(), fieldObfName, getFieldDescriptor(type));
+            String deobfName = getMappingResolver().mapFieldName(INTERMEDIARY, clazz.getName(), intermediaryName, getFieldDescriptor(type));
             Field f = clazz.getDeclaredField(deobfName);
             f.setAccessible(true);
             return f;
