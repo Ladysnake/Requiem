@@ -23,9 +23,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -37,7 +36,7 @@ public final class ResurrectionDataLoader implements SimpleResourceReloadListene
         .registerTypeAdapter(new TypeToken<EntityType<?>>() {}.getType(), new EntityTypeAdapter())
         .create();
 
-    private final Set<ResurrectionData> resurrectionData = new TreeSet<>();
+    private final List<ResurrectionData> resurrectionData = new ArrayList<>();
 
     @Nullable
     public MobEntity getNextBody(ServerPlayerEntity player, DamageSource killingBlow) {
@@ -63,6 +62,7 @@ public final class ResurrectionDataLoader implements SimpleResourceReloadListene
                     Requiem.LOGGER.error("Could not read resurrection data from {}", location, e);
                 }
             }
+            Collections.sort(resurrectionData);
             return resurrectionData;
         }, executor);
     }
