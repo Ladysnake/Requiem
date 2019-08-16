@@ -33,6 +33,7 @@ import ladysnake.requiem.api.v1.remnant.MobResurrectable;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.impl.remnant.dialogue.DialogueTrackerImpl;
+import ladysnake.requiem.common.impl.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.remnant.RemnantTypes;
@@ -41,22 +42,17 @@ import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.fabricmc.fabric.api.event.player.*;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.SpiderEntity;
-import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.dimension.DimensionType;
 
 import java.util.UUID;
 
@@ -86,17 +82,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                 return false;
             }
             ServerPlayerEntity lazarus = (ServerPlayerEntity) dead;
-            EntityType<? extends MobEntity> body;
-            if (deathCause.getAttacker() instanceof ZombieEntity) {
-                body = EntityType.ZOMBIE;
-            } else if (deathCause == DamageSource.LAVA && lazarus.dimension == DimensionType.THE_NETHER) {
-                body = EntityType.WITHER_SKELETON;
-            } else if (deathCause == DamageSource.IN_WALL && BlockTags.SAND.contains(lazarus.world.getBlockState(lazarus.getBlockPos().add(0, lazarus.getEyeHeight(lazarus.getPose()), 0)).getBlock())) {
-                body = EntityType.HUSK;
-            } else {
-                return false;
-            }
-            MobEntity secondLife = body.create(lazarus.world);
+            MobEntity secondLife = ResurrectionDataLoader.INSTANCE.getNextBody(lazarus, deathCause);
             if (secondLife != null) {
                 ((MobResurrectable) lazarus).setResurrectionEntity(secondLife);
                 return ((RequiemPlayer) lazarus).asRemnant().getType().isDemon();

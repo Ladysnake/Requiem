@@ -1,0 +1,12 @@
+{
+    "priority": 100,
+    "killing_blow": {
+        "name": "inWall"
+    },
+    "special_conditions": [
+        "head_in_sand"
+    ],
+    "entity": {
+        "type": "minecraft:husk"
+    }
+}

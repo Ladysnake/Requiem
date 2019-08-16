@@ -24,7 +24,7 @@ import net.minecraft.util.Identifier;
 
 import java.io.IOException;
 
-public class IdentifierAdapter extends TypeAdapter<Identifier> {
+public final class IdentifierAdapter extends TypeAdapter<Identifier> {
     @Override
     public void write(JsonWriter out, Identifier value) throws IOException {
         out.value(value.toString());

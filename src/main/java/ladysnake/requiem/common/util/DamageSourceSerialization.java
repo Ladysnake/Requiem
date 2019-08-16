@@ -31,7 +31,7 @@ import java.util.function.BiFunction;
 
 import static net.minecraft.entity.damage.DamageSource.*;
 
-public class DamageSourceSerialization {
+public final class DamageSourceSerialization {
     public static final Map<String, BiFunction<@Nullable Entity, @Nullable Entity, DamageSource>> DAMAGE_FACTORIES = new HashMap<>();
 
     static {

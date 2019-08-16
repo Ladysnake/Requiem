@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 
-public class EntityTypeAdapter extends TypeAdapter<EntityType<?>> {
+public final class EntityTypeAdapter extends TypeAdapter<EntityType<?>> {
     @Override
     public void write(JsonWriter out, EntityType<?> value) throws IOException {
         out.value(Objects.requireNonNull(EntityType.getId(value)).toString());

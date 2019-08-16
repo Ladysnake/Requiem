@@ -1,0 +1,11 @@
+{
+    "priority": 80,
+    "killing_blow": {
+        "direct_entity": {
+            "type": "#c:zombies"
+        }
+    },
+    "entity": {
+        "type": "minecraft:zombie"
+    }
+}

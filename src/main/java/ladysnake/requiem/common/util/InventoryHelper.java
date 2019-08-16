@@ -22,7 +22,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
 
-public class InventoryHelper {
+public final class InventoryHelper {
     public static void transferEquipment(LivingEntity source, LivingEntity dest) {
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             ItemStack stuff = source.getEquippedStack(slot);
