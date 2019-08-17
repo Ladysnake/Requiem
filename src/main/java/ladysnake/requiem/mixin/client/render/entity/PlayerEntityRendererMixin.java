@@ -141,6 +141,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Unique
     private boolean requiem_renderPossessedArm(AbstractClientPlayerEntity renderedPlayer, boolean rightArm) {
         if (((RequiemPlayer) renderedPlayer).asRemnant().isSoul()) {
@@ -160,7 +161,6 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                             playerEntityModel_1.handSwingProgress = 0.0F;
                             playerEntityModel_1.isSneaking = false;
                             playerEntityModel_1.field_3396 = 0.0F;
-                            //noinspection unchecked
                             playerEntityModel_1.method_17087(possessed, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
                             Cuboid arm = rightArm ? playerEntityModel_1.rightArm : playerEntityModel_1.leftArm;
                             arm.pitch = 0.0F;

@@ -128,7 +128,6 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
             return;
         }
         // we need a cast here to trick the compiler
-        //noinspection RedundantCast
         if (this.possessor != null && ((RequiemPlayer) this.possessor).asPossessor().getPossessedEntity() == (Entity)this) {
             throw new IllegalStateException("Players must stop possessing an entity before it can change possessor!");
         }
@@ -268,13 +267,13 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     This causes issues, to which one of the simplest fix is to call remove() right after calling next().
      */
 
-    @Redirect(method = "clearPotionEffects", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;next()Ljava/lang/Object;"))
+    @Redirect(method = "clearPotionEffects", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;next()Ljava/lang/Object;", remap = false))
     private Object swapIteratorOperationsPart1(Iterator iterator) {
         Object next = iterator.next();
         iterator.remove();
         return next;
     }
-    @Redirect(method = "clearPotionEffects", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;remove()V"))
+    @Redirect(method = "clearPotionEffects", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;remove()V", remap = false))
     private void swapIteratorOperationsPart2(Iterator iterator) {
         // NO-OP
     }
