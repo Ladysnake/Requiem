@@ -35,14 +35,19 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.Collections;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -56,6 +61,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
     private final PlayerEntity player;
     @Nullable private UUID possessedUuid;
     private int possessedNetworkId;
+    private int conversionTimer = -1;
 
     public PossessionComponentImpl(PlayerEntity player) {
         this.player = player;
@@ -170,6 +176,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                     player.stopRiding();
                     possessed.startRiding(ridden);
                 }
+                this.conversionTimer = -1;
             }
         }
     }
@@ -229,9 +236,45 @@ public final class PossessionComponentImpl implements PossessionComponent {
         return this.possessedUuid != null;
     }
 
+    @Override
+    public void startCuring() {
+        Random rand = this.player.getRand();
+        this.conversionTimer = rand.nextInt(1201) + 2400;  // a bit shorter than villager
+        this.player.removeStatusEffect(StatusEffects.WEAKNESS);
+        this.player.addPotionEffect(new StatusEffectInstance(StatusEffects.STRENGTH, conversionTimer, 0));
+        this.player.world.playSound(null, this.player.x + 0.5D, this.player.y + 0.5D, this.player.z + 0.5D, SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, this.player.getSoundCategory(), 1.0F + rand.nextFloat(), rand.nextFloat() * 0.7F + 0.3F);
+    }
+
+    @Override
+    public void update() {
+        if (!this.player.world.isClient && this.conversionTimer > 0) {
+            this.conversionTimer--;
+            if (this.conversionTimer == 0) {
+                MobEntity possessedEntity = this.getPossessedEntity();
+                if (possessedEntity != null) {
+                    this.asRequiemPlayer().asRemnant().setSoul(false);
+                    possessedEntity.remove();
+                    this.player.addPotionEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
+                    this.player.world.playLevelEvent(null, 1027, new BlockPos(this.player), 0);
+                }
+                this.conversionTimer = -1;
+            }
+        }
+    }
+
     @CheckForNull
     public UUID getPossessedEntityUuid() {
         return this.possessedUuid;
     }
 
+    @Override
+    public CompoundTag toTag(CompoundTag tag) {
+        tag.putInt("conversionTimer", this.conversionTimer);
+        return tag;
+    }
+
+    @Override
+    public void fromTag(CompoundTag compound) {
+        this.conversionTimer = compound.getInt("conversionTimer");
+    }
 }

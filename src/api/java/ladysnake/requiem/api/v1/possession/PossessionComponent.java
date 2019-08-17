@@ -21,6 +21,7 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
 
 import javax.annotation.CheckForNull;
 
@@ -109,5 +110,13 @@ public interface PossessionComponent {
 
     boolean isPossessing();
 
+    void startCuring();
+
+    void update();
+
     RequiemPlayer asRequiemPlayer();
+
+    CompoundTag toTag(CompoundTag tag);
+
+    void fromTag(CompoundTag compound);
 }

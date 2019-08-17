@@ -35,7 +35,6 @@ import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -47,8 +46,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -74,6 +71,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     @Shadow @Final public PlayerAbilities abilities;
     private static final String REQUIEM$TAG_REMNANT_DATA = "requiem:remnant_data";
+    private static final String REQUIEM$TAG_POSSESSION_COMPONENT = "requiem:possession_component";
     private static final EntityDimensions REQUIEM$SOUL_SNEAKING_SIZE = EntityDimensions.changing(0.6f, 0.6f);
 
     private RemnantState remnantState = NullRemnantState.NULL_STATE;
@@ -129,6 +127,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private void updateMovementAlterer(CallbackInfo info) {
         this.movementAlterer.update();
         this.remnantState.update();
+        this.possessionComponent.update();
     }
 
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
@@ -151,6 +150,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         CompoundTag remnantData = new CompoundTag();
         remnantData.putString("id", RemnantTypes.getId(this.asRemnant().getType()).toString());
         tag.put(REQUIEM$TAG_REMNANT_DATA, this.remnantState.toTag(remnantData));
+        tag.put(REQUIEM$TAG_POSSESSION_COMPONENT, this.possessionComponent.toTag(new CompoundTag()));
     }
 
     @Inject(at = @At("TAIL"), method = "readCustomDataFromTag")
@@ -159,11 +159,12 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         RemnantType remnantType = RemnantTypes.get(new Identifier(remnantTag.getString("id")));
         this.become(remnantType);
         this.remnantState.fromTag(remnantTag);
+        this.possessionComponent.fromTag(tag.getCompound(REQUIEM$TAG_POSSESSION_COMPONENT));
     }
 
     /* Actual modifications of vanilla behaviour */
 
-    @Inject(method = "eatFood", at = @At(value = "HEAD"))
+    @Inject(method = "eatFood", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/HungerManager;eat(Lnet/minecraft/item/Item;Lnet/minecraft/item/ItemStack;)V"))
     private void eatZombieFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
         MobEntity possessedEntity = this.asPossessor().getPossessedEntity();
         if (possessedEntity instanceof ZombieEntity && stack.getItem().isFood()) {
@@ -174,10 +175,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
             }
         }
         if (possessedEntity != null && possessedEntity.isUndead() && RequiemItemTags.UNDEAD_CURES.contains(stack.getItem()) && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)) {
-            this.remnantState.setSoul(false);
-            possessedEntity.remove();
-            world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_ZOMBIE_VILLAGER_CONVERTED, SoundCategory.PLAYERS, 1.0F, 0.1F);
-            this.addPotionEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 5));
+            this.possessionComponent.startCuring();
         }
     }
 
