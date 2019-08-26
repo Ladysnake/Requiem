@@ -1,6 +1,6 @@
 # Requiem
 
-![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/requiem-logo-200x125.png)
+![](https://raw.githubusercontent.com/Ladysnake/Requiem/master/requiem-logo-200x125.png)
 
 [![Download](https://curse.nikky.moe/api/img/265729?logo)](https://curse.nikky.moe/api/url/265729) ![](https://jitpack.io/v/ladysnake/dissolution.svg) ![](https://img.shields.io/github/issues/ladysnake/requiem.svg)
 
@@ -133,9 +133,9 @@ The Opus Daemonium is an item that allows a Player to activate or deactivate Req
 
 #### Variants
 There are 3 variants of Opus Daemoniums:
-- Neutral  ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium.png) : The base Opus Daemonium to obtain the two other variants. Can be opened to write inside it. If the phrase is a valid incantation, the player can sign it and use 5 experience levels in order to convert the Opus into either a Curse or Cure Opus.
-- Curse ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_curse.png) : Activates the mod's death system when used. Obtained by writing "Ad Vitam Aeternam" inside a neutral Opus Daemonium.
-- Cure ![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_cure.png) : Deactivates the mod's death system when used. Obtained by writing "Ad Vitam Mortale" inside a neutral Opus Daemonium.
+- Neutral  ![](https://raw.githubusercontent.com/Ladysnake/Requiem/master/readme/opus_daemonium.png) : The base Opus Daemonium to obtain the two other variants. Can be opened to write inside it. If the phrase is a valid incantation, the player can sign it and use 5 experience levels in order to convert the Opus into either a Curse or Cure Opus.
+- Curse ![](https://raw.githubusercontent.com/Ladysnake/Requiem/master/readme/opus_daemonium_curse.png) : Activates the mod's death system when used. Obtained by writing "Ad Vitam Aeternam" inside a neutral Opus Daemonium.
+- Cure ![](https://raw.githubusercontent.com/Ladysnake/Requiem/master/readme/opus_daemonium_cure.png) : Deactivates the mod's death system when used. Obtained by writing "Ad Vitam Mortale" inside a neutral Opus Daemonium.
 
 #### Recipe (shapeless)
-![](https://raw.githubusercontent.com/Ladysnake/Requiem/fabric/readme/opus_daemonium_recipe.png)
+![](https://raw.githubusercontent.com/Ladysnake/Requiem/master/readme/opus_daemonium_recipe.png)
