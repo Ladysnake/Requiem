@@ -37,7 +37,7 @@ public final class ExtendedDamageSourcePredicate {
     }
 
     public boolean test(ServerPlayerEntity player, DamageSource damage) {
-        return (damageName == null || damageName.equals(damage.name)) || base.test(player, damage);
+        return (damageName == null || damageName.equals(damage.name)) && base.test(player, damage);
     }
 
     public static ExtendedDamageSourcePredicate deserialize(@Nullable JsonElement element) {
