@@ -94,7 +94,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
         this.requiem_possessedEntityTag = serializedSecondLife;
     }
 
-    @Inject(method = "changeDimension", at = @At("HEAD"))
+    @Inject(method = "changeDimension", at = @At(value = "HEAD", shift = At.Shift.AFTER))   // Let cancelling mixins do their job
     private void changePossessedDimension(DimensionType dim, CallbackInfoReturnable<Entity> info) {
         PossessionComponent possessionComponent = this.asPossessor();
         if (possessionComponent.isPossessing()) {
@@ -106,6 +106,12 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
         }
     }
 
+    @Inject(method = "changeDimension", at = @At(value = "RETURN", ordinal = 1))
+    private void onTeleportDone(DimensionType destination, CallbackInfoReturnable<Entity> cir) {
+        sendToAllTrackingIncluding(this, createCorporealityMessage(this));
+        spawnResurrectionEntity();
+    }
+
     @Inject(method = "copyFrom", at = @At("RETURN"))
     private void clonePlayer(ServerPlayerEntity original, boolean fromEnd, CallbackInfo ci) {
         // We can safely cast a class to a mixin from another mixin
@@ -114,12 +120,6 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
         if (this.requiem_possessedEntityTag != null) {
             this.inventory.clone(original.inventory);
         }
-    }
-
-    @Inject(method = "onTeleportationDone", at = @At("HEAD"))
-    private void onTeleportDone(CallbackInfo info) {
-        sendToAllTrackingIncluding(this, createCorporealityMessage(this));
-        spawnResurrectionEntity();
     }
 
     @Inject(method = "swingHand", at = @At("HEAD"))
