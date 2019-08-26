@@ -1,0 +1,60 @@
+{
+  "targets": [
+    "swap",
+    "blurred_players",
+    "players"
+  ],
+  "passes": [
+    {
+      "name": "requiem:alpha_to_rgb",
+      "intarget": "players",
+      "outtarget": "blurred_players"
+    },
+    {
+      "name": "blur",
+      "intarget": "blurred_players",
+      "outtarget": "swap",
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 1.0, 0.0 ]
+        },
+        {
+          "name": "Radius",
+          "values": [ 20.0 ]
+        }
+      ]
+    },
+    {
+      "name": "blur",
+      "intarget": "swap",
+      "outtarget": "blurred_players",
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 0.0, 1.0 ]
+        },
+        {
+          "name": "Radius",
+          "values": [ 20.0 ]
+        }
+      ]
+    },
+    {
+      "name": "requiem:shadow_players",
+      "intarget": "minecraft:main",
+      "outtarget": "swap",
+      "auxtargets": [
+        {
+          "name": "PlayerSampler",
+          "id": "blurred_players"
+        }
+      ]
+    },
+    {
+      "name": "blit",
+      "intarget": "swap",
+      "outtarget": "minecraft:main"
+    }
+  ]
+}

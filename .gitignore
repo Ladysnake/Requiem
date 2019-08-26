@@ -1,5 +1,3 @@
-classes
-
 # eclipse
 bin
 .settings
@@ -10,7 +8,6 @@ bin
 out
 *.ipr
 *.iws
-*.iml
 .idea
 
 # gradle
@@ -21,5 +18,3 @@ build
 eclipse
 run
 src\main\resources\assets\minecraft
-Dissolution.wiki
-tags

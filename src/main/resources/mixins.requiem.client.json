@@ -1,0 +1,26 @@
+{
+  "required": true,
+  "package": "ladysnake.requiem.mixin.client",
+  "compatibilityLevel": "JAVA_8",
+  "minVersion": "0.7.11-SNAPSHOT",
+  "mixins": [
+    "MinecraftClientMixin",
+    "entity.ClientEntityMixin",
+    "gui.container.BookScreenMixin",
+    "gui.container.LecternScreenMixin",
+    "gui.container.WrittenBookScreenContentsMixin",
+    "gui.hud.InGameHudMixin",
+    "gui.ingame.EditBookScreenAccessor",
+    "item.ItemStackTooltipMixin",
+    "network.ClientPlayerEntityMixin",
+    "render.GameRendererMixin",
+    "render.entity.AccessibleTextureEntityRenderer",
+    "render.entity.EntityRenderDispatcherMixin",
+    "render.entity.EntityRendererMixin",
+    "render.entity.LivingEntityRendererMixin",
+    "render.entity.PlayerEntityRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

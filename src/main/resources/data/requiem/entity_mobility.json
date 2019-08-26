@@ -1,0 +1,5 @@
+{
+  "minecraft:drowned": {
+    "swimMode": "ENABLED"
+  }
+}

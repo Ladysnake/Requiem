@@ -1,173 +1,160 @@
-buildscript {
-    repositories {
-        jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
-    }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-    }
-}
+// Credits to UpcraftLP for the base build script
+
+
+import net.fabricmc.loom.task.RemapJarTask
+
+import java.time.Year
 
 plugins {
-    id "org.sonarqube" version "2.6"
+    id "fabric-loom" version "0.2.5-SNAPSHOT"
+    id "net.minecrell.licenser" version "0.4.1"
+    id "com.matthewprenger.cursegradle" version "1.1.2"
+    id "maven-publish"
+}
+
+group = rootProject.maven_group
+archivesBaseName = rootProject.name.toLowerCase(Locale.ROOT)
+version = mod_version
+
+subprojects {
+    apply plugin: 'fabric-loom'
+    apply plugin: 'com.matthewprenger.cursegradle'
+    apply plugin: 'maven-publish'
+
+    archivesBaseName = "${rootProject.archivesBaseName}-${project.name.toLowerCase(Locale.ROOT)}"
+    group = "${rootProject.group}.${rootProject.archivesBaseName}"
 }
 
 allprojects {
-    group = mod_group
 
-    apply plugin: "net.minecraftforge.gradle.forge"
-    apply plugin: 'signing'
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 
-    sourceCompatibility = targetCompatibility = '1.8'
-}
+    version = rootProject.mod_version
 
-version = dissolution_version
-archivesBaseName = "Dissolution"
+    /*
+     Adds a JavadocJar task, javax annotations, manifest attributes, curseforge and maven configuration
+     */
+    apply from: "https://raw.githubusercontent.com/NerdHubMC/Gradle-Scripts/master/scripts/fabric/basic_project.gradle"
 
-allprojects {
-
-    minecraft {
-        version = project.forge_version
-        runDir = "run"
-        replace '@VERSION@', project.version
-        if (project.hasProperty('keyStore')) {
-            replace '@FINGERPRINT@', project.findProperty('signSHA1')
-        }
-
-        mappings = project.mcp_version
-        makeObfSourceJar = false // Disable Srg named sources jar
-    }
-
-    apply from: new File(rootProject.projectDir, 'dependencies.gradle')
-    apply from: new File(rootProject.projectDir, 'update_json.gradle')
-
-    build.finalizedBy updateJson
-
-    jar {
-        from sourceSets.main.output
-        manifest {
-            attributes([
-                    'Maven-Artifact': "${project.group}:${archivesBaseName}:${project.version}",
-                    'Timestamp'     : System.currentTimeMillis()
-            ])
-        }
+    sourceSets {
+        api
     }
 
     processResources {
-        // this will ensure that this task is redone when the versions change.
         inputs.property "version", project.version
-        inputs.property "mcversion", project.minecraft.version
 
-        // replace stuff in mcmod.info, nothing else
         from(sourceSets.main.resources.srcDirs) {
-            include "mcmod.info"
-
-            // replace version and mcversion
-            expand "version": project.version, "mcversion": project.minecraft.version
+            include "fabric.mod.json"
+            expand "version": project.version
         }
 
-        // copy everything else, that's not the mcmod.info
         from(sourceSets.main.resources.srcDirs) {
-            exclude "mcmod.info"
+            exclude "fabric.mod.json"
         }
-
-        rename '(.+_at.cfg)', 'META-INF/$1'
     }
 
-    task signJar(type: SignJar, dependsOn: reobfJar) {
-        onlyIf {
-            project.hasProperty('keyStore')
+    repositories {
+        maven {
+            url "http://maven.fabricmc.net/"
+            name "Fabric"
+        }
+        maven {
+            url "https://jitpack.io"
+            name "JitPack"
+        }
+    }
+
+    task apiJar(type: Jar, dependsOn: apiClasses) {
+        classifier = 'api-dev'
+        from sourceSets.api.allJava
+        from (sourceSets.api.output) {
+            include "fabric.mod.json"
+            expand "version": project.version
+        }
+        from (sourceSets.api.output) {
+            exclude "fabric.mod.json"
+        }
+    }
+
+    task remapApiJar(type: RemapJarTask, dependsOn: project.apiJar) {
+        input = apiJar.archivePath
+        classifier = 'api'
+        addNestedDependencies = false
+    }
+
+    javadoc {
+        source += sourceSets.api.allJava
+    }
+
+    dependencies {
+        //to change the versions see the gradle.properties file
+        minecraft "com.mojang:minecraft:${project.minecraft_version}"
+        mappings "net.fabricmc:yarn:${project.yarn_mappings}"
+        modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+        // Fabric API. This is technically optional, but you probably want it anyway.
+        modApi "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+        
+        // Lazily evaluated callable returning a non-live (unlike a FileCollection) list of files
+        sourceSets.api.compileClasspath += files({sourceSets.main.compileClasspath.toList()})
+
+        compile sourceSets.api.output
+        include files(remapApiJar.archivePath)
+
+        compileOnly "org.jetbrains:annotations:${jb_annotations_version}"
+        compileOnly "org.apiguardian:apiguardian-api:${apiguardian_version}"
+
+        testImplementation "org.junit.jupiter:junit-jupiter-api:5.4.0-M1"
+    }
+
+    remapJar.dependsOn(remapApiJar)
+
+    license {
+        header = rootProject.file("code_quality/${project.license_header}_HEADER.txt")
+
+        include "**/*.java"
+        exclude "**/package-info.java"
+
+        //export variables
+        ext {
+            year = Year.now()
+            projectDisplayName = rootProject.name
+            projectOwners = rootProject.owners
+            gplVersion = rootProject.gpl_version
         }
 
-        keyStore = project.properties.keyStore
-        alias = project.properties.keyStoreAlias
-        storePass = project.properties.keyStorePass
-        keyPass = project.properties.keyStoreKeyPass
+        newLine = false // Disables the empty line between the header and package name
     }
-	
-	compileJava {
-		options.encoding = 'UTF-8'
-	}
 
-    build.dependsOn signJar
-}
-
-apply plugin: 'maven'
-
-// Define additional jar creating tasks to be used as dependencies
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-}
-task apiJar(type: Jar) {
-    classifier = 'api'
-}
-
-configurations {
-    contained
-    contained.transitive = false
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifact(remapApiJar) {
+                    classifier = "api"
+                }
+            }
+        }
+    }
 }
 
 dependencies {
-    contained  "com.github.Pyrofab:Ladylib:${ladylib_version}"
-    contained  "com.jamieswhiteshirt:clothesline-hooks:${mc_version}-${clothesline_hook_version}"
-    contained files(apiJar.archivePath) {
-        builtBy apiJar
-    }
+    modImplementation("com.github.Ladysnake:Satin:${rootProject.satin_version}")
+    include "com.github.Ladysnake:Satin:${satin_version}"
+    modRuntime "io.github.prospector.modmenu:ModMenu:${modmenu_version}"
+    modApi "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-base:${cca_version}"
+    include "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-base:${cca_version}"
+    modImplementation "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
+    include "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
+    modImplementation "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-world:${cca_version}"
+    include "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-world:${cca_version}"
 }
 
-//Builds the main jar
 jar {
-    from(configurations.contained.files) {
-        include '*'
-        into 'META-INF/libraries'
-    }
-
-    manifest {
-        attributes([
-                'ContainedDeps': configurations.contained.files.collect { it.name }.join(" ")
-        ])
-    }
-    archiveName = "${archivesBaseName}-${mc_version}-${dissolution_version}${version_nickname}.jar"
-
-    manifest {
-        attributes 'FMLAT': 'dissolution_at.cfg'
-    }
+    from "LICENSE-CODE"
+    from "LICENSE-ART"
 }
 
-//Builds an api jar
-apiJar {
-    from sourceSets.api.output
-    from sourceSets.api.allJava
-    manifest {
-        attributes([
-                'Maven-Artifact': "${project.group}:${archivesBaseName}:${classifier}:${project.version}",
-                'Timestamp'     : System.currentTimeMillis()
-        ])
-    }
+license {
+    exclude "**/RayHelper.java"
 }
-
-//Builds a source jar
-sourcesJar {
-    from sourceSets.api.allSource
-    from sourceSets.main.allSource
-}
-
-updateJson {
-    beta = true
-    curseforgeURL = "https://minecraft.curseforge.com/projects/dissolution"
-}
-
-signJar {
-    inputFile = jar.archivePath
-    outputFile = jar.archivePath
-}
-
-artifacts {
-    archives(apiJar) {
-        type 'jar'
-        builtBy apiJar
-        classifier 'api'
-    }
-    archives sourceJar
-}
-install.dependsOn(signJar)

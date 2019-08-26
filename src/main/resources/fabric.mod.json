@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "id": "requiem",
+  "version": "${version}",
+
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "ladysnake.requiem.client.RequiemClient"
+    ],
+    "main": [
+      "ladysnake.requiem.Requiem"
+    ],
+    "requiem:plugin": [
+      "ladysnake.requiem.common.VanillaRequiemPlugin"
+    ]
+  },
+  "mixins": [
+    {
+      "environment": "client",
+      "config": "mixins.requiem.client.json"
+    },
+    {
+      "environment": "*",
+      "config": "mixins.requiem.common.json"
+    }
+  ],
+
+  "depends": {
+    "requiemapi": "${version}",
+    "satin": "^1.2.0"
+  },
+
+  "name": "Requiem",
+  "icon": "assets/requiem/skull_logo.png",
+  "description": "Death revamped and ethereal powers",
+  "authors": [
+    "Pyrofab",
+    "doctor4t"
+  ],
+  "contributors": [
+    "UpcraftLP"
+  ],
+  "contact": {
+    "sources": "https://github.com/Ladysnake/Requiem",
+    "issues": "https://github.com/Ladysnake/Requiem/issues",
+    "discord": "ladysnake.glitch.me/discord"
+  },
+  "license": "ARR"
+}

@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "id": "pandemonium",
+  "version": "${version}",
+
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "ladysnake.pandemonium.client.PandemoniumClient"
+    ],
+    "main": [
+      "ladysnake.pandemonium.Pandemonium"
+    ]
+  },
+  "mixins": [
+    {
+      "environment": "client",
+      "config": "mixins.pandemonium.client.json"
+    },
+    {
+      "environment": "*",
+      "config": "mixins.pandemonium.common.json"
+    }
+  ],
+
+  "depends": {
+    "requiemapi": "${version}",
+    "satin": "^1.2.0"
+  },
+
+  "name": "Requiem: Pandemonium",
+  "description": "Death revamped and ethereal powers",
+  "authors": [
+    "Pyrofab",
+    "Doctor4t"
+  ],
+  "contributors": [
+    "UpcraftLP"
+  ],
+  "contact": {
+    "sources": "https://github.com/Ladysnake/Requiem",
+    "issues": "https://github.com/Ladysnake/Requiem/issues",
+    "discord": "ladysnake.glitch.me/discord"
+  },
+  "licence": "ARR"
+}

@@ -1,0 +1,57 @@
+{
+  "start_at": "introduction",
+  "states": {
+    "introduction": {
+      "text": "requiem:dialogue.first_contact.introduction.text",
+      "choices": {
+        "requiem:dialogue.first_contact.introduction.explain": "explanation",
+        "requiem:dialogue.first_contact.introduction.yes": "interested",
+        "requiem:dialogue.first_contact.introduction.no": "disinterested"
+      }
+    },
+    "explanation": {
+      "text": "requiem:dialogue.first_contact.explanation.text",
+      "choices": {
+        "requiem:dialogue.first_contact.explanation.ok": "introduction"
+      }
+    },
+    "interested": {
+      "text": "requiem:dialogue.first_contact.interested.text",
+      "choices": {
+        "requiem:dialogue.first_contact.doubt": "introduction",
+        "requiem:dialogue.first_contact.confirm": "very_interested"
+      }
+    },
+    "disinterested": {
+      "text": "requiem:dialogue.first_contact.disinterested.text",
+      "choices": {
+        "requiem:dialogue.first_contact.doubt": "introduction",
+        "requiem:dialogue.first_contact.confirm": "very_disinterested"
+      }
+    },
+    "very_interested": {
+      "type": "ask_confirmation",
+      "text": "requiem:dialogue.first_contact.very_interested.text",
+      "choices": {
+        "requiem:dialogue.first_contact.final_doubt": "interested",
+        "requiem:dialogue.first_contact.final_confirm": "accept"
+      }
+    },
+    "very_disinterested": {
+      "type": "ask_confirmation",
+      "text": "requiem:dialogue.first_contact.very_disinterested.text",
+      "choices": {
+        "requiem:dialogue.first_contact.final_doubt": "disinterested",
+        "requiem:dialogue.first_contact.final_confirm": "refuse"
+      }
+    },
+    "accept": {
+      "type": "end_dialogue",
+      "action": "requiem:become_remnant"
+    },
+    "refuse": {
+      "type": "end_dialogue",
+      "action": "requiem:stay_mortal"
+    }
+  }
+}

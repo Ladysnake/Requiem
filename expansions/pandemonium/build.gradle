@@ -1,0 +1,8 @@
+dependencies {
+    compile rootProject
+    modImplementation("com.github.Ladysnake:Satin:${rootProject.satin_version}")
+}
+
+jar {
+    from rootProject.files("LICENSE-CODE", "LICENSE-ART")
+}
