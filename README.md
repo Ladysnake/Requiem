@@ -11,6 +11,7 @@
   - [What is Requiem?](#what-is-requiem)
   - [Why would you want to use it?](#why-would-you-want-to-use-it)
   - [Getting started](#getting-started)
+  - [Mod Interactions](#mod-interactions)
 - [Wiki](#wiki)
   - [Gameplay mechanics](#gameplay-mechanics)
     - [First death](#first-death)
@@ -47,6 +48,16 @@ As explained above, Requiem is great for players willing to make death a little 
 - Running the mod will require Fabric and Fabric API. For more information on how to use Fabric, [please visit the official website](https://fabricmc.net/). To download Fabric API, [please visit the official Curse Forge page](https://minecraft.curseforge.com/projects/fabric).
 - If Fabric is installed on your Minecraft Java copy, [you can download Rquiem from Curse Forge](https://minecraft.curseforge.com/projects/requiem) and copy the jar file obtained, as well as the download Fabric API jar file, in the mods folder located in you Minecraft installation or Fabric Server folder. Please make sure to have the latest version, as we will not accept issues regarding older versions.
 - Once the previous steps have been completed, boot up your game, and upon your first death, Requiem will asks you whether you'd like to enable the modified death system or not through an interactive dialogue. Be careful, because after choosing, the dialogue won't be prompted a second time, and you will have to use a special item to change that.
+
+## Mod Interactions
+
+Most mods that render the player (eg. Paper Doll) will display the possessed entity as expected.
+
+Known Incompatibilities:
+- First Person Mod: Makes the possessed mob appear in first person, blocking the sight.
+- Immersive Portals: Completely breaks possession when a portal is in sight. Possessed entities vanish when traversing
+a nether portal. Graphical glitches occur when Optifine is not present.
+- Optifine/Optifabric: The Fast Maths option is incompatible with Requiem.
 
 # Wiki
 This section lists and explains the different mechanics and items Requiem adds to the game. If you need information about something you did not understand, this is where to look!
