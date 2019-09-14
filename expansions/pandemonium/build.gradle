@@ -1,6 +1,5 @@
 dependencies {
     compile rootProject
-    modImplementation("com.github.Ladysnake:Satin:${rootProject.satin_version}")
 }
 
 jar {
