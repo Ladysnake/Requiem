@@ -162,7 +162,6 @@ public final class PossessionComponentImpl implements PossessionComponent {
     public void stopPossessing(boolean transfer) {
         LivingEntity possessed = this.getPossessedEntity();
         if (possessed != null) {
-            this.possessedUuid = null;
             this.resetState();
             ((Possessable)possessed).setPossessor(null);
             if (player instanceof ServerPlayerEntity && transfer) {
@@ -201,19 +200,20 @@ public final class PossessionComponentImpl implements PossessionComponent {
         if (host == null) {
             if (this.player.world instanceof ServerWorld) {
                 // Second attempt: use the UUID (server)
-                // method_14190 == getEntityByUuid
                 host = ((ServerWorld)this.player.world).getEntity(this.getPossessedEntityUuid());
             }
-            // Set the possessed uuid to null to avoid infinite recursion
-            this.possessedUuid = null;
             if (host instanceof MobEntity && host instanceof Possessable) {
+                // Set the possessed uuid to null to avoid infinite recursion
+                this.possessedUuid = null;
                 this.startPossessing((MobEntity) host);
             } else {
                 if (host != null) {
                     Requiem.LOGGER.warn("{}: this player's supposedly possessed entity ({}) cannot be possessed!", this.player, host);
                 }
-                Requiem.LOGGER.debug("{}: this player's possessed entity is nowhere to be found", this);
-                this.resetState();
+                if (!this.player.world.isClient) {
+                    Requiem.LOGGER.debug("{}: this player's possessed entity is nowhere to be found", this);
+                    this.resetState();
+                }
                 host = null;
             }
         }
@@ -221,6 +221,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
     }
 
     private void resetState() {
+        this.possessedUuid = null;
         this.possessedNetworkId = -1;
         ((RequiemPlayer) this.player).getMovementAlterer().setConfig(((RequiemPlayer)player).asRemnant().isSoul() ? SerializableMovementConfig.SOUL : null);
         this.player.calculateDimensions(); // update size

@@ -128,7 +128,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
             return;
         }
         // we need a cast here to trick the compiler
-        if (this.possessor != null && ((RequiemPlayer) this.possessor).asPossessor().getPossessedEntity() == (Entity)this) {
+        if (((this.possessor != null) && (((RequiemPlayer) this.possessor).asPossessor().getPossessedEntity() == (Entity) this)) && !this.world.isClient) {
             throw new IllegalStateException("Players must stop possessing an entity before it can change possessor!");
         }
         this.possessor = possessor;
