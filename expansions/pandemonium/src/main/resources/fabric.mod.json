@@ -6,7 +6,7 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "ladysnake.pandemonium.client.PandemoniumClient"
+      "ladysnake.pandemonium.client.PandemoniumClient::INSTANCE"
     ],
     "main": [
       "ladysnake.pandemonium.Pandemonium"

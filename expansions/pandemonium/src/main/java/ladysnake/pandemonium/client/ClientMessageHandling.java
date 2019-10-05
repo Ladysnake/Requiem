@@ -6,6 +6,7 @@ import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.requiem.client.RequiemFx;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 
@@ -45,6 +46,12 @@ public class ClientMessageHandling {
             mc.player.world.playSound(mc.player, mc.player.x, mc.player.y, mc.player.z, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2, 0.6f);
             RequiemFx.INSTANCE.beginEtherealAnimation();
         })));
+        ClientSidePacketRegistry.INSTANCE.register(SOUL_WEB_PATH, ((context, buf) -> {
+            int entityId = buf.readInt();
+            float pathSize = buf.readFloat();
+            Path path = Path.fromBuffer(buf);
+            context.getTaskQueue().execute(() -> PandemoniumClient.INSTANCE.soulWebRenderer.addPath(entityId, path, pathSize));
+        }));
     }
 
 }

@@ -1,6 +1,7 @@
 package ladysnake.pandemonium.client;
 
 import ladysnake.pandemonium.client.handler.HeadDownTransformHandler;
+import ladysnake.pandemonium.client.render.SoulWebRenderer;
 import ladysnake.pandemonium.client.render.entity.PlayerShellEntityRenderer;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.requiem.api.v1.RequiemPlayer;
@@ -14,6 +15,7 @@ import ladysnake.satin.api.event.PickEntityShaderCallback;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.render.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -22,16 +24,22 @@ import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.WaterCreatureEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 
 @CalledThroughReflection
 public class PandemoniumClient implements ClientModInitializer {
+    public static final PandemoniumClient INSTANCE = new PandemoniumClient();
+
+    public final SoulWebRenderer soulWebRenderer = new SoulWebRenderer(MinecraftClient.getInstance());
+
     @Override
     public void onInitializeClient() {
         ClientMessageHandling.init();
         FractureKeyBinding.init();
         ApplyCameraTransformsCallback.EVENT.register(new HeadDownTransformHandler());
         EntityRendererRegistry.INSTANCE.register(PlayerShellEntity.class, (r, it) -> new PlayerShellEntityRenderer(r));
+        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(this.soulWebRenderer);
         registerCallbacks();
     }
 

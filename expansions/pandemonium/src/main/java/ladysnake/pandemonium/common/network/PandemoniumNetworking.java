@@ -14,6 +14,7 @@ public class PandemoniumNetworking {
     public static final Identifier ANCHOR_DAMAGE = Requiem.id("anchor_damage");
     public static final Identifier ANCHOR_SYNC = Requiem.id("anchor_sync_update");
     public static final Identifier ANCHOR_REMOVE = Requiem.id("anchor_sync_remove");
+    public static final Identifier SOUL_WEB_PATH = Requiem.id("soul_web_path");
 
     @Contract(pure = true)
     public static CustomPayloadS2CPacket createAnchorDamageMessage(boolean dead) {

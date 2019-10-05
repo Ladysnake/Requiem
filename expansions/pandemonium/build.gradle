@@ -1,5 +1,13 @@
+repositories {
+    maven {
+        name = "NerdHubMC"
+        url = "https://maven.abusedmaster.xyz"
+    }
+}
+
 dependencies {
     compile rootProject
+    modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
 }
 
 jar {

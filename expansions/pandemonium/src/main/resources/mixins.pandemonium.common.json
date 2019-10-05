@@ -8,7 +8,9 @@
     "entity.mob.WitchEntityMixin",
     "entity.player.PlayerEntityMixin",
     "server.PlayerManagerMixin",
-    "server.world.ServerWorldMixin"
+    "server.world.ServerWorldMixin",
+    "special.soulweb.LivingEntityMixin",
+    "special.soulweb.MobEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

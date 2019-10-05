@@ -3,6 +3,8 @@
   "package": "ladysnake.pandemonium.mixin.client",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "render.GameRendererMixin",
+    "render.debug.DebugRendererMixin",
     "world.ClientWorldMixin"
   ],
   "injectors": {
