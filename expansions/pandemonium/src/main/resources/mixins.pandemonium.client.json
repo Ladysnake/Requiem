@@ -5,6 +5,7 @@
   "mixins": [
     "render.GameRendererMixin",
     "render.debug.DebugRendererMixin",
+    "render.entity.EntityRendererMixin",
     "world.ClientWorldMixin"
   ],
   "injectors": {
