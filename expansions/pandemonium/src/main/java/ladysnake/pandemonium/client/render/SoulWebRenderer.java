@@ -1,9 +1,9 @@
 package ladysnake.pandemonium.client.render;
 
-import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
-import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import ladysnake.pandemonium.Pandemonium;
 import ladysnake.satin.api.util.ShaderLoader;
 import ladysnake.satin.api.util.ShaderPrograms;
@@ -15,6 +15,7 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -22,13 +23,13 @@ import java.io.IOException;
 import java.util.List;
 
 public final class SoulWebRenderer extends PathfindingDebugRenderer implements SimpleSynchronousResourceReloadListener {
-    public static final SoulWebRenderer INSTANCE = new SoulWebRenderer(MinecraftClient.getInstance());
     public static final Identifier RESOURCE_ID = Pandemonium.id("soul_web_renderer");
 
-    private final Int2ObjectMap<Path> paths = new Int2ObjectOpenHashMap<>();
-    private final Int2DoubleMap pathLengths = new Int2DoubleOpenHashMap();
+    private final Int2ObjectOpenHashMap<Path> paths = new Int2ObjectOpenHashMap<>();
+    private final Int2LongOpenHashMap pathTimes = new Int2LongOpenHashMap();
     private final MinecraftClient client;
     private int shader;
+    private boolean rendering;
 
     public SoulWebRenderer(MinecraftClient mc) {
         super(mc);
@@ -39,23 +40,23 @@ public final class SoulWebRenderer extends PathfindingDebugRenderer implements S
     public void addPath(int entityId, Path path, float size) {
         super.addPath(entityId, path, size);
         this.paths.put(entityId, path);
-        double pathLength = 0;
-        if (path.getLength() != 0) {
-            PathNode last = path.getNode(0);
-            for (int i = 1; i < path.getLength(); i++) {
-                pathLength += last.distanceSquared(path.getNode(i));
-            }
-        }
-        this.pathLengths.put(entityId, pathLength);
+        this.pathTimes.put(entityId, SystemUtil.getMeasuringTimeMs());
     }
 
     public void render(float tickDelta, long time) {
 //        this.render(time);
+        rendering = true;
         if (shader > 0) {
             ShaderPrograms.useShader(shader);
         }
-        for (Int2ObjectMap.Entry<Path> pathEntry : this.paths.int2ObjectEntrySet()) {
+        long systemTime = SystemUtil.getMeasuringTimeMs();
+        for (ObjectIterator<Int2ObjectMap.Entry<Path>> iterator = this.paths.int2ObjectEntrySet().fastIterator(); iterator.hasNext(); ) {
+            Int2ObjectMap.Entry<Path> pathEntry = iterator.next();
             int entityId = pathEntry.getIntKey();
+            if (systemTime - pathTimes.get(entityId) > 20000L) {
+                iterator.remove();
+                continue;
+            }
             Entity tracked = this.client.world.getEntityById(entityId);
             if (tracked != null) {
                 double x = tracked.x;
@@ -88,6 +89,11 @@ public final class SoulWebRenderer extends PathfindingDebugRenderer implements S
             }
         }
         ShaderPrograms.useShader(0);
+        rendering = false;
+    }
+
+    public boolean isRendering() {
+        return rendering;
     }
 
     @Override

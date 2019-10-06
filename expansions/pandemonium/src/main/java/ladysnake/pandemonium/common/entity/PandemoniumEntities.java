@@ -25,16 +25,17 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.util.registry.Registry;
 
 public class PandemoniumEntities {
-    public static EntityType<PlayerShellEntity> PLAYER_SHELL;
+    public static final EntityType<PlayerShellEntity> PLAYER_SHELL = FabricEntityTypeBuilder.create(EntityCategory.MISC, PlayerShellEntity::new)
+        .size(EntityDimensions.changing(EntityType.PLAYER.getWidth(), EntityType.PLAYER.getHeight()))
+        .trackable(64, 1, true)
+        .build();
+    public static final EntityType<KcPlayerShellEntity> KC_PLAYER_SHELL = FabricEntityTypeBuilder.create(EntityCategory.MISC, KcPlayerShellEntity::new)
+        .size(EntityDimensions.changing(EntityType.PLAYER.getWidth(), EntityType.PLAYER.getHeight()))
+        .trackable(64, 1, true)
+        .build();
 
     public static void init() {
-        PLAYER_SHELL = Registry.register(
-                Registry.ENTITY_TYPE,
-                Requiem.id("player_shell"),
-                FabricEntityTypeBuilder.create(EntityCategory.MISC, PlayerShellEntity::new)
-                        .size(EntityDimensions.changing(EntityType.PLAYER.getWidth(), EntityType.PLAYER.getHeight()))
-                        .trackable(64, 1, true)
-                        .build()
-        );
+        Registry.register(Registry.ENTITY_TYPE, Requiem.id("player_shell"), PLAYER_SHELL);
+        Registry.register(Registry.ENTITY_TYPE, Requiem.id("kc_player_shell"), KC_PLAYER_SHELL);
     }
 }

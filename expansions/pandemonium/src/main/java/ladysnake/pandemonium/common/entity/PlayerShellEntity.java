@@ -282,7 +282,7 @@ public class PlayerShellEntity extends MobEntity {
     /* Static Methods */
 
     public static PlayerShellEntity fromPlayer(PlayerEntity player) {
-        PlayerShellEntity shell = new PlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, player.world);
+        PlayerShellEntity shell = new KcPlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, player.world);
         shell.playerNbt = performNbtCopy(player, shell);
         int invSize = player.inventory.main.size();
         shell.inventory = new BasicInventory(invSize);
