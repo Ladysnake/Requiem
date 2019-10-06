@@ -18,12 +18,15 @@
 package ladysnake.pandemonium.common.entity;
 
 import com.mojang.authlib.GameProfile;
+import ladysnake.pandemonium.common.enchantment.PandemoniumEnchantments;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.common.util.InventoryHelper;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -36,9 +39,11 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.apiguardian.api.API;
@@ -215,6 +220,19 @@ public class PlayerShellEntity extends MobEntity {
     }
 
     @Override
+    public boolean damage(DamageSource source, float amount) {
+        if (!source.isUnblockable() && !source.doesDamageToCreative() && !source.isSourceCreativePlayer() && !source.getMagic()) {
+            ItemStack chestplate = this.getEquippedStack(EquipmentSlot.CHEST);
+            if (EnchantmentHelper.getLevel(PandemoniumEnchantments.ROCK_BODY, chestplate) > 0 && chestplate.isDamageable()) {
+                chestplate.damage(MathHelper.ceil(amount * (random.nextGaussian() + 1) * 5), this, e -> e.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
+                this.playSound(SoundEvents.BLOCK_ANVIL_LAND, 0.8f, 0.6f);
+                return false;
+            }
+        }
+        return super.damage(source, amount);
+    }
+
+    @Override
     protected void dropInventory() {
         super.dropInventory();
         if (this.inventory != null) {
@@ -282,7 +300,7 @@ public class PlayerShellEntity extends MobEntity {
     /* Static Methods */
 
     public static PlayerShellEntity fromPlayer(PlayerEntity player) {
-        PlayerShellEntity shell = new KcPlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, player.world);
+        PlayerShellEntity shell = new PlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, player.world);
         shell.playerNbt = performNbtCopy(player, shell);
         int invSize = player.inventory.main.size();
         shell.inventory = new BasicInventory(invSize);

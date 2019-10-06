@@ -1,4 +1,7 @@
 {
+  "enchantment.pandemonium.rock_body": "Rock Body",
+  "item.minecraft.potion.effect.pandemonium.body_recall":"Potion of Body Recall",
+  "effect.pandemonium.body_recall":"Body Recall",
   "requiem:tooltip.witch_brew_base": "Witch's Brew Base",
   "requiem:shulker.onboard": "Press %1$s to leave",
   "key.requiem.ethereal_fracture": "Ethereal Fracture"

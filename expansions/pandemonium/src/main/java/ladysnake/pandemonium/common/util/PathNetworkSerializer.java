@@ -1,4 +1,4 @@
-package ladysnake.pandemonium.common.remnant.special.soulweb;
+package ladysnake.pandemonium.common.util;
 
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;

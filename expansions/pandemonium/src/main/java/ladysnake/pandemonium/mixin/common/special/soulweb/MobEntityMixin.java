@@ -1,9 +1,9 @@
 package ladysnake.pandemonium.mixin.common.special.soulweb;
 
 import io.netty.buffer.Unpooled;
+import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
 import ladysnake.pandemonium.common.network.PandemoniumNetworking;
-import ladysnake.pandemonium.common.remnant.special.soulweb.PathNetworkSerializer;
-import ladysnake.pandemonium.common.remnant.special.soulweb.SoulWeb;
+import ladysnake.pandemonium.common.util.PathNetworkSerializer;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.fabricmc.fabric.api.server.PlayerStream;
@@ -37,7 +37,7 @@ public abstract class MobEntityMixin extends LivingEntity {
 
     @Inject(method = "tickNewAi", at = @At("RETURN"))
     private void sendPath(CallbackInfo ci) {
-        if (this.hasStatusEffect(SoulWeb.SOUL_WEBBED_EFFECT)) {
+        if (this.hasStatusEffect(PandemoniumStatusEffects.SOUL_WEBBED)) {
             Path path = this.getNavigation().getCurrentPath();
             if (path != null && (!path.equalsPath(this.lastPath) || path.getCurrentNodeIndex() != lastNodeIndex)) {
                 Packet<?> packet = ServerSidePacketRegistry.INSTANCE.toPacket(

@@ -1,4 +1,4 @@
-package ladysnake.pandemonium.common.remnant.special.soulweb;
+package ladysnake.pandemonium.common.entity.effect;
 
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
