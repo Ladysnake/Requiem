@@ -52,6 +52,7 @@ public abstract class MobEntityMixin extends LivingEntity {
                     .filter(p -> RequiemPlayer.from(p).asRemnant().isIncorporeal())
                     .forEach(p -> ServerSidePacketRegistry.INSTANCE.sendToPlayer(p, packet));
                 this.lastPath = path;
+                this.lastNodeIndex = path.getCurrentNodeIndex();
             }
         }
     }
