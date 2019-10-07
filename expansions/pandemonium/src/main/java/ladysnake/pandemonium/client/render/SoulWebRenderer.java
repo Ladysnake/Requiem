@@ -22,29 +22,33 @@ import net.minecraft.util.math.Vec3d;
 import java.io.IOException;
 import java.util.List;
 
-public final class SoulWebRenderer extends PathfindingDebugRenderer implements SimpleSynchronousResourceReloadListener {
+public final class SoulWebRenderer implements SimpleSynchronousResourceReloadListener {
     public static final Identifier RESOURCE_ID = Pandemonium.id("soul_web_renderer");
 
+    private final PathfindingDebugRenderer debugRender;
     private final Int2ObjectOpenHashMap<Path> paths = new Int2ObjectOpenHashMap<>();
     private final Int2LongOpenHashMap pathTimes = new Int2LongOpenHashMap();
     private final MinecraftClient client;
     private int shader;
     private boolean rendering;
+    private boolean debug;
 
     public SoulWebRenderer(MinecraftClient mc) {
-        super(mc);
+        debugRender = new PathfindingDebugRenderer(mc);
         client = mc;
+        debug = false;
     }
 
-    @Override
     public void addPath(int entityId, Path path, float size) {
-        super.addPath(entityId, path, size);
+        this.debugRender.addPath(entityId, path, size);
         this.paths.put(entityId, path);
         this.pathTimes.put(entityId, SystemUtil.getMeasuringTimeMs());
     }
 
     public void render(float tickDelta, long time) {
-//        this.render(time);
+        if (debug) {
+            this.debugRender.render(time);
+        }
         rendering = true;
         if (shader > 0) {
             ShaderPrograms.useShader(shader);
