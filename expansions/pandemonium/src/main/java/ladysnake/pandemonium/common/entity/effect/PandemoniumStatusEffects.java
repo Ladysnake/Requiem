@@ -9,7 +9,7 @@ import net.minecraft.util.registry.Registry;
 
 public class PandemoniumStatusEffects {
     public static final StatusEffect SOUL_WEBBED = new SoulWebbedEffect(StatusEffectType.HARMFUL, 0xEFEFEF)
-        .addAttributeModifier(EntityAttributes.MOVEMENT_SPEED, "d125fc82-2fd1-4dea-ac92-1355e15ecdfc", -0.15, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+        .addAttributeModifier(EntityAttributes.MOVEMENT_SPEED, "d125fc82-2fd1-4dea-ac92-1355e15ecdfc", -0.35, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
     public static final StatusEffect BODY_RECALL = new BodyRecallEffect(StatusEffectType.NEUTRAL, 0xAA22BB);
 
     public static void init() {
