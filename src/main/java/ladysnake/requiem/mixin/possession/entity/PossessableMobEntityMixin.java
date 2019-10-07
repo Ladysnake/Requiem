@@ -29,6 +29,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -37,7 +39,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(MobEntity.class)
 public abstract class PossessableMobEntityMixin extends LivingEntity implements Possessable {
 
+    @Shadow
+    public abstract void setAttacking(boolean boolean_1);
+
+    @Shadow
+    public abstract boolean isAttacking();
+
+    @Unique
     private MobAbilityController abilityController = MobAbilityController.DUMMY;
+    @Unique
+    private int attackingCountdown;
 
     public PossessableMobEntityMixin(EntityType<? extends MobEntity> type, World world) {
         super(type, world);
@@ -55,6 +66,23 @@ public abstract class PossessableMobEntityMixin extends LivingEntity implements 
         return abilityController;
     }
 
+    @Inject(method = "setAttacking", at = @At("RETURN"))
+    private void resetAttackMode(boolean attacking, CallbackInfo ci) {
+        if (attacking && this.isBeingPossessed()) {
+            attackingCountdown = 100;
+        }
+    }
+
+    @Inject(method = "tickMovement", at = @At("RETURN"))
+    private void resetAttackMode(CallbackInfo ci) {
+        if (this.isAttacking() && !this.isUsingItem() && this.isBeingPossessed()) {
+            this.attackingCountdown--;
+            if (this.attackingCountdown == 0) {
+                this.setAttacking(false);
+            }
+        }
+    }
+
     @Inject(method = "getEquippedStack", at = @At("HEAD"), cancellable = true)
     private void getEquippedStack(EquipmentSlot slot, CallbackInfoReturnable<ItemStack> cir) {
         PlayerEntity possessor = this.getPossessor();
@@ -70,4 +98,5 @@ public abstract class PossessableMobEntityMixin extends LivingEntity implements 
             possessor.setEquippedStack(slot, item);
         }
     }
+
 }
