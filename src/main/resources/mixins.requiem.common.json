@@ -6,7 +6,6 @@
   "mixins": [
     "advancement.criterion.CriterionsAccessor",
     "block.entity.LecternBlockEntityMixin",
-    "compat.immersiveportals.ServerTeleportationManagerMixin",
     "entity.ItemEntityMixin",
     "entity.LivingEntityMixin",
     "entity.attribute.AbstractEntityAttributeContainerAccessor",
