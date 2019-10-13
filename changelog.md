@@ -1,4 +1,11 @@
 ------------------------------------------------------
+Version 1.0.1
+------------------------------------------------------
+Bug Fixes
+- Possessed mobs now raise their arms when attacking or using a bow
+- Fixed most incompatibilities with Immersive Portals
+
+------------------------------------------------------
 Version 1.0.0
 ------------------------------------------------------
 Additions
