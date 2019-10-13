@@ -59,13 +59,11 @@ public final class PossessionComponentImpl implements PossessionComponent {
     private static final Set<PlayerEntity> attributeUpdated = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
 
     private final PlayerEntity player;
-    @Nullable private UUID possessedUuid;
-    private int possessedNetworkId;
+    @Nullable private MobEntity possessed;
     private int conversionTimer = -1;
 
     public PossessionComponentImpl(PlayerEntity player) {
         this.player = player;
-        this.possessedNetworkId = -1;
     }
 
     @Override
@@ -121,10 +119,9 @@ public final class PossessionComponentImpl implements PossessionComponent {
             }
         }
         // Actually set the possessed entity
-        this.possessedUuid = host.getUuid();
-        this.possessedNetworkId = host.getEntityId();
+        this.possessed = host;
         possessable.setPossessor(this.player);
-        this.syncPossessed();
+        this.syncPossessed(host.getEntityId());
         // Update some attributes
         this.player.copyPositionAndRotation(host);
         this.player.calculateDimensions(); // update size
@@ -162,7 +159,6 @@ public final class PossessionComponentImpl implements PossessionComponent {
     public void stopPossessing(boolean transfer) {
         LivingEntity possessed = this.getPossessedEntity();
         if (possessed != null) {
-            this.possessedUuid = null;
             this.resetState();
             ((Possessable)possessed).setPossessor(null);
             if (player instanceof ServerPlayerEntity && transfer) {
@@ -181,9 +177,9 @@ public final class PossessionComponentImpl implements PossessionComponent {
         }
     }
 
-    private void syncPossessed() {
+    private void syncPossessed(int entityId) {
         if (!this.player.world.isClient) {
-            sendToAllTrackingIncluding(this.player, createPossessionMessage(this.player.getUuid(), this.possessedNetworkId));
+            sendToAllTrackingIncluding(this.player, createPossessionMessage(this.player.getUuid(), entityId));
         }
     }
 
@@ -196,36 +192,28 @@ public final class PossessionComponentImpl implements PossessionComponent {
         if (!isPossessing()) {
             return null;
         }
-        // First attempt: use the network id (client & server)
-        Entity host = this.player.world.getEntityById(this.possessedNetworkId);
-        if (host == null) {
+
+        if (this.possessed.removed) {
+            UUID possessedUuid = this.possessed.getUuid();
+            Requiem.LOGGER.debug("{}: this player's possessed entity has disappeared", this.player);
+            this.resetState();
+            // Attempt to find an equivalent entity using the UUID
             if (this.player.world instanceof ServerWorld) {
-                // Second attempt: use the UUID (server)
-                // method_14190 == getEntityByUuid
-                host = ((ServerWorld)this.player.world).getEntity(this.getPossessedEntityUuid());
-            }
-            // Set the possessed uuid to null to avoid infinite recursion
-            this.possessedUuid = null;
-            if (host instanceof MobEntity && host instanceof Possessable) {
-                this.startPossessing((MobEntity) host);
-            } else {
-                if (host != null) {
-                    Requiem.LOGGER.warn("{}: this player's supposedly possessed entity ({}) cannot be possessed!", this.player, host);
+                Entity host = ((ServerWorld)this.player.world).getEntity(possessedUuid);
+                if (host instanceof MobEntity && host instanceof Possessable) {
+                    this.startPossessing((MobEntity) host);
                 }
-                Requiem.LOGGER.debug("{}: this player's possessed entity is nowhere to be found", this);
-                this.resetState();
-                host = null;
             }
         }
-        return (MobEntity) host;
+        return this.possessed;
     }
 
     private void resetState() {
-        this.possessedNetworkId = -1;
+        this.possessed = null;
         ((RequiemPlayer) this.player).getMovementAlterer().setConfig(((RequiemPlayer)player).asRemnant().isSoul() ? SerializableMovementConfig.SOUL : null);
         this.player.calculateDimensions(); // update size
         this.player.setBreath(this.player.getMaxBreath());
-        syncPossessed();
+        syncPossessed(-1);
     }
 
     /**
@@ -233,7 +221,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
      */
     @Override
     public boolean isPossessing() {
-        return this.possessedUuid != null;
+        return this.possessed != null;
     }
 
     @Override
@@ -260,11 +248,6 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 this.conversionTimer = -1;
             }
         }
-    }
-
-    @CheckForNull
-    public UUID getPossessedEntityUuid() {
-        return this.possessedUuid;
     }
 
     @Override

@@ -38,9 +38,11 @@ public class DebugItem extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        if (player.isSneaking() && !world.isClient) {
-            debugMode = (debugMode + 1) % 2;
-            player.addChatMessage(new TranslatableText("Switched mode to %s", debugMode), true);
+        if (player.isSneaking()) {
+            if (!world.isClient) {
+                debugMode = (debugMode + 1) % 2;
+                player.addChatMessage(new TranslatableText("Switched mode to %s", debugMode), true);
+            }
         } else {
             switch (debugMode) {
                 case 0:

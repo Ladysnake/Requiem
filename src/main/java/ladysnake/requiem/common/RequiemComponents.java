@@ -22,10 +22,13 @@ import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.common.impl.movement.MovementAltererManager;
+import ladysnake.requiem.common.impl.remnant.RevivingDeathSuspender;
 import nerdhub.cardinal.components.api.ComponentRegistry;
 import nerdhub.cardinal.components.api.ComponentType;
 import nerdhub.cardinal.components.api.component.ComponentProvider;
+import nerdhub.cardinal.components.api.event.EntityComponentCallback;
 import nerdhub.cardinal.components.api.util.ObjectPath;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
 public final class RequiemComponents {
@@ -46,4 +49,10 @@ public final class RequiemComponents {
     public static final ComponentType<DeathSuspender> DEATH_SUSPENDER = ComponentRegistry.INSTANCE.registerIfAbsent(
             Requiem.id("death_suspension"), DeathSuspender.class
     );
+
+    public static void initComponents() {
+        EntityComponentCallback.event(PlayerEntity.class).register((player, components) -> {
+            components.put(DEATH_SUSPENDER, new RevivingDeathSuspender(player));
+        });
+    }
 }

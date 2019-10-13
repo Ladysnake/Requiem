@@ -10,6 +10,7 @@ plugins {
     id "net.minecrell.licenser" version "0.4.1"
     id "com.matthewprenger.cursegradle" version "1.1.2"
     id "maven-publish"
+    id "com.wynprice.cursemaven" version "1.2.3"
 }
 
 group = rootProject.maven_group
@@ -59,10 +60,6 @@ allprojects {
             url "http://maven.fabricmc.net/"
             name "Fabric"
         }
-        maven {
-            url "https://jitpack.io"
-            name "JitPack"
-        }
     }
 
     task apiJar(type: Jar, dependsOn: apiClasses) {
@@ -95,7 +92,7 @@ allprojects {
 
         // Fabric API. This is technically optional, but you probably want it anyway.
         modApi "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-        
+
         // Lazily evaluated callable returning a non-live (unlike a FileCollection) list of files
         sourceSets.api.compileClasspath += files({sourceSets.main.compileClasspath.toList()})
 
@@ -138,16 +135,28 @@ allprojects {
     }
 }
 
+repositories {
+    maven {
+        name = "NerdHubMC"
+        url = "https://maven.abusedmaster.xyz"
+    }
+    maven {
+        url "https://jitpack.io"
+        name "JitPack"
+    }
+}
+
 dependencies {
-    modImplementation("com.github.Ladysnake:Satin:${rootProject.satin_version}")
+    modApi("com.github.Ladysnake:Satin:${rootProject.satin_version}")
     include "com.github.Ladysnake:Satin:${satin_version}"
     modRuntime "io.github.prospector.modmenu:ModMenu:${modmenu_version}"
-    modApi "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-base:${cca_version}"
-    include "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-base:${cca_version}"
-    modImplementation "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
-    include "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
-    modImplementation "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-world:${cca_version}"
-    include "com.github.Pyrofab.Cardinal-Components-API:cardinal-components-world:${cca_version}"
+    modApi "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}"
+    include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}"
+    modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
+    include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
+    modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
+    include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
+    modImplementation curse.resolve('immersive-portals-mod', 2806496)
 }
 
 jar {
