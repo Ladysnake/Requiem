@@ -10,7 +10,7 @@ plugins {
     id "net.minecrell.licenser" version "0.4.1"
     id "com.matthewprenger.cursegradle" version "1.1.2"
     id "maven-publish"
-    id "com.wynprice.cursemaven" version "1.2.2"
+    id "com.wynprice.cursemaven" version "1.2.3"
 }
 
 group = rootProject.maven_group
@@ -156,7 +156,7 @@ dependencies {
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
     modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
-    modImplementation curse.resolve('immersive-portals-mod', 2789415)
+    modImplementation curse.resolve('immersive-portals-mod', 2806496)
 }
 
 jar {
