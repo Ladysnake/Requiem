@@ -17,8 +17,8 @@
  */
 package ladysnake.requiem.client;
 
-import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.satin.api.event.EntitiesPreRenderCallback;
@@ -31,10 +31,11 @@ import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.VisibleRegion;
+import net.minecraft.client.render.Frustum;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -69,10 +70,10 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
 
     private void update(MinecraftClient client) {
         if (client.player != null) {
-            PlayerEntity closestEtherealPlayer = client.world.getClosestPlayer(client.player.x, client.player.y, client.player.z, ETHEREAL_DESATURATE_RANGE, p -> p != client.player && ((RequiemPlayer)p).asRemnant().isIncorporeal());
+            PlayerEntity closestEtherealPlayer = client.player.world.getClosestPlayer(client.player.getX(), client.player.getY(), client.player.getZ(), ETHEREAL_DESATURATE_RANGE, p -> p != client.player && ((RequiemPlayer)p).asRemnant().isIncorporeal());
              this.nearEthereal = closestEtherealPlayer != null;
             if (nearEthereal) {
-                float distanceSqToEthereal = (float) client.player.squaredDistanceTo(closestEtherealPlayer.x, closestEtherealPlayer.y, closestEtherealPlayer.z);
+                float distanceSqToEthereal = (float) client.player.squaredDistanceTo(closestEtherealPlayer.getX(), closestEtherealPlayer.getY(), closestEtherealPlayer.getZ());
                 uniformSaturation.set(0.8f * (distanceSqToEthereal / ETHEREAL_DESATURATE_RANGE_SQ));
             }
         }
@@ -85,7 +86,7 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
             this.playersFramebuffer = Objects.requireNonNull(shader.getShaderEffect()).getSecondaryTarget("players");
             this.playersFramebuffer.beginWrite(false);
             // Use the same depth texture for our framebuffer as the main one
-            GLX.glFramebufferTexture2D(GLX.GL_FRAMEBUFFER, GLX.GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+            GlStateManager.framebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
         }
     }
 
@@ -93,8 +94,8 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
         if (this.playersFramebuffer != null) {
             this.playersFramebuffer.beginWrite(false);
             if (!this.renderedSoulPlayers) {
-                GlStateManager.clearColor(this.playersFramebuffer.clearColor[0], this.playersFramebuffer.clearColor[1], this.playersFramebuffer.clearColor[2], this.playersFramebuffer.clearColor[3]);
-                GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
+                RenderSystem.clearColor(this.playersFramebuffer.clearColor[0], this.playersFramebuffer.clearColor[1], this.playersFramebuffer.clearColor[2], this.playersFramebuffer.clearColor[3]);
+                RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
 
                 this.renderedSoulPlayers = true;
             }
@@ -102,7 +103,7 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
     }
 
     @Override
-    public void beforeEntitiesRender(Camera camera, VisibleRegion frustum, float tickDelta) {
+    public void beforeEntitiesRender(Camera camera, Frustum frustum, float tickDelta) {
         if (!this.shadowPlayerEffect.isInitialized()) {
             try {
                 this.shadowPlayerEffect.initialize();

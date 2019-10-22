@@ -84,7 +84,7 @@ public class OnRemnantChoiceCriterion extends CriterionBase<OnRemnantChoiceCrite
                 }
             }
 
-            this.apply(conditionsContainers);
+            this.grant(conditionsContainers);
         }
     }
 }

@@ -17,14 +17,13 @@
  */
 package ladysnake.requiem.mixin.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.client.ShadowPlayerFx;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.model.Model;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -32,16 +31,14 @@ import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 
 @Mixin(PlayerEntityRenderer.class)
 public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
@@ -60,21 +57,21 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
      * correctly.
      */
     @Inject(method = "method_4215", at = @At("HEAD"), cancellable = true)
-    private void cancelRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
+    private void cancelRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, LayeredVertexConsumerStorage vertexConsumers, CallbackInfo ci) {
         LivingEntity possessedEntity = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
         if (possessedEntity != null) {
             EntityRenderDispatcher renderManager = MinecraftClient.getInstance().getEntityRenderManager();
             if (((VariableMobilityEntity)possessedEntity).requiem_isImmovable()) {
-                renderManager.render(possessedEntity, tickDelta, true);
+                renderManager.render(possessedEntity, tickDelta);
             } else {
-                possessedEntity.field_6283 = renderedPlayer.field_6283;
+                possessedEntity.bodyYaw = renderedPlayer.bodyYaw;
                 possessedEntity.yaw = renderedPlayer.yaw;
                 possessedEntity.pitch = renderedPlayer.pitch;
                 possessedEntity.headYaw = renderedPlayer.headYaw;
                 possessedEntity.prevHeadYaw = renderedPlayer.prevHeadYaw;
-                renderManager.render(possessedEntity, x, y, z, yaw, tickDelta, true);
+                renderManager.render(possessedEntity, x, y, z, yaw, tickDelta, matrices, vertexConsumers);
             }
-            info.cancel();
+            ci.cancel();
         }
     }
 
@@ -85,24 +82,25 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
      * so rendering should be visually equivalent.
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+/* TODO reimplement using Blaze3D
     @Inject(
             method = "method_4215",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;method_4054(Lnet/minecraft/entity/LivingEntity;DDDFF)V"
+                    target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;method_4054(Lnet/minecraft/entity/LivingEntity;DDDFFLnet/minecraft/util/math/MatrixStack;Lnet/minecraft/client/render/LayeredVertexConsumerStorage;)V"
             )
     )
-    private void preRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
+    private void preRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, LayeredVertexConsumerStorage vertexConsumers, CallbackInfo info) {
         if (((RequiemPlayer) renderedPlayer).asRemnant().isIncorporeal()) {
             Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
             boolean isObserverRemnant = cameraEntity instanceof RequiemPlayer && ((RequiemPlayer) cameraEntity).asRemnant().getType().isDemon();
             float alpha = isObserverRemnant ? 1.0f : 0.05f;
-            GlStateManager.color4f(1.0f, 1.0f, 1.0f, alpha);
-            GlStateManager.depthMask(false);
+            RenderSystem.color4f(1.0f, 1.0f, 1.0f, alpha);
+            RenderSystem.depthMask(false);
             ShadowPlayerFx.INSTANCE.beginPlayersFbWrite();
         } else if (((RequiemPlayer) renderedPlayer).getDeathSuspender().isLifeTransient()) {
-            GlStateManager.color4f(1f, 1f, 1f, 0.5f);
-            GlStateManager.depthMask(false);
+            RenderSystem.color4f(1f, 1f, 1f, 0.5f);
+            RenderSystem.depthMask(false);
         }
     }
 
@@ -111,39 +109,39 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
             at = @At(
                     value = "INVOKE",
                     shift = AFTER,
-                    target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;method_4054(Lnet/minecraft/entity/LivingEntity;DDDFF)V"
+                    target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;method_4054(Lnet/minecraft/entity/LivingEntity;DDDFFLnet/minecraft/util/math/MatrixStack;Lnet/minecraft/client/render/LayeredVertexConsumerStorage;)V"
             )
     )
-    private void postRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, CallbackInfo info) {
+    private void postRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, LayeredVertexConsumerStorage vertexConsumers, CallbackInfo info) {
         MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
-        GlStateManager.depthMask(true);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.depthMask(true);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
+*/
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Hand rendering hijack
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     @Shadow
-    protected abstract void setModelPose(AbstractClientPlayerEntity player);
+    protected abstract void method_23205(MatrixStack matrixStack_1, LayeredVertexConsumerStorage layeredVertexConsumerStorage_1, AbstractClientPlayerEntity abstractClientPlayerEntity_1, ModelPart modelPart_1, ModelPart modelPart_2);
 
     @Inject(method = "renderRightArm", at = @At("HEAD"), cancellable = true)
-    private void renderRightArm(AbstractClientPlayerEntity renderedPlayer, CallbackInfo info) {
-        if (requiem_renderPossessedArm(renderedPlayer, true)) {
-            info.cancel();
+    private void renderRightArm(MatrixStack matrices, LayeredVertexConsumerStorage vertices, AbstractClientPlayerEntity renderedPlayer, CallbackInfo ci) {
+        if (requiem_renderPossessedArm(matrices, vertices, renderedPlayer, true)) {
+            ci.cancel();
         }
     }
 
     @Inject(method = "renderLeftArm", at = @At("HEAD"), cancellable = true)
-    private void renderLeftArm(AbstractClientPlayerEntity renderedPlayer, CallbackInfo info) {
-        if (requiem_renderPossessedArm(renderedPlayer, false)) {
-            info.cancel();
+    private void renderLeftArm(MatrixStack matrices, LayeredVertexConsumerStorage vertices, AbstractClientPlayerEntity renderedPlayer, CallbackInfo ci) {
+        if (requiem_renderPossessedArm(matrices, vertices, renderedPlayer, false)) {
+            ci.cancel();
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Unique
-    private boolean requiem_renderPossessedArm(AbstractClientPlayerEntity renderedPlayer, boolean rightArm) {
+    private boolean requiem_renderPossessedArm(MatrixStack matrices, LayeredVertexConsumerStorage vertices, AbstractClientPlayerEntity renderedPlayer, boolean rightArm) {
         if (((RequiemPlayer) renderedPlayer).asRemnant().isSoul()) {
             if (((RequiemPlayer) renderedPlayer).asPossessor().isPossessing()) {
                 LivingEntity possessed = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
@@ -153,19 +151,9 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                     if (renderer instanceof FeatureRendererContext) {
                         Model model = ((LivingEntityRenderer) renderer).getModel();
                         if (model instanceof BipedEntityModel) {
-                            renderer.bindTexture(((AccessibleTextureEntityRenderer) renderer).getTexture(possessed));
-                            GlStateManager.color3f(1.0F, 1.0F, 1.0F);
-                            BipedEntityModel playerEntityModel_1 = (BipedEntityModel) model;
-                            this.setModelPose(renderedPlayer);
-                            GlStateManager.enableBlend();
-                            playerEntityModel_1.handSwingProgress = 0.0F;
-                            playerEntityModel_1.isSneaking = false;
-                            playerEntityModel_1.field_3396 = 0.0F;
-                            playerEntityModel_1.method_17087(possessed, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-                            Cuboid arm = rightArm ? playerEntityModel_1.rightArm : playerEntityModel_1.leftArm;
-                            arm.pitch = 0.0F;
-                            arm.render(0.0625F);
-                            GlStateManager.disableBlend();
+                            BipedEntityModel bipedModel = (BipedEntityModel) model;
+                            ModelPart arm = rightArm ? bipedModel.rightArm : bipedModel.leftArm;
+                            this.method_23205(matrices, vertices, renderedPlayer, arm, arm);
                         }
                     }
                 }

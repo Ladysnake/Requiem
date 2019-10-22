@@ -23,6 +23,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -54,9 +55,9 @@ public abstract class GameRendererMixin {
         }
     }
 
-    @Inject(method = "applyCameraTransformations", at = @At("TAIL"))
-    private void applyCameraTransformations(float tickDelta, CallbackInfo ci) {
-        ApplyCameraTransformsCallback.EVENT.invoker().applyCameraTransformations(this.camera, tickDelta);
+    @Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;update(Lnet/minecraft/world/BlockView;Lnet/minecraft/entity/Entity;ZZF)V"))
+    private void applyCameraTransformations(float tickDelta, long nanoTime, MatrixStack matrices, CallbackInfo ci) {
+        ApplyCameraTransformsCallback.EVENT.invoker().applyCameraTransformations(this.camera, matrices, tickDelta);
     }
 
     @Inject(method = "shouldRenderBlockOutline", at = @At("HEAD"), cancellable = true)

@@ -26,7 +26,7 @@ public class CooldownStrengthAttribute extends DelegatingAttribute {
     private final Possessable owner;
 
     public <T extends LivingEntity & Possessable> CooldownStrengthAttribute(T entity) {
-        super(entity.getAttributeContainer(), entity.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE));
+        super(entity.getAttributes(), entity.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE));
         this.owner = entity;
     }
 

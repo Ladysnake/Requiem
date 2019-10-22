@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
 public abstract class PossessorEntityMixin {
-    @Inject(method = "getMaxBreath", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getMaxAir", at = @At("HEAD"), cancellable = true)
     private void delegateMaxBreath(CallbackInfoReturnable<Integer> cir) {
         if (this instanceof RequiemPlayer) {
             PossessionComponent possessionComponent = ((RequiemPlayer) this).asPossessor();
@@ -36,13 +36,13 @@ public abstract class PossessorEntityMixin {
             if (possessionComponent != null) {
                 Entity possessedEntity = possessionComponent.getPossessedEntity();
                 if (possessedEntity != null) {
-                    cir.setReturnValue(possessedEntity.getMaxBreath());
+                    cir.setReturnValue(possessedEntity.getMaxAir());
                 }
             }
         }
     }
 
-    @Inject(method = "getBreath", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getAir", at = @At("HEAD"), cancellable = true)
     private void delegateBreath(CallbackInfoReturnable<Integer> cir) {
         if (this instanceof RequiemPlayer) {
             PossessionComponent possessionComponent = ((RequiemPlayer) this).asPossessor();
@@ -51,7 +51,7 @@ public abstract class PossessorEntityMixin {
             if (possessionComponent != null) {
                 Entity possessedEntity = ((RequiemPlayer) this).asPossessor().getPossessedEntity();
                 if (possessedEntity != null) {
-                    cir.setReturnValue(possessedEntity.getBreath());
+                    cir.setReturnValue(possessedEntity.getAir());
                 }
             }
         }

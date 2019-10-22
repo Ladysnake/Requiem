@@ -17,7 +17,6 @@
  */
 package ladysnake.pandemonium.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.pandemonium.client.RequiemSkinManager;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
@@ -26,8 +25,7 @@ import net.minecraft.client.render.entity.feature.*;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.util.Identifier;
-
-import javax.annotation.Nonnull;
+import net.minecraft.util.math.MatrixStack;
 
 public class PlayerShellEntityRenderer extends BipedEntityRenderer<PlayerShellEntity, PlayerEntityModel<PlayerShellEntity>> {
 
@@ -38,26 +36,18 @@ public class PlayerShellEntityRenderer extends BipedEntityRenderer<PlayerShellEn
         this.addFeature(new StuckArrowsFeatureRenderer<>(this));
         this.addFeature(new HeadFeatureRenderer<>(this));
         this.addFeature(new ElytraFeatureRenderer<>(this));
+        this.addFeature(new TridentRiptideFeatureRenderer<>(this));
+        this.addFeature(new StingerFeatureRenderer<>(this));
     }
 
     @Override
-    protected Identifier getTexture(PlayerShellEntity entity) {
+    public Identifier getTexture(PlayerShellEntity entity) {
         return RequiemSkinManager.get(entity.getProfile());
     }
 
-    /**
-     * Called before render
-     */
     @Override
-    protected void scale(PlayerShellEntity entitylivingbaseIn, float partialTickTime) {
-        GlStateManager.scalef(0.9375F, 0.9375F, 0.9375F);
-    }
-
-    @Override
-    public void render(@Nonnull PlayerShellEntity entity, double x, double y, double z, float entityYaw, float partialTicks) {
-        GlStateManager.setProfile(GlStateManager.RenderMode.PLAYER_SKIN);
-        super.render(entity, x, y, z, entityYaw, partialTicks);
-        GlStateManager.unsetProfile(GlStateManager.RenderMode.PLAYER_SKIN);
+    protected void scale(PlayerShellEntity shell, MatrixStack matrices, float tickDelta) {
+        matrices.scale(0.9375F, 0.9375F, 0.9375F);
     }
 
 }

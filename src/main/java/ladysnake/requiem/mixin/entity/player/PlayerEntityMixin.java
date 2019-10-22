@@ -134,9 +134,9 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private void travel(CallbackInfo info) {
         Entity possessed = this.asPossessor().getPossessedEntity();
         if (possessed != null && ((VariableMobilityEntity) possessed).requiem_isImmovable()) {
-            if (!world.isClient && (this.x != possessed.x || this.y != possessed.y || this.z != possessed.z)) {
+            if (!world.isClient && (this.getX() != possessed.getX() || this.getY() != possessed.getY() || this.getZ() != possessed.getZ())) {
                 ServerPlayNetworkHandler networkHandler = ((ServerPlayerEntity) (Object) this).networkHandler;
-                networkHandler.teleportRequest(possessed.x, possessed.y, possessed.z, this.yaw, this.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
+                networkHandler.teleportRequest(possessed.getX(), possessed.getY(), possessed.getZ(), this.yaw, this.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
                 networkHandler.syncWithPlayerPosition();
             }
             info.cancel();
@@ -205,7 +205,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         double yMotion = this.getRotationVector().y;
         double modifier = yMotion < -0.2D ? 0.085D : 0.06D;
         // If the motion change would not be applied, apply it ourselves
-        if (yMotion > 0.0D && !this.jumping && this.world.getBlockState(new BlockPos(this.x, this.y + 1.0D - 0.1D, this.z)).getFluidState().isEmpty() && this.remnantState.isIncorporeal()) {
+        if (yMotion > 0.0D && !this.jumping && this.world.getBlockState(new BlockPos(this.getX(), this.getY() + 1.0D - 0.1D, this.getZ())).getFluidState().isEmpty() && this.remnantState.isIncorporeal()) {
             Vec3d velocity = this.getVelocity();
             this.setVelocity(velocity.add(0.0D, (yMotion - velocity.y) * modifier, 0.0D));
         }
@@ -221,7 +221,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
             Entity possessedEntity = this.asPossessor().getPossessedEntity();
             if (possessedEntity != null) {
                 cir.setReturnValue(possessedEntity.getDimensions(pose));
-            } else if (pose == EntityPose.SNEAKING) {
+            } else if (pose == EntityPose.CROUCHING) {
                 cir.setReturnValue(REQUIEM$SOUL_SNEAKING_SIZE);
             }
         }

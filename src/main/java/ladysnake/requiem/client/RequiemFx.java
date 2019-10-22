@@ -18,6 +18,7 @@
 package ladysnake.requiem.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.satin.api.event.EntitiesPostRenderCallback;
@@ -31,7 +32,7 @@ import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.VisibleRegion;
+import net.minecraft.client.render.Frustum;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 
@@ -94,6 +95,7 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
             if (--fishEyeAnimation == 2) {
                 sendToServer(POSSESSION_REQUEST, createPossessionRequestBuffer(possessed));
             }
+            assert client.player != null;
             if (!((RequiemPlayer) client.player).asRemnant().isIncorporeal()) {
                 this.possessionTarget = null;
             }
@@ -133,12 +135,13 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
             uniformSlider.set((fishEyeAnimation - tickDelta) / 40 + 0.25f);
             fishEyeShader.render(tickDelta);
             if (this.possessionTarget != null && this.framebuffer != null) {
-                GlStateManager.enableBlend();
-                GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-                this.framebuffer.draw(this.mc.window.getWidth(), this.mc.window.getHeight(), false);
+                RenderSystem.enableBlend();
+                RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE);
+                this.framebuffer.method_22594(this.mc.getWindow().getWidth(), this.mc.getWindow().getHeight(), false);
                 MinecraftClient.getInstance().worldRenderer.drawEntityOutlinesFramebuffer();
             }
         }
+        assert mc.player != null;
         boolean incorporeal = ((RequiemPlayer) mc.player).asRemnant().isIncorporeal();
         if (incorporeal || this.etherealAnimation > 0 || this.pulseAnimation >= 0) {
             // 10 -> 1
@@ -170,22 +173,22 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
     }
 
     @Override
-    public void onEntitiesRendered(Camera camera, VisibleRegion frustum, float tickDelta) {
+    public void onEntitiesRendered(Camera camera, Frustum frustum, float tickDelta) {
         Entity possessed = getAnimationEntity();
         if (possessed != null) {
             if (this.framebuffer == null) {
-                this.framebuffer = new GlFramebuffer(mc.window.getWidth(), mc.window.getHeight(), true, MinecraftClient.IS_SYSTEM_MAC);
+                this.framebuffer = new GlFramebuffer(mc.getWindow().getWidth(), mc.getWindow().getHeight(), true, MinecraftClient.IS_SYSTEM_MAC);
             }
             this.framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
-            GlStateManager.disableFog();
+            RenderSystem.disableFog();
             this.framebuffer.beginWrite(false);
-            this.mc.getEntityRenderManager().render(possessed, tickDelta, true);
-            GlStateManager.enableLighting();
-            GlStateManager.enableFog();
-            GlStateManager.enableBlend();
-            GlStateManager.enableColorMaterial();
-            GlStateManager.enableDepthTest();
-            GlStateManager.enableAlphaTest();
+            this.mc.getEntityRenderManager().render(possessed, tickDelta);
+            RenderSystem.enableLighting();
+            RenderSystem.enableFog();
+            RenderSystem.enableBlend();
+            RenderSystem.enableColorMaterial();
+            RenderSystem.enableDepthTest();
+            RenderSystem.enableAlphaTest();
             this.mc.getFramebuffer().beginWrite(false);
         }
     }

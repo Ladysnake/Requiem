@@ -17,25 +17,26 @@
  */
 package ladysnake.pandemonium.client.handler;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MatrixStack;
 
 public class HeadDownTransformHandler implements ApplyCameraTransformsCallback {
     @Override
-    public void applyCameraTransformations(Camera camera, float tickDelta) {
+    public void applyCameraTransformations(Camera camera, MatrixStack matrices, float tickDelta) {
         Entity focusedEntity = camera.getFocusedEntity();
         if (focusedEntity instanceof PlayerEntity && !camera.isThirdPerson()) {
             Entity possessed = ((RequiemPlayer) focusedEntity).asPossessor().getPossessedEntity();
             if (possessed instanceof ShulkerEntity && ((ShulkerEntity) possessed).getAttachedFace() == Direction.UP || possessed instanceof BatEntity && ((BatEntity) possessed).isRoosting()) {
-                GlStateManager.rotatef(180.0F, 1.0F, 0.0F, 0.0F);
-                GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
+                matrices.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0F));
+                matrices.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F));
             }
         }
     }

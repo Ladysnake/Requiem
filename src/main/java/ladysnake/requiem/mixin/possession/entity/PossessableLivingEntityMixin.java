@@ -71,15 +71,17 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
     @Shadow public abstract float getHealth();
 
-    @Shadow public abstract AbstractEntityAttributeContainer getAttributeContainer();
-
     @Shadow public abstract float getAbsorptionAmount();
 
     @Shadow public float headYaw;
-    @Shadow public float field_6283;
     @Shadow public float limbAngle;
     @Shadow public float limbDistance;
 
+    @Shadow
+    public abstract AbstractEntityAttributeContainer getAttributes();
+
+    @Shadow
+    public float bodyYaw;
     @Nullable
     private PlayerEntity possessor;
 
@@ -159,7 +161,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         // Entities may or may not register ATTACK_DAMAGE
         //noinspection ConstantConditions
         if (this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE) != null) {
-            AttributeHelper.substituteAttributeInstance(this.getAttributeContainer(), new CooldownStrengthAttribute((LivingEntity & Possessable)(Object)this));
+            AttributeHelper.substituteAttributeInstance(this.getAttributes(), new CooldownStrengthAttribute((LivingEntity & Possessable)(Object)this));
         }
     }
 
@@ -185,7 +187,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         // If anyone has a better idea for immovable mobs, tell me
         if (player != null) {
             this.setRotation(player.yaw, player.pitch);
-            this.headYaw = this.field_6283 = this.prevYaw = this.yaw;
+            this.headYaw = this.bodyYaw = this.prevYaw = this.yaw;
             if (!this.requiem_immovable) {
                 this.setSwimming(player.isSwimming());
                 // Prevent this entity from taking fall damage unless triggered by the possessor
@@ -193,7 +195,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
                 this.setVelocity(player.getVelocity());
                 this.move(MovementType.SELF, this.getVelocity());
-                this.setPosition(player.x, player.y, player.z);
+                this.setPosition(player.getX(), player.getY(), player.getZ());
                 // update limb movement
                 this.limbAngle = player.limbAngle;
                 this.limbDistance = player.limbDistance;
@@ -231,30 +233,30 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         }
     }
 
-    @Inject(method = "method_6076", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "tickActiveItemStack", at = @At("HEAD"), cancellable = true)
     private void updateHeldItem(CallbackInfo ci) {
         if (this.isBeingPossessed()) {
             ci.cancel();
         }
     }
 
-    @Inject(method = "method_6020", at = @At("RETURN"))
+    @Inject(method = "onStatusEffectApplied", at = @At("RETURN"))
     private void onStatusEffectAdded(StatusEffectInstance effect, CallbackInfo ci) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor instanceof ServerPlayerEntity) {
-            possessor.addPotionEffect(new StatusEffectInstance(effect));
+            possessor.addStatusEffect(new StatusEffectInstance(effect));
         }
     }
-    @Inject(method = "method_6009", at = @At("RETURN"))
+    @Inject(method = "onStatusEffectUpgraded", at = @At("RETURN"))
     private void onStatusEffectUpdated(StatusEffectInstance effect, boolean upgrade, CallbackInfo ci) {
         if (upgrade) {
             PlayerEntity possessor = this.getPossessor();
             if (possessor instanceof ServerPlayerEntity) {
-                possessor.addPotionEffect(new StatusEffectInstance(effect));
+                possessor.addStatusEffect(new StatusEffectInstance(effect));
             }
         }
     }
-    @Inject(method = "method_6129", at = @At("RETURN"))
+    @Inject(method = "onStatusEffectRemoved", at = @At("RETURN"))
     private void onStatusEffectRemoved(StatusEffectInstance effect, CallbackInfo ci) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor instanceof ServerPlayerEntity) {
@@ -267,13 +269,13 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     This causes issues, to which one of the simplest fix is to call remove() right after calling next().
      */
 
-    @Redirect(method = "clearPotionEffects", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;next()Ljava/lang/Object;", remap = false))
+    @Redirect(method = "clearStatusEffects", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;next()Ljava/lang/Object;", remap = false))
     private Object swapIteratorOperationsPart1(Iterator iterator) {
         Object next = iterator.next();
         iterator.remove();
         return next;
     }
-    @Redirect(method = "clearPotionEffects", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;remove()V", remap = false))
+    @Redirect(method = "clearStatusEffects", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;remove()V", remap = false))
     private void swapIteratorOperationsPart2(Iterator iterator) {
         // NO-OP
     }
@@ -319,11 +321,11 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     /**
      * Returns Whether this entity is using a shield or equivalent
      */
-    @Inject(method = "method_6039", at = @At("HEAD"), cancellable = true)
-    private void method_6039(CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "isBlocking", at = @At("HEAD"), cancellable = true)
+    private void isBlocking(CallbackInfoReturnable<Boolean> cir) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
-            cir.setReturnValue(possessor.method_6039());
+            cir.setReturnValue(possessor.isBlocking());
         }
     }
 

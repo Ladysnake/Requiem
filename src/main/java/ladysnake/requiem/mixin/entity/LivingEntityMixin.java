@@ -64,7 +64,7 @@ public abstract class LivingEntityMixin extends Entity {
      * Fixes a bug in vanilla minecraft that gives back {@link ItemStack#finishUsing(World, LivingEntity)}'s result
      * even after an inventory drop
      */
-    @Inject(method = "method_6040", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;clearActiveItem()V"))
+    @Inject(method = "consumeItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;clearActiveItem()V"))
     private void dropUsedItemAsSoul(CallbackInfo ci) {
         if (this instanceof RequiemPlayer && ((RequiemPlayer) this).asRemnant().isIncorporeal()&& !world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
             this.dropStack(this.getStackInHand(this.getActiveHand()));

@@ -112,7 +112,7 @@ public class RevivingDeathSuspender implements DeathSuspender, EntitySyncedCompo
     @Override
     public void fromTag(CompoundTag tag) {
         this.setLifeTransient(tag.getBoolean("lifeTransient"));
-        if (tag.containsKey("deathCause") && this.player.world.isClient) {
+        if (tag.contains("deathCause") && this.player.world.isClient) {
             this.deathCause = DamageSourceSerialization.fromTag(tag.getCompound("deathCause"), (ServerWorld)this.player.world);
         }
     }

@@ -32,12 +32,12 @@ public final class InventoryHelper {
             if (!dest.getEquippedStack(slot).isEmpty()) {
                 dest.dropStack(stuff, 0.5f);
             } else {
-                dest.setEquippedStack(slot, stuff);
+                dest.equipStack(slot, stuff);
                 if (dest instanceof MobEntity) {
                     ((MobEntity) dest).setEquipmentDropChance(slot, 2.0F);
                 }
             }
-            source.setEquippedStack(slot, ItemStack.EMPTY);
+            source.equipStack(slot, ItemStack.EMPTY);
         }
     }
 }

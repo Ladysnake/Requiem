@@ -132,23 +132,23 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
         }
     }
 
-    @Inject(method = "method_6020", at = @At("RETURN"))
+    @Inject(method = "onStatusEffectApplied", at = @At("RETURN"))
     private void onStatusEffectAdded(StatusEffectInstance effect, CallbackInfo ci) {
         MobEntity possessed = this.asPossessor().getPossessedEntity();
         if (possessed != null) {
-            possessed.addPotionEffect(new StatusEffectInstance(effect));
+            possessed.addStatusEffect(new StatusEffectInstance(effect));
         }
     }
-    @Inject(method = "method_6009", at = @At("RETURN"))
+    @Inject(method = "onStatusEffectUpgraded", at = @At("RETURN"))
     private void onStatusEffectUpdated(StatusEffectInstance effect, boolean upgrade, CallbackInfo ci) {
         if (upgrade) {
             MobEntity possessed = this.asPossessor().getPossessedEntity();
             if (possessed != null) {
-                possessed.addPotionEffect(new StatusEffectInstance(effect));
+                possessed.addStatusEffect(new StatusEffectInstance(effect));
             }
         }
     }
-    @Inject(method = "method_6129", at = @At("RETURN"))
+    @Inject(method = "onStatusEffectRemoved", at = @At("RETURN"))
     private void onStatusEffectRemoved(StatusEffectInstance effect, CallbackInfo ci) {
         MobEntity possessed = this.asPossessor().getPossessedEntity();
         if (possessed != null) {

@@ -50,7 +50,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
         super(world, profile);
     }
 
-    @Inject(method = "method_14226", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "playerTick", at = @At("HEAD"), cancellable = true)
     private void stopTicking(CallbackInfo ci) {
         if (this.getDeathSuspender().isLifeTransient()) {
             ci.cancel();

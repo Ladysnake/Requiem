@@ -52,8 +52,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.createCorporealityMessage;
@@ -103,13 +105,13 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             return ActionResult.PASS;
         });
         // Prevent incorporeal players from breaking anything
-        AttackBlockCallback.EVENT.register((player, world, hand, blockPos, facing) -> isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
+        AttackBlockCallback.EVENT.register((player, world, hand, blockPos, facing) -> getInteractionResult(player));
         // Prevent incorporeal players from hitting anything
-        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
+        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> getInteractionResult(player));
         // Prevent incorporeal players from interacting with anything
-        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> getInteractionResult(player));
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> !player.world.isClient && isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
-        UseItemCallback.EVENT.register((player, world, hand) -> isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
+        UseItemCallback.EVENT.register((player, world, hand) -> new TypedActionResult<>(getInteractionResult(player), player.getStackInHand(hand)));
         // Make players respawn in the right place with the right state
         PlayerCloneCallback.EVENT.register((original, clone, returnFromEnd) -> {
             RequiemPlayer requiemClone = RequiemPlayer.from(clone);
@@ -120,6 +122,11 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             sendToAllTrackingIncluding(player, createCorporealityMessage(player));
             ((MobResurrectable)player).spawnResurrectionEntity();
         }));
+    }
+
+    @Nonnull
+    private ActionResult getInteractionResult(PlayerEntity player) {
+        return isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS;
     }
 
     private boolean isInteractionForbidden(PlayerEntity player) {
@@ -146,7 +153,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                 if (!world.isClient) {
                     MobEntity possessedEntity = ((RequiemPlayer) player).asPossessor().getPossessedEntity();
                     if (possessedEntity != null && EntityTypeTags.SKELETONS.contains(possessedEntity.getType())) {
-                        if (possessedEntity.getHealth() < possessedEntity.getHealthMaximum()) {
+                        if (possessedEntity.getHealth() < possessedEntity.getMaximumHealth()) {
                             possessedEntity.heal(4.0f);
                             possessedEntity.playAmbientSound();
                             heldItem.decrement(1);
@@ -154,9 +161,9 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                         }
                     }
                 }
-                return ActionResult.SUCCESS;
+                return new TypedActionResult<>(ActionResult.SUCCESS, heldItem);
             }
-            return ActionResult.PASS;
+            return new TypedActionResult<>(ActionResult.PASS, heldItem);
         });
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (entity instanceof SpiderEntity) {
@@ -193,7 +200,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         if (deathSuspender.isLifeTransient()) {
             requiemPlayer.become(chosenType);
             if (chosenType != MORTAL) {
-                player.world.playSound(null, player.x, player.y, player.z, RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
+                player.world.playSound(null, player.getX(), player.getY(), player.getZ(), RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
                 RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(false, false));
             }
             RequiemCriteria.MADE_REMNANT_CHOICE.handle(player, chosenType);

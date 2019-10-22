@@ -17,9 +17,9 @@
  */
 package ladysnake.pandemonium.common.impl.anchor;
 
-import ladysnake.requiem.Requiem;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
+import ladysnake.requiem.Requiem;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -41,7 +41,7 @@ public class FractureAnchorPersistentState extends PersistentState {
 
     @Override
     public void fromTag(CompoundTag tag) {
-        if (!tag.containsKey("Anchors", NbtType.LIST)) {
+        if (!tag.contains("Anchors", NbtType.LIST)) {
             Requiem.LOGGER.error("Invalid save data. Expected list of FractureAnchors, found none. Discarding save data.");
             return;
         }
@@ -49,7 +49,7 @@ public class FractureAnchorPersistentState extends PersistentState {
         for (Tag anchorNbt : list) {
             CompoundTag anchorTag = (CompoundTag) anchorNbt;
             FractureAnchor anchor = this.manager.addAnchor(AnchorFactories.fromTag(anchorTag));
-            if (anchorTag.containsKey("X", NbtType.DOUBLE)) {
+            if (anchorTag.contains("X", NbtType.DOUBLE)) {
                 anchor.setPosition(anchorTag.getDouble("X"), anchorTag.getDouble("Y"), anchorTag.getDouble("Z"));
             } else {
                 Requiem.LOGGER.error("Invalid save data. Expected position information, found none. Skipping.");

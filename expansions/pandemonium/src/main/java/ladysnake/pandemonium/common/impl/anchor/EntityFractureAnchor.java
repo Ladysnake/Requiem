@@ -46,8 +46,8 @@ public class EntityFractureAnchor extends TrackedFractureAnchor {
         if (entity != null) {
             if (entity instanceof LivingEntity && ((LivingEntity)entity).getHealth() <= 0.0F) {
                 this.invalidate();
-            } else if (entity.x != this.x || entity.y != this.y || entity.z != this.z) {
-                this.setPosition(entity.x, entity.y, entity.z);
+            } else if (entity.getX() != this.x || entity.getY() != this.y || entity.getZ() != this.z) {
+                this.setPosition(entity.getX(), entity.getY(), entity.getZ());
             }
         } else if (this.manager.getWorld().isChunkLoaded(((int)this.x) >> 4, ((int)this.z) >> 4)) {
             // chunk is loaded but entity not found -- assume dead

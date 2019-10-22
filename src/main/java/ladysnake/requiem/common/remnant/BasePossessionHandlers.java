@@ -56,14 +56,14 @@ public static void register() {
                     // Retry a few times
                     for (int i = 0; i < 20; i++) {
                         if (((EndermanEntityAccessor) target).invokeTeleportRandomly()) {
-                            possessor.world.playSound(null, target.x, target.y, target.z, SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
+                            possessor.world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
                             break;
                         }
                     }
                     tpDest = target;
                 } else {
                     // TODO when the dimension API is merged, use a custom teleporter to make the END path work with any dimension
-                    possessor.world.playSound(null, target.x, target.y, target.z, SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
+                    possessor.world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
                     // Set the variable in advance to avoid game credits
                     ((ServerPlayerEntity)possessor).notInAnyWorld = true;
                     possessor.changeDimension(DimensionType.OVERWORLD);
@@ -71,7 +71,7 @@ public static void register() {
                     tpDest = target.changeDimension(DimensionType.OVERWORLD);
                 }
                 if (tpDest != null) {
-                    possessor.teleport(tpDest.x, tpDest.y, tpDest.z, true);
+                    possessor.teleport(tpDest.getX(), tpDest.getY(), tpDest.getZ(), true);
                 }
             }
             return PossessionStartCallback.Result.HANDLED;
