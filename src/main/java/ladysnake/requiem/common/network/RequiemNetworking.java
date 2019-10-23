@@ -63,12 +63,12 @@ public class RequiemNetworking {
     }
 
     public static void sendToServer(CustomPayloadC2SPacket message) {
+        assert MinecraftClient.getInstance().player != null;
         MinecraftClient.getInstance().player.networkHandler.sendPacket(message);
     }
 
     public static void sendTo(ServerPlayerEntity player, CustomPayloadS2CPacket message) {
         sendToPlayer(player, message);
-        // FIXME free memory
     }
 
     public static void sendToAllTrackingIncluding(Entity tracked, CustomPayloadS2CPacket message) {
@@ -78,7 +78,6 @@ public class RequiemNetworking {
                 sendToPlayer((ServerPlayerEntity) tracked, message);
             }
         }
-        // FIXME free memory
     }
 
     private static void sendToPlayer(ServerPlayerEntity player, CustomPayloadS2CPacket message) {
