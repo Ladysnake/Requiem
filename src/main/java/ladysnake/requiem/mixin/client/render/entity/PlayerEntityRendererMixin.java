@@ -24,6 +24,7 @@ import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -61,16 +62,21 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         LivingEntity possessedEntity = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
         if (possessedEntity != null) {
             EntityRenderDispatcher renderManager = MinecraftClient.getInstance().getEntityRenderManager();
+            matrices.pop(); // discard transforms made for the player rendering
             if (((VariableMobilityEntity)possessedEntity).requiem_isImmovable()) {
                 renderManager.render(possessedEntity, tickDelta);
             } else {
                 possessedEntity.bodyYaw = renderedPlayer.bodyYaw;
+                possessedEntity.prevBodyYaw = renderedPlayer.prevBodyYaw;
                 possessedEntity.yaw = renderedPlayer.yaw;
+                possessedEntity.prevYaw = renderedPlayer.prevYaw;
                 possessedEntity.pitch = renderedPlayer.pitch;
+                possessedEntity.prevPitch = renderedPlayer.prevPitch;
                 possessedEntity.headYaw = renderedPlayer.headYaw;
                 possessedEntity.prevHeadYaw = renderedPlayer.prevHeadYaw;
                 renderManager.render(possessedEntity, x, y, z, yaw, tickDelta, matrices, vertexConsumers);
             }
+            matrices.push();
             ci.cancel();
         }
     }
@@ -124,7 +130,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     @Shadow
-    protected abstract void method_23205(MatrixStack matrixStack_1, LayeredVertexConsumerStorage layeredVertexConsumerStorage_1, AbstractClientPlayerEntity abstractClientPlayerEntity_1, ModelPart modelPart_1, ModelPart modelPart_2);
+    protected abstract void setModelPose(AbstractClientPlayerEntity abstractClientPlayerEntity_1);
 
     @Inject(method = "renderRightArm", at = @At("HEAD"), cancellable = true)
     private void renderRightArm(MatrixStack matrices, LayeredVertexConsumerStorage vertices, AbstractClientPlayerEntity renderedPlayer, CallbackInfo ci) {
@@ -146,14 +152,23 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
             if (((RequiemPlayer) renderedPlayer).asPossessor().isPossessing()) {
                 LivingEntity possessed = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
                 if (possessed != null) {
-                    EntityRenderer renderer = MinecraftClient.getInstance().getEntityRenderManager().getRenderer(possessed);
+                    EntityRenderer<? super LivingEntity> possessedRenderer = MinecraftClient.getInstance().getEntityRenderManager().getRenderer(possessed);
                     // If the mob has an arm, render it instead of the player's
-                    if (renderer instanceof FeatureRendererContext) {
-                        Model model = ((LivingEntityRenderer) renderer).getModel();
-                        if (model instanceof BipedEntityModel) {
-                            BipedEntityModel bipedModel = (BipedEntityModel) model;
+                    if (possessedRenderer instanceof FeatureRendererContext) {
+                        Model possessedModel = ((LivingEntityRenderer) possessedRenderer).getModel();
+                        if (possessedModel instanceof BipedEntityModel) {
+                            @SuppressWarnings("unchecked") BipedEntityModel<LivingEntity> bipedModel = (BipedEntityModel<LivingEntity>) possessedModel;
+                            PlayerEntityModel<AbstractClientPlayerEntity> playerModel = this.getModel();
                             ModelPart arm = rightArm ? bipedModel.rightArm : bipedModel.leftArm;
-                            this.method_23205(matrices, vertices, renderedPlayer, arm, arm);
+                            this.setModelPose(renderedPlayer);
+                            bipedModel.leftArmPose = playerModel.leftArmPose;
+                            bipedModel.rightArmPose = playerModel.rightArmPose;
+                            int lightmapCoordinates = renderedPlayer.getLightmapCoordinates();
+                            bipedModel.handSwingProgress = 0.0F;
+                            bipedModel.isSneaking = false;
+                            bipedModel.method_17087(possessed, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+                            arm.pitch = 0.0F;
+                            arm.render(matrices, vertices.getBuffer(possessedModel.method_23500(possessedRenderer.getTexture(possessed))), 0.0625F, lightmapCoordinates, OverlayTexture.field_21444, null);
                         }
                     }
                 }
