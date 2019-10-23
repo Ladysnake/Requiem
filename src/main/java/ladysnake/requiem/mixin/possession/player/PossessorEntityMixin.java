@@ -56,4 +56,9 @@ public abstract class PossessorEntityMixin {
             }
         }
     }
+
+    @Inject(method = "canAvoidTraps", at = @At("RETURN"), cancellable = true)
+    private void soulsAvoidTraps(CallbackInfoReturnable<Boolean> cir) {
+        cir.setReturnValue(cir.getReturnValueZ() || (this instanceof RequiemPlayer && ((RequiemPlayer) this).asRemnant().isIncorporeal()));
+    }
 }
