@@ -68,7 +68,7 @@ public class DissolutionConfig {
         @Config.Comment("If set to false, incorporeal players won't be able to use the /dissolution stuck command to get back to their spawnpoint")
         public boolean allowStuckCommand = true;
 
-        @Config.Comment("If set to true, will kill you when out of experience. Not fully tested.")
+        @Config.Comment("If set to true, will kill you when out of experience.")
         public boolean dieFromExperience = false;
 
     }
