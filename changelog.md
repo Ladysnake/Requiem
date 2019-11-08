@@ -1,3 +1,7 @@
+##### Version 1.12.2-0.3.7 - BUILT
+- Added the Hardcore option to also be possible in survival.
+- Added a config option to enable said behavior.
+
 ##### Version 1.12.2-0.3.6 - BUILT
 - ADDED A WHITELIST CONFIG OPTION FOR POSSESSING MOBS. THERE.
 - Fixed offhand items never getting transferred between bodies
