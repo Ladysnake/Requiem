@@ -63,7 +63,11 @@ public class PlayerTickHandler {
                         ((EntityPlayerMP)event.player).connection.sendPacket(new SPacketSetExperience(event.player.experience, event.player.experienceTotal, event.player.experienceLevel));
                         if (removedXp <= 0 && (event.player.world.getMinecraftServer().isHardcore() || Dissolution.config.ghost.dieFromExperience)) {
                             event.player.setHealth(0f);
-                            event.player.sendStatusMessage(new TextComponentTranslation("dissolution.message.out_of_xp_death"), false);
+                            if (event.player.world.getMinecraftServer().isHardcore()) {
+                                event.player.sendStatusMessage(new TextComponentTranslation("dissolution.message.out_of_xp_death"), false);
+                            } else {
+                                event.player.sendStatusMessage(new TextComponentTranslation("dissolution.message.out_of_xp_survival"), false);
+                            }
                             playerCorp.setStrongSoul(false);
                             event.player.attackEntityFrom(Dissolution.OUT_OF_XP, Float.POSITIVE_INFINITY);
                         }
