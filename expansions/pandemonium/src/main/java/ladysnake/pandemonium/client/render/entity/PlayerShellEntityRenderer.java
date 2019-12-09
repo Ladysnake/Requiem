@@ -24,8 +24,8 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.feature.*;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 public class PlayerShellEntityRenderer extends BipedEntityRenderer<PlayerShellEntity, PlayerEntityModel<PlayerShellEntity>> {
 
@@ -37,7 +37,7 @@ public class PlayerShellEntityRenderer extends BipedEntityRenderer<PlayerShellEn
         this.addFeature(new HeadFeatureRenderer<>(this));
         this.addFeature(new ElytraFeatureRenderer<>(this));
         this.addFeature(new TridentRiptideFeatureRenderer<>(this));
-        this.addFeature(new StingerFeatureRenderer<>(this));
+        this.addFeature(new StuckStingersFeatureRenderer<>(this));
     }
 
     @Override

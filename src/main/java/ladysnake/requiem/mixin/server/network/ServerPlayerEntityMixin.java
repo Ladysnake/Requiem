@@ -44,7 +44,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
 
     @Shadow public abstract ServerWorld getServerWorld();
 
-    @Shadow public abstract PlayerAdvancementTracker getAdvancementManager();
+    @Shadow
+    public abstract PlayerAdvancementTracker getAdvancementTracker();
 
     public ServerPlayerEntityMixin(World world, GameProfile profile) {
         super(world, profile);
@@ -60,8 +61,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
     @Inject(method = "onDeath", at = @At("HEAD"), cancellable = true)
     private void suspendDeath(DamageSource killingBlow, CallbackInfo ci) {
         Identifier advancementId = Requiem.id("adventure/the_choice");
-        Advancement theChoice = this.getServerWorld().getServer().getAdvancementManager().get(advancementId);
-        AdvancementProgress progress = this.getAdvancementManager().getProgress(theChoice);
+        Advancement theChoice = this.getServerWorld().getServer().getAdvancementLoader().get(advancementId);
+        AdvancementProgress progress = this.getAdvancementTracker().getProgress(theChoice);
         if (progress == null) {
             Requiem.LOGGER.error("Advancement '{}' is missing", advancementId);
         } else if (!progress.isDone()) {

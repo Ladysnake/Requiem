@@ -51,7 +51,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     @Shadow
     protected abstract int getHeartCount(LivingEntity livingEntity_1);
 
-    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$class_4535;Lcom/mojang/blaze3d/platform/GlStateManager$class_4534;Lcom/mojang/blaze3d/platform/GlStateManager$class_4535;Lcom/mojang/blaze3d/platform/GlStateManager$class_4534;)V"), cancellable = true)
+    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$SrcFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DstFactor;Lcom/mojang/blaze3d/platform/GlStateManager$SrcFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DstFactor;)V"), cancellable = true)
     private void colorCrosshair(CallbackInfo ci) {
         CrosshairRenderCallback.EVENT.invoker().onCrosshairRender(this.scaledWidth, this.scaledHeight);
     }
@@ -101,7 +101,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
         return playerEntity.isInFluid(fluid);
     }
 
-    @ModifyVariable(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/SystemUtil;getMeasuringTimeMs()J"), ordinal = 0)
+    @ModifyVariable(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J"), ordinal = 0)
     private int substituteHealth(int health) {
         assert client.player != null;
         LivingEntity entity = ((RequiemPlayer)client.player).asPossessor().getPossessedEntity();

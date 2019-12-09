@@ -36,7 +36,7 @@ public class OnResurrectCriterion extends CriterionBase<OnResurrectCriterion.Con
     }
 
     public void handle(ServerPlayerEntity player, Entity body) {
-        Handler handler = this.getHandler(player.getAdvancementManager());
+        Handler handler = this.getHandler(player.getAdvancementTracker());
         if (handler != null) {
             handler.handle(player, body);
         }

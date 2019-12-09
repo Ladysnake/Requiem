@@ -109,7 +109,7 @@ public abstract class PlayerManagerMixin {
             Entity possessedEntityMount = EntityType.loadEntityWithPassengers(
                     serializedPossessedInfo.getCompound(POSSESSED_ENTITY_TAG),
                     world,
-                    (entity_1x) -> !world.method_18768(entity_1x) ? null : entity_1x
+                    (entity_1x) -> !world.tryLoadEntity(entity_1x) ? null : entity_1x
             );
             if (possessedEntityMount != null) {
                 UUID possessedEntityUuid = serializedPossessedInfo.getUuid(POSSESSED_UUID_TAG);
@@ -157,7 +157,7 @@ public abstract class PlayerManagerMixin {
             for (Entity ridden : possessedEntity.getPassengersDeep()) {
                 world.removeEntity(ridden);
             }
-            world.method_8497(player.chunkX, player.chunkZ).markDirty();
+            world.getChunk(player.chunkX, player.chunkZ).markDirty();
         }
     }
 

@@ -31,7 +31,7 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,7 +43,7 @@ import java.util.Map;
 import java.util.function.BiPredicate;
 
 public final class ResurrectionData implements Comparable<ResurrectionData> {
-    private static final Map<String, BiPredicate<ServerPlayerEntity, DamageSource>> SPECIAL_PREDICATES = SystemUtil.consume(new HashMap<>(), m -> {
+    private static final Map<String, BiPredicate<ServerPlayerEntity, DamageSource>> SPECIAL_PREDICATES = Util.make(new HashMap<>(), m -> {
         m.put("head_in_sand", (lazarus, killingBlow) -> BlockTags.SAND.contains(lazarus.world.getBlockState(lazarus.getBlockPos().add(0, lazarus.getEyeHeight(lazarus.getPose()), 0)).getBlock()));
     });
 

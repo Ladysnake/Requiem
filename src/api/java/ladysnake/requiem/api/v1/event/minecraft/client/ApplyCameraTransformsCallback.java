@@ -20,7 +20,7 @@ package ladysnake.requiem.api.v1.event.minecraft.client;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.render.Camera;
-import net.minecraft.util.math.MatrixStack;
+import net.minecraft.client.util.math.MatrixStack;
 
 public interface ApplyCameraTransformsCallback {
 

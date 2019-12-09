@@ -30,7 +30,7 @@ import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.GlFramebuffer;
+import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.entity.Entity;
@@ -57,7 +57,7 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
     private float accentColorG;
     private float accentColorB;
     @Nullable
-    private GlFramebuffer framebuffer;
+    private Framebuffer framebuffer;
 
     private int fishEyeAnimation = -1;
     private int etherealAnimation = 0;
@@ -136,8 +136,8 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
             fishEyeShader.render(tickDelta);
             if (this.possessionTarget != null && this.framebuffer != null) {
                 RenderSystem.enableBlend();
-                RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE);
-                this.framebuffer.method_22594(this.mc.getWindow().getWidth(), this.mc.getWindow().getHeight(), false);
+                RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
+                this.framebuffer.draw(this.mc.getWindow().getWidth(), this.mc.getWindow().getHeight(), false);
                 MinecraftClient.getInstance().worldRenderer.drawEntityOutlinesFramebuffer();
             }
         }
@@ -177,18 +177,14 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
         Entity possessed = getAnimationEntity();
         if (possessed != null) {
             if (this.framebuffer == null) {
-                this.framebuffer = new GlFramebuffer(mc.getWindow().getWidth(), mc.getWindow().getHeight(), true, MinecraftClient.IS_SYSTEM_MAC);
+                this.framebuffer = new Framebuffer(mc.getWindow().getWidth(), mc.getWindow().getHeight(), true, MinecraftClient.IS_SYSTEM_MAC);
             }
             this.framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
             RenderSystem.disableFog();
+            // TODO use a custom VertexConsumerProvider
             this.framebuffer.beginWrite(false);
-            this.mc.getEntityRenderManager().render(possessed, tickDelta);
-            RenderSystem.enableLighting();
-            RenderSystem.enableFog();
-            RenderSystem.enableBlend();
-            RenderSystem.enableColorMaterial();
-            RenderSystem.enableDepthTest();
-            RenderSystem.enableAlphaTest();
+
+//            this.mc.getEntityRenderManager().render(possessed, tickDelta);
             this.mc.getFramebuffer().beginWrite(false);
         }
     }

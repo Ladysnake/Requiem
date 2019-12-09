@@ -29,7 +29,7 @@ import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.GlFramebuffer;
+import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.entity.player.PlayerEntity;
@@ -57,7 +57,7 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
     private final ManagedShaderEffect desaturateEffect = ShaderEffectManager.getInstance().manage(DESATURATE_SHADER_ID);
 
     @Nullable
-    private GlFramebuffer playersFramebuffer;
+    private Framebuffer playersFramebuffer;
     private boolean renderedSoulPlayers;
     private boolean nearEthereal;
     private Uniform1f uniformSaturation = this.desaturateEffect.findUniform1f("Saturation");

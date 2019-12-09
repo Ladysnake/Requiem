@@ -23,8 +23,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -32,8 +32,8 @@ import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -57,14 +57,17 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
      * instead. This both prevents visual stuttering from position desync and lets mods render the player
      * correctly.
      */
-    @Inject(method = "method_4215", at = @At("HEAD"), cancellable = true)
-    private void cancelRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, LayeredVertexConsumerStorage vertexConsumers, CallbackInfo ci) {
+    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
+    private void cancelRender(AbstractClientPlayerEntity renderedPlayer, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int lightmap, CallbackInfo ci) {
         LivingEntity possessedEntity = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
         if (possessedEntity != null) {
             EntityRenderDispatcher renderManager = MinecraftClient.getInstance().getEntityRenderManager();
-            matrices.pop(); // discard transforms made for the player rendering
+//            matrices.pop(); // discard transforms made for the player rendering
             if (((VariableMobilityEntity)possessedEntity).requiem_isImmovable()) {
-                renderManager.render(possessedEntity, tickDelta);
+                double relativeX = possessedEntity.getX() - renderedPlayer.getX();
+                double relativeY = possessedEntity.getY() - renderedPlayer.getY();
+                double relativeZ = possessedEntity.getZ() - renderedPlayer.getZ();
+                renderManager.render(possessedEntity, relativeX, relativeY, relativeZ, yaw, tickDelta, matrices, vertexConsumers, lightmap);
             } else {
                 possessedEntity.bodyYaw = renderedPlayer.bodyYaw;
                 possessedEntity.prevBodyYaw = renderedPlayer.prevBodyYaw;
@@ -74,9 +77,9 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                 possessedEntity.prevPitch = renderedPlayer.prevPitch;
                 possessedEntity.headYaw = renderedPlayer.headYaw;
                 possessedEntity.prevHeadYaw = renderedPlayer.prevHeadYaw;
-                renderManager.render(possessedEntity, x, y, z, yaw, tickDelta, matrices, vertexConsumers);
+                renderManager.render(possessedEntity, 0, 0, 0, yaw, tickDelta, matrices, vertexConsumers, lightmap);
             }
-            matrices.push();
+//            matrices.push();
             ci.cancel();
         }
     }
@@ -133,21 +136,21 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     protected abstract void setModelPose(AbstractClientPlayerEntity abstractClientPlayerEntity_1);
 
     @Inject(method = "renderRightArm", at = @At("HEAD"), cancellable = true)
-    private void renderRightArm(MatrixStack matrices, LayeredVertexConsumerStorage vertices, AbstractClientPlayerEntity renderedPlayer, CallbackInfo ci) {
-        if (requiem_renderPossessedArm(matrices, vertices, renderedPlayer, true)) {
+    private void renderRightArm(MatrixStack matrices, VertexConsumerProvider vertices, int lightmap, AbstractClientPlayerEntity renderedPlayer, CallbackInfo ci) {
+        if (requiem_renderPossessedArm(matrices, vertices, renderedPlayer, lightmap, true)) {
             ci.cancel();
         }
     }
 
     @Inject(method = "renderLeftArm", at = @At("HEAD"), cancellable = true)
-    private void renderLeftArm(MatrixStack matrices, LayeredVertexConsumerStorage vertices, AbstractClientPlayerEntity renderedPlayer, CallbackInfo ci) {
-        if (requiem_renderPossessedArm(matrices, vertices, renderedPlayer, false)) {
+    private void renderLeftArm(MatrixStack matrices, VertexConsumerProvider vertices, int lightmap, AbstractClientPlayerEntity renderedPlayer, CallbackInfo ci) {
+        if (requiem_renderPossessedArm(matrices, vertices, renderedPlayer, lightmap, false)) {
             ci.cancel();
         }
     }
 
     @Unique
-    private boolean requiem_renderPossessedArm(MatrixStack matrices, LayeredVertexConsumerStorage vertices, AbstractClientPlayerEntity renderedPlayer, boolean rightArm) {
+    private boolean requiem_renderPossessedArm(MatrixStack matrices, VertexConsumerProvider vertices, AbstractClientPlayerEntity renderedPlayer, int lightmapCoordinates, boolean rightArm) {
         if (((RequiemPlayer) renderedPlayer).asRemnant().isSoul()) {
             if (((RequiemPlayer) renderedPlayer).asPossessor().isPossessing()) {
                 LivingEntity possessed = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
@@ -163,12 +166,11 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                             this.setModelPose(renderedPlayer);
                             bipedModel.leftArmPose = playerModel.leftArmPose;
                             bipedModel.rightArmPose = playerModel.rightArmPose;
-                            int lightmapCoordinates = renderedPlayer.getLightmapCoordinates();
                             bipedModel.handSwingProgress = 0.0F;
                             bipedModel.isSneaking = false;
-                            bipedModel.method_17087(possessed, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+                            bipedModel.setAngles(possessed, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
                             arm.pitch = 0.0F;
-                            arm.render(matrices, vertices.getBuffer(possessedModel.method_23500(possessedRenderer.getTexture(possessed))), 0.0625F, lightmapCoordinates, OverlayTexture.field_21444, null);
+                            arm.render(matrices, vertices.getBuffer(possessedModel.getLayer(possessedRenderer.getTexture(possessed))), lightmapCoordinates, OverlayTexture.DEFAULT_UV);
                         }
                     }
                 }

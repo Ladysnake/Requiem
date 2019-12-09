@@ -107,7 +107,7 @@ public class EditOpusScreen extends BookEditScreen {
         int bgX = (this.width - 192) / 2;
         this.blit(bgX, 2, 0, 0, 192, 192);
         String page = this.getFirstPage();
-        this.font.drawStringBounded(page, bgX + 36, 32, 114, 0);
+        this.font.drawTrimmed(page, bgX + 36, 32, 114, 0);
         ((EditBookScreenAccessor)this).invokeDrawHighlight(page);
         if (((EditBookScreenAccessor)this).getTickCounter() / 6 % 2 == 0) {
             Point2D cursorPosition = this.getCursorPositionForIndex(page, ((EditBookScreenAccessor)this).getCursorIndex());

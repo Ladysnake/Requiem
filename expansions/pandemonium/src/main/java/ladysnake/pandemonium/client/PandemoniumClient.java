@@ -56,7 +56,7 @@ public class PandemoniumClient implements ClientModInitializer {
                     ShulkerEntityRenderer renderer = (ShulkerEntityRenderer) renderManager.getRenderer(shulker);
                     if (renderer != null) {
                         ShulkerEntityModel<?> model = renderer.getModel();
-                        ModelPart nerdFace = model.method_2830();
+                        ModelPart nerdFace = model.getHead();
                         nerdFace.visible = false;
                         // TODO update to blaze3D
 //                        renderManager.render(shulker, tickDelta, true);
