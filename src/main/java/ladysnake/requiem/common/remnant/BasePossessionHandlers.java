@@ -32,7 +32,7 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class BasePossessionHandlers {
 
-public static void register() {
+    public static void register() {
         PossessionStartCallback.EVENT.register(Requiem.id("blacklist"), (target, possessor, simulate) -> {
             if (!target.world.isClient && RequiemEntityTypeTags.POSSESSION_BLACKLIST.contains(target.getType())) {
                 return PossessionStartCallback.Result.DENY;
@@ -65,7 +65,7 @@ public static void register() {
                     // TODO when the dimension API is merged, use a custom teleporter to make the END path work with any dimension
                     possessor.world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
                     // Set the variable in advance to avoid game credits
-                    ((ServerPlayerEntity)possessor).notInAnyWorld = true;
+                    ((ServerPlayerEntity) possessor).notInAnyWorld = true;
                     possessor.changeDimension(DimensionType.OVERWORLD);
                     ((ServerPlayerEntity) possessor).networkHandler.sendPacket(new GameStateChangeS2CPacket(4, 0.0F));
                     tpDest = target.changeDimension(DimensionType.OVERWORLD);
