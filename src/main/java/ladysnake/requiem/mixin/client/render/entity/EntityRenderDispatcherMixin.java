@@ -51,9 +51,10 @@ public abstract class EntityRenderDispatcherMixin {
         Entity camera = client.getCameraEntity();
         if (camera instanceof RequiemPlayer) {
             requiem_camerasPossessed = ((RequiemPlayer) camera).asPossessor().getPossessedEntity();
-            if (requiem_camerasPossessed == null) {
-                requiem_camerasPossessed = RequiemFx.INSTANCE.getAnimationEntity();
-            }
+            // TODO restore when custom render layer is done
+//            if (requiem_camerasPossessed == null) {
+//                requiem_camerasPossessed = RequiemFx.INSTANCE.getAnimationEntity();
+//            }
         } else {
             requiem_camerasPossessed = null;
         }
