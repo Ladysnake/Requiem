@@ -266,7 +266,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     private void onStatusEffectRemoved(StatusEffectInstance effect, CallbackInfo ci) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor instanceof ServerPlayerEntity) {
-            possessor.removeStatusEffect(effect.getEffectType());
+            possessor.tryRemoveStatusEffect(effect.getEffectType());
         }
     }
 
