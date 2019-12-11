@@ -19,7 +19,7 @@ package ladysnake.requiem.mixin.item;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.common.entity.internal.ArrowShooter;
-import ladysnake.requiem.common.entity.internal.ItemStackConvertible;
+import ladysnake.requiem.mixin.entity.projectile.ProjectileEntityAccessor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -84,7 +84,7 @@ public abstract class BowItemMixin extends RangedWeaponItem {
     private ProjectileEntity useSkeletonArrow(ProjectileEntity firedArrow) {
         LivingEntity entity = REQUIEM__CURRENT_USER.get();
         if (entity instanceof ArrowShooter) {
-            return ((ArrowShooter)entity).invokeGetArrow(((ItemStackConvertible)firedArrow).invokeAsItemStack(), 1f);
+            return ((ArrowShooter)entity).invokeGetArrow(((ProjectileEntityAccessor)firedArrow).invokeAsItemStack(), 1f);
         }
         return firedArrow;
     }

@@ -42,9 +42,10 @@ public abstract class ServerPlayerInteractionManagerMixin {
                     shift = AFTER
             ))
     private void keepSoulAbilities(GameMode newMode, CallbackInfo info) {
-        if (RequiemPlayer.from(this.player).asRemnant().isSoul()) {
+        RequiemPlayer requiemPlayer = RequiemPlayer.from(this.player);
+        if (requiemPlayer.asRemnant().isSoul()) {
             this.player.abilities.invulnerable = true;
-            ((RequiemPlayer)this.player).getMovementAlterer().applyConfig();
+            requiemPlayer.getMovementAlterer().applyConfig();
         }
     }
 }
