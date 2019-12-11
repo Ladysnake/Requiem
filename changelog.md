@@ -3,6 +3,9 @@ Version 1.1.0
 ------------------------------------------------------
 Updated to 1.15
 
+Additions
+- Added the `regular_eater` entity type tag to allow some possessed mobs to use the standard hunger mechanic
+
 ------------------------------------------------------
 Version 1.0.1
 ------------------------------------------------------
