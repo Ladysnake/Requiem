@@ -21,6 +21,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -79,7 +80,10 @@ public abstract class InGameHudMixin extends DrawableHelper {
         int actual = this.getHeartCount(livingEntity_1);
         RequiemPlayer cameraPlayer = (RequiemPlayer) this.getCameraPlayer();
         if (actual == 0 && cameraPlayer != null && cameraPlayer.asRemnant().isSoul()) {
-            return -1;
+            Possessable possessed = (Possessable) cameraPlayer.asPossessor().getPossessedEntity();
+            if (possessed == null || !possessed.isRegularEater()) {
+                return -1;
+            }
         }
         return actual;
     }

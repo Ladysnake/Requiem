@@ -20,6 +20,7 @@ package ladysnake.requiem.mixin.entity.player;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
@@ -39,6 +40,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
@@ -56,6 +58,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -70,6 +73,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     /* Implementation of RequiemPlayer */
 
     @Shadow @Final public PlayerAbilities abilities;
+    @Shadow
+    protected HungerManager hungerManager;
     private static final String REQUIEM$TAG_REMNANT_DATA = "requiem:remnant_data";
     private static final String REQUIEM$TAG_POSSESSION_COMPONENT = "requiem:possession_component";
     private static final EntityDimensions REQUIEM$SOUL_SNEAKING_SIZE = EntityDimensions.changing(0.6f, 0.6f);
@@ -232,6 +237,32 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private void adjustSoulSneakingEyeHeight(EntityPose pose, EntityDimensions size, CallbackInfoReturnable<Float> cir) {
         if (this.remnantState.isIncorporeal()) {
             cir.setReturnValue(0.4f);
+        }
+    }
+
+    @Inject(method = "canConsume", at = @At("RETURN"), cancellable = true)
+    private void canSoulConsume(boolean ignoreHunger, CallbackInfoReturnable<Boolean> cir) {
+        if (this.remnantState.isSoul()) {
+            Possessable possessed = (Possessable) this.possessionComponent.getPossessedEntity();
+            cir.setReturnValue(ignoreHunger || possessed != null && possessed.isRegularEater() && this.hungerManager.isNotFull());
+        }
+    }
+
+    @Inject(method = "canFoodHeal", at = @At("RETURN"), cancellable = true)
+    private void canFoodHealPossessed(CallbackInfoReturnable<Boolean> cir) {
+        if (this.remnantState.isSoul()) {
+            LivingEntity possessed = this.possessionComponent.getPossessedEntity();
+            cir.setReturnValue(possessed != null && ((Possessable) possessed).isRegularEater() && possessed.getHealth() > 0 && possessed.getHealth() < possessed.getMaximumHealth());
+        }
+    }
+
+    @Inject(method = "addExhaustion", slice = @Slice(to = @At("INVOKE:FIRST")), at = @At(value = "RETURN"))
+    private void addExhaustion(float exhaustion, CallbackInfo ci) {
+        Possessable possessed = (Possessable) this.possessionComponent.getPossessedEntity();
+        if (possessed != null && possessed.isRegularEater()) {
+            if (!this.world.isClient) {
+                this.hungerManager.addExhaustion(exhaustion);
+            }
         }
     }
 

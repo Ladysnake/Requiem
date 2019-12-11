@@ -96,7 +96,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     private void registerEtherealEventHandlers() {
         // Prevent incorporeal players from picking up anything
         ItemPickupCallback.EVENT.register((player, pickedUp) -> {
-            if (isInteractionForbidden(player)) {
+            if (isInteractionForbidden(player) || ((RequiemPlayer)player).asRemnant().isSoul() && !player.isCreative()) {
                 Entity possessed = ((RequiemPlayer)player).asPossessor().getPossessedEntity();
                 if (possessed == null || !RequiemEntityTypeTags.ITEM_USER.contains(possessed.getType())) {
                     return ActionResult.FAIL;
