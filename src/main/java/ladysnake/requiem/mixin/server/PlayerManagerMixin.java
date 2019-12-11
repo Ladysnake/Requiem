@@ -102,14 +102,14 @@ public abstract class PlayerManagerMixin {
             String string_1,
             @Nullable CompoundTag serializedPlayer
     ) {
-        if (serializedPlayer != null && serializedPlayer.containsKey(POSSESSED_ROOT_TAG, NbtType.COMPOUND)) {
+        if (serializedPlayer != null && serializedPlayer.contains(POSSESSED_ROOT_TAG, NbtType.COMPOUND)) {
             sendTo(player, createCorporealityMessage(player));
             ServerWorld world = this.server.getWorld(player.dimension);
             CompoundTag serializedPossessedInfo = serializedPlayer.getCompound(POSSESSED_ROOT_TAG);
             Entity possessedEntityMount = EntityType.loadEntityWithPassengers(
                     serializedPossessedInfo.getCompound(POSSESSED_ENTITY_TAG),
                     world,
-                    (entity_1x) -> !world.method_18768(entity_1x) ? null : entity_1x
+                    (entity_1x) -> !world.tryLoadEntity(entity_1x) ? null : entity_1x
             );
             if (possessedEntityMount != null) {
                 UUID possessedEntityUuid = serializedPossessedInfo.getUuid(POSSESSED_UUID_TAG);
@@ -157,7 +157,7 @@ public abstract class PlayerManagerMixin {
             for (Entity ridden : possessedEntity.getPassengersDeep()) {
                 world.removeEntity(ridden);
             }
-            world.method_8497(player.chunkX, player.chunkZ).markDirty();
+            world.getChunk(player.chunkX, player.chunkZ).markDirty();
         }
     }
 
@@ -185,8 +185,8 @@ public abstract class PlayerManagerMixin {
         PlayerCloneCallback.EVENT.invoker().onPlayerClone(original, clone, returnFromEnd);
         REQUIEM$RESPAWN_WORLD.set(clone.getServerWorld());
         // Prevent players from respawning in fairly bad conditions
-        while(!clone.world.doesNotCollide(clone) && clone.y < 256.0D) {
-            clone.setPosition(clone.x, clone.y + 1.0D, clone.z);
+        while(!clone.world.doesNotCollide(clone) && clone.getY() < 256.0D) {
+            clone.setPosition(clone.getX(), clone.getY() + 1.0D, clone.getZ());
         }
     }
 

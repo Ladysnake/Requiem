@@ -64,14 +64,14 @@ public class WitchEntityMixin extends HostileEntity {
             method = "tickMovement",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/mob/WitchEntity;setEquippedStack(Lnet/minecraft/entity/EquipmentSlot;Lnet/minecraft/item/ItemStack;)V",
+                    target = "Lnet/minecraft/entity/mob/WitchEntity;equipStack(Lnet/minecraft/entity/EquipmentSlot;Lnet/minecraft/item/ItemStack;)V",
                     ordinal = 0,
                     shift = AFTER
             )
     )
     private void giveBottleBack(CallbackInfo ci) {
         if (((Possessable)this).isBeingPossessed()) {
-            this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GLASS_BOTTLE));
+            this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GLASS_BOTTLE));
         }
     }
 }

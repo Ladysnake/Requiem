@@ -36,7 +36,7 @@ public class OnResurrectCriterion extends CriterionBase<OnResurrectCriterion.Con
     }
 
     public void handle(ServerPlayerEntity player, Entity body) {
-        Handler handler = this.getHandler(player.getAdvancementManager());
+        Handler handler = this.getHandler(player.getAdvancementTracker());
         if (handler != null) {
             handler.handle(player, body);
         }
@@ -44,7 +44,7 @@ public class OnResurrectCriterion extends CriterionBase<OnResurrectCriterion.Con
 
     @Override
     public Conditions conditionsFromJson(JsonObject json, JsonDeserializationContext ctx) {
-        return new Conditions(this.getId(), EntityPredicate.deserialize(json.get("body")));
+        return new Conditions(this.getId(), EntityPredicate.fromJson(json.get("body")));
     }
 
     static class Conditions extends AbstractCriterionConditions {
@@ -78,7 +78,7 @@ public class OnResurrectCriterion extends CriterionBase<OnResurrectCriterion.Con
                 }
             }
 
-            this.apply(conditionsContainers);
+            this.grant(conditionsContainers);
         }
     }
 }

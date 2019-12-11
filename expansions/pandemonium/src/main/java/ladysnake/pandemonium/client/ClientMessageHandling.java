@@ -42,7 +42,9 @@ public class ClientMessageHandling {
         }));
         ClientSidePacketRegistry.INSTANCE.register(ETHEREAL_ANIMATION, ((context, buf) -> context.getTaskQueue().execute(() -> {
             MinecraftClient mc = MinecraftClient.getInstance();
-            mc.player.world.playSound(mc.player, mc.player.x, mc.player.y, mc.player.z, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2, 0.6f);
+            assert mc != null;
+            assert mc.player != null;
+            mc.player.world.playSound(mc.player, mc.player.getX(), mc.player.getY(), mc.player.getZ(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2, 0.6f);
             RequiemFx.INSTANCE.beginEtherealAnimation();
         })));
     }

@@ -40,7 +40,7 @@ public class OnRemnantChoiceCriterion extends CriterionBase<OnRemnantChoiceCrite
     }
 
     public void handle(ServerPlayerEntity player, RemnantType chosenType) {
-        Handler handler = this.getHandler(player.getAdvancementManager());
+        Handler handler = this.getHandler(player.getAdvancementTracker());
         if (handler != null) {
             handler.handle(chosenType);
         }
@@ -84,7 +84,7 @@ public class OnRemnantChoiceCriterion extends CriterionBase<OnRemnantChoiceCrite
                 }
             }
 
-            this.apply(conditionsContainers);
+            this.grant(conditionsContainers);
         }
     }
 }

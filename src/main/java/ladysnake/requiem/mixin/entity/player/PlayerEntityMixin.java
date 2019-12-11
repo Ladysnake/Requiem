@@ -20,6 +20,7 @@ package ladysnake.requiem.mixin.entity.player;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
@@ -39,6 +40,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
@@ -56,6 +58,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -70,6 +73,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     /* Implementation of RequiemPlayer */
 
     @Shadow @Final public PlayerAbilities abilities;
+    @Shadow
+    protected HungerManager hungerManager;
     private static final String REQUIEM$TAG_REMNANT_DATA = "requiem:remnant_data";
     private static final String REQUIEM$TAG_POSSESSION_COMPONENT = "requiem:possession_component";
     private static final EntityDimensions REQUIEM$SOUL_SNEAKING_SIZE = EntityDimensions.changing(0.6f, 0.6f);
@@ -134,9 +139,9 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private void travel(CallbackInfo info) {
         Entity possessed = this.asPossessor().getPossessedEntity();
         if (possessed != null && ((VariableMobilityEntity) possessed).requiem_isImmovable()) {
-            if (!world.isClient && (this.x != possessed.x || this.y != possessed.y || this.z != possessed.z)) {
+            if (!world.isClient && (this.getX() != possessed.getX() || this.getY() != possessed.getY() || this.getZ() != possessed.getZ())) {
                 ServerPlayNetworkHandler networkHandler = ((ServerPlayerEntity) (Object) this).networkHandler;
-                networkHandler.teleportRequest(possessed.x, possessed.y, possessed.z, this.yaw, this.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
+                networkHandler.teleportRequest(possessed.getX(), possessed.getY(), possessed.getZ(), this.yaw, this.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
                 networkHandler.syncWithPlayerPosition();
             }
             info.cancel();
@@ -205,7 +210,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         double yMotion = this.getRotationVector().y;
         double modifier = yMotion < -0.2D ? 0.085D : 0.06D;
         // If the motion change would not be applied, apply it ourselves
-        if (yMotion > 0.0D && !this.jumping && this.world.getBlockState(new BlockPos(this.x, this.y + 1.0D - 0.1D, this.z)).getFluidState().isEmpty() && this.remnantState.isIncorporeal()) {
+        if (yMotion > 0.0D && !this.jumping && this.world.getBlockState(new BlockPos(this.getX(), this.getY() + 1.0D - 0.1D, this.getZ())).getFluidState().isEmpty() && this.remnantState.isIncorporeal()) {
             Vec3d velocity = this.getVelocity();
             this.setVelocity(velocity.add(0.0D, (yMotion - velocity.y) * modifier, 0.0D));
         }
@@ -221,7 +226,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
             Entity possessedEntity = this.asPossessor().getPossessedEntity();
             if (possessedEntity != null) {
                 cir.setReturnValue(possessedEntity.getDimensions(pose));
-            } else if (pose == EntityPose.SNEAKING) {
+            } else if (pose == EntityPose.CROUCHING) {
                 cir.setReturnValue(REQUIEM$SOUL_SNEAKING_SIZE);
             }
         }
@@ -232,6 +237,32 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private void adjustSoulSneakingEyeHeight(EntityPose pose, EntityDimensions size, CallbackInfoReturnable<Float> cir) {
         if (this.remnantState.isIncorporeal()) {
             cir.setReturnValue(0.4f);
+        }
+    }
+
+    @Inject(method = "canConsume", at = @At("RETURN"), cancellable = true)
+    private void canSoulConsume(boolean ignoreHunger, CallbackInfoReturnable<Boolean> cir) {
+        if (this.remnantState.isSoul()) {
+            Possessable possessed = (Possessable) this.possessionComponent.getPossessedEntity();
+            cir.setReturnValue(ignoreHunger || possessed != null && possessed.isRegularEater() && this.hungerManager.isNotFull());
+        }
+    }
+
+    @Inject(method = "canFoodHeal", at = @At("RETURN"), cancellable = true)
+    private void canFoodHealPossessed(CallbackInfoReturnable<Boolean> cir) {
+        if (this.remnantState.isSoul()) {
+            LivingEntity possessed = this.possessionComponent.getPossessedEntity();
+            cir.setReturnValue(possessed != null && ((Possessable) possessed).isRegularEater() && possessed.getHealth() > 0 && possessed.getHealth() < possessed.getMaximumHealth());
+        }
+    }
+
+    @Inject(method = "addExhaustion", slice = @Slice(to = @At("INVOKE:FIRST")), at = @At(value = "RETURN"))
+    private void addExhaustion(float exhaustion, CallbackInfo ci) {
+        Possessable possessed = (Possessable) this.possessionComponent.getPossessedEntity();
+        if (possessed != null && possessed.isRegularEater()) {
+            if (!this.world.isClient) {
+                this.hungerManager.addExhaustion(exhaustion);
+            }
         }
     }
 

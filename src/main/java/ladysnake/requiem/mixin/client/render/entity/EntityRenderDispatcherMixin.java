@@ -20,9 +20,15 @@ package ladysnake.requiem.mixin.client.render.entity;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.client.RequiemFx;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VisibleRegion;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.Frustum;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -39,15 +45,16 @@ public abstract class EntityRenderDispatcherMixin {
     /**
      * Called once per frame, used to update the entity
      */
-    @Inject(method = "setRenderPosition", at = @At("HEAD"))
-    private void updateCamerasPossessedEntity(double x, double y, double z, CallbackInfo info) {
+    @Inject(method = "configure", at = @At("HEAD"))
+    private void updateCamerasPossessedEntity(World w, Camera c, Entity e, CallbackInfo ci) {
         MinecraftClient client = MinecraftClient.getInstance();
         Entity camera = client.getCameraEntity();
         if (camera instanceof RequiemPlayer) {
             requiem_camerasPossessed = ((RequiemPlayer) camera).asPossessor().getPossessedEntity();
-            if (requiem_camerasPossessed == null) {
-                requiem_camerasPossessed = RequiemFx.INSTANCE.getAnimationEntity();
-            }
+            // TODO restore when custom render layer is done
+//            if (requiem_camerasPossessed == null) {
+//                requiem_camerasPossessed = RequiemFx.INSTANCE.getAnimationEntity();
+//            }
         } else {
             requiem_camerasPossessed = null;
         }
@@ -57,9 +64,18 @@ public abstract class EntityRenderDispatcherMixin {
      * Prevents the camera's possessed entity from rendering
      */
     @Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true)
-    private void preventPossessedRender(Entity entity, VisibleRegion visibleRegion, double x, double y, double z, CallbackInfoReturnable<Boolean> info) {
+    private void preventPossessedRender(Entity entity, Frustum visibleRegion, double x, double y, double z, CallbackInfoReturnable<Boolean> info) {
         if (requiem_camerasPossessed == entity) {
             info.setReturnValue(false);
+        }
+    }
+
+    @Inject(method = "renderShadow", at = @At("HEAD"), cancellable = true)
+    private static void preventShadowRender(MatrixStack matrices, VertexConsumerProvider vertices, Entity rendered, float distance, float tickDelta, WorldView world, float radius, CallbackInfo ci) {
+        if (rendered instanceof PlayerEntity) {
+            if (((RequiemPlayer)rendered).asRemnant().isSoul()) {
+                ci.cancel();
+            }
         }
     }
 }

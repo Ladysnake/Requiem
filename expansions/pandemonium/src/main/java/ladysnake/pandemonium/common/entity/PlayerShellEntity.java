@@ -112,7 +112,7 @@ public class PlayerShellEntity extends MobEntity {
                 // override common data that may have been altered during this shell's existence
                 possessor.inventory.clear();
                 performNbtCopy(this, possessor);
-                ((ServerPlayerEntity)possessor).networkHandler.teleportRequest(this.x, this.y, this.z, this.yaw, this.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
+                ((ServerPlayerEntity)possessor).networkHandler.teleportRequest(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
                 if (this.inventory != null) {
                     transferInventory(this.inventory, possessor.inventory, Math.min(possessor.inventory.main.size(), this.inventory.getInvSize()));
                     this.dropInventory();
@@ -145,7 +145,7 @@ public class PlayerShellEntity extends MobEntity {
                 EquipmentSlot slot = MobEntity.getPreferredEquipmentSlot(stack);
                 if (stack.isEmpty()) {
                     EquipmentSlot clickedSlot = this.getClickedSlot(vec);
-                    if (this.isEquippedStackValid(clickedSlot)) {
+                    if (this.hasStackEquipped(clickedSlot)) {
                         this.swapItem(player, clickedSlot, stack, hand);
                     } else {
                         return ActionResult.PASS;
@@ -155,7 +155,7 @@ public class PlayerShellEntity extends MobEntity {
                 }
                 return ActionResult.SUCCESS;
             } else {
-                return stack.isEmpty() && !this.isEquippedStackValid(this.getClickedSlot(vec))
+                return stack.isEmpty() && !this.hasStackEquipped(this.getClickedSlot(vec))
                         ? ActionResult.PASS
                         : ActionResult.SUCCESS;
             }
@@ -175,14 +175,14 @@ public class PlayerShellEntity extends MobEntity {
         boolean flag = this.isBaby();
         double d0 = (rayTrace.y) * (flag ? 2.0D : 1.0D);
 
-        if (d0 >= 0.1D && d0 < 0.1D + (flag ? 0.8D : 0.45D) && this.isEquippedStackValid(EquipmentSlot.FEET)) {
+        if (d0 >= 0.1D && d0 < 0.1D + (flag ? 0.8D : 0.45D) && this.hasStackEquipped(EquipmentSlot.FEET)) {
             slot = EquipmentSlot.FEET;
         } else if (d0 >= 0.9D + (flag ? 0.3D : 0.0D) && d0 < 0.9D + (flag ? 1.0D : 0.7D)
-                && this.isEquippedStackValid(EquipmentSlot.CHEST)) {
+                && this.hasStackEquipped(EquipmentSlot.CHEST)) {
             slot = EquipmentSlot.CHEST;
-        } else if (d0 >= 0.4D && d0 < 0.4D + (flag ? 1.0D : 0.8D) && this.isEquippedStackValid(EquipmentSlot.LEGS)) {
+        } else if (d0 >= 0.4D && d0 < 0.4D + (flag ? 1.0D : 0.8D) && this.hasStackEquipped(EquipmentSlot.LEGS)) {
             slot = EquipmentSlot.LEGS;
-        } else if (d0 >= 1.6D && this.isEquippedStackValid(EquipmentSlot.HEAD)) {
+        } else if (d0 >= 1.6D && this.hasStackEquipped(EquipmentSlot.HEAD)) {
             slot = EquipmentSlot.HEAD;
         }
 
@@ -195,16 +195,16 @@ public class PlayerShellEntity extends MobEntity {
         if (player.abilities.creativeMode && equippedStack.isEmpty() && !playerItemStack.isEmpty()) {
             ItemStack copy = playerItemStack.copy();
             copy.setCount(1);
-            this.setEquippedStack(targetedSlot, copy);
+            this.equipStack(targetedSlot, copy);
         } else if (!playerItemStack.isEmpty() && playerItemStack.getCount() > 1) {
             if (equippedStack.isEmpty()) {
                 ItemStack copy = playerItemStack.copy();
                 copy.setCount(1);
-                this.setEquippedStack(targetedSlot, copy);
+                this.equipStack(targetedSlot, copy);
                 playerItemStack.decrement(1);
             }
         } else {
-            this.setEquippedStack(targetedSlot, playerItemStack);
+            this.equipStack(targetedSlot, playerItemStack);
             player.setStackInHand(hand, equippedStack);
         }
     }
@@ -239,19 +239,19 @@ public class PlayerShellEntity extends MobEntity {
     @Override
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
-        if (tag.containsKey("Items")) {
+        if (tag.contains("Items")) {
             ListTag items = tag.getList("Items", 10);
             this.inventory = new BasicInventory(tag.getInt("InvSize"));
 
             for(int i = 0; i < items.size(); ++i) {
-                CompoundTag compoundTag_2 = items.getCompoundTag(i);
+                CompoundTag compoundTag_2 = items.getCompound(i);
                 int slot = compoundTag_2.getByte("Slot") & 255;
                 if (slot >= 2 && slot < this.inventory.getInvSize()) {
                     this.inventory.setInvStack(slot, ItemStack.fromTag(compoundTag_2));
                 }
             }
         }
-        if (tag.containsKey("PlayerNbt")) {
+        if (tag.contains("PlayerNbt")) {
             this.playerNbt = tag.getCompound("PlayerNbt");
         }
         this.setPlayerUuid(tag.getUuid("Player"));

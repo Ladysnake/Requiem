@@ -30,17 +30,17 @@ import java.util.List;
 @Mixin(BookEditScreen.class)
 public interface EditBookScreenAccessor {
     @Accessor
-    PageTurnWidget getButtonPreviousPage();
+    PageTurnWidget getPreviousPageButton();
     @Accessor
-    PageTurnWidget getButtonNextPage();
+    PageTurnWidget getNextPageButton();
     @Accessor
-    ButtonWidget getButtonDone();
+    ButtonWidget getDoneButton();
     @Accessor
-    ButtonWidget getButtonSign();
+    ButtonWidget getSignButton();
     @Accessor
-    void setButtonSign(ButtonWidget button);
+    void setSignButton(ButtonWidget button);
     @Accessor
-    void setButtonDone(ButtonWidget button);
+    void setDoneButton(ButtonWidget button);
     @Accessor
     boolean isDirty();
     @Accessor
@@ -48,9 +48,9 @@ public interface EditBookScreenAccessor {
     @Accessor
     List<String> getPages();
     @Accessor
-    ButtonWidget getButtonFinalize();
+    ButtonWidget getFinalizeButton();
     @Accessor
-    ButtonWidget getButtonCancel();
+    ButtonWidget getCancelButton();
     @Accessor
     int getCursorIndex();
     @Invoker

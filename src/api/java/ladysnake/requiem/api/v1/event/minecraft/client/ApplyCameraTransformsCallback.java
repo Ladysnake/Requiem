@@ -20,15 +20,16 @@ package ladysnake.requiem.api.v1.event.minecraft.client;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.util.math.MatrixStack;
 
 public interface ApplyCameraTransformsCallback {
 
-    void applyCameraTransformations(Camera camera, float tickDelta);
+    void applyCameraTransformations(Camera camera, MatrixStack matrices, float tickDelta);
 
     Event<ApplyCameraTransformsCallback> EVENT = EventFactory.createArrayBacked(ApplyCameraTransformsCallback.class,
-            (listeners) -> (camera, tickDelta) -> {
+            (listeners) -> (camera, matrices, tickDelta) -> {
                 for (ApplyCameraTransformsCallback handler : listeners) {
-                    handler.applyCameraTransformations(camera, tickDelta);
+                    handler.applyCameraTransformations(camera, matrices, tickDelta);
                 }
             });
 

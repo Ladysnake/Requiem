@@ -6,7 +6,7 @@ import net.fabricmc.loom.task.RemapJarTask
 import java.time.Year
 
 plugins {
-    id "fabric-loom" version "0.2.5-SNAPSHOT"
+    id "fabric-loom" version "0.2.7-SNAPSHOT"
     id "net.minecrell.licenser" version "0.4.1"
     id "com.matthewprenger.cursegradle" version "1.1.2"
     id "maven-publish"
@@ -42,23 +42,20 @@ allprojects {
         api
     }
 
-    processResources {
-        inputs.property "version", project.version
-
-        from(sourceSets.main.resources.srcDirs) {
-            include "fabric.mod.json"
-            expand "version": project.version
-        }
-
-        from(sourceSets.main.resources.srcDirs) {
-            exclude "fabric.mod.json"
-        }
-    }
-
     repositories {
         maven {
             url "http://maven.fabricmc.net/"
             name "Fabric"
+        }
+    }
+
+    jar {
+        from (sourceSets.main.output) {
+            include "fabric.mod.json"
+            expand "version": project.version
+        }
+        from (sourceSets.main.output) {
+            exclude "fabric.mod.json"
         }
     }
 
@@ -87,7 +84,7 @@ allprojects {
     dependencies {
         //to change the versions see the gradle.properties file
         minecraft "com.mojang:minecraft:${project.minecraft_version}"
-        mappings "net.fabricmc:yarn:${project.yarn_mappings}"
+        mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
         modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
         // Fabric API. This is technically optional, but you probably want it anyway.
@@ -149,14 +146,14 @@ repositories {
 dependencies {
     modApi("com.github.Ladysnake:Satin:${rootProject.satin_version}")
     include "com.github.Ladysnake:Satin:${satin_version}"
-    modRuntime "io.github.prospector.modmenu:ModMenu:${modmenu_version}"
+//    modRuntime "io.github.prospector.modmenu:ModMenu:${modmenu_version}"
     modApi "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}"
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}"
     modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
     modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
-    modImplementation curse.resolve('immersive-portals-mod', 2806496)
+//    modImplementation curse.resolve('immersive-portals-mod', 2806496)
 }
 
 jar {

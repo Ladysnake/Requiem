@@ -31,15 +31,22 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.Util;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiPredicate;
 
 public final class ResurrectionData implements Comparable<ResurrectionData> {
+    private static final Map<String, BiPredicate<ServerPlayerEntity, DamageSource>> SPECIAL_PREDICATES = Util.make(new HashMap<>(), m -> {
+        m.put("head_in_sand", (lazarus, killingBlow) -> BlockTags.SAND.contains(lazarus.world.getBlockState(lazarus.getBlockPos().add(0, lazarus.getEyeHeight(lazarus.getPose()), 0)).getBlock()));
+    });
+
     private final int priority;
     @Nullable
     private final EntityPredicate playerPredicate;
@@ -86,7 +93,7 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
     public static ResurrectionData deserialize(JsonObject json) {
         int priority = JsonHelper.getInt(json, "priority", 100);
         @Nullable ExtendedDamageSourcePredicate damagePredicate = ExtendedDamageSourcePredicate.deserialize(json.get("killing_blow"));
-        @Nullable EntityPredicate playerPredicate = EntityPredicate.deserialize(json.get("player"));
+        @Nullable EntityPredicate playerPredicate = EntityPredicate.fromJson(json.get("player"));
         if (damagePredicate == null && playerPredicate == null) {
             throw new JsonParseException("Resurrection data must have either a damage source predicate (\"killingBlow\") or an entity predicate (\"player\")");
         }
@@ -105,14 +112,9 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
         }
         List<BiPredicate<ServerPlayerEntity, DamageSource>> specials = new ArrayList<>();
         JsonArray specialConditions = JsonHelper.getArray(json, "special_conditions", new JsonArray());
+        assert specialConditions != null;
         for (JsonElement specialCondition : specialConditions) {
-            switch (JsonHelper.asString(specialCondition, "special condition")) {
-                case "head_in_sand": {
-                    specials.add((lazarus, killingBlow) -> BlockTags.SAND.contains(lazarus.world.getBlockState(lazarus.getBlockPos().add(0, lazarus.getEyeHeight(lazarus.getPose()), 0)).getBlock()));
-                    break;
-                }
-                default: break;
-            }
+            specials.add(SPECIAL_PREDICATES.get(JsonHelper.asString(specialCondition, "special condition")));
         }
         return new ResurrectionData(priority, playerPredicate, damagePredicate, type, nbt, specials);
     }

@@ -112,14 +112,14 @@ public class ClosedSpaceDetector {
         if (!this.scannedBlocks.contains(player.getBlockPos())) {
             return;
         }
-        EndermanEntity bart = this.player.world.method_21727(EndermanEntity.class, TargetPredicate.DEFAULT, player, player.x, player.y, player.z, new Box(player.getBlockPos()).expand(20));
+        EndermanEntity bart = this.player.world.getClosestEntity(EndermanEntity.class, TargetPredicate.DEFAULT, player, player.getX(), player.getY(), player.getZ(), new Box(player.getBlockPos()).expand(20));
         if (bart == null) {
             bart = new EndermanEntity(EntityType.ENDERMAN, this.player.world);
             bart.copyPositionAndRotation(this.player);
             bart.setCustomName(new LiteralText("Bart"));
             this.player.world.spawnEntity(bart);
         }
-        bart.teleport(player.x, player.y, player.z, true);
+        bart.teleport(player.getX(), player.getY(), player.getZ(), true);
         this.reset(false);
     }
 }

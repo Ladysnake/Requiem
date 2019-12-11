@@ -60,7 +60,7 @@ public abstract class FollowTargetGoalMixin extends TrackTargetGoal {
     private void addShellsAsTargets(CallbackInfo ci) {
         if (this.targetEntity == null) {
             // method_21727 = getClosestEntity
-            this.targetEntity = this.mob.world.method_21727(PlayerShellEntity.class, this.targetPredicate, this.mob, this.mob.x, this.mob.y + (double)this.mob.getStandingEyeHeight(), this.mob.z, this.getSearchBox(this.getFollowRange()));
+            this.targetEntity = this.mob.world.getClosestEntity(PlayerShellEntity.class, this.targetPredicate, this.mob, this.mob.getX(), this.mob.getY() + (double)this.mob.getStandingEyeHeight(), this.mob.getZ(), this.getSearchBox(this.getFollowRange()));
         }
     }
 }

@@ -51,7 +51,7 @@ public class ZaWorldFx implements PostWorldRenderCallback {
     private final ManagedShaderEffect shader = ShaderEffectManager.getInstance().manage(ZA_WARUDO_SHADER_ID, shader -> {
         MinecraftClient mc = MinecraftClient.getInstance();
         shader.setSamplerUniform("DepthSampler", ((ReadableDepthFramebuffer)mc.getFramebuffer()).getStillDepthMap());
-        shader.setUniformValue("ViewPort", 0, 0, mc.window.getFramebufferWidth(), mc.window.getFramebufferHeight());
+        shader.setUniformValue("ViewPort", 0, 0, mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight());
     });
     private final Uniform1f uniformOuterSat = shader.findUniform1f("OuterSat");
     private final Uniform1f uniformSTime = shader.findUniform1f("STime");
@@ -73,7 +73,7 @@ public class ZaWorldFx implements PostWorldRenderCallback {
                 this.ticks = 0;
                 this.prevRadius = this.radius = 0;
                 this.renderingEffect = true;
-                client.player.world.playSound(client.player.x, client.player.y, client.player.z, RequiemSoundEvents.EFFECT_TIME_STOP, SoundCategory.PLAYERS, 1.0F, 1.0F, false);
+                client.player.world.playSound(client.player.getX(), client.player.getY(), client.player.getZ(), RequiemSoundEvents.EFFECT_TIME_STOP, SoundCategory.PLAYERS, 1.0F, 1.0F, false);
             }
             this.ticks++;
             this.prevRadius = this.radius;
@@ -103,7 +103,7 @@ public class ZaWorldFx implements PostWorldRenderCallback {
             Vec3d cameraPos = camera.getPos();
             uniformCameraPosition.set((float) cameraPos.x, (float) cameraPos.y, (float) cameraPos.z);
             Entity e = camera.getFocusedEntity();
-            uniformCenter.set(lerpf(e.x, e.prevX, tickDelta), lerpf(e.y, e.prevY, tickDelta), lerpf(e.z, e.prevZ, tickDelta));
+            uniformCenter.set(lerpf(e.getX(), e.prevX, tickDelta), lerpf(e.getY(), e.prevY, tickDelta), lerpf(e.getZ(), e.prevZ, tickDelta));
             uniformRadius.set(lerpf(radius, prevRadius, tickDelta));
             shader.render(tickDelta);
         }

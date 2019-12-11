@@ -72,7 +72,7 @@ public abstract class CriterionBase<T extends CriterionConditions, H extends Cri
     public void endTracking(PlayerAdvancementTracker tracker) {
         this.handlers.remove(tracker);
     }
-    
+
     public static class Handler<T extends CriterionConditions> {
         private final PlayerAdvancementTracker tracker;
         protected final Set<ConditionsContainer<T>> conditions = new HashSet<>();
@@ -93,10 +93,10 @@ public abstract class CriterionBase<T extends CriterionConditions, H extends Cri
             return this.conditions.isEmpty();
         }
 
-        protected void apply(@Nullable List<ConditionsContainer<T>> conditionsContainers) {
+        protected void grant(@Nullable List<ConditionsContainer<T>> conditionsContainers) {
             if (conditionsContainers != null) {
                 for (ConditionsContainer<T> container : conditionsContainers) {
-                    container.apply(this.tracker);
+                    container.grant(this.tracker);
                 }
             }
         }
