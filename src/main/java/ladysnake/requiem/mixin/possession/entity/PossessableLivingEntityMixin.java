@@ -227,7 +227,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     private void onDeath(DamageSource deathCause, CallbackInfo ci) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
-            ((RequiemPlayer)possessor).asPossessor().stopPossessing(!possessor.isCreative());
+            ((RequiemPlayer)possessor).asPossessor().stopPossessing();
         }
     }
 

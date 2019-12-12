@@ -63,6 +63,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         if (possessedEntity != null) {
             EntityRenderDispatcher renderManager = MinecraftClient.getInstance().getEntityRenderManager();
 //            matrices.pop(); // discard transforms made for the player rendering
+            // TODO display the nameplate when some gamerule is enabled (yog)
             if (((VariableMobilityEntity)possessedEntity).requiem_isImmovable()) {
                 double relativeX = possessedEntity.getX() - renderedPlayer.getX();
                 double relativeY = possessedEntity.getY() - renderedPlayer.getY();
