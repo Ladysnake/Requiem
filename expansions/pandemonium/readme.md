@@ -1,11 +1,10 @@
-Possession
+Pandemonium
 ==========
 
-When a player in ethereal form interacts with a living entity, they start possessing them. Possessed entities behave as normal, except they are completely controlled by the player.
+A WIP Requiem expansion, upgrading soul capabilities.
 
 
-
-### Eligible entities
+###Changes to Requiem
 
 Most living entities can be possessed. Notable exceptions are the Enderdragon, the Wither boss, and other players.
 
