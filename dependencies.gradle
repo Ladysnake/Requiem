@@ -30,7 +30,8 @@ dependencies {
     compile         "org.jetbrains:annotations:15.0"
     testCompile     "junit:junit:4.12"
     // LadyLib is available at runtime through contained dependencies
-    deobfProvided   "com.github.Pyrofab:Ladylib:${ladylib_version}"
+    // NOT FOR MY PC apparently
+    deobfCompile   "com.github.Pyrofab:Ladylib:${ladylib_version}"
     deobfProvided   "albedo:albedo:0.1.3"
     deobfProvided   "com.azanor.baubles:Baubles:${baubles_version}"
     deobfProvided   "thaumcraft:Thaumcraft:${mc_version}:${thaumcraft_version}"
@@ -40,7 +41,7 @@ dependencies {
     compileOnly     "potion-core:PotionCore:1.6_for_${mc_version}:src"
     compileOnly     "epic-siege-mod:EpicSiegeMod:13.163:sources"
     deobfProvided   "journeymap:journeymap:1.12.2:5.5.3"
-    deobfProvided   "aether-legacy:aether_legacy:${mc_version}:${aether_version}"
+    deobfProvided   "the-aether:aether_legacy:${mc_version}:${aether_version}"
     deobfCompile    "com.jamieswhiteshirt:clothesline-hooks:1.12.2-0.0.1.0"
     compileOnly     "ichunutil:iChunUtil:${mc_version}:${ichunutil_version}"
     compileOnly     "sync:Sync:${mc_version}:${sync_version}"
