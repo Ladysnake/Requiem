@@ -1,13 +1,11 @@
 package ladysnake.dissolution.common.networking;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+
+import io.netty.buffer.ByteBuf;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class ConfigMessage implements IMessage {
 
