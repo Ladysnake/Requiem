@@ -26,7 +26,7 @@ public enum AetherLegacyCompat {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEntityTravelToDimension(EntityTravelToDimensionEvent event) {
         Entity traveller = event.getEntity();
-        if (traveller.dimension == AetherConfig.getAetherDimensionID() && traveller.posY < -2) {
+        if (traveller.dimension == AetherConfig.dimension.aether_dimension_id && traveller.posY < -2) {
             // Too lazy to make this work properly, just remove the body if the player falls off the sky
             // (Issue: with default handling, the body is respawned at negative Y coordinates)
             // PRs welcome ofc
