@@ -1,3 +1,6 @@
+##### Version 1.12.2-0.3.10 - BUILT
+- Version bump for ModWinder support
+
 ##### Version 1.12.2-0.3.7 - BUILT
 - Added the Hardcore option to also be possible in survival.
 - Added a config option to enable said behavior.
