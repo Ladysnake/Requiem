@@ -1,18 +1,5 @@
 package ladysnake.dissolution.client.renders;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.logging.log4j.message.FormattedMessage;
-import org.lwjgl.opengl.ARBShaderObjects;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
-
 import ladysnake.dissolution.common.Dissolution;
 import ladysnake.dissolution.common.Ref;
 import net.minecraft.client.Minecraft;
@@ -25,6 +12,18 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import org.apache.logging.log4j.message.FormattedMessage;
+import org.lwjgl.opengl.ARBShaderObjects;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Helper class for shader creation and usage
@@ -55,10 +54,7 @@ public final class ShaderHelper {
     }
 
     private static boolean shouldUseShaders() {
-        boolean pyrofabReturn = OpenGlHelper.shadersSupported && Dissolution.config.client.useShaders;
-		// EntityEntry creeper;
-        // boolean sschrShaderCut = DissolutionConfigManager.isEntityWhitelisted(creeper);
-        return pyrofabReturn;
+        return OpenGlHelper.shadersSupported && Dissolution.config.client.useShaders;
     }
 
     /**
