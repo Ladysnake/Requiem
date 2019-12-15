@@ -1,4 +1,6 @@
 ##### Version 1.12.2-0.3.7 - BUILT
+All credits for this update goes to sschr15
+
 - Added the Hardcore option to also be possible in survival.
 - Added a config option to enable said behavior.
 
