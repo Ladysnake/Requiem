@@ -1,4 +1,5 @@
 classes
+logs/
 
 # eclipse
 bin
@@ -23,3 +24,4 @@ run
 src\main\resources\assets\minecraft
 Dissolution.wiki
 tags
+.vscode/

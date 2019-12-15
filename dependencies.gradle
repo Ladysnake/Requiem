@@ -30,6 +30,8 @@ dependencies {
     compile         "org.jetbrains:annotations:15.0"
     testCompile     "junit:junit:4.12"
     // LadyLib is available at runtime through contained dependencies
+    // Some people might have trouble loading it, and if that includes you,
+    // create a new test profile in the Minecraft launcher for just Dissolution
     deobfProvided   "com.github.Pyrofab:Ladylib:${ladylib_version}"
     deobfProvided   "albedo:albedo:0.1.3"
     deobfProvided   "com.azanor.baubles:Baubles:${baubles_version}"

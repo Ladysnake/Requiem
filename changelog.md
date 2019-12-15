@@ -1,3 +1,6 @@
+##### Version 1.12.2-0.3.10 - BUILT
+- Version bump for ModWinder support
+
 ##### Version 1.12.2-0.3.7 - BUILT
 All credits for this update goes to sschr15
 
