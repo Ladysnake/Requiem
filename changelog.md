@@ -1,11 +1,20 @@
-##### Version 1.12.2-0.3.10 - BUILT
+##### Version 1.12.2-0.3.11 - BUILT
 - Version bump for ModWinder support
 
-##### Version 1.12.2-0.3.7 - BUILT
+##### Version 1.12.2-0.3.10 - BUILT
 All credits for this update goes to sschr15
 
 - Added the Hardcore option to also be possible in survival.
 - Added a config option to enable said behavior.
+
+##### Version 1.12.2-0.3.9 - BUILT
+- Fixed crash when two mods have a possessable entity with the same class name
+
+##### Version 1.12.2-0.3.8 - BUILT
+- Fixed crash when killed by a player possessing a mob
+
+##### Version 1.12.2-0.3.7 - BUILT
+Disabled the skipDeathScreen option by default, fixing entities becoming invisible after death.
 
 ##### Version 1.12.2-0.3.6 - BUILT
 - ADDED A WHITELIST CONFIG OPTION FOR POSSESSING MOBS. THERE.
