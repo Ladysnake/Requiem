@@ -107,6 +107,10 @@ allprojects {
     license {
         header = rootProject.file("code_quality/${project.license_header}_HEADER.txt")
 
+        matching('ladysnake/**/api/**') {
+            header = rootProject.file("code_quality/${project.api_license_header}_HEADER.txt")
+        }
+
         include "**/*.java"
         exclude "**/package-info.java"
 
