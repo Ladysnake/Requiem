@@ -46,7 +46,8 @@ public abstract class GameRendererMixin {
             at = @At(
                     value = "RETURN"
             ),
-            cancellable = true
+            cancellable = true,
+            remap = false
     )
     private static void unselectPossessedEntity(Entity tested, CallbackInfoReturnable<Boolean> info) {
         Entity camera = MinecraftClient.getInstance().getCameraEntity();
