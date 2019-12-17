@@ -33,7 +33,7 @@ public abstract class LivingEntityRendererMixin {
 
     @SuppressWarnings("UnresolvedMixinReference")   // Minecraft dev plugin is an idiot sandwich
     @Nullable
-    @Redirect(method = "method_4054", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getVehicle()Lnet/minecraft/entity/Entity;"))
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getVehicle()Lnet/minecraft/entity/Entity;"))
     private Entity getPossessorRiddenEntity(LivingEntity entity) {
         PlayerEntity possessor = ((Possessable) entity).getPossessor();
         if (possessor != null) {
@@ -43,7 +43,7 @@ public abstract class LivingEntityRendererMixin {
     }
 
     @SuppressWarnings("UnresolvedMixinReference")   // Minecraft dev plugin is an idiot sandwich
-    @Redirect(method = "method_4054", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;hasVehicle()Z"))
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;hasVehicle()Z"))
     private boolean doesPossessorHaveVehicle(LivingEntity entity) {
         PlayerEntity possessor = ((Possessable) entity).getPossessor();
         if (possessor != null) {

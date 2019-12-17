@@ -22,7 +22,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.attribute.*;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
 
 public class DelegatingAttribute extends EntityAttributeInstanceImpl {
@@ -57,12 +57,12 @@ public class DelegatingAttribute extends EntityAttributeInstanceImpl {
     }
 
     @Override
-    public Collection<EntityAttributeModifier> getModifiers(EntityAttributeModifier.Operation operation) {
+    public Set<EntityAttributeModifier> getModifiers(EntityAttributeModifier.Operation operation) {
         return getDelegateAttributeInstance().getModifiers(operation);
     }
 
     @Override
-    public Collection<EntityAttributeModifier> getModifiers() {
+    public Set<EntityAttributeModifier> getModifiers() {
         return getDelegateAttributeInstance().getModifiers();
     }
 

@@ -65,5 +65,9 @@
     "flightMode": "ENABLED",
     "fallSpeedModifier": 0.8,
     "gravity": 0.01
+  },
+  "minecraft:ender_dragon": {
+    "flightMode": "FORCED",
+    "inertia": 0.9
   }
 }

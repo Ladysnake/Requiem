@@ -110,7 +110,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 InventoryHelper.transferEquipment(host, player);
             }
             for (StatusEffectInstance effect : host.getStatusEffects()) {
-                player.addPotionEffect(new StatusEffectInstance(effect));
+                player.addStatusEffect(new StatusEffectInstance(effect));
             }
             Entity ridden = ((Entity) possessable).getVehicle();
             if (ridden != null) {
@@ -136,7 +136,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
     }
 
     private void swapAttributes(PlayerEntity player) {
-        AbstractEntityAttributeContainer attributeMap = player.getAttributeContainer();
+        AbstractEntityAttributeContainer attributeMap = player.getAttributes();
         // Replace every registered attribute
         for (EntityAttributeInstance current: attributeMap.values()) {
             EntityAttributeInstance replacement = new PossessionDelegatingAttribute(attributeMap, current, this);
@@ -166,7 +166,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                     InventoryHelper.transferEquipment(player, possessed);
                 }
                 ((LivingEntityAccessor)player).invokeDropInventory();
-                player.clearPotionEffects();
+                player.clearStatusEffects();
                 Entity ridden = player.getVehicle();
                 if (ridden != null) {
                     player.stopRiding();
@@ -212,7 +212,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
         this.possessed = null;
         ((RequiemPlayer) this.player).getMovementAlterer().setConfig(((RequiemPlayer)player).asRemnant().isSoul() ? SerializableMovementConfig.SOUL : null);
         this.player.calculateDimensions(); // update size
-        this.player.setBreath(this.player.getMaxBreath());
+        this.player.setAir(this.player.getMaxAir());
         syncPossessed(-1);
     }
 
@@ -226,11 +226,11 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     @Override
     public void startCuring() {
-        Random rand = this.player.getRand();
+        Random rand = this.player.getRandom();
         this.conversionTimer = rand.nextInt(1201) + 2400;  // a bit shorter than villager
         this.player.removeStatusEffect(StatusEffects.WEAKNESS);
-        this.player.addPotionEffect(new StatusEffectInstance(StatusEffects.STRENGTH, conversionTimer, 0));
-        this.player.world.playSound(null, this.player.x + 0.5D, this.player.y + 0.5D, this.player.z + 0.5D, SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, this.player.getSoundCategory(), 1.0F + rand.nextFloat(), rand.nextFloat() * 0.7F + 0.3F);
+        this.player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, conversionTimer, 0));
+        this.player.world.playSound(null, this.player.getX() + 0.5D, this.player.getY() + 0.5D, this.player.getZ() + 0.5D, SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, this.player.getSoundCategory(), 1.0F + rand.nextFloat(), rand.nextFloat() * 0.7F + 0.3F);
     }
 
     @Override
@@ -242,7 +242,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 if (possessedEntity != null) {
                     this.asRequiemPlayer().asRemnant().setSoul(false);
                     possessedEntity.remove();
-                    this.player.addPotionEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
+                    this.player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
                     this.player.world.playLevelEvent(null, 1027, new BlockPos(this.player), 0);
                 }
                 this.conversionTimer = -1;

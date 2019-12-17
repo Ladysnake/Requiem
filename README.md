@@ -139,3 +139,18 @@ There are 3 variants of Opus Daemoniums:
 
 #### Recipe (shapeless)
 ![](https://raw.githubusercontent.com/Ladysnake/Requiem/master/readme/opus_daemonium_recipe.png)
+
+## Admin Commands
+Requiem adds a few admin commands to make testing the mod or helping clueless players more easily.
+All Requiem commands start with `/requiem`. Most of them take an optional player argument. If that argument is not given, the target
+of the command will be the command executor.
+
+- `/requiem remnant`
+    - `/requiem remnant set <true|false> [player]`: sets the remnant status of a player. (Remnants are called demons in the lore, they turn into ghosts when they die)
+    - `/requiem remnant query [player]`: queries the remnant status of a player.
+- `/requiem soul`
+    - `/requiem soul set <true|false> [player]`: sets the soul status of a remnant player.
+    - `/requiem soul query [player]`: queries the soul status of a player
+- `/requiem possession`
+    - `/requiem possession start <mob> [player]`: makes the player start possessing a mob, if they are already a soul.
+    - `/requiem possession stop [player]`: stops an ongoing possession on the specified player.

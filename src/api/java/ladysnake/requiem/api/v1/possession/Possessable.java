@@ -2,18 +2,18 @@
  * Requiem
  * Copyright (C) 2019 Ladysnake
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses>.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; If not, see <https://www.gnu.org/licenses>.
  */
 package ladysnake.requiem.api.v1.possession;
 
@@ -84,5 +84,10 @@ public interface Possessable extends ProtoPossessable {
      * @param possessor the new possessor of this entity
      */
     default void setPossessor(@Nullable PlayerEntity possessor) {}
+
+    /**
+     * Whether this entity behaves like a player with regard to hunger (hunger bar, hunger damage, food regen)
+     */
+    default boolean isRegularEater() { return false; }
 
 }

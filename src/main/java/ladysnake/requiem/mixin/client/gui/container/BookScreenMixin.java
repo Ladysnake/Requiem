@@ -36,7 +36,7 @@ public class BookScreenMixin {
         BookScreen self = (BookScreen) (Object) this;
         //noinspection ConstantConditions
         if (self instanceof LecternScreen) {
-            Item book = ((LecternScreen)self).method_17573().getBookItem().getItem();
+            Item book = ((LecternScreen)self).getContainer().getBookItem().getItem();
             if (book instanceof WrittenOpusItem || book instanceof OpusDemoniumItem) {
                 return EditOpusScreen.BOOK_TEXTURE;
             }

@@ -31,12 +31,12 @@ public class WrittenOpusContents implements BookScreen.Contents {
     }
 
     @Override
-    public int getLineCount() {
+    public int getPageCount() {
         return 1;
     }
 
     @Override
-    public Text getLine(int lineNo) {
+    public Text getPageUnchecked(int lineNo) {
         if (lineNo == 0) {
             return this.magicSentence;
         }

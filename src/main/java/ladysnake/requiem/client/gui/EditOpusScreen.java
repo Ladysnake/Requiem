@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.RequiemRegistries;
@@ -69,18 +69,18 @@ public class EditOpusScreen extends BookEditScreen {
     protected void init() {
         super.init();
         EditBookScreenAccessor access = ((EditBookScreenAccessor)this);
-        this.removeButton(access.getButtonNextPage());
-        this.removeButton(access.getButtonPreviousPage());
-        this.removeButton(access.getButtonSign());
-        this.removeButton(access.getButtonFinalize());
-        this.removeButton(access.getButtonCancel());
-        access.setButtonSign(this.addButton(new ButtonWidget(
+        this.removeButton(access.getNextPageButton());
+        this.removeButton(access.getPreviousPageButton());
+        this.removeButton(access.getSignButton());
+        this.removeButton(access.getFinalizeButton());
+        this.removeButton(access.getCancelButton());
+        access.setSignButton(this.addButton(new ButtonWidget(
                 this.width / 2 - 100, 196, 98, 20,
                 I18n.translate("book.signButton"),
                 (widget) -> this.finalizeOpus(true)))
         );
-        this.removeButton(access.getButtonDone());
-        access.setButtonDone(this.addButton(new ButtonWidget(
+        this.removeButton(access.getDoneButton());
+        access.setDoneButton(this.addButton(new ButtonWidget(
                 this.width / 2 + 2, 196, 98, 20,
                 I18n.translate("gui.done"),
                 (widget) -> this.finalizeOpus(false)))
@@ -98,14 +98,16 @@ public class EditOpusScreen extends BookEditScreen {
     }
 
     public void render(int mouseX, int mouseY, float tickDelta) {
+        assert this.minecraft != null;
+        assert this.minecraft.player != null;
         this.renderBackground();
         this.setFocused(null);
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.minecraft.getTextureManager().bindTexture(BOOK_TEXTURE);
         int bgX = (this.width - 192) / 2;
         this.blit(bgX, 2, 0, 0, 192, 192);
         String page = this.getFirstPage();
-        this.font.drawStringBounded(page, bgX + 36, 32, 114, 0);
+        this.font.drawTrimmed(page, bgX + 36, 32, 114, 0);
         ((EditBookScreenAccessor)this).invokeDrawHighlight(page);
         if (((EditBookScreenAccessor)this).getTickCounter() / 6 % 2 == 0) {
             Point2D cursorPosition = this.getCursorPositionForIndex(page, ((EditBookScreenAccessor)this).getCursorIndex());
@@ -126,7 +128,7 @@ public class EditOpusScreen extends BookEditScreen {
         for (AbstractButtonWidget button : this.buttons) {
             button.render(mouseX, mouseY, tickDelta);
         }
-        ButtonWidget signButton = ((EditBookScreenAccessor) this).getButtonSign();
+        ButtonWidget signButton = ((EditBookScreenAccessor) this).getSignButton();
         int x = signButton.x + signButton.getWidth() - 22;
         int y = signButton.y - 13;
         this.minecraft.getTextureManager().bindTexture(XP_COST_TEXTURE);
@@ -193,8 +195,10 @@ public class EditOpusScreen extends BookEditScreen {
     }
 
     private void checkMagicSentence() {
+        assert minecraft != null;
+        assert minecraft.player != null;
         // Strings are lowercase in the map to make the check case insensitive
         this.validSentence = this.incantations.containsKey(this.getFirstPage().toLowerCase(Locale.getDefault()));
-        ((EditBookScreenAccessor) this).getButtonSign().active = this.validSentence && (this.minecraft.player.experienceLevel >= REQUIRED_XP || this.minecraft.player.isCreative());
+        ((EditBookScreenAccessor) this).getSignButton().active = this.validSentence && (this.minecraft.player.experienceLevel >= REQUIRED_XP || this.minecraft.player.isCreative());
     }
 }

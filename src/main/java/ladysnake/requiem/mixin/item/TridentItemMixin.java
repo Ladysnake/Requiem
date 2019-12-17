@@ -27,13 +27,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.TridentItem;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TridentItem.class)
 public abstract class TridentItemMixin extends Item {
-    private static ThreadLocal<Boolean> REVERT_CREATIVE_MODE = ThreadLocal.withInitial(() -> false);
+    @Unique
+    private static final ThreadLocal<Boolean> REVERT_CREATIVE_MODE = ThreadLocal.withInitial(() -> false);
 
     public TridentItemMixin(Settings settings) {
         super(settings);

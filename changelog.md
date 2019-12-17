@@ -1,4 +1,15 @@
 ------------------------------------------------------
+Version 1.1.0
+------------------------------------------------------
+Updated to 1.15
+
+Additions
+- Added the `regular_eater` entity type tag to allow some possessed mobs to use the standard hunger mechanic
+
+Bug Fixes
+- Fixed possessed mobs not tagged as "item user" being able to pick up items
+
+------------------------------------------------------
 Version 1.0.1
 ------------------------------------------------------
 Bug Fixes

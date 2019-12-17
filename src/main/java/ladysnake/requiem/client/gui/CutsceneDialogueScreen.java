@@ -143,13 +143,13 @@ public class CutsceneDialogueScreen extends Screen {
         this.renderBackground();
         int y = MIN_RENDER_Y;
         String title = I18n.translate(this.dialogue.getCurrentText());
-        this.font.drawStringBounded(title, 10, y, MAX_TEXT_WIDTH, 0xFFFFFF);
+        this.font.drawTrimmed(title, 10, y, MAX_TEXT_WIDTH, 0xFFFFFF);
         y += this.font.getStringBoundedHeight(title, MAX_TEXT_WIDTH) + TITLE_GAP;
         ImmutableList<String> choices = this.dialogue.getCurrentChoices();
         for (int i = 0; i < choices.size(); i++) {
             String choice = I18n.translate(choices.get(i));
             int strHeight = this.font.getStringBoundedHeight(choice, MAX_TEXT_WIDTH);
-            this.font.drawStringBounded(choice, 10, y, MAX_TEXT_WIDTH, i == this.selectedChoice ? 0xE0E044 : 0xA0A0A0);
+            this.font.drawTrimmed(choice, 10, y, MAX_TEXT_WIDTH, i == this.selectedChoice ? 0xE0E044 : 0xA0A0A0);
             y += strHeight + CHOICE_GAP;
         }
         String tip = I18n.translate("requiem:dialogue.instructions", minecraft.options.keyForward.getLocalizedName().toUpperCase(), minecraft.options.keyBack.getLocalizedName().toUpperCase(), minecraft.options.keyInventory.getLocalizedName().toUpperCase());

@@ -43,24 +43,24 @@ public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
 
     @Override
     public boolean trigger(PlayerEntity player) {
-        double double_1 = 25.0;
-        float float_1 = MathHelper.sqrt(MathHelper.sqrt(double_1)) * 0.5F;
+        double d = 25.0;
+        float f = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5F;
         Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
 
-        this.owner.world.playLevelEvent(null, 1018, new BlockPos((int)this.owner.x, (int)this.owner.y, (int)this.owner.z), 0);
+        this.owner.world.playLevelEvent(null, 1018, new BlockPos((int)this.owner.getX(), (int)this.owner.getY(), (int)this.owner.getZ()), 0);
         if (this.owner instanceof BlazeEntity) {
             this.fireTicks = 200;
             ((BlazeEntityAccessor) this.owner).invokeSetFireActive(true);
         }
-        SmallFireballEntity smallFireballEntity_1 = new SmallFireballEntity(
+        SmallFireballEntity fireball = new SmallFireballEntity(
                 this.owner.world,
                 this.owner,
-                rot.x + this.owner.getRand().nextGaussian() * (double)float_1,
+                rot.x + this.owner.getRandom().nextGaussian() * (double)f,
                 rot.y,
-                rot.z + this.owner.getRand().nextGaussian() * (double)float_1
+                rot.z + this.owner.getRandom().nextGaussian() * (double)f
         );
-        smallFireballEntity_1.y = this.owner.y + (double)(this.owner.getHeight() / 2.0F) + 0.5D;
-        this.owner.world.spawnEntity(smallFireballEntity_1);
+        fireball.setPosition(this.owner.getX(), this.owner.getY() + (double)(this.owner.getHeight() / 2.0F) + 0.5D, this.owner.getZ());
+        this.owner.world.spawnEntity(fireball);
         return true;
     }
 }

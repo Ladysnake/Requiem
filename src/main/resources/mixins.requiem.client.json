@@ -16,7 +16,6 @@
     "render.GameRendererMixin",
     "render.entity.AccessibleTextureEntityRenderer",
     "render.entity.EntityRenderDispatcherMixin",
-    "render.entity.EntityRendererMixin",
     "render.entity.LivingEntityRendererMixin",
     "render.entity.PlayerEntityRendererMixin"
   ],

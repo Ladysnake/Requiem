@@ -17,10 +17,11 @@
  */
 package ladysnake.requiem.mixin.client.gui.hud;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -45,12 +46,13 @@ public abstract class InGameHudMixin extends DrawableHelper {
 
     @Shadow @Nullable protected abstract PlayerEntity getCameraPlayer();
 
-    @Shadow protected abstract int method_1744(LivingEntity livingEntity_1);
-
     @Shadow private int scaledWidth;
     @Shadow private int scaledHeight;
 
-    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$SourceFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DestFactor;Lcom/mojang/blaze3d/platform/GlStateManager$SourceFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DestFactor;)V"), cancellable = true)
+    @Shadow
+    protected abstract int getHeartCount(LivingEntity livingEntity_1);
+
+    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$SrcFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DstFactor;Lcom/mojang/blaze3d/platform/GlStateManager$SrcFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DstFactor;)V"), cancellable = true)
     private void colorCrosshair(CallbackInfo ci) {
         CrosshairRenderCallback.EVENT.invoker().onCrosshairRender(this.scaledWidth, this.scaledHeight);
     }
@@ -60,9 +62,10 @@ public abstract class InGameHudMixin extends DrawableHelper {
             at = @At(value = "CONSTANT", args = "stringValue=health")
     )
     private void drawPossessionHud(CallbackInfo info) {
+        assert client.player != null;
         if (((RequiemPlayer)client.player).asRemnant().isIncorporeal()) {
             // Make everything that follows *invisible*
-            GlStateManager.color4f(1, 1, 1, 0);
+            RenderSystem.color4f(1, 1, 1, 0);
         }
     }
 
@@ -70,14 +73,17 @@ public abstract class InGameHudMixin extends DrawableHelper {
             method = "renderStatusBars",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/hud/InGameHud;method_1744(Lnet/minecraft/entity/LivingEntity;)I"
+                    target = "Lnet/minecraft/client/gui/hud/InGameHud;getHeartCount(Lnet/minecraft/entity/LivingEntity;)I"
             )
     )
     private int preventFoodRender(InGameHud self, LivingEntity livingEntity_1) {
-        int actual = this.method_1744(livingEntity_1);
+        int actual = this.getHeartCount(livingEntity_1);
         RequiemPlayer cameraPlayer = (RequiemPlayer) this.getCameraPlayer();
         if (actual == 0 && cameraPlayer != null && cameraPlayer.asRemnant().isSoul()) {
-            return -1;
+            Possessable possessed = (Possessable) cameraPlayer.asPossessor().getPossessedEntity();
+            if (possessed == null || !possessed.isRegularEater()) {
+                return -1;
+            }
         }
         return actual;
     }
@@ -99,8 +105,9 @@ public abstract class InGameHudMixin extends DrawableHelper {
         return playerEntity.isInFluid(fluid);
     }
 
-    @ModifyVariable(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/SystemUtil;getMeasuringTimeMs()J"), ordinal = 0)
+    @ModifyVariable(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J"), ordinal = 0)
     private int substituteHealth(int health) {
+        assert client.player != null;
         LivingEntity entity = ((RequiemPlayer)client.player).asPossessor().getPossessedEntity();
         if (entity != null) {
             return MathHelper.ceil(entity.getHealth());
@@ -120,8 +127,9 @@ public abstract class InGameHudMixin extends DrawableHelper {
             at = @At(value = "CONSTANT", args = "stringValue=air")
     )
     private void resumeDrawing(CallbackInfo info) {
+        assert client.player != null;
         if (((RequiemPlayer)client.player).asRemnant().isSoul()) {
-            GlStateManager.color4f(1, 1, 1, 1);
+            RenderSystem.color4f(1, 1, 1, 1);
         }
     }
 

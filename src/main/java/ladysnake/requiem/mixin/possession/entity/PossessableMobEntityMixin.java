@@ -91,11 +91,11 @@ public abstract class PossessableMobEntityMixin extends LivingEntity implements 
         }
     }
 
-    @Inject(method = "setEquippedStack", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "equipStack", at = @At("HEAD"), cancellable = true)
     private void setEquippedStack(EquipmentSlot slot, ItemStack item, CallbackInfo ci) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null && !world.isClient) {
-            possessor.setEquippedStack(slot, item);
+            possessor.equipStack(slot, item);
         }
     }
 

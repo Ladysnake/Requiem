@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.client;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
@@ -104,7 +104,7 @@ public class RequiemClient implements ClientModInitializer {
         UseEntityCallback.EVENT.register((player, world, hand, target, hitPosition) -> {
             if (player == MinecraftClient.getInstance().cameraEntity && ((RequiemPlayer) player).asRemnant().isIncorporeal()) {
                 if (target instanceof MobEntity && target.world.isClient) {
-                    target.world.playSound(player, target.x, target.y, target.z, RequiemSoundEvents.EFFECT_POSSESSION_ATTEMPT, SoundCategory.PLAYERS, 2, 0.6f);
+                    target.world.playSound(player, target.getX(), target.getY(), target.getZ(), RequiemSoundEvents.EFFECT_POSSESSION_ATTEMPT, SoundCategory.PLAYERS, 2, 0.6f);
                     RequiemFx.INSTANCE.beginFishEyeAnimation(target);
                 }
                 return ActionResult.SUCCESS;
@@ -113,11 +113,12 @@ public class RequiemClient implements ClientModInitializer {
         });
         CrosshairRenderCallback.EVENT.register(Requiem.id("possession_indicator"), (scaledWidth, scaledHeight) -> {
             MinecraftClient client = MinecraftClient.getInstance();
+            assert client.player != null;
             if (((RequiemPlayer) client.player).asRemnant().isIncorporeal()) {
                 if (client.targetedEntity instanceof MobEntity) {
                     int x = (scaledWidth - 32) / 2 + 8;
                     int y = (scaledHeight - 16) / 2 + 16;
-                    GlStateManager.color3f(1.0f, 1.0f, 1.0f);
+                    RenderSystem.color3f(1.0f, 1.0f, 1.0f);
                     client.getTextureManager().bindTexture(POSSESSION_ICON);
                     DrawableHelper.blit(x, y, 16, 16, 0, 0, 16, 16, 16, 16);
                     client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
@@ -126,13 +127,15 @@ public class RequiemClient implements ClientModInitializer {
         });
         CrosshairRenderCallback.EVENT.register(Requiem.id("enderman_color"), (scaledWidth, scaledHeight) -> {
             MinecraftClient client = MinecraftClient.getInstance();
+            assert client.player != null;
             if (client.targetedEntity instanceof EndermanEntity && client.player.dimension == DimensionType.THE_END) {
-                GlStateManager.color3f(0.4f, 0.0f, 1.0f);
+                RenderSystem.color3f(0.4f, 0.0f, 1.0f);
             }
         });
         // Prevents the hotbar from being rendered when the player cannot use items
         HotbarRenderCallback.EVENT.register(tickDelta -> {
             MinecraftClient client = MinecraftClient.getInstance();
+            assert client.player != null;
             RequiemPlayer player = (RequiemPlayer) client.player;
             if (!client.player.isCreative() && player.asRemnant().isSoul()) {
                 Entity possessed = player.asPossessor().getPossessedEntity();

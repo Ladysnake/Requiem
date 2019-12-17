@@ -19,8 +19,8 @@ package ladysnake.pandemonium.common.remnant;
 
 import ladysnake.pandemonium.api.PandemoniumWorld;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
-import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.pandemonium.common.impl.anchor.EntityFractureAnchor;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.impl.remnant.MutableRemnantState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -84,7 +84,7 @@ public class FracturableRemnantState extends MutableRemnantState {
     @Override
     public void fromTag(@Nonnull CompoundTag tag) {
         super.fromTag(tag);
-        if (tag.hasUuid("AnchorUuid")) {
+        if (tag.containsUuid("AnchorUuid")) {
             this.anchorUuid = tag.getUuid("AnchorUuid");
         }
     }

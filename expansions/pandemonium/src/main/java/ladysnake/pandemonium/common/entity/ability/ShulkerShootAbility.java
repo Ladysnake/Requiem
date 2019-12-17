@@ -41,13 +41,13 @@ public class ShulkerShootAbility extends IndirectAbilityBase<ShulkerEntity> impl
     public boolean trigger(PlayerEntity player) {
         if (this.bulletCooldown <= 0) {
             // method_21727 = getClosestEntity
-            return this.trigger(player, this.owner.world.method_21727(
+            return this.trigger(player, this.owner.world.getClosestEntityIncludingUngeneratedChunks(
                     LivingEntity.class,
                     new TargetPredicate(),
                     this.owner,
-                    this.owner.x,
-                    this.owner.y + (double)this.owner.getStandingEyeHeight(),
-                    this.owner.z,
+                    this.owner.getX(),
+                    this.owner.getY() + (double)this.owner.getStandingEyeHeight(),
+                    this.owner.getZ(),
                     this.getSearchBox(16.0)));
         }
         return false;

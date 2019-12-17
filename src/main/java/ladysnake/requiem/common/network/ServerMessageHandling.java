@@ -96,7 +96,7 @@ public class ServerMessageHandling {
                     ((ServerPlayerEntity)player).networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(player.experienceProgress, player.experienceLevel, player.experienceLevel));
                 } else {
                     ListTag pages = new ListTag();
-                    pages.add(new StringTag(content));
+                    pages.add(StringTag.of(content));
                     book.putSubTag("pages", pages);
                 }
             });

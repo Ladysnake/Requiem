@@ -119,8 +119,6 @@ public final class ReloadableDialogueRegistry implements SubDataManager<Map<Iden
                 }
             }
             Requiem.LOGGER.info("[Requiem] Parsed dialogues {}", dialogues.keySet());
-            // FIXME apply never gets called normally in production, this is a hotfix
-            apply(dialogues);
             return dialogues;
         }, executor);
     }

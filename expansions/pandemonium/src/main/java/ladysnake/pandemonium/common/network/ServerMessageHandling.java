@@ -29,9 +29,10 @@ public class ServerMessageHandling {
                     PlayerShellEntity shellEntity = PlayerShellEntity.fromPlayer(player);
                     player.world.spawnEntity(shellEntity);
                     FractureAnchor anchor = anchorManager.addAnchor(AnchorFactories.fromEntityUuid(shellEntity.getUuid()));
-                    anchor.setPosition(shellEntity.x, shellEntity.y, shellEntity.z);
+                    anchor.setPosition(shellEntity.getX(), shellEntity.getY(), shellEntity.getZ());
                     remnantState.setSoul(true);
                 } else if (possessionComponent.isPossessing()/* && state.getAnchor() != null*/) {
+                    // TODO make a gamerule to keep the inventory when leaving a mob
                     possessionComponent.stopPossessing();
                 } else {
                     return;
