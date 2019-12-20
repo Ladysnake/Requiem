@@ -33,16 +33,15 @@ allprojects {
 
     version = rootProject.mod_version
 
-    /*
-     Adds a JavadocJar task, javax annotations, manifest attributes, curseforge and maven configuration
-     */
-    apply from: "https://raw.githubusercontent.com/NerdHubMC/Gradle-Scripts/master/scripts/fabric/basic_project.gradle"
+    // Adds a few utility methods like getProjectProperty
+    apply from: "https://raw.githubusercontent.com/NerdHubMC/Gradle-Scripts/master/scripts/utilities.gradle"
 
     sourceSets {
         api
     }
 
     repositories {
+        mavenCentral()
         maven {
             url "http://maven.fabricmc.net/"
             name "Fabric"
@@ -59,8 +58,13 @@ allprojects {
         }
     }
 
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        archiveClassifier = "sources"
+        from sourceSets.main.allSource
+    }
+
     task apiJar(type: Jar, dependsOn: apiClasses) {
-        classifier = 'api-dev'
+        archiveClassifier = 'api-dev'
         from sourceSets.api.allJava
         from (sourceSets.api.output) {
             include "fabric.mod.json"
@@ -72,14 +76,27 @@ allprojects {
     }
 
     task remapApiJar(type: RemapJarTask, dependsOn: project.apiJar) {
-        input = apiJar.archivePath
-        classifier = 'api'
+        input = apiJar.archiveFile
+        archiveClassifier = 'api'
         addNestedDependencies = false
     }
+
+    task apiProdJar(type: Jar, dependsOn: project.remapApiJar) {
+        archiveClassifier = 'api-prod'
+        from (zipTree(remapApiJar.archiveFile)) {
+            exclude '**/*.java'
+            exclude '**/package-info.class'
+        }
+    }
+
+    remapJar.dependsOn(apiProdJar)
 
     javadoc {
         source += sourceSets.api.allJava
     }
+
+    apply from: "https://raw.githubusercontent.com/NerdHubMC/Gradle-Scripts/master/scripts/fabric/publish/changelog.gradle"
+    apply from: "https://raw.githubusercontent.com/NerdHubMC/Gradle-Scripts/master/scripts/fabric/publish/maven_base.gradle"
 
     dependencies {
         //to change the versions see the gradle.properties file
@@ -94,15 +111,14 @@ allprojects {
         sourceSets.api.compileClasspath += files({sourceSets.main.compileClasspath.toList()})
 
         compile sourceSets.api.output
-        include files(remapApiJar.archivePath)
+        include files(apiProdJar.archiveFile)
 
+        compileOnly "com.google.code.findbugs:jsr305:3.0.2"
         compileOnly "org.jetbrains:annotations:${jb_annotations_version}"
         compileOnly "org.apiguardian:apiguardian-api:${apiguardian_version}"
 
         testImplementation "org.junit.jupiter:junit-jupiter-api:5.4.0-M1"
     }
-
-    remapJar.dependsOn(remapApiJar)
 
     license {
         header = rootProject.file("code_quality/${project.license_header}_HEADER.txt")
@@ -130,6 +146,9 @@ allprojects {
             mavenJava(MavenPublication) {
                 artifact(remapApiJar) {
                     classifier = "api"
+                }
+                artifact(apiProdJar) {
+                    classifier = "api-prod"
                 }
             }
         }
