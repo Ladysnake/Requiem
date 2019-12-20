@@ -9,6 +9,7 @@ plugins {
     id "net.minecrell.licenser" version "0.4.1"
     id "com.matthewprenger.cursegradle" version "1.4.0"
     id "maven-publish"
+    id "org.ajoberstar.grgit" version "3.1.1"
     id "com.wynprice.cursemaven" version "1.2.3"
 }
 
@@ -194,7 +195,13 @@ license {
     exclude "**/RayHelper.java"
 }
 
+task checkGitStatus() {
+    if (!(grgit != null && grgit.status().isClean())) throw new RuntimeException("Git repository not ready for release")
+}
+
 curseforge {
+    dependsOn checkGitStatus
+
     if (project.getProjectProperty("curse_key") != null) {
         apiKey = project.getProjectProperty("curse_key")
     }
