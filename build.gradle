@@ -196,11 +196,25 @@ license {
 }
 
 task checkGitStatus() {
-    if (!(grgit != null && grgit.status().isClean())) throw new RuntimeException("Git repository not ready for release")
+    if (grgit == null) throw new RuntimeException("No git repository")
+    if (!grgit.status().isClean()) {
+        throw new RuntimeException("Git repository not ready for release (${grgit.status()})")
+    }
+    def currentBranch = grgit.branch.current.getName()
+    if (currentBranch != 'master') {
+        throw new RuntimeException("Need to be on the master branch to release (currently on ${currentBranch})")
+    }
+    grgit.fetch()
+    def status = grgit.branch.status(name: currentBranch)
+    if (status.aheadCount != 0) {
+        throw new RuntimeException("Some commits have not been pushed")
+    }
+    if (status.behindCount != 0) {
+        throw new RuntimeException("Some commits have not been pulled")
+    }
 }
 
 curseforge {
-    dependsOn checkGitStatus
 
     if (project.getProjectProperty("curse_key") != null) {
         apiKey = project.getProjectProperty("curse_key")
@@ -284,3 +298,5 @@ curseforge {
         }
     }
 }
+
+tasks.curseforge.dependsOn(checkGitStatus)
