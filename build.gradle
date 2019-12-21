@@ -210,6 +210,9 @@ task checkGitStatus() {
             throw new RuntimeException("Need to be on the master branch to release (currently on ${currentBranch})")
         }
         grgit.fetch()
+        if (grgit.tag.list().any { it.name == project.version }) {
+            throw new RuntimeException("A tag already exists for ${project.version}")
+        }
         def status = grgit.branch.status(name: currentBranch)
         if (status.aheadCount != 0) {
             throw new RuntimeException('Some commits have not been pushed')
