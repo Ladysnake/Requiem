@@ -10,6 +10,7 @@ plugins {
     id "com.matthewprenger.cursegradle" version "1.4.0"
     id "maven-publish"
     id "org.ajoberstar.grgit" version "3.1.1"
+    id "com.github.breadmoirai.github-release" version "2.2.9"
     id "com.wynprice.cursemaven" version "1.2.3"
 }
 
@@ -196,23 +197,41 @@ license {
 }
 
 task checkGitStatus() {
-    if (grgit == null) throw new RuntimeException("No git repository")
-    if (!grgit.status().isClean()) {
-        throw new RuntimeException("Git repository not ready for release (${grgit.status()})")
-    }
-    def currentBranch = grgit.branch.current.getName()
-    if (currentBranch != 'master') {
-        throw new RuntimeException("Need to be on the master branch to release (currently on ${currentBranch})")
-    }
-    grgit.fetch()
-    def status = grgit.branch.status(name: currentBranch)
-    if (status.aheadCount != 0) {
-        throw new RuntimeException("Some commits have not been pushed")
-    }
-    if (status.behindCount != 0) {
-        throw new RuntimeException("Some commits have not been pulled")
+    group = 'publishing'
+    description = 'Checks that the git repository is in a state suitable for release'
+    doLast {
+        if (grgit == null) throw new RuntimeException("No git repository")
+        if (!grgit.status().isClean()) {
+            throw new RuntimeException("Git repository not ready for release (${grgit.status()})")
+        }
+        def currentBranch = grgit.branch.current.getName()
+        if (currentBranch != 'master') {
+            throw new RuntimeException("Need to be on the master branch to release (currently on ${currentBranch})")
+        }
+        grgit.fetch()
+        def status = grgit.branch.status(name: currentBranch)
+        if (status.aheadCount != 0) {
+            throw new RuntimeException("Some commits have not been pushed")
+        }
+        if (status.behindCount != 0) {
+            throw new RuntimeException("Some commits have not been pulled")
+        }
     }
 }
+
+githubRelease {
+    token "${getProjectProperty("github_releases_token")}"
+    // default owner: last component of maven group
+    // default repo: name of the project
+    tagName project.version
+    targetCommitish { grgit.branch.current().name }
+    releaseName project.version
+    body { getChangelog() }
+
+    FilenameFilter filter = { dir, filename -> filename.contains(project.version) && !filename.contains("-dev.jar") }
+    releaseAssets = { jar.destinationDirectory.asFile.get().listFiles filter }
+}
+tasks.githubRelease.dependsOn(checkGitStatus)
 
 curseforge {
 
@@ -300,3 +319,8 @@ curseforge {
 }
 
 tasks.curseforge.dependsOn(checkGitStatus)
+
+task release(dependsOn: [tasks.publish, tasks.githubRelease, tasks.curseforge]) {
+    group = 'publishing'
+    description = 'Releases a new version to Maven, Github and Curseforge'
+}
