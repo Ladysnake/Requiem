@@ -15,11 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.common.entity.ability;
+package ladysnake.pandemonium.common.entity.ability;
 
+import ladysnake.pandemonium.common.util.RayHelper;
+import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -39,9 +40,9 @@ public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> extends 
         Vec3d startPoint = this.owner.getCameraPosVec(1.0f);
         Vec3d lookVec = this.owner.getRotationVec(1.0f);
         Vec3d endPoint = startPoint.add(lookVec.x * range, lookVec.y * range, lookVec.z * range);
-        Vec3d vec3d_2 = this.owner.getRotationVec(1.0F);
-        Box boundingBox_1 = this.owner.getBoundingBox().stretch(vec3d_2.x * range, vec3d_2.y * range, vec3d_2.z * range).expand(1.0D, 1.0D, 1.0D);
-        EntityHitResult trace = ProjectileUtil.rayTrace(this.owner, startPoint, endPoint, boundingBox_1, (entity_1x) -> entity_1x != player && !entity_1x.isSpectator() && entity_1x.collides(), range);
+        Vec3d rot = this.owner.getRotationVec(1.0F);
+        Box bb = this.owner.getBoundingBox().stretch(rot.x * range, rot.y * range, rot.z * range).expand(1.0D, 1.0D, 1.0D);
+        EntityHitResult trace = RayHelper.rayTrace(this.owner, startPoint, endPoint, bb, (e) -> e != player && !e.isSpectator() && e.collides(), range);
         if (trace != null) {
             Entity traced = trace.getEntity();
             if (traced instanceof LivingEntity) {
