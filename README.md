@@ -57,7 +57,8 @@ Known Incompatibilities:
 - First Person Mod: Makes the possessed mob appear in first person, blocking the sight.
 - Immersive Portals: Completely breaks possession when a portal is in sight. Possessed entities vanish when traversing
 a nether portal. Graphical glitches occur when Optifine is not present.
-- Optifine/Optifabric: The Fast Maths option is incompatible with Requiem.
+- Optifine/Optifabric: The Fast Maths and Fast Render option is incompatible with Requiem.
+- Optifine shaders: VanillaPlus works as is. More complex shaders may need to be turned off on load, but they can be re-enabled while playing.
 
 # Wiki
 This section lists and explains the different mechanics and items Requiem adds to the game. If you need information about something you did not understand, this is where to look!
