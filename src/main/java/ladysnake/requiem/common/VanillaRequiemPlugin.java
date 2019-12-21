@@ -147,24 +147,6 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             }
             return ActionResult.PASS;
         });
-        UseItemCallback.EVENT.register((player, world, hand) -> {
-            ItemStack heldItem = player.getStackInHand(hand);
-            if (RequiemItemTags.BONES.contains(heldItem.getItem())) {
-                if (!world.isClient) {
-                    MobEntity possessedEntity = ((RequiemPlayer) player).asPossessor().getPossessedEntity();
-                    if (possessedEntity != null && EntityTypeTags.SKELETONS.contains(possessedEntity.getType())) {
-                        if (possessedEntity.getHealth() < possessedEntity.getMaximumHealth()) {
-                            possessedEntity.heal(4.0f);
-                            possessedEntity.playAmbientSound();
-                            heldItem.decrement(1);
-                            player.getItemCooldownManager().set(heldItem.getItem(), 40);
-                        }
-                    }
-                }
-                return new TypedActionResult<>(ActionResult.SUCCESS, heldItem);
-            }
-            return new TypedActionResult<>(ActionResult.PASS, heldItem);
-        });
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (entity instanceof SpiderEntity) {
                 LivingEntity possessed = ((RequiemPlayer)player).asPossessor().getPossessedEntity();
