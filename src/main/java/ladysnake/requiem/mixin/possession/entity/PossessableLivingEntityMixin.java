@@ -24,8 +24,10 @@ import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.requiem.common.entity.ai.attribute.CooldownStrengthAttribute;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
+import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.mixin.possession.player.LivingEntityAccessor;
+import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -39,12 +41,15 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -64,8 +69,15 @@ import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
  */
 @Mixin(LivingEntity.class)
 abstract class PossessableLivingEntityMixin extends Entity implements Possessable, VariableMobilityEntity {
+    @Unique
     private boolean requiem_immovable = RequiemEntityTypeTags.IMMOVABLE.contains(this.getType());
+    @Unique
     private boolean requiem_regularEater = RequiemEntityTypeTags.EATER.contains(this.getType());
+    @Unique
+    private boolean requiem_wasCustomNameVisible;
+    @Unique
+    @Nullable
+    private Text requiem_previousCustomName;
 
     @Shadow
     public abstract EntityAttributeInstance getAttributeInstance(EntityAttribute entityAttribute_1);
@@ -139,6 +151,26 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         if (possessor != null) {
             this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).addModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS);
         }
+        updateName(possessor);
+    }
+
+    @Unique
+    private void updateName(@CheckForNull PlayerEntity possessor) {
+        if (possessor != null) {
+            if (this.requiem_previousCustomName == null) {
+                this.requiem_wasCustomNameVisible = this.isCustomNameVisible();
+                this.requiem_previousCustomName = this.getCustomName();
+            }
+            if (world.getGameRules().getBoolean(RequiemGamerules.SHOW_POSSESSOR_NAMETAG)) {
+                this.setCustomNameVisible(true);
+                this.setCustomName(possessor.getName());
+            }
+        } else {
+            this.setCustomNameVisible(this.requiem_wasCustomNameVisible);
+            this.setCustomName(this.requiem_previousCustomName);
+            this.requiem_wasCustomNameVisible = false;
+            this.requiem_previousCustomName = null;
+        }
     }
 
     @Override
@@ -154,6 +186,27 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     /* * * * * * * * * * *
         Entity overrides
     * * * * * * * * * * */
+
+    @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
+    private void writeCustomDataToTag(CompoundTag tag, CallbackInfo ci) {
+        Text text = this.requiem_previousCustomName;
+        if (text != null) {
+            tag.putString("requiem_PreviousCustomName", Text.Serializer.toJson(text));
+        }
+
+        if (this.requiem_wasCustomNameVisible) {
+            tag.putBoolean("requiem_WasCustomNameVisible", true);
+        }
+    }
+
+    @Inject(method = "readCustomDataFromTag", at = @At("RETURN"))
+    private void readCustomDataFromTag(CompoundTag tag, CallbackInfo ci) {
+        if (tag.contains("requiem_PreviousCustomName", NbtType.STRING)) {
+            this.setCustomName(Text.Serializer.fromJson(tag.getString("requiem_PreviousCustomName")));
+        }
+
+        this.setCustomNameVisible(tag.getBoolean("requiem_WasCustomNameVisible"));
+    }
 
     @Inject(method = "canMoveVoluntarily", at = @At("HEAD"), cancellable = true)
     private void canMoveVoluntarily(CallbackInfoReturnable<Boolean> cir) {
@@ -276,13 +329,13 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
      */
 
     @Redirect(method = "clearStatusEffects", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;next()Ljava/lang/Object;", remap = false))
-    private Object swapIteratorOperationsPart1(Iterator iterator) {
+    private Object swapIteratorOperationsPart1(Iterator<?> iterator) {
         Object next = iterator.next();
         iterator.remove();
         return next;
     }
     @Redirect(method = "clearStatusEffects", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;remove()V", remap = false))
-    private void swapIteratorOperationsPart2(Iterator iterator) {
+    private void swapIteratorOperationsPart2(Iterator<?> iterator) {
         // NO-OP
     }
 
