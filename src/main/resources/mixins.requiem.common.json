@@ -6,6 +6,7 @@
   "mixins": [
     "advancement.criterion.CriterionsAccessor",
     "block.entity.LecternBlockEntityMixin",
+    "entity.EntityMixin",
     "entity.ItemEntityMixin",
     "entity.LivingEntityMixin",
     "entity.attribute.AbstractEntityAttributeContainerAccessor",

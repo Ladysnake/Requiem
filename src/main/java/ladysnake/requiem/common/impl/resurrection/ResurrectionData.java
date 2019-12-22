@@ -22,6 +22,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import ladysnake.requiem.common.util.RequiemEntityExtension;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -44,7 +45,10 @@ import java.util.function.BiPredicate;
 
 public final class ResurrectionData implements Comparable<ResurrectionData> {
     private static final Map<String, BiPredicate<ServerPlayerEntity, DamageSource>> SPECIAL_PREDICATES = Util.make(new HashMap<>(), m -> {
-        m.put("head_in_sand", (lazarus, killingBlow) -> BlockTags.SAND.contains(lazarus.world.getBlockState(lazarus.getBlockPos().add(0, lazarus.getEyeHeight(lazarus.getPose()), 0)).getBlock()));
+        m.put("head_in_sand", (lazarus, killingBlow) -> {
+            float eyeHeight = ((RequiemEntityExtension) lazarus).getEyeHeight();
+            return BlockTags.SAND.contains(lazarus.world.getBlockState(lazarus.getBlockPos().add(0, eyeHeight, 0)).getBlock());
+        });
     });
 
     private final int priority;
