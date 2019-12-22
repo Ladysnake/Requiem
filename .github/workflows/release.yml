@@ -3,13 +3,13 @@ name: Requiem Release
 on:
   pull_request:
     types: [closed]
-    branches: 
+    branches:
       - master
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged && github.event.pull_request.labels.nodes.*.name.contains("release")
+    if: github.event.pull_request.merged && contains(github.event.pull_request.labels.nodes.*.name, "release"))
 
     steps:
     - uses: actions/checkout@v1
