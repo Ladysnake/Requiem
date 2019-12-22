@@ -245,7 +245,7 @@ githubRelease {
     // default repo: name of the project
     tagName = project.version
     targetCommitish = { grgit.branch.current().name }
-    body = { getChangelog() }
+    body = { project.getChangelogText() }
 
     FilenameFilter filter = { dir, filename -> filename.contains(project.version) && !filename.contains('-dev.jar') }
     releaseAssets = { jar.destinationDirectory.asFile.get().listFiles filter }
