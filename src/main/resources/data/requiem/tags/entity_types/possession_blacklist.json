@@ -2,6 +2,9 @@
   "replace": false,
   "values": [
     "minecraft:wither",
-    "minecraft:ender_dragon"
+    "minecraft:ender_dragon",
+    "mobz:boss_entity",
+    "mobz:bigboss_entity",
+    "mobz:test_entity"
   ]
 }

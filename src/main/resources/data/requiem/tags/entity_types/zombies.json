@@ -1,6 +1,24 @@
 {
-    "replace": false,
-    "values": [
-        "#c:zombies"
+  "replace": false,
+  "values": [
+    "#c:zombies"
+  ],
+  "libcd": {
+    "entries": [
+      {
+        "when": [
+          {
+            "libcd:mod_loaded": "mobz"
+          }
+        ],
+        "values": [
+          "mobz:enderzombie_entity",
+          "mobz:tank_entity",
+          "mobz:armored_entity",
+          "mobz:smallzombie_entity",
+          "mobz:fast_entity"
+        ]
+      }
     ]
+  }
 }
