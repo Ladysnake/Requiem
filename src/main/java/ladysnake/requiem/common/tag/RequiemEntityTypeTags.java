@@ -27,6 +27,7 @@ public final class RequiemEntityTypeTags {
     public static final Tag<EntityType<?>> ITEM_USER = register("item_user");
     public static final Tag<EntityType<?>> IMMOVABLE = register("immovable");
     public static final Tag<EntityType<?>> EATER = register("regular_eater");
+    public static final Tag<EntityType<?>> SKELETONS = register("skeletons");
     public static final Tag<EntityType<?>> ZOMBIES = register("zombies");
 
     public static Tag<EntityType<?>> register(String name) {

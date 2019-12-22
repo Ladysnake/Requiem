@@ -23,11 +23,9 @@ import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -54,7 +52,7 @@ public abstract class ItemMixin {
                 } else {
                     cir.setReturnValue(new TypedActionResult<>(ActionResult.FAIL, heldStack));
                 }
-            } else if (EntityTypeTags.SKELETONS.contains(possessedEntity.getType())) {
+            } else if (RequiemEntityTypeTags.SKELETONS.contains(possessedEntity.getType())) {
                 if (possessedEntity.getHealth() < possessedEntity.getMaximumHealth()) {
                     possessedEntity.heal(4.0f);
                     possessedEntity.playAmbientSound();

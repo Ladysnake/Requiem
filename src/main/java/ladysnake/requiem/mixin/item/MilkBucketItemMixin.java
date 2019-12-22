@@ -18,12 +18,12 @@
 package ladysnake.requiem.mixin.item;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MilkBucketItem;
-import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,7 +38,7 @@ public abstract class MilkBucketItemMixin {
     private void regenSkeletons(ItemStack stack, World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
         if (user instanceof RequiemPlayer) {
             LivingEntity possessed = ((RequiemPlayer) user).asPossessor().getPossessedEntity();
-            if (possessed != null && EntityTypeTags.SKELETONS.contains(possessed.getType())) {
+            if (possessed != null && RequiemEntityTypeTags.SKELETONS.contains(possessed.getType())) {
                 possessed.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 30*20));
             }
         }
