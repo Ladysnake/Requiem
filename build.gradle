@@ -178,14 +178,17 @@ repositories {
 dependencies {
     modApi("com.github.Ladysnake:Satin:${rootProject.satin_version}")
     include "com.github.Ladysnake:Satin:${satin_version}"
-//    modRuntime "io.github.prospector.modmenu:ModMenu:${modmenu_version}"
+    modRuntime ("io.github.prospector:modmenu:${modmenu_version}") {
+        transitive = false
+    }
     modApi "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}"
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}"
     modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
     modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
-//    modImplementation curse.resolve('immersive-portals-mod', 2806496)
+    modRuntime curse.resolve('immersive-portals-mod', 2845123)
+    modRuntime curse.resolve('mobz', 2841266)
 }
 
 jar {
