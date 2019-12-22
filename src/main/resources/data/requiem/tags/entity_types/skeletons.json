@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#c:zombies"
+    "#minecraft:skeletons"
   ],
   "libcd": {
     "entries": [
@@ -12,11 +12,9 @@
           }
         ],
         "values": [
-          "mobz:enderzombie_entity",
-          "mobz:tank_entity",
-          "mobz:armored_entity",
-          "mobz:smallzombie_entity",
-          "mobz:fast_entity"
+          "mobz:skeli1_entity",
+          "mobz:skeli2_entity",
+          "mobz:skeli3_entity"
         ]
       }
     ]

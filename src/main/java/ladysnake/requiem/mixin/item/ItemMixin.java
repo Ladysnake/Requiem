@@ -18,11 +18,11 @@
 package ladysnake.requiem.mixin.item;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -40,16 +40,25 @@ public abstract class ItemMixin {
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(World world, PlayerEntity player, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
         MobEntity possessedEntity = ((RequiemPlayer) player).asPossessor().getPossessedEntity();
-        ItemStack stack = player.getStackInHand(hand);
-        if (possessedEntity != null && possessedEntity.isUndead() && RequiemItemTags.UNDEAD_CURES.contains(stack.getItem()) && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)) {
-            player.setCurrentHand(hand);
-            cir.setReturnValue(new TypedActionResult<>(ActionResult.SUCCESS, stack));
-        } else if (possessedEntity instanceof ZombieEntity) {
-            if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || RequiemItemTags.RAW_FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
+        ItemStack heldStack = player.getStackInHand(hand);
+        if (possessedEntity != null) {
+            if (possessedEntity.isUndead() && RequiemItemTags.UNDEAD_CURES.contains(heldStack.getItem()) && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)) {
                 player.setCurrentHand(hand);
-                cir.setReturnValue(new TypedActionResult<>(ActionResult.SUCCESS, stack));
-            } else {
-                cir.setReturnValue(new TypedActionResult<>(ActionResult.FAIL, stack));
+                cir.setReturnValue(new TypedActionResult<>(ActionResult.SUCCESS, heldStack));
+            } else if (RequiemEntityTypeTags.ZOMBIES.contains(possessedEntity.getType())) {
+                if (RequiemItemTags.RAW_MEATS.contains(heldStack.getItem()) || RequiemItemTags.RAW_FISHES.contains(heldStack.getItem()) && possessedEntity instanceof DrownedEntity) {
+                    player.setCurrentHand(hand);
+                    cir.setReturnValue(new TypedActionResult<>(ActionResult.SUCCESS, heldStack));
+                } else {
+                    cir.setReturnValue(new TypedActionResult<>(ActionResult.FAIL, heldStack));
+                }
+            } else if (RequiemEntityTypeTags.SKELETONS.contains(possessedEntity.getType())) {
+                if (possessedEntity.getHealth() < possessedEntity.getMaximumHealth()) {
+                    possessedEntity.heal(4.0f);
+                    possessedEntity.playAmbientSound();
+                    heldStack.decrement(1);
+                    player.getItemCooldownManager().set(heldStack.getItem(), 40);
+                }
             }
         }
     }

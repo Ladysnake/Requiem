@@ -19,13 +19,17 @@ package ladysnake.pandemonium.common.util;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * Some raytracing utilities
@@ -136,6 +140,49 @@ public class RayHelper {
             }
         }
         return pos;
+    }
+
+    /**
+     * @see net.minecraft.entity.ProjectileUtil#rayTrace(Entity, Vec3d, Vec3d, Box, Predicate, double)
+     */
+    public static EntityHitResult rayTrace(Entity watcher, Vec3d startPoint, Vec3d endPoint, Box box, Predicate<Entity> predicate, double range) {
+        World world = watcher.world;
+        double r = range;
+        Entity target = null;
+        Vec3d pos = null;
+
+        for (Entity entity : world.getEntities(watcher, box, predicate)) {
+            Box bb = entity.getBoundingBox().expand(entity.getTargetingMargin());
+            Optional<Vec3d> hitPosition = bb.rayTrace(startPoint, endPoint);
+            if (bb.contains(startPoint)) {
+                if (r >= 0.0D) {
+                    target = entity;
+                    pos = hitPosition.orElse(startPoint);
+                    r = 0.0D;
+                }
+            } else if (hitPosition.isPresent()) {
+                Vec3d hitPos = hitPosition.get();
+                double distanceSq = startPoint.squaredDistanceTo(hitPos);
+                if (distanceSq < r || r == 0.0D) {
+                    if (entity.getRootVehicle() == watcher.getRootVehicle()) {
+                        if (r == 0.0D) {
+                            target = entity;
+                            pos = hitPos;
+                        }
+                    } else {
+                        target = entity;
+                        pos = hitPos;
+                        r = distanceSq;
+                    }
+                }
+            }
+        }
+
+        if (target == null) {
+            return null;
+        }
+
+        return new EntityHitResult(target, pos);
     }
 
     public static class RaytraceException extends RuntimeException {

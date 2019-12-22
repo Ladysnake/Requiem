@@ -1,0 +1,33 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:pillager",
+    "minecraft:vex",
+    "minecraft:villager",
+    "minecraft:vindicator",
+    "minecraft:witch"
+  ],
+  "libcd": {
+    "entries": [
+      {
+        "when": [
+          {
+            "libcd:mod_loaded": "mobz"
+          }
+        ],
+        "values": [
+          "mobz:archer_entity",
+          "mobz:archer2_entity",
+          "mobz:dwarf_entity",
+          "mobz:fulliron_entity",
+          "mobz:friend_entity",
+          "mobz:knight_entity",
+          "mobz:knight2_entity",
+          "mobz:knight4_entity",
+          "mobz:mage_entity",
+          "mobz:mage2_entity"
+        ]
+      }
+    ]
+  }
+}

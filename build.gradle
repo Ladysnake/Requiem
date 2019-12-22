@@ -6,11 +6,13 @@ import net.fabricmc.loom.task.RemapJarTask
 import java.time.Year
 
 plugins {
-    id "fabric-loom" version "0.2.7-SNAPSHOT"
-    id "net.minecrell.licenser" version "0.4.1"
-    id "com.matthewprenger.cursegradle" version "1.1.2"
-    id "maven-publish"
-    id "com.wynprice.cursemaven" version "1.2.3"
+    id 'fabric-loom' version '0.2.7-SNAPSHOT'
+    id 'net.minecrell.licenser' version '0.4.1'
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id 'maven-publish'
+    id 'org.ajoberstar.grgit' version '3.1.1'
+    id 'com.github.breadmoirai.github-release' version '2.2.9'
+    id 'com.wynprice.cursemaven' version '1.2.3'
 }
 
 group = rootProject.maven_group
@@ -33,53 +35,77 @@ allprojects {
 
     version = rootProject.mod_version
 
-    /*
-     Adds a JavadocJar task, javax annotations, manifest attributes, curseforge and maven configuration
-     */
-    apply from: "https://raw.githubusercontent.com/NerdHubMC/Gradle-Scripts/master/scripts/fabric/basic_project.gradle"
+    // Adds a few utility methods like getProjectProperty
+    apply from: 'https://raw.githubusercontent.com/NerdHubMC/Gradle-Scripts/master/scripts/utilities.gradle'
 
     sourceSets {
         api
     }
 
     repositories {
+        mavenCentral()
         maven {
-            url "http://maven.fabricmc.net/"
-            name "Fabric"
+            url 'http://maven.fabricmc.net/'
+            name 'Fabric'
         }
+    }
+
+    // ensure that the encoding is set to UTF-8, no matter what the system default is
+    // this fixes some edge cases with special characters not displaying correctly
+    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
     }
 
     jar {
-        from (sourceSets.main.output) {
-            include "fabric.mod.json"
-            expand "version": project.version
+        from(sourceSets.main.output) {
+            include 'fabric.mod.json'
+            expand 'version': project.version
         }
-        from (sourceSets.main.output) {
-            exclude "fabric.mod.json"
+        from(sourceSets.main.output) {
+            exclude 'fabric.mod.json'
         }
     }
 
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        archiveClassifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
     task apiJar(type: Jar, dependsOn: apiClasses) {
-        classifier = 'api-dev'
+        archiveClassifier = 'api-dev'
         from sourceSets.api.allJava
-        from (sourceSets.api.output) {
-            include "fabric.mod.json"
-            expand "version": project.version
+        from(sourceSets.api.output) {
+            include 'fabric.mod.json'
+            expand 'version': project.version
         }
-        from (sourceSets.api.output) {
-            exclude "fabric.mod.json"
+        from(sourceSets.api.output) {
+            exclude 'fabric.mod.json'
         }
     }
 
     task remapApiJar(type: RemapJarTask, dependsOn: project.apiJar) {
-        input = apiJar.archivePath
-        classifier = 'api'
+        input = apiJar.archiveFile
+        archiveClassifier = 'api'
         addNestedDependencies = false
     }
+
+    task apiProdJar(type: Jar, dependsOn: project.remapApiJar) {
+        archiveClassifier = 'api-prod'
+        from(zipTree(remapApiJar.archiveFile)) {
+            exclude '**/*.java'
+            exclude '**/package-info.class'
+        }
+    }
+
+    remapJar.dependsOn(apiProdJar)
 
     javadoc {
         source += sourceSets.api.allJava
     }
+
+    apply from: 'https://raw.githubusercontent.com/NerdHubMC/Gradle-Scripts/master/scripts/fabric/publish/changelog.gradle'
+    apply from: 'https://raw.githubusercontent.com/NerdHubMC/Gradle-Scripts/master/scripts/fabric/publish/maven_base.gradle'
 
     dependencies {
         //to change the versions see the gradle.properties file
@@ -91,18 +117,17 @@ allprojects {
         modApi "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
         // Lazily evaluated callable returning a non-live (unlike a FileCollection) list of files
-        sourceSets.api.compileClasspath += files({sourceSets.main.compileClasspath.toList()})
+        sourceSets.api.compileClasspath += files({ sourceSets.main.compileClasspath.toList() })
 
         compile sourceSets.api.output
-        include files(remapApiJar.archivePath)
+        include files(apiProdJar.archiveFile)
 
+        compileOnly "com.google.code.findbugs:jsr305:3.0.2"
         compileOnly "org.jetbrains:annotations:${jb_annotations_version}"
         compileOnly "org.apiguardian:apiguardian-api:${apiguardian_version}"
 
         testImplementation "org.junit.jupiter:junit-jupiter-api:5.4.0-M1"
     }
-
-    remapJar.dependsOn(remapApiJar)
 
     license {
         header = rootProject.file("code_quality/${project.license_header}_HEADER.txt")
@@ -111,8 +136,8 @@ allprojects {
             header = rootProject.file("code_quality/${project.api_license_header}_HEADER.txt")
         }
 
-        include "**/*.java"
-        exclude "**/package-info.java"
+        include '**/*.java'
+        exclude '**/package-info.java'
 
         //export variables
         ext {
@@ -129,7 +154,10 @@ allprojects {
         publications {
             mavenJava(MavenPublication) {
                 artifact(remapApiJar) {
-                    classifier = "api"
+                    classifier = 'api'
+                }
+                artifact(apiProdJar) {
+                    classifier = 'api-prod'
                 }
             }
         }
@@ -138,33 +166,180 @@ allprojects {
 
 repositories {
     maven {
-        name = "NerdHubMC"
-        url = "https://maven.abusedmaster.xyz"
+        name = 'NerdHubMC'
+        url = 'https://maven.abusedmaster.xyz'
     }
     maven {
-        url "https://jitpack.io"
-        name "JitPack"
+        name = 'CottonMC'
+        url = 'http://server.bbkr.space:8081/artifactory/libs-release'
+    }
+    maven {
+        name = 'JitPack'
+        url = 'https://jitpack.io'
     }
 }
 
 dependencies {
     modApi("com.github.Ladysnake:Satin:${rootProject.satin_version}")
     include "com.github.Ladysnake:Satin:${satin_version}"
-//    modRuntime "io.github.prospector.modmenu:ModMenu:${modmenu_version}"
+    modRuntime ("io.github.prospector:modmenu:${modmenu_version}") {
+        transitive = false
+    }
     modApi "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}"
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}"
     modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
     modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
-//    modImplementation curse.resolve('immersive-portals-mod', 2806496)
+    // libcd
+    modRuntime ("io.github.cottonmc:Jankson-Fabric:${jankson_version}") {
+        transitive = false
+    }
+    modRuntime ("io.github.CottonMC:LibCD:${libcd_version}") {
+        transitive = false
+    }
+    include "io.github.CottonMC:LibCD:${libcd_version}"
+
+    modRuntime curse.resolve('immersive-portals-mod', 2845123)
+    modRuntime curse.resolve('mobz', 2841266)
 }
 
 jar {
-    from "LICENSE-CODE"
-    from "LICENSE-ART"
+    from 'LICENSE-CODE'
+    from 'LICENSE-ART'
 }
 
 license {
-    exclude "**/RayHelper.java"
+    exclude '**/RayHelper.java'
+}
+
+task checkGitStatus() {
+    group = 'publishing'
+    description = 'Checks that the git repository is in a state suitable for release'
+    doLast {
+        if (grgit == null) throw new RuntimeException('No git repository')
+        if (!grgit.status().isClean()) {
+            throw new RuntimeException("Git repository not ready for release (${grgit.status()})")
+        }
+        def currentBranch = grgit.branch.current().getName()
+        if (currentBranch != 'master') {
+            throw new RuntimeException("Need to be on the master branch to release (currently on ${currentBranch})")
+        }
+        grgit.fetch()
+        if (grgit.tag.list().any { it.name == project.version }) {
+            throw new RuntimeException("A tag already exists for ${project.version}")
+        }
+        def status = grgit.branch.status(name: currentBranch)
+        if (status.aheadCount != 0) {
+            throw new RuntimeException('Some commits have not been pushed')
+        }
+        if (status.behindCount != 0) {
+            throw new RuntimeException('Some commits have not been pulled')
+        }
+    }
+}
+
+githubRelease {
+    token "${getProjectProperty('github_releases_token')}"
+    // default owner: last component of maven group
+    // default repo: name of the project
+    tagName = project.version
+    targetCommitish = { grgit.branch.current().name }
+    body = { getChangelog() }
+
+    FilenameFilter filter = { dir, filename -> filename.contains(project.version) && !filename.contains('-dev.jar') }
+    releaseAssets = { jar.destinationDirectory.asFile.get().listFiles filter }
+}
+tasks.githubRelease.dependsOn(checkGitStatus)
+
+curseforge {
+
+    if (project.getProjectProperty('curse_key') != null) {
+        apiKey = project.getProjectProperty('curse_key')
+    }
+
+    if (project.hasProperty('curseforge_id')) {
+        project {
+            id = findProperty('curseforge_id')
+
+            releaseType = project.release_type
+
+            //usually automatically determined by the CurseGradle plugin, but won't work with fabric
+            "${project.curseforge_versions}".split('; ').each {
+                addGameVersion it
+            }
+            addGameVersion 'Fabric'
+
+            mainArtifact(remapJar) {
+                displayName = "${project.name}-${project.version}.jar"
+
+                if (project.hasProperty('cf_requirements') || project.hasProperty('cf_optionals') || project.hasProperty('cf_embeddeds') || project.hasProperty('cf_tools') || project.hasProperty('cf_incompatibles') || project.hasProperty('cf_includes')) {
+                    relations {
+                        if (project.hasProperty('cf_requirements')) {
+                            "${project.cf_requirements}".split('; ').each {
+                                requiredDependency "${it}"
+                            }
+                        }
+                        if (project.hasProperty('cf_optionals')) {
+                            "${project.cf_optionals}".split('; ').each {
+                                optionalDependency "${it}"
+                            }
+                        }
+                        if (project.hasProperty('cf_embeddeds')) {
+                            "${project.cf_embeddeds}".split('; ').each {
+                                embeddedLibrary "${it}"
+                            }
+                        }
+                        if (project.hasProperty('cf_tools')) {
+                            "${project.cf_tools}".split('; ').each {
+                                tool "${it}"
+                            }
+                        }
+                        if (project.hasProperty('cf_incompatibles')) {
+                            "${project.cf_incompatibles}".split('; ').each {
+                                incompatible "${it}"
+                            }
+                        }
+                        if (project.hasProperty('cf_includes')) {
+                            "${project.cf_includes}".split('; ').each {
+                                include "${it}"
+                            }
+                        }
+                    }
+                }
+            }
+
+            changelogType = 'markdown'
+            changelog = project.getChangelogText()
+
+            allprojects {
+                addArtifact(sourcesJar) {
+                    displayName = "${project.name}-${project.version}-sources.jar"
+                }
+                addArtifact(remapApiJar) {
+                    displayName = "${project.name}-${project.version}-api.jar"
+                }
+            }
+
+            subprojects {
+                addArtifact(remapJar) {
+                    displayName = "${project.name}-${project.version}.jar"
+                }
+            }
+
+            afterEvaluate {
+                uploadTask.dependsOn remapSourcesJar
+            }
+        }
+        options {
+            forgeGradleIntegration = false
+        }
+    }
+}
+
+tasks.curseforge.dependsOn(checkGitStatus)
+
+task release(dependsOn: [tasks.publish, tasks.githubRelease, tasks.curseforge]) {
+    group = 'publishing'
+    description = 'Releases a new version to Maven, Github and Curseforge'
 }

@@ -39,7 +39,6 @@ import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.fabricmc.fabric.api.event.player.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -48,9 +47,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
@@ -147,24 +144,6 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             }
             return ActionResult.PASS;
         });
-        UseItemCallback.EVENT.register((player, world, hand) -> {
-            ItemStack heldItem = player.getStackInHand(hand);
-            if (RequiemItemTags.BONES.contains(heldItem.getItem())) {
-                if (!world.isClient) {
-                    MobEntity possessedEntity = ((RequiemPlayer) player).asPossessor().getPossessedEntity();
-                    if (possessedEntity != null && EntityTypeTags.SKELETONS.contains(possessedEntity.getType())) {
-                        if (possessedEntity.getHealth() < possessedEntity.getMaximumHealth()) {
-                            possessedEntity.heal(4.0f);
-                            possessedEntity.playAmbientSound();
-                            heldItem.decrement(1);
-                            player.getItemCooldownManager().set(heldItem.getItem(), 40);
-                        }
-                    }
-                }
-                return new TypedActionResult<>(ActionResult.SUCCESS, heldItem);
-            }
-            return new TypedActionResult<>(ActionResult.PASS, heldItem);
-        });
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (entity instanceof SpiderEntity) {
                 LivingEntity possessed = ((RequiemPlayer)player).asPossessor().getPossessedEntity();
@@ -195,17 +174,20 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     private static void handleRemnantChoiceAction(ServerPlayerEntity player, RemnantType chosenType) {
-        RequiemPlayer requiemPlayer = RequiemPlayer.from(player);
-        DeathSuspender deathSuspender = requiemPlayer.getDeathSuspender();
+        DeathSuspender deathSuspender = RequiemPlayer.from(player).getDeathSuspender();
         if (deathSuspender.isLifeTransient()) {
-            requiemPlayer.become(chosenType);
-            if (chosenType != MORTAL) {
-                player.world.playSound(null, player.getX(), player.getY(), player.getZ(), RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
-                RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(false, false));
-            }
-            RequiemCriteria.MADE_REMNANT_CHOICE.handle(player, chosenType);
+            makeRemnantChoice(player, chosenType);
             deathSuspender.resumeDeath();
         }
+    }
+
+    public static void makeRemnantChoice(ServerPlayerEntity player, RemnantType chosenType) {
+        RequiemPlayer.from(player).become(chosenType);
+        if (chosenType != MORTAL) {
+            player.world.playSound(null, player.getX(), player.getY(), player.getZ(), RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
+            RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(false, false));
+        }
+        RequiemCriteria.MADE_REMNANT_CHOICE.handle(player, chosenType);
     }
 
 }

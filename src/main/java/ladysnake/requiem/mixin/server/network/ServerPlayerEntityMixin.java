@@ -21,6 +21,9 @@ import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.VanillaRequiemPlugin;
+import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
@@ -66,8 +69,13 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
         if (progress == null) {
             Requiem.LOGGER.error("Advancement '{}' is missing", advancementId);
         } else if (!progress.isDone()) {
-            this.getDeathSuspender().suspendDeath(killingBlow);
-            ci.cancel();
+            RemnantType startingRemnantType = world.getGameRules().get(RequiemGamerules.STARTING_SOUL_MODE).get().getRemnantType();
+            if (startingRemnantType == null) {
+                this.getDeathSuspender().suspendDeath(killingBlow);
+                ci.cancel();
+            } else {
+                VanillaRequiemPlugin.makeRemnantChoice((ServerPlayerEntity) (Object) this, startingRemnantType);
+            }
         }
     }
 

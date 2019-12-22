@@ -6,6 +6,7 @@
   "mixins": [
     "advancement.criterion.CriterionsAccessor",
     "block.entity.LecternBlockEntityMixin",
+    "entity.EntityMixin",
     "entity.ItemEntityMixin",
     "entity.LivingEntityMixin",
     "entity.attribute.AbstractEntityAttributeContainerAccessor",
@@ -16,7 +17,6 @@
     "entity.mob.EndermanEntityAccessor",
     "entity.mob.WitchEntityMixin",
     "entity.player.PlayerEntityMixin",
-    "possession.player.HungerManagerMixin",
     "entity.projectile.ProjectileEntityAccessor",
     "item.BowItemMixin",
     "item.ItemMixin",
@@ -29,6 +29,7 @@
     "possession.entity.mob.ZombieEntityMixin",
     "possession.entity.passive.HorseBaseEntityMixin",
     "possession.entity.passive.IronGolemEntityMixin",
+    "possession.player.HungerManagerMixin",
     "possession.player.LivingEntityAccessor",
     "possession.player.PossessorEntityMixin",
     "possession.player.PossessorLivingEntityMixin",
@@ -37,6 +38,7 @@
     "server.network.ServerPlayerEntityMixin",
     "server.network.ServerPlayerInteractionManagerMixin",
     "server.world.ServerWorldMixin",
+    "world.GameRulesAccessor",
     "world.WorldMixin"
   ],
   "injectors": {

@@ -1,4 +1,20 @@
 ------------------------------------------------------
+Version 1.1.1
+------------------------------------------------------
+Additions
+- Added some gamerules
+    - `requiem:showPossessorNameTag`: if set to `true`, shows the name of the possessor above the head of possessed entities. (default: `false`)
+    - `requiem:startingRemnantType`: can be set to `FORCE_REMNANT` or `FORCE_VANILLA` to enforce all players to be respectively a demon or a normal player at the start of the game.
+- Added the `requiem:humans` and `requiem:skeletons` entity type tags for server owners and modpack makers to fine tune mob categories
+- Added compatibility for mobz
+
+Bug Fixes
+- Fixed crash when skeletons attempt to heal using bones
+- Fixed ranged attacks crashing on dedicated servers
+- Fixed husk resurrection crashing on dedicated servers
+
+
+------------------------------------------------------
 Version 1.1.0
 ------------------------------------------------------
 Updated to 1.15

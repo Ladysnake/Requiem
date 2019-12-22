@@ -155,3 +155,7 @@ of the command will be the command executor.
 - `/requiem possession`
     - `/requiem possession start <mob> [player]`: makes the player start possessing a mob, if they are already a soul.
     - `/requiem possession stop [player]`: stops an ongoing possession on the specified player.
+
+On top of those commands, Requiem adds a few gamerules to help customize a server's gameplay:
+    - `requiem:showPossessorNameTag`: if set to `true`, shows the name of the possessor above the head of possessed entities. (default: `false`)
+    - `requiem:startingRemnantType`: can be set to `FORCE_REMNANT` or `FORCE_VANILLA` to enforce all players to be respectively a demon or a normal player at the start of the game. (default: `CHOOSE`)

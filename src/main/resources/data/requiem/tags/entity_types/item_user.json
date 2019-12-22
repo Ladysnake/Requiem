@@ -3,13 +3,9 @@
   "values": [
     "minecraft:enderman",
 
-    "#c:zombies",
-    "#minecraft:skeletons",
+    "#requiem:zombies",
+    "#requiem:skeletons",
+    "#requiem:humans"
 
-    "minecraft:pillager",
-    "minecraft:vex",
-    "minecraft:villager",
-    "minecraft:vindicator",
-    "minecraft:witch"
   ]
 }
