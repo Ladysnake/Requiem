@@ -74,6 +74,7 @@ public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity> {
         try {
             Class<? extends Goal> clazz = ReflectionHelper.findClass("net.minecraft.class_1577$class_1578");
             BEAM_GOAL_FACTORY = clazz.getConstructor(GuardianEntity.class);
+            BEAM_GOAL_FACTORY.setAccessible(true);
         } catch (ClassNotFoundException e) {
             throw new UncheckedReflectionException("Could not find the FireBeamGoal class", e);
         } catch (NoSuchMethodException e) {
