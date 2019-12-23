@@ -6,6 +6,19 @@
     "#requiem:zombies",
     "#requiem:skeletons",
     "#requiem:humans"
-
-  ]
+  ],
+  "libcd": {
+    "entries": [
+      {
+        "when": [
+          {
+            "libcd:mod_loaded": "thehallow"
+          }
+        ],
+        "values": [
+          "thehallow:mummy"
+        ]
+      }
+    ]
+  }
 }
