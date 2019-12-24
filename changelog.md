@@ -1,4 +1,13 @@
 ------------------------------------------------------
+Version 1.1.2
+------------------------------------------------------
+Additions
+- Mummies from The Hallow can now be possessed
+
+Bug Fixes
+- Fixed health bar not being right during possession when Health Overlay is installed
+
+------------------------------------------------------
 Version 1.1.1
 ------------------------------------------------------
 Additions
