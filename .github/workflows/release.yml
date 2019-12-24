@@ -9,7 +9,7 @@ on:
 jobs:
   check_release:
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.nodes.*.name, "release"))
+    if: contains(github.event.pull_request.labels.nodes.*.name, 'release')
     
     steps: 
     - uses: actions/checkout@v1
@@ -22,7 +22,7 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged && contains(github.event.pull_request.labels.nodes.*.name, "release"))
+    if: github.event.pull_request.merged && contains(github.event.pull_request.labels.nodes.*.name, 'release')
 
     steps:
     - uses: actions/checkout@v1
