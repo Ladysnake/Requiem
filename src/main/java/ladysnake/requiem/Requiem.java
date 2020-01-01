@@ -25,7 +25,6 @@ import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.command.RequiemCommand;
-import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.impl.ApiInitializer;
 import ladysnake.requiem.common.impl.movement.MovementAltererManager;
 import ladysnake.requiem.common.impl.remnant.dialogue.ReloadableDialogueRegistry;
@@ -69,7 +68,6 @@ public class Requiem implements ModInitializer {
         RequiemComponents.initComponents();
         SyncServerResourcesCallback.EVENT.register(player -> RequiemNetworking.sendTo(player, RequiemNetworking.createDataSyncMessage(SubDataManagerHelper.getServerHelper())));
         ApiInitializer.setPluginCallback(this::registerPlugin);
-        RequiemGamerules.init();
     }
 
     private void registerSubDataManagers() {

@@ -202,7 +202,7 @@ dependencies {
     }
     include "io.github.CottonMC:LibCD:${libcd_version}"
 
-    modRuntime curse.resolve('immersive-portals-mod', 2845123)
+//    modRuntime curse.resolve('immersive-portals-mod', 2845123)
     modRuntime curse.resolve('mobz', 2841266)
 }
 

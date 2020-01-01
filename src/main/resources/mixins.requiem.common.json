@@ -38,6 +38,7 @@
     "server.network.ServerPlayerEntityMixin",
     "server.world.ServerWorldMixin",
     "world.GameRulesAccessor",
+    "world.GameRulesMixin",
     "world.WorldMixin"
   ],
   "injectors": {
