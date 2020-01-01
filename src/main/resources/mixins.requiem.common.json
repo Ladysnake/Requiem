@@ -36,7 +36,6 @@
     "possession.player.PossessorServerPlayerEntityMixin",
     "server.PlayerManagerMixin",
     "server.network.ServerPlayerEntityMixin",
-    "server.network.ServerPlayerInteractionManagerMixin",
     "server.world.ServerWorldMixin",
     "world.GameRulesAccessor",
     "world.WorldMixin"

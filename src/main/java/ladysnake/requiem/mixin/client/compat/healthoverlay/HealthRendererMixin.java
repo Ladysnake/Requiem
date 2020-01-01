@@ -28,11 +28,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Pseudo
-@Mixin(targets = "terrails.healthoverlay.HealthRenderer")
+@Mixin(targets = "terrails.healthoverlay.HealthRenderer", remap = false)
 public class HealthRendererMixin {
     @Shadow
     private MinecraftClient client;
 
+    @SuppressWarnings("UnresolvedMixinReference")
     @ModifyVariable(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J"), ordinal = 1)
     private int substituteHealth(int health) {
         assert client.player != null;
