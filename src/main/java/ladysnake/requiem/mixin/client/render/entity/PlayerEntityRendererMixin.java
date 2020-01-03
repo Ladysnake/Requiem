@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -159,7 +159,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                     EntityRenderer<? super LivingEntity> possessedRenderer = MinecraftClient.getInstance().getEntityRenderManager().getRenderer(possessed);
                     // If the mob has an arm, render it instead of the player's
                     if (possessedRenderer instanceof FeatureRendererContext) {
-                        Model possessedModel = ((LivingEntityRenderer) possessedRenderer).getModel();
+                        Model possessedModel = ((LivingEntityRenderer<?, ?>) possessedRenderer).getModel();
                         if (possessedModel instanceof BipedEntityModel) {
                             @SuppressWarnings("unchecked") BipedEntityModel<LivingEntity> bipedModel = (BipedEntityModel<LivingEntity>) possessedModel;
                             PlayerEntityModel<AbstractClientPlayerEntity> playerModel = this.getModel();
