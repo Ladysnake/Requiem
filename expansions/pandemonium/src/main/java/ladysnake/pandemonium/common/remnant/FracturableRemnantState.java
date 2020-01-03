@@ -22,6 +22,7 @@ import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.common.impl.anchor.EntityFractureAnchor;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.impl.remnant.MutableRemnantState;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,7 +34,6 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 
 import static ladysnake.pandemonium.common.network.PandemoniumNetworking.createAnchorDamageMessage;
-import static ladysnake.requiem.common.network.RequiemNetworking.sendTo;
 
 public class FracturableRemnantState extends MutableRemnantState {
     @Nullable
@@ -53,12 +53,12 @@ public class FracturableRemnantState extends MutableRemnantState {
                 if (anchorEntity instanceof LivingEntity) {
                     float health = ((LivingEntity) anchorEntity).getHealth();
                     if (health < this.previousAnchorHealth) {
-                        sendTo((ServerPlayerEntity) this.player, createAnchorDamageMessage(false));
+                        RequiemNetworking.sendTo((ServerPlayerEntity) this.player, createAnchorDamageMessage(false));
                     }
                     this.previousAnchorHealth = health;
                 }
             } else if (this.previousAnchorHealth > 0) {
-                sendTo((ServerPlayerEntity) this.player, createAnchorDamageMessage(true));
+                RequiemNetworking.sendTo((ServerPlayerEntity) this.player, createAnchorDamageMessage(true));
                 this.previousAnchorHealth = -1;
             }
         }
