@@ -204,6 +204,7 @@ dependencies {
 
 //    modRuntime curse.resolve('immersive-portals-mod', 2845123)
     modRuntime curse.resolve('mobz', 2841266)
+    modRuntime "io.github.Terrails:Health-Overlay:1.15-SNAPSHOT"
 }
 
 jar {
