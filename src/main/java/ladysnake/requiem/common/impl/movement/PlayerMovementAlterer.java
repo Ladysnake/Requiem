@@ -17,17 +17,18 @@
  */
 package ladysnake.requiem.common.impl.movement;
 
+import io.github.ladysnake.pal.AbilitySource;
+import io.github.ladysnake.pal.Pal;
+import io.github.ladysnake.pal.VanillaAbilities;
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.MovementConfig;
-import net.minecraft.client.network.packet.PlayerAbilitiesS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
-import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.CheckForNull;
@@ -36,6 +37,7 @@ import javax.annotation.Nullable;
 import static ladysnake.requiem.api.v1.entity.MovementConfig.MovementMode.*;
 
 public class PlayerMovementAlterer implements MovementAlterer {
+    public static final AbilitySource MOVEMENT_ALTERER_ABILITIES = Pal.getAbilitySource(Requiem.id("movement_alterer"));
     @Nullable
     private MovementConfig config;
     private final PlayerEntity player;
@@ -53,14 +55,10 @@ public class PlayerMovementAlterer implements MovementAlterer {
 
     @Override
     public void applyConfig() {
-        if (this.config == null) {
-            return;
-        }
-        PlayerAbilities abilities = this.player.abilities;
-        abilities.allowFlying = player.isCreative() || player.isSpectator() || getActualFlightMode(config, player) != DISABLED;
-        abilities.flying &= abilities.allowFlying;
-        if (player instanceof ServerPlayerEntity && ((ServerPlayerEntity) player).networkHandler != null) {
-            ((ServerPlayerEntity) player).networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(abilities));
+        if (getActualFlightMode(config, player) == DISABLED) {
+            MOVEMENT_ALTERER_ABILITIES.revokeFrom(player, VanillaAbilities.ALLOW_FLYING);
+        } else {
+            MOVEMENT_ALTERER_ABILITIES.grantTo(player, VanillaAbilities.ALLOW_FLYING);
         }
     }
 
@@ -125,7 +123,10 @@ public class PlayerMovementAlterer implements MovementAlterer {
         return config.getSwimMode();
     }
 
-    private static MovementConfig.MovementMode getActualFlightMode(MovementConfig config, Entity entity) {
+    private static MovementConfig.MovementMode getActualFlightMode(@Nullable MovementConfig config, Entity entity) {
+        if (config == null) {
+            return DISABLED;
+        }
         if (config.getFlightMode() == UNSPECIFIED) {
             return entity instanceof FlyingEntity ? FORCED : DISABLED;
         }

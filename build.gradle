@@ -191,6 +191,8 @@ dependencies {
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
     modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
+    modImplementation "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
+    include "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
     // libcd
     modRuntime ("io.github.cottonmc:Jankson-Fabric:${jankson_version}") {
         transitive = false
@@ -200,8 +202,9 @@ dependencies {
     }
     include "io.github.CottonMC:LibCD:${libcd_version}"
 
-    modRuntime curse.resolve('immersive-portals-mod', 2845123)
+//    modRuntime curse.resolve('immersive-portals-mod', 2845123)
     modRuntime curse.resolve('mobz', 2841266)
+    modRuntime "io.github.Terrails:Health-Overlay:1.15-SNAPSHOT"
 }
 
 jar {

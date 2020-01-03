@@ -1,13 +1,22 @@
 {
   "minecraft:bat": {
     "fallSpeedModifier": 0.9,
-    "flightMode": "ENABLED",
-    "swimMode": "DISABLED"
+    "flightMode": "FORCED",
+    "swimMode": "DISABLED",
+    "inertia": 0.5,
+    "gravity":0.03
+  },
+  "minecraft:bee": {
+    "fallSpeedModifier": 0.9,
+    "flightMode": "FORCED",
+    "swimMode": "DISABLED",
+    "inertia": 0.8,
+    "gravity": 0.005
   },
   "minecraft:blaze":  {
     "flightMode": "FORCED",
-    "inertia": 0.4,
-    "gravity": 0.03
+    "inertia": 0.95,
+    "gravity": 0.005
   },
   "minecraft:cave_spider": {
     "climbsWalls": true
@@ -47,6 +56,9 @@
   "minecraft:salmon": {
     "swimMode": "FORCED",
     "flopsOnLand": true
+  },
+  "minecraft:slime": {
+    "inertia":0.5
   },
   "minecraft:squid": {
     "swimMode": "FORCED"
