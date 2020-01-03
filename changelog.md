@@ -1,4 +1,14 @@
 ------------------------------------------------------
+Version 1.1.3
+------------------------------------------------------
+Bug Fixes
+- Fixed skeletons being able to consume anything
+- Fixed custom gamerules not loading on servers
+- Fixed possession when using a trans-dimensional teleport command
+- Fixed incompatibility with Shulker Charm disabling soul flight
+- Fixed incompatibility with Health Overlay, causing hearts over 20HP to not be colored
+
+------------------------------------------------------
 Version 1.1.2
 ------------------------------------------------------
 Additions
