@@ -1,4 +1,11 @@
 ------------------------------------------------------
+Version 1.1.4
+------------------------------------------------------
+Bug Fixes
+- Fixed the game crashing whenever an evoker spawned
+- Fixed crash at launch with Health Overlay installed
+
+------------------------------------------------------
 Version 1.1.3
 ------------------------------------------------------
 Bug Fixes

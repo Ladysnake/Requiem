@@ -24,11 +24,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import terrails.healthoverlay.HealthRenderer;
 
 @Pseudo
-@Mixin(targets = "terrails.healthoverlay.HealthRenderer", remap = false)
+@Mixin(value = HealthRenderer.class)
 public class HealthRendererMixin {
-    @SuppressWarnings({"UnresolvedMixinReference", "InvalidMemberReference"})
+    @SuppressWarnings({"InvalidMemberReference"})
     @Redirect(method = {"render", "renderHearts"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getHealth()F"))
     private float substituteHealth(PlayerEntity player) {
         LivingEntity possessed = ((RequiemPlayer)player).asPossessor().getPossessedEntity();
