@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,8 +33,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.Objects;
-
 public class CutsceneDialogueScreen extends Screen {
     public static final int MIN_RENDER_Y = 40;
     public static final int TITLE_GAP = 20;
@@ -63,11 +61,14 @@ public class CutsceneDialogueScreen extends Screen {
     }
 
     private ChoiceResult confirmChoice(int selectedChoice) {
+        assert minecraft != null;
         ChoiceResult result = this.dialogue.choose(this.dialogue.getCurrentChoices().get(selectedChoice));
         if (result == ChoiceResult.END_DIALOGUE) {
-            Objects.requireNonNull(this.minecraft).openScreen(null);
-            ((RequiemPlayer)this.minecraft.player).getDialogueTracker().endDialogue();
-            ((RequiemPlayer) this.minecraft.player).getDeathSuspender().setLifeTransient(false);
+            this.minecraft.openScreen(null);
+            RequiemPlayer player = (RequiemPlayer) this.minecraft.player;
+            assert player != null;
+            player.getDialogueTracker().endDialogue();
+            player.getDeathSuspender().setLifeTransient(false);
         } else if (result == ChoiceResult.ASK_CONFIRMATION) {
             ImmutableList<String> choices = this.dialogue.getCurrentChoices();
             this.minecraft.openScreen(new ConfirmScreen(
@@ -84,6 +85,7 @@ public class CutsceneDialogueScreen extends Screen {
     }
 
     private void onBigChoiceMade(boolean yes) {
+        assert minecraft != null;
         if (this.confirmChoice(yes ? 0 : 1) == ChoiceResult.DEFAULT) {
             this.minecraft.openScreen(this);
         }
@@ -137,6 +139,7 @@ public class CutsceneDialogueScreen extends Screen {
 
     @Override
     public void render(int mouseX, int mouseY, float tickDelta) {
+        assert minecraft != null;
         if (!ZaWorldFx.INSTANCE.hasFinishedAnimation()) {
             return;
         }

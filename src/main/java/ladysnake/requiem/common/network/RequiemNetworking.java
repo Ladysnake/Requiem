@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.Packet;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.packet.CustomPayloadC2SPacket;
 import net.minecraft.server.world.ServerWorld;
@@ -67,11 +68,11 @@ public class RequiemNetworking {
         MinecraftClient.getInstance().player.networkHandler.sendPacket(message);
     }
 
-    public static void sendTo(ServerPlayerEntity player, CustomPayloadS2CPacket message) {
+    public static void sendTo(ServerPlayerEntity player, Packet<?> message) {
         sendToPlayer(player, message);
     }
 
-    public static void sendToAllTrackingIncluding(Entity tracked, CustomPayloadS2CPacket message) {
+    public static void sendToAllTrackingIncluding(Entity tracked, Packet<?> message) {
         if (tracked.world instanceof ServerWorld) {
             PlayerStream.watching(tracked).forEach(p -> sendToPlayer((ServerPlayerEntity) p, message));
             if (tracked instanceof ServerPlayerEntity) {
@@ -80,7 +81,7 @@ public class RequiemNetworking {
         }
     }
 
-    private static void sendToPlayer(ServerPlayerEntity player, CustomPayloadS2CPacket message) {
+    private static void sendToPlayer(ServerPlayerEntity player, Packet<?> message) {
         if (player.networkHandler != null) {
             player.networkHandler.sendPacket(message);
         }

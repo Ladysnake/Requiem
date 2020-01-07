@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ public class ClosedSpaceDetector {
     private FloodfillQueue<BlockPos> toScan = new FloodfillQueue<>();
     private int counter;
     // We do initialize it
-    @SuppressWarnings("NullableProblems")
+    @SuppressWarnings("NotNullFieldNotInitialized")
     private DimensionType scanDimension;
     private boolean scanning;
 

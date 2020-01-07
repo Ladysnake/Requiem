@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -98,6 +99,16 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
 
     @Inject(method = "changeDimension", at = @At(value = "HEAD", shift = At.Shift.AFTER))   // Let cancelling mixins do their job
     private void changePossessedDimension(DimensionType dim, CallbackInfoReturnable<Entity> info) {
+        prepareDimensionChange();
+    }
+
+    @Inject(method = "teleport", at = @At(value = "HEAD", shift = At.Shift.AFTER))   // Let cancelling mixins do their job
+    private void changePossessedDimension(ServerWorld targetWorld, double x, double y, double z, float yaw, float pitch, CallbackInfo ci) {
+        prepareDimensionChange();
+    }
+
+    @Unique
+    private void prepareDimensionChange() {
         PossessionComponent possessionComponent = this.asPossessor();
         if (possessionComponent.isPossessing()) {
             MobEntity current = possessionComponent.getPossessedEntity();
@@ -110,6 +121,12 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
 
     @Inject(method = "changeDimension", at = @At(value = "RETURN", ordinal = 1))
     private void onTeleportDone(DimensionType destination, CallbackInfoReturnable<Entity> cir) {
+        sendToAllTrackingIncluding(this, createCorporealityMessage(this));
+        spawnResurrectionEntity();
+    }
+
+    @Inject(method = "teleport", at = @At(value = "RETURN"))
+    private void onTeleportDone(ServerWorld targetWorld, double x, double y, double z, float yaw, float pitch, CallbackInfo ci) {
         sendToAllTrackingIncluding(this, createCorporealityMessage(this));
         spawnResurrectionEntity();
     }

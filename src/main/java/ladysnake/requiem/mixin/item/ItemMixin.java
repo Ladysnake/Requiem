@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ public abstract class ItemMixin {
                     cir.setReturnValue(new TypedActionResult<>(ActionResult.FAIL, heldStack));
                 }
             } else if (RequiemEntityTypeTags.SKELETONS.contains(possessedEntity.getType())) {
-                if (possessedEntity.getHealth() < possessedEntity.getMaximumHealth()) {
+                if (RequiemItemTags.BONES.contains(heldStack.getItem()) && possessedEntity.getHealth() < possessedEntity.getMaximumHealth()) {
                     possessedEntity.heal(4.0f);
                     possessedEntity.playAmbientSound();
                     heldStack.decrement(1);

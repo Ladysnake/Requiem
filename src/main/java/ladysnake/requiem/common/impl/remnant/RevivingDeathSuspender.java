@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,10 @@
  */
 package ladysnake.requiem.common.impl.remnant;
 
+import io.github.ladysnake.pal.AbilitySource;
+import io.github.ladysnake.pal.Pal;
+import io.github.ladysnake.pal.VanillaAbilities;
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.common.RequiemComponents;
 import ladysnake.requiem.common.util.DamageSourceSerialization;
@@ -32,6 +36,7 @@ import net.minecraft.util.PacketByteBuf;
 import javax.annotation.Nullable;
 
 public class RevivingDeathSuspender implements DeathSuspender, EntitySyncedComponent {
+    public static final AbilitySource DEATH_SUSPENSION_ABILITIES = Pal.getAbilitySource(Requiem.id("death_suspension"));
     private boolean lifeTransient;
     private PlayerEntity player;
     @Nullable
@@ -48,7 +53,7 @@ public class RevivingDeathSuspender implements DeathSuspender, EntitySyncedCompo
         }
         this.player.setHealth(1f);
         this.player.setInvulnerable(true);
-        this.player.abilities.invulnerable = true;
+        Pal.grantAbility(player, VanillaAbilities.INVULNERABLE, DEATH_SUSPENSION_ABILITIES);
         this.deathCause = deathCause;
         this.setLifeTransient(true);
         this.markDirty();
@@ -67,7 +72,7 @@ public class RevivingDeathSuspender implements DeathSuspender, EntitySyncedCompo
     @Override
     public void resumeDeath() {
         this.player.setInvulnerable(false);
-        this.player.abilities.invulnerable = false;
+        Pal.revokeAbility(player, VanillaAbilities.INVULNERABLE, DEATH_SUSPENSION_ABILITIES);
         this.player.setHealth(0f);
         this.setLifeTransient(false);
         this.markDirty();

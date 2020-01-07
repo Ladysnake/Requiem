@@ -35,7 +35,7 @@ public class FractureKeyBinding {
     public static final FabricKeyBinding etherealFractureKey = FabricKeyBinding.Builder.create(
             ETHEREAL_FRACTURE,
             InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_WORLD_2,
+            GLFW.GLFW_KEY_WORLD_2,  // '<'
             "key.categories.gameplay"
     ).build();
 

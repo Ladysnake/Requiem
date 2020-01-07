@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +17,15 @@
  */
 package ladysnake.requiem.common.impl.remnant;
 
+import io.github.ladysnake.pal.AbilitySource;
+import io.github.ladysnake.pal.Pal;
+import io.github.ladysnake.pal.VanillaAbilities;
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
 import ladysnake.requiem.common.remnant.ClosedSpaceDetector;
-import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -33,6 +36,7 @@ import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTracki
 
 public class MutableRemnantState implements RemnantState {
     public static final String ETHEREAL_TAG = "ethereal";
+    public static final AbilitySource SOUL_STATE = Pal.getAbilitySource(Requiem.id("soul_state"));
 
     private final RemnantType type;
     protected final PlayerEntity player;
@@ -60,16 +64,13 @@ public class MutableRemnantState implements RemnantState {
     public void setSoul(boolean incorporeal) {
         if (this.ethereal != incorporeal) {
             this.ethereal = incorporeal;
-            PlayerAbilities abilities = this.player.abilities;
             SerializableMovementConfig config;
             if (incorporeal) {
                 config = SerializableMovementConfig.SOUL;
-                abilities.invulnerable = true;
+                Pal.grantAbility(player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
             } else {
                 config = null;
-                abilities.allowFlying = this.player.isCreative();
-                abilities.flying &= abilities.allowFlying;
-                abilities.invulnerable = this.player.isCreative();
+                Pal.revokeAbility(player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
                 ((RequiemPlayer)this.player).asPossessor().stopPossessing(false);
             }
             ((RequiemPlayer)this.player).getMovementAlterer().setConfig(config);

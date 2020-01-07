@@ -72,7 +72,7 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
     static {
         try {
             Class<? extends SpellcastingIllagerEntity.CastSpellGoal> clazz = ReflectionHelper.findClass("net.minecraft.class_1564$class_1567");
-            VEX_GOAL_FACTORY = clazz.getConstructor(EvokerEntity.class);
+            VEX_GOAL_FACTORY = clazz.getDeclaredConstructor(EvokerEntity.class);
             VEX_GOAL_FACTORY.setAccessible(true);
         } catch (ClassNotFoundException e) {
             throw new UncheckedReflectionException("Could not find the SummonVexGoal class", e);

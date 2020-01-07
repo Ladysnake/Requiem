@@ -9,6 +9,7 @@ plugins {
     id 'fabric-loom' version '0.2.7-SNAPSHOT'
     id 'net.minecrell.licenser' version '0.4.1'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id "com.jfrog.bintray" version '1.8.4'
     id 'maven-publish'
     id 'org.ajoberstar.grgit' version '3.1.1'
     id 'com.github.breadmoirai.github-release' version '2.2.9'
@@ -166,6 +167,10 @@ allprojects {
 
 repositories {
     maven {
+        name = 'Ladysnake Libs'
+        url = 'https://dl.bintray.com/ladysnake/libs'
+    }
+    maven {
         name = 'NerdHubMC'
         url = 'https://maven.abusedmaster.xyz'
     }
@@ -191,6 +196,8 @@ dependencies {
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
     modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
+    modImplementation "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
+    include "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
     // libcd
     modRuntime ("io.github.cottonmc:Jankson-Fabric:${jankson_version}") {
         transitive = false
@@ -200,8 +207,9 @@ dependencies {
     }
     include "io.github.CottonMC:LibCD:${libcd_version}"
 
-    modRuntime curse.resolve('immersive-portals-mod', 2845123)
+//    modRuntime curse.resolve('immersive-portals-mod', 2845123)
     modRuntime curse.resolve('mobz', 2841266)
+    modCompileOnly "io.github.Terrails:Health-Overlay:1.15-SNAPSHOT"
 }
 
 jar {
@@ -251,6 +259,26 @@ githubRelease {
     releaseAssets = { jar.destinationDirectory.asFile.get().listFiles filter }
 }
 tasks.githubRelease.dependsOn(checkGitStatus)
+
+bintray {
+    user = project.findProperty('bintray_user')
+    key = project.findProperty('bintray_api_key')
+    publications = ['mavenJava']
+    publish = true //[Default: false] Whether version should be auto published after an upload
+    pkg {
+        repo = 'mods'
+        name = project.name
+        userOrg = 'ladysnake'
+        version {
+            name = project.version
+            vcsTag = project.version
+            released  = new Date()
+        }
+    }
+}
+
+bintrayUpload.dependsOn(checkGitStatus)
+bintrayUpload.dependsOn(build)
 
 curseforge {
 
@@ -312,15 +340,6 @@ curseforge {
             changelogType = 'markdown'
             changelog = project.getChangelogText()
 
-            allprojects {
-                addArtifact(sourcesJar) {
-                    displayName = "${project.name}-${project.version}-sources.jar"
-                }
-                addArtifact(remapApiJar) {
-                    displayName = "${project.name}-${project.version}-api.jar"
-                }
-            }
-
             subprojects {
                 addArtifact(remapJar) {
                     displayName = "${project.name}-${project.version}.jar"
@@ -339,7 +358,7 @@ curseforge {
 
 tasks.curseforge.dependsOn(checkGitStatus)
 
-task release(dependsOn: [tasks.publish, tasks.githubRelease, tasks.curseforge]) {
+task release(dependsOn: [tasks.clean, tasks.publish, tasks.githubRelease, tasks.bintrayUpload, tasks.curseforge]) {
     group = 'publishing'
     description = 'Releases a new version to Maven, Github and Curseforge'
 }

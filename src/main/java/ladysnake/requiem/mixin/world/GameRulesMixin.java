@@ -15,14 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.common.util.reflection;
+package ladysnake.requiem.mixin.world;
 
-public class UnableToFindFieldException extends ReflectionException {
-    public UnableToFindFieldException(String message, Throwable cause) {
-        super(message, cause);
-    }
+import ladysnake.requiem.common.gamerule.RequiemGamerules;
+import net.minecraft.world.GameRules;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-    public UnableToFindFieldException(Throwable cause) {
-        super(cause);
+@Mixin(GameRules.class)
+public class GameRulesMixin {
+    @SuppressWarnings("UnresolvedMixinReference")
+    @Inject(method = "<clinit>", at = @At("RETURN"))
+    private static void initRequiemGamerules(CallbackInfo ci) {
+        RequiemGamerules.init();
     }
 }
