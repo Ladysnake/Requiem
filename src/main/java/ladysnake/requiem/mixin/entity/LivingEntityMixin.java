@@ -19,11 +19,14 @@ package ladysnake.requiem.mixin.entity;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.MobResurrectable;
+import ladysnake.requiem.common.util.DamageHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.world.GameRules;
@@ -32,32 +35,91 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
 
-    @Shadow public abstract ItemStack getStackInHand(Hand hand_1);
+    @Shadow
+    public abstract ItemStack getStackInHand(Hand hand);
 
-    @Shadow public abstract Hand getActiveHand();
+    @Shadow
+    public abstract Hand getActiveHand();
 
-    @Shadow public abstract void setStackInHand(Hand hand_1, ItemStack itemStack_1);
+    @Shadow
+    public abstract void setStackInHand(Hand hand, ItemStack stack);
+
+    @Shadow
+    protected int playerHitTimer;
+
+    @Shadow
+    protected boolean dead;
+
+    @Shadow
+    protected PlayerEntity attackingPlayer;
+
+    @Shadow
+    public int deathTime;
 
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
 
+    /**
+     * Allows mobs to drop player-restricted loot when wielding a humanity weapon
+     */
+    @ModifyVariable(method = "drop", at = @At(value = "HEAD"), argsOnly = true)
+    private DamageSource enableHumanity(DamageSource deathCause) {
+        if (DamageHelper.getHumanityLevel(deathCause) > 0) {
+            assert deathCause.getAttacker() != null : "Humanity implies attacker";
+            PlayerEntity possessor = ((Possessable) deathCause.getAttacker()).getPossessor();
+            if (possessor != null) {
+                this.playerHitTimer = 100;
+                this.attackingPlayer = possessor;
+                DamageSource proxiedDamage = DamageHelper.createProxiedDamage(deathCause, possessor);
+                if (proxiedDamage != null) {
+                    return proxiedDamage;
+                }
+            }
+        }
+        return deathCause;
+    }
+
     @Inject(
-            method = "drop",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;dropInventory()V"),
-            cancellable = true
+        method = "drop",
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;dropInventory()V"),
+        cancellable = true
     )
     private void fireDropEvent(DamageSource deathCause, CallbackInfo ci) {
-        if (LivingEntityDropCallback.EVENT.invoker().onEntityDrop((LivingEntity)(Object)this, deathCause)) {
+        if (LivingEntityDropCallback.EVENT.invoker().onEntityDrop((LivingEntity) (Object) this, deathCause)) {
             ci.cancel();
         } else if (this instanceof MobResurrectable) {
             ((MobResurrectable) this).spawnResurrectionEntity();
         }
+        // prevent xp drops if not enough humanity
+        if (DamageHelper.getHumanityLevel(deathCause) == 1) {
+            this.playerHitTimer = 0;
+        }
+    }
+
+    /**
+     * Marks possessed entities as the attacker for any damage caused by their possessor,
+     * or the opposite when the killer wields a Humanity enchanted weapon.
+     *
+     * @param source damage dealt
+     * @param amount amount of damage dealt
+     */
+    @ModifyVariable(method = "damage", at = @At("HEAD"), argsOnly = true)
+    private DamageSource proxyDamage(DamageSource source, DamageSource s, float amount) {
+        Entity attacker = source.getAttacker();
+        if (attacker instanceof LivingEntity) {
+            DamageSource newSource = DamageHelper.tryProxyDamage(source, (LivingEntity) attacker);
+            if (newSource != null) {
+                return newSource;
+            }
+        }
+        return source;
     }
 
     /**
@@ -66,7 +128,7 @@ public abstract class LivingEntityMixin extends Entity {
      */
     @Inject(method = "consumeItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;clearActiveItem()V"))
     private void dropUsedItemAsSoul(CallbackInfo ci) {
-        if (this instanceof RequiemPlayer && ((RequiemPlayer) this).asRemnant().isIncorporeal()&& !world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
+        if (this instanceof RequiemPlayer && ((RequiemPlayer) this).asRemnant().isIncorporeal() && !world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
             this.dropStack(this.getStackInHand(this.getActiveHand()));
             this.setStackInHand(this.getActiveHand(), ItemStack.EMPTY);
         }

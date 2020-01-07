@@ -21,9 +21,6 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.EntityDamageSource;
-import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -65,32 +62,6 @@ public abstract class PossessorLivingEntityMixin extends Entity {
             return ((RequiemPlayer) this).getMovementAlterer().getSwimmingAcceleration(speedAmount);
         }
         return speedAmount;
-    }
-
-    /**
-     * Marks possessed entities as the attacker for any damage caused by their possessor
-     *
-     * @param source damage dealt
-     * @param amount amount of damage dealt
-     * @param info   callback
-     */
-    @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
-    private void proxyDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
-        if (source.getAttacker() instanceof RequiemPlayer) {
-            Entity possessed = ((RequiemPlayer) source.getAttacker()).asPossessor().getPossessedEntity();
-            if (possessed != null) {
-                DamageSource newSource = null;
-                if (source instanceof ProjectileDamageSource) {
-                    newSource = new ProjectileDamageSource(source.getName(), source.getSource(), possessed);
-                } else if (source instanceof EntityDamageSource) {
-                    newSource = new EntityDamageSource(source.getName(), possessed);
-                }
-                if (newSource != null) {
-                    ((LivingEntity) (Object) this).damage(newSource, amount);
-                    info.setReturnValue(true);
-                }
-            }
-        }
     }
 
     @Inject(method = "collides", at = @At("RETURN"), cancellable = true)

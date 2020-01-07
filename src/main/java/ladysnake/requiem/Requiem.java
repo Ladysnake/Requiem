@@ -25,6 +25,7 @@ import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.command.RequiemCommand;
+import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.impl.ApiInitializer;
 import ladysnake.requiem.common.impl.movement.MovementAltererManager;
 import ladysnake.requiem.common.impl.remnant.dialogue.ReloadableDialogueRegistry;
@@ -57,6 +58,7 @@ public class Requiem implements ModInitializer {
         ApiInitializer.init();
         RequiemCriteria.init();
         RequiemBlocks.init();
+        RequiemEnchantments.init();
         RequiemItems.init();
         RequiemRegistries.init();
         RequiemSoundEvents.init();
