@@ -167,6 +167,10 @@ allprojects {
 
 repositories {
     maven {
+        name = 'Ladysnake Libs'
+        url = 'https://dl.bintray.com/ladysnake/libs'
+    }
+    maven {
         name = 'NerdHubMC'
         url = 'https://maven.abusedmaster.xyz'
     }

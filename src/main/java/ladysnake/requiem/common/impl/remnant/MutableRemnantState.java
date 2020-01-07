@@ -67,10 +67,10 @@ public class MutableRemnantState implements RemnantState {
             SerializableMovementConfig config;
             if (incorporeal) {
                 config = SerializableMovementConfig.SOUL;
-                SOUL_STATE.grantTo(player, VanillaAbilities.INVULNERABLE);
+                Pal.grantAbility(player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
             } else {
                 config = null;
-                SOUL_STATE.revokeFrom(player, VanillaAbilities.INVULNERABLE);
+                Pal.revokeAbility(player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
                 ((RequiemPlayer)this.player).asPossessor().stopPossessing(false);
             }
             ((RequiemPlayer)this.player).getMovementAlterer().setConfig(config);

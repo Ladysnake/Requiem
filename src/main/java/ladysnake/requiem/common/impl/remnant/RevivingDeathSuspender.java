@@ -53,7 +53,7 @@ public class RevivingDeathSuspender implements DeathSuspender, EntitySyncedCompo
         }
         this.player.setHealth(1f);
         this.player.setInvulnerable(true);
-        DEATH_SUSPENSION_ABILITIES.grantTo(player, VanillaAbilities.INVULNERABLE);
+        Pal.grantAbility(player, VanillaAbilities.INVULNERABLE, DEATH_SUSPENSION_ABILITIES);
         this.deathCause = deathCause;
         this.setLifeTransient(true);
         this.markDirty();
@@ -72,7 +72,7 @@ public class RevivingDeathSuspender implements DeathSuspender, EntitySyncedCompo
     @Override
     public void resumeDeath() {
         this.player.setInvulnerable(false);
-        DEATH_SUSPENSION_ABILITIES.revokeFrom(player, VanillaAbilities.INVULNERABLE);
+        Pal.revokeAbility(player, VanillaAbilities.INVULNERABLE, DEATH_SUSPENSION_ABILITIES);
         this.player.setHealth(0f);
         this.setLifeTransient(false);
         this.markDirty();

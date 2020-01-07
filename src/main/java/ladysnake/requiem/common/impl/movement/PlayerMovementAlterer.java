@@ -56,9 +56,9 @@ public class PlayerMovementAlterer implements MovementAlterer {
     @Override
     public void applyConfig() {
         if (getActualFlightMode(config, player) == DISABLED) {
-            MOVEMENT_ALTERER_ABILITIES.revokeFrom(player, VanillaAbilities.ALLOW_FLYING);
+            Pal.revokeAbility(player, VanillaAbilities.ALLOW_FLYING, MOVEMENT_ALTERER_ABILITIES);
         } else {
-            MOVEMENT_ALTERER_ABILITIES.grantTo(player, VanillaAbilities.ALLOW_FLYING);
+            Pal.grantAbility(player, VanillaAbilities.ALLOW_FLYING, MOVEMENT_ALTERER_ABILITIES);
         }
     }
 
