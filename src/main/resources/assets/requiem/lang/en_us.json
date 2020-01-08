@@ -4,6 +4,8 @@
   "requiem:advancements.adventure.the_choice.title": "A devilish conundrum",
   "requiem:advancements.adventure.the_choice.description": "Choose between an ordinary life and a bizarre eternity",
 
+  "requiem:argument.entity.options.possessor.description": "Entities possessed by",
+
   "requiem:commands.query.success.other": "%2$s is %1$s",
   "requiem:commands.query.success.self": "You are %s",
   "requiem:commands.ethereal.set.fail": "Failed to make %s ethereal as they are Mortal",
