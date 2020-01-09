@@ -20,61 +20,80 @@ package ladysnake.requiem.common.impl;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.RequiemPlugin;
+import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
+import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
+import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.internal.ApiInternals;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
+import ladysnake.requiem.common.impl.ability.DefaultedMobAbilityRegistry;
 import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityConfig;
 import ladysnake.requiem.common.impl.data.CommonSubDataManagerHelper;
 import ladysnake.requiem.common.impl.data.ServerSubDataManagerHelper;
+import ladysnake.requiem.common.impl.movement.MovementAltererManager;
+import ladysnake.requiem.common.impl.remnant.SoulbindingRegistryImpl;
+import ladysnake.requiem.common.impl.remnant.dialogue.DialogueManager;
+import ladysnake.requiem.common.util.reflection.ReflectionHelper;
 import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.world.World;
 import org.apiguardian.api.API;
 
 import java.lang.reflect.Field;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.apiguardian.api.API.Status.INTERNAL;
 
 @API(status = INTERNAL)
-public class ApiInitializer {
+public final class ApiInitializer {
 
-    public static void init(Predicate<StatusEffect> soulboundStatusEffectPredicate) {
+    public static void init() {
         try {
-            setAbilityBuilderFactory(ImmutableMobAbilityConfig.Builder::new);
-            setSubDataManagerHelper(new ServerSubDataManagerHelper(), true);
-            setSubDataManagerHelper(new CommonSubDataManagerHelper(), false);
-            setSoulboundStatusEffectPredicate(soulboundStatusEffectPredicate);
+            ReflectionHelper.<Supplier<MobAbilityConfig.Builder<?>>>setField(ApiInternals.class.getDeclaredField("abilityBuilderFactory"),
+                ImmutableMobAbilityConfig.Builder::new);
+            ReflectionHelper.<SubDataManagerHelper>setField(ApiInternals.class.getDeclaredField("serverSubDataManagerHelper"),
+                new ServerSubDataManagerHelper());
+            ReflectionHelper.<SubDataManagerHelper>setField(ApiInternals.class.getDeclaredField("clientSubDataManagerHelper"),
+                new CommonSubDataManagerHelper());
+            ReflectionHelper.<MobAbilityRegistry>setField(ApiInternals.class.getDeclaredField("mobAbilityRegistry"),
+                new DefaultedMobAbilityRegistry(ImmutableMobAbilityConfig.DEFAULT));
+            ReflectionHelper.<SoulbindingRegistry>setField(ApiInternals.class.getDeclaredField("soulbindingRegistry"),
+                new SoulbindingRegistryImpl());
+            initSubDataManagers();
         } catch (IllegalAccessException | NoSuchFieldException e) {
             Requiem.LOGGER.error("Could not initialize the mod's API");
             throw new UncheckedReflectionException(e);
         }
     }
 
-    private static void setAbilityBuilderFactory(Supplier<MobAbilityConfig.Builder<?>> factory) throws IllegalAccessException, NoSuchFieldException {
-        Field f = ApiInternals.class.getDeclaredField("abilityBuilderFactory");
-        f.setAccessible(true);
-        f.set(null, factory);
-    }
-
-    private static void setSubDataManagerHelper(SubDataManagerHelper helper, boolean server) throws IllegalAccessException, NoSuchFieldException {
-        Field f = server ? ApiInternals.class.getDeclaredField("serverSubDataManagerHelper") : ApiInternals.class.getDeclaredField("clientSubDataManagerHelper");
-        f.setAccessible(true);
-        f.set(null, helper);
-    }
-
-    private static void setSoulboundStatusEffectPredicate(Predicate<StatusEffect> predicate) throws IllegalAccessException, NoSuchFieldException {
-        Field f = ApiInternals.class.getDeclaredField("soulboundStatusEffectPredicate");
-        f.setAccessible(true);
-        f.set(null, predicate);
+    private static void initSubDataManagers() throws IllegalAccessException, NoSuchFieldException {
+        // Dialogues
+        DialogueManager serverDialogueManager = new DialogueManager();
+        DialogueManager clientDialogueManager = new DialogueManager();
+        SubDataManagerHelper.getServerHelper().registerSubDataManager(serverDialogueManager);
+        SubDataManagerHelper.getClientHelper().registerSubDataManager(clientDialogueManager);
+        ReflectionHelper.<Function<World, DialogueRegistry>>setField(
+            ApiInternals.class.getDeclaredField("dialogueRegistryGetter"),
+            w -> w == null || !w.isClient ? serverDialogueManager : clientDialogueManager
+        );
+        // Movement alterers
+        MovementAltererManager serverMovementAltererManager = new MovementAltererManager();
+        MovementAltererManager clientMovementAltererManager = new MovementAltererManager();
+        SubDataManagerHelper.getServerHelper().registerSubDataManager(serverMovementAltererManager);
+        SubDataManagerHelper.getClientHelper().registerSubDataManager(clientMovementAltererManager);
+        ReflectionHelper.<Function<World, MovementRegistry>>setField(
+            ApiInternals.class.getDeclaredField("dialogueRegistryGetter"),
+            w -> w == null || !w.isClient ? serverMovementAltererManager : clientMovementAltererManager
+        );
     }
 
     public static void discoverEntryPoints() {
         FabricLoader.getInstance()
-                .getEntrypoints(RequiemApi.ENTRYPOINT_KEY, RequiemPlugin.class)
-                .forEach(RequiemApi::registerPlugin);
+            .getEntrypoints(RequiemApi.ENTRYPOINT_KEY, RequiemPlugin.class)
+            .forEach(RequiemApi::registerPlugin);
     }
 
     public static void setPluginCallback(Consumer<RequiemPlugin> callback) {
@@ -88,5 +107,4 @@ public class ApiInitializer {
             throw new UncheckedReflectionException("Failed to load plugins", e);
         }
     }
-
 }

@@ -18,8 +18,8 @@
 package ladysnake.requiem.mixin.possession.entity;
 
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
+import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityController;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -57,7 +57,7 @@ public abstract class PossessableMobEntityMixin extends LivingEntity implements 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void initAbilities(CallbackInfo ci) {
         if (world != null && !world.isClient) {
-            this.abilityController = new ImmutableMobAbilityController<>(RequiemRegistries.ABILITIES.getConfig((MobEntity)(Object)this), (MobEntity & Possessable)(Object)this);
+            this.abilityController = new ImmutableMobAbilityController<>(MobAbilityRegistry.instance().getConfig((MobEntity)(Object)this), (MobEntity & Possessable)(Object)this);
         }
     }
 

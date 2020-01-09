@@ -25,7 +25,7 @@ import net.minecraft.util.profiler.Profiler;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public interface SubDataManager<T> extends SimpleResourceReloadListener<T>, TransientComponent {
+public interface SubDataManager<T> extends SimpleResourceReloadListener<T> {
     @Override
     default CompletableFuture<Void> apply(T data, ResourceManager manager, Profiler profiler, Executor executor) {
         return CompletableFuture.runAsync(() -> apply(data), executor);

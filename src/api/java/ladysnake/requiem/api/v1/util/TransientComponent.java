@@ -19,10 +19,15 @@ package ladysnake.requiem.api.v1.util;
 
 import nerdhub.cardinal.components.api.component.Component;
 import net.minecraft.nbt.CompoundTag;
+import org.apiguardian.api.API;
 
 /**
  * A component that has no data to save, or has its data saved through external systems
+ *
+ * @deprecated no reason to exist in Requiem API. Make your own if you want.
  */
+@Deprecated
+@API(status = API.Status.DEPRECATED, since = "1.2.0")
 public interface TransientComponent extends Component {
     @Override
     default void fromTag(CompoundTag tag) {

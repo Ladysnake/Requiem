@@ -17,10 +17,14 @@
  */
 package ladysnake.requiem.api.v1.entity.ability;
 
+import ladysnake.requiem.api.v1.internal.ApiInternals;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 
 public interface MobAbilityRegistry {
+    static MobAbilityRegistry instance() {
+        return ApiInternals.getMobAbilityRegistry();
+    }
 
     <E extends MobEntity> MobAbilityConfig<? super E> getConfig(E entity);
 

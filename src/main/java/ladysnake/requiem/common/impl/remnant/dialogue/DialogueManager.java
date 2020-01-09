@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public final class ReloadableDialogueRegistry implements SubDataManager<Map<Identifier, DialogueStateMachine>>, DialogueRegistry {
+public final class DialogueManager implements SubDataManager<Map<Identifier, DialogueStateMachine>>, DialogueRegistry {
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .disableHtmlEscaping()
@@ -94,7 +94,7 @@ public final class ReloadableDialogueRegistry implements SubDataManager<Map<Iden
     @Override
     public DialogueAction getAction(Identifier actionId) {
         if (!this.actions.containsKey(actionId)) {
-            Requiem.LOGGER.warn("[DialogueTracker] Unknown action {}", actionId);
+            Requiem.LOGGER.warn("[Requiem] Unknown dialogue action {}", actionId);
             return DialogueAction.NONE;
         }
         return this.actions.get(actionId);

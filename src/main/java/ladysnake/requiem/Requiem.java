@@ -18,7 +18,10 @@
 package ladysnake.requiem;
 
 import ladysnake.requiem.api.v1.RequiemPlugin;
+import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
+import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.event.minecraft.SyncServerResourcesCallback;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.common.RequiemComponents;
 import ladysnake.requiem.common.RequiemRegistries;
@@ -28,25 +31,18 @@ import ladysnake.requiem.common.command.RequiemCommand;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.impl.ApiInitializer;
-import ladysnake.requiem.common.impl.movement.MovementAltererManager;
-import ladysnake.requiem.common.impl.remnant.dialogue.ReloadableDialogueRegistry;
 import ladysnake.requiem.common.impl.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.network.ServerMessageHandling;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
-import nerdhub.cardinal.components.api.event.WorldComponentCallback;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.registry.CommandRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class Requiem implements ModInitializer {
     public static final String MOD_ID = "requiem";
@@ -56,12 +52,9 @@ public class Requiem implements ModInitializer {
         return new Identifier(MOD_ID, path);
     }
 
-    private ReloadableDialogueRegistry dialogueManager;
-    private Set<StatusEffect> soulboundStatusEffects = new HashSet<>();
-
     @Override
     public void onInitialize() {
-        ApiInitializer.init(soulboundStatusEffects::contains);
+        ApiInitializer.init();
         RequiemCriteria.init();
         RequiemBlocks.init();
         RequiemEnchantments.init();
@@ -69,40 +62,20 @@ public class Requiem implements ModInitializer {
         RequiemRegistries.init();
         RequiemSoundEvents.init();
         RequiemStatusEffects.init();
+        RequiemComponents.init();
         ServerMessageHandling.init();
         ApiInitializer.discoverEntryPoints();
         CommandRegistry.INSTANCE.register(false, RequiemCommand::register);
-        this.registerSubDataManagers();
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(ResurrectionDataLoader.INSTANCE);
-        RequiemComponents.initComponents();
         SyncServerResourcesCallback.EVENT.register(player -> RequiemNetworking.sendTo(player, RequiemNetworking.createDataSyncMessage(SubDataManagerHelper.getServerHelper())));
         ApiInitializer.setPluginCallback(this::registerPlugin);
-    }
-
-    private void registerSubDataManagers() {
-        // Dialogues
-        ReloadableDialogueRegistry serverDialogueManager = new ReloadableDialogueRegistry();
-        ReloadableDialogueRegistry clientDialogueManager = new ReloadableDialogueRegistry();
-        SubDataManagerHelper.getServerHelper().registerSubDataManager(serverDialogueManager);
-        SubDataManagerHelper.getClientHelper().registerSubDataManager(clientDialogueManager);
-        this.dialogueManager = serverDialogueManager;
-        // Movement alterers
-        MovementAltererManager serverMovementAltererManager = new MovementAltererManager();
-        MovementAltererManager clientMovementAltererManager = new MovementAltererManager();
-        SubDataManagerHelper.getServerHelper().registerSubDataManager(serverMovementAltererManager);
-        SubDataManagerHelper.getClientHelper().registerSubDataManager(clientMovementAltererManager);
-        // Access through World objects, similar to TagManager
-        WorldComponentCallback.EVENT.register((world, components) -> {
-            components.put(RequiemComponents.DIALOGUES, world.isClient ? clientDialogueManager : serverDialogueManager);
-            components.put(RequiemComponents.MOVEMENT_ALTERERS, world.isClient ? clientMovementAltererManager : serverMovementAltererManager);
-        });
     }
 
     private void registerPlugin(RequiemPlugin plugin) {
         plugin.onRequiemInitialize();
         plugin.registerRemnantStates(RequiemRegistries.REMNANT_STATES);
-        plugin.registerMobAbilities(RequiemRegistries.ABILITIES);
-        plugin.registerDialogueActions(dialogueManager);
-        this.soulboundStatusEffects.addAll(plugin.getSoulboundStatusEffects());
+        plugin.registerMobAbilities(MobAbilityRegistry.instance());
+        plugin.registerSoulBindings(SoulbindingRegistry.instance());
+        plugin.registerDialogueActions(DialogueRegistry.get(null));
     }
 }

@@ -20,10 +20,10 @@ package ladysnake.requiem.common.impl.possession;
 import com.google.common.collect.MapMaker;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.common.RequiemComponents;
 import ladysnake.requiem.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.requiem.common.entity.ai.attribute.PossessionDelegatingAttribute;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
@@ -128,7 +128,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
         // Update some attributes
         this.player.copyPositionAndRotation(host);
         this.player.calculateDimensions(); // update size
-        ((RequiemPlayer) this.player).getMovementAlterer().setConfig(RequiemComponents.MOVEMENT_ALTERER_MANAGER.get(this.player.world).getEntityMovementConfig(host.getType()));
+        ((RequiemPlayer) this.player).getMovementAlterer().setConfig(MovementRegistry.get(this.player.world).getEntityMovementConfig(host.getType()));
         if (!attributeUpdated.contains(this.player)) {
             this.swapAttributes(this.player);
             attributeUpdated.add(this.player);

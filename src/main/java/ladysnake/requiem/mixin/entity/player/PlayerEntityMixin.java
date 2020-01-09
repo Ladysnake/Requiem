@@ -30,7 +30,7 @@ import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.impl.movement.PlayerMovementAlterer;
 import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.remnant.NullRemnantState;
-import ladysnake.requiem.common.impl.remnant.dialogue.DialogueTrackerImpl;
+import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
@@ -82,7 +82,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private RemnantState remnantState = NullRemnantState.NULL_STATE;
     private final PossessionComponent possessionComponent = new PossessionComponentImpl(this.asPlayer());
     private final MovementAlterer movementAlterer = new PlayerMovementAlterer(this.asPlayer());
-    private final DialogueTracker dialogueTracker = new DialogueTrackerImpl(this.asPlayer());
+    private final DialogueTracker dialogueTracker = new PlayerDialogueTracker(this.asPlayer());
 
     @Override
     public RemnantState asRemnant() {
