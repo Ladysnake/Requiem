@@ -85,7 +85,7 @@ public final class ApiInitializer {
         SubDataManagerHelper.getServerHelper().registerSubDataManager(serverMovementAltererManager);
         SubDataManagerHelper.getClientHelper().registerSubDataManager(clientMovementAltererManager);
         ReflectionHelper.<Function<World, MovementRegistry>>setField(
-            ApiInternals.class.getDeclaredField("dialogueRegistryGetter"),
+            ApiInternals.class.getDeclaredField("movementRegistryGetter"),
             w -> w == null || !w.isClient ? serverMovementAltererManager : clientMovementAltererManager
         );
     }
