@@ -134,6 +134,11 @@ public class ReflectionHelper {
         }
     }
 
+    public static <T> void setField(Field f, T value) throws IllegalAccessException {
+        f.setAccessible(true);
+        f.set(null, value);
+    }
+
     /**
      * Creates a factory for the given class implementing the given <tt>lambdaType</tt>.
      * The constructor of the class will be looked up using the passed in <tt>lookup</tt> object.

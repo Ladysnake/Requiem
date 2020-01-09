@@ -19,7 +19,6 @@ package ladysnake.requiem.api.v1;
 
 import com.google.common.collect.ImmutableSet;
 import ladysnake.requiem.api.v1.internal.ApiInternals;
-import net.minecraft.entity.effect.StatusEffect;
 import org.apiguardian.api.API;
 
 /**
@@ -96,21 +95,6 @@ public final class RequiemApi {
     @API(status = API.Status.MAINTAINED)
     public static ImmutableSet<RequiemPlugin> getRegisteredPlugins() {
         return ApiInternals.copyRegisteredPlugins();
-    }
-
-    /**
-     * Returns {@code true} if the given {@link StatusEffect} is registered as
-     * soulbound.
-     *
-     * <p> Soulbound status effects are carried over when the player dies,
-     * and stay with the soul when leaving a body.
-     *
-     * @param effect status effect to test
-     * @return {@code true} if {@code effect} is soulbound
-     * @see RequiemPlugin#getSoulboundStatusEffects()
-     */
-    public static boolean isSoulboundStatusEffect(StatusEffect effect) {
-        return ApiInternals.isSoulboundStatusEffect(effect);
     }
 
 }

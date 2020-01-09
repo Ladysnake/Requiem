@@ -17,15 +17,16 @@
  */
 package ladysnake.requiem.api.v1;
 
+import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.api.v1.dialogue.DialogueAction;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
+import ladysnake.requiem.api.v1.entity.ability.MobAbility;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
+import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import net.minecraft.entity.effect.StatusEffect;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import net.minecraft.util.registry.Registry;
-
-import java.util.Collection;
-import java.util.Collections;
+import net.minecraft.world.World;
 
 /**
  * An entry point for API consumers.
@@ -45,21 +46,17 @@ public interface RequiemPlugin {
     default void onRequiemInitialize() {}
 
     /**
-     * Register custom {@link ladysnake.requiem.api.v1.entity.ability.MobAbility mob abilities}
-     * for known entity types.
-     * <p>
-     * The passed in {@link MobAbilityRegistry} can be safely reused outside of this method.
-     * Stored instances should be refreshed each time this method is called.
+     * Register custom {@link MobAbility mob abilities} for known entity types.
      *
      * @param registry Requiem's ability registry
+     * @see MobAbilityRegistry#instance()
      */
     default void registerMobAbilities(MobAbilityRegistry registry) {}
 
     /**
-     * Register {@link RemnantType} to provide custom {@link ladysnake.requiem.api.v1.remnant.RemnantState} players
-     * can be in.
-     * <p>
-     * The passed in {@link Registry} can be safely reused outside of this method.
+     * Register {@link RemnantType} to provide custom {@link RemnantState} players can be in.
+     *
+     * <p> The passed in {@link Registry} can be safely reused outside of this method.
      * Stored instances should be refreshed each time this method is called.
      *
      * @param registry Requiem's remnant type registry
@@ -68,18 +65,21 @@ public interface RequiemPlugin {
 
     /**
      * Register {@link DialogueAction} to handle dialogue choices.
-     * This method is called before {@link ladysnake.requiem.api.v1.dialogue.CutsceneDialogue dialogues themselves}
-     * are registered.
-     * <p>
-     * The passed in {@link DialogueRegistry} can be safely reused outside of this method.
-     * Stored instances should be refreshed each time this method is called.
      *
-     * @param serverRegistry Requiem's dialogue registry
+     * <p> This method is called before {@link CutsceneDialogue dialogues themselves}
+     * are registered.
+     *
+     * @param registry Requiem's dialogue registry
+     * @see DialogueRegistry#get(World)
      */
-    default void registerDialogueActions(DialogueRegistry serverRegistry) {}
+    default void registerDialogueActions(DialogueRegistry registry) {}
 
     /**
-     * @return a collection of status effects that are carried over when a player turns incorporeal
+     * Register soulbound objects that get carried over when players leave their body.
+     *
+     * @param registry Requiem's soulbinding registry
+     * @see SoulbindingRegistry#instance()
      */
-    default Collection<StatusEffect> getSoulboundStatusEffects() { return Collections.emptySet(); }
+    default void registerSoulBindings(SoulbindingRegistry registry) {}
+
 }

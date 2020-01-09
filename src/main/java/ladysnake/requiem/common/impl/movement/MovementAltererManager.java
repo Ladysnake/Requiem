@@ -24,6 +24,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.MovementConfig;
+import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.common.util.EntityTypeAdapter;
 import net.minecraft.entity.EntityType;
@@ -42,7 +43,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public final class MovementAltererManager implements SubDataManager<Map<EntityType<?>, SerializableMovementConfig>> {
+public final class MovementAltererManager implements SubDataManager<Map<EntityType<?>, SerializableMovementConfig>>, MovementRegistry {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(new TypeToken<EntityType<?>>() {}.getType(), new EntityTypeAdapter()).create();
     public static final Identifier LOCATION = Requiem.id("entity_mobility.json");
     private static final Type TYPE = new TypeToken<Map<EntityType<?>, SerializableMovementConfig>>() {}.getType();
@@ -102,6 +103,7 @@ public final class MovementAltererManager implements SubDataManager<Map<EntityTy
         return LISTENER_ID;
     }
 
+    @Override
     public MovementConfig getEntityMovementConfig(EntityType<?> type) {
         return this.entityMovementConfigs.getOrDefault(type, new SerializableMovementConfig());
     }

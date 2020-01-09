@@ -18,11 +18,8 @@
 package ladysnake.requiem.common;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.impl.ability.DefaultedMobAbilityRegistry;
-import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityConfig;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DefaultedRegistry;
@@ -37,7 +34,6 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
  */
 @API(status = EXPERIMENTAL)
 public final class RequiemRegistries {
-    public static final MobAbilityRegistry ABILITIES = new DefaultedMobAbilityRegistry(ImmutableMobAbilityConfig.DEFAULT);
     public static final DefaultedRegistry<RemnantType> REMNANT_STATES = new DefaultedRegistry<>(RemnantState.NULL_STATE_ID);
 
     public static void init() {

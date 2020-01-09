@@ -21,14 +21,13 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
-import ladysnake.requiem.common.RequiemComponents;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
 
-public final class DialogueTrackerImpl implements DialogueTracker {
+public final class PlayerDialogueTracker implements DialogueTracker {
     public static final Identifier BECOME_REMNANT = Requiem.id("become_remnant");
     public static final Identifier STAY_MORTAL = Requiem.id("stay_mortal");
 
@@ -37,8 +36,8 @@ public final class DialogueTrackerImpl implements DialogueTracker {
     private CutsceneDialogue currentDialogue;
     private PlayerEntity player;
 
-    public DialogueTrackerImpl(PlayerEntity player) {
-        this.manager = RequiemComponents.DIALOGUE_REGISTRY.get(player.world);
+    public PlayerDialogueTracker(PlayerEntity player) {
+        this.manager = DialogueRegistry.get(player.world);
         this.player = player;
     }
 

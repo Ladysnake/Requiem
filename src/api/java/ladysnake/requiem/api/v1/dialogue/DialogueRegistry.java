@@ -17,12 +17,32 @@
  */
 package ladysnake.requiem.api.v1.dialogue;
 
+import ladysnake.requiem.api.v1.RequiemPlugin;
+import ladysnake.requiem.api.v1.internal.ApiInternals;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 import org.apiguardian.api.API;
+
+import javax.annotation.Nullable;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 public interface DialogueRegistry {
+    /**
+     * Retrieve the dialogue registry for the given {@link World}.
+     *
+     * <p> If {@code world} is {@code null}, the returned dialogue registry is the one
+     * used by server worlds. Although that registry is fit for registering new dialogues,
+     * one should prefer using implementing {@link RequiemPlugin#registerDialogueActions(DialogueRegistry)}
+     * to do so at an appropriate time.
+     *
+     * @param world the world for which to get the dialogue registry, or {@code null} to get the main registry
+     * @return the dialogue registry for the given world
+     */
+    static DialogueRegistry get(@Nullable World world) {
+        return ApiInternals.getDialogueRegistry(world);
+    }
+
     CutsceneDialogue getDialogue(Identifier id);
 
     @API(status = EXPERIMENTAL)
