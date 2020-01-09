@@ -28,10 +28,12 @@ import ladysnake.requiem.common.impl.data.CommonSubDataManagerHelper;
 import ladysnake.requiem.common.impl.data.ServerSubDataManagerHelper;
 import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.effect.StatusEffect;
 import org.apiguardian.api.API;
 
 import java.lang.reflect.Field;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static org.apiguardian.api.API.Status.INTERNAL;
@@ -39,11 +41,12 @@ import static org.apiguardian.api.API.Status.INTERNAL;
 @API(status = INTERNAL)
 public class ApiInitializer {
 
-    public static void init() {
+    public static void init(Predicate<StatusEffect> soulboundStatusEffectPredicate) {
         try {
             setAbilityBuilderFactory(ImmutableMobAbilityConfig.Builder::new);
             setSubDataManagerHelper(new ServerSubDataManagerHelper(), true);
             setSubDataManagerHelper(new CommonSubDataManagerHelper(), false);
+            setSoulboundStatusEffectPredicate(soulboundStatusEffectPredicate);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             Requiem.LOGGER.error("Could not initialize the mod's API");
             throw new UncheckedReflectionException(e);
@@ -60,6 +63,12 @@ public class ApiInitializer {
         Field f = server ? ApiInternals.class.getDeclaredField("serverSubDataManagerHelper") : ApiInternals.class.getDeclaredField("clientSubDataManagerHelper");
         f.setAccessible(true);
         f.set(null, helper);
+    }
+
+    private static void setSoulboundStatusEffectPredicate(Predicate<StatusEffect> predicate) throws IllegalAccessException, NoSuchFieldException {
+        Field f = ApiInternals.class.getDeclaredField("soulboundStatusEffectPredicate");
+        f.setAccessible(true);
+        f.set(null, predicate);
     }
 
     public static void discoverEntryPoints() {

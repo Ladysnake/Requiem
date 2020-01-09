@@ -21,7 +21,11 @@ import ladysnake.requiem.api.v1.dialogue.DialogueAction;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.util.registry.Registry;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * An entry point for API consumers.
@@ -73,4 +77,9 @@ public interface RequiemPlugin {
      * @param serverRegistry Requiem's dialogue registry
      */
     default void registerDialogueActions(DialogueRegistry serverRegistry) {}
+
+    /**
+     * @return a collection of status effects that are carried over when a player turns incorporeal
+     */
+    default Collection<StatusEffect> getSoulboundStatusEffects() { return Collections.emptySet(); }
 }

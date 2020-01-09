@@ -22,6 +22,7 @@ import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.mob.MobEntity;
 import org.apiguardian.api.API;
 
@@ -29,6 +30,7 @@ import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static org.apiguardian.api.API.Status.INTERNAL;
@@ -39,6 +41,7 @@ import static org.apiguardian.api.API.Status.INTERNAL;
  */
 @API(status = INTERNAL)
 public final class ApiInternals {
+
     private ApiInternals() { throw new AssertionError(); }
 
     @Nullable
@@ -64,6 +67,8 @@ public final class ApiInternals {
     private static SubDataManagerHelper clientSubDataManagerHelper;
     @AccessedThroughReflection
     private static SubDataManagerHelper serverSubDataManagerHelper;
+    @AccessedThroughReflection
+    private static Predicate<StatusEffect> soulboundStatusEffectPredicate;
 
     @SuppressWarnings("unchecked")
     public static <T extends MobEntity> MobAbilityConfig.Builder<T> mobAbilityConfig$builderImpl() {
@@ -99,5 +104,9 @@ public final class ApiInternals {
 
     public static SubDataManagerHelper getServerSubDataManagerHelper() {
         return serverSubDataManagerHelper;
+    }
+
+    public static boolean isSoulboundStatusEffect(StatusEffect effect) {
+        return soulboundStatusEffectPredicate.test(effect);
     }
 }
