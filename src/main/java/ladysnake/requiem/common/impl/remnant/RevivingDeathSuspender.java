@@ -29,7 +29,6 @@ import nerdhub.cardinal.components.api.util.sync.EntitySyncedComponent;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.PacketByteBuf;
 
@@ -56,7 +55,7 @@ public class RevivingDeathSuspender implements DeathSuspender, EntitySyncedCompo
         Pal.grantAbility(player, VanillaAbilities.INVULNERABLE, DEATH_SUSPENSION_ABILITIES);
         this.deathCause = deathCause;
         this.setLifeTransient(true);
-        this.markDirty();
+        this.sync();
     }
 
     @Override
@@ -75,7 +74,7 @@ public class RevivingDeathSuspender implements DeathSuspender, EntitySyncedCompo
         Pal.revokeAbility(player, VanillaAbilities.INVULNERABLE, DEATH_SUSPENSION_ABILITIES);
         this.player.setHealth(0f);
         this.setLifeTransient(false);
-        this.markDirty();
+        this.sync();
         this.player.onDeath(this.deathCause != null ? deathCause : DamageSource.GENERIC);
     }
 
@@ -87,12 +86,6 @@ public class RevivingDeathSuspender implements DeathSuspender, EntitySyncedCompo
     @Override
     public ComponentType<?> getComponentType() {
         return RequiemComponents.DEATH_SUSPENDER;
-    }
-
-    @Override
-    public void markDirty() {
-        EntitySyncedComponent.super.markDirty();
-        this.syncWith((ServerPlayerEntity) this.player);
     }
 
     @Override

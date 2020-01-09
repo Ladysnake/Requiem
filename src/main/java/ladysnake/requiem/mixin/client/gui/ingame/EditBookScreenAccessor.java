@@ -18,8 +18,8 @@
 package ladysnake.requiem.mixin.client.gui.ingame;
 
 import net.minecraft.client.gui.screen.ingame.BookEditScreen;
-import net.minecraft.client.gui.screen.ingame.PageTurnWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.PageTurnWidget;
 import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
