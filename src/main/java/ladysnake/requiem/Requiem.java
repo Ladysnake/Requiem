@@ -26,6 +26,7 @@ import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.command.RequiemCommand;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
+import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.impl.ApiInitializer;
 import ladysnake.requiem.common.impl.movement.MovementAltererManager;
 import ladysnake.requiem.common.impl.remnant.dialogue.ReloadableDialogueRegistry;
@@ -38,10 +39,14 @@ import nerdhub.cardinal.components.api.event.WorldComponentCallback;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.registry.CommandRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class Requiem implements ModInitializer {
     public static final String MOD_ID = "requiem";
@@ -52,16 +57,18 @@ public class Requiem implements ModInitializer {
     }
 
     private ReloadableDialogueRegistry dialogueManager;
+    private Set<StatusEffect> soulboundStatusEffects = new HashSet<>();
 
     @Override
     public void onInitialize() {
-        ApiInitializer.init();
+        ApiInitializer.init(soulboundStatusEffects::contains);
         RequiemCriteria.init();
         RequiemBlocks.init();
         RequiemEnchantments.init();
         RequiemItems.init();
         RequiemRegistries.init();
         RequiemSoundEvents.init();
+        RequiemStatusEffects.init();
         ServerMessageHandling.init();
         ApiInitializer.discoverEntryPoints();
         CommandRegistry.INSTANCE.register(false, RequiemCommand::register);
@@ -96,5 +103,6 @@ public class Requiem implements ModInitializer {
         plugin.registerRemnantStates(RequiemRegistries.REMNANT_STATES);
         plugin.registerMobAbilities(RequiemRegistries.ABILITIES);
         plugin.registerDialogueActions(dialogueManager);
+        this.soulboundStatusEffects.addAll(plugin.getSoulboundStatusEffects());
     }
 }

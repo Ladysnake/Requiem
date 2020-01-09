@@ -34,6 +34,7 @@ import ladysnake.requiem.api.v1.remnant.MobResurrectable;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
+import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.impl.remnant.dialogue.DialogueTrackerImpl;
 import ladysnake.requiem.common.impl.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.common.network.RequiemNetworking;
@@ -46,6 +47,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.SpiderEntity;
@@ -56,6 +58,8 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.createCorporealityMessage;
@@ -164,6 +168,11 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
     @Override
     public void registerMobAbilities(MobAbilityRegistry abilityRegistry) {
+    }
+
+    @Override
+    public Collection<StatusEffect> getSoulboundStatusEffects() {
+        return Collections.singleton(RequiemStatusEffects.ATTRITION);
     }
 
     @Override
