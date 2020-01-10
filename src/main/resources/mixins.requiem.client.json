@@ -11,6 +11,7 @@
     "gui.container.LecternScreenMixin",
     "gui.container.WrittenBookScreenContentsMixin",
     "gui.hud.InGameHudMixin",
+    "gui.ingame.AbstractInventoryScreenMixin",
     "gui.ingame.EditBookScreenAccessor",
     "item.ItemStackTooltipMixin",
     "network.ClientPlayerEntityMixin",
@@ -18,7 +19,8 @@
     "render.entity.AccessibleTextureEntityRenderer",
     "render.entity.EntityRenderDispatcherMixin",
     "render.entity.LivingEntityRendererMixin",
-    "render.entity.PlayerEntityRendererMixin"
+    "render.entity.PlayerEntityRendererMixin",
+    "texture.SpriteAtlasHolderAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
