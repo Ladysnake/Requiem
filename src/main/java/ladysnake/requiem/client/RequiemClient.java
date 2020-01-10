@@ -33,6 +33,7 @@ import ladysnake.requiem.common.tag.RequiemItemTags;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
 import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.MinecraftClient;
@@ -147,6 +148,12 @@ public class RequiemClient implements ClientModInitializer {
         });
         // Add custom tooltips to items when the player is possessing certain entities
         ItemTooltipCallback.EVENT.register(RequiemClient::addPossessionTooltip);
+        // Register special icons for different levels of attrition
+        ClientSpriteRegistryCallback.event(new Identifier("textures/atlas/mob_effects.png")).register((atlasTexture, registry) -> {
+            for (int i = 1; i <= 4; i++) {
+                registry.register(Requiem.id("mob_effect/attrition_" + i));
+            }
+        });
     }
 
     private static void addPossessionTooltip(ItemStack item, @Nullable PlayerEntity player, @SuppressWarnings("unused") TooltipContext context, List<Text> lines) {

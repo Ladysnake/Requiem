@@ -22,18 +22,27 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
+import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
+import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
+import ladysnake.requiem.mixin.client.texture.SpriteAtlasHolderAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -43,6 +52,8 @@ import javax.annotation.Nullable;
 public abstract class InGameHudMixin extends DrawableHelper {
 
     @Shadow @Final private MinecraftClient client;
+    @Unique private boolean boundSpecialBackground;
+    @Unique private StatusEffectInstance renderedEffect;
 
     @Shadow @Nullable protected abstract PlayerEntity getCameraPlayer();
 
@@ -131,6 +142,37 @@ public abstract class InGameHudMixin extends DrawableHelper {
         if (((RequiemPlayer)client.player).asRemnant().isSoul()) {
             RenderSystem.color4f(1, 1, 1, 1);
         }
+    }
+
+    // ModifyVariable is only used to capture the local variable more easily
+    @ModifyVariable(method = "renderStatusEffectOverlay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;blit(IIIIII)V"))
+    private StatusEffectInstance customizeDrawnBackground(StatusEffectInstance effect) {
+        if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
+            assert this.client != null;
+            this.client.getTextureManager().bindTexture(AttritionStatusEffect.ATTRITION_BACKGROUND);
+            boundSpecialBackground = true;
+            renderedEffect = effect;
+        }
+        return effect;
+    }
+
+    @Inject(method = "renderStatusEffectOverlay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;blit(IIIIII)V", shift = At.Shift.AFTER))
+    private void restoreDrawnBackground(CallbackInfo ci) {
+        if (boundSpecialBackground) {
+            this.client.getTextureManager().bindTexture(AbstractContainerScreen.BACKGROUND_TEXTURE);
+            boundSpecialBackground = false;
+        }
+    }
+
+    @ModifyVariable(method = "renderStatusEffectOverlay", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/texture/StatusEffectSpriteManager;getSprite(Lnet/minecraft/entity/effect/StatusEffect;)Lnet/minecraft/client/texture/Sprite;"))
+    private Sprite customizeDrawnSprite(Sprite baseSprite) {
+        int amplifier = renderedEffect.getAmplifier();
+        if (this.renderedEffect.getEffectType() == RequiemStatusEffects.ATTRITION && amplifier < 4) {
+            Identifier baseId = baseSprite.getId();
+            return ((SpriteAtlasHolderAccessor) MinecraftClient.getInstance().getStatusEffectSpriteManager())
+                .getAtlas().getSprite(new Identifier(baseId.getNamespace(), baseId.getPath() + '_' + (amplifier + 1)));
+        }
+        return baseSprite;
     }
 
 }
