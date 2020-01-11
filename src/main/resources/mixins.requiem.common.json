@@ -8,6 +8,7 @@
     "block.entity.LecternBlockEntityMixin",
     "command.EffectCommandMixin",
     "command.EntitySelectorOptionsMixin",
+    "enchantment.EnchantmentHelperMixin",
     "entity.EntityMixin",
     "entity.ItemEntityMixin",
     "entity.LivingEntityMixin",
