@@ -35,6 +35,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
+import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.impl.resurrection.ResurrectionDataLoader;
@@ -124,6 +125,9 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> {
             sendToAllTrackingIncluding(player, createCorporealityMessage(player));
             ((MobResurrectable)player).spawnResurrectionEntity();
+            if (!returnFromEnd && RequiemPlayer.from(player).asRemnant().isIncorporeal()) {
+                AttritionStatusEffect.apply(player);
+            }
         }));
     }
 

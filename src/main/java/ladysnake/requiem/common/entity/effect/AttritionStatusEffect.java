@@ -3,11 +3,29 @@ package ladysnake.requiem.common.entity.effect;
 import ladysnake.requiem.Requiem;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class AttritionStatusEffect extends StatusEffect {
     public static final Identifier ATTRITION_BACKGROUND = Requiem.id("textures/gui/attrition_background.png");
+
+    public static void apply(PlayerEntity target) {
+        StatusEffectInstance attrition = target.getStatusEffect(RequiemStatusEffects.ATTRITION);
+        int amplifier;
+        if (attrition == null) amplifier = 0;
+        else if (attrition.getAmplifier() < 3) amplifier = attrition.getAmplifier() + 1;
+        else amplifier = attrition.getAmplifier();
+        target.addStatusEffect(new StatusEffectInstance(
+            RequiemStatusEffects.ATTRITION,
+            300,
+            amplifier,
+            false,
+            false,
+            true
+        ));
+    }
 
     public AttritionStatusEffect(StatusEffectType type, int color) {
         super(type, color);
