@@ -20,8 +20,10 @@ package ladysnake.requiem.mixin.server.network;
 import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import net.minecraft.advancement.Advancement;
@@ -29,6 +31,7 @@ import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -36,14 +39,21 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
 import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
 @Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin extends PlayerEntity implements RequiemPlayer {
+public abstract class ServerPlayerEntityMixin extends PlayerEntity implements RequiemPlayer, StatusEffectReapplicator {
+
+    @Unique private final Collection<StatusEffectInstance> reappliedEffects = new ArrayList<>();
 
     @Shadow public abstract ServerWorld getServerWorld();
 
@@ -79,6 +89,23 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
         }
     }
 
+    @Inject(method = "onStatusEffectRemoved", at = @At("RETURN"))
+    private void onStatusEffectRemoved(StatusEffectInstance effect, CallbackInfo ci) {
+        if (this.asRemnant().isSoul()) {
+            if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
+                reappliedEffects.add(new StatusEffectInstance(effect));
+            }
+        }
+    }
+
+    @Inject(method = "playerTick", at = @At("RETURN"))
+    private void restoreSoulboundEffects(CallbackInfo ci) {
+        for (Iterator<StatusEffectInstance> iterator = reappliedEffects.iterator(); iterator.hasNext(); ) {
+            this.addStatusEffect(iterator.next());
+            iterator.remove();
+        }
+    }
+
     @Inject(method = "onStartedTracking", at = @At("HEAD"))
     private void onStartedTracking(Entity tracked, CallbackInfo info) {
         ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
@@ -95,5 +122,10 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
             ((Possessable) tracked).getPossessorUuid()
                     .ifPresent(uuid -> sendTo(self, createPossessionMessage(uuid, tracked.getEntityId())));
         }
+    }
+
+    @Override
+    public Collection<StatusEffectInstance> getReappliedStatusEffects() {
+        return this.reappliedEffects;
     }
 }

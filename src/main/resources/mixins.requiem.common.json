@@ -6,6 +6,7 @@
   "mixins": [
     "advancement.criterion.CriterionsAccessor",
     "block.entity.LecternBlockEntityMixin",
+    "command.EffectCommandMixin",
     "command.EntitySelectorOptionsMixin",
     "entity.EntityMixin",
     "entity.ItemEntityMixin",
@@ -14,6 +15,7 @@
     "entity.attribute.EntityAttributeContainerAccessor",
     "entity.attribute.EntityAttributesMixin",
     "entity.damage.DamageTrackerMixin",
+    "entity.effect.StatusEffectInstanceMixin",
     "entity.mob.AbstractSkeletonEntityAccessor",
     "entity.mob.EndermanEntityAccessor",
     "entity.mob.WitchEntityMixin",
