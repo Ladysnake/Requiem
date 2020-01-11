@@ -33,6 +33,7 @@ import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.impl.ApiInitializer;
 import ladysnake.requiem.common.impl.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.common.item.RequiemItems;
+import ladysnake.requiem.common.loot.RequiemLootTables;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.network.ServerMessageHandling;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
@@ -59,6 +60,7 @@ public class Requiem implements ModInitializer {
         RequiemBlocks.init();
         RequiemEnchantments.init();
         RequiemItems.init();
+        RequiemLootTables.init();
         RequiemRegistries.init();
         RequiemSoundEvents.init();
         RequiemStatusEffects.init();
