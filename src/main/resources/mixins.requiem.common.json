@@ -23,6 +23,7 @@
     "entity.player.PlayerEntityMixin",
     "entity.projectile.ProjectileEntityAccessor",
     "item.BowItemMixin",
+    "item.EnchantedBookItemMixin",
     "item.ItemMixin",
     "item.MilkBucketItemMixin",
     "item.PotionItemMixin",
