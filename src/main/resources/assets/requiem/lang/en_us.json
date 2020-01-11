@@ -61,6 +61,9 @@
   "requiem:tooltip.skeletal_efficiency": "Skeletal Efficiency",
   "requiem:tooltip.zombie_food": "Zombie Snack",
 
+  "death.attack.requiem.attrition.hardcore": "%1$s was put to rest, forever.",
+  "death.attack.requiem.attrition.hardcore.player": "%2$s put %1$s to rest, forever.",
+
   "effect.requiem.attrition": "Attrition",
 
   "enchantment.requiem.humanity": "Humanity",
