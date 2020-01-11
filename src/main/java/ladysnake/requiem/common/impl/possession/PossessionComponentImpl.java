@@ -244,7 +244,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
     public void startCuring() {
         Random rand = this.player.getRandom();
         this.conversionTimer = rand.nextInt(1201) + 2400;  // a bit shorter than villager
-        this.player.removeStatusEffect(StatusEffects.WEAKNESS);
+        this.player.tryRemoveStatusEffect(StatusEffects.WEAKNESS);
         this.player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, conversionTimer, 0));
         this.player.world.playSound(null, this.player.getX() + 0.5D, this.player.getY() + 0.5D, this.player.getZ() + 0.5D, SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, this.player.getSoundCategory(), 1.0F + rand.nextFloat(), rand.nextFloat() * 0.7F + 0.3F);
     }

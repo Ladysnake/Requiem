@@ -169,7 +169,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
     private void onStatusEffectRemoved(StatusEffectInstance effect, CallbackInfo ci) {
         MobEntity possessed = this.asPossessor().getPossessedEntity();
         if (possessed != null) {
-            possessed.removeStatusEffect(effect.getEffectType());
+            possessed.tryRemoveStatusEffect(effect.getEffectType());
         }
     }
 
