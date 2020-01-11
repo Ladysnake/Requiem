@@ -176,11 +176,12 @@ public final class PossessionComponentImpl implements PossessionComponent {
                     InventoryHelper.transferEquipment(player, possessed);
                 }
                 ((LivingEntityAccessor)player).invokeDropInventory();
-                player.clearStatusEffects();    // will not clear soulbound effects
-                // remove soulbound effects from the host
+                player.clearStatusEffects();
+                // move soulbound effects from the host to the soul
                 for (StatusEffectInstance effect : possessed.getStatusEffects()) {
                     if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
                         possessed.tryRemoveStatusEffect(effect.getEffectType());
+                        player.addStatusEffect(new StatusEffectInstance(effect));
                     }
                 }
                 RequiemNetworking.sendToAllTrackingIncluding(player, new EntityAttributesS2CPacket(player.getEntityId(), ((EntityAttributeContainer) player.getAttributes()).buildTrackedAttributesCollection()));
