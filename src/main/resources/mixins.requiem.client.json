@@ -20,6 +20,7 @@
     "render.entity.EntityRenderDispatcherMixin",
     "render.entity.LivingEntityRendererMixin",
     "render.entity.PlayerEntityRendererMixin",
+    "render.model.ModelLoaderMixin",
     "texture.SpriteAtlasHolderAccessor"
   ],
   "injectors": {
