@@ -151,8 +151,8 @@ public abstract class InGameHudMixin extends DrawableHelper {
             assert this.client != null;
             this.client.getTextureManager().bindTexture(AttritionStatusEffect.ATTRITION_BACKGROUND);
             boundSpecialBackground = true;
-            renderedEffect = effect;
         }
+        renderedEffect = effect;
         return effect;
     }
 
