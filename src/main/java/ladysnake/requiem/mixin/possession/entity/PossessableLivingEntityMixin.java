@@ -23,6 +23,7 @@ import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.requiem.common.entity.ai.attribute.CooldownStrengthAttribute;
+import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
@@ -281,6 +282,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
             ((RequiemPlayer)possessor).asPossessor().stopPossessing();
+            AttritionStatusEffect.apply(possessor);
         }
     }
 
