@@ -96,6 +96,11 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
     @Shadow
     public float bodyYaw;
+
+    @Shadow
+    @Nullable
+    public abstract LivingEntity getAttacker();
+
     @Nullable
     private PlayerEntity possessor;
 
@@ -282,6 +287,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
             ((RequiemPlayer)possessor).asPossessor().stopPossessing();
+            possessor.setAttacker(this.getAttacker());
             AttritionStatusEffect.apply(possessor);
         }
     }
