@@ -24,6 +24,7 @@ import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.requiem.common.entity.ai.attribute.PossessionDelegatingAttribute;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
@@ -112,6 +113,11 @@ public final class PossessionComponentImpl implements PossessionComponent {
             if (RequiemEntityTypeTags.ITEM_USER.contains(host.getType())) {
                 InventoryHelper.transferEquipment(host, player);
             }
+            for (StatusEffectInstance effect : player.getStatusEffects()) {
+                if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
+                    host.addStatusEffect(new StatusEffectInstance(effect));
+                }
+            }
             for (StatusEffectInstance effect : host.getStatusEffects()) {
                 player.addStatusEffect(new StatusEffectInstance(effect));
             }
@@ -169,7 +175,13 @@ public final class PossessionComponentImpl implements PossessionComponent {
                     InventoryHelper.transferEquipment(player, possessed);
                 }
                 ((LivingEntityAccessor)player).invokeDropInventory();
-                player.clearStatusEffects();
+                player.clearStatusEffects();    // will not clear soulbound effects
+                // remove soulbound effects from the host
+                for (StatusEffectInstance effect : possessed.getStatusEffects()) {
+                    if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
+                        possessed.tryRemoveStatusEffect(effect.getEffectType());
+                    }
+                }
                 RequiemNetworking.sendToAllTrackingIncluding(player, new EntityAttributesS2CPacket(player.getEntityId(), ((EntityAttributeContainer) player.getAttributes()).buildTrackedAttributesCollection()));
                 Entity ridden = player.getVehicle();
                 if (ridden != null) {

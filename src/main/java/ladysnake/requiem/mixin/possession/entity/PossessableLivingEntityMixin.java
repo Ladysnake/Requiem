@@ -362,7 +362,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
      * @param enderTp <code>true</code> for ender particles and sound effect
      */
     @Inject(method = "teleport", at = @At("HEAD"), cancellable = true)
-    private void method_6082(double x, double y, double z, boolean enderTp, CallbackInfoReturnable<Boolean> cir) {
+    private void teleportPossessor(double x, double y, double z, boolean enderTp, CallbackInfoReturnable<Boolean> cir) {
         PlayerEntity player = this.getPossessor();
         if (player != null) {
             cir.setReturnValue(player.teleport(x, y, z, enderTp));
