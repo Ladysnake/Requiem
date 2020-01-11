@@ -171,12 +171,21 @@ public final class PossessionComponentImpl implements PossessionComponent {
         if (possessed != null) {
             this.resetState();
             ((Possessable)possessed).setPossessor(null);
-            if (player instanceof ServerPlayerEntity && transfer) {
-                if (RequiemEntityTypeTags.ITEM_USER.contains(possessed.getType())) {
-                    InventoryHelper.transferEquipment(player, possessed);
+            if (player instanceof ServerPlayerEntity) {
+                if (transfer) {
+                    if (RequiemEntityTypeTags.ITEM_USER.contains(possessed.getType())) {
+                        InventoryHelper.transferEquipment(player, possessed);
+                    }
+                    ((LivingEntityAccessor) player).invokeDropInventory();
+                    player.clearStatusEffects();
+                    RequiemNetworking.sendToAllTrackingIncluding(player, new EntityAttributesS2CPacket(player.getEntityId(), ((EntityAttributeContainer) player.getAttributes()).buildTrackedAttributesCollection()));
+                    Entity ridden = player.getVehicle();
+                    if (ridden != null) {
+                        player.stopRiding();
+                        possessed.startRiding(ridden);
+                    }
+                    this.conversionTimer = -1;
                 }
-                ((LivingEntityAccessor)player).invokeDropInventory();
-                player.clearStatusEffects();
                 // move soulbound effects from the host to the soul
                 for (StatusEffectInstance effect : possessed.getStatusEffects()) {
                     if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
@@ -184,13 +193,6 @@ public final class PossessionComponentImpl implements PossessionComponent {
                         player.addStatusEffect(new StatusEffectInstance(effect));
                     }
                 }
-                RequiemNetworking.sendToAllTrackingIncluding(player, new EntityAttributesS2CPacket(player.getEntityId(), ((EntityAttributeContainer) player.getAttributes()).buildTrackedAttributesCollection()));
-                Entity ridden = player.getVehicle();
-                if (ridden != null) {
-                    player.stopRiding();
-                    possessed.startRiding(ridden);
-                }
-                this.conversionTimer = -1;
             }
         }
     }
