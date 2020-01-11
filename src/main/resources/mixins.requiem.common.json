@@ -28,6 +28,7 @@
     "item.MilkBucketItemMixin",
     "item.PotionItemMixin",
     "item.TridentItemMixin",
+    "loot.function.EnchantRandomlyLootFunctionMixin",
     "possession.entity.PossessableEntityMixin",
     "possession.entity.PossessableLivingEntityMixin",
     "possession.entity.PossessableMobEntityMixin",
