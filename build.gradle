@@ -194,8 +194,6 @@ dependencies {
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}"
     modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
-    modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
-    include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
     modImplementation "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
     include "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
     // libcd

@@ -187,7 +187,8 @@ public final class PossessionComponentImpl implements PossessionComponent {
                     this.conversionTimer = -1;
                 }
                 // move soulbound effects from the host to the soul
-                for (StatusEffectInstance effect : possessed.getStatusEffects()) {
+                // careful with ConcurrentModificationException
+                for (StatusEffectInstance effect : possessed.getStatusEffects().toArray(new StatusEffectInstance[0])) {
                     if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
                         possessed.tryRemoveStatusEffect(effect.getEffectType());
                         player.addStatusEffect(new StatusEffectInstance(effect));
