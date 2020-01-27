@@ -69,7 +69,7 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity> {
         try {
             CAST_SPELL_GOAL$CAST_SPELL = ReflectionHelper.findMethodFromIntermediary(SpellcastingIllagerEntity.CastSpellGoal.class, "method_7148", void.class);
             Class<? extends SpellcastingIllagerEntity.CastSpellGoal> clazz = ReflectionHelper.findClass("net.minecraft.class_1564$class_1565");
-            FANGS_GOAL_FACTORY = clazz.getConstructor(EvokerEntity.class);
+            FANGS_GOAL_FACTORY = clazz.getDeclaredConstructor(EvokerEntity.class);
             FANGS_GOAL_FACTORY.setAccessible(true);
         } catch (ClassNotFoundException e) {
             throw new UncheckedReflectionException("Could not find the ConjureFangsGoal class", e);

@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,12 +27,15 @@ import ladysnake.requiem.common.RequiemComponents;
 import ladysnake.requiem.common.entity.ai.attribute.AttributeHelper;
 import ladysnake.requiem.common.entity.ai.attribute.PossessionDelegatingAttribute;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.util.InventoryHelper;
 import ladysnake.requiem.mixin.possession.player.LivingEntityAccessor;
+import net.minecraft.client.network.packet.EntityAttributesS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -167,6 +170,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 }
                 ((LivingEntityAccessor)player).invokeDropInventory();
                 player.clearStatusEffects();
+                RequiemNetworking.sendToAllTrackingIncluding(player, new EntityAttributesS2CPacket(player.getEntityId(), ((EntityAttributeContainer) player.getAttributes()).buildTrackedAttributesCollection()));
                 Entity ridden = player.getVehicle();
                 if (ridden != null) {
                     player.stopRiding();

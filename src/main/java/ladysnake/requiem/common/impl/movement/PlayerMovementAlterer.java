@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,9 +56,9 @@ public class PlayerMovementAlterer implements MovementAlterer {
     @Override
     public void applyConfig() {
         if (getActualFlightMode(config, player) == DISABLED) {
-            MOVEMENT_ALTERER_ABILITIES.revokeFrom(player, VanillaAbilities.ALLOW_FLYING);
+            Pal.revokeAbility(player, VanillaAbilities.ALLOW_FLYING, MOVEMENT_ALTERER_ABILITIES);
         } else {
-            MOVEMENT_ALTERER_ABILITIES.grantTo(player, VanillaAbilities.ALLOW_FLYING);
+            Pal.grantAbility(player, VanillaAbilities.ALLOW_FLYING, MOVEMENT_ALTERER_ABILITIES);
         }
     }
 

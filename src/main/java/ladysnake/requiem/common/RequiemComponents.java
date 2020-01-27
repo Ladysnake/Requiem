@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,9 +32,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
 public final class RequiemComponents {
+    @SuppressWarnings("rawtypes")
     public static final ComponentType<SubDataManager> DIALOGUES = ComponentRegistry.INSTANCE.registerIfAbsent(
             Requiem.id("dialogue_registry"), SubDataManager.class
     );
+    @SuppressWarnings("rawtypes")
     public static final ComponentType<SubDataManager> MOVEMENT_ALTERERS = ComponentRegistry.INSTANCE.registerIfAbsent(
             Requiem.id("movement_alterer"), SubDataManager.class
     );

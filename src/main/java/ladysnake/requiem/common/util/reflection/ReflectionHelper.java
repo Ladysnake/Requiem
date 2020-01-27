@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@ import java.lang.invoke.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
@@ -35,6 +37,7 @@ import static org.apiguardian.api.API.Status.STABLE;
 public class ReflectionHelper {
 
     public static final String INTERMEDIARY = "intermediary";
+    public static final Pattern LTYPE_PATTERN = Pattern.compile("L(.*?);");
 
     @API(status = MAINTAINED, since = "1.0.0")
     public static boolean isDevEnv() {
@@ -43,12 +46,36 @@ public class ReflectionHelper {
 
     @API(status = MAINTAINED, since = "1.0.0")
     public static String getMethodDescriptor(Class<?> returnType, Class<?>... parameterTypes) {
-        return Type.getMethodDescriptor(Type.getType(returnType), Arrays.stream(parameterTypes).map(Type::getType).toArray(Type[]::new));
+        return Type.getMethodDescriptor(Type.getType(returnType), Arrays.stream(parameterTypes).map(ReflectionHelper::getUnmappedType).toArray(Type[]::new));
+    }
+
+    /**
+     * Finds the {@link Type} of the given class in the intermediary namespace.
+     *
+     * <p> If {@code clazz} has no mappings, this method behaves as if:
+     * {@code Type.getDescriptor(clazz)}.
+     *
+     * @param clazz a class of which to find the unmapped type
+     * @return the unmapped type
+     */
+    private static Type getUnmappedType(Class<?> clazz) {
+        /*
+        * Note that we cannot directly check if the class has a mapping, because of array types.
+        * As such, we unmap the core class of the parsed descriptor.
+        */
+        String desc = Type.getDescriptor(clazz);
+        Matcher lMatch = LTYPE_PATTERN.matcher(desc);
+        if (lMatch.find()) {
+            String coreClass = lMatch.group(1).replace('/', '.');
+            String unmappedType = getMappingResolver().unmapClassName(INTERMEDIARY, coreClass);
+            desc = lMatch.replaceFirst("L" + unmappedType.replace('.', '/') + ";");
+        }
+        return Type.getType(desc);
     }
 
     @API(status = MAINTAINED, since = "1.0.0")
     public static String getFieldDescriptor(Class<?> type) {
-        return Type.getType(type).getDescriptor();
+        return getUnmappedType(type).getDescriptor();
     }
 
     @SuppressWarnings("unchecked")
@@ -60,7 +87,7 @@ public class ReflectionHelper {
     /**
      * Finds a method with the specified Intermediary name and parameters in the given class and generates a {@link Method} for it.
      *
-     * @param clazz            The class to find the method on.
+     * @param owner            The class to find the method on.
      * @param intermediaryName The intermediary name of the method to find (used in obfuscated environments, e.g. "method_1234").
      *                         If the method has no intermediary name (ie. not obfuscated), the visible name should be used.
      * @param returnType       The return type of the method to find.
@@ -70,11 +97,12 @@ public class ReflectionHelper {
      * @apiNote for performance, store the returned value and avoid calling this repeatedly.
      */
     @API(status = MAINTAINED, since = "1.0.0")
-    public static Method findMethodFromIntermediary(Class<?> clazz, String intermediaryName, Class<?> returnType, Class<?>... parameterTypes) throws UnableToFindMethodException {
+    public static Method findMethodFromIntermediary(Class<?> owner, String intermediaryName, Class<?> returnType, Class<?>... parameterTypes) throws UnableToFindMethodException {
         try {
             String methodDesc = getMethodDescriptor(returnType, parameterTypes);
-            String mappedName = getMappingResolver().mapMethodName(INTERMEDIARY, clazz.getName(), intermediaryName, methodDesc);
-            Method m = clazz.getDeclaredMethod(mappedName, parameterTypes);
+            String intermediaryOwner = getMappingResolver().unmapClassName(INTERMEDIARY, owner.getName());
+            String mappedName = getMappingResolver().mapMethodName(INTERMEDIARY, intermediaryOwner, intermediaryName, methodDesc);
+            Method m = owner.getDeclaredMethod(mappedName, parameterTypes);
             m.setAccessible(true);
             return m;
         } catch (NoSuchMethodException e) {
@@ -85,7 +113,7 @@ public class ReflectionHelper {
     /**
      * Finds a field with the specified name and type in the given class and returns an accessible {@link Field} object representing it.
      *
-     * @param clazz            The class to find the method on.
+     * @param owner            The class to find the method on.
      * @param intermediaryName The intermediary name of the field to find (used in obfuscated environments, i.e. "field_1234").
      * @param type             The type of the field to find.
      * @return A handle for the getter of the field with the specified name and type in the given class.
@@ -93,10 +121,12 @@ public class ReflectionHelper {
      * @apiNote for performance, store the returned value and avoid calling this repeatedly.
      */
     @API(status = MAINTAINED, since = "1.0.0")
-    public static Field findFieldFromIntermediary(Class<?> clazz, String intermediaryName, Class<?> type) throws UnableToFindFieldException {
+    public static Field findFieldFromIntermediary(Class<?> owner, String intermediaryName, Class<?> type) throws UnableToFindFieldException {
         try {
-            String deobfName = getMappingResolver().mapFieldName(INTERMEDIARY, clazz.getName(), intermediaryName, getFieldDescriptor(type));
-            Field f = clazz.getDeclaredField(deobfName);
+            String fieldDesc = getFieldDescriptor(type);
+            String intermediaryOwner = getMappingResolver().unmapClassName(INTERMEDIARY, owner.getName());
+            String mappedName = getMappingResolver().mapFieldName(INTERMEDIARY, intermediaryOwner, intermediaryName, fieldDesc);
+            Field f = owner.getDeclaredField(mappedName);
             f.setAccessible(true);
             return f;
         } catch (NoSuchFieldException e) {

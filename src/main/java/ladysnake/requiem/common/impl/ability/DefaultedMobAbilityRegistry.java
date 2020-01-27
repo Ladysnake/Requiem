@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ public class DefaultedMobAbilityRegistry implements MobAbilityRegistry {
 
     @Nullable
     private <E extends MobEntity> MobAbilityConfig<? super E> getRegisteredConfig(EntityType<?> entityType) {
-        @SuppressWarnings({"unchecked", "SuspiciousMethodCalls"}) MobAbilityConfig<E> ret = (MobAbilityConfig<E>) this.configs.get(entityType);
+        @SuppressWarnings("unchecked") MobAbilityConfig<E> ret = (MobAbilityConfig<E>) this.configs.get(entityType);
         return ret;
     }
 
