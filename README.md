@@ -55,7 +55,6 @@ Most mods that render the player (eg. Paper Doll) will display the possessed ent
 
 Known Incompatibilities:
 - First Person Mod: Makes the possessed mob appear in first person, blocking the sight.
-- Immersive Portals: Possessed entities randomly vanish when traversing a nether portal.
 - Optifine/Optifabric: The Fast Maths and Fast Render option is incompatible with Requiem.
 - Optifine shaders: VanillaPlus works as is. More complex shaders may need to be turned off on load, but they can be re-enabled while playing.
 
