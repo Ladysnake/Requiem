@@ -42,7 +42,7 @@ public abstract class EffectCommandMixin {
 
     // ModifyVariable to capture the entity more easily
     @ModifyVariable(method = "executeClear(Lnet/minecraft/server/command/ServerCommandSource;Ljava/util/Collection;Lnet/minecraft/entity/effect/StatusEffect;)I",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;tryRemoveStatusEffect(Lnet/minecraft/entity/effect/StatusEffect;)Z", shift = At.Shift.AFTER))
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;removeStatusEffect(Lnet/minecraft/entity/effect/StatusEffect;)Z", shift = At.Shift.AFTER))
     private static Entity actuallyClearSoulboundEffect(Entity entity, ServerCommandSource source, Collection<Entity> targets, StatusEffect effect) {
         if (entity instanceof StatusEffectReapplicator) {
             ((StatusEffectReapplicator) entity).getReappliedStatusEffects().removeIf(e -> e.getEffectType() == effect);

@@ -22,8 +22,8 @@ import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.mixin.client.texture.SpriteAtlasHolderAccessor;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.container.Container;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -38,7 +38,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AbstractInventoryScreen.class)
-public abstract class AbstractInventoryScreenMixin<T extends Container> extends AbstractContainerScreen<T> {
+public abstract class AbstractInventoryScreenMixin<T extends Container> extends ContainerScreen<T> {
     @Unique
     private StatusEffectInstance renderedEffect;
     @Unique

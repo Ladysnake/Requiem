@@ -260,7 +260,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
                 this.setVelocity(player.getVelocity());
                 this.move(MovementType.SELF, this.getVelocity());
-                this.setPosition(player.getX(), player.getY(), player.getZ());
+                this.updatePosition(player.getX(), player.getY(), player.getZ());
                 // update limb movement
                 this.limbAngle = player.limbAngle;
                 this.limbDistance = player.limbDistance;
@@ -327,7 +327,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     private void onStatusEffectRemoved(StatusEffectInstance effect, CallbackInfo ci) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor instanceof ServerPlayerEntity) {
-            possessor.tryRemoveStatusEffect(effect.getEffectType());
+            possessor.removeStatusEffect(effect.getEffectType());
         }
     }
 

@@ -71,12 +71,12 @@ public abstract class PlayerManagerMixin {
 
     @Shadow @Final private List<ServerPlayerEntity> players;
 
-    @Inject(method = "onPlayerConnect", at = @At(value = "NEW", target = "net/minecraft/client/network/packet/SynchronizeTagsS2CPacket"))
+    @Inject(method = "onPlayerConnect", at = @At(value = "NEW", target = "net/minecraft/network/packet/s2c/play/SynchronizeTagsS2CPacket"))
     private void synchronizeServerData(ClientConnection conn, ServerPlayerEntity player, CallbackInfo ci) {
         SyncServerResourcesCallback.EVENT.invoker().onServerSync(player);
     }
 
-    @Inject(method = "onDataPacksReloaded", at = @At(value = "NEW", target = "net/minecraft/client/network/packet/SynchronizeTagsS2CPacket"))
+    @Inject(method = "onDataPacksReloaded", at = @At(value = "NEW", target = "net/minecraft/network/packet/s2c/play/SynchronizeTagsS2CPacket"))
     private void synchronizeServerData(CallbackInfo ci) {
         for (ServerPlayerEntity player : this.players) {
             SyncServerResourcesCallback.EVENT.invoker().onServerSync(player);
@@ -186,7 +186,7 @@ public abstract class PlayerManagerMixin {
         REQUIEM$RESPAWN_WORLD.set(clone.getServerWorld());
         // Prevent players from respawning in fairly bad conditions
         while(!clone.world.doesNotCollide(clone) && clone.getY() < 256.0D) {
-            clone.setPosition(clone.getX(), clone.getY() + 1.0D, clone.getZ());
+            clone.updatePosition(clone.getX(), clone.getY() + 1.0D, clone.getZ());
         }
     }
 

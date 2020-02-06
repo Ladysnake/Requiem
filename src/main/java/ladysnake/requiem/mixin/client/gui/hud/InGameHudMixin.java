@@ -29,7 +29,7 @@ import ladysnake.requiem.mixin.client.texture.SpriteAtlasHolderAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -159,7 +159,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     @Inject(method = "renderStatusEffectOverlay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;blit(IIIIII)V", shift = At.Shift.AFTER))
     private void restoreDrawnBackground(CallbackInfo ci) {
         if (boundSpecialBackground) {
-            this.client.getTextureManager().bindTexture(AbstractContainerScreen.BACKGROUND_TEXTURE);
+            this.client.getTextureManager().bindTexture(ContainerScreen.BACKGROUND_TEXTURE);
             boundSpecialBackground = false;
         }
     }

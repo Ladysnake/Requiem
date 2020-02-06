@@ -45,7 +45,7 @@ public class GhastFireballAbility extends IndirectAbilityBase<MobEntity> {
             this.owner.world.playLevelEvent(null, 1016, new BlockPos(this.owner), 0);
             FireballEntity fireball = new FireballEntity(this.owner.world, this.owner, rot.x, rot.y, rot.z);
             fireball.explosionPower = this.owner instanceof GhastEntity ? ((GhastEntity) this.owner).getFireballStrength() : 1;
-            fireball.setPosition(
+            fireball.updatePosition(
                 this.owner.getX() + scaledRot.x * 4.0D,
                 this.owner.getY() + (double)(this.owner.getHeight() / 2.0F) + 0.5D,
                 this.owner.getZ() + scaledRot.z * 4.0D

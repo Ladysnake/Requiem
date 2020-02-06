@@ -61,7 +61,7 @@ public class AttritionStatusEffect extends StatusEffect {
     }
 
     @Override
-    public double method_5563(int amplifier, EntityAttributeModifier entityAttributeModifier) {
-        return super.method_5563(Math.min(amplifier, 3), entityAttributeModifier);
+    public double adjustModifierAmount(int amplifier, EntityAttributeModifier entityAttributeModifier) {
+        return super.adjustModifierAmount(Math.min(amplifier, 3), entityAttributeModifier);
     }
 }
