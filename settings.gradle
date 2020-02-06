@@ -13,5 +13,5 @@ rootProject.name = 'Requiem'
 
 ['pandemonium'].forEach {
     include it
-    project(":$it").projectDir = file("expansions/" + it)
+    project(":$it").projectDir = file("expansions/$it")
 }

@@ -59,7 +59,7 @@ public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
                 rot.y,
                 rot.z + this.owner.getRandom().nextGaussian() * (double)f
         );
-        fireball.setPosition(this.owner.getX(), this.owner.getY() + (double)(this.owner.getHeight() / 2.0F) + 0.5D, this.owner.getZ());
+        fireball.updatePosition(this.owner.getX(), this.owner.getY() + (double)(this.owner.getHeight() / 2.0F) + 0.5D, this.owner.getZ());
         this.owner.world.spawnEntity(fireball);
         return true;
     }

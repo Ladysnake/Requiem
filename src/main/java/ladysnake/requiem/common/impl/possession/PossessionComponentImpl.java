@@ -33,7 +33,6 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.util.InventoryHelper;
 import ladysnake.requiem.mixin.possession.player.LivingEntityAccessor;
-import net.minecraft.client.network.packet.EntityAttributesS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
@@ -44,6 +43,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -190,7 +190,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 // careful with ConcurrentModificationException
                 for (StatusEffectInstance effect : possessed.getStatusEffects().toArray(new StatusEffectInstance[0])) {
                     if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
-                        possessed.tryRemoveStatusEffect(effect.getEffectType());
+                        possessed.removeStatusEffect(effect.getEffectType());
                         player.addStatusEffect(new StatusEffectInstance(effect));
                     }
                 }
@@ -249,7 +249,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
     public void startCuring() {
         Random rand = this.player.getRandom();
         this.conversionTimer = rand.nextInt(1201) + 2400;  // a bit shorter than villager
-        this.player.tryRemoveStatusEffect(StatusEffects.WEAKNESS);
+        this.player.removeStatusEffect(StatusEffects.WEAKNESS);
         this.player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, conversionTimer, 0));
         this.player.world.playSound(null, this.player.getX() + 0.5D, this.player.getY() + 0.5D, this.player.getZ() + 0.5D, SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, this.player.getSoundCategory(), 1.0F + rand.nextFloat(), rand.nextFloat() * 0.7F + 0.3F);
     }
@@ -263,7 +263,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 if (possessedEntity != null) {
                     this.asRequiemPlayer().asRemnant().setSoul(false);
                     possessedEntity.remove();
-                    this.player.tryRemoveStatusEffect(RequiemStatusEffects.ATTRITION);
+                    this.player.removeStatusEffect(RequiemStatusEffects.ATTRITION);
                     this.player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
                     this.player.world.playLevelEvent(null, 1027, new BlockPos(this.player), 0);
                 }

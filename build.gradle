@@ -44,6 +44,7 @@ allprojects {
     }
 
     repositories {
+        mavenLocal()
         mavenCentral()
         maven {
             url 'http://maven.fabricmc.net/'
@@ -185,16 +186,24 @@ repositories {
 }
 
 dependencies {
-    modApi("com.github.Ladysnake:Satin:${rootProject.satin_version}")
-    include "com.github.Ladysnake:Satin:${satin_version}"
+    modApi("io.github.ladysnake:Satin:${rootProject.satin_version}") {
+        transitive = false
+    }
+    include "io.github.ladysnake:Satin:${satin_version}"
     modRuntime ("io.github.prospector:modmenu:${modmenu_version}") {
         transitive = false
     }
-    modApi "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}"
+    modApi ("com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}") {
+        transitive = false
+    }
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}"
-    modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
+    modImplementation ("com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}") {
+        transitive = false
+    }
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
-    modImplementation "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
+    modImplementation ("io.github.ladysnake:PlayerAbilityLib:${pal_version}") {
+        transitive = false
+    }
     include "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
     // libcd
     modRuntime ("io.github.cottonmc:Jankson-Fabric:${jankson_version}") {
