@@ -21,6 +21,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.client.render.RequiemBuilderStorage;
 import ladysnake.satin.api.event.EntitiesPostRenderCallback;
 import ladysnake.satin.api.event.ResolutionChangeCallback;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
@@ -131,6 +132,8 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
 
     @Override
     public void renderShaderEffects(float tickDelta) {
+        RequiemBuilderStorage.INSTANCE.getRequiemVertexConsumers().draw();
+
         if (this.possessionTarget != null && this.possessionTarget.get() != null) {
             uniformSlider.set((fishEyeAnimation - tickDelta) / 40 + 0.25f);
             fishEyeShader.render(tickDelta);
@@ -176,13 +179,11 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
     public void onEntitiesRendered(Camera camera, Frustum frustum, float tickDelta) {
         Entity possessed = getAnimationEntity();
         if (possessed != null) {
-            if (this.framebuffer == null) {
-                this.framebuffer = new Framebuffer(mc.getWindow().getWidth(), mc.getWindow().getHeight(), true, MinecraftClient.IS_SYSTEM_MAC);
-            }
-            this.framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
+            Framebuffer framebuffer = this.getFramebuffer();
+            framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
             RenderSystem.disableFog();
             // TODO use a custom VertexConsumerProvider
-            this.framebuffer.beginWrite(false);
+            framebuffer.beginWrite(false);
 
 //            this.mc.getEntityRenderManager().render(possessed, tickDelta);
             this.mc.getFramebuffer().beginWrite(false);
@@ -194,5 +195,12 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
         if (this.framebuffer != null) {
             this.framebuffer.resize(newWidth, newHeight, MinecraftClient.IS_SYSTEM_MAC);
         }
+    }
+
+    public Framebuffer getFramebuffer() {
+        if (this.framebuffer == null) {
+            this.framebuffer = new Framebuffer(mc.getWindow().getWidth(), mc.getWindow().getHeight(), true, MinecraftClient.IS_SYSTEM_MAC);
+        }
+        return framebuffer;
     }
 }

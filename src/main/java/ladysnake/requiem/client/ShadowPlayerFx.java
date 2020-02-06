@@ -124,4 +124,8 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
         }
     }
 
+    @Nullable
+    public Framebuffer getPlayersFramebuffer() {
+        return playersFramebuffer;
+    }
 }
