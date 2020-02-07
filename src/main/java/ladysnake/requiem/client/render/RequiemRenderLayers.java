@@ -22,6 +22,7 @@ public final class RequiemRenderLayers extends RenderPhase {
     private static final Target ZOOM_ENTITY_TARGET = new Target("requiem:zoom_entity_target", () -> {
         RequiemFx.INSTANCE.getFramebuffer().beginWrite(false);
     }, () -> {
+        RequiemFx.INSTANCE.getFramebuffer().clear(MinecraftClient.IS_SYSTEM_MAC);
         MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
     });
 
