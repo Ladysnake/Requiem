@@ -28,6 +28,8 @@ import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.network.ClientMessageHandling;
 import ladysnake.requiem.client.render.RequiemBuilderStorage;
+import ladysnake.requiem.client.render.entity.HorologistEntityRenderer;
+import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
@@ -35,6 +37,7 @@ import ladysnake.satin.api.event.BufferBuildersInitCallback;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
 import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
@@ -80,6 +83,7 @@ public class RequiemClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientMessageHandling.init();
+        EntityRendererRegistry.INSTANCE.register(RequiemEntities.HOROLOGIST, (r, it) -> new HorologistEntityRenderer(r));
         registerCallbacks();
     }
 
