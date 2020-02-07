@@ -132,7 +132,7 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
 
     @Override
     public void renderShaderEffects(float tickDelta) {
-        RequiemBuilderStorage.INSTANCE.getRequiemVertexConsumers().draw();
+        drawZoomFramebuffer();
 
         if (this.possessionTarget != null && this.possessionTarget.get() != null) {
             uniformSlider.set((fishEyeAnimation - tickDelta) / 40 + 0.25f);
@@ -175,19 +175,22 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
         }
     }
 
+    private boolean canDrawEntityOutlines() {
+        return this.framebuffer != null && !this.fishEyeShader.isErrored() && MinecraftClient.getInstance().player != null;
+    }
+
+    private void drawZoomFramebuffer() {
+        if (this.canDrawEntityOutlines()) {
+            RenderSystem.enableBlend();
+            RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
+            RequiemBuilderStorage.INSTANCE.getRequiemVertexConsumers().draw();
+            RenderSystem.disableBlend();
+        }
+    }
+
     @Override
     public void onEntitiesRendered(Camera camera, Frustum frustum, float tickDelta) {
-        Entity possessed = getAnimationEntity();
-        if (possessed != null) {
-            Framebuffer framebuffer = this.getFramebuffer();
-            framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
-            RenderSystem.disableFog();
-            // TODO use a custom VertexConsumerProvider
-            framebuffer.beginWrite(false);
 
-//            this.mc.getEntityRenderManager().render(possessed, tickDelta);
-            this.mc.getFramebuffer().beginWrite(false);
-        }
     }
 
     @Override
