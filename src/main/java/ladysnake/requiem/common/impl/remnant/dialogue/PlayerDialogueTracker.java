@@ -46,7 +46,7 @@ public final class PlayerDialogueTracker implements DialogueTracker {
         if (!this.player.world.isClient) {
             this.manager.getAction(action).handle((ServerPlayerEntity) this.player);
         } else {
-            Requiem.LOGGER.warn("DialogueTrackerImpl#handleAction called on the wrong side !");
+            Requiem.LOGGER.warn("PlayerDialogueTracker#handleAction called on the wrong side !");
         }
     }
 
