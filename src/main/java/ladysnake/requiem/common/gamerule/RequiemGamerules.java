@@ -23,6 +23,8 @@ import net.minecraft.world.GameRules;
 public class RequiemGamerules {
     public static final GameRules.RuleKey<GameRules.BooleanRule> SHOW_POSSESSOR_NAMETAG =
         register("showPossessorNameTag", GameruleHelper.createBooleanRule(false));
+    public static final GameRules.RuleKey<GameRules.BooleanRule> SPAWN_HELP_ENDERMEN =
+        register("spawn_help_endermen", GameruleHelper.createBooleanRule(true));
     public static final GameRules.RuleKey<EnumRule<StartingRemnantType>> STARTING_SOUL_MODE =
         register("startingRemnantType", GameruleHelper.createEnumRule(StartingRemnantType.CHOOSE));
 
