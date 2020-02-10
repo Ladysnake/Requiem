@@ -24,6 +24,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
 import ladysnake.requiem.common.remnant.ClosedSpaceDetector;
 import net.minecraft.entity.player.PlayerEntity;
@@ -89,7 +90,9 @@ public class MutableRemnantState implements RemnantState {
                 if (!this.lastTickIncorporeal) {
                     this.closedSpaceDetector.reset(false);
                 }
-                this.closedSpaceDetector.tick();
+                if (player.world.getGameRules().getBoolean(RequiemGamerules.SPAWN_HELP_ENDERMEN)) {
+                    this.closedSpaceDetector.tick();
+                }
             }
         }
         this.lastTickIncorporeal = incorporeal;
