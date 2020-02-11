@@ -18,6 +18,7 @@
 package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.common.entity.HorologistManager;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,6 +28,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class DebugItem extends Item {
@@ -56,6 +58,9 @@ public class DebugItem extends Item {
                     }
                     break;
                 case 1:
+                    if (!world.isClient) {
+                        HorologistManager.trySpawnHorologistAt(player.world, new BlockPos.Mutable(player));
+                    }
                     break;
             }
         }
