@@ -23,6 +23,7 @@ import io.github.ladysnake.pal.VanillaAbilities;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.common.RequiemComponents;
+import ladysnake.requiem.common.entity.HorologistManager;
 import ladysnake.requiem.common.util.DamageSourceSerialization;
 import nerdhub.cardinal.components.api.ComponentType;
 import nerdhub.cardinal.components.api.util.sync.EntitySyncedComponent;
@@ -55,6 +56,9 @@ public class RevivingDeathSuspender implements DeathSuspender, EntitySyncedCompo
         Pal.grantAbility(player, VanillaAbilities.INVULNERABLE, DEATH_SUSPENSION_ABILITIES);
         this.deathCause = deathCause;
         this.setLifeTransient(true);
+        if (!this.player.world.isClient) {
+            HorologistManager.trySpawnHorologistAround(this.player.world, this.player.getBlockPos());
+        }
         this.sync();
     }
 

@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 
 public class HorologistEntity extends PassiveEntity implements Npc {
-    public HorologistEntity(EntityType<? extends PassiveEntity> type, World world) {
+    public HorologistEntity(EntityType<? extends HorologistEntity> type, World world) {
         super(type, world);
     }
 
