@@ -1,6 +1,9 @@
 package ladysnake.requiem.common.entity;
 
+import nerdhub.cardinal.components.api.component.Component;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -8,12 +11,22 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
+import java.util.UUID;
 
-public class HorologistManager {
-    public static Optional<HorologistEntity> trySpawnHorologistAround(World world, BlockPos pos) {
+public final class HorologistManager implements Component {
+    private static final UUID HOROLOGIST_UUID = UUID.fromString("578c808d-b9ef-46c3-b628-1246c8b54e65");
+
+    private boolean busy = false;
+
+    public Optional<HorologistEntity> trySpawnHorologistAround(ServerWorld world, BlockPos pos) {
+
+        if (isHorologistBusy()) {
+            return Optional.empty();
+        }
+
         int xCenter = pos.getX();
         int yCenter = pos.getY();
         int zCenter = pos.getZ();
@@ -40,7 +53,11 @@ public class HorologistManager {
         return Optional.empty();
     }
 
-    public static Optional<HorologistEntity> trySpawnHorologistAt(World world, BlockPos.Mutable pos) {
+    public Optional<HorologistEntity> trySpawnHorologistAt(ServerWorld world, BlockPos.Mutable pos) {
+        if (isHorologistBusy()) {
+            return Optional.empty();
+        }
+
         VoxelShape voxelShape = world.getBlockState(pos).getCollisionShape(world, pos);
         if (!(voxelShape.getMaximum(Direction.Axis.Y) > 0.4375D)) {
 
@@ -64,11 +81,7 @@ public class HorologistManager {
                         vec3d.y + (double) type.getHeight(),
                         vec3d.z + (double) radius
                     ))) {
-                        HorologistEntity horologist = new HorologistEntity(RequiemEntities.HOROLOGIST, world);
-                        horologist.updatePosition(vec3d.x, vec3d.y, vec3d.z);
-                        world.spawnEntity(horologist);
-                        ((ServerWorld) world).spawnParticles(ParticleTypes.PORTAL, vec3d.x, vec3d.y, vec3d.z, 100, 0.1, 0.1, 0.1, 0.1);
-                        return Optional.of(horologist);
+                        return retrieveHorologistEntity(world, vec3d);
                     }
                 }
             }
@@ -76,4 +89,40 @@ public class HorologistManager {
         return Optional.empty();
     }
 
+    public boolean isHorologistBusy() {
+        return this.busy;
+    }
+
+    public void freeHorologist() {
+        this.busy = false;
+    }
+
+    @Nonnull
+    private Optional<HorologistEntity> retrieveHorologistEntity(ServerWorld world, Vec3d vec3d) {
+        Entity horologist = world.getEntity(HOROLOGIST_UUID);
+        if (!(horologist instanceof HorologistEntity)) {
+            if (horologist != null) {
+                world.removeEntity(horologist);
+            }
+            horologist = new HorologistEntity(RequiemEntities.HOROLOGIST, world);
+            horologist.setUuid(HOROLOGIST_UUID);
+        }
+        horologist.updatePosition(vec3d.x, vec3d.y, vec3d.z);
+        if (!world.spawnEntity(horologist)) {
+            return Optional.empty();
+        }
+        world.spawnParticles(ParticleTypes.PORTAL, vec3d.x, vec3d.y, vec3d.z, 100, 0.1, 0.1, 0.1, 0.1);
+        return Optional.of((HorologistEntity) horologist);
+    }
+
+    @Override
+    public void fromTag(CompoundTag tag) {
+        this.busy = tag.getBoolean("busy");
+    }
+
+    @Override
+    public CompoundTag toTag(CompoundTag tag) {
+        tag.putBoolean("busy", this.busy);
+        return tag;
+    }
 }
