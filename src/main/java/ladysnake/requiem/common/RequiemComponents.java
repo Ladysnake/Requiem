@@ -19,16 +19,22 @@ package ladysnake.requiem.common;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.common.entity.HorologistManager;
 import ladysnake.requiem.common.impl.remnant.RevivingDeathSuspender;
 import nerdhub.cardinal.components.api.ComponentRegistry;
 import nerdhub.cardinal.components.api.ComponentType;
 import nerdhub.cardinal.components.api.event.EntityComponentCallback;
+import nerdhub.cardinal.components.api.event.LevelComponentCallback;
 import net.minecraft.entity.player.PlayerEntity;
 
 public final class RequiemComponents {
     public static final ComponentType<DeathSuspender> DEATH_SUSPENDER = ComponentRegistry.INSTANCE.registerIfAbsent(
             Requiem.id("death_suspension"), DeathSuspender.class
     ).attach(EntityComponentCallback.event(PlayerEntity.class), RevivingDeathSuspender::new);
+
+    public static final ComponentType<HorologistManager> HOROLOGIST_MANAGER = ComponentRegistry.INSTANCE.registerIfAbsent(
+        Requiem.id("horologist_manager"), HorologistManager.class
+    ).attach(LevelComponentCallback.EVENT, p -> new HorologistManager());
 
     public static void init() {
         // NO-OP

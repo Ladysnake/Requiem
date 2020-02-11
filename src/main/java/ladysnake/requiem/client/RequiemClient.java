@@ -79,6 +79,7 @@ import static net.minecraft.client.gui.DrawableHelper.GUI_ICONS_LOCATION;
 public class RequiemClient implements ClientModInitializer {
 
     private static final Identifier POSSESSION_ICON = Requiem.id("textures/gui/possession_icon.png");
+    private static int timeBeforeDialogueGui;
 
     @Override
     public void onInitializeClient() {
@@ -113,9 +114,13 @@ public class RequiemClient implements ClientModInitializer {
     private static void clientTick(MinecraftClient client) {
         if (client.player != null && client.currentScreen == null) {
             if (((RequiemPlayer) client.player).getDeathSuspender().isLifeTransient()) {
-                DialogueTracker dialogueTracker = ((RequiemPlayer) client.player).getDialogueTracker();
-                dialogueTracker.startDialogue(Requiem.id("remnant_choice"));
-                client.openScreen(new CutsceneDialogueScreen(new TranslatableText("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue()));
+                if (--timeBeforeDialogueGui == 0) {
+                    DialogueTracker dialogueTracker = ((RequiemPlayer) client.player).getDialogueTracker();
+                    dialogueTracker.startDialogue(Requiem.id("remnant_choice"));
+                    client.openScreen(new CutsceneDialogueScreen(new TranslatableText("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue()));
+                } else if (timeBeforeDialogueGui < 0) {
+                    timeBeforeDialogueGui = 20;
+                }
             }
             MobEntity possessedEntity = ((RequiemPlayer) client.player).asPossessor().getPossessedEntity();
             if (possessedEntity != null && possessedEntity.isOnFire()) {

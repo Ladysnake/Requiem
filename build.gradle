@@ -193,14 +193,14 @@ dependencies {
     modRuntime ("io.github.prospector:modmenu:${modmenu_version}") {
         transitive = false
     }
-    modApi ("com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}") {
-        transitive = false
-    }
+    modApi ("com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}")
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}"
-    modImplementation ("com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}") {
-        transitive = false
-    }
+    modImplementation ("com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}")
     include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
+    modImplementation ("com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}")
+    include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
+    modImplementation ("com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-level:${cca_version}")
+    include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-level:${cca_version}"
     modImplementation ("io.github.ladysnake:PlayerAbilityLib:${pal_version}") {
         transitive = false
     }

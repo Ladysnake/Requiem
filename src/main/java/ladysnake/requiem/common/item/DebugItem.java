@@ -18,12 +18,15 @@
 package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.common.entity.HorologistManager;
+import ladysnake.requiem.common.RequiemComponents;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.common.remnant.RemnantTypes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -42,7 +45,7 @@ public class DebugItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         if (player.isSneaking()) {
             if (!world.isClient) {
-                debugMode = (debugMode + 1) % 2;
+                debugMode = (debugMode + 1) % 3;
                 player.addChatMessage(new TranslatableText("Switched mode to %s", debugMode), true);
             }
         } else {
@@ -59,7 +62,14 @@ public class DebugItem extends Item {
                     break;
                 case 1:
                     if (!world.isClient) {
-                        HorologistManager.trySpawnHorologistAt(player.world, new BlockPos.Mutable(player));
+                        RequiemComponents.HOROLOGIST_MANAGER.get(world.getLevelProperties())
+                            .trySpawnHorologistAround((ServerWorld) player.world, new BlockPos.Mutable(player));
+                    }
+                    break;
+                case 2:
+                    if (!world.isClient) {
+                        RequiemPlayer.from(player).become(RemnantTypes.MORTAL);
+                        ((RequiemPlayer) player).getDeathSuspender().suspendDeath(DamageSource.CACTUS);
                     }
                     break;
             }
