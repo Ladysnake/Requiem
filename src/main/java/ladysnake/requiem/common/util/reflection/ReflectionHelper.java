@@ -46,7 +46,7 @@ public class ReflectionHelper {
 
     @API(status = MAINTAINED, since = "1.0.0")
     public static String getMethodDescriptor(Class<?> returnType, Class<?>... parameterTypes) {
-        return Type.getMethodDescriptor(Type.getType(returnType), Arrays.stream(parameterTypes).map(ReflectionHelper::getUnmappedType).toArray(Type[]::new));
+        return Type.getMethodDescriptor(getUnmappedType(returnType), Arrays.stream(parameterTypes).map(ReflectionHelper::getUnmappedType).toArray(Type[]::new));
     }
 
     /**
