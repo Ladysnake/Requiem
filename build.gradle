@@ -6,13 +6,14 @@ import net.fabricmc.loom.task.RemapJarTask
 import java.time.Year
 
 plugins {
-    id 'fabric-loom' version '0.2.7-SNAPSHOT'
+    id "fabric-loom" version "0.4-SNAPSHOT"
+    id "com.github.fudge.forgedflowerloom" version "2.0.0"
     id 'net.minecrell.licenser' version '0.4.1'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
     id "com.jfrog.bintray" version '1.8.4'
     id 'org.ajoberstar.grgit' version '3.1.1'
     id 'com.github.breadmoirai.github-release' version '2.2.9'
-    id 'com.wynprice.cursemaven' version '1.2.3'
+    id "com.wynprice.cursemaven" version "2.1.5"
     id 'maven-publish'
 }
 
@@ -215,7 +216,7 @@ dependencies {
     include "io.github.CottonMC:LibCD:${libcd_version}"
 
 //    modRuntime curse.resolve('immersive-portals-mod', 2845123)
-    modRuntime curse.resolve('mobz', 2841266)
+    modRuntime "curse.maven:mobz:2965825"
     modCompileOnly("io.github.Terrails:Health-Overlay:1.15-SNAPSHOT") {
         transitive = false
     }
