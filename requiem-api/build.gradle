@@ -1,0 +1,13 @@
+archivesBaseName = "Requiem-API"
+group = rootProject.group
+
+repositories {
+    maven {
+        name = 'Ladysnake Libs'
+        url = 'https://dl.bintray.com/ladysnake/libs'
+    }
+}
+
+dependencies {
+    modApi ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${rootProject.cca_version}")
+}

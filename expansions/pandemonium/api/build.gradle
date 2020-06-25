@@ -2,11 +2,5 @@ archivesBaseName = "${rootProject.archivesBaseName}-${project.name.toLowerCase(L
 group = "${rootProject.group}.${rootProject.archivesBaseName}"
 
 dependencies {
-    compile rootProject
-    compile project(":pandemonium-api")
-    include project(":pandemonium-api")
-}
-
-jar {
-    from rootProject.files("LICENSE-CODE", "LICENSE-ART")
+    compile project(":requiem-api")
 }
