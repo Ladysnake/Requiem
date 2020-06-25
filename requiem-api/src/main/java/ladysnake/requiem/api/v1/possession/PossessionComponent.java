@@ -33,7 +33,7 @@ public interface PossessionComponent {
      * Attempts to start possessing a mob.
      * <p>
      * Starting possession sets internal state for both the {@link Possessable mob} and the
-     * {@link ladysnake.requiem.api.v1.RequiemPlayer player} represented by this component.
+     * {@link RequiemPlayer player} represented by this component.
      * It will also make any necessary change to the global game state (eg. teleporting the
      * player to the possessed mob, or transferring equipment).
      * <p>
@@ -59,7 +59,7 @@ public interface PossessionComponent {
      * Attempts to start possessing a mob.
      * <p>
      * Starting possession sets internal state for both the {@link Possessable mob} and the
-     * {@link ladysnake.requiem.api.v1.RequiemPlayer player} represented by this component.
+     * {@link RequiemPlayer player} represented by this component.
      * It will also make any necessary change to the global game state (eg. teleporting the
      * player to the possessed mob, or transferring equipment).
      * <p>
