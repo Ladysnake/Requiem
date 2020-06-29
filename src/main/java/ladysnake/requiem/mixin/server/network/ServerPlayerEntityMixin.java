@@ -53,6 +53,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -72,14 +73,14 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
 
     @Unique private final Collection<StatusEffectInstance> reappliedEffects = new ArrayList<>();
 
+    public ServerPlayerEntityMixin(World world, BlockPos blockPos, GameProfile gameProfile) {
+        super(world, blockPos, gameProfile);
+    }
+
     @Shadow public abstract ServerWorld getServerWorld();
 
     @Shadow
     public abstract PlayerAdvancementTracker getAdvancementTracker();
-
-    public ServerPlayerEntityMixin(World world, GameProfile profile) {
-        super(world, profile);
-    }
 
     @Inject(method = "playerTick", at = @At("HEAD"), cancellable = true)
     private void stopTicking(CallbackInfo ci) {

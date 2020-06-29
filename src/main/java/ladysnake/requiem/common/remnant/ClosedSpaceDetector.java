@@ -42,7 +42,8 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -65,13 +66,13 @@ public class ClosedSpaceDetector {
     /**The player for which this detector is running*/
     private final PlayerEntity player;
     /**All blocks that have already been scanned*/
-    private Set<BlockPos> scannedBlocks = new HashSet<>();
+    private final Set<BlockPos> scannedBlocks = new HashSet<>();
     /** All blocks that should be scanned */
-    private FloodfillQueue<BlockPos> toScan = new FloodfillQueue<>();
+    private final FloodfillQueue<BlockPos> toScan = new FloodfillQueue<>();
     private int counter;
     // We do initialize it
     @SuppressWarnings("NotNullFieldNotInitialized")
-    private DimensionType scanDimension;
+    private RegistryKey<World> scanDimension;
     private boolean scanning;
 
     public ClosedSpaceDetector(PlayerEntity player) {
@@ -86,7 +87,7 @@ public class ClosedSpaceDetector {
             this.scannedBlocks.clear();
             this.toScan.clear();
             this.toScan.add(this.player.getBlockPos());
-            this.scanDimension = this.player.dimension;
+            this.scanDimension = this.player.world.getRegistryKey();
         }
     }
 
@@ -98,7 +99,7 @@ public class ClosedSpaceDetector {
         if (!this.scanning) {
             return;
         }
-        if (this.scanDimension != this.player.dimension) {
+        if (this.scanDimension != this.player.world.getRegistryKey()) {
             this.reset(false);
         }
         scanSurroundings();

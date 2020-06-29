@@ -27,8 +27,9 @@
   ],
 
   "depends": {
+    "minecraft": ">=1.16",
     "requiemapi": "${version}",
-    "satin": "^1.2.0"
+    "satin": "^1.4.0-"
   },
 
   "name": "Requiem",

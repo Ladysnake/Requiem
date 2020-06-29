@@ -42,8 +42,8 @@ import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
-import ladysnake.requiem.common.entity.ai.attribute.AttributeHelper;
-import ladysnake.requiem.common.entity.ai.attribute.PossessionDelegatingAttribute;
+import ladysnake.requiem.common.entity.attribute.DelegatingAttribute;
+import ladysnake.requiem.common.entity.attribute.PossessionDelegatingAttribute;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
 import ladysnake.requiem.common.network.RequiemNetworking;
@@ -52,8 +52,8 @@ import ladysnake.requiem.common.util.InventoryHelper;
 import ladysnake.requiem.mixin.possession.player.LivingEntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributeContainer;
+import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -64,7 +64,7 @@ import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -163,11 +163,14 @@ public final class PossessionComponentImpl implements PossessionComponent {
     }
 
     private void swapAttributes(PlayerEntity player) {
-        AbstractEntityAttributeContainer attributeMap = player.getAttributes();
+        AttributeContainer attributeMap = player.getAttributes();
         // Replace every registered attribute
-        for (EntityAttributeInstance current: attributeMap.values()) {
-            EntityAttributeInstance replacement = new PossessionDelegatingAttribute(attributeMap, current, this);
-            AttributeHelper.substituteAttributeInstance(attributeMap, replacement);
+        for (EntityAttribute attribute : Registry.ATTRIBUTE) {
+            // Note: this fills the attribute map for the player, whether this is an issue is to be determined
+            EntityAttributeInstance current = player.getAttributeInstance(attribute);
+            if (current != null) {
+                DelegatingAttribute.replaceAttribute(attributeMap, new PossessionDelegatingAttribute(current, this));
+            }
         }
     }
 
@@ -195,7 +198,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                     }
                     ((LivingEntityAccessor) player).invokeDropInventory();
                     player.clearStatusEffects();
-                    RequiemNetworking.sendToAllTrackingIncluding(player, new EntityAttributesS2CPacket(player.getEntityId(), ((EntityAttributeContainer) player.getAttributes()).buildTrackedAttributesCollection()));
+                    RequiemNetworking.sendToAllTrackingIncluding(player, new EntityAttributesS2CPacket(player.getEntityId(), player.getAttributes().getAttributesToSend()));
                     Entity ridden = player.getVehicle();
                     if (ridden != null) {
                         player.stopRiding();
@@ -282,7 +285,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                     possessedEntity.remove();
                     this.player.removeStatusEffect(RequiemStatusEffects.ATTRITION);
                     this.player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-                    this.player.world.playLevelEvent(null, 1027, new BlockPos(this.player), 0);
+                    this.player.world.syncWorldEvent(null, 1027, this.player.getBlockPos(), 0);
                 }
                 this.conversionTimer = -1;
             }

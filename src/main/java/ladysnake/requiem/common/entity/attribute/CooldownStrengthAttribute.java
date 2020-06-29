@@ -32,20 +32,31 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.world;
+package ladysnake.requiem.common.entity.attribute;
 
-import ladysnake.requiem.common.gamerule.RequiemGamerules;
-import net.minecraft.world.GameRules;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import ladysnake.requiem.api.v1.possession.Possessable;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.player.PlayerEntity;
 
-@Mixin(GameRules.class)
-public class GameRulesMixin {
-    @SuppressWarnings("UnresolvedMixinReference")
-    @Inject(method = "<clinit>", at = @At("RETURN"))
-    private static void initRequiemGamerules(CallbackInfo ci) {
-        RequiemGamerules.init();
+import java.util.Objects;
+
+public class CooldownStrengthAttribute extends DelegatingAttribute {
+    private final Possessable owner;
+
+    public <T extends LivingEntity & Possessable> CooldownStrengthAttribute(T entity) {
+        super(Objects.requireNonNull(entity.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
+        this.owner = entity;
+    }
+
+    @Override
+    public double getValue() {
+        final double strength = super.getValue();
+        PlayerEntity possessor = this.owner.getPossessor();
+        if (possessor != null) {
+            double attackCharge = possessor.getAttackCooldownProgress(0.5f);
+            return strength * (0.2F + attackCharge * attackCharge * 0.8F);
+        }
+        return strength;
     }
 }

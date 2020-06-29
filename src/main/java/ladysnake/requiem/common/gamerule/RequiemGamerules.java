@@ -35,22 +35,24 @@
 package ladysnake.requiem.common.gamerule;
 
 import ladysnake.requiem.Requiem;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
+import net.fabricmc.fabric.api.gamerule.v1.RuleFactory;
+import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
 import net.minecraft.world.GameRules;
 
 public class RequiemGamerules {
-    public static final GameRules.RuleKey<GameRules.BooleanRule> SHOW_POSSESSOR_NAMETAG =
-        register("showPossessorNameTag", GameruleHelper.createBooleanRule(false));
-    public static final GameRules.RuleKey<GameRules.BooleanRule> SPAWN_HELP_ENDERMEN =
-        register("spawn_help_endermen", GameruleHelper.createBooleanRule(true));
-    public static final GameRules.RuleKey<EnumRule<StartingRemnantType>> STARTING_SOUL_MODE =
-        register("startingRemnantType", GameruleHelper.createEnumRule(StartingRemnantType.CHOOSE));
+    public static final GameRules.Key<GameRules.BooleanRule> SHOW_POSSESSOR_NAMETAG =
+        register("showPossessorNameTag", RuleFactory.createBooleanRule(false), GameRules.Category.PLAYER);
+    public static final GameRules.Key<GameRules.BooleanRule> SPAWN_HELP_ENDERMEN =
+        register("spawn_help_endermen", RuleFactory.createBooleanRule(true), GameRules.Category.MISC);
+    public static final GameRules.Key<EnumRule<StartingRemnantType>> STARTING_SOUL_MODE =
+        register("startingRemnantType", RuleFactory.createEnumRule(StartingRemnantType.CHOOSE), GameRules.Category.PLAYER);
 
     public static void init() {
         // static init
     }
 
-    private static <T extends GameRules.Rule<T>> GameRules.RuleKey<T> register(String name, GameRules.RuleType<T> type) {
-        return GameruleHelper.register(Requiem.MOD_ID + ":" + name, type);
+    private static <T extends GameRules.Rule<T>> GameRules.Key<T> register(String name, GameRules.Type<T> type, GameRules.Category category) {
+        return GameRuleRegistry.register(Requiem.MOD_ID + ":" + name, category, type);
     }
-
 }

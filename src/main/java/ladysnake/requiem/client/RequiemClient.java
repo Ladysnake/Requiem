@@ -46,23 +46,25 @@ import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.network.ClientMessageHandling;
 import ladysnake.requiem.client.render.RequiemBuilderStorage;
 import ladysnake.requiem.client.render.entity.HorologistEntityRenderer;
+import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import ladysnake.satin.api.event.BufferBuildersInitCallback;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
-import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
-import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -70,12 +72,12 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.tag.ItemTags;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -83,14 +85,11 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import static net.minecraft.client.gui.DrawableHelper.GUI_ICONS_LOCATION;
 
 @CalledThroughReflection
 public class RequiemClient implements ClientModInitializer {
@@ -102,17 +101,27 @@ public class RequiemClient implements ClientModInitializer {
     public void onInitializeClient() {
         ClientMessageHandling.init();
         EntityRendererRegistry.INSTANCE.register(RequiemEntities.HOROLOGIST, (r, it) -> new HorologistEntityRenderer(r));
+        FabricModelPredicateProviderRegistry.register(Requiem.id("humanity"), (stack, world, entity) -> {
+            ListTag enchantments = EnchantedBookItem.getEnchantmentTag(stack);
+            for (int i = 0; i < enchantments.size(); i++) {
+                CompoundTag tag = enchantments.getCompound(i);
+                Identifier enchantId = Identifier.tryParse(tag.getString("id"));
+                if (enchantId != null && enchantId.equals(RequiemEnchantments.HUMANITY_ID)) {
+                    return tag.getInt("lvl");
+                }
+            }
+            return 0F;
+        });
         registerCallbacks();
     }
 
     private void registerCallbacks() {
-        ReadableDepthFramebuffer.useFeature();
         RequiemFx.INSTANCE.registerCallbacks();
         ShadowPlayerFx.INSTANCE.registerCallbacks();
         ZaWorldFx.INSTANCE.registerCallbacks();
 
         BufferBuildersInitCallback.EVENT.register(RequiemBuilderStorage.INSTANCE);
-        ClientTickCallback.EVENT.register(RequiemClient::clientTick);
+        ClientTickEvents.END_CLIENT_TICK.register(RequiemClient::clientTick);
         PickEntityShaderCallback.EVENT.register(RequiemClient::pickEntityShader);
         // Start possession on right click
         UseEntityCallback.EVENT.register(RequiemClient::interactWithEntity);
@@ -121,7 +130,7 @@ public class RequiemClient implements ClientModInitializer {
         // Make the crosshair purple when able to teleport to the Overworld using an enderman
         CrosshairRenderCallback.EVENT.register(Requiem.id("enderman_color"), RequiemClient::drawEnderCrosshair);
         // Prevents the hotbar from being rendered when the player cannot use items
-        HotbarRenderCallback.EVENT.register(RequiemClient::preventHotbarRender);
+        HotbarRenderCallback.EVENT.register((matrices, tickDelta) -> preventHotbarRender());
         // Add custom tooltips to items when the player is possessing certain entities
         ItemTooltipCallback.EVENT.register(RequiemClient::addPossessionTooltip);
         // Register special icons for different levels of attrition
@@ -166,30 +175,30 @@ public class RequiemClient implements ClientModInitializer {
         return ActionResult.PASS;
     }
 
-    private static void drawPossessionIndicator(int scaledWidth, int scaledHeight) {
+    private static void drawPossessionIndicator(MatrixStack matrices, int scaledWidth, int scaledHeight) {
         MinecraftClient client = MinecraftClient.getInstance();
         assert client.player != null;
         if (((RequiemPlayer) client.player).asRemnant().isIncorporeal()) {
             if (client.targetedEntity instanceof MobEntity) {
                 int x = (scaledWidth - 32) / 2 + 8;
                 int y = (scaledHeight - 16) / 2 + 16;
-                RenderSystem.color3f(1.0f, 1.0f, 1.0f);
                 client.getTextureManager().bindTexture(POSSESSION_ICON);
-                DrawableHelper.blit(x, y, 16, 16, 0, 0, 16, 16, 16, 16);
-                client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
+                DrawableHelper.drawTexture(matrices, x, y, 16, 16, 0, 0, 16, 16, 16, 16);
+                client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
             }
         }
     }
 
-    private static void drawEnderCrosshair(int scaledWidth, int scaledHeight) {
+    private static void drawEnderCrosshair(MatrixStack matrices, int scaledWidth, int scaledHeight) {
         MinecraftClient client = MinecraftClient.getInstance();
         assert client.player != null;
-        if (client.targetedEntity instanceof EndermanEntity && client.player.dimension == DimensionType.THE_END) {
+        if (client.targetedEntity instanceof EndermanEntity && client.player.world.getRegistryKey() == World.END) {
+            // TODO probably replace with a proper texture
             RenderSystem.color3f(0.4f, 0.0f, 1.0f);
         }
     }
 
-    private static ActionResult preventHotbarRender(float tickDelta) {
+    private static ActionResult preventHotbarRender() {
         MinecraftClient client = MinecraftClient.getInstance();
         assert client.player != null;
         RequiemPlayer player = (RequiemPlayer) client.player;
@@ -234,10 +243,7 @@ public class RequiemClient implements ClientModInitializer {
             } else {
                 return;
             }
-            lines.add(Texts.setStyleIfAbsent(
-                    new TranslatableText(key),
-                    new Style().setColor(Formatting.DARK_GRAY)
-            ));
+            lines.add(new TranslatableText(key).styled(style -> style.withColor(Formatting.DARK_GRAY)));
         }
     }
 

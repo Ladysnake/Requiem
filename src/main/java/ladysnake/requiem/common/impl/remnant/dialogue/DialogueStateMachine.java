@@ -36,12 +36,13 @@ package ladysnake.requiem.common.impl.remnant.dialogue;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.annotations.SerializedName;
-import ladysnake.requiem.api.v1.annotation.Unlocalized;
 import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -50,17 +51,17 @@ import java.util.Objects;
 
 public class DialogueStateMachine implements CutsceneDialogue {
     @SerializedName("start_at")
-    private String start;
-    private Map<String, DialogueState> states;
+    private Text start;
+    private Map<Text, DialogueState> states;
     @Nullable
     private transient DialogueState currentState;
-    private transient ImmutableList<@Unlocalized String> currentChoices = ImmutableList.of();
+    private transient ImmutableList<Text> currentChoices = ImmutableList.of();
 
     public DialogueStateMachine() {
-        this("", new HashMap<>());
+        this(LiteralText.EMPTY, new HashMap<>());
     }
 
-    private DialogueStateMachine(String start, Map<String, DialogueState> states) {
+    private DialogueStateMachine(Text start, Map<Text, DialogueState> states) {
         this.start = start;
         this.states = states;
     }
@@ -75,21 +76,21 @@ public class DialogueStateMachine implements CutsceneDialogue {
     }
 
     @Override
-    public @Unlocalized String getCurrentText() {
+    public Text getCurrentText() {
         return this.getCurrentState().getText();
     }
 
     @Override
-    public ImmutableList<@Unlocalized String> getCurrentChoices() {
+    public ImmutableList<Text> getCurrentChoices() {
         return this.currentChoices;
     }
 
     @Override
-    public ChoiceResult choose(String choice) {
+    public ChoiceResult choose(Text choice) {
         return this.selectState(this.getCurrentState().getNextState(choice));
     }
 
-    private ChoiceResult selectState(String state) {
+    private ChoiceResult selectState(Text state) {
         if (!this.states.containsKey(state)) {
             throw new IllegalArgumentException(state + " is not an available dialogue state");
         }
@@ -103,20 +104,20 @@ public class DialogueStateMachine implements CutsceneDialogue {
     }
 
     public DialogueStateMachine readFromPacket(PacketByteBuf buf) {
-        this.start = buf.readString();
+        this.start = buf.readText();
         int nbStates = buf.readVarInt();
         this.states = new HashMap<>(nbStates);
         for (int i = 0; i < nbStates; i++) {
-            this.states.put(buf.readString(), new DialogueState().readFromPacket(buf));
+            this.states.put(buf.readText(), new DialogueState().readFromPacket(buf));
         }
         return this;
     }
 
     public void writeToPacket(PacketByteBuf buf) {
-        buf.writeString(this.start);
+        buf.writeText(this.start);
         buf.writeVarInt((byte) this.states.size());
-        for (Map.Entry<String, DialogueState> entry : this.states.entrySet()) {
-            buf.writeString(entry.getKey());
+        for (Map.Entry<Text, DialogueState> entry : this.states.entrySet()) {
+            buf.writeText(entry.getKey());
             entry.getValue().writeToPacket(buf);
         }
     }

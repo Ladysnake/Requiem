@@ -58,7 +58,7 @@ public final class ExtendedDamageSourcePredicate {
     }
 
     public static ExtendedDamageSourcePredicate deserialize(@Nullable JsonElement element) {
-        DamageSourcePredicate base = DamageSourcePredicate.deserialize(element);
+        DamageSourcePredicate base = DamageSourcePredicate.fromJson(element);
         if (base == DamageSourcePredicate.EMPTY) {
             return EMPTY;
         }

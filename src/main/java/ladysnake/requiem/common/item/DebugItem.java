@@ -63,7 +63,7 @@ public class DebugItem extends Item {
         if (player.isSneaking()) {
             if (!world.isClient) {
                 debugMode = (debugMode + 1) % 3;
-                player.addChatMessage(new TranslatableText("Switched mode to %s", debugMode), true);
+                player.sendMessage(new TranslatableText("Switched mode to %s", debugMode), true);
             }
         } else {
             switch (debugMode) {
@@ -80,7 +80,7 @@ public class DebugItem extends Item {
                 case 1:
                     if (!world.isClient) {
                         RequiemComponents.HOROLOGIST_MANAGER.get(world.getLevelProperties())
-                            .trySpawnHorologistAround((ServerWorld) player.world, new BlockPos.Mutable(player));
+                            .trySpawnHorologistAround((ServerWorld) player.world, new BlockPos.Mutable(player.getX(), player.getY(), player.getZ()));
                     }
                     break;
                 case 2:

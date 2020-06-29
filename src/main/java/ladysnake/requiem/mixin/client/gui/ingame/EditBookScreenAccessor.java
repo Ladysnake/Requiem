@@ -40,7 +40,6 @@ import net.minecraft.client.gui.widget.PageTurnWidget;
 import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
-import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.util.List;
 
@@ -68,10 +67,6 @@ public interface EditBookScreenAccessor {
     ButtonWidget getFinalizeButton();
     @Accessor
     ButtonWidget getCancelButton();
-    @Accessor
-    int getCursorIndex();
-    @Invoker
-    void invokeDrawHighlight(String page);
     @Accessor
     int getTickCounter();
 }

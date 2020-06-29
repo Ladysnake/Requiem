@@ -46,11 +46,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 import javax.annotation.Nullable;
 
@@ -60,10 +61,10 @@ public class HorologistEntity extends PassiveEntity implements Npc {
     }
 
     @Override
-    public net.minecraft.entity.EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (entityData == null) {
-            entityData = new PassiveEntity.EntityData();
-            ((PassiveEntity.EntityData)entityData).setBabyAllowed(false);
+            entityData = new PassiveEntity.PassiveData();
+            ((PassiveEntity.PassiveData)entityData).setBabyAllowed(false);
         }
 
         return super.initialize(world, difficulty, spawnType, entityData, entityTag);
@@ -125,10 +126,10 @@ public class HorologistEntity extends PassiveEntity implements Npc {
     }
 
     @Override
-    public boolean interactMob(PlayerEntity player, Hand hand) {
+    public ActionResult interactMob(PlayerEntity player, Hand hand) {
         if (world.isClient) {
             RequiemPlayer.from(player).getDialogueTracker().startDialogue(Requiem.id("remnant_choice"));
-            return true;
+            return ActionResult.SUCCESS;
         }
         return super.interactMob(player, hand);
     }

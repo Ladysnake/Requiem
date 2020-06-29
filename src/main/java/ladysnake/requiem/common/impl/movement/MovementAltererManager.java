@@ -45,10 +45,10 @@ import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.common.util.EntityTypeAdapter;
 import net.minecraft.entity.EntityType;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 

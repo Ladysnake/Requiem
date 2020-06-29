@@ -44,7 +44,7 @@ import net.minecraft.util.registry.Registry;
 public class RequiemEnchantments {
     public static final Identifier HUMANITY_ID = Requiem.id("humanity");
     public static final Enchantment HUMANITY = new HumanityEnchantment(
-        Enchantment.Weight.RARE, EnchantmentTarget.WEAPON, new EquipmentSlot[]{EquipmentSlot.MAINHAND}
+        Enchantment.Rarity.RARE, EnchantmentTarget.WEAPON, new EquipmentSlot[]{EquipmentSlot.MAINHAND}
     );
 
     public static void init() {

@@ -50,8 +50,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -71,8 +71,8 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
     @Nullable
     private CompoundTag requiem_possessedEntityTag;
 
-    public PossessorServerPlayerEntityMixin(World world_1, GameProfile gameProfile_1) {
-        super(world_1, gameProfile_1);
+    public PossessorServerPlayerEntityMixin(World world, BlockPos blockPos, GameProfile gameProfile) {
+        super(world, blockPos, gameProfile);
     }
 
     @Override
@@ -115,7 +115,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
     }
 
     @Inject(method = "changeDimension", at = @At(value = "HEAD", shift = At.Shift.AFTER))   // Let cancelling mixins do their job
-    private void changePossessedDimension(DimensionType dim, CallbackInfoReturnable<Entity> info) {
+    private void changePossessedDimension(ServerWorld dim, CallbackInfoReturnable<Entity> info) {
         prepareDimensionChange();
     }
 
@@ -137,7 +137,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
     }
 
     @Inject(method = "changeDimension", at = @At(value = "RETURN", ordinal = 1))
-    private void onTeleportDone(DimensionType destination, CallbackInfoReturnable<Entity> cir) {
+    private void onTeleportDone(ServerWorld destination, CallbackInfoReturnable<Entity> cir) {
         sendToAllTrackingIncluding(this, createCorporealityMessage(this));
         spawnResurrectionEntity();
     }

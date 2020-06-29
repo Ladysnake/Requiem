@@ -32,18 +32,17 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.entity.ai.attribute;
+package ladysnake.requiem.common.entity.attribute;
 
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 
 public class PossessionDelegatingAttribute extends DelegatingAttribute {
     private final PossessionComponent handler;
 
-    public PossessionDelegatingAttribute(AbstractEntityAttributeContainer map, EntityAttributeInstance original, PossessionComponent handler) {
-        super(map, original);
+    public PossessionDelegatingAttribute(EntityAttributeInstance original, PossessionComponent handler) {
+        super(original);
         this.handler = handler;
     }
 

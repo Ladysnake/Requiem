@@ -31,7 +31,7 @@ public class PlayerShellEntityRenderer extends BipedEntityRenderer<PlayerShellEn
 
     public PlayerShellEntityRenderer(EntityRenderDispatcher renderManagerIn) {
         super(renderManagerIn, new PlayerEntityModel<>(0.0F, true), 0.5F);
-        this.addFeature(new ArmorBipedFeatureRenderer<>(this, new BipedEntityModel<>(0.5F), new BipedEntityModel<>(1.0F)));
+        this.addFeature(new ArmorFeatureRenderer<>(this, new BipedEntityModel<>(0.5F), new BipedEntityModel<>(1.0F)));
         this.addFeature(new HeldItemFeatureRenderer<>(this));
         this.addFeature(new StuckArrowsFeatureRenderer<>(this));
         this.addFeature(new HeadFeatureRenderer<>(this));

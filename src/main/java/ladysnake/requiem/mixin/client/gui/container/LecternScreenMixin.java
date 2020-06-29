@@ -39,9 +39,9 @@ import ladysnake.requiem.common.item.OpusDemoniumItem;
 import ladysnake.requiem.common.item.WrittenOpusItem;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.gui.screen.ingame.LecternScreen;
-import net.minecraft.container.LecternContainer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.LecternScreenHandler;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -51,11 +51,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LecternScreen.class)
 public abstract class LecternScreenMixin extends BookScreen {
-    @Shadow @Final private LecternContainer lecternContainer;
+
+    @Shadow @Final private LecternScreenHandler container;
 
     @Inject(method = "updatePageProvider", at = @At("HEAD"), cancellable = true)
     private void updatePageProvider(CallbackInfo ci) {
-        ItemStack book = this.lecternContainer.getBookItem();
+        ItemStack book = this.container.getBookItem();
         Item bookItem = book.getItem();
         if (bookItem instanceof OpusDemoniumItem) {
             this.setPageProvider(new BookScreen.WritableBookContents(book));

@@ -47,7 +47,7 @@ public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
         float f = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5F;
         Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
 
-        this.owner.world.playLevelEvent(null, 1018, new BlockPos((int)this.owner.getX(), (int)this.owner.getY(), (int)this.owner.getZ()), 0);
+        this.owner.world.syncWorldEvent(null, 1018, new BlockPos((int)this.owner.getX(), (int)this.owner.getY(), (int)this.owner.getZ()), 0);
         if (this.owner instanceof BlazeEntity) {
             this.fireTicks = 200;
             ((BlazeEntityAccessor) this.owner).invokeSetFireActive(true);

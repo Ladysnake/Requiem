@@ -35,8 +35,8 @@
 package ladysnake.requiem.common.tag;
 
 import ladysnake.requiem.Requiem;
+import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.entity.EntityType;
-import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.Tag;
 
 public final class RequiemEntityTypeTags {
@@ -47,8 +47,11 @@ public final class RequiemEntityTypeTags {
     public static final Tag<EntityType<?>> SKELETONS = register("skeletons");
     public static final Tag<EntityType<?>> ZOMBIES = register("zombies");
 
-    public static Tag<EntityType<?>> register(String name) {
-        return new EntityTypeTags.CachingTag(Requiem.id(name));
+    public static void init() {
+        // NO-OP
     }
 
+    public static Tag<EntityType<?>> register(String name) {
+        return TagRegistry.entityType(Requiem.id(name));
+    }
 }

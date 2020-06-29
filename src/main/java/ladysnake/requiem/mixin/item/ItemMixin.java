@@ -70,7 +70,7 @@ public abstract class ItemMixin {
                     cir.setReturnValue(new TypedActionResult<>(ActionResult.FAIL, heldStack));
                 }
             } else if (RequiemEntityTypeTags.SKELETONS.contains(possessedEntity.getType())) {
-                if (RequiemItemTags.BONES.contains(heldStack.getItem()) && possessedEntity.getHealth() < possessedEntity.getMaximumHealth()) {
+                if (RequiemItemTags.BONES.contains(heldStack.getItem()) && possessedEntity.getHealth() < possessedEntity.getMaxHealth()) {
                     possessedEntity.heal(4.0f);
                     possessedEntity.playAmbientSound();
                     heldStack.decrement(1);

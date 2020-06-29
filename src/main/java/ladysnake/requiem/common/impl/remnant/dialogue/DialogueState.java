@@ -37,41 +37,43 @@ package ladysnake.requiem.common.impl.remnant.dialogue;
 import com.google.common.collect.ImmutableList;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class DialogueState {
-    private String text;
-    private LinkedHashMap<String, String> choices;
+public final class DialogueState {
+    private Text text;
+    private LinkedHashMap<Text, Text> choices;
     @Nullable
     private Identifier action;
     private ChoiceResult type;
 
     @CalledThroughReflection
     public DialogueState() {
-        this("", new LinkedHashMap<>(), null, ChoiceResult.DEFAULT);
+        this(LiteralText.EMPTY, new LinkedHashMap<>(), null, ChoiceResult.DEFAULT);
     }
 
-    private DialogueState(String text, LinkedHashMap<String, String> choices, @Nullable Identifier action, ChoiceResult type) {
+    private DialogueState(Text text, LinkedHashMap<Text, Text> choices, @Nullable Identifier action, ChoiceResult type) {
         this.text = text;
         this.choices = choices;
         this.action = action;
         this.type = type;
     }
 
-    public String getText() {
+    public Text getText() {
         return text;
     }
 
-    public ImmutableList<String> getAvailableChoices() {
+    public ImmutableList<Text> getAvailableChoices() {
         return ImmutableList.copyOf(choices.keySet());
     }
 
-    public String getNextState(String choice) {
+    public Text getNextState(Text choice) {
         return this.choices.get(choice);
     }
 
@@ -85,11 +87,11 @@ public class DialogueState {
     }
 
     public DialogueState readFromPacket(PacketByteBuf buf) {
-        this.text = buf.readString();
+        this.text = buf.readText();
         int nbChoices = buf.readByte();
         this.choices = new LinkedHashMap<>(nbChoices);
         for (int i = 0; i < nbChoices; i++) {
-            choices.put(buf.readString(), buf.readString());
+            choices.put(buf.readText(), buf.readText());
         }
         String actionStr = buf.readString();
         if (!actionStr.isEmpty()) {
@@ -100,11 +102,11 @@ public class DialogueState {
     }
 
     public void writeToPacket(PacketByteBuf buf) {
-        buf.writeString(this.text);
+        buf.writeText(this.text);
         buf.writeByte((byte)this.choices.size());
-        for (Map.Entry<String, String> choice : this.choices.entrySet()) {
-            buf.writeString(choice.getKey());
-            buf.writeString(choice.getValue());
+        for (Map.Entry<Text, Text> choice : this.choices.entrySet()) {
+            buf.writeText(choice.getKey());
+            buf.writeText(choice.getValue());
         }
         buf.writeString(this.action == null ? "" : this.action.toString());
         buf.writeEnumConstant(this.type);

@@ -42,11 +42,13 @@ import ladysnake.requiem.api.v1.dialogue.DialogueAction;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.common.util.IdentifierAdapter;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
-import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.profiler.Profiler;
 
 import java.io.IOException;
@@ -59,11 +61,13 @@ import java.util.concurrent.Executor;
 
 public final class DialogueManager implements SubDataManager<Map<Identifier, DialogueStateMachine>>, DialogueRegistry {
     private static final Gson GSON = new GsonBuilder()
-            .setPrettyPrinting()
-            .disableHtmlEscaping()
-            .registerTypeAdapter(Identifier.class, new IdentifierAdapter())
-            .registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory())
-            .create();
+        .setPrettyPrinting()
+        .disableHtmlEscaping()
+        .registerTypeAdapter(Identifier.class, new IdentifierAdapter())
+        .registerTypeHierarchyAdapter(Text.class, new Text.Serializer())
+        .registerTypeHierarchyAdapter(Style.class, new Style.Serializer())
+        .registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory())
+        .create();
     public static final int PREFIX_LENGTH = "requiem_dialogues/".length();
     public static final int SUFFIX_LENGTH = ".json".length();
 
@@ -143,8 +147,8 @@ public final class DialogueManager implements SubDataManager<Map<Identifier, Dia
     @Override
     public String toString() {
         return "ReloadableDialogueRegistry{" +
-                "dialogues=" + dialogues.keySet() +
-                ", actions=" + actions.keySet() +
-                '}';
+            "dialogues=" + dialogues.keySet() +
+            ", actions=" + actions.keySet() +
+            '}';
     }
 }

@@ -55,10 +55,10 @@ public final class DamageSourceSerialization {
         // God I wish we had a registry for this
         for (DamageSource damage : new DamageSource[]{IN_FIRE, LIGHTNING_BOLT, ON_FIRE, LAVA, HOT_FLOOR, IN_WALL,
                 CRAMMING, DROWN, STARVE, CACTUS, FALL, FLY_INTO_WALL, OUT_OF_WORLD, GENERIC, MAGIC, WITHER, ANVIL,
-                FALLING_BLOCK, DRAGON_BREATH, FIREWORKS, DRYOUT, SWEET_BERRY_BUSH}) {
+                FALLING_BLOCK, DRAGON_BREATH, DRYOUT, SWEET_BERRY_BUSH}) {
             DAMAGE_FACTORIES.put(damage.name, (e1, e2) -> damage);
         }
-        for (String name : new String[] {"mob", "arrow", "trident", "fireball", "thrown", "indirectMagic"}) {
+        for (String name : new String[] {"mob", "arrow", "trident", "fireball", "thrown", "indirectMagic", "fireworks"}) {
             DAMAGE_FACTORIES.put(name, (e1, e2) -> new ProjectileDamageSource(name, e1, e2));
         }
     }

@@ -32,9 +32,6 @@ import static ladysnake.requiem.common.network.RequiemNetworking.sendTo;
 public class TrackedFractureAnchor extends InertFractureAnchor {
     public TrackedFractureAnchor(FractureAnchorManager manager, UUID uuid, int id) {
         super(manager, uuid, id);
-        if (!(manager.getWorld() instanceof ServerWorld)) {
-            throw new IllegalArgumentException("EntityFractureAnchor is only supported on ServerWorld!");
-        }
     }
 
     protected TrackedFractureAnchor(FractureAnchorManager manager, CompoundTag tag, int id) {

@@ -118,6 +118,7 @@ allprojects {
 }
 
 repositories {
+    jcenter()
     maven {
         name = 'Ladysnake Libs'
         url = 'https://dl.bintray.com/ladysnake/libs'
@@ -130,6 +131,7 @@ repositories {
         name = 'JitPack'
         url = 'https://jitpack.io'
     }
+    mavenLocal()
 }
 
 dependencies {
@@ -149,28 +151,18 @@ dependencies {
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${cca_version}"
     modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}")
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
-    modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${cca_version}")
-    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${cca_version}"
-    modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-level:${cca_version}")
-    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-level:${cca_version}"
     modImplementation ("io.github.ladysnake:PlayerAbilityLib:${pal_version}") {
         transitive = false
     }
     include "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
-    // libcd
-    modRuntime ("io.github.cottonmc:Jankson-Fabric:${jankson_version}") {
-        transitive = false
-    }
-    modRuntime ("io.github.CottonMC:LibCD:${libcd_version}") {
-        transitive = false
-    }
-    include "io.github.CottonMC:LibCD:${libcd_version}"
+    modImplementation "com.github.FabLabsMC.fabric:fabric-game-rule-api-v1:gamerules-SNAPSHOT"
+    include "com.github.FabLabsMC.fabric:fabric-game-rule-api-v1:gamerules-SNAPSHOT"
+    modRuntime ("io.github.cottonmc:LibCD:${libcd_version}")
+    include "io.github.cottonmc:LibCD:${libcd_version}"
 
 //    modRuntime curse.resolve('immersive-portals-mod', 2845123)
-    modRuntime "curse.maven:mobz:2965825"
-    modCompileOnly("io.github.Terrails:Health-Overlay:1.15-SNAPSHOT") {
-        transitive = false
-    }
+//    modRuntime "curse.maven:mobz:2965825"
+    modCompileOnly("io.github.Terrails:Health-Overlay:1.16-Fabric-SNAPSHOT")
 }
 
 remapJar.dependsOn(project(":requiem-api").tasks.remapJar)

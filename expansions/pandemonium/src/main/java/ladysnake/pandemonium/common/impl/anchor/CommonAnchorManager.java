@@ -22,6 +22,14 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorFactory;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
+import ladysnake.requiem.Requiem;
+import ladysnake.requiem.common.network.RequiemNetworking;
+import nerdhub.cardinal.components.api.util.sync.WorldSyncedComponent;
+import net.fabricmc.fabric.api.util.NbtType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -30,7 +38,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class CommonAnchorManager implements FractureAnchorManager {
+import static ladysnake.pandemonium.common.network.PandemoniumNetworking.createAnchorUpdateMessage;
+
+public class CommonAnchorManager implements FractureAnchorManager, WorldSyncedComponent {
     private final Map<UUID, FractureAnchor> anchorsByUuid = new HashMap<>();
     private final Int2ObjectMap<FractureAnchor> anchorsById = new Int2ObjectOpenHashMap<>();
     private final World world;
@@ -98,5 +108,40 @@ public class CommonAnchorManager implements FractureAnchorManager {
     @Override
     public World getWorld() {
         return this.world;
+    }
+
+    @Override
+    public void syncWith(ServerPlayerEntity player) {
+        for (FractureAnchor anchor : FractureAnchorManager.get(world).getAnchors()) {
+            RequiemNetworking.sendTo(player, createAnchorUpdateMessage(anchor));
+        }
+    }
+
+    @Override
+    public void fromTag(CompoundTag tag) {
+        if (!tag.contains("Anchors", NbtType.LIST)) {
+            Requiem.LOGGER.error("Invalid save data. Expected list of FractureAnchors, found none. Discarding save data.");
+            return;
+        }
+        ListTag list = tag.getList("Anchors", NbtType.COMPOUND);
+        for (Tag anchorNbt : list) {
+            CompoundTag anchorTag = (CompoundTag) anchorNbt;
+            FractureAnchor anchor = this.addAnchor(AnchorFactories.fromTag(anchorTag));
+            if (anchorTag.contains("X", NbtType.DOUBLE)) {
+                anchor.setPosition(anchorTag.getDouble("X"), anchorTag.getDouble("Y"), anchorTag.getDouble("Z"));
+            } else {
+                Requiem.LOGGER.error("Invalid save data. Expected position information, found none. Skipping.");
+            }
+        }
+    }
+
+    @Override
+    public CompoundTag toTag(CompoundTag tag) {
+        ListTag list = new ListTag();
+        for (FractureAnchor anchor : this.getAnchors()) {
+            list.add(anchor.toTag(new CompoundTag()));
+        }
+        tag.put("Anchors", list);
+        return tag;
     }
 }

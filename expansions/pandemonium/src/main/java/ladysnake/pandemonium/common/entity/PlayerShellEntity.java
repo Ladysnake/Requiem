@@ -28,8 +28,8 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -59,7 +59,7 @@ public class PlayerShellEntity extends MobEntity {
     /**
      * Saves the content of the inventory the player had when this shell was created
      */
-    protected BasicInventory inventory;
+    protected SimpleInventory inventory;
     /**
      * The player's game profile
      */
@@ -114,7 +114,7 @@ public class PlayerShellEntity extends MobEntity {
                 performNbtCopy(this, possessor);
                 ((ServerPlayerEntity)possessor).networkHandler.teleportRequest(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
                 if (this.inventory != null) {
-                    transferInventory(this.inventory, possessor.inventory, Math.min(possessor.inventory.main.size(), this.inventory.getInvSize()));
+                    transferInventory(this.inventory, possessor.inventory, Math.min(possessor.inventory.main.size(), this.inventory.size()));
                     this.dropInventory();
                 }
                 InventoryHelper.transferEquipment(this, possessor);
@@ -126,9 +126,9 @@ public class PlayerShellEntity extends MobEntity {
 
     public void transferInventory(Inventory from, Inventory to, int size) {
         for (int i = 0; i < size; i++) {
-            if (to.getInvStack(i).isEmpty()) {
-                to.setInvStack(i, from.getInvStack(i));
-                from.setInvStack(i, ItemStack.EMPTY);
+            if (to.getStack(i).isEmpty()) {
+                to.setStack(i, from.getStack(i));
+                from.setStack(i, ItemStack.EMPTY);
             }
         }
     }
@@ -218,8 +218,8 @@ public class PlayerShellEntity extends MobEntity {
     protected void dropInventory() {
         super.dropInventory();
         if (this.inventory != null) {
-            for(int int_1 = 0; int_1 < this.inventory.getInvSize(); ++int_1) {
-                ItemStack itemStack_1 = this.inventory.getInvStack(int_1);
+            for(int int_1 = 0; int_1 < this.inventory.size(); ++int_1) {
+                ItemStack itemStack_1 = this.inventory.getStack(int_1);
                 if (!itemStack_1.isEmpty()) {
                     this.dropStack(itemStack_1);
                 }
@@ -241,13 +241,13 @@ public class PlayerShellEntity extends MobEntity {
         super.readCustomDataFromTag(tag);
         if (tag.contains("Items")) {
             ListTag items = tag.getList("Items", 10);
-            this.inventory = new BasicInventory(tag.getInt("InvSize"));
+            this.inventory = new SimpleInventory(tag.getInt("InvSize"));
 
             for(int i = 0; i < items.size(); ++i) {
                 CompoundTag compoundTag_2 = items.getCompound(i);
                 int slot = compoundTag_2.getByte("Slot") & 255;
-                if (slot >= 2 && slot < this.inventory.getInvSize()) {
-                    this.inventory.setInvStack(slot, ItemStack.fromTag(compoundTag_2));
+                if (slot >= 2 && slot < this.inventory.size()) {
+                    this.inventory.setStack(slot, ItemStack.fromTag(compoundTag_2));
                 }
             }
         }
@@ -263,8 +263,8 @@ public class PlayerShellEntity extends MobEntity {
         if (this.inventory != null) {
             ListTag items = new ListTag();
 
-            for(int i = 2; i < this.inventory.getInvSize(); ++i) {
-                ItemStack stack = this.inventory.getInvStack(i);
+            for(int i = 2; i < this.inventory.size(); ++i) {
+                ItemStack stack = this.inventory.getStack(i);
                 if (!stack.isEmpty()) {
                     CompoundTag slotTag = new CompoundTag();
                     slotTag.putByte("Slot", (byte)i);
@@ -274,7 +274,7 @@ public class PlayerShellEntity extends MobEntity {
             }
 
             compound.put("Items", items);
-            compound.putInt("InvSize", this.inventory.getInvSize());
+            compound.putInt("InvSize", this.inventory.size());
         }
         this.getPlayerUuid().ifPresent(uuid -> compound.putUuid("Player", uuid));
     }
@@ -285,7 +285,7 @@ public class PlayerShellEntity extends MobEntity {
         PlayerShellEntity shell = new PlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, player.world);
         shell.playerNbt = performNbtCopy(player, shell);
         int invSize = player.inventory.main.size();
-        shell.inventory = new BasicInventory(invSize);
+        shell.inventory = new SimpleInventory(invSize);
         InventoryHelper.transferEquipment(player, shell);
         shell.transferInventory(player.inventory, shell.inventory, invSize);
         shell.setPlayerUuid(player.getUuid());

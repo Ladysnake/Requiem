@@ -37,7 +37,7 @@ package ladysnake.requiem.common.impl.movement;
 import com.google.gson.Gson;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.entity.MovementConfig;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 import org.apiguardian.api.API;
 
 /**

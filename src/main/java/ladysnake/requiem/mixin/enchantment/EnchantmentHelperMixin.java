@@ -36,7 +36,7 @@ package ladysnake.requiem.mixin.enchantment;
 
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.InfoEnchantment;
+import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
@@ -48,8 +48,8 @@ import java.util.List;
 
 @Mixin(EnchantmentHelper.class)
 public abstract class EnchantmentHelperMixin {
-    @Inject(method = "getHighestApplicableEnchantmentsAtPower", at = @At(value = "RETURN"))
-    private static void skipRandomHumanityBookEnchant(int power, ItemStack stack, boolean bl, CallbackInfoReturnable<List<InfoEnchantment>> cir) {
+    @Inject(method = "getPossibleEntries", at = @At(value = "RETURN"))
+    private static void skipRandomHumanityBookEnchant(int power, ItemStack stack, boolean bl, CallbackInfoReturnable<List<EnchantmentLevelEntry>> cir) {
         if (stack.getItem() == Items.BOOK) {
             cir.getReturnValue().removeIf(enchantment -> enchantment.enchantment == RequiemEnchantments.HUMANITY);
         }

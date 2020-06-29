@@ -55,7 +55,7 @@ public class MeleeAbility extends DirectAbilityBase<MobEntity> {
     @Override
     public boolean trigger(PlayerEntity player, Entity target) {
         // We actually need to check if the entity has an attack damage attribute, because mojang doesn't.
-        boolean success = (ignoreDamageAttribute || owner.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE) != null) && owner.tryAttack(target);
+        boolean success = (ignoreDamageAttribute || owner.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE) != null) && owner.tryAttack(target);
         if (success && target instanceof LivingEntity) {
             this.owner.setAttacking(true);
             player.getMainHandStack().postHit((LivingEntity) target, player);

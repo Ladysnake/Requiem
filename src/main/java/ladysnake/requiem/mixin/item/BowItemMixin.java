@@ -35,13 +35,13 @@
 package ladysnake.requiem.mixin.item;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.common.entity.internal.ArrowShooter;
+import ladysnake.requiem.mixin.entity.mob.ArrowShooter;
 import ladysnake.requiem.mixin.entity.projectile.ProjectileEntityAccessor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -90,18 +90,19 @@ public abstract class BowItemMixin extends RangedWeaponItem {
     }
 
     @ModifyVariable(method = "onStoppedUsing", ordinal = 0, at = @At("STORE"))
-    private boolean giveSkeletonInfinity(boolean infinity) {
-        if (REQUIEM__CURRENT_USER.get() instanceof AbstractSkeletonEntity) {
+    private boolean giveSkeletonInfinity(boolean infinity, ItemStack item, World world, LivingEntity user, int charge) {
+        MobEntity possessed = ((RequiemPlayer) user).asPossessor().getPossessedEntity();
+        if (possessed instanceof AbstractSkeletonEntity) {
             return infinity || RANDOM.nextFloat() < 0.8f;
         }
         return infinity;
     }
 
     @ModifyVariable(method = "onStoppedUsing", ordinal = 0, at = @At("STORE"))
-    private ProjectileEntity useSkeletonArrow(ProjectileEntity firedArrow) {
-        LivingEntity entity = REQUIEM__CURRENT_USER.get();
-        if (entity instanceof ArrowShooter) {
-            return ((ArrowShooter)entity).invokeGetArrow(((ProjectileEntityAccessor)firedArrow).invokeAsItemStack(), 1f);
+    private PersistentProjectileEntity useSkeletonArrow(PersistentProjectileEntity firedArrow, ItemStack item, World world, LivingEntity user, int charge) {
+        LivingEntity possessed = ((RequiemPlayer) user).asPossessor().getPossessedEntity();
+        if (possessed instanceof ArrowShooter) {
+            return ((ArrowShooter)possessed).invokeGetArrow(((ProjectileEntityAccessor)firedArrow).invokeAsItemStack(), 1f);
         }
         return firedArrow;
     }

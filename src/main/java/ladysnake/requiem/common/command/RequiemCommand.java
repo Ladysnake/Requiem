@@ -48,6 +48,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Util;
 import net.minecraft.world.GameRules;
 
 import java.util.Collection;
@@ -148,7 +149,7 @@ public class RequiemCommand {
             source.sendFeedback(new TranslatableText("requiem:commands.ethereal.set.success.self", name), true);
         } else {
             if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                player.sendMessage(new TranslatableText("requiem:commands.ethereal.set.target", name));
+                player.sendSystemMessage(new TranslatableText("requiem:commands.ethereal.set.target", name), Util.NIL_UUID);
             }
 
             source.sendFeedback(new TranslatableText("requiem:commands.ethereal.set.success.other", player.getDisplayName(), name), true);
@@ -230,7 +231,7 @@ public class RequiemCommand {
             source.sendFeedback(new TranslatableText("requiem:commands.remnant.set.success.self", name), true);
         } else {
             if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                player.sendMessage(new TranslatableText("requiem:commands.remnant.set.target", name));
+                player.sendSystemMessage(new TranslatableText("requiem:commands.remnant.set.target", name), Util.NIL_UUID);
             }
 
             source.sendFeedback(new TranslatableText("requiem:commands.remnant.set.success.other", player.getDisplayName(), name), true);

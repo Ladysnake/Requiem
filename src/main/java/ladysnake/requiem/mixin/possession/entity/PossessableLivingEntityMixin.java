@@ -38,8 +38,8 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
-import ladysnake.requiem.common.entity.ai.attribute.AttributeHelper;
-import ladysnake.requiem.common.entity.ai.attribute.CooldownStrengthAttribute;
+import ladysnake.requiem.common.entity.attribute.CooldownStrengthAttribute;
+import ladysnake.requiem.common.entity.attribute.DelegatingAttribute;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
@@ -50,7 +50,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
+import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -65,6 +65,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -109,15 +110,15 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     @Shadow public float limbDistance;
 
     @Shadow
-    public abstract AbstractEntityAttributeContainer getAttributes();
-
-    @Shadow
     public float bodyYaw;
 
     @Shadow
     @Nullable
     public abstract LivingEntity getAttacker();
 
+    @Shadow
+    @Final
+    private AttributeContainer attributes;
     @Nullable
     private PlayerEntity possessor;
 
@@ -166,13 +167,15 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
             return;
         }
         // we need a cast here to trick the compiler
+        // clever Idea assumes possessedEntity cannot be this because of the wrong class, which is wrong because Mixin
+        //noinspection ConstantConditions
         if (((this.possessor != null) && (((RequiemPlayer) this.possessor).asPossessor().getPossessedEntity() == (Entity) this)) && !this.world.isClient) {
             throw new IllegalStateException("Players must stop possessing an entity before it can change possessor!");
         }
         this.possessor = possessor;
-        this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).removeModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS_UUID);
+        this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).removeModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS_UUID);
         if (possessor != null) {
-            this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).addModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS);
+            this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).addTemporaryModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS);
         }
         updateName(possessor);
     }
@@ -242,8 +245,8 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     private void initAttributes(CallbackInfo ci) {
         // Entities may or may not register ATTACK_DAMAGE
         //noinspection ConstantConditions
-        if (this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE) != null) {
-            AttributeHelper.substituteAttributeInstance(this.getAttributes(), new CooldownStrengthAttribute((LivingEntity & Possessable)(Object)this));
+        if (this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE) != null) {
+            DelegatingAttribute.replaceAttribute(attributes, new CooldownStrengthAttribute((LivingEntity & Possessable)(Object) this));
         }
     }
 
@@ -254,7 +257,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
             // Make possessed monsters despawn gracefully
             if (!this.world.isClient) {
                 if (this instanceof Monster && this.world.getDifficulty() == Difficulty.PEACEFUL) {
-                    player.addChatMessage(new TranslatableText("requiem.message.peaceful_despawn"), true);
+                    player.sendMessage(new TranslatableText("requiem.message.peaceful_despawn"), true);
                 }
             }
             // Set the player's hit timer for damage animation and stuff
@@ -290,7 +293,6 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         this.getMobAbilityController().updateAbilities();
     }
 
-    @SuppressWarnings("InvalidMemberReference")
     @Inject(method = {"pushAwayFrom", "pushAway"}, at = @At("HEAD"), cancellable = true)
     private void pushAwayFrom(Entity entity, CallbackInfo ci) {
         // Prevent infinite propulsion through self collision
@@ -372,10 +374,10 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
      * Knockback
      */
     @Inject(method = "takeKnockback", at = @At("HEAD"), cancellable = true)
-    private void knockback(Entity entity, float vx, double vy, double vz, CallbackInfo ci) {
+    private void knockback(float vx, double vy, double vz, CallbackInfo ci) {
         PlayerEntity possessing = getPossessor();
         if (possessing != null) {
-            possessing.takeKnockback(entity, vx, vy, vz);
+            possessing.takeKnockback(vx, vy, vz);
             ci.cancel();
         }
     }

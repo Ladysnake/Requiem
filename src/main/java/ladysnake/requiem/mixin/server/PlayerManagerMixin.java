@@ -34,7 +34,6 @@
  */
 package ladysnake.requiem.mixin.server;
 
-import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
@@ -47,14 +46,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.UserCache;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.dimension.DimensionType;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -65,7 +59,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -79,7 +72,6 @@ import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 @Mixin(PlayerManager.class)
 public abstract class PlayerManagerMixin {
     private static final ThreadLocal<ServerWorld> REQUIEM$RESPAWN_WORLD = new ThreadLocal<>();
-    @Shadow @Final private MinecraftServer server;
 
     @Inject(method = "onPlayerConnect", at = @At("RETURN"))
     private void onPlayerConnect(ClientConnection connection, ServerPlayerEntity createdPlayer, CallbackInfo info) {
@@ -100,28 +92,24 @@ public abstract class PlayerManagerMixin {
         }
     }
 
-    @Inject(
+    @ModifyVariable(
             method = "onPlayerConnect",
             at = @At(
                     value = "CONSTANT",
                     args = "stringValue=RootVehicle",
                     ordinal = 0
             ),
-            locals = LocalCapture.CAPTURE_FAILHARD
+            ordinal = 0
     )
-    private void logInPossessedEntity(
+    @Nullable
+    private CompoundTag logInPossessedEntity(
+            @Nullable CompoundTag serializedPlayer,
             ClientConnection connection,
-            ServerPlayerEntity player,
-            CallbackInfo info,
-            // Local variables
-            GameProfile gameProfile_1,
-            UserCache userCache_1,
-            String string_1,
-            @Nullable CompoundTag serializedPlayer
+            ServerPlayerEntity player
     ) {
         if (serializedPlayer != null && serializedPlayer.contains(POSSESSED_ROOT_TAG, NbtType.COMPOUND)) {
             sendTo(player, createCorporealityMessage(player));
-            ServerWorld world = this.server.getWorld(player.dimension);
+            ServerWorld world = player.getServerWorld();
             CompoundTag serializedPossessedInfo = serializedPlayer.getCompound(POSSESSED_ROOT_TAG);
             Entity possessedEntityMount = EntityType.loadEntityWithPassengers(
                     serializedPossessedInfo.getCompound(POSSESSED_ENTITY_TAG),
@@ -133,6 +121,7 @@ public abstract class PlayerManagerMixin {
                 resumePossession(((RequiemPlayer) player).asPossessor(), world, possessedEntityMount, possessedEntityUuid);
             }
         }
+        return serializedPlayer;
     }
 
     private void resumePossession(PossessionComponent player, ServerWorld world, Entity possessedEntityMount, UUID possessedEntityUuid) {
@@ -178,66 +167,49 @@ public abstract class PlayerManagerMixin {
         }
     }
 
-    @Inject(
-            method = "respawnPlayer",
-            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;doesNotCollide(Lnet/minecraft/entity/Entity;)Z")),
-            at = @At(
-                    value = "FIELD",
-                    opcode = Opcodes.GETFIELD,
-                    target = "Lnet/minecraft/server/network/ServerPlayerEntity;networkHandler:Lnet/minecraft/server/network/ServerPlayNetworkHandler;",
-                    ordinal = 0
-            ),
-            locals = LocalCapture.CAPTURE_FAILHARD
+    @ModifyVariable(
+        method = "respawnPlayer",
+        slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;doesNotCollide(Lnet/minecraft/entity/Entity;)Z")),
+        at = @At(
+            value = "FIELD",
+            opcode = Opcodes.GETFIELD,
+            target = "Lnet/minecraft/server/network/ServerPlayerEntity;networkHandler:Lnet/minecraft/server/network/ServerPlayNetworkHandler;",
+            ordinal = 0
+        ),
+        ordinal = 1
     )
-    private void firePlayerCloneEvent(
-            ServerPlayerEntity original,
-            DimensionType destination,
-            boolean returnFromEnd,
-            CallbackInfoReturnable<ServerPlayerEntity> cir,
-            BlockPos spawnPos,
-            boolean forcedSpawn,
-            ServerPlayerInteractionManager manager,
-            ServerPlayerEntity clone
-    ) {
+    private ServerPlayerEntity firePlayerCloneEvent(ServerPlayerEntity clone, ServerPlayerEntity original, boolean returnFromEnd) {
         PlayerCloneCallback.EVENT.invoker().onPlayerClone(original, clone, returnFromEnd);
         REQUIEM$RESPAWN_WORLD.set(clone.getServerWorld());
         // Prevent players from respawning in fairly bad conditions
         while(!clone.world.doesNotCollide(clone) && clone.getY() < 256.0D) {
             clone.updatePosition(clone.getX(), clone.getY() + 1.0D, clone.getZ());
         }
+        return clone;
     }
 
     @ModifyVariable(
-            method = "respawnPlayer",
-            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;doesNotCollide(Lnet/minecraft/entity/Entity;)Z")),
-            at = @At(
-                    value = "FIELD",
-                    opcode = Opcodes.GETFIELD,
-                    target = "Lnet/minecraft/server/network/ServerPlayerEntity;networkHandler:Lnet/minecraft/server/network/ServerPlayNetworkHandler;",
-                    ordinal = 0,
-                    shift = AFTER
-            )
+        method = "respawnPlayer",
+        slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;doesNotCollide(Lnet/minecraft/entity/Entity;)Z")),
+        at = @At(
+            value = "FIELD",
+            opcode = Opcodes.GETFIELD,
+            target = "Lnet/minecraft/server/network/ServerPlayerEntity;networkHandler:Lnet/minecraft/server/network/ServerPlayNetworkHandler;",
+            ordinal = 0,
+            shift = AFTER
+        ),
+        ordinal = 1
     )
     private ServerWorld fixRespawnWorld(ServerWorld respawnWorld) {
         return REQUIEM$RESPAWN_WORLD.get();
     }
 
-    @Inject(
-            method = "respawnPlayer",
-            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;doesNotCollide(Lnet/minecraft/entity/Entity;)Z")),
-            at = @At("RETURN"),
-            locals = LocalCapture.CAPTURE_FAILHARD
-    )
+    @Inject(method = "respawnPlayer", at = @At("RETURN"))
     private void firePlayerRespawnEvent(
             ServerPlayerEntity original,
-            DimensionType destination,
             boolean returnFromEnd,
-            CallbackInfoReturnable<ServerPlayerEntity> cir,
-            BlockPos spawnPos,
-            boolean forcedSpawn,
-            ServerPlayerInteractionManager manager,
-            ServerPlayerEntity clone
+            CallbackInfoReturnable<ServerPlayerEntity> cir
     ) {
-        PlayerRespawnCallback.EVENT.invoker().onPlayerRespawn(clone, returnFromEnd);
+        PlayerRespawnCallback.EVENT.invoker().onPlayerRespawn(cir.getReturnValue(), returnFromEnd);
     }
 }

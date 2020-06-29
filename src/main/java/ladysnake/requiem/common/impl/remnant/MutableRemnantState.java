@@ -83,12 +83,17 @@ public class MutableRemnantState implements RemnantState {
         if (this.ethereal != incorporeal) {
             this.ethereal = incorporeal;
             SerializableMovementConfig config;
+            boolean serverside = !this.player.world.isClient;
             if (incorporeal) {
                 config = SerializableMovementConfig.SOUL;
-                Pal.grantAbility(player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
+                if (serverside) {
+                    Pal.grantAbility(player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
+                }
             } else {
                 config = null;
-                Pal.revokeAbility(player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
+                if (serverside) {
+                    Pal.revokeAbility(player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
+                }
                 ((RequiemPlayer)this.player).asPossessor().stopPossessing(false);
             }
             ((RequiemPlayer)this.player).getMovementAlterer().setConfig(config);
@@ -129,8 +134,7 @@ public class MutableRemnantState implements RemnantState {
 
     protected void copyGlobalPos(ServerPlayerEntity original) {
         ServerPlayerEntity clone = (ServerPlayerEntity) this.player;
-        clone.dimension = original.world.dimension.getType();
-        ServerWorld previousWorld = clone.server.getWorld(clone.dimension);
+        ServerWorld previousWorld = clone.getServerWorld();
         clone.setWorld(previousWorld);
         clone.interactionManager.setWorld(previousWorld);
         clone.copyPositionAndRotation(original);

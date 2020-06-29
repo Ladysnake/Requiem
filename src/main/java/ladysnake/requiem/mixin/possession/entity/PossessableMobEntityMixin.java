@@ -34,9 +34,11 @@
  */
 package ladysnake.requiem.mixin.possession.entity;
 
+import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityController;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -52,6 +54,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(MobEntity.class)
 public abstract class PossessableMobEntityMixin extends LivingEntity implements Possessable {
@@ -116,4 +119,14 @@ public abstract class PossessableMobEntityMixin extends LivingEntity implements 
         }
     }
 
+    @Inject(method = "method_29243", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EquipmentSlot;values()[Lnet/minecraft/entity/EquipmentSlot;"), locals = LocalCapture.CAPTURE_FAILSOFT)
+    private <T extends MobEntity> void possessConvertedZombie(EntityType<T> type, CallbackInfoReturnable<T> ci, T converted) {
+        PlayerEntity possessor = this.getPossessor();
+        if (possessor != null) {
+            PossessionComponent possessionComponent = ((RequiemPlayer)possessor).asPossessor();
+            possessionComponent.stopPossessing(false);
+            // The possession will start when the entity is added to the world
+            ((Possessable)converted).setPossessor(possessor);
+        }
+    }
 }
