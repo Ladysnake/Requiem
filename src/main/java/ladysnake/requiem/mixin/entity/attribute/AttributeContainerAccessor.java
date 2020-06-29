@@ -32,17 +32,18 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.entity.mob;
+package ladysnake.requiem.mixin.entity.attribute;
 
-import ladysnake.requiem.common.entity.internal.ArrowShooter;
-import net.minecraft.entity.mob.AbstractSkeletonEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Invoker;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(AbstractSkeletonEntity.class)
-public abstract class AbstractSkeletonEntityAccessor implements ArrowShooter {
-    @Invoker("createArrowProjectile")
-    public abstract ProjectileEntity invokeGetArrow(ItemStack arrowStack, float charge);
+import java.util.Map;
+
+@Mixin(AttributeContainer.class)
+public interface AttributeContainerAccessor {
+    @Accessor
+    Map<EntityAttribute, EntityAttributeInstance> getCustom();
 }

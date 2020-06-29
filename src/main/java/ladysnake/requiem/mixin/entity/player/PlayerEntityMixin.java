@@ -51,7 +51,6 @@ import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.entity.*;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -74,7 +73,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -201,20 +199,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         }
     }
 
-    /**
-     * Players' base movement speed is reset each tick to their walking speed.
-     * We don't want that when a possession is occurring.
-     *
-     * @param attr the {@code this} attribute reference
-     * @param value the value that is supposed to be assigned
-     */
-    @Redirect(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/attribute/EntityAttributeInstance;setBaseValue(D)V"))
-    private void ignoreSpeedResetDuringPossession(EntityAttributeInstance attr, double value) {
-        if (!this.asPossessor().isPossessing()) {
-            attr.setBaseValue(value);
-        }
-    }
-
     @Inject(method = "isSwimming", at = @At("HEAD"), cancellable = true)
     private void flyLikeSuperman(CallbackInfoReturnable<Boolean> cir) {
         if (this.abilities.flying && this.isSprinting() && this.remnantState.isIncorporeal()) {
@@ -269,7 +253,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private void canFoodHealPossessed(CallbackInfoReturnable<Boolean> cir) {
         if (this.remnantState.isSoul()) {
             LivingEntity possessed = this.possessionComponent.getPossessedEntity();
-            cir.setReturnValue(possessed != null && ((Possessable) possessed).isRegularEater() && possessed.getHealth() > 0 && possessed.getHealth() < possessed.getMaximumHealth());
+            cir.setReturnValue(possessed != null && ((Possessable) possessed).isRegularEater() && possessed.getHealth() > 0 && possessed.getHealth() < possessed.getMaxHealth());
         }
     }
 

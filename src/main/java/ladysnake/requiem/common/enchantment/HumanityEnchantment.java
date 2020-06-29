@@ -39,7 +39,7 @@ import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
 
 public class HumanityEnchantment extends Enchantment {
-    protected HumanityEnchantment(Weight weight, EnchantmentTarget type, EquipmentSlot[] slotTypes) {
+    protected HumanityEnchantment(Rarity weight, EnchantmentTarget type, EquipmentSlot[] slotTypes) {
         super(weight, type, slotTypes);
     }
 

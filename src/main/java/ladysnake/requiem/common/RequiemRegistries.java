@@ -34,13 +34,16 @@
  */
 package ladysnake.requiem.common;
 
+import com.mojang.serialization.Lifecycle;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.remnant.RemnantTypes;
+import ladysnake.requiem.mixin.registration.RegistryAccessor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import org.apiguardian.api.API;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
@@ -51,10 +54,11 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
  */
 @API(status = EXPERIMENTAL)
 public final class RequiemRegistries {
-    public static final DefaultedRegistry<RemnantType> REMNANT_STATES = new DefaultedRegistry<>(RemnantState.NULL_STATE_ID);
+
+    public static final RegistryKey<Registry<RemnantType>> REMNANT_STATE_KEY = RegistryKey.ofRegistry(Requiem.id("remnant_states"));
+    public static final DefaultedRegistry<RemnantType> REMNANT_STATES = RegistryAccessor.create(REMNANT_STATE_KEY, RemnantState.NULL_STATE_ID, Lifecycle.stable(), () -> RemnantTypes.MORTAL);
 
     public static void init() {
-        Registry.register(Registry.REGISTRIES, Requiem.id("remnant_states"), REMNANT_STATES);
         Registry.register(REMNANT_STATES, new Identifier(RemnantState.NULL_STATE_ID), RemnantTypes.MORTAL);
     }
 

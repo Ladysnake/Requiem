@@ -17,8 +17,8 @@
  */
 package ladysnake.pandemonium.common.remnant;
 
-import ladysnake.pandemonium.api.PandemoniumWorld;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
+import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.pandemonium.common.impl.anchor.EntityFractureAnchor;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.impl.remnant.MutableRemnantState;
@@ -67,7 +67,7 @@ public class FracturableRemnantState extends MutableRemnantState {
     @Nullable
     public FractureAnchor getAnchor() {
         return this.anchorUuid != null
-                ? ((PandemoniumWorld) player.world).getAnchorManager().getAnchor(this.anchorUuid)
+                ? FractureAnchorManager.get(this.player.world).getAnchor(this.anchorUuid)
                 : null;
     }
 

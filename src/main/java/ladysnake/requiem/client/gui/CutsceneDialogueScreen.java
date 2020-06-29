@@ -36,7 +36,6 @@ package ladysnake.requiem.client.gui;
 
 import com.google.common.collect.ImmutableList;
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.api.v1.annotation.Unlocalized;
 import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.client.ZaWorldFx;
@@ -44,7 +43,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -54,10 +53,11 @@ public class CutsceneDialogueScreen extends Screen {
     public static final int MIN_RENDER_Y = 40;
     public static final int TITLE_GAP = 20;
     public static final int CHOICE_GAP = 5;
+    public static final int MAX_TEXT_WIDTH = 300;
+
     private final CutsceneDialogue dialogue;
     private int selectedChoice;
     private boolean hoveringChoice;
-    public static final int MAX_TEXT_WIDTH = 300;
 
     public CutsceneDialogueScreen(Text title, CutsceneDialogue dialogue) {
         super(title);
@@ -78,22 +78,22 @@ public class CutsceneDialogueScreen extends Screen {
     }
 
     private ChoiceResult confirmChoice(int selectedChoice) {
-        assert minecraft != null;
+        assert this.client != null;
         ChoiceResult result = this.dialogue.choose(this.dialogue.getCurrentChoices().get(selectedChoice));
         if (result == ChoiceResult.END_DIALOGUE) {
-            this.minecraft.openScreen(null);
-            RequiemPlayer player = (RequiemPlayer) this.minecraft.player;
+            this.client.openScreen(null);
+            RequiemPlayer player = (RequiemPlayer) this.client.player;
             assert player != null;
             player.getDialogueTracker().endDialogue();
             player.getDeathSuspender().setLifeTransient(false);
         } else if (result == ChoiceResult.ASK_CONFIRMATION) {
-            ImmutableList<String> choices = this.dialogue.getCurrentChoices();
-            this.minecraft.openScreen(new ConfirmScreen(
+            ImmutableList<Text> choices = this.dialogue.getCurrentChoices();
+            this.client.openScreen(new ConfirmScreen(
                     this::onBigChoiceMade,
-                    new TranslatableText(this.dialogue.getCurrentText()),
+                    this.dialogue.getCurrentText(),
                     new LiteralText(""),
-                    I18n.translate(choices.get(0)),
-                    I18n.translate(choices.get(1))
+                    choices.get(0),
+                    choices.get(1)
             ));
         } else {
             this.selectedChoice = 0;
@@ -102,9 +102,9 @@ public class CutsceneDialogueScreen extends Screen {
     }
 
     private void onBigChoiceMade(boolean yes) {
-        assert minecraft != null;
+        assert client != null;
         if (this.confirmChoice(yes ? 0 : 1) == ChoiceResult.DEFAULT) {
-            this.minecraft.openScreen(this);
+            this.client.openScreen(this);
         }
     }
 
@@ -137,13 +137,13 @@ public class CutsceneDialogueScreen extends Screen {
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        ImmutableList<@Unlocalized String> choices = this.dialogue.getCurrentChoices();
-        String title = I18n.translate(this.dialogue.getCurrentText());
-        int y = MIN_RENDER_Y + this.font.getStringBoundedHeight(title, MAX_TEXT_WIDTH) + TITLE_GAP;
+        ImmutableList<Text> choices = this.dialogue.getCurrentChoices();
+        Text title = this.dialogue.getCurrentText();
+        int y = MIN_RENDER_Y + this.getTextBoundedHeight(title, MAX_TEXT_WIDTH) + TITLE_GAP;
         for (int i = 0; i < choices.size(); i++) {
-            String choice = I18n.translate(choices.get(i));
-            int strHeight = this.font.getStringBoundedHeight(choice, width);
-            int strWidth = strHeight == 9 ? this.font.getStringWidth(choice) : width;
+            Text choice = choices.get(i);
+            int strHeight = this.getTextBoundedHeight(choice, width);
+            int strWidth = strHeight == 9 ? this.textRenderer.getWidth(choice) : width;
             if (mouseX < strWidth && mouseY > y && mouseY < y + strHeight) {
                 this.selectedChoice = i;
                 this.hoveringChoice = true;
@@ -154,26 +154,30 @@ public class CutsceneDialogueScreen extends Screen {
         }
     }
 
+    private int getTextBoundedHeight(Text text, int maxWidth) {
+        return 9 * this.textRenderer.wrapLines(text, maxWidth).size();
+    }
+
     @Override
-    public void render(int mouseX, int mouseY, float tickDelta) {
-        assert minecraft != null;
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
+        assert client != null;
         if (!ZaWorldFx.INSTANCE.hasFinishedAnimation()) {
             return;
         }
-        this.renderBackground();
+        this.renderBackground(matrices);
         int y = MIN_RENDER_Y;
-        String title = I18n.translate(this.dialogue.getCurrentText());
-        this.font.drawTrimmed(title, 10, y, MAX_TEXT_WIDTH, 0xFFFFFF);
-        y += this.font.getStringBoundedHeight(title, MAX_TEXT_WIDTH) + TITLE_GAP;
-        ImmutableList<String> choices = this.dialogue.getCurrentChoices();
+        Text title = this.dialogue.getCurrentText();
+        this.textRenderer.drawTrimmed(title, 10, y, MAX_TEXT_WIDTH, 0xFFFFFF);
+        y += this.getTextBoundedHeight(title, MAX_TEXT_WIDTH) + TITLE_GAP;
+        ImmutableList<Text> choices = this.dialogue.getCurrentChoices();
         for (int i = 0; i < choices.size(); i++) {
-            String choice = I18n.translate(choices.get(i));
-            int strHeight = this.font.getStringBoundedHeight(choice, MAX_TEXT_WIDTH);
-            this.font.drawTrimmed(choice, 10, y, MAX_TEXT_WIDTH, i == this.selectedChoice ? 0xE0E044 : 0xA0A0A0);
+            Text choice = choices.get(i);
+            int strHeight = this.getTextBoundedHeight(choice, MAX_TEXT_WIDTH);
+            this.textRenderer.drawTrimmed(choice, 10, y, MAX_TEXT_WIDTH, i == this.selectedChoice ? 0xE0E044 : 0xA0A0A0);
             y += strHeight + CHOICE_GAP;
         }
-        String tip = I18n.translate("requiem:dialogue.instructions", minecraft.options.keyForward.getLocalizedName().toUpperCase(), minecraft.options.keyBack.getLocalizedName().toUpperCase(), minecraft.options.keyInventory.getLocalizedName().toUpperCase());
-        this.font.draw(tip, (this.width - font.getStringWidth(tip)) * 0.5f, this.height - 30, 0x808080);
-        super.render(mouseX, mouseY, tickDelta);
+        Text tip = new TranslatableText("requiem:dialogue.instructions", client.options.keyForward.getBoundKeyLocalizedText(), client.options.keyBack.getBoundKeyLocalizedText(), client.options.keyInventory.getBoundKeyLocalizedText());
+        this.textRenderer.draw(matrices, tip, (this.width - this.textRenderer.getWidth(tip)) * 0.5f, this.height - 30, 0x808080);
+        super.render(matrices, mouseX, mouseY, tickDelta);
     }
 }

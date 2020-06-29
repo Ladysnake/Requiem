@@ -40,22 +40,23 @@ import ladysnake.requiem.common.entity.HorologistEntity;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.satin.api.event.PostWorldRenderCallback;
 import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
-import ladysnake.satin.api.experimental.managed.Uniform1f;
-import ladysnake.satin.api.experimental.managed.Uniform3f;
-import ladysnake.satin.api.experimental.managed.UniformMat4;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
+import ladysnake.satin.api.managed.uniform.Uniform1f;
+import ladysnake.satin.api.managed.uniform.Uniform3f;
+import ladysnake.satin.api.managed.uniform.UniformFinder;
+import ladysnake.satin.api.managed.uniform.UniformMat4;
 import ladysnake.satin.api.util.GlMatrices;
-import net.fabricmc.fabric.api.event.client.ClientTickCallback;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 
 public class ZaWorldFx implements PostWorldRenderCallback {
@@ -63,7 +64,7 @@ public class ZaWorldFx implements PostWorldRenderCallback {
     public static final Identifier ZA_WARUDO_SHADER_ID = Requiem.id("shaders/post/za_warudo.json");
     public static final ZaWorldFx INSTANCE = new ZaWorldFx();
 
-    private MinecraftClient mc = MinecraftClient.getInstance();
+    private final MinecraftClient mc = MinecraftClient.getInstance();
     private int ticks;
     private float prevRadius;
     private float radius;
@@ -74,17 +75,17 @@ public class ZaWorldFx implements PostWorldRenderCallback {
         shader.setSamplerUniform("DepthSampler", ((ReadableDepthFramebuffer)mc.getFramebuffer()).getStillDepthMap());
         shader.setUniformValue("ViewPort", 0, 0, mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight());
     });
-    private final Uniform1f uniformOuterSat = shader.findUniform1f("OuterSat");
-    private final Uniform1f uniformSTime = shader.findUniform1f("STime");
-    private final UniformMat4 uniformInverseTransformMatrix = shader.findUniformMat4("InverseTransformMatrix");
-    private final Uniform3f uniformCameraPosition = shader.findUniform3f("CameraPosition");
-    private final Uniform3f uniformCenter = shader.findUniform3f("Center");
-    private final Uniform1f uniformRadius = shader.findUniform1f("Radius");
+    private final Uniform1f uniformOuterSat = ((UniformFinder) shader).findUniform1f("OuterSat");
+    private final Uniform1f uniformSTime = ((UniformFinder) shader).findUniform1f("STime");
+    private final UniformMat4 uniformInverseTransformMatrix = ((UniformFinder) shader).findUniformMat4("InverseTransformMatrix");
+    private final Uniform3f uniformCameraPosition = ((UniformFinder) shader).findUniform3f("CameraPosition");
+    private final Uniform3f uniformCenter = ((UniformFinder) shader).findUniform3f("Center");
+    private final Uniform1f uniformRadius = ((UniformFinder) shader).findUniform1f("Radius");
 
 
     void registerCallbacks() {
         PostWorldRenderCallback.EVENT.register(this);
-        ClientTickCallback.EVENT.register(this::update);
+        ClientTickEvents.END_CLIENT_TICK.register(this::update);
     }
 
     private void turnToFace(Entity entity) {

@@ -34,40 +34,42 @@
  */
 package ladysnake.requiem.common.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import net.minecraft.advancement.PlayerAdvancementTracker;
+import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-import java.util.ArrayList;
-import java.util.List;
+public class OnRemnantChoiceCriterion extends AbstractCriterion<OnRemnantChoiceCriterion.Conditions> {
+    private final Identifier id;
 
-public class OnRemnantChoiceCriterion extends CriterionBase<OnRemnantChoiceCriterion.Conditions, OnRemnantChoiceCriterion.Handler> {
     public OnRemnantChoiceCriterion(Identifier id) {
-        super(id, Handler::new);
+        this.id = id;
     }
 
     @Override
-    public Conditions conditionsFromJson(JsonObject json, JsonDeserializationContext ctx) {
-        return new Conditions(this.getId(), RemnantTypePredicate.deserialize(json.get("remnant_type")));
+    public Identifier getId() {
+        return this.id;
+    }
+
+    @Override
+    protected Conditions conditionsFromJson(JsonObject json, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+        return new Conditions(this.getId(), playerPredicate, RemnantTypePredicate.deserialize(json.get("remnant_type")));
     }
 
     public void handle(ServerPlayerEntity player, RemnantType chosenType) {
-        Handler handler = this.getHandler(player.getAdvancementTracker());
-        if (handler != null) {
-            handler.handle(chosenType);
-        }
+        this.test(player, (conditions) -> conditions.test(chosenType));
     }
 
     public static class Conditions extends AbstractCriterionConditions {
         private final RemnantTypePredicate predicate;
 
-        public Conditions(Identifier id, RemnantTypePredicate predicate) {
-            super(id);
+        public Conditions(Identifier id, EntityPredicate.Extended playerPredicate, RemnantTypePredicate predicate) {
+            super(id, playerPredicate);
             this.predicate = predicate;
         }
 
@@ -76,32 +78,10 @@ public class OnRemnantChoiceCriterion extends CriterionBase<OnRemnantChoiceCrite
         }
 
         @Override
-        public JsonElement toJson() {
-            JsonObject json = new JsonObject();
+        public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+            JsonObject json = super.toJson(predicateSerializer);
             json.add("type", this.predicate.serialize());
             return json;
-        }
-    }
-
-    public static class Handler extends CriterionBase.Handler<Conditions> {
-        public Handler(PlayerAdvancementTracker tracker) {
-            super(tracker);
-        }
-
-        public void handle(RemnantType chosenType) {
-            List<ConditionsContainer<Conditions>> conditionsContainers = null;
-
-            for (ConditionsContainer<Conditions> condition : this.conditions) {
-                if (condition.getConditions().test(chosenType)) {
-                    if (conditionsContainers == null) {
-                        conditionsContainers = new ArrayList<>();
-                    }
-
-                    conditionsContainers.add(condition);
-                }
-            }
-
-            this.grant(conditionsContainers);
         }
     }
 }

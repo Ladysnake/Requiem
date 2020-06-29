@@ -18,14 +18,14 @@
 package ladysnake.requiem.api.v1.dialogue;
 
 import com.google.common.collect.ImmutableList;
-import ladysnake.requiem.api.v1.annotation.Unlocalized;
+import net.minecraft.text.Text;
 
 public interface CutsceneDialogue {
     void start();
 
-    @Unlocalized String getCurrentText();
+    Text getCurrentText();
 
-    ImmutableList<@Unlocalized String> getCurrentChoices();
+    ImmutableList<Text> getCurrentChoices();
 
     /**
      * Chooses an option in an initialized dialogue
@@ -33,5 +33,5 @@ public interface CutsceneDialogue {
      * @throws IllegalArgumentException if the given choice is not part of the {@link #getCurrentChoices() current choices}
      * @return true if the new state is an end state
      */
-    ChoiceResult choose(String choice);
+    ChoiceResult choose(Text choice);
 }

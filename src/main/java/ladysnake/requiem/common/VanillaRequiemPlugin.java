@@ -42,7 +42,6 @@ import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.event.minecraft.ItemPickupCallback;
 import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
-import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
@@ -61,6 +60,7 @@ import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import nerdhub.cardinal.components.api.event.PlayerCopyCallback;
 import net.fabricmc.fabric.api.event.player.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -93,7 +93,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             "Inherent Mob Slowness",
             -0.66,
             EntityAttributeModifier.Operation.MULTIPLY_TOTAL
-    ).setSerialize(false);
+    );
 
     @Override
     public void onRequiemInitialize() {
@@ -134,7 +134,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> !player.world.isClient && isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
         UseItemCallback.EVENT.register((player, world, hand) -> new TypedActionResult<>(getInteractionResult(player), player.getStackInHand(hand)));
         // Make players respawn in the right place with the right state
-        PlayerCloneCallback.EVENT.register((original, clone, returnFromEnd) -> {
+        PlayerCopyCallback.EVENT.register((original, clone, returnFromEnd) -> {
             RequiemPlayer requiemClone = RequiemPlayer.from(clone);
             requiemClone.become(RequiemPlayer.from(original).asRemnant().getType());
             requiemClone.asRemnant().copyFrom(original, returnFromEnd);

@@ -34,68 +34,48 @@
  */
 package ladysnake.requiem.common.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import net.minecraft.advancement.PlayerAdvancementTracker;
+import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.entity.Entity;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
-public class OnResurrectCriterion extends CriterionBase<OnResurrectCriterion.Conditions, OnResurrectCriterion.Handler> {
+public class OnResurrectCriterion extends AbstractCriterion<OnResurrectCriterion.Conditions> {
+    private final Identifier id;
+
     public OnResurrectCriterion(Identifier id) {
-        super(id, Handler::new);
-    }
-
-    public void handle(ServerPlayerEntity player, Entity body) {
-        Handler handler = this.getHandler(player.getAdvancementTracker());
-        if (handler != null) {
-            handler.handle(player, body);
-        }
+        this.id = id;
     }
 
     @Override
-    public Conditions conditionsFromJson(JsonObject json, JsonDeserializationContext ctx) {
-        return new Conditions(this.getId(), EntityPredicate.fromJson(json.get("body")));
+    public Identifier getId() {
+        return this.id;
+    }
+
+    public void handle(ServerPlayerEntity player, Entity body) {
+        this.test(player, conditions -> conditions.test(player, body));
+    }
+
+    @Override
+    public Conditions conditionsFromJson(JsonObject json, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer ctx) {
+        return new Conditions(this.getId(), playerPredicate, EntityPredicate.fromJson(json.get("body")));
     }
 
     static class Conditions extends AbstractCriterionConditions {
         private final EntityPredicate entity;
 
-        public Conditions(Identifier id, EntityPredicate entity) {
-            super(id);
+        public Conditions(Identifier id, EntityPredicate.Extended playerPredicate, EntityPredicate entity) {
+            super(id, playerPredicate);
             this.entity = entity;
         }
 
         public boolean test(ServerPlayerEntity player, @Nullable Entity body) {
             return this.entity.test(player, body);
-        }
-    }
-
-    static class Handler extends CriterionBase.Handler<Conditions> {
-        public Handler(PlayerAdvancementTracker tracker) {
-            super(tracker);
-        }
-
-        public void handle(ServerPlayerEntity player, Entity body) {
-            List<ConditionsContainer<Conditions>> conditionsContainers = null;
-
-            for (ConditionsContainer<Conditions> condition : this.conditions) {
-                if (condition.getConditions().test(player, body)) {
-                    if (conditionsContainers == null) {
-                        conditionsContainers = new ArrayList<>();
-                    }
-
-                    conditionsContainers.add(condition);
-                }
-            }
-
-            this.grant(conditionsContainers);
         }
     }
 }

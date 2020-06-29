@@ -32,37 +32,16 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.entity.ai.attribute;
+package ladysnake.requiem.mixin.entity.mob;
 
-import ladysnake.requiem.mixin.entity.attribute.AbstractEntityAttributeContainerAccessor;
-import ladysnake.requiem.mixin.entity.attribute.EntityAttributeContainerAccessor;
-import net.minecraft.entity.attribute.*;
+import net.minecraft.entity.mob.AbstractSkeletonEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.item.ItemStack;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-import java.util.Map;
-
-public final class AttributeHelper {
-    private AttributeHelper() { throw new AssertionError(); }
-
-    public static void substituteAttributeInstance(AbstractEntityAttributeContainer entityAttributeContainer, EntityAttributeInstance replacement) {
-        final Map<EntityAttribute, EntityAttributeInstance> attributes = ((AbstractEntityAttributeContainerAccessor)entityAttributeContainer).getInstancesByKey();
-        final Map<String, EntityAttributeInstance> attributesByName = ((AbstractEntityAttributeContainerAccessor)entityAttributeContainer).getInstancesById();
-        final Map<String, EntityAttributeInstance> instancesByName = (entityAttributeContainer instanceof EntityAttributeContainer)
-                ? ((EntityAttributeContainerAccessor) entityAttributeContainer).getInstancesByName()
-                : null;
-        EntityAttribute attribute = replacement.getAttribute();
-        String name = attribute.getId();
-        attributes.put(attribute, replacement);
-        attributesByName.put(name, replacement);
-        if (instancesByName != null) {
-            String description;
-            if (attribute instanceof ClampedEntityAttribute) {
-                description = ((ClampedEntityAttribute) attribute).getName();
-            } else {
-                description = null;
-            }
-            if (description != null && instancesByName.containsKey(description)) {
-                instancesByName.put(description, replacement);
-            }
-        }
-    }
+@Mixin(AbstractSkeletonEntity.class)
+public interface ArrowShooter {
+    @Invoker("createArrowProjectile")
+    PersistentProjectileEntity invokeGetArrow(ItemStack arrowStack, float charge);
 }

@@ -34,7 +34,6 @@
  */
 package ladysnake.requiem.mixin.client.gui.hud;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
@@ -42,19 +41,18 @@ import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
-import ladysnake.requiem.mixin.client.texture.SpriteAtlasHolderAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -63,66 +61,122 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import javax.annotation.Nullable;
-
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin extends DrawableHelper {
 
-    @Shadow @Final private MinecraftClient client;
-    @Unique private boolean boundSpecialBackground;
-    @Unique private StatusEffectInstance renderedEffect;
-
-    @Shadow @Nullable protected abstract PlayerEntity getCameraPlayer();
-
-    @Shadow private int scaledWidth;
-    @Shadow private int scaledHeight;
+    @Unique
+    private boolean skippedFood;
 
     @Shadow
-    protected abstract int getHeartCount(LivingEntity livingEntity_1);
+    @Final
+    private MinecraftClient client;
+    @Unique
+    private boolean boundSpecialBackground;
+    @Unique
+    private StatusEffectInstance renderedEffect;
+
+    @Shadow
+    private int scaledWidth;
+    @Shadow
+    private int scaledHeight;
 
     @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$SrcFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DstFactor;Lcom/mojang/blaze3d/platform/GlStateManager$SrcFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DstFactor;)V"), cancellable = true)
-    private void colorCrosshair(CallbackInfo ci) {
-        CrosshairRenderCallback.EVENT.invoker().onCrosshairRender(this.scaledWidth, this.scaledHeight);
+    private void colorCrosshair(MatrixStack matrices, CallbackInfo ci) {
+        CrosshairRenderCallback.EVENT.invoker().onCrosshairRender(matrices, this.scaledWidth, this.scaledHeight);
     }
 
-    @Inject(
-            method = "renderStatusBars",
-            at = @At(value = "CONSTANT", args = "stringValue=health")
+    @ModifyVariable(
+        method = "renderStatusBars",
+        slice = @Slice(
+            // precise slice makes it more likely to detect errors from wrong variable index
+            from = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getArmor()I"),
+            to = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/entity/player/PlayerEntity;getArmor()I", shift = At.Shift.AFTER)
+        ),
+        at = @At("STORE"),
+        index = 20 // there are too many ints in this method, so we just take the variable index from the bytecode
     )
-    private void drawPossessionHud(CallbackInfo info) {
+    private int preventArmorRender(int armor) {
         assert client.player != null;
-        if (((RequiemPlayer)client.player).asRemnant().isIncorporeal()) {
+
+        if (((RequiemPlayer) client.player).asRemnant().isIncorporeal()) {
             // Make everything that follows *invisible*
-            RenderSystem.color4f(1, 1, 1, 0);
+            return 0;
         }
+
+        return armor;
     }
 
-    @Redirect(
-            method = "renderStatusBars",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/hud/InGameHud;getHeartCount(Lnet/minecraft/entity/LivingEntity;)I"
-            )
+    @ModifyVariable(
+        method = "renderStatusBars",
+        slice = @Slice(
+            // precise slice makes it more likely to detect errors from wrong variable index
+            from = @At(value = "FIELD", target = "Lnet/minecraft/entity/attribute/EntityAttributes;GENERIC_MAX_HEALTH:Lnet/minecraft/entity/attribute/EntityAttribute;"),
+            to = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getAbsorptionAmount()F")
+        ),
+        at = @At(value = "STORE"),
+        index = 13 // there are too many ints in this method, so we just take the variable index from the bytecode
     )
-    private int preventFoodRender(InGameHud self, LivingEntity livingEntity_1) {
-        int actual = this.getHeartCount(livingEntity_1);
-        RequiemPlayer cameraPlayer = (RequiemPlayer) this.getCameraPlayer();
-        if (actual == 0 && cameraPlayer != null && cameraPlayer.asRemnant().isSoul()) {
-            Possessable possessed = (Possessable) cameraPlayer.asPossessor().getPossessedEntity();
+    private float preventHealthRender(float maxHealth) {
+        assert client.player != null;
+        if (((RequiemPlayer) client.player).asRemnant().isIncorporeal()) {
+            return 0;
+        }
+        return maxHealth;
+    }
+
+    @ModifyVariable(
+        method = "renderStatusBars",
+        // precise slice makes it more likely to detect errors from wrong variable index
+        slice = @Slice(
+            from = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getAbsorptionAmount()F"),
+            to = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;ceil(F)I", ordinal = 1)
+        ),
+        at = @At(value = "STORE"),
+        index = 14 // there are too many ints in this method, so we just take the variable index from the bytecode
+    )
+    private int preventAbsorptionRender(int absorption) {
+        assert client.player != null;
+        if (((RequiemPlayer) client.player).asRemnant().isIncorporeal()) {
+            return 0;
+        }
+        return absorption;
+    }
+
+    @ModifyVariable(
+        method = "renderStatusBars",
+        at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/gui/hud/InGameHud;getHeartCount(Lnet/minecraft/entity/LivingEntity;)I"),
+        index = 23
+    )
+    private int preventFoodRender(int mountHeartCount) {
+        RequiemPlayer player = (RequiemPlayer) this.client.player;
+        if (mountHeartCount == 0 && player != null && player.asRemnant().isSoul()) {
+            Possessable possessed = (Possessable) player.asPossessor().getPossessedEntity();
             if (possessed == null || !possessed.isRegularEater()) {
+                skippedFood = true;
                 return -1;
             }
         }
-        return actual;
+        skippedFood = false;
+        return mountHeartCount;
+    }
+
+    @ModifyVariable(
+        method = "renderStatusBars",
+        at = @At(value = "CONSTANT", args = "stringValue=air"),
+        index = 23
+    )
+    private int fixAirRender(int mountHeartCount) {
+        if (skippedFood) return 0;
+        return mountHeartCount;
     }
 
     @Redirect(
-            method = "renderStatusBars",
-            slice = @Slice(from = @At(value = "CONSTANT", args="stringValue=air")),
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isInFluid(Lnet/minecraft/tag/Tag;)Z")
+        method = "renderStatusBars",
+        slice = @Slice(from = @At(value = "CONSTANT", args = "stringValue=air")),
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSubmergedIn(Lnet/minecraft/tag/Tag;)Z")
     )
     private boolean preventAirRender(PlayerEntity playerEntity, Tag<Fluid> fluid) {
-        if (((RequiemPlayer)playerEntity).asRemnant().isSoul()) {
+        if (((RequiemPlayer) playerEntity).asRemnant().isSoul()) {
             LivingEntity possessed = ((RequiemPlayer) playerEntity).asPossessor().getPossessedEntity();
             if (possessed == null) {
                 return false;
@@ -130,13 +184,13 @@ public abstract class InGameHudMixin extends DrawableHelper {
                 return false;
             }
         }
-        return playerEntity.isInFluid(fluid);
+        return playerEntity.isSubmergedIn(fluid);
     }
 
     @ModifyVariable(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J"), ordinal = 0)
     private int substituteHealth(int health) {
         assert client.player != null;
-        LivingEntity entity = ((RequiemPlayer)client.player).asPossessor().getPossessedEntity();
+        LivingEntity entity = ((RequiemPlayer) client.player).asPossessor().getPossessedEntity();
         if (entity != null) {
             return MathHelper.ceil(entity.getHealth());
         }
@@ -144,25 +198,14 @@ public abstract class InGameHudMixin extends DrawableHelper {
     }
 
     @Inject(method = "renderHotbar", at = @At("HEAD"), cancellable = true)
-    private void fireHotBarRenderEvent(float tickDelta, CallbackInfo info) {
-        if (HotbarRenderCallback.EVENT.invoker().onHotbarRender(tickDelta) != ActionResult.PASS) {
+    private void fireHotBarRenderEvent(float tickDelta, MatrixStack matrices, CallbackInfo info) {
+        if (HotbarRenderCallback.EVENT.invoker().onHotbarRender(matrices, tickDelta) != ActionResult.PASS) {
             info.cancel();
         }
     }
 
-    @Inject(
-            method = "renderStatusBars",
-            at = @At(value = "CONSTANT", args = "stringValue=air")
-    )
-    private void resumeDrawing(CallbackInfo info) {
-        assert client.player != null;
-        if (((RequiemPlayer)client.player).asRemnant().isSoul()) {
-            RenderSystem.color4f(1, 1, 1, 1);
-        }
-    }
-
     // ModifyVariable is only used to capture the local variable more easily
-    @ModifyVariable(method = "renderStatusEffectOverlay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;blit(IIIIII)V"))
+    @ModifyVariable(method = "renderStatusEffectOverlay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"))
     private StatusEffectInstance customizeDrawnBackground(StatusEffectInstance effect) {
         if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
             assert this.client != null;
@@ -173,23 +216,16 @@ public abstract class InGameHudMixin extends DrawableHelper {
         return effect;
     }
 
-    @Inject(method = "renderStatusEffectOverlay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;blit(IIIIII)V", shift = At.Shift.AFTER))
+    @Inject(method = "renderStatusEffectOverlay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V", shift = At.Shift.AFTER))
     private void restoreDrawnBackground(CallbackInfo ci) {
         if (boundSpecialBackground) {
-            this.client.getTextureManager().bindTexture(ContainerScreen.BACKGROUND_TEXTURE);
+            this.client.getTextureManager().bindTexture(HandledScreen.BACKGROUND_TEXTURE);
             boundSpecialBackground = false;
         }
     }
 
     @ModifyVariable(method = "renderStatusEffectOverlay", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/texture/StatusEffectSpriteManager;getSprite(Lnet/minecraft/entity/effect/StatusEffect;)Lnet/minecraft/client/texture/Sprite;"))
     private Sprite customizeDrawnSprite(Sprite baseSprite) {
-        int amplifier = renderedEffect.getAmplifier();
-        if (this.renderedEffect.getEffectType() == RequiemStatusEffects.ATTRITION && amplifier < 4) {
-            Identifier baseId = baseSprite.getId();
-            return ((SpriteAtlasHolderAccessor) MinecraftClient.getInstance().getStatusEffectSpriteManager())
-                .getAtlas().getSprite(new Identifier(baseId.getNamespace(), baseId.getPath() + '_' + (amplifier + 1)));
-        }
-        return baseSprite;
+        return RequiemStatusEffects.substituteSprite(baseSprite, renderedEffect);
     }
-
 }

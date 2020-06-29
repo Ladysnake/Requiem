@@ -35,8 +35,8 @@
 package ladysnake.requiem.common.advancement.criterion;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.mixin.advancement.criterion.CriterionsAccessor;
-import net.minecraft.advancement.criterion.Criterions;
+import ladysnake.requiem.mixin.registration.CriteriaAccessor;
+import net.minecraft.advancement.criterion.Criteria;
 
 public class RequiemCriteria {
     public static final OnResurrectCriterion PLAYER_RESURRECTED_AS_ENTITY = new OnResurrectCriterion(Requiem.id("player_resurrected_as_entity"));
@@ -45,8 +45,8 @@ public class RequiemCriteria {
     public static void init() {
         // the class may not have been loaded at this point, so we need to classload it ourselves
         // before calling the accessor
-        Criterions.getAllCriterions();
-        CriterionsAccessor.invokeRegister(PLAYER_RESURRECTED_AS_ENTITY);
-        CriterionsAccessor.invokeRegister(MADE_REMNANT_CHOICE);
+        Criteria.getCriteria();
+        CriteriaAccessor.invokeRegister(PLAYER_RESURRECTED_AS_ENTITY);
+        CriteriaAccessor.invokeRegister(MADE_REMNANT_CHOICE);
     }
 }

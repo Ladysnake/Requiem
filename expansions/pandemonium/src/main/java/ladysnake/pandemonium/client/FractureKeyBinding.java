@@ -18,9 +18,9 @@
 package ladysnake.pandemonium.client;
 
 import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
-import net.fabricmc.fabric.api.client.keybinding.KeyBindingRegistry;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
@@ -32,15 +32,15 @@ public class FractureKeyBinding {
 
     public static final Identifier ETHEREAL_FRACTURE = Requiem.id("ethereal_fracture");
 
-    public static final FabricKeyBinding etherealFractureKey = FabricKeyBinding.Builder.create(
-            ETHEREAL_FRACTURE,
+    public static final KeyBinding etherealFractureKey = new KeyBinding(
+            ETHEREAL_FRACTURE.toString(),
             InputUtil.Type.KEYSYM,
             GLFW.GLFW_KEY_WORLD_2,  // '<'
             "key.categories.gameplay"
-    ).build();
+        );
 
     public static void init() {
-        KeyBindingRegistry.INSTANCE.register(etherealFractureKey);
+        KeyBindingHelper.registerKeyBinding(etherealFractureKey);
     }
 
     public static void update(MinecraftClient client) {

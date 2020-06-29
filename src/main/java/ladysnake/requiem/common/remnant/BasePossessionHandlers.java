@@ -44,8 +44,9 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 public class BasePossessionHandlers {
 
@@ -69,7 +70,8 @@ public class BasePossessionHandlers {
         if (!target.world.isClient && target instanceof EndermanEntity) {
             if (!simulate) {
                 Entity tpDest;
-                if (possessor.world.dimension.getType() != DimensionType.THE_END/* == DimensionType.OVERWORLD*/) {
+                // Maybe consider making the dimensional teleportation work in any dimension other than the overworld ?
+                if (possessor.world.getRegistryKey() != World.END/* == DimensionType.OVERWORLD*/) {
                     // Retry a few times
                     for (int i = 0; i < 20; i++) {
                         if (((EndermanEntityAccessor) target).invokeTeleportRandomly()) {
@@ -79,13 +81,13 @@ public class BasePossessionHandlers {
                     }
                     tpDest = target;
                 } else {
-                    // TODO when the dimension API is merged, use a custom teleporter to make the END path work with any dimension
                     possessor.world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
                     // Set the variable in advance to avoid game credits
                     ((ServerPlayerEntity) possessor).notInAnyWorld = true;
-                    possessor.changeDimension(DimensionType.OVERWORLD);
-                    ((ServerPlayerEntity) possessor).networkHandler.sendPacket(new GameStateChangeS2CPacket(4, 0.0F));
-                    tpDest = target.changeDimension(DimensionType.OVERWORLD);
+                    ServerWorld destination = ((ServerPlayerEntity) possessor).server.getWorld(World.OVERWORLD);
+                    possessor.changeDimension(destination);
+                    ((ServerPlayerEntity) possessor).networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_WON, 0.0F));
+                    tpDest = target.changeDimension(destination);
                 }
                 if (tpDest != null) {
                     possessor.teleport(tpDest.getX(), tpDest.getY(), tpDest.getZ(), true);

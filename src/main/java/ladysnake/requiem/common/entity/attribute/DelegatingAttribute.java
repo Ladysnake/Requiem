@@ -32,22 +32,32 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.entity.ai.attribute;
+package ladysnake.requiem.common.entity.attribute;
 
+import ladysnake.requiem.mixin.entity.attribute.AttributeContainerAccessor;
+import ladysnake.requiem.mixin.entity.attribute.EntityAttributeInstanceAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.attribute.*;
+import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.nbt.CompoundTag;
 
 import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.UUID;
 
-public class DelegatingAttribute extends EntityAttributeInstanceImpl {
+public class DelegatingAttribute extends EntityAttributeInstance {
     private final EntityAttributeInstance original;
 
-    public DelegatingAttribute(AbstractEntityAttributeContainer map, EntityAttributeInstance original) {
-        super(map, original.getAttribute());
+    public DelegatingAttribute(EntityAttributeInstance original) {
+        super(original.getAttribute(), ((EntityAttributeInstanceAccessor) original).getUpdateCallback());
         this.original = original;
+    }
+
+    public static void replaceAttribute(AttributeContainer attributeMap, EntityAttributeInstance replacement) {
+        ((AttributeContainerAccessor) attributeMap).getCustom().put(replacement.getAttribute(), replacement);
     }
 
     public final EntityAttributeInstance getOriginal() {
@@ -95,18 +105,13 @@ public class DelegatingAttribute extends EntityAttributeInstanceImpl {
     }
 
     @Override
-    public void addModifier(EntityAttributeModifier modifier) {
-        getDelegateAttributeInstance().addModifier(modifier);
-    }
-
-    @Override
     public void removeModifier(EntityAttributeModifier modifier) {
         getDelegateAttributeInstance().removeModifier(modifier);
     }
 
     @Override
-    public void removeModifier(UUID p_188479_1_) {
-        getDelegateAttributeInstance().removeModifier(p_188479_1_);
+    public void removeModifier(UUID modifierId) {
+        getDelegateAttributeInstance().removeModifier(modifierId);
     }
 
     @Override
@@ -120,4 +125,33 @@ public class DelegatingAttribute extends EntityAttributeInstanceImpl {
         return getDelegateAttributeInstance().getValue();
     }
 
+    @Override
+    public void addTemporaryModifier(EntityAttributeModifier modifier) {
+        getDelegateAttributeInstance().addTemporaryModifier(modifier);
+    }
+
+    @Override
+    public void addPersistentModifier(EntityAttributeModifier modifier) {
+        getDelegateAttributeInstance().addPersistentModifier(modifier);
+    }
+
+    @Override
+    public boolean tryRemoveModifier(UUID uuid) {
+        return getDelegateAttributeInstance().tryRemoveModifier(uuid);
+    }
+
+    @Override
+    public void setFrom(EntityAttributeInstance other) {
+        getDelegateAttributeInstance().setFrom(other);
+    }
+
+    @Override
+    public CompoundTag toTag() {
+        return original.toTag();
+    }
+
+    @Override
+    public void fromTag(CompoundTag tag) {
+        original.fromTag(tag);
+    }
 }

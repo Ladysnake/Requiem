@@ -54,8 +54,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ClientPlayerEntityMixin extends PlayerEntity implements RequiemPlayer {
     @Shadow public Input input;
 
-    public ClientPlayerEntityMixin(World world_1, GameProfile gameProfile_1) {
-        super(world_1, gameProfile_1);
+    public ClientPlayerEntityMixin(World world, BlockPos blockPos, GameProfile gameProfile) {
+        super(world, blockPos, gameProfile);
     }
 
     @Inject(method = "cannotFitAt", at = @At(value = "RETURN", ordinal = 1), cancellable = true)

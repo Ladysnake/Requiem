@@ -1,6 +1,5 @@
 package ladysnake.pandemonium.common.network;
 
-import ladysnake.pandemonium.api.PandemoniumWorld;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
@@ -24,7 +23,7 @@ public class ServerMessageHandling {
             RemnantState remnantState = ((RequiemPlayer)player).asRemnant();
             if (remnantState instanceof MutableRemnantState) {
                 PossessionComponent possessionComponent = ((RequiemPlayer) player).asPossessor();
-                FractureAnchorManager anchorManager = ((PandemoniumWorld) player.world).getAnchorManager();
+                FractureAnchorManager anchorManager = FractureAnchorManager.get(player.world);
                 if (!remnantState.isSoul()) {
                     PlayerShellEntity shellEntity = PlayerShellEntity.fromPlayer(player);
                     player.world.spawnEntity(shellEntity);

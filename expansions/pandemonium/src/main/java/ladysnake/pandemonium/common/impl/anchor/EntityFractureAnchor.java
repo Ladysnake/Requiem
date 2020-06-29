@@ -30,13 +30,20 @@ public class EntityFractureAnchor extends TrackedFractureAnchor {
     private final UUID entityUuid;
 
     public EntityFractureAnchor(UUID entityUuid, FractureAnchorManager manager, UUID uuid, int id) {
-        super(manager, uuid, id);
+        super(checkSide(manager), uuid, id);
         this.entityUuid = entityUuid;
     }
 
     protected EntityFractureAnchor(FractureAnchorManager manager, CompoundTag tag, int id) {
-        super(manager, tag, id);
+        super(checkSide(manager), tag, id);
         this.entityUuid = tag.getUuid("AnchorEntity");
+    }
+
+    private static FractureAnchorManager checkSide(FractureAnchorManager manager) {
+        if (!(manager.getWorld() instanceof ServerWorld)) {
+            throw new IllegalArgumentException("EntityFractureAnchor is only supported on ServerWorld!");
+        }
+        return manager;
     }
 
     @Override

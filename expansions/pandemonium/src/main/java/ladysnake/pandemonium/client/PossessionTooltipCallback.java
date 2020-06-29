@@ -25,9 +25,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
@@ -48,10 +46,7 @@ public class PossessionTooltipCallback implements ItemTooltipCallback {
             } else {    // More tooltips can easily be added here
                 return;
             }
-            lines.add(Texts.setStyleIfAbsent(
-                    new TranslatableText(translationKey),
-                    new Style().setColor(Formatting.DARK_GRAY)
-            ));
+            lines.add(new TranslatableText(translationKey).styled(style -> style.withColor(Formatting.DARK_GRAY)));
         }
     }
 }

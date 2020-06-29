@@ -72,10 +72,12 @@ public class PlayerMovementAlterer implements MovementAlterer {
 
     @Override
     public void applyConfig() {
-        if (getActualFlightMode(config, player) == DISABLED) {
-            Pal.revokeAbility(player, VanillaAbilities.ALLOW_FLYING, MOVEMENT_ALTERER_ABILITIES);
-        } else {
-            Pal.grantAbility(player, VanillaAbilities.ALLOW_FLYING, MOVEMENT_ALTERER_ABILITIES);
+        if (!this.player.world.isClient) {
+            if (getActualFlightMode(config, player) == DISABLED) {
+                Pal.revokeAbility(player, VanillaAbilities.ALLOW_FLYING, MOVEMENT_ALTERER_ABILITIES);
+            } else {
+                Pal.grantAbility(player, VanillaAbilities.ALLOW_FLYING, MOVEMENT_ALTERER_ABILITIES);
+            }
         }
     }
 
@@ -106,7 +108,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
         if (getActualFlightMode(config, getPlayerOrPossessed(player)) == FORCED) {
             this.player.abilities.flying = true;
         }
-        if (this.player.onGround && config.shouldFlopOnLand() && this.player.world.getBlockState(this.player.getBlockPos()).isAir()) {
+        if (this.player.isOnGround() && config.shouldFlopOnLand() && this.player.world.getBlockState(this.player.getBlockPos()).isAir()) {
             this.player.jump();
         }
         Vec3d velocity = this.player.getVelocity();
@@ -122,7 +124,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
     }
 
     private Vec3d applyFallSpeedModifier(Vec3d velocity, float fallSpeedModifier) {
-        if (!this.player.onGround && velocity.y < 0) {
+        if (!this.player.isOnGround() && velocity.y < 0) {
             velocity = velocity.multiply(1.0, fallSpeedModifier, 1.0);
         }
         return velocity;

@@ -12,8 +12,8 @@ import ladysnake.requiem.client.RequiemFx;
 import ladysnake.satin.api.event.EntitiesPostRenderCallback;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -38,7 +38,7 @@ public class PandemoniumClient implements ClientModInitializer {
     private void registerCallbacks() {
         // Add custom tooltips to items when the player is possessing certain entities
         ItemTooltipCallback.EVENT.register(new PossessionTooltipCallback());
-        ClientTickCallback.EVENT.register(FractureKeyBinding::update);
+        ClientTickEvents.END_CLIENT_TICK.register(FractureKeyBinding::update);
         PickEntityShaderCallback.EVENT.register((camera, loadShaderFunc, appliedShaderGetter) -> {
             if (camera instanceof WaterCreatureEntity) {
                 loadShaderFunc.accept(RequiemFx.FISH_EYE_SHADER_ID);

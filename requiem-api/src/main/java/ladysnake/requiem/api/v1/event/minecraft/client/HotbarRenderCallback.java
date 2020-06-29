@@ -19,16 +19,17 @@ package ladysnake.requiem.api.v1.event.minecraft.client;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.ActionResult;
 
 public interface HotbarRenderCallback {
 
-    ActionResult onHotbarRender(float tickDelta);
+    ActionResult onHotbarRender(MatrixStack matrices, float tickDelta);
 
     Event<HotbarRenderCallback> EVENT = EventFactory.createArrayBacked(HotbarRenderCallback.class,
-            (listeners) -> (tickDelta) -> {
+            (listeners) -> (matrices, tickDelta) -> {
                 for (HotbarRenderCallback handler : listeners) {
-                    ActionResult actionResult = handler.onHotbarRender(tickDelta);
+                    ActionResult actionResult = handler.onHotbarRender(matrices, tickDelta);
                     if (actionResult != ActionResult.PASS) {
                         return actionResult;
                     }

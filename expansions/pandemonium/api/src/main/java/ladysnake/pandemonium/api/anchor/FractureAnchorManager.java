@@ -17,6 +17,10 @@
  */
 package ladysnake.pandemonium.api.anchor;
 
+import nerdhub.cardinal.components.api.ComponentRegistry;
+import nerdhub.cardinal.components.api.ComponentType;
+import nerdhub.cardinal.components.api.component.Component;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -33,7 +37,12 @@ import java.util.UUID;
  * <p>
  * The tracker is kept synchronized between server and clients.
  */
-public interface FractureAnchorManager {
+public interface FractureAnchorManager extends Component {
+    ComponentType<FractureAnchorManager> COMPONENT = ComponentRegistry.INSTANCE.registerStatic(new Identifier("pandemonium", "anchor_provider"), FractureAnchorManager.class);
+
+    static FractureAnchorManager get(World world) {
+        return COMPONENT.get(world);
+    }
 
     /**
      *

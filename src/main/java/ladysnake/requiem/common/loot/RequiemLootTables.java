@@ -37,12 +37,16 @@ package ladysnake.requiem.common.loot;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import net.fabricmc.fabric.api.loot.v1.FabricLootPoolBuilder;
 import net.fabricmc.fabric.api.loot.v1.event.LootTableLoadingCallback;
-import net.minecraft.enchantment.InfoEnchantment;
+import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.item.EnchantedBookItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.ConstantLootTableRange;
 import net.minecraft.loot.condition.RandomChanceLootCondition;
+import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.loot.function.LootFunction;
+import net.minecraft.loot.function.LootFunctionType;
 
 import java.util.regex.Pattern;
 
@@ -57,13 +61,22 @@ public final class RequiemLootTables {
         LootTableLoadingCallback.EVENT.register((resourceManager, lootManager, identifier, fabricLootSupplierBuilder, lootTableSetter) -> {
             if (NETHER_CHEST.matcher(identifier.getPath()).matches()) {
                 fabricLootSupplierBuilder.withPool(FabricLootPoolBuilder.builder()
-                    .withRolls(ConstantLootTableRange.create(1))
-                    .withEntry(ItemEntry.builder(Items.BOOK).withFunction(() -> (itemStack, lootContext) -> {
-                        boolean betterHumanity = lootContext.getRandom().nextFloat() * (1 + lootContext.getLuck()) > BASIC_HUMANITY_CHANCE;
-                        InfoEnchantment enchantment = new InfoEnchantment(RequiemEnchantments.HUMANITY, betterHumanity ? 2 : 1);
-                        return EnchantedBookItem.forEnchantment(enchantment);
-                    }))
-                    .withCondition(RandomChanceLootCondition.builder(HUMANITY_CHANCE))
+                    .rolls(ConstantLootTableRange.create(1))
+                    .withEntry(ItemEntry.builder(Items.BOOK).apply(() -> new LootFunction() {
+                        @Override
+                        public LootFunctionType getType() {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
+                        public ItemStack apply(ItemStack itemStack, LootContext lootContext) {
+                            boolean betterHumanity = lootContext.getRandom().nextFloat() * (1 + lootContext.getLuck()) > BASIC_HUMANITY_CHANCE;
+                            EnchantmentLevelEntry enchantment = new EnchantmentLevelEntry(RequiemEnchantments.HUMANITY, betterHumanity ? 2 : 1);
+                            return EnchantedBookItem.forEnchantment(enchantment);
+                        }
+                    }).build())
+                    .withCondition(RandomChanceLootCondition.builder(HUMANITY_CHANCE).build())
+                    .build()
                 );
             }
         });
