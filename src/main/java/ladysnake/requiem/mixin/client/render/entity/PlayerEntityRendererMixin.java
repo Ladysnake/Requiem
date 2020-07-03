@@ -103,50 +103,6 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * Player rendering hijack part 2
-     * We render incorporeal players on a different framebuffer for reuse.
-     * The main framebuffer's depth has been previously copied to the alternate's,
-     * so rendering should be visually equivalent.
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/* TODO reimplement using Blaze3D
-    @Inject(
-            method = "method_4215",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;method_4054(Lnet/minecraft/entity/LivingEntity;DDDFFLnet/minecraft/util/math/MatrixStack;Lnet/minecraft/client/render/LayeredVertexConsumerStorage;)V"
-            )
-    )
-    private void preRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, LayeredVertexConsumerStorage vertexConsumers, CallbackInfo info) {
-        if (((RequiemPlayer) renderedPlayer).asRemnant().isIncorporeal()) {
-            Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
-            boolean isObserverRemnant = cameraEntity instanceof RequiemPlayer && ((RequiemPlayer) cameraEntity).asRemnant().getType().isDemon();
-            float alpha = isObserverRemnant ? 1.0f : 0.05f;
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, alpha);
-            RenderSystem.depthMask(false);
-            ShadowPlayerFx.INSTANCE.beginPlayersFbWrite();
-        } else if (((RequiemPlayer) renderedPlayer).getDeathSuspender().isLifeTransient()) {
-            RenderSystem.color4f(1f, 1f, 1f, 0.5f);
-            RenderSystem.depthMask(false);
-        }
-    }
-
-    @Inject(
-            method = "method_4215",
-            at = @At(
-                    value = "INVOKE",
-                    shift = AFTER,
-                    target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;method_4054(Lnet/minecraft/entity/LivingEntity;DDDFFLnet/minecraft/util/math/MatrixStack;Lnet/minecraft/client/render/LayeredVertexConsumerStorage;)V"
-            )
-    )
-    private void postRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, LayeredVertexConsumerStorage vertexConsumers, CallbackInfo info) {
-        MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
-        RenderSystem.depthMask(true);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-    }
-*/
-
-    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Hand rendering hijack
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
