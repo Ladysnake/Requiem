@@ -89,9 +89,9 @@ import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 @Mixin(LivingEntity.class)
 abstract class PossessableLivingEntityMixin extends Entity implements Possessable, VariableMobilityEntity {
     @Unique
-    private boolean requiem_immovable = RequiemEntityTypeTags.IMMOVABLE.contains(this.getType());
+    private final boolean requiem_immovable = RequiemEntityTypeTags.IMMOVABLE.contains(this.getType());
     @Unique
-    private boolean requiem_regularEater = RequiemEntityTypeTags.EATER.contains(this.getType());
+    private final boolean requiem_regularEater = RequiemEntityTypeTags.EATER.contains(this.getType());
     @Unique
     private boolean requiem_wasCustomNameVisible;
     @Unique

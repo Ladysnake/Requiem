@@ -40,21 +40,24 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.satin.api.event.EntitiesPreRenderCallback;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
-import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
-import ladysnake.satin.api.experimental.managed.Uniform1f;
+import ladysnake.satin.api.managed.ManagedFramebuffer;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
-import net.fabricmc.fabric.api.event.client.ClientTickCallback;
+import ladysnake.satin.api.managed.uniform.Uniform1f;
+import ladysnake.satin.api.managed.uniform.UniformFinder;
+import ladysnake.satin.api.util.RenderLayerHelper;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderPhase;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Objects;
@@ -73,16 +76,23 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
     private final ManagedShaderEffect shadowPlayerEffect = ShaderEffectManager.getInstance().manage(SHADOW_PLAYER_SHADER_ID, this::assignDepthTexture);
     private final ManagedShaderEffect desaturateEffect = ShaderEffectManager.getInstance().manage(DESATURATE_SHADER_ID);
 
-    @Nullable
-    private Framebuffer playersFramebuffer;
+    private final ManagedFramebuffer playersFramebuffer = shadowPlayerEffect.getTarget("players");
+    private final RenderPhase.Target target = new RenderPhase.Target(
+        "requiem:shadow_players_target",
+        this::beginPlayersFbWrite,
+        () -> {
+            MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+            RenderSystem.depthMask(true);
+        }
+    );
     private boolean renderedSoulPlayers;
     private boolean nearEthereal;
-    private Uniform1f uniformSaturation = this.desaturateEffect.findUniform1f("Saturation");
+    private final Uniform1f uniformSaturation = ((UniformFinder)this.desaturateEffect).findUniform1f("Saturation");
 
     void registerCallbacks() {
         EntitiesPreRenderCallback.EVENT.register(this);
         ShaderEffectRenderCallback.EVENT.register(this);
-        ClientTickCallback.EVENT.register(this::update);
+        ClientTickEvents.END_CLIENT_TICK.register(this::update);
     }
 
     private void update(MinecraftClient client) {
@@ -98,20 +108,24 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
 
     private void assignDepthTexture(ManagedShaderEffect shader) {
         client.getFramebuffer().beginWrite(false);
-        int depthTexture = ((ReadableDepthFramebuffer)client.getFramebuffer()).getCurrentDepthTexture();
+        int depthTexture = client.getFramebuffer().depthAttachment;
         if (depthTexture > -1) {
-            this.playersFramebuffer = Objects.requireNonNull(shader.getShaderEffect()).getSecondaryTarget("players");
-            this.playersFramebuffer.beginWrite(false);
+            // FIXME satin initializes ManagedFramebuffers after calling the init callback
+            Framebuffer playersFramebuffer = Objects.requireNonNull(shader.getShaderEffect()).getSecondaryTarget("players");
+            playersFramebuffer.beginWrite(false);
             // Use the same depth texture for our framebuffer as the main one
             GlStateManager.framebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
         }
     }
 
     public void beginPlayersFbWrite() {
-        if (this.playersFramebuffer != null) {
-            this.playersFramebuffer.beginWrite(false);
+        Framebuffer playersFramebuffer = this.playersFramebuffer.getFramebuffer();
+        if (playersFramebuffer != null) {
+            playersFramebuffer.beginWrite(false);
+            RenderSystem.depthMask(false);
             if (!this.renderedSoulPlayers) {
-                RenderSystem.clearColor(this.playersFramebuffer.clearColor[0], this.playersFramebuffer.clearColor[1], this.playersFramebuffer.clearColor[2], this.playersFramebuffer.clearColor[3]);
+                // no depth clearing
+                RenderSystem.clearColor(playersFramebuffer.clearColor[0], playersFramebuffer.clearColor[1], playersFramebuffer.clearColor[2], playersFramebuffer.clearColor[3]);
                 RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
 
                 this.renderedSoulPlayers = true;
@@ -141,8 +155,7 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
         }
     }
 
-    @Nullable
-    public Framebuffer getPlayersFramebuffer() {
-        return playersFramebuffer;
+    public RenderLayer getRenderLayer(RenderLayer base) {
+        return RenderLayerHelper.copy(base, "requiem:shadow_players", builder -> builder.target(target));
     }
 }
