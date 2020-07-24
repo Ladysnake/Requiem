@@ -93,7 +93,7 @@ allprojects {
         //export variables
         ext {
             year = Year.now()
-            projectDisplayName = rootProject.name
+            projectDisplayName = rootProject.display_name
             projectOwners = rootProject.owners
             gplVersion = rootProject.gpl_version
         }
