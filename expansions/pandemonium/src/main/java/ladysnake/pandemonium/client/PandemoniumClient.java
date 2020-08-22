@@ -52,7 +52,7 @@ public class PandemoniumClient implements ClientModInitializer {
                 Entity possessed = ((RequiemPlayer)client.player).asPossessor().getPossessedEntity();
                 if (possessed instanceof ShulkerEntity) {
                     ShulkerEntity shulker = (ShulkerEntity) possessed;
-                    EntityRenderDispatcher renderManager = client.getEntityRenderManager();
+                    EntityRenderDispatcher renderManager = client.getEntityRenderDispatcher();
                     ShulkerEntityRenderer renderer = (ShulkerEntityRenderer) renderManager.getRenderer(shulker);
                     if (renderer != null) {
                         ShulkerEntityModel<?> model = renderer.getModel();
