@@ -73,8 +73,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
 
     @Unique private final Collection<StatusEffectInstance> reappliedEffects = new ArrayList<>();
 
-    public ServerPlayerEntityMixin(World world, BlockPos blockPos, GameProfile gameProfile) {
-        super(world, blockPos, gameProfile);
+    public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
+        super(world, pos, yaw, profile);
     }
 
     @Shadow public abstract ServerWorld getServerWorld();

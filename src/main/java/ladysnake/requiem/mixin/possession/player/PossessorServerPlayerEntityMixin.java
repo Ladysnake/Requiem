@@ -71,8 +71,8 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
     @Nullable
     private CompoundTag requiem_possessedEntityTag;
 
-    public PossessorServerPlayerEntityMixin(World world, BlockPos blockPos, GameProfile gameProfile) {
-        super(world, blockPos, gameProfile);
+    public PossessorServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
+        super(world, pos, yaw, profile);
     }
 
     @Override
@@ -114,7 +114,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
         this.requiem_possessedEntityTag = serializedSecondLife;
     }
 
-    @Inject(method = "changeDimension", at = @At(value = "HEAD", shift = At.Shift.AFTER))   // Let cancelling mixins do their job
+    @Inject(method = "moveToWorld", at = @At(value = "HEAD", shift = At.Shift.AFTER))   // Let cancelling mixins do their job
     private void changePossessedDimension(ServerWorld dim, CallbackInfoReturnable<Entity> info) {
         prepareDimensionChange();
     }
@@ -136,7 +136,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
         }
     }
 
-    @Inject(method = "changeDimension", at = @At(value = "RETURN", ordinal = 1))
+    @Inject(method = "moveToWorld", at = @At(value = "RETURN", ordinal = 1))
     private void onTeleportDone(ServerWorld destination, CallbackInfoReturnable<Entity> cir) {
         sendToAllTrackingIncluding(this, createCorporealityMessage(this));
         spawnResurrectionEntity();

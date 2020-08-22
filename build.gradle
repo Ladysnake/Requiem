@@ -141,9 +141,7 @@ dependencies {
         include project(":requiem-api")
     }
 
-    modApi("io.github.ladysnake:Satin:${rootProject.satin_version}") {
-        transitive = false
-    }
+    modApi("io.github.ladysnake:Satin:${rootProject.satin_version}")
     include "io.github.ladysnake:Satin:${satin_version}"
     modRuntime ("io.github.prospector:modmenu:${modmenu_version}") {
         transitive = false
@@ -151,14 +149,8 @@ dependencies {
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${cca_version}"
     modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}")
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
-    modImplementation ("io.github.ladysnake:PlayerAbilityLib:${pal_version}") {
-        transitive = false
-    }
+    modImplementation ("io.github.ladysnake:PlayerAbilityLib:${pal_version}")
     include "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
-    modImplementation "com.github.FabLabsMC.fabric:fabric-game-rule-api-v1:gamerules-SNAPSHOT"
-    include "com.github.FabLabsMC.fabric:fabric-game-rule-api-v1:gamerules-SNAPSHOT"
-    modRuntime ("io.github.cottonmc:LibCD:${libcd_version}")
-    include "io.github.cottonmc:LibCD:${libcd_version}"
 
 //    modRuntime curse.resolve('immersive-portals-mod', 2845123)
 //    modRuntime "curse.maven:mobz:2965825"
