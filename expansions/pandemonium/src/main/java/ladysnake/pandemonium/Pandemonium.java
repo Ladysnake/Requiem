@@ -1,7 +1,7 @@
 package ladysnake.pandemonium;
 
-import dev.onyxstudios.cca.api.v3.component.world.WorldComponentFactoryRegistry;
-import dev.onyxstudios.cca.api.v3.component.world.WorldComponentInitializer;
+import dev.onyxstudios.cca.api.v3.world.WorldComponentFactoryRegistry;
+import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.pandemonium.client.ClientAnchorManager;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;

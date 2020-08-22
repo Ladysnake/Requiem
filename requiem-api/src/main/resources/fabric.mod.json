@@ -4,6 +4,7 @@
   "version": "${version}",
 
   "name": "Requiem-API",
+  "icon": "skull_logo.png",
   "description": "Requiem's modding API",
   "license": "LGPL-3.0-or-later",
   "authors": [
@@ -18,6 +19,7 @@
   "environment": "*",
 
   "custom": {
-    "modmenu:api": true
+    "modmenu:api": true,
+    "modmenu:parent": "requiem"
   }
 }
