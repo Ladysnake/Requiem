@@ -37,19 +37,17 @@ package ladysnake.requiem.mixin.world;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-import java.util.List;
 import java.util.function.Predicate;
 
 @Mixin(World.class)
 public abstract class WorldMixin {
-    @ModifyArg(method = "getEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/WorldChunk;getEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/List;Ljava/util/function/Predicate;)V"), index = 3)
-    private Predicate<Entity> ignorePossessed(Entity ignored, Box searchArea, List<Entity> foundEntities, Predicate<Entity> predicate) {
+    @ModifyVariable(method = "getOtherEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;", at = @At(value = "HEAD"), argsOnly = true)
+    private Predicate<Entity> ignorePossessed(Predicate<Entity> predicate, Entity ignored) {
         if (ignored instanceof RequiemPlayer) {
             LivingEntity possessed = ((RequiemPlayer) ignored).asPossessor().getPossessedEntity();
             if (possessed != null) {

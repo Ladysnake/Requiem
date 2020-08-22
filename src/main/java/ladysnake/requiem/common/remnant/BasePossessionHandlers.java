@@ -85,9 +85,9 @@ public class BasePossessionHandlers {
                     // Set the variable in advance to avoid game credits
                     ((ServerPlayerEntity) possessor).notInAnyWorld = true;
                     ServerWorld destination = ((ServerPlayerEntity) possessor).server.getWorld(World.OVERWORLD);
-                    possessor.changeDimension(destination);
+                    possessor.moveToWorld(destination);
                     ((ServerPlayerEntity) possessor).networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_WON, 0.0F));
-                    tpDest = target.changeDimension(destination);
+                    tpDest = target.moveToWorld(destination);
                 }
                 if (tpDest != null) {
                     possessor.teleport(tpDest.getX(), tpDest.getY(), tpDest.getZ(), true);

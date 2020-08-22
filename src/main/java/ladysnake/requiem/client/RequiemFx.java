@@ -46,7 +46,6 @@ import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
 import ladysnake.satin.api.managed.uniform.Uniform1f;
 import ladysnake.satin.api.managed.uniform.Uniform3f;
-import ladysnake.satin.api.managed.uniform.UniformFinder;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
@@ -88,12 +87,12 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
     private int ticks = 0;
     @Nullable
     private WeakReference<Entity> possessionTarget;
-    private final Uniform3f uniformOverlayColor = ((UniformFinder)spectreShader).findUniform3f("OverlayColor");
-    private final Uniform1f uniformZoom = ((UniformFinder)spectreShader).findUniform1f("Zoom");
-    private final Uniform1f uniformRaysIntensity = ((UniformFinder)spectreShader).findUniform1f("RaysIntensity");
-    private final Uniform1f uniformSolidIntensity = ((UniformFinder)spectreShader).findUniform1f("SolidIntensity");
-    private final Uniform1f uniformSlider = ((UniformFinder)fishEyeShader).findUniform1f("Slider");
-    private final Uniform1f uniformSTime = ((UniformFinder)spectreShader).findUniform1f("STime");
+    private final Uniform3f uniformOverlayColor = spectreShader.findUniform3f("OverlayColor");
+    private final Uniform1f uniformZoom = spectreShader.findUniform1f("Zoom");
+    private final Uniform1f uniformRaysIntensity = spectreShader.findUniform1f("RaysIntensity");
+    private final Uniform1f uniformSolidIntensity = spectreShader.findUniform1f("SolidIntensity");
+    private final Uniform1f uniformSlider = fishEyeShader.findUniform1f("Slider");
+    private final Uniform1f uniformSTime = spectreShader.findUniform1f("STime");
 
     void registerCallbacks() {
         ShaderEffectRenderCallback.EVENT.register(this);

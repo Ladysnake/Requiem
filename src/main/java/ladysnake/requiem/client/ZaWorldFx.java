@@ -44,7 +44,6 @@ import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
 import ladysnake.satin.api.managed.uniform.Uniform1f;
 import ladysnake.satin.api.managed.uniform.Uniform3f;
-import ladysnake.satin.api.managed.uniform.UniformFinder;
 import ladysnake.satin.api.managed.uniform.UniformMat4;
 import ladysnake.satin.api.util.GlMatrices;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -75,12 +74,12 @@ public class ZaWorldFx implements PostWorldRenderCallback {
         shader.setSamplerUniform("DepthSampler", ((ReadableDepthFramebuffer)mc.getFramebuffer()).getStillDepthMap());
         shader.setUniformValue("ViewPort", 0, 0, mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight());
     });
-    private final Uniform1f uniformOuterSat = ((UniformFinder) shader).findUniform1f("OuterSat");
-    private final Uniform1f uniformSTime = ((UniformFinder) shader).findUniform1f("STime");
-    private final UniformMat4 uniformInverseTransformMatrix = ((UniformFinder) shader).findUniformMat4("InverseTransformMatrix");
-    private final Uniform3f uniformCameraPosition = ((UniformFinder) shader).findUniform3f("CameraPosition");
-    private final Uniform3f uniformCenter = ((UniformFinder) shader).findUniform3f("Center");
-    private final Uniform1f uniformRadius = ((UniformFinder) shader).findUniform1f("Radius");
+    private final Uniform1f uniformOuterSat = shader.findUniform1f("OuterSat");
+    private final Uniform1f uniformSTime = shader.findUniform1f("STime");
+    private final UniformMat4 uniformInverseTransformMatrix = shader.findUniformMat4("InverseTransformMatrix");
+    private final Uniform3f uniformCameraPosition = shader.findUniform3f("CameraPosition");
+    private final Uniform3f uniformCenter = shader.findUniform3f("Center");
+    private final Uniform1f uniformRadius = shader.findUniform1f("Radius");
 
 
     void registerCallbacks() {
@@ -90,6 +89,7 @@ public class ZaWorldFx implements PostWorldRenderCallback {
 
     private void turnToFace(Entity entity) {
         PlayerEntity player = mc.player;
+        assert player != null;
         double dx = player.getX() - entity.getX();
         double dz = player.getZ() - entity.getZ();
         double angle = Math.atan2(dz, dx) * 180 / Math.PI;

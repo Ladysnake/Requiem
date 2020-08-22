@@ -119,8 +119,8 @@ public abstract class PossessableMobEntityMixin extends LivingEntity implements 
         }
     }
 
-    @Inject(method = "method_29243", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EquipmentSlot;values()[Lnet/minecraft/entity/EquipmentSlot;"), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private <T extends MobEntity> void possessConvertedZombie(EntityType<T> type, CallbackInfoReturnable<T> ci, T converted) {
+    @Inject(method = "method_29243", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"), locals = LocalCapture.CAPTURE_FAILSOFT)
+    private <T extends MobEntity> void possessConvertedZombie(EntityType<T> type, boolean bl, CallbackInfoReturnable<T> ci, T converted) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
             PossessionComponent possessionComponent = ((RequiemPlayer)possessor).asPossessor();

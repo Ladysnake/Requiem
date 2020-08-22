@@ -78,7 +78,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     private void cancelRender(AbstractClientPlayerEntity renderedPlayer, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int lightmap, CallbackInfo ci) {
         LivingEntity possessedEntity = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
         if (possessedEntity != null) {
-            EntityRenderDispatcher renderManager = MinecraftClient.getInstance().getEntityRenderManager();
+            EntityRenderDispatcher renderManager = MinecraftClient.getInstance().getEntityRenderDispatcher();
 //            matrices.pop(); // discard transforms made for the player rendering
             // TODO display the nameplate when some gamerule is enabled (yog)
             if (((VariableMobilityEntity)possessedEntity).requiem_isImmovable()) {
@@ -129,7 +129,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
             if (((RequiemPlayer) renderedPlayer).asPossessor().isPossessing()) {
                 LivingEntity possessed = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
                 if (possessed != null) {
-                    EntityRenderer<? super LivingEntity> possessedRenderer = MinecraftClient.getInstance().getEntityRenderManager().getRenderer(possessed);
+                    EntityRenderer<? super LivingEntity> possessedRenderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(possessed);
                     // If the mob has an arm, render it instead of the player's
                     if (possessedRenderer instanceof FeatureRendererContext) {
                         Model possessedModel = ((LivingEntityRenderer<?, ?>) possessedRenderer).getModel();
@@ -141,7 +141,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                             bipedModel.leftArmPose = playerModel.leftArmPose;
                             bipedModel.rightArmPose = playerModel.rightArmPose;
                             bipedModel.handSwingProgress = 0.0F;
-                            bipedModel.isSneaking = false;
+                            bipedModel.sneaking = false;
                             bipedModel.setAngles(possessed, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
                             arm.pitch = 0.0F;
                             arm.render(matrices, vertices.getBuffer(possessedModel.getLayer(possessedRenderer.getTexture(possessed))), lightmapCoordinates, OverlayTexture.DEFAULT_UV);

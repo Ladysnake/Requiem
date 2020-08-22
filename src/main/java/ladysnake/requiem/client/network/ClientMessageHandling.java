@@ -86,7 +86,7 @@ public class ClientMessageHandling {
                     Entity entity = player.world.getEntityById(possessedId);
                     if (entity instanceof MobEntity) {
                         ((RequiemPlayer)player).asPossessor().startPossessing((MobEntity) entity);
-                        if (client.options.perspective == 0) {
+                        if (client.options.getPerspective().isFirstPerson()) {
                             client.gameRenderer.onCameraEntitySet(entity);
                         }
                     } else {

@@ -44,7 +44,6 @@ import ladysnake.satin.api.managed.ManagedFramebuffer;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
 import ladysnake.satin.api.managed.uniform.Uniform1f;
-import ladysnake.satin.api.managed.uniform.UniformFinder;
 import ladysnake.satin.api.util.RenderLayerHelper;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
@@ -60,7 +59,6 @@ import org.lwjgl.opengl.GL30;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.Objects;
 
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 
@@ -87,7 +85,7 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
     );
     private boolean renderedSoulPlayers;
     private boolean nearEthereal;
-    private final Uniform1f uniformSaturation = ((UniformFinder)this.desaturateEffect).findUniform1f("Saturation");
+    private final Uniform1f uniformSaturation = this.desaturateEffect.findUniform1f("Saturation");
 
     void registerCallbacks() {
         EntitiesPreRenderCallback.EVENT.register(this);
@@ -108,10 +106,8 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
 
     private void assignDepthTexture(ManagedShaderEffect shader) {
         client.getFramebuffer().beginWrite(false);
-        int depthTexture = client.getFramebuffer().depthAttachment;
+        int depthTexture = client.getFramebuffer().getDepthAttachment();
         if (depthTexture > -1) {
-            // FIXME satin initializes ManagedFramebuffers after calling the init callback
-            Framebuffer playersFramebuffer = Objects.requireNonNull(shader.getShaderEffect()).getSecondaryTarget("players");
             playersFramebuffer.beginWrite(false);
             // Use the same depth texture for our framebuffer as the main one
             GlStateManager.framebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
