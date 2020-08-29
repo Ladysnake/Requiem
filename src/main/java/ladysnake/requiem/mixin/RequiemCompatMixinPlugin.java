@@ -39,6 +39,7 @@ public final class RequiemCompatMixinPlugin implements IMixinConfigPlugin {
     public List<String> getMixins() {
         return (new CompatBuilder())
             .addClient("healthoverlay", "HealthRendererMixin")
+            .add("origins", "PowerTypeMixin")
             .mixins;
     }
 
