@@ -18,6 +18,7 @@
 package ladysnake.pandemonium.common.impl.anchor;
 
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -27,7 +28,6 @@ import java.util.UUID;
 
 import static ladysnake.pandemonium.common.network.PandemoniumNetworking.createAnchorDeleteMessage;
 import static ladysnake.pandemonium.common.network.PandemoniumNetworking.createAnchorUpdateMessage;
-import static ladysnake.requiem.common.network.RequiemNetworking.sendTo;
 
 public class TrackedFractureAnchor extends InertFractureAnchor {
     public TrackedFractureAnchor(FractureAnchorManager manager, UUID uuid, int id) {
@@ -52,7 +52,7 @@ public class TrackedFractureAnchor extends InertFractureAnchor {
 
     protected void syncWithWorld(CustomPayloadS2CPacket packet) {
         for (ServerPlayerEntity player : ((ServerWorld) this.manager.getWorld()).getPlayers()) {
-            sendTo(player, packet);
+            RequiemNetworking.sendTo(player, packet);
         }
     }
 
