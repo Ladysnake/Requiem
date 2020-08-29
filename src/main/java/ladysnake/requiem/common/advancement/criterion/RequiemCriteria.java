@@ -35,7 +35,7 @@
 package ladysnake.requiem.common.advancement.criterion;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.mixin.registration.CriteriaAccessor;
+import ladysnake.requiem.mixin.common.registration.CriteriaAccessor;
 import net.minecraft.advancement.criterion.Criteria;
 
 public class RequiemCriteria {

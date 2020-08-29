@@ -32,34 +32,29 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common;
+package ladysnake.requiem.mixin.common.world;
 
-import com.mojang.serialization.Lifecycle;
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.remnant.RemnantState;
-import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.remnant.RemnantTypes;
-import ladysnake.requiem.mixin.common.registration.RegistryAccessor;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.DefaultedRegistry;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import org.apiguardian.api.API;
+import ladysnake.requiem.api.v1.RequiemPlayer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+import java.util.function.Predicate;
 
-/**
- * Entry point for the possession mechanic.
- * Everything here is subject to be moved to a more specialized place.
- */
-@API(status = EXPERIMENTAL)
-public final class RequiemRegistries {
-
-    public static final RegistryKey<Registry<RemnantType>> REMNANT_STATE_KEY = RegistryKey.ofRegistry(Requiem.id("remnant_states"));
-    public static final DefaultedRegistry<RemnantType> REMNANT_STATES = RegistryAccessor.create(REMNANT_STATE_KEY, RemnantState.NULL_STATE_ID, Lifecycle.stable(), () -> RemnantTypes.MORTAL);
-
-    public static void init() {
-        Registry.register(REMNANT_STATES, new Identifier(RemnantState.NULL_STATE_ID), RemnantTypes.MORTAL);
+@Mixin(World.class)
+public abstract class WorldMixin {
+    @ModifyVariable(method = "getOtherEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;", at = @At(value = "HEAD"), argsOnly = true)
+    private Predicate<Entity> ignorePossessed(Predicate<Entity> predicate, Entity ignored) {
+        if (ignored instanceof RequiemPlayer) {
+            LivingEntity possessed = ((RequiemPlayer) ignored).asPossessor().getPossessedEntity();
+            if (possessed != null) {
+                Predicate<Entity> appendedPredicate = e -> e != possessed;
+                return predicate == null ? appendedPredicate : predicate.and(appendedPredicate);
+            }
+        }
+        return predicate;
     }
-
 }

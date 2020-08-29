@@ -49,7 +49,7 @@ import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.util.InventoryHelper;
-import ladysnake.requiem.mixin.possession.player.LivingEntityAccessor;
+import ladysnake.requiem.mixin.common.possession.player.LivingEntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;

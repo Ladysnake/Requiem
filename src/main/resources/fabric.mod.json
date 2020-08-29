@@ -23,6 +23,10 @@
     {
       "environment": "*",
       "config": "mixins.requiem.common.json"
+    },
+    {
+      "environment": "*",
+      "config": "mixins.requiem.compat.json"
     }
   ],
 

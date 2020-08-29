@@ -76,6 +76,7 @@ allprojects {
         compileOnly "com.google.code.findbugs:jsr305:3.0.2"
         compileOnly "org.jetbrains:annotations:${jb_annotations_version}"
         compileOnly "org.apiguardian:apiguardian-api:${apiguardian_version}"
+        compileOnly "com.demonwav.mcdev:annotations:1.0"
 
         testImplementation "org.junit.jupiter:junit-jupiter-api:5.4.0-M1"
     }
@@ -128,6 +129,9 @@ repositories {
         url = 'http://server.bbkr.space:8081/artifactory/libs-release'
     }
     maven {
+        url "https://maven.jamieswhiteshirt.com/libs-release/"
+    }
+    maven {
         name = 'JitPack'
         url = 'https://jitpack.io'
     }
@@ -155,6 +159,12 @@ dependencies {
 //    modRuntime curse.resolve('immersive-portals-mod', 2845123)
 //    modRuntime "curse.maven:mobz:2965825"
     modCompileOnly("io.github.Terrails:Health-Overlay:1.16-Fabric-SNAPSHOT")
+
+    modRuntime "com.jamieswhiteshirt:reach-entity-attributes:1.0.1"
+    modCompileOnly("io.github.apace100:origins-fabric:v0.3.6")
+    modRuntime("io.github.apace100:origins-fabric:v0.3.6") {
+        transitive = false
+    }
 }
 
 remapJar.dependsOn(project(":requiem-api").tasks.remapJar)

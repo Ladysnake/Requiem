@@ -37,7 +37,7 @@ package ladysnake.requiem.common.remnant;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import ladysnake.requiem.mixin.entity.mob.EndermanEntityAccessor;
+import ladysnake.requiem.mixin.common.entity.mob.EndermanEntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.MobEntity;
