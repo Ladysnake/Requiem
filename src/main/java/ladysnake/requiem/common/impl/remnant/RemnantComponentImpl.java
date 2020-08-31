@@ -55,6 +55,11 @@ public final class RemnantComponentImpl implements RemnantComponent, AutoSyncedC
     }
 
     @Override
+    public void update() {
+        this.state.update();
+    }
+
+    @Override
     public void copyFrom(ServerPlayerEntity original, boolean lossless) {
         this.state.copyFrom(original, lossless);
     }
