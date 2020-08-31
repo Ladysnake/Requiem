@@ -63,7 +63,5 @@ public interface RemnantComponent extends ComponentV3 {
      */
     void copyFrom(ServerPlayerEntity original, boolean lossless);
 
-    default void update() {
-        // NO-OP
-    }
+    void update();
 }
