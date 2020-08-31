@@ -64,7 +64,7 @@ import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Requiem implements ModInitializer {
+public final class Requiem implements ModInitializer {
     public static final String MOD_ID = "requiem";
     public static final Logger LOGGER = LogManager.getLogger("Requiem");
 

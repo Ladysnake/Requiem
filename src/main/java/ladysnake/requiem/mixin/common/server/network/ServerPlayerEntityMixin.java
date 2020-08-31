@@ -35,12 +35,9 @@
 package ladysnake.requiem.mixin.common.server.network;
 
 import com.mojang.authlib.GameProfile;
-import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
-import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
@@ -50,7 +47,6 @@ import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -123,18 +119,6 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
         for (Iterator<StatusEffectInstance> iterator = reappliedEffects.iterator(); iterator.hasNext(); ) {
             this.addStatusEffect(iterator.next());
             iterator.remove();
-        }
-    }
-
-    @Inject(method = "onStartedTracking", at = @At("RETURN"))
-    private void onStartedTracking(Entity tracked, CallbackInfo info) {
-        ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
-        if (tracked instanceof Possessable) {
-            // Synchronize possessed entities with their possessor / other players
-            PlayerEntity possessor = ((Possessable) tracked).getPossessor();
-            if (possessor != null) {
-                PossessionComponent.KEY.syncWith(self, ComponentProvider.fromEntity(possessor));
-            }
         }
     }
 
