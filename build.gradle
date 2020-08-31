@@ -161,7 +161,9 @@ dependencies {
     modCompileOnly("io.github.Terrails:Health-Overlay:1.16-Fabric-SNAPSHOT")
 
     modRuntime "com.jamieswhiteshirt:reach-entity-attributes:1.0.1"
-    modCompileOnly("io.github.apace100:origins-fabric:v0.3.6")
+    modCompileOnly("io.github.apace100:origins-fabric:v0.3.6") {
+        transitive = false
+    }
     modRuntime("io.github.apace100:origins-fabric:v0.3.6") {
         transitive = false
     }

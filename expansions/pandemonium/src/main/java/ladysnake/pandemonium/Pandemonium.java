@@ -42,7 +42,7 @@ public class Pandemonium implements ModInitializer, WorldComponentInitializer {
 
     @Override
     public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {
-        registry.register(FractureAnchorManager.COMPONENT, world -> world.isClient
+        registry.register(FractureAnchorManager.KEY, world -> world.isClient
             ? new ClientAnchorManager(world)
             : new CommonAnchorManager(world)
         );

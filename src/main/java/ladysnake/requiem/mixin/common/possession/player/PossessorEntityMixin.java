@@ -34,8 +34,9 @@
  */
 package ladysnake.requiem.mixin.common.possession.player;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -46,36 +47,30 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class PossessorEntityMixin {
     @Inject(method = "getMaxAir", at = @At("HEAD"), cancellable = true)
     private void delegateMaxBreath(CallbackInfoReturnable<Integer> cir) {
-        if (this instanceof RequiemPlayer) {
-            PossessionComponent possessionComponent = ((RequiemPlayer) this).asPossessor();
-            // This method can be called in the constructor
-            //noinspection ConstantConditions
-            if (possessionComponent != null) {
-                Entity possessedEntity = possessionComponent.getPossessedEntity();
-                if (possessedEntity != null) {
-                    cir.setReturnValue(possessedEntity.getMaxAir());
-                }
+        Entity self = (Entity) (Object) this;
+        // This method can be called in the constructor
+        if (ComponentProvider.fromEntity(self).getComponentContainer() != null) {
+            Entity possessedEntity = PossessionComponent.getPossessedEntity(self);
+            if (possessedEntity != null) {
+                cir.setReturnValue(possessedEntity.getMaxAir());
             }
         }
     }
 
     @Inject(method = "getAir", at = @At("HEAD"), cancellable = true)
     private void delegateBreath(CallbackInfoReturnable<Integer> cir) {
-        if (this instanceof RequiemPlayer) {
-            PossessionComponent possessionComponent = ((RequiemPlayer) this).asPossessor();
-            // This method can be called in the constructor
-            //noinspection ConstantConditions
-            if (possessionComponent != null) {
-                Entity possessedEntity = ((RequiemPlayer) this).asPossessor().getPossessedEntity();
-                if (possessedEntity != null) {
-                    cir.setReturnValue(possessedEntity.getAir());
-                }
+        Entity self = (Entity) (Object) this;
+        // This method can be called in the constructor
+        if (ComponentProvider.fromEntity(self).getComponentContainer() != null) {
+            Entity possessedEntity = PossessionComponent.getPossessedEntity(self);
+            if (possessedEntity != null) {
+                cir.setReturnValue(possessedEntity.getAir());
             }
         }
     }
 
     @Inject(method = "canAvoidTraps", at = @At("RETURN"), cancellable = true)
     private void soulsAvoidTraps(CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(cir.getReturnValueZ() || (this instanceof RequiemPlayer && ((RequiemPlayer) this).asRemnant().isIncorporeal()));
+        cir.setReturnValue(cir.getReturnValueZ() || RemnantComponent.isIncorporeal((Entity) (Object) this));
     }
 }

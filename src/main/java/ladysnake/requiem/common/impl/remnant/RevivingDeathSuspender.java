@@ -39,22 +39,20 @@ import io.github.ladysnake.pal.Pal;
 import io.github.ladysnake.pal.VanillaAbilities;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
-import ladysnake.requiem.common.RequiemComponents;
 import ladysnake.requiem.common.util.DamageSourceSerialization;
-import nerdhub.cardinal.components.api.ComponentType;
-import nerdhub.cardinal.components.api.util.sync.EntitySyncedComponent;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 import javax.annotation.Nullable;
 
-public class RevivingDeathSuspender implements DeathSuspender, EntitySyncedComponent {
+public final class RevivingDeathSuspender implements DeathSuspender {
     public static final AbilitySource DEATH_SUSPENSION_ABILITIES = Pal.getAbilitySource(Requiem.id("death_suspension"));
+    private final PlayerEntity player;
     private boolean lifeTransient;
-    private PlayerEntity player;
     @Nullable
     private DamageSource deathCause;
 
@@ -72,7 +70,7 @@ public class RevivingDeathSuspender implements DeathSuspender, EntitySyncedCompo
         Pal.grantAbility(player, VanillaAbilities.INVULNERABLE, DEATH_SUSPENSION_ABILITIES);
         this.deathCause = deathCause;
         this.setLifeTransient(true);
-        this.sync();
+        DeathSuspender.KEY.sync(this.player);
     }
 
     @Override
@@ -91,22 +89,12 @@ public class RevivingDeathSuspender implements DeathSuspender, EntitySyncedCompo
         Pal.revokeAbility(player, VanillaAbilities.INVULNERABLE, DEATH_SUSPENSION_ABILITIES);
         this.player.setHealth(0f);
         this.setLifeTransient(false);
-        this.sync();
+        DeathSuspender.KEY.sync(this.player);
         this.player.onDeath(this.deathCause != null ? deathCause : DamageSource.GENERIC);
     }
 
     @Override
-    public PlayerEntity getEntity() {
-        return this.player;
-    }
-
-    @Override
-    public ComponentType<?> getComponentType() {
-        return RequiemComponents.DEATH_SUSPENDER;
-    }
-
-    @Override
-    public void writeToPacket(PacketByteBuf buf) {
+    public void writeToPacket(PacketByteBuf buf, ServerPlayerEntity player, int syncOp) {
         buf.writeBoolean(this.isLifeTransient());
     }
 
@@ -116,16 +104,15 @@ public class RevivingDeathSuspender implements DeathSuspender, EntitySyncedCompo
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
+    public void writeToNbt(CompoundTag tag) {
         tag.putBoolean("lifeTransient", this.lifeTransient);
         if (this.deathCause != null) {
             tag.put("deathCause", DamageSourceSerialization.toTag(this.deathCause));
         }
-        return tag;
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
+    public void readFromNbt(CompoundTag tag) {
         this.setLifeTransient(tag.getBoolean("lifeTransient"));
         if (tag.contains("deathCause") && this.player.world.isClient) {
             this.deathCause = DamageSourceSerialization.fromTag(tag.getCompound("deathCause"), (ServerWorld)this.player.world);

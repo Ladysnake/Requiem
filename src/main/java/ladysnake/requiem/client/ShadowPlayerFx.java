@@ -37,7 +37,7 @@ package ladysnake.requiem.client;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.satin.api.event.EntitiesPreRenderCallback;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import ladysnake.satin.api.managed.ManagedFramebuffer;
@@ -95,8 +95,14 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
 
     private void update(MinecraftClient client) {
         if (client.player != null) {
-            PlayerEntity closestEtherealPlayer = client.player.world.getClosestPlayer(client.player.getX(), client.player.getY(), client.player.getZ(), ETHEREAL_DESATURATE_RANGE, p -> p != client.player && ((RequiemPlayer)p).asRemnant().isIncorporeal());
-             this.nearEthereal = closestEtherealPlayer != null;
+            PlayerEntity closestEtherealPlayer = client.player.world.getClosestPlayer(
+                client.player.getX(),
+                client.player.getY(),
+                client.player.getZ(),
+                ETHEREAL_DESATURATE_RANGE,
+                p -> p != client.player && RemnantComponent.isIncorporeal(p)
+            );
+            this.nearEthereal = closestEtherealPlayer != null;
             if (nearEthereal) {
                 float distanceSqToEthereal = (float) client.player.squaredDistanceTo(closestEtherealPlayer.getX(), closestEtherealPlayer.getY(), closestEtherealPlayer.getZ());
                 uniformSaturation.set(0.8f * (distanceSqToEthereal / ETHEREAL_DESATURATE_RANGE_SQ));

@@ -38,6 +38,7 @@ import com.google.common.collect.ImmutableList;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.client.ZaWorldFx;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
@@ -85,7 +86,7 @@ public class CutsceneDialogueScreen extends Screen {
             RequiemPlayer player = (RequiemPlayer) this.client.player;
             assert player != null;
             player.getDialogueTracker().endDialogue();
-            player.getDeathSuspender().setLifeTransient(false);
+            DeathSuspender.get(this.client.player).setLifeTransient(false);
         } else if (result == ChoiceResult.ASK_CONFIRMATION) {
             ImmutableList<Text> choices = this.dialogue.getCurrentChoices();
             this.client.openScreen(new ConfirmScreen(

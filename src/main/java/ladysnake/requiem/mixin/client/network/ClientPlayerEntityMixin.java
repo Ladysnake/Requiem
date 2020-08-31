@@ -36,12 +36,14 @@ package ladysnake.requiem.mixin.client.network;
 
 import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Contract;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -74,10 +76,19 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Re
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;setSprinting(Z)V", ordinal = 0)
     )
     private boolean continueFlyingLikeSuperman(boolean value) {
-        if (this.abilities.flying && this.input.movementForward > 0F && this.isSprinting() && this.asRemnant().isIncorporeal()) {
+        if (this.abilities.flying && this.input.movementForward > 0F && this.isSprinting() && RemnantComponent.get(this).isIncorporeal()) {
             return true;
         }
         return value;
     }
 
+    /**
+     * Return a {@code PlayerEntity} instance that corresponds to this player.
+     * Calling {@link #from(PlayerEntity)} on the returned value returns {@code this} instance.
+     *
+     * @return {@code this} as a {@link PlayerEntity}
+     * @since 1.0.0
+     */
+    @Contract(pure = true)
+    public abstract PlayerEntity asPlayer();
 }

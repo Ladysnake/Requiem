@@ -37,7 +37,7 @@ package ladysnake.requiem.client;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.client.render.RequiemBuilderStorage;
 import ladysnake.satin.api.event.EntitiesPostRenderCallback;
 import ladysnake.satin.api.event.ResolutionChangeCallback;
@@ -114,7 +114,7 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
                 sendToServer(POSSESSION_REQUEST, createPossessionRequestBuffer(possessed));
             }
             assert client.player != null;
-            if (!((RequiemPlayer) client.player).asRemnant().isIncorporeal()) {
+            if (!RemnantComponent.get(client.player).isIncorporeal()) {
                 this.possessionTarget = null;
             }
         }
@@ -162,7 +162,7 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
             }
         }
         assert mc.player != null;
-        boolean incorporeal = ((RequiemPlayer) mc.player).asRemnant().isIncorporeal();
+        boolean incorporeal = RemnantComponent.get(mc.player).isIncorporeal();
         if (incorporeal || this.etherealAnimation > 0 || this.pulseAnimation >= 0) {
             // 10 -> 1
             float zoom = Math.max(1, (etherealAnimation - tickDelta));

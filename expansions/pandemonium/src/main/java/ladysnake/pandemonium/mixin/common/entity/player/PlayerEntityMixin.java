@@ -7,6 +7,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Contract;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,4 +31,13 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         }
     }
 
+    /**
+     * Return a {@code PlayerEntity} instance that corresponds to this player.
+     * Calling {@link #from(PlayerEntity)} on the returned value returns {@code this} instance.
+     *
+     * @return {@code this} as a {@link PlayerEntity}
+     * @since 1.0.0
+     */
+    @Contract(pure = true)
+    public abstract PlayerEntity asPlayer();
 }

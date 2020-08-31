@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.common.entity.effect;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
@@ -55,7 +55,7 @@ public abstract class StatusEffectInstanceMixin {
 
     @Inject(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/effect/StatusEffectInstance;updateDuration()I"))
     private void preventSoulboundCountdown(LivingEntity livingEntity, Runnable r, CallbackInfoReturnable<Boolean> cir) {
-        if (livingEntity instanceof RequiemPlayer && ((RequiemPlayer) livingEntity).asRemnant().isSoul()) {
+        if (RemnantComponent.isSoul(livingEntity)) {
             if (SoulbindingRegistry.instance().isSoulbound(this.getEffectType())) {
                 this.duration++; // revert the duration decrement
             }

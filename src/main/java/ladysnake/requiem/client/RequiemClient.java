@@ -42,6 +42,8 @@ import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.network.ClientMessageHandling;
 import ladysnake.requiem.client.render.RequiemBuilderStorage;
@@ -139,7 +141,7 @@ public class RequiemClient implements ClientModInitializer {
 
     private static void clientTick(MinecraftClient client) {
         if (client.player != null && client.currentScreen == null) {
-            if (((RequiemPlayer) client.player).getDeathSuspender().isLifeTransient()) {
+            if (DeathSuspender.get(client.player).isLifeTransient()) {
                 if (--timeBeforeDialogueGui == 0) {
                     DialogueTracker dialogueTracker = ((RequiemPlayer) client.player).getDialogueTracker();
                     dialogueTracker.startDialogue(Requiem.id("remnant_choice"));
@@ -165,7 +167,7 @@ public class RequiemClient implements ClientModInitializer {
     }
 
     private static ActionResult interactWithEntity(PlayerEntity player, World world, Hand hand, Entity target, EntityHitResult hitPosition) {
-        if (player == MinecraftClient.getInstance().getCameraEntity() && ((RequiemPlayer) player).asRemnant().isIncorporeal()) {
+        if (player == MinecraftClient.getInstance().getCameraEntity() && RemnantComponent.get(player).isIncorporeal()) {
             if (target instanceof MobEntity && target.world.isClient) {
                 target.world.playSound(player, target.getX(), target.getY(), target.getZ(), RequiemSoundEvents.EFFECT_POSSESSION_ATTEMPT, SoundCategory.PLAYERS, 2, 0.6f);
                 RequiemFx.INSTANCE.beginFishEyeAnimation(target);
@@ -178,7 +180,7 @@ public class RequiemClient implements ClientModInitializer {
     private static void drawPossessionIndicator(MatrixStack matrices, int scaledWidth, int scaledHeight) {
         MinecraftClient client = MinecraftClient.getInstance();
         assert client.player != null;
-        if (((RequiemPlayer) client.player).asRemnant().isIncorporeal()) {
+        if (RemnantComponent.get(client.player).isIncorporeal()) {
             if (client.targetedEntity instanceof MobEntity) {
                 int x = (scaledWidth - 32) / 2 + 8;
                 int y = (scaledHeight - 16) / 2 + 16;
@@ -201,9 +203,8 @@ public class RequiemClient implements ClientModInitializer {
     private static ActionResult preventHotbarRender() {
         MinecraftClient client = MinecraftClient.getInstance();
         assert client.player != null;
-        RequiemPlayer player = (RequiemPlayer) client.player;
-        if (!client.player.isCreative() && player.asRemnant().isSoul()) {
-            Entity possessed = player.asPossessor().getPossessedEntity();
+        if (!client.player.isCreative() && RemnantComponent.get(client.player).isSoul()) {
+            Entity possessed = RequiemPlayer.from(client.player).asPossessor().getPossessedEntity();
             if (possessed == null || !RequiemEntityTypeTags.ITEM_USER.contains(possessed.getType())) {
                 return ActionResult.SUCCESS;
             }

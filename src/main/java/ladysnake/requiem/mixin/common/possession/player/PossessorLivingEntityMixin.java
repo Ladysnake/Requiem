@@ -34,8 +34,10 @@
  */
 package ladysnake.requiem.mixin.common.possession.player;
 
+import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.util.math.BlockPos;
@@ -83,7 +85,7 @@ public abstract class PossessorLivingEntityMixin extends Entity {
 
     @Inject(method = "collides", at = @At("RETURN"), cancellable = true)
     private void preventSoulsCollision(CallbackInfoReturnable<Boolean> info) {
-        if (this instanceof RequiemPlayer && ((RequiemPlayer) this).asRemnant().isSoul()) {
+        if (RemnantComponent.isSoul(this)) {
             info.setReturnValue(false);
         }
     }
@@ -116,16 +118,12 @@ public abstract class PossessorLivingEntityMixin extends Entity {
 
     @Inject(method = "getEyeHeight", at = @At("HEAD"), cancellable = true)
     private void adjustEyeHeight(EntityPose pose, EntityDimensions size, CallbackInfoReturnable<Float> cir) {
-        if (this instanceof RequiemPlayer) {
-            PossessionComponent possessionComponent = ((RequiemPlayer) this).asPossessor();
-            // This method can be called before the possession component is set
-            //noinspection ConstantConditions
-            if (possessionComponent != null) {
-                LivingEntity possessed = possessionComponent.getPossessedEntity();
-                if (possessed != null) {
-                    //noinspection ConstantConditions
-                    cir.setReturnValue(((PossessorLivingEntityMixin)(Object)possessed).getEyeHeight(pose, possessed.getDimensions(pose)));
-                }
+        // This method can be called in the Entity constructor
+        if (ComponentProvider.fromEntity(this).getComponentContainer() != null) {
+            LivingEntity possessed = PossessionComponent.getPossessedEntity(this);
+            if (possessed != null) {
+                //noinspection ConstantConditions
+                cir.setReturnValue(((PossessorLivingEntityMixin)(Object)possessed).getEyeHeight(pose, possessed.getDimensions(pose)));
             }
         }
     }

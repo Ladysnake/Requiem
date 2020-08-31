@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.minecraft.SyncServerResourcesCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -64,19 +65,12 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
-import static ladysnake.requiem.common.network.RequiemNetworking.createCorporealityMessage;
-import static ladysnake.requiem.common.network.RequiemNetworking.sendTo;
 import static ladysnake.requiem.mixin.common.server.PlayerTagKeys.*;
 import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 
 @Mixin(PlayerManager.class)
 public abstract class PlayerManagerMixin {
     private static final ThreadLocal<ServerWorld> REQUIEM$RESPAWN_WORLD = new ThreadLocal<>();
-
-    @Inject(method = "onPlayerConnect", at = @At("RETURN"))
-    private void onPlayerConnect(ClientConnection connection, ServerPlayerEntity createdPlayer, CallbackInfo info) {
-        sendTo(createdPlayer, createCorporealityMessage(createdPlayer));
-    }
 
     @Shadow @Final private List<ServerPlayerEntity> players;
 
@@ -108,7 +102,7 @@ public abstract class PlayerManagerMixin {
             ServerPlayerEntity player
     ) {
         if (serializedPlayer != null && serializedPlayer.contains(POSSESSED_ROOT_TAG, NbtType.COMPOUND)) {
-            sendTo(player, createCorporealityMessage(player));
+            RemnantComponent.KEY.sync(player);
             ServerWorld world = player.getServerWorld();
             CompoundTag serializedPossessedInfo = serializedPlayer.getCompound(POSSESSED_ROOT_TAG);
             Entity possessedEntityMount = EntityType.loadEntityWithPassengers(

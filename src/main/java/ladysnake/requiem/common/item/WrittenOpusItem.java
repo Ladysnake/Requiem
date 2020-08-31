@@ -35,6 +35,7 @@
 package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.network.RequiemNetworking;
@@ -94,13 +95,13 @@ public class WrittenOpusItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
         if (!world.isClient && stack.getItem() == this) {
-            RemnantType currentState = ((RequiemPlayer) player).asRemnant().getType();
+            RemnantType currentState = RemnantComponent.get(player).getRemnantType();
             if (currentState != this.remnantType && !((RequiemPlayer) player).asPossessor().isPossessing()) {
                 boolean cure = this == RequiemItems.OPUS_DEMONIUM_CURE;
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), RequiemSoundEvents.ITEM_OPUS_USE, player.getSoundCategory(), 1.0F, 0.1F);
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), cure ? RequiemSoundEvents.EFFECT_BECOME_MORTAL : RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
                 RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(cure, true));
-                ((RequiemPlayer) player).become(remnantType);
+                RemnantComponent.get(player).become(remnantType);
                 player.incrementStat(Stats.USED.getOrCreateStat(this));
                 stack.decrement(1);
                 RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, this.remnantType);

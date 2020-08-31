@@ -17,10 +17,20 @@
  */
 package ladysnake.requiem.api.v1.remnant;
 
-import nerdhub.cardinal.components.api.component.Component;
+import dev.onyxstudios.cca.api.v3.component.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Identifier;
 
-public interface DeathSuspender extends Component {
+public interface DeathSuspender extends AutoSyncedComponent {
+    ComponentKey<DeathSuspender> KEY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("requiem", "death_suspension"), DeathSuspender.class);
+
+    static DeathSuspender get(PlayerEntity player) {
+        return KEY.get(player);
+    }
+
     void suspendDeath(DamageSource deathCause);
 
     boolean isLifeTransient();

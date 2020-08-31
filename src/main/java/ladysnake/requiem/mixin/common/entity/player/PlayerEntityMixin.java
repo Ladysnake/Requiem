@@ -39,16 +39,10 @@ import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.api.v1.remnant.DeathSuspender;
-import ladysnake.requiem.api.v1.remnant.RemnantState;
-import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.RequiemComponents;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.impl.movement.PlayerMovementAlterer;
-import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
-import ladysnake.requiem.common.impl.remnant.NullRemnantState;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
-import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.entity.*;
 import net.minecraft.entity.effect.StatusEffects;
@@ -60,11 +54,9 @@ import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -79,9 +71,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.EnumSet;
 
-import static ladysnake.requiem.common.network.RequiemNetworking.createCorporealityMessage;
-import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTrackingIncluding;
-
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity implements RequiemPlayer {
 
@@ -90,23 +79,14 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     @Shadow @Final public PlayerAbilities abilities;
     @Shadow
     protected HungerManager hungerManager;
-    private static final String REQUIEM$TAG_REMNANT_DATA = "requiem:remnant_data";
-    private static final String REQUIEM$TAG_POSSESSION_COMPONENT = "requiem:possession_component";
     private static final EntityDimensions REQUIEM$SOUL_SNEAKING_SIZE = EntityDimensions.changing(0.6f, 0.6f);
 
-    private RemnantState remnantState = NullRemnantState.NULL_STATE;
-    private final PossessionComponent possessionComponent = new PossessionComponentImpl(this.asPlayer());
-    private final MovementAlterer movementAlterer = new PlayerMovementAlterer(this.asPlayer());
-    private final DialogueTracker dialogueTracker = new PlayerDialogueTracker(this.asPlayer());
-
-    @Override
-    public RemnantState asRemnant() {
-        return this.remnantState;
-    }
+    private final MovementAlterer movementAlterer = new PlayerMovementAlterer((PlayerEntity) (Object) this);
+    private final DialogueTracker dialogueTracker = new PlayerDialogueTracker((PlayerEntity) (Object) this);
 
     @Override
     public PossessionComponent asPossessor() {
-        return possessionComponent;
+        return PossessionComponent.KEY.get(this);
     }
 
     @Override
@@ -115,39 +95,15 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     }
 
     @Override
-    public DeathSuspender getDeathSuspender() {
-        return RequiemComponents.DEATH_SUSPENDER.get(this);
-    }
-
-    @Override
     public DialogueTracker getDialogueTracker() {
         return this.dialogueTracker;
-    }
-
-    @Override
-    public PlayerEntity asPlayer() {
-        return (PlayerEntity) (Object) this;
-    }
-
-    @Override
-    public void become(RemnantType type) {
-        if (type == this.remnantState.getType()) {
-            return;
-        }
-        RemnantState handler = type.create(this.asPlayer());
-        this.remnantState.setSoul(false);
-        this.remnantState = handler;
-        if (!this.world.isClient) {
-            ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
-            sendToAllTrackingIncluding(player, createCorporealityMessage(player));
-        }
     }
 
     @Inject(method = "tickMovement", at = @At("HEAD"))
     private void updateMovementAlterer(CallbackInfo info) {
         this.movementAlterer.update();
-        this.remnantState.update();
-        this.possessionComponent.update();
+        RemnantComponent.KEY.get(this).update();
+        PossessionComponent.KEY.get(this).update();
     }
 
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
@@ -163,25 +119,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         }
     }
 
-    /* NBT (de)serialization of added fields */
-
-    @Inject(at = @At("TAIL"), method = "writeCustomDataToTag")
-    private void writeCustomDataToTag(CompoundTag tag, CallbackInfo info) {
-        CompoundTag remnantData = new CompoundTag();
-        remnantData.putString("id", RemnantTypes.getId(this.asRemnant().getType()).toString());
-        tag.put(REQUIEM$TAG_REMNANT_DATA, this.remnantState.toTag(remnantData));
-        tag.put(REQUIEM$TAG_POSSESSION_COMPONENT, this.possessionComponent.toTag(new CompoundTag()));
-    }
-
-    @Inject(at = @At("TAIL"), method = "readCustomDataFromTag")
-    private void readCustomDataFromTag(CompoundTag tag, CallbackInfo info) {
-        CompoundTag remnantTag = tag.getCompound(REQUIEM$TAG_REMNANT_DATA);
-        RemnantType remnantType = RemnantTypes.get(new Identifier(remnantTag.getString("id")));
-        this.become(remnantType);
-        this.remnantState.fromTag(remnantTag);
-        this.possessionComponent.fromTag(tag.getCompound(REQUIEM$TAG_POSSESSION_COMPONENT));
-    }
-
     /* Actual modifications of vanilla behaviour */
 
     @Inject(method = "eatFood", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/HungerManager;eat(Lnet/minecraft/item/Item;Lnet/minecraft/item/ItemStack;)V"))
@@ -195,13 +132,13 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
             }
         }
         if (possessedEntity != null && possessedEntity.isUndead() && RequiemItemTags.UNDEAD_CURES.contains(stack.getItem()) && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)) {
-            this.possessionComponent.startCuring();
+            this.asPossessor().startCuring();
         }
     }
 
     @Inject(method = "isSwimming", at = @At("HEAD"), cancellable = true)
     private void flyLikeSuperman(CallbackInfoReturnable<Boolean> cir) {
-        if (this.abilities.flying && this.isSprinting() && this.remnantState.isIncorporeal()) {
+        if (this.abilities.flying && this.isSprinting() && RemnantComponent.KEY.get(this).isIncorporeal()) {
             cir.setReturnValue(true);
         }
     }
@@ -211,7 +148,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         double yMotion = this.getRotationVector().y;
         double modifier = yMotion < -0.2D ? 0.085D : 0.06D;
         // If the motion change would not be applied, apply it ourselves
-        if (yMotion > 0.0D && !this.jumping && this.world.getBlockState(new BlockPos(this.getX(), this.getY() + 1.0D - 0.1D, this.getZ())).getFluidState().isEmpty() && this.remnantState.isIncorporeal()) {
+        if (yMotion > 0.0D && !this.jumping && this.world.getBlockState(new BlockPos(this.getX(), this.getY() + 1.0D - 0.1D, this.getZ())).getFluidState().isEmpty() && RemnantComponent.KEY.get(this).isIncorporeal()) {
             Vec3d velocity = this.getVelocity();
             this.setVelocity(velocity.add(0.0D, (yMotion - velocity.y) * modifier, 0.0D));
         }
@@ -223,7 +160,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
      */
     @Inject(method = "getDimensions", at = @At("HEAD"), cancellable = true)
     private void adjustSize(EntityPose pose, CallbackInfoReturnable<EntityDimensions> cir) {
-        if (this.remnantState.isSoul()) {
+        if (RemnantComponent.KEY.get(this).isSoul()) {
             Entity possessedEntity = this.asPossessor().getPossessedEntity();
             if (possessedEntity != null) {
                 cir.setReturnValue(possessedEntity.getDimensions(pose));
@@ -236,30 +173,30 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     // 1.27 is the sneaking eye height
     @Inject(method = "getActiveEyeHeight", at = {@At(value = "CONSTANT", args = "floatValue=1.27")}, cancellable = true)
     private void adjustSoulSneakingEyeHeight(EntityPose pose, EntityDimensions size, CallbackInfoReturnable<Float> cir) {
-        if (this.remnantState.isIncorporeal()) {
+        if (RemnantComponent.KEY.get(this).isIncorporeal()) {
             cir.setReturnValue(0.4f);
         }
     }
 
     @Inject(method = "canConsume", at = @At("RETURN"), cancellable = true)
     private void canSoulConsume(boolean ignoreHunger, CallbackInfoReturnable<Boolean> cir) {
-        if (this.remnantState.isSoul()) {
-            Possessable possessed = (Possessable) this.possessionComponent.getPossessedEntity();
+        if (RemnantComponent.KEY.get(this).isSoul()) {
+            Possessable possessed = (Possessable) PossessionComponent.KEY.get(this).getPossessedEntity();
             cir.setReturnValue(ignoreHunger || possessed != null && possessed.isRegularEater() && this.hungerManager.isNotFull());
         }
     }
 
     @Inject(method = "canFoodHeal", at = @At("RETURN"), cancellable = true)
     private void canFoodHealPossessed(CallbackInfoReturnable<Boolean> cir) {
-        if (this.remnantState.isSoul()) {
-            LivingEntity possessed = this.possessionComponent.getPossessedEntity();
+        if (RemnantComponent.KEY.get(this).isSoul()) {
+            LivingEntity possessed = PossessionComponent.KEY.get(this).getPossessedEntity();
             cir.setReturnValue(possessed != null && ((Possessable) possessed).isRegularEater() && possessed.getHealth() > 0 && possessed.getHealth() < possessed.getMaxHealth());
         }
     }
 
     @Inject(method = "addExhaustion", slice = @Slice(to = @At("INVOKE:FIRST")), at = @At(value = "RETURN"))
     private void addExhaustion(float exhaustion, CallbackInfo ci) {
-        Possessable possessed = (Possessable) this.possessionComponent.getPossessedEntity();
+        Possessable possessed = (Possessable) PossessionComponent.KEY.get(this).getPossessedEntity();
         if (possessed != null && possessed.isRegularEater()) {
             if (!this.world.isClient) {
                 this.hungerManager.addExhaustion(exhaustion);

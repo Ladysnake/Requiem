@@ -18,7 +18,7 @@
 package ladysnake.pandemonium.common.entity;
 
 import com.mojang.authlib.GameProfile;
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.util.InventoryHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -119,7 +119,7 @@ public class PlayerShellEntity extends MobEntity {
                 }
                 InventoryHelper.transferEquipment(this, possessor);
                 this.remove();
-                ((RequiemPlayer) possessor).asRemnant().setSoul(false);
+                RemnantComponent.get(possessor).setSoul(false);
             }
         }
     }
