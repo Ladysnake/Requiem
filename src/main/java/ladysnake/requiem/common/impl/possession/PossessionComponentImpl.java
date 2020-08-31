@@ -35,12 +35,14 @@
 package ladysnake.requiem.common.impl.possession;
 
 import com.google.common.collect.MapMaker;
+import dev.onyxstudios.cca.api.v3.component.AutoSyncedComponent;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.entity.attribute.DelegatingAttribute;
 import ladysnake.requiem.common.entity.attribute.PossessionDelegatingAttribute;
@@ -50,6 +52,7 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.util.InventoryHelper;
 import ladysnake.requiem.mixin.common.possession.player.LivingEntityAccessor;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -60,6 +63,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -73,10 +77,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import static ladysnake.requiem.common.network.RequiemNetworking.createPossessionMessage;
-import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTrackingIncluding;
-
-public final class PossessionComponentImpl implements PossessionComponent {
+public final class PossessionComponentImpl implements PossessionComponent, AutoSyncedComponent {
     // Identity weak map. Should probably be made into its own util class.
     private static final Set<PlayerEntity> attributeUpdated = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
 
@@ -88,14 +89,8 @@ public final class PossessionComponentImpl implements PossessionComponent {
         this.player = player;
     }
 
-    @Override
-    public RequiemPlayer asRequiemPlayer() {
-        return RequiemPlayer.from(this.player);
-    }
-
     private boolean isReadyForPossession() {
-        RequiemPlayer dp = (RequiemPlayer) this.player;
-        return player.world.isClient || (!player.isSpectator() && dp.asRemnant().isIncorporeal());
+        return player.world.isClient || (!player.isSpectator() && RemnantComponent.get(this.player).isIncorporeal());
     }
 
     /**
@@ -148,7 +143,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
         // Actually set the possessed entity
         this.possessed = host;
         possessable.setPossessor(this.player);
-        this.syncPossessed(host.getEntityId());
+        PossessionComponent.KEY.sync(this.player);
         // Update some attributes
         this.player.copyPositionAndRotation(host);
         this.player.calculateDimensions(); // update size
@@ -218,9 +213,25 @@ public final class PossessionComponentImpl implements PossessionComponent {
         }
     }
 
-    private void syncPossessed(int entityId) {
-        if (!this.player.world.isClient) {
-            sendToAllTrackingIncluding(this.player, createPossessionMessage(this.player.getUuid(), entityId));
+    @Override
+    public void writeToPacket(PacketByteBuf buf, ServerPlayerEntity recipient, int syncOp) {
+        buf.writeInt(this.possessed == null ? -1 : this.possessed.getEntityId());
+    }
+
+    @Override
+    public void readFromPacket(PacketByteBuf buf) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        int possessedId = buf.readInt();
+        Entity entity = player.world.getEntityById(possessedId);
+
+        if (entity instanceof MobEntity) {
+            this.startPossessing((MobEntity) entity);
+            if (client.options.getPerspective().isFirstPerson()) {
+                client.gameRenderer.onCameraEntitySet(entity);
+            }
+        } else {
+            this.stopPossessing();
+            client.gameRenderer.onCameraEntitySet(player);
         }
     }
 
@@ -251,10 +262,10 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     private void resetState() {
         this.possessed = null;
-        ((RequiemPlayer) this.player).getMovementAlterer().setConfig(((RequiemPlayer)player).asRemnant().isSoul() ? SerializableMovementConfig.SOUL : null);
+        ((RequiemPlayer) this.player).getMovementAlterer().setConfig(RemnantComponent.get(this.player).isSoul() ? SerializableMovementConfig.SOUL : null);
         this.player.calculateDimensions(); // update size
         this.player.setAir(this.player.getMaxAir());
-        syncPossessed(-1);
+        PossessionComponent.KEY.sync(this.player);
     }
 
     /**
@@ -281,7 +292,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
             if (this.conversionTimer == 0) {
                 MobEntity possessedEntity = this.getPossessedEntity();
                 if (possessedEntity != null) {
-                    this.asRequiemPlayer().asRemnant().setSoul(false);
+                    RemnantComponent.get(this.player).setSoul(false);
                     possessedEntity.remove();
                     this.player.removeStatusEffect(RequiemStatusEffects.ATTRITION);
                     this.player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
@@ -293,13 +304,12 @@ public final class PossessionComponentImpl implements PossessionComponent {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
+    public void writeToNbt(CompoundTag tag) {
         tag.putInt("conversionTimer", this.conversionTimer);
-        return tag;
     }
 
     @Override
-    public void fromTag(CompoundTag compound) {
+    public void readFromNbt(CompoundTag compound) {
         this.conversionTimer = compound.getInt("conversionTimer");
     }
 }

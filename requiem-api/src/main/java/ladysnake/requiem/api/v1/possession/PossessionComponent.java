@@ -17,18 +17,34 @@
  */
 package ladysnake.requiem.api.v1.possession;
 
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
+import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckForNull;
 
 /**
  * A {@link PossessionComponent} handles a player's possession status.
  */
-public interface PossessionComponent {
+public interface PossessionComponent extends ComponentV3 {
+    ComponentKey<PossessionComponent> KEY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("requiem", "possessor"), PossessionComponent.class);
+
+    static PossessionComponent get(PlayerEntity player) {
+        return KEY.get(player);
+    }
+
+    static @Nullable MobEntity getPossessedEntity(Entity possessor) {
+        PossessionComponent p = KEY.getNullable(possessor);
+        return p == null ? null : p.getPossessedEntity();
+    }
+
     /**
      * Attempts to start possessing a mob.
      * <p>
@@ -95,9 +111,7 @@ public interface PossessionComponent {
      * Stops an ongoing possession.
      * Equipment will be transferred if the player is not in creative.
      */
-    default void stopPossessing() {
-        this.stopPossessing(!this.asRequiemPlayer().asPlayer().isCreative());
-    }
+    void stopPossessing();
 
     /**
      * Stops an ongoing possession.
@@ -114,9 +128,4 @@ public interface PossessionComponent {
 
     void update();
 
-    RequiemPlayer asRequiemPlayer();
-
-    CompoundTag toTag(CompoundTag tag);
-
-    void fromTag(CompoundTag compound);
 }

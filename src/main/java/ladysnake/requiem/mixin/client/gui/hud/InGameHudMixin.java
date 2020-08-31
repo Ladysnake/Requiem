@@ -38,6 +38,7 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
@@ -98,7 +99,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     private int preventArmorRender(int armor) {
         assert client.player != null;
 
-        if (((RequiemPlayer) client.player).asRemnant().isIncorporeal()) {
+        if (RemnantComponent.get(client.player).isIncorporeal()) {
             // Make everything that follows *invisible*
             return 0;
         }
@@ -118,7 +119,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     )
     private float preventHealthRender(float maxHealth) {
         assert client.player != null;
-        if (((RequiemPlayer) client.player).asRemnant().isIncorporeal()) {
+        if (RemnantComponent.get(client.player).isIncorporeal()) {
             return 0;
         }
         return maxHealth;
@@ -136,7 +137,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     )
     private int preventAbsorptionRender(int absorption) {
         assert client.player != null;
-        if (((RequiemPlayer) client.player).asRemnant().isIncorporeal()) {
+        if (RemnantComponent.get(client.player).isIncorporeal()) {
             return 0;
         }
         return absorption;
@@ -149,7 +150,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     )
     private int preventFoodRender(int mountHeartCount) {
         RequiemPlayer player = (RequiemPlayer) this.client.player;
-        if (mountHeartCount == 0 && player != null && player.asRemnant().isSoul()) {
+        if (mountHeartCount == 0 && player != null && RemnantComponent.get(this.client.player).isSoul()) {
             Possessable possessed = (Possessable) player.asPossessor().getPossessedEntity();
             if (possessed == null || !possessed.isRegularEater()) {
                 skippedFood = true;
@@ -176,7 +177,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
         at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSubmergedIn(Lnet/minecraft/tag/Tag;)Z")
     )
     private boolean preventAirRender(PlayerEntity playerEntity, Tag<Fluid> fluid) {
-        if (((RequiemPlayer) playerEntity).asRemnant().isSoul()) {
+        if (RemnantComponent.get(playerEntity).isSoul()) {
             LivingEntity possessed = ((RequiemPlayer) playerEntity).asPossessor().getPossessedEntity();
             if (possessed == null) {
                 return false;

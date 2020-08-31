@@ -35,6 +35,7 @@
 package ladysnake.requiem.mixin.client.render.entity;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
@@ -42,7 +43,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.spongepowered.asm.mixin.Mixin;
@@ -84,10 +84,8 @@ public abstract class EntityRenderDispatcherMixin {
 
     @Inject(method = "renderShadow", at = @At("HEAD"), cancellable = true)
     private static void preventShadowRender(MatrixStack matrices, VertexConsumerProvider vertices, Entity rendered, float distance, float tickDelta, WorldView world, float radius, CallbackInfo ci) {
-        if (rendered instanceof PlayerEntity) {
-            if (((RequiemPlayer)rendered).asRemnant().isSoul()) {
-                ci.cancel();
-            }
+        if (RemnantComponent.isSoul(rendered)) {
+            ci.cancel();
         }
     }
 }

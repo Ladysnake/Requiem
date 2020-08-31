@@ -34,7 +34,8 @@
  */
 package ladysnake.requiem.mixin.client.render.entity;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.client.ShadowPlayerFx;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -42,6 +43,7 @@ import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -74,8 +76,8 @@ public abstract class PlayerRendererLayerMixin<T extends LivingEntity, M extends
     @SuppressWarnings("UnresolvedMixinReference")   // the method is injected through the intrinsic above
     @Inject(method = "getRenderLayer", at = @At("RETURN"), cancellable = true)
     private void replaceRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl, CallbackInfoReturnable<RenderLayer> cir) {
-        RequiemPlayer player = (RequiemPlayer) entity;
-        if (player.asRemnant().isIncorporeal() || player.getDeathSuspender().isLifeTransient()) {
+        PlayerEntity player = (PlayerEntity) entity;
+        if (RemnantComponent.get(player).isIncorporeal() || DeathSuspender.get(player).isLifeTransient()) {
             cir.setReturnValue(ShadowPlayerFx.INSTANCE.getRenderLayer(cir.getReturnValue()));
         }
     }

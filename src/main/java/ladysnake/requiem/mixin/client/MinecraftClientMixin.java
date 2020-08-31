@@ -35,6 +35,7 @@
 package ladysnake.requiem.mixin.client;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -89,7 +90,7 @@ public abstract class MinecraftClientMixin {
     )
     private void skipDeathScreen(Screen screen, CallbackInfo ci) {
         if (screen instanceof DeathScreen) {
-            if (RequiemPlayer.from(this.player).asRemnant().getType().isDemon()) {
+            if (RemnantComponent.get(this.player).getRemnantType().isDemon()) {
                 this.player.requestRespawn();
                 ci.cancel();
             }

@@ -35,6 +35,7 @@
 package ladysnake.requiem.mixin.client.render.entity;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Model;
@@ -125,7 +126,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
     @Unique
     private boolean requiem_renderPossessedArm(MatrixStack matrices, VertexConsumerProvider vertices, AbstractClientPlayerEntity renderedPlayer, int lightmapCoordinates, boolean rightArm) {
-        if (((RequiemPlayer) renderedPlayer).asRemnant().isSoul()) {
+        if (RemnantComponent.get(renderedPlayer).isSoul()) {
             if (((RequiemPlayer) renderedPlayer).asPossessor().isPossessing()) {
                 LivingEntity possessed = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
                 if (possessed != null) {

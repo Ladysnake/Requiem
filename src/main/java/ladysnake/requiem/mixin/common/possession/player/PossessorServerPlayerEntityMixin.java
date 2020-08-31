@@ -52,6 +52,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Contract;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -62,8 +63,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.annotation.Nullable;
 import java.util.function.Function;
 
-import static ladysnake.requiem.common.network.RequiemNetworking.createCorporealityMessage;
-import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTrackingIncluding;
 import static ladysnake.requiem.mixin.common.server.PlayerTagKeys.*;
 
 @Mixin(ServerPlayerEntity.class)
@@ -138,13 +137,11 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
 
     @Inject(method = "moveToWorld", at = @At(value = "RETURN", ordinal = 1))
     private void onTeleportDone(ServerWorld destination, CallbackInfoReturnable<Entity> cir) {
-        sendToAllTrackingIncluding(this, createCorporealityMessage(this));
         spawnResurrectionEntity();
     }
 
     @Inject(method = "teleport", at = @At(value = "RETURN"))
     private void onTeleportDone(ServerWorld targetWorld, double x, double y, double z, float yaw, float pitch, CallbackInfo ci) {
-        sendToAllTrackingIncluding(this, createCorporealityMessage(this));
         spawnResurrectionEntity();
     }
 
@@ -209,4 +206,14 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
             tag.put(POSSESSED_ROOT_TAG, possessedRoot);
         }
     }
+
+    /**
+     * Return a {@code PlayerEntity} instance that corresponds to this player.
+     * Calling {@link #from(PlayerEntity)} on the returned value returns {@code this} instance.
+     *
+     * @return {@code this} as a {@link PlayerEntity}
+     * @since 1.0.0
+     */
+    @Contract(pure = true)
+    public abstract PlayerEntity asPlayer();
 }

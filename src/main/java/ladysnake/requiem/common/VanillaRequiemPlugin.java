@@ -45,10 +45,7 @@ import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.api.v1.remnant.DeathSuspender;
-import ladysnake.requiem.api.v1.remnant.MobResurrectable;
-import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
+import ladysnake.requiem.api.v1.remnant.*;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
@@ -78,8 +75,6 @@ import net.minecraft.util.registry.Registry;
 import javax.annotation.Nonnull;
 import java.util.UUID;
 
-import static ladysnake.requiem.common.network.RequiemNetworking.createCorporealityMessage;
-import static ladysnake.requiem.common.network.RequiemNetworking.sendToAllTrackingIncluding;
 import static ladysnake.requiem.common.remnant.RemnantTypes.MORTAL;
 
 public final class VanillaRequiemPlugin implements RequiemPlugin {
@@ -107,7 +102,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             MobEntity secondLife = ResurrectionDataLoader.INSTANCE.getNextBody(lazarus, deathCause);
             if (secondLife != null) {
                 ((MobResurrectable) lazarus).setResurrectionEntity(secondLife);
-                return ((RequiemPlayer) lazarus).asRemnant().getType().isDemon();
+                return RemnantComponent.get(lazarus).getRemnantType().isDemon();
             }
             return false;
         });
@@ -117,7 +112,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     private void registerEtherealEventHandlers() {
         // Prevent incorporeal players from picking up anything
         ItemPickupCallback.EVENT.register((player, pickedUp) -> {
-            if (isInteractionForbidden(player) || ((RequiemPlayer)player).asRemnant().isSoul() && !player.isCreative()) {
+            if (isInteractionForbidden(player) || RemnantComponent.get(player).isSoul() && !player.isCreative()) {
                 Entity possessed = ((RequiemPlayer)player).asPossessor().getPossessedEntity();
                 if (possessed == null || !RequiemEntityTypeTags.ITEM_USER.contains(possessed.getType())) {
                     return ActionResult.FAIL;
@@ -135,14 +130,14 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         UseItemCallback.EVENT.register((player, world, hand) -> new TypedActionResult<>(getInteractionResult(player), player.getStackInHand(hand)));
         // Make players respawn in the right place with the right state
         PlayerCopyCallback.EVENT.register((original, clone, returnFromEnd) -> {
-            RequiemPlayer requiemClone = RequiemPlayer.from(clone);
-            requiemClone.become(RequiemPlayer.from(original).asRemnant().getType());
-            requiemClone.asRemnant().copyFrom(original, returnFromEnd);
+            RemnantComponent requiemClone = RemnantComponent.get(clone);
+            requiemClone.become(RemnantComponent.get(original).getRemnantType());
+            requiemClone.copyFrom(original, returnFromEnd);
         });
         PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> {
-            sendToAllTrackingIncluding(player, createCorporealityMessage(player));
+            RemnantComponent.KEY.sync(player);
             ((MobResurrectable)player).spawnResurrectionEntity();
-            if (!returnFromEnd && RequiemPlayer.from(player).asRemnant().isIncorporeal()) {
+            if (!returnFromEnd && RemnantComponent.get(player).isIncorporeal()) {
                 AttritionStatusEffect.apply(player);
             }
         }));
@@ -154,7 +149,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     private boolean isInteractionForbidden(PlayerEntity player) {
-        return !player.isCreative() && ((RequiemPlayer) player).asRemnant().isIncorporeal() || ((RequiemPlayer) player).getDeathSuspender().isLifeTransient();
+        return !player.isCreative() && RemnantComponent.get(player).isIncorporeal() || DeathSuspender.get(player).isLifeTransient();
     }
 
     private void registerPossessionEventHandlers() {
@@ -206,7 +201,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     private static void handleRemnantChoiceAction(ServerPlayerEntity player, RemnantType chosenType) {
-        DeathSuspender deathSuspender = RequiemPlayer.from(player).getDeathSuspender();
+        DeathSuspender deathSuspender = DeathSuspender.get(player);
         if (deathSuspender.isLifeTransient()) {
             makeRemnantChoice(player, chosenType);
             deathSuspender.resumeDeath();
@@ -214,7 +209,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     public static void makeRemnantChoice(ServerPlayerEntity player, RemnantType chosenType) {
-        RequiemPlayer.from(player).become(chosenType);
+        RemnantComponent.get(player).become(chosenType);
         if (chosenType != MORTAL) {
             player.world.playSound(null, player.getX(), player.getY(), player.getZ(), RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
             RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(false, false));

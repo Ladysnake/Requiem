@@ -36,6 +36,7 @@ package ladysnake.requiem.mixin.common.possession.player;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.HungerManager;
@@ -60,16 +61,16 @@ public abstract class HungerManagerMixin {
     private int foodLevel;
 
     @Inject(method = "update", at = @At(value = "INVOKE", ordinal = 0))
-    private void updateSoulHunger(PlayerEntity playerEntity, CallbackInfo ci) {
-        RequiemPlayer requiemPlayer = RequiemPlayer.from(playerEntity);
-        if (requiemPlayer.asRemnant().isSoul()) {
+    private void updateSoulHunger(PlayerEntity player, CallbackInfo ci) {
+        RequiemPlayer requiemPlayer = RequiemPlayer.from(player);
+        if (RemnantComponent.get(player).isSoul()) {
             Possessable possessed = (Possessable) requiemPlayer.asPossessor().getPossessedEntity();
             if (possessed == null || !possessed.isRegularEater()) {
                 this.exhaustion = 0;
                 this.foodLevel = 20;
             }
         }
-        PLAYER_ENTITY_THREAD_LOCAL.set(playerEntity);
+        PLAYER_ENTITY_THREAD_LOCAL.set(player);
     }
 
     @ModifyArg(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;heal(F)V"))

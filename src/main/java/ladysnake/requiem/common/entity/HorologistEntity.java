@@ -36,7 +36,6 @@ package ladysnake.requiem.common.entity;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.common.RequiemComponents;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.damage.DamageSource;
@@ -100,7 +99,6 @@ public class HorologistEntity extends PassiveEntity implements Npc {
             attacker.damage(source, amount);
             particleType = ParticleTypes.SMOKE;
         } else if (source.isSourceCreativePlayer() || source.isOutOfWorld() || amount > 3F){
-            RequiemComponents.HOROLOGIST_MANAGER.get(this.world.getLevelProperties()).freeHorologist();
             this.remove();
             particleType = ParticleTypes.LARGE_SMOKE;
         }

@@ -34,8 +34,8 @@
  */
 package ladysnake.requiem.common.item;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.common.RequiemComponents;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.RemnantTypes;
@@ -43,12 +43,10 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class DebugItem extends Item {
@@ -62,31 +60,25 @@ public class DebugItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         if (player.isSneaking()) {
             if (!world.isClient) {
-                debugMode = (debugMode + 1) % 3;
+                debugMode = (debugMode + 1) % 2;
                 player.sendMessage(new TranslatableText("Switched mode to %s", debugMode), true);
             }
         } else {
             switch (debugMode) {
                 case 0:
                     if (world.isClient) {
-                        if (((RequiemPlayer) player).getDeathSuspender().isLifeTransient()) {
+                        if (DeathSuspender.get(player).isLifeTransient()) {
                             RequiemNetworking.sendToServer(RequiemNetworking.createDialogueActionMessage(PlayerDialogueTracker.BECOME_REMNANT));
-                            ((RequiemPlayer) player).getDeathSuspender().setLifeTransient(false);
+                            DeathSuspender.get(player).setLifeTransient(false);
                         } else {
-                            ((RequiemPlayer) player).getDeathSuspender().setLifeTransient(true);
+                            DeathSuspender.get(player).setLifeTransient(true);
                         }
                     }
                     break;
                 case 1:
                     if (!world.isClient) {
-                        RequiemComponents.HOROLOGIST_MANAGER.get(world.getLevelProperties())
-                            .trySpawnHorologistAround((ServerWorld) player.world, new BlockPos.Mutable(player.getX(), player.getY(), player.getZ()));
-                    }
-                    break;
-                case 2:
-                    if (!world.isClient) {
-                        RequiemPlayer.from(player).become(RemnantTypes.MORTAL);
-                        ((RequiemPlayer) player).getDeathSuspender().suspendDeath(DamageSource.CACTUS);
+                        RemnantComponent.get(player).become(RemnantTypes.MORTAL);
+                        DeathSuspender.get(player).suspendDeath(DamageSource.CACTUS);
                     }
                     break;
             }

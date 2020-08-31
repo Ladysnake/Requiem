@@ -118,7 +118,7 @@ public class CommonAnchorManager implements FractureAnchorManager, WorldSyncedCo
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
+    public void readFromNbt(CompoundTag tag) {
         if (!tag.contains("Anchors", NbtType.LIST)) {
             Requiem.LOGGER.error("Invalid save data. Expected list of FractureAnchors, found none. Discarding save data.");
             return;
@@ -136,12 +136,11 @@ public class CommonAnchorManager implements FractureAnchorManager, WorldSyncedCo
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
+    public void writeToNbt(CompoundTag tag) {
         ListTag list = new ListTag();
         for (FractureAnchor anchor : this.getAnchors()) {
             list.add(anchor.toTag(new CompoundTag()));
         }
         tag.put("Anchors", list);
-        return tag;
     }
 }

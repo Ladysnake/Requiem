@@ -35,7 +35,6 @@
 package ladysnake.requiem.common.network;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
@@ -43,7 +42,6 @@ import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
@@ -55,15 +53,11 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Contract;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static io.netty.buffer.Unpooled.buffer;
 
 public class RequiemNetworking {
-    // Server -> Client
-    public static final Identifier POSSESSION_SYNC = Requiem.id("possession_sync");
-    public static final Identifier REMNANT_SYNC = Requiem.id("remnant_sync");
     public static final Identifier POSSESSION_ACK = Requiem.id("possession_ack");
     public static final Identifier OPUS_USE = Requiem.id("opus_use");
     public static final Identifier DATA_SYNC = Requiem.id("data_sync");
@@ -102,31 +96,6 @@ public class RequiemNetworking {
         if (player.networkHandler != null) {
             player.networkHandler.sendPacket(message);
         }
-    }
-
-    @Contract(pure = true)
-    public static CustomPayloadS2CPacket createCorporealityMessage(PlayerEntity synchronizedPlayer) {
-        RemnantType remnantType = ((RequiemPlayer) synchronizedPlayer).asRemnant().getType();
-        boolean incorporeal = ((RequiemPlayer)synchronizedPlayer).asRemnant().isSoul();
-        UUID playerUuid = synchronizedPlayer.getUuid();
-        return createCorporealityMessage(playerUuid, remnantType, incorporeal);
-    }
-
-    @Contract(pure = true)
-    private static CustomPayloadS2CPacket createCorporealityMessage(UUID playerUuid, RemnantType remnantType, boolean incorporeal) {
-        PacketByteBuf buf = createEmptyBuffer();
-        buf.writeUuid(playerUuid);
-        buf.writeVarInt(RemnantTypes.getRawId(remnantType));
-        buf.writeBoolean(incorporeal);
-        return new CustomPayloadS2CPacket(REMNANT_SYNC, buf);
-    }
-
-    @Contract(pure = true)
-    public static CustomPayloadS2CPacket createPossessionMessage(UUID playerUuid, int possessedId) {
-        PacketByteBuf buf = createEmptyBuffer();
-        buf.writeUuid(playerUuid);
-        buf.writeInt(possessedId);
-        return new CustomPayloadS2CPacket(POSSESSION_SYNC, buf);
     }
 
     public static CustomPayloadS2CPacket createOpusUsePacket(boolean cure, boolean showBook) {

@@ -34,10 +34,10 @@
  */
 package ladysnake.requiem.mixin.common.entity;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.MobResurrectable;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.util.DamageHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -69,9 +69,6 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow
     protected int playerHitTimer;
-
-    @Shadow
-    protected boolean dead;
 
     @Shadow
     protected PlayerEntity attackingPlayer;
@@ -145,7 +142,7 @@ public abstract class LivingEntityMixin extends Entity {
      */
     @Inject(method = "consumeItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;clearActiveItem()V"))
     private void dropUsedItemAsSoul(CallbackInfo ci) {
-        if (this instanceof RequiemPlayer && ((RequiemPlayer) this).asRemnant().isIncorporeal() && !world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
+        if (RemnantComponent.isIncorporeal(this) && !world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
             this.dropStack(this.getStackInHand(this.getActiveHand()));
             this.setStackInHand(this.getActiveHand(), ItemStack.EMPTY);
         }

@@ -35,7 +35,7 @@
 package ladysnake.requiem.client;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.common.entity.HorologistEntity;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.satin.api.event.PostWorldRenderCallback;
@@ -106,7 +106,7 @@ public class ZaWorldFx implements PostWorldRenderCallback {
     }
 
     private void update(MinecraftClient client) {
-        if (client.player != null && ((RequiemPlayer) client.player).getDeathSuspender().isLifeTransient()) {
+        if (client.player != null && DeathSuspender.get(client.player).isLifeTransient()) {
             if (!this.renderingEffect) {
                 this.uniformOuterSat.set(1f);
                 this.ticks = 0;

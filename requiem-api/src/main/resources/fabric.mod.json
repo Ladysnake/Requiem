@@ -20,6 +20,11 @@
 
   "custom": {
     "modmenu:api": true,
-    "modmenu:parent": "requiem"
+    "modmenu:parent": "requiem",
+    "cardinal-components": [
+      "requiem:remnant",
+      "requiem:possessor",
+      "requiem:death_suspension"
+    ]
   }
 }
