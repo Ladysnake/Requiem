@@ -34,10 +34,14 @@
  */
 package ladysnake.requiem.common.remnant;
 
+import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
+import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.mixin.common.entity.mob.EndermanEntityAccessor;
+import nerdhub.cardinal.components.api.event.TrackingStartCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -51,6 +55,15 @@ import net.minecraft.world.World;
 public class BasePossessionHandlers {
 
     public static void register() {
+        TrackingStartCallback.EVENT.register((player, tracked) -> {
+            if (tracked instanceof Possessable) {
+                // Synchronize possessed entities with their possessor / other players
+                PlayerEntity possessor = ((Possessable) tracked).getPossessor();
+                if (possessor != null) {
+                    PossessionComponent.KEY.syncWith(player, ComponentProvider.fromEntity(possessor));
+                }
+            }
+        });
         PossessionStartCallback.EVENT.register(Requiem.id("blacklist"), (target, possessor, simulate) -> {
             if (!target.world.isClient && RequiemEntityTypeTags.POSSESSION_BLACKLIST.contains(target.getType())) {
                 return PossessionStartCallback.Result.DENY;
