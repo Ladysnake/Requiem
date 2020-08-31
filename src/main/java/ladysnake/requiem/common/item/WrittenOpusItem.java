@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.common.item;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
@@ -96,7 +96,7 @@ public class WrittenOpusItem extends Item {
         ItemStack stack = player.getStackInHand(hand);
         if (!world.isClient && stack.getItem() == this) {
             RemnantType currentState = RemnantComponent.get(player).getRemnantType();
-            if (currentState != this.remnantType && !((RequiemPlayer) player).asPossessor().isPossessing()) {
+            if (currentState != this.remnantType && !PossessionComponent.get(player).isPossessing()) {
                 boolean cure = this == RequiemItems.OPUS_DEMONIUM_CURE;
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), RequiemSoundEvents.ITEM_OPUS_USE, player.getSoundCategory(), 1.0F, 0.1F);
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), cure ? RequiemSoundEvents.EFFECT_BECOME_MORTAL : RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);

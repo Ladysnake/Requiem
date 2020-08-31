@@ -35,7 +35,6 @@
 package ladysnake.requiem.mixin.common.server;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.minecraft.SyncServerResourcesCallback;
@@ -112,7 +111,7 @@ public abstract class PlayerManagerMixin {
             );
             if (possessedEntityMount != null) {
                 UUID possessedEntityUuid = serializedPossessedInfo.getUuid(POSSESSED_UUID_TAG);
-                resumePossession(((RequiemPlayer) player).asPossessor(), world, possessedEntityMount, possessedEntityUuid);
+                resumePossession(PossessionComponent.get(player), world, possessedEntityMount, possessedEntityUuid);
             }
         }
         return serializedPlayer;
@@ -150,7 +149,7 @@ public abstract class PlayerManagerMixin {
             )
     )
     private void logOutPossessedEntity(ServerPlayerEntity player, CallbackInfo info) {
-        Entity possessedEntity = ((RequiemPlayer) player).asPossessor().getPossessedEntity();
+        Entity possessedEntity = PossessionComponent.get(player).getPossessedEntity();
         if (possessedEntity != null) {
             ServerWorld world = player.getServerWorld();
             world.removeEntity(possessedEntity);

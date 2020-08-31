@@ -34,10 +34,10 @@
  */
 package ladysnake.requiem.mixin.client.gui.hud;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
@@ -46,6 +46,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
@@ -149,14 +150,16 @@ public abstract class InGameHudMixin extends DrawableHelper {
         index = 23
     )
     private int preventFoodRender(int mountHeartCount) {
-        RequiemPlayer player = (RequiemPlayer) this.client.player;
-        if (mountHeartCount == 0 && player != null && RemnantComponent.get(this.client.player).isSoul()) {
-            Possessable possessed = (Possessable) player.asPossessor().getPossessedEntity();
+        ClientPlayerEntity player = this.client.player;
+
+        if (mountHeartCount == 0 && player != null && RemnantComponent.get(player).isSoul()) {
+            Possessable possessed = (Possessable) PossessionComponent.get(player).getPossessedEntity();
             if (possessed == null || !possessed.isRegularEater()) {
                 skippedFood = true;
                 return -1;
             }
         }
+
         skippedFood = false;
         return mountHeartCount;
     }
@@ -178,7 +181,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     )
     private boolean preventAirRender(PlayerEntity playerEntity, Tag<Fluid> fluid) {
         if (RemnantComponent.get(playerEntity).isSoul()) {
-            LivingEntity possessed = ((RequiemPlayer) playerEntity).asPossessor().getPossessedEntity();
+            LivingEntity possessed = PossessionComponent.get( playerEntity).getPossessedEntity();
             if (possessed == null) {
                 return false;
             } else if (possessed.canBreatheInWater()) {
@@ -191,7 +194,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     @ModifyVariable(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J"), ordinal = 0)
     private int substituteHealth(int health) {
         assert client.player != null;
-        LivingEntity entity = ((RequiemPlayer) client.player).asPossessor().getPossessedEntity();
+        LivingEntity entity = PossessionComponent.get( client.player).getPossessedEntity();
         if (entity != null) {
             return MathHelper.ceil(entity.getHealth());
         }

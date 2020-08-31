@@ -35,7 +35,6 @@
 package ladysnake.requiem.common;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
@@ -45,6 +44,7 @@ import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.*;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
@@ -113,7 +113,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         // Prevent incorporeal players from picking up anything
         ItemPickupCallback.EVENT.register((player, pickedUp) -> {
             if (isInteractionForbidden(player) || RemnantComponent.get(player).isSoul() && !player.isCreative()) {
-                Entity possessed = ((RequiemPlayer)player).asPossessor().getPossessedEntity();
+                Entity possessed = PossessionComponent.get(player).getPossessedEntity();
                 if (possessed == null || !RequiemEntityTypeTags.ITEM_USER.contains(possessed.getType())) {
                     return ActionResult.FAIL;
                 }
@@ -156,7 +156,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         BasePossessionHandlers.register();
         // Proxy melee attacks
         AttackEntityCallback.EVENT.register((playerEntity, world, hand, target, hitResult) -> {
-            LivingEntity possessed = ((RequiemPlayer)playerEntity).asPossessor().getPossessedEntity();
+            LivingEntity possessed = PossessionComponent.get(playerEntity).getPossessedEntity();
             if (possessed != null && !possessed.removed) {
                 if (possessed.world.isClient || target != possessed && ((Possessable)possessed).getMobAbilityController().useDirect(AbilityType.ATTACK, target)) {
                     playerEntity.resetLastAttackedTicks();
@@ -168,7 +168,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         });
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (entity instanceof SpiderEntity) {
-                LivingEntity possessed = ((RequiemPlayer)player).asPossessor().getPossessedEntity();
+                LivingEntity possessed = PossessionComponent.get(player).getPossessedEntity();
                 if (possessed instanceof SkeletonEntity) {
                     if (!world.isClient) {
                         possessed.startRiding(entity);

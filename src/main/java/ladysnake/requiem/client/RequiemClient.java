@@ -42,6 +42,7 @@ import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
@@ -150,7 +151,7 @@ public class RequiemClient implements ClientModInitializer {
                     timeBeforeDialogueGui = 20;
                 }
             }
-            MobEntity possessedEntity = ((RequiemPlayer) client.player).asPossessor().getPossessedEntity();
+            MobEntity possessedEntity = PossessionComponent.get(client.player).getPossessedEntity();
             if (possessedEntity != null && possessedEntity.isOnFire()) {
                 client.player.setOnFireFor(1);
             }
@@ -158,11 +159,9 @@ public class RequiemClient implements ClientModInitializer {
     }
 
     private static void pickEntityShader(Entity camera, Consumer<Identifier> loadShaderFunc, Supplier<ShaderEffect> appliedShaderGetter) {
-        if (camera instanceof RequiemPlayer) {
-            Entity possessed = ((RequiemPlayer) camera).asPossessor().getPossessedEntity();
-            if (possessed != null) {
-                MinecraftClient.getInstance().gameRenderer.onCameraEntitySet(possessed);
-            }
+        Entity possessed = PossessionComponent.getPossessedEntity(camera);
+        if (possessed != null) {
+            MinecraftClient.getInstance().gameRenderer.onCameraEntitySet(possessed);
         }
     }
 
@@ -204,7 +203,7 @@ public class RequiemClient implements ClientModInitializer {
         MinecraftClient client = MinecraftClient.getInstance();
         assert client.player != null;
         if (!client.player.isCreative() && RemnantComponent.get(client.player).isSoul()) {
-            Entity possessed = RequiemPlayer.from(client.player).asPossessor().getPossessedEntity();
+            Entity possessed = PossessionComponent.get(client.player).getPossessedEntity();
             if (possessed == null || !RequiemEntityTypeTags.ITEM_USER.contains(possessed.getType())) {
                 return ActionResult.SUCCESS;
             }
@@ -220,7 +219,7 @@ public class RequiemClient implements ClientModInitializer {
 
     private static void addPossessionTooltip(ItemStack item, @Nullable PlayerEntity player, @SuppressWarnings("unused") TooltipContext context, List<Text> lines) {
         if (player != null) {
-            LivingEntity possessed = ((RequiemPlayer) player).asPossessor().getPossessedEntity();
+            LivingEntity possessed = PossessionComponent.get(player).getPossessedEntity();
             if (possessed == null) {
                 return;
             }

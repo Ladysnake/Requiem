@@ -39,6 +39,7 @@ import io.github.ladysnake.pal.Pal;
 import io.github.ladysnake.pal.VanillaAbilities;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
@@ -68,7 +69,7 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public boolean isIncorporeal() {
-        return this.isSoul() && !((RequiemPlayer) player).asPossessor().isPossessing();
+        return this.isSoul() && !PossessionComponent.get(this.player).isPossessing();
     }
 
     @Override
@@ -92,7 +93,7 @@ public class MutableRemnantState implements RemnantState {
                 if (serverside) {
                     Pal.revokeAbility(player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
                 }
-                ((RequiemPlayer)this.player).asPossessor().stopPossessing(false);
+                PossessionComponent.get(this.player).stopPossessing(false);
             }
             ((RequiemPlayer)this.player).getMovementAlterer().setConfig(config);
             RemnantComponent.KEY.sync(this.player);

@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.common.item;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.PotionItem;
 import org.spongepowered.asm.mixin.Mixin;
@@ -45,11 +45,9 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 public abstract class PotionItemMixin {
     @ModifyArg(method = "finishUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/effect/StatusEffect;applyInstantEffect(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/LivingEntity;ID)V"))
     private LivingEntity targetPossessedEntity(LivingEntity entity) {
-        if (entity instanceof RequiemPlayer) {
-            LivingEntity possessed = ((RequiemPlayer) entity).asPossessor().getPossessedEntity();
-            if (possessed != null) {
-                return possessed;
-            }
+        LivingEntity possessed = PossessionComponent.getPossessedEntity(entity);
+        if (possessed != null) {
+            return possessed;
         }
         return entity;
     }

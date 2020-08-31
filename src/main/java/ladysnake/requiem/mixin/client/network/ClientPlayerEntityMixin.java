@@ -36,6 +36,7 @@ package ladysnake.requiem.mixin.client.network;
 
 import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -43,7 +44,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Contract;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -63,7 +63,7 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Re
     @Inject(method = "method_30674", at = @At(value = "RETURN"), cancellable = true)
     private void stopPushingOutOfBlocks(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValue()) {
-            Entity possessed = this.asPossessor().getPossessedEntity();
+            Entity possessed = PossessionComponent.get(this).getPossessedEntity();
             if (possessed != null && possessed.getHeight() < 1F) {
                 cir.setReturnValue(false);
             }
@@ -81,14 +81,4 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Re
         }
         return value;
     }
-
-    /**
-     * Return a {@code PlayerEntity} instance that corresponds to this player.
-     * Calling {@link #from(PlayerEntity)} on the returned value returns {@code this} instance.
-     *
-     * @return {@code this} as a {@link PlayerEntity}
-     * @since 1.0.0
-     */
-    @Contract(pure = true)
-    public abstract PlayerEntity asPlayer();
 }

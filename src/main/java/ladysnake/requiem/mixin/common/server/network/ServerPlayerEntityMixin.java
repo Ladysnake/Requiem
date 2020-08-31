@@ -59,7 +59,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Contract;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -143,14 +142,4 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
     public Collection<StatusEffectInstance> getReappliedStatusEffects() {
         return this.reappliedEffects;
     }
-
-    /**
-     * Return a {@code PlayerEntity} instance that corresponds to this player.
-     * Calling {@link #from(PlayerEntity)} on the returned value returns {@code this} instance.
-     *
-     * @return {@code this} as a {@link PlayerEntity}
-     * @since 1.0.0
-     */
-    @Contract(pure = true)
-    public abstract PlayerEntity asPlayer();
 }

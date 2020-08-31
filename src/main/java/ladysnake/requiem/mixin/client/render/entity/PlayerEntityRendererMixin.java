@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.client.render.entity;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import net.minecraft.client.MinecraftClient;
@@ -77,7 +77,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
      */
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void cancelRender(AbstractClientPlayerEntity renderedPlayer, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int lightmap, CallbackInfo ci) {
-        LivingEntity possessedEntity = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
+        LivingEntity possessedEntity = PossessionComponent.get(renderedPlayer).getPossessedEntity();
         if (possessedEntity != null) {
             EntityRenderDispatcher renderManager = MinecraftClient.getInstance().getEntityRenderDispatcher();
 //            matrices.pop(); // discard transforms made for the player rendering
@@ -127,26 +127,24 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     @Unique
     private boolean requiem_renderPossessedArm(MatrixStack matrices, VertexConsumerProvider vertices, AbstractClientPlayerEntity renderedPlayer, int lightmapCoordinates, boolean rightArm) {
         if (RemnantComponent.get(renderedPlayer).isSoul()) {
-            if (((RequiemPlayer) renderedPlayer).asPossessor().isPossessing()) {
-                LivingEntity possessed = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
-                if (possessed != null) {
-                    EntityRenderer<? super LivingEntity> possessedRenderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(possessed);
-                    // If the mob has an arm, render it instead of the player's
-                    if (possessedRenderer instanceof FeatureRendererContext) {
-                        Model possessedModel = ((LivingEntityRenderer<?, ?>) possessedRenderer).getModel();
-                        if (possessedModel instanceof BipedEntityModel) {
-                            @SuppressWarnings("unchecked") BipedEntityModel<LivingEntity> bipedModel = (BipedEntityModel<LivingEntity>) possessedModel;
-                            PlayerEntityModel<AbstractClientPlayerEntity> playerModel = this.getModel();
-                            ModelPart arm = rightArm ? bipedModel.rightArm : bipedModel.leftArm;
-                            this.setModelPose(renderedPlayer);
-                            bipedModel.leftArmPose = playerModel.leftArmPose;
-                            bipedModel.rightArmPose = playerModel.rightArmPose;
-                            bipedModel.handSwingProgress = 0.0F;
-                            bipedModel.sneaking = false;
-                            bipedModel.setAngles(possessed, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
-                            arm.pitch = 0.0F;
-                            arm.render(matrices, vertices.getBuffer(possessedModel.getLayer(possessedRenderer.getTexture(possessed))), lightmapCoordinates, OverlayTexture.DEFAULT_UV);
-                        }
+            LivingEntity possessed = PossessionComponent.get(renderedPlayer).getPossessedEntity();
+            if (possessed != null) {
+                EntityRenderer<? super LivingEntity> possessedRenderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(possessed);
+                // If the mob has an arm, render it instead of the player's
+                if (possessedRenderer instanceof FeatureRendererContext) {
+                    Model possessedModel = ((LivingEntityRenderer<?, ?>) possessedRenderer).getModel();
+                    if (possessedModel instanceof BipedEntityModel) {
+                        @SuppressWarnings("unchecked") BipedEntityModel<LivingEntity> bipedModel = (BipedEntityModel<LivingEntity>) possessedModel;
+                        PlayerEntityModel<AbstractClientPlayerEntity> playerModel = this.getModel();
+                        ModelPart arm = rightArm ? bipedModel.rightArm : bipedModel.leftArm;
+                        this.setModelPose(renderedPlayer);
+                        bipedModel.leftArmPose = playerModel.leftArmPose;
+                        bipedModel.rightArmPose = playerModel.rightArmPose;
+                        bipedModel.handSwingProgress = 0.0F;
+                        bipedModel.sneaking = false;
+                        bipedModel.setAngles(possessed, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+                        arm.pitch = 0.0F;
+                        arm.render(matrices, vertices.getBuffer(possessedModel.getLayer(possessedRenderer.getTexture(possessed))), lightmapCoordinates, OverlayTexture.DEFAULT_UV);
                     }
                 }
             }

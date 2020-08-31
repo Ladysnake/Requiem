@@ -55,26 +55,27 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class PossessorLivingEntityMixin extends Entity {
-    @Shadow protected abstract float getEyeHeight(EntityPose pose, EntityDimensions size);
+    @Shadow
+    protected abstract float getEyeHeight(EntityPose pose, EntityDimensions size);
 
     public PossessorLivingEntityMixin(EntityType<?> entityType_1, World world_1) {
         super(entityType_1, world_1);
     }
 
     @ModifyVariable(
-            method = "travel",
-            slice = @Slice(
-                    from = @At(
-                            value = "INVOKE",
-                            target = "Lnet/minecraft/enchantment/EnchantmentHelper;getDepthStrider(Lnet/minecraft/entity/LivingEntity;)I"
-                    )
-            ),
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/entity/LivingEntity;move(Lnet/minecraft/entity/MovementType;Lnet/minecraft/util/math/Vec3d;)V",
-                    ordinal = 0
-            ),
+        method = "travel",
+        slice = @Slice(
+            from = @At(
+                value = "INVOKE",
+                target = "Lnet/minecraft/enchantment/EnchantmentHelper;getDepthStrider(Lnet/minecraft/entity/LivingEntity;)I"
+            )
+        ),
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/entity/LivingEntity;move(Lnet/minecraft/entity/MovementType;Lnet/minecraft/util/math/Vec3d;)V",
             ordinal = 0
+        ),
+        ordinal = 0
     )
     private float fixUnderwaterVelocity(float /* float_4 */ speedAmount) {
         if (this instanceof RequiemPlayer) {
@@ -98,21 +99,21 @@ public abstract class PossessorLivingEntityMixin extends Entity {
     }
 
     @Inject(
-            method = "fall",
-            at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/LivingEntity;fallDistance:F", ordinal = 0),
-            cancellable = true
+        method = "fall",
+        at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/LivingEntity;fallDistance:F", ordinal = 0),
+        cancellable = true
     )
     private void onFall(double fallY, boolean onGround, BlockState floorBlock, BlockPos floorPos, CallbackInfo info) {
-        if (this instanceof RequiemPlayer && !world.isClient) {
-            Entity possessed = ((RequiemPlayer) this).asPossessor().getPossessedEntity();
-            if (possessed != null) {
-                possessed.fallDistance = this.fallDistance;
-                possessed.copyPositionAndRotation(this);
-                possessed.move(MovementType.SELF, Vec3d.ZERO);
-                // We know that possessed is a LivingEntity, Mixin will translate to that type automatically
-                //noinspection ConstantConditions
-                ((PossessorLivingEntityMixin)possessed).fall(fallY, onGround, floorBlock, floorPos);
-            }
+        if (world.isClient) return;
+
+        Entity possessed = PossessionComponent.getPossessedEntity(this);
+        if (possessed != null) {
+            possessed.fallDistance = this.fallDistance;
+            possessed.copyPositionAndRotation(this);
+            possessed.move(MovementType.SELF, Vec3d.ZERO);
+            // We know that possessed is a LivingEntity, Mixin will translate to that type automatically
+            //noinspection ConstantConditions
+            ((PossessorLivingEntityMixin) possessed).fall(fallY, onGround, floorBlock, floorPos);
         }
     }
 
@@ -123,7 +124,7 @@ public abstract class PossessorLivingEntityMixin extends Entity {
             LivingEntity possessed = PossessionComponent.getPossessedEntity(this);
             if (possessed != null) {
                 //noinspection ConstantConditions
-                cir.setReturnValue(((PossessorLivingEntityMixin)(Object)possessed).getEyeHeight(pose, possessed.getDimensions(pose)));
+                cir.setReturnValue(((PossessorLivingEntityMixin) (Object) possessed).getEyeHeight(pose, possessed.getDimensions(pose)));
             }
         }
     }

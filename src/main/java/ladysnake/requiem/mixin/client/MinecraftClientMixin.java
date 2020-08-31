@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.client;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DeathScreen;
@@ -65,7 +65,7 @@ public abstract class MinecraftClientMixin {
             )
     )
     private void onShakeFistAtAir(CallbackInfo info) {
-        if (((RequiemPlayer) player).asPossessor().isPossessing()) {
+        if (PossessionComponent.get( player).isPossessing()) {
             sendToServer(LEFT_CLICK_AIR, createEmptyBuffer());
         }
     }
@@ -77,7 +77,7 @@ public abstract class MinecraftClientMixin {
     private void onInteractWithAir(CallbackInfo info) {
         // Check that the player is qualified to interact with something
         if (!this.interactionManager.isBreakingBlock() && !this.player.isRiding()) {
-            if (((RequiemPlayer) player).asPossessor().isPossessing() && player.getMainHandStack().isEmpty()) {
+            if (PossessionComponent.get( player).isPossessing() && player.getMainHandStack().isEmpty()) {
                 sendToServer(RIGHT_CLICK_AIR, createEmptyBuffer());
             }
         }

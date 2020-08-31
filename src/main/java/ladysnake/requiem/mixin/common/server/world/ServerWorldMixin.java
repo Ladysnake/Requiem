@@ -34,8 +34,8 @@
  */
 package ladysnake.requiem.mixin.common.server.world;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.internal.ProtoPossessable;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -53,7 +53,7 @@ public abstract class ServerWorldMixin {
     private void possessLoadedEntities(Entity entity, CallbackInfo ci) {
         PlayerEntity possessor = ((ProtoPossessable) entity).getPossessor();
         if (possessor != null && entity instanceof MobEntity) {
-            ((RequiemPlayer)possessor).asPossessor().startPossessing((MobEntity) entity);
+            PossessionComponent.get(possessor).startPossessing((MobEntity) entity);
         }
     }
 }

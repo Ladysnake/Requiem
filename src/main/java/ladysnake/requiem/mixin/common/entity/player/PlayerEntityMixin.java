@@ -85,11 +85,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private final DialogueTracker dialogueTracker = new PlayerDialogueTracker((PlayerEntity) (Object) this);
 
     @Override
-    public PossessionComponent asPossessor() {
-        return PossessionComponent.KEY.get(this);
-    }
-
-    @Override
     public MovementAlterer getMovementAlterer() {
         return this.movementAlterer;
     }
@@ -108,7 +103,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
     private void travel(CallbackInfo info) {
-        Entity possessed = this.asPossessor().getPossessedEntity();
+        Entity possessed = PossessionComponent.getPossessedEntity(this);
         if (possessed != null && ((VariableMobilityEntity) possessed).requiem_isImmovable()) {
             if (!world.isClient && (this.getX() != possessed.getX() || this.getY() != possessed.getY() || this.getZ() != possessed.getZ())) {
                 ServerPlayNetworkHandler networkHandler = ((ServerPlayerEntity) (Object) this).networkHandler;
@@ -123,7 +118,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     @Inject(method = "eatFood", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/HungerManager;eat(Lnet/minecraft/item/Item;Lnet/minecraft/item/ItemStack;)V"))
     private void eatZombieFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
-        MobEntity possessedEntity = this.asPossessor().getPossessedEntity();
+        MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
         if (possessedEntity instanceof ZombieEntity && stack.getItem().isFood()) {
             if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || RequiemItemTags.RAW_FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
                 FoodComponent food = stack.getItem().getFoodComponent();
@@ -132,7 +127,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
             }
         }
         if (possessedEntity != null && possessedEntity.isUndead() && RequiemItemTags.UNDEAD_CURES.contains(stack.getItem()) && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)) {
-            this.asPossessor().startCuring();
+            PossessionComponent.KEY.get(this).startCuring();
         }
     }
 
@@ -161,7 +156,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     @Inject(method = "getDimensions", at = @At("HEAD"), cancellable = true)
     private void adjustSize(EntityPose pose, CallbackInfoReturnable<EntityDimensions> cir) {
         if (RemnantComponent.KEY.get(this).isSoul()) {
-            Entity possessedEntity = this.asPossessor().getPossessedEntity();
+            Entity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
             if (possessedEntity != null) {
                 cir.setReturnValue(possessedEntity.getDimensions(pose));
             } else if (pose == EntityPose.CROUCHING) {

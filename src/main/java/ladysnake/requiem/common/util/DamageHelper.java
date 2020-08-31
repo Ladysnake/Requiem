@@ -34,15 +34,16 @@
  */
 package ladysnake.requiem.common.util;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.damage.ProjectileDamageSource;
+import net.minecraft.entity.player.PlayerEntity;
 import org.jetbrains.annotations.Nullable;
 
 public final class DamageHelper {
@@ -55,34 +56,24 @@ public final class DamageHelper {
     }
 
     /**
-     * Returns {@code true} if {@code attacker} is a possessed item user, or a possessing player
+     * If applicable, returns the possessed entity that is responsible for the damage
      */
     @Nullable
     private static LivingEntity getPossessionAttacker(DamageSource source) {
-        Entity attacker = source.getAttacker();
+        // players do not care about humanity anyway, so we check for their possessed entity directly
+        Entity attacker = source.getAttacker() instanceof PlayerEntity ? PossessionComponent.getPossessedEntity(source.getAttacker()) : source.getAttacker();
+
+        // check that the attacker is being possessed, and that it can use its equipment
         if (attacker instanceof Possessable && ((Possessable) attacker).isBeingPossessed() && RequiemEntityTypeTags.ITEM_USER.contains(attacker.getType())) {
             return (LivingEntity) attacker;
         }
-        if (attacker instanceof RequiemPlayer) {
-            return ((RequiemPlayer) attacker).asPossessor().getPossessedEntity();
-        }
+
         return null;
     }
 
     public static DamageSource tryProxyDamage(DamageSource source, LivingEntity attacker) {
-        Entity delegate = getDamageDelegate(attacker);
-        if (delegate != null) {
-            return createProxiedDamage(source, delegate);
-        }
-        return null;
-    }
-
-    @Nullable
-    private static Entity getDamageDelegate(LivingEntity attacker) {
-        if (attacker instanceof RequiemPlayer) {
-            return ((RequiemPlayer) attacker).asPossessor().getPossessedEntity();
-        }
-        return null;
+        Entity delegate = PossessionComponent.getPossessedEntity(attacker);
+        return delegate != null ? createProxiedDamage(source, delegate) : null;
     }
 
     @Nullable

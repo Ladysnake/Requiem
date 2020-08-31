@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.common.item;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.mixin.common.entity.mob.ArrowShooter;
 import ladysnake.requiem.mixin.common.entity.projectile.ProjectileEntityAccessor;
 import net.minecraft.entity.LivingEntity;
@@ -51,6 +51,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -59,14 +60,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BowItem.class)
 public abstract class BowItemMixin extends RangedWeaponItem {
+    @Unique
     private static final ThreadLocal<LivingEntity> REQUIEM__CURRENT_USER = new ThreadLocal<>();
+
     public BowItemMixin(Item.Settings settings) {
         super(settings);
     }
 
     @Inject(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;setCurrentHand(Lnet/minecraft/util/Hand;)V"))
     private void setAttackingMode(World world, PlayerEntity player, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        MobEntity possessed = RequiemPlayer.from(player).asPossessor().getPossessedEntity();
+        MobEntity possessed = PossessionComponent.get(player).getPossessedEntity();
         if (possessed != null) {
             possessed.setAttacking(true);
         }
@@ -82,7 +85,7 @@ public abstract class BowItemMixin extends RangedWeaponItem {
             )
     )
     private void setCurrentUser(ItemStack item, World world, LivingEntity user, int charge, CallbackInfo ci) {
-        MobEntity possessed = ((RequiemPlayer) user).asPossessor().getPossessedEntity();
+        MobEntity possessed = PossessionComponent.getPossessedEntity(user);
         REQUIEM__CURRENT_USER.set(possessed);
         if (possessed != null) {    // counterpart to setAttackingMode
             possessed.setAttacking(false);
@@ -91,7 +94,7 @@ public abstract class BowItemMixin extends RangedWeaponItem {
 
     @ModifyVariable(method = "onStoppedUsing", ordinal = 0, at = @At("STORE"))
     private boolean giveSkeletonInfinity(boolean infinity, ItemStack item, World world, LivingEntity user, int charge) {
-        MobEntity possessed = ((RequiemPlayer) user).asPossessor().getPossessedEntity();
+        MobEntity possessed = PossessionComponent.getPossessedEntity(user);
         if (possessed instanceof AbstractSkeletonEntity) {
             return infinity || RANDOM.nextFloat() < 0.8f;
         }
@@ -100,7 +103,7 @@ public abstract class BowItemMixin extends RangedWeaponItem {
 
     @ModifyVariable(method = "onStoppedUsing", ordinal = 0, at = @At("STORE"))
     private PersistentProjectileEntity useSkeletonArrow(PersistentProjectileEntity firedArrow, ItemStack item, World world, LivingEntity user, int charge) {
-        LivingEntity possessed = ((RequiemPlayer) user).asPossessor().getPossessedEntity();
+        LivingEntity possessed = PossessionComponent.getPossessedEntity(user);
         if (possessed instanceof ArrowShooter) {
             return ((ArrowShooter)possessed).invokeGetArrow(((ProjectileEntityAccessor)firedArrow).invokeAsItemStack(), 1f);
         }

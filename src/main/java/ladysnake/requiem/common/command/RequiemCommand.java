@@ -36,7 +36,6 @@ package ladysnake.requiem.common.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
@@ -164,7 +163,7 @@ public class RequiemCommand {
         if (!RemnantComponent.get(player).isIncorporeal()) {
             throw new CommandException(new TranslatableText("requiem:commands.possession.start.fail.not_incorporeal", player.getDisplayName()));
         }
-        boolean success = ((RequiemPlayer) player).asPossessor().startPossessing((MobEntity) possessed);
+        boolean success = PossessionComponent.get(player).startPossessing((MobEntity) possessed);
         if (!success) {
             throw new CommandException(new TranslatableText("requiem:commands.possession.start.fail", possessed.getDisplayName()));
         }
@@ -182,7 +181,7 @@ public class RequiemCommand {
     private static int stopPossession(ServerCommandSource source, Collection<ServerPlayerEntity> players) {
         int count = 0;
         for (ServerPlayerEntity player : players) {
-            PossessionComponent possessionComponent = ((RequiemPlayer) player).asPossessor();
+            PossessionComponent possessionComponent = PossessionComponent.get(player);
             if (possessionComponent.isPossessing()) {
                 Entity possessed = Objects.requireNonNull(possessionComponent.getPossessedEntity());
                 possessionComponent.stopPossessing();

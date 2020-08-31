@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.common.item;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.entity.effect.StatusEffects;
@@ -56,7 +56,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ItemMixin {
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(World world, PlayerEntity player, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        MobEntity possessedEntity = ((RequiemPlayer) player).asPossessor().getPossessedEntity();
+        MobEntity possessedEntity = PossessionComponent.get( player).getPossessedEntity();
         ItemStack heldStack = player.getStackInHand(hand);
         if (possessedEntity != null) {
             if (possessedEntity.isUndead() && RequiemItemTags.UNDEAD_CURES.contains(heldStack.getItem()) && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)) {

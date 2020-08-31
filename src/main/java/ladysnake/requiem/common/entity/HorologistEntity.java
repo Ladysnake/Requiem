@@ -34,8 +34,6 @@
  */
 package ladysnake.requiem.common.entity;
 
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.damage.DamageSource;
@@ -125,7 +123,6 @@ public class HorologistEntity extends PassiveEntity implements Npc {
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         if (world.isClient) {
-            RequiemPlayer.from(player).getDialogueTracker().startDialogue(Requiem.id("remnant_choice"));
             return ActionResult.SUCCESS;
         }
         return super.interactMob(player, hand);

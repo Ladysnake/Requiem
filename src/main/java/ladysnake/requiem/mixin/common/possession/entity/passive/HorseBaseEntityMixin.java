@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.common.possession.entity.passive;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -61,8 +61,8 @@ public abstract class HorseBaseEntityMixin extends MobEntity {
     @Inject(method = "isSaddled", at = @At("HEAD"), cancellable = true)
     private void undeadHorsesAutoSaddled(CallbackInfoReturnable<Boolean> cir) {
         Entity passenger = this.getPrimaryPassenger();
-        if (passenger instanceof RequiemPlayer && this.isUndead()) {
-            LivingEntity possessedEntity = ((RequiemPlayer) passenger).asPossessor().getPossessedEntity();
+        if (this.isUndead() && passenger != null) {
+            LivingEntity possessedEntity = PossessionComponent.getPossessedEntity(passenger);
             if (possessedEntity != null && possessedEntity.isUndead()) {
                 cir.setReturnValue(true);
             }

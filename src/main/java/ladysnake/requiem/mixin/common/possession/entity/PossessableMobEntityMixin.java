@@ -34,7 +34,6 @@
  */
 package ladysnake.requiem.mixin.common.possession.entity;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.possession.Possessable;
@@ -123,8 +122,7 @@ public abstract class PossessableMobEntityMixin extends LivingEntity implements 
     private <T extends MobEntity> void possessConvertedZombie(EntityType<T> type, boolean bl, CallbackInfoReturnable<T> ci, T converted) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
-            PossessionComponent possessionComponent = ((RequiemPlayer)possessor).asPossessor();
-            possessionComponent.stopPossessing(false);
+            PossessionComponent.get(possessor).stopPossessing(false);
             // The possession will start when the entity is added to the world
             ((Possessable)converted).setPossessor(possessor);
         }
