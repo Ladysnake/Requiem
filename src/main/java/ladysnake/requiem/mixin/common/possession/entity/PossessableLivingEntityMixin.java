@@ -34,9 +34,9 @@
  */
 package ladysnake.requiem.mixin.common.possession.entity;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.entity.attribute.CooldownStrengthAttribute;
 import ladysnake.requiem.common.entity.attribute.DelegatingAttribute;
@@ -144,7 +144,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     @Override
     public PlayerEntity getPossessor() {
         if (this.possessor != null && this.possessor.removed) {
-            ((RequiemPlayer)this.possessor).asPossessor().stopPossessing();
+            PossessionComponent.get(this.possessor).stopPossessing();
             // Make doubly sure
             this.setPossessor(null);
         }
@@ -169,7 +169,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         // we need a cast here to trick the compiler
         // clever Idea assumes possessedEntity cannot be this because of the wrong class, which is wrong because Mixin
         //noinspection ConstantConditions
-        if (((this.possessor != null) && (((RequiemPlayer) this.possessor).asPossessor().getPossessedEntity() == (Entity) this)) && !this.world.isClient) {
+        if ((this.possessor != null && PossessionComponent.get(this.possessor).getPossessedEntity() == (Entity) this) && !this.world.isClient) {
             throw new IllegalStateException("Players must stop possessing an entity before it can change possessor!");
         }
         this.possessor = possessor;
@@ -305,7 +305,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     private void onDeath(DamageSource deathCause, CallbackInfo ci) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
-            ((RequiemPlayer)possessor).asPossessor().stopPossessing();
+            PossessionComponent.get(possessor).stopPossessing();
             possessor.setAttacker(this.getAttacker());
             AttritionStatusEffect.apply(possessor);
         }

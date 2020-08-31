@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.common.world;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.World;
@@ -48,12 +48,10 @@ import java.util.function.Predicate;
 public abstract class WorldMixin {
     @ModifyVariable(method = "getOtherEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;", at = @At(value = "HEAD"), argsOnly = true)
     private Predicate<Entity> ignorePossessed(Predicate<Entity> predicate, Entity ignored) {
-        if (ignored instanceof RequiemPlayer) {
-            LivingEntity possessed = ((RequiemPlayer) ignored).asPossessor().getPossessedEntity();
-            if (possessed != null) {
-                Predicate<Entity> appendedPredicate = e -> e != possessed;
-                return predicate == null ? appendedPredicate : predicate.and(appendedPredicate);
-            }
+        LivingEntity possessed = PossessionComponent.getPossessedEntity(ignored);
+        if (possessed != null) {
+            Predicate<Entity> appendedPredicate = e -> e != possessed;
+            return predicate == null ? appendedPredicate : predicate.and(appendedPredicate);
         }
         return predicate;
     }

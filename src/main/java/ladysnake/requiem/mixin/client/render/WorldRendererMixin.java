@@ -34,7 +34,6 @@
  */
 package ladysnake.requiem.mixin.client.render;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.client.RequiemFx;
 import ladysnake.requiem.client.render.RequiemBuilderStorage;
 import ladysnake.requiem.client.render.RequiemRenderLayers;
@@ -43,6 +42,7 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
@@ -77,7 +77,7 @@ public abstract class WorldRendererMixin {
                                               Matrix4f matrix4f,
                                               CallbackInfo ci) {
         Entity cameraEntity = camera.getFocusedEntity();
-        if (cameraEntity instanceof RequiemPlayer) {
+        if (cameraEntity instanceof PlayerEntity) {
             requiem_camerasFocused = RequiemFx.INSTANCE.getAnimationEntity();
         } else {
             requiem_camerasFocused = null;

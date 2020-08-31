@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.common.item;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.player.PlayerAbilities;
@@ -60,7 +60,7 @@ public abstract class TridentItemMixin extends Item {
 
     @Inject(method = "onStoppedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/TridentEntity;setProperties(Lnet/minecraft/entity/Entity;FFFFF)V"))
     private void giveDrownedInfinity(ItemStack stack, World world, LivingEntity user, int ticks, CallbackInfo ci) {
-        if (((RequiemPlayer)user).asPossessor().getPossessedEntity() instanceof DrownedEntity && RANDOM.nextFloat() < 0.8f) {
+        if (PossessionComponent.getPossessedEntity(user) instanceof DrownedEntity && RANDOM.nextFloat() < 0.8f) {
             PlayerAbilities abilities = ((PlayerEntity) user).abilities;
             if (!abilities.creativeMode) {
                 // Makes the trident not consume the item

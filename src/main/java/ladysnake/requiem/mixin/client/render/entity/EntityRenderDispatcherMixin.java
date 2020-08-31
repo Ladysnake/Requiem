@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.client.render.entity;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
@@ -65,11 +65,7 @@ public abstract class EntityRenderDispatcherMixin {
     private void updateCamerasPossessedEntity(World w, Camera c, Entity e, CallbackInfo ci) {
         MinecraftClient client = MinecraftClient.getInstance();
         Entity camera = client.getCameraEntity();
-        if (camera instanceof RequiemPlayer) {
-            requiem_camerasPossessed = ((RequiemPlayer) camera).asPossessor().getPossessedEntity();
-        } else {
-            requiem_camerasPossessed = null;
-        }
+        requiem_camerasPossessed = camera == null ? null : PossessionComponent.getPossessedEntity(camera);
     }
 
     /**

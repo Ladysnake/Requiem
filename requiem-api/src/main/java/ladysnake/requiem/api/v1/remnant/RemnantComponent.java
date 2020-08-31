@@ -7,7 +7,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Contract;
 
+/**
+ * @since 2.0.0
+ */
 public interface RemnantComponent extends ComponentV3 {
     ComponentKey<RemnantComponent> KEY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("requiem", "remnant"), RemnantComponent.class);
 
@@ -21,6 +25,14 @@ public interface RemnantComponent extends ComponentV3 {
         return r != null && r.isSoul();
     }
 
+    /**
+     * Return a player's {@link RemnantState}. The remnant state is live, and
+     * every modification made to it is reflected on the player.
+     *
+     * @return the player's remnant state
+     * @since 2.0.0
+     */
+    @Contract(pure = true)
     static RemnantComponent get(PlayerEntity player) {
         return KEY.get(player);
     }

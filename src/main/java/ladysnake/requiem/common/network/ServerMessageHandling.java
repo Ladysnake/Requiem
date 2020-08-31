@@ -37,6 +37,7 @@ package ladysnake.requiem.common.network;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.item.OpusDemoniumItem;
 import ladysnake.requiem.common.item.RequiemItems;
@@ -66,14 +67,14 @@ public class ServerMessageHandling {
     public static void init() {
         register(LEFT_CLICK_AIR, (context, buf) -> {
             PlayerEntity player = context.getPlayer();
-            Possessable possessed = (Possessable) ((RequiemPlayer)player).asPossessor().getPossessedEntity();
+            Possessable possessed = (Possessable) PossessionComponent.get(player).getPossessedEntity();
             if (possessed != null) {
                 possessed.getMobAbilityController().useIndirect(AbilityType.ATTACK);
             }
         });
         register(RIGHT_CLICK_AIR, (context, buf) -> {
             PlayerEntity player = context.getPlayer();
-            Possessable possessed = (Possessable) ((RequiemPlayer)player).asPossessor().getPossessedEntity();
+            Possessable possessed = (Possessable) PossessionComponent.get(player).getPossessedEntity();
             if (possessed != null) {
                 possessed.getMobAbilityController().useIndirect(AbilityType.INTERACT);
             }
@@ -84,7 +85,7 @@ public class ServerMessageHandling {
                 PlayerEntity player = context.getPlayer();
                 Entity entity = player.world.getEntityById(requestedId);
                 if (entity instanceof MobEntity && entity.distanceTo(player) < 20) {
-                    ((RequiemPlayer) player).asPossessor().startPossessing((MobEntity) entity);
+                    PossessionComponent.get(player).startPossessing((MobEntity) entity);
                 }
                 sendTo((ServerPlayerEntity) player, createEmptyMessage(POSSESSION_ACK));
             });

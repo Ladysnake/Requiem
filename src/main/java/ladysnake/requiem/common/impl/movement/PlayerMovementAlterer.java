@@ -38,9 +38,9 @@ import io.github.ladysnake.pal.AbilitySource;
 import io.github.ladysnake.pal.Pal;
 import io.github.ladysnake.pal.VanillaAbilities;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.MovementConfig;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.FlyingEntity;
@@ -131,7 +131,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
     }
 
     private static LivingEntity getPlayerOrPossessed(PlayerEntity player) {
-        LivingEntity possessed = ((RequiemPlayer)player).asPossessor().getPossessedEntity();
+        LivingEntity possessed = PossessionComponent.get(player).getPossessedEntity();
         return possessed == null ? player : possessed;
     }
 

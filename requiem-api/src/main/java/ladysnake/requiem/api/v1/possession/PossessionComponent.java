@@ -17,15 +17,16 @@
  */
 package ladysnake.requiem.api.v1.possession;
 
+import dev.onyxstudios.cca.api.v3.component.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
-import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckForNull;
@@ -33,9 +34,17 @@ import javax.annotation.CheckForNull;
 /**
  * A {@link PossessionComponent} handles a player's possession status.
  */
-public interface PossessionComponent extends ComponentV3 {
+public interface PossessionComponent extends AutoSyncedComponent {
     ComponentKey<PossessionComponent> KEY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("requiem", "possessor"), PossessionComponent.class);
 
+    /**
+     * Return a player's {@link PossessionComponent}. The possession component is
+     * live, and every modification made to it is reflected on the player.
+     *
+     * @return the player's possession component
+     * @since 2.0.0
+     */
+    @Contract(pure = true)
     static PossessionComponent get(PlayerEntity player) {
         return KEY.get(player);
     }

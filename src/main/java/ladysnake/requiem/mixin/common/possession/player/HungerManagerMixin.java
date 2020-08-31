@@ -34,8 +34,8 @@
  */
 package ladysnake.requiem.mixin.common.possession.player;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -62,9 +62,8 @@ public abstract class HungerManagerMixin {
 
     @Inject(method = "update", at = @At(value = "INVOKE", ordinal = 0))
     private void updateSoulHunger(PlayerEntity player, CallbackInfo ci) {
-        RequiemPlayer requiemPlayer = RequiemPlayer.from(player);
         if (RemnantComponent.get(player).isSoul()) {
-            Possessable possessed = (Possessable) requiemPlayer.asPossessor().getPossessedEntity();
+            Possessable possessed = (Possessable) PossessionComponent.get(player).getPossessedEntity();
             if (possessed == null || !possessed.isRegularEater()) {
                 this.exhaustion = 0;
                 this.foodLevel = 20;
@@ -75,7 +74,7 @@ public abstract class HungerManagerMixin {
 
     @ModifyArg(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;heal(F)V"))
     private float healPossessedEntity(float amount) {
-        LivingEntity possessedEntity = RequiemPlayer.from(PLAYER_ENTITY_THREAD_LOCAL.get()).asPossessor().getPossessedEntity();
+        LivingEntity possessedEntity = PossessionComponent.get(PLAYER_ENTITY_THREAD_LOCAL.get()).getPossessedEntity();
         if (possessedEntity != null && ((Possessable) possessedEntity).isRegularEater()) {
             possessedEntity.heal(amount);
         }
@@ -84,7 +83,7 @@ public abstract class HungerManagerMixin {
 
     @ModifyArg(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
     private float damagePossessedEntity(float amount) {
-        LivingEntity possessedEntity = RequiemPlayer.from(PLAYER_ENTITY_THREAD_LOCAL.get()).asPossessor().getPossessedEntity();
+        LivingEntity possessedEntity = PossessionComponent.get(PLAYER_ENTITY_THREAD_LOCAL.get()).getPossessedEntity();
         if (possessedEntity != null && ((Possessable) possessedEntity).isRegularEater()) {
             possessedEntity.damage(DamageSource.STARVE, amount);
         }

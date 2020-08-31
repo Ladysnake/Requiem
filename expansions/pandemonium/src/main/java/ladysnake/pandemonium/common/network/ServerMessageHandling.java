@@ -4,7 +4,6 @@ import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.impl.anchor.AnchorFactories;
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.network.RequiemNetworking;
@@ -21,7 +20,7 @@ public class ServerMessageHandling {
             PlayerEntity player = context.getPlayer();
             RemnantComponent remnantState = RemnantComponent.get(player);
             if (remnantState.getRemnantType().isDemon()) {
-                PossessionComponent possessionComponent = ((RequiemPlayer) player).asPossessor();
+                PossessionComponent possessionComponent = PossessionComponent.get(player);
                 FractureAnchorManager anchorManager = FractureAnchorManager.get(player.world);
                 if (!remnantState.isSoul()) {
                     PlayerShellEntity shellEntity = PlayerShellEntity.fromPlayer(player);

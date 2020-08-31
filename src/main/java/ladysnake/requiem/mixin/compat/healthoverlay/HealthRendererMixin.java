@@ -36,7 +36,7 @@ package ladysnake.requiem.mixin.compat.healthoverlay;
 
 import com.demonwav.mcdev.annotations.CheckEnv;
 import com.demonwav.mcdev.annotations.Env;
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -50,7 +50,7 @@ import terrails.healthoverlay.HealthRenderer;
 public abstract class HealthRendererMixin {
     @Redirect(method = {"render", "renderHearts"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getHealth()F"))
     private float substituteHealth(PlayerEntity player) {
-        LivingEntity possessed = ((RequiemPlayer)player).asPossessor().getPossessedEntity();
+        LivingEntity possessed = PossessionComponent.get(player).getPossessedEntity();
         if (possessed != null) {
             return possessed.getHealth();
         }

@@ -52,7 +52,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Contract;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -88,15 +87,16 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
     public void spawnResurrectionEntity() {
         if (this.requiem_possessedEntityTag != null) {
             Entity formerPossessed = EntityType.loadEntityWithPassengers(
-                    this.requiem_possessedEntityTag,
-                    world,
-                    Function.identity()
+                this.requiem_possessedEntityTag,
+                world,
+                Function.identity()
             );
+
             if (formerPossessed instanceof MobEntity) {
                 formerPossessed.copyPositionAndRotation(this);
                 if (world.spawnEntity(formerPossessed)) {
-                    if (this.asPossessor().startPossessing((MobEntity) formerPossessed)) {
-                        RequiemCriteria.PLAYER_RESURRECTED_AS_ENTITY.handle((ServerPlayerEntity)(Object) this, formerPossessed);
+                    if (PossessionComponent.get(this).startPossessing((MobEntity) formerPossessed)) {
+                        RequiemCriteria.PLAYER_RESURRECTED_AS_ENTITY.handle((ServerPlayerEntity) (Object) this, formerPossessed);
                     }
                 } else {
                     Requiem.LOGGER.error("Failed to spawn possessed entity {}", formerPossessed);
@@ -104,6 +104,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
             } else {
                 Requiem.LOGGER.error("Could not recreate possessed entity {}", requiem_possessedEntityTag);
             }
+
             this.requiem_possessedEntityTag = null;
         }
     }
@@ -113,19 +114,22 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
         this.requiem_possessedEntityTag = serializedSecondLife;
     }
 
-    @Inject(method = "moveToWorld", at = @At(value = "HEAD", shift = At.Shift.AFTER))   // Let cancelling mixins do their job
+    @Inject(method = "moveToWorld", at = @At(value = "HEAD", shift = At.Shift.AFTER))
+    // Let cancelling mixins do their job
     private void changePossessedDimension(ServerWorld dim, CallbackInfoReturnable<Entity> info) {
         prepareDimensionChange();
     }
 
-    @Inject(method = "teleport", at = @At(value = "HEAD", shift = At.Shift.AFTER))   // Let cancelling mixins do their job
+    @Inject(method = "teleport", at = @At(value = "HEAD", shift = At.Shift.AFTER))
+    // Let cancelling mixins do their job
     private void changePossessedDimension(ServerWorld targetWorld, double x, double y, double z, float yaw, float pitch, CallbackInfo ci) {
         prepareDimensionChange();
     }
 
     @Unique
     private void prepareDimensionChange() {
-        PossessionComponent possessionComponent = this.asPossessor();
+        PossessionComponent possessionComponent = PossessionComponent.get(this);
+
         if (possessionComponent.isPossessing()) {
             MobEntity current = possessionComponent.getPossessedEntity();
             if (current != null && !current.removed) {
@@ -150,6 +154,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
         // We can safely cast a class to a mixin from another mixin
         //noinspection ConstantConditions
         this.requiem_possessedEntityTag = ((PossessorServerPlayerEntityMixin) (Object) original).requiem_possessedEntityTag;
+
         if (this.requiem_possessedEntityTag != null) {
             this.inventory.clone(original.inventory);
         }
@@ -157,7 +162,8 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
 
     @Inject(method = "swingHand", at = @At("HEAD"))
     private void swingHand(Hand hand, CallbackInfo ci) {
-        LivingEntity possessed = this.asPossessor().getPossessedEntity();
+        LivingEntity possessed = PossessionComponent.get(this).getPossessedEntity();
+
         if (possessed != null) {
             possessed.swingHand(hand);
         }
@@ -165,23 +171,28 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
 
     @Inject(method = "onStatusEffectApplied", at = @At("RETURN"))
     private void onStatusEffectAdded(StatusEffectInstance effect, CallbackInfo ci) {
-        MobEntity possessed = this.asPossessor().getPossessedEntity();
+        MobEntity possessed = PossessionComponent.get(this).getPossessedEntity();
+
         if (possessed != null) {
             possessed.addStatusEffect(new StatusEffectInstance(effect));
         }
     }
+
     @Inject(method = "onStatusEffectUpgraded", at = @At("RETURN"))
     private void onStatusEffectUpdated(StatusEffectInstance effect, boolean upgrade, CallbackInfo ci) {
         if (upgrade) {
-            MobEntity possessed = this.asPossessor().getPossessedEntity();
+            MobEntity possessed = PossessionComponent.get(this).getPossessedEntity();
+
             if (possessed != null) {
                 possessed.addStatusEffect(new StatusEffectInstance(effect));
             }
         }
     }
+
     @Inject(method = "onStatusEffectRemoved", at = @At("RETURN"))
     private void onStatusEffectRemoved(StatusEffectInstance effect, CallbackInfo ci) {
-        MobEntity possessed = this.asPossessor().getPossessedEntity();
+        MobEntity possessed = PossessionComponent.get(this).getPossessedEntity();
+
         if (possessed != null) {
             possessed.removeStatusEffect(effect.getEffectType());
         }
@@ -190,7 +201,8 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
 
     @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
     private void writePossessedMobToTag(CompoundTag tag, CallbackInfo info) {
-        Entity possessedEntity = this.asPossessor().getPossessedEntity();
+        Entity possessedEntity = PossessionComponent.get(this).getPossessedEntity();
+
         if (possessedEntity != null) {
             Entity possessedEntityVehicle = possessedEntity.getRootVehicle();
             CompoundTag possessedRoot = new CompoundTag();
@@ -206,14 +218,4 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
             tag.put(POSSESSED_ROOT_TAG, possessedRoot);
         }
     }
-
-    /**
-     * Return a {@code PlayerEntity} instance that corresponds to this player.
-     * Calling {@link #from(PlayerEntity)} on the returned value returns {@code this} instance.
-     *
-     * @return {@code this} as a {@link PlayerEntity}
-     * @since 1.0.0
-     */
-    @Contract(pure = true)
-    public abstract PlayerEntity asPlayer();
 }
