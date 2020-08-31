@@ -158,10 +158,12 @@ public class RequiemClient implements ClientModInitializer {
         }
     }
 
-    private static void pickEntityShader(Entity camera, Consumer<Identifier> loadShaderFunc, Supplier<ShaderEffect> appliedShaderGetter) {
-        Entity possessed = PossessionComponent.getPossessedEntity(camera);
-        if (possessed != null) {
-            MinecraftClient.getInstance().gameRenderer.onCameraEntitySet(possessed);
+    private static void pickEntityShader(@Nullable Entity camera, Consumer<Identifier> loadShaderFunc, Supplier<ShaderEffect> appliedShaderGetter) {
+        if (camera != null) {
+            Entity possessed = PossessionComponent.getPossessedEntity(camera);
+            if (possessed != null) {
+                MinecraftClient.getInstance().gameRenderer.onCameraEntitySet(possessed);
+            }
         }
     }
 
