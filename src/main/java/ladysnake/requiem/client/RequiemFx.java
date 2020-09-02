@@ -34,23 +34,17 @@
  */
 package ladysnake.requiem.client;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.client.render.RequiemBuilderStorage;
-import ladysnake.satin.api.event.EntitiesPostRenderCallback;
-import ladysnake.satin.api.event.ResolutionChangeCallback;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
+import ladysnake.satin.api.managed.ManagedFramebuffer;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
 import ladysnake.satin.api.managed.uniform.Uniform1f;
 import ladysnake.satin.api.managed.uniform.Uniform3f;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.Frustum;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 
@@ -60,9 +54,10 @@ import java.lang.ref.WeakReference;
 import static ladysnake.requiem.client.FxHelper.impulse;
 import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
-public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionChangeCallback, ShaderEffectRenderCallback {
+public final class RequiemFx implements ShaderEffectRenderCallback {
     public static final Identifier SPECTRE_SHADER_ID = Requiem.id("shaders/post/spectre.json");
     public static final Identifier FISH_EYE_SHADER_ID = Requiem.id("shaders/post/fish_eye.json");
+    public static final Identifier ZOOM_SHADER_ID = Requiem.id("shaders/post/zoom.json");
     private static final float[] ETHEREAL_COLOR = {0.0f, 0.7f, 1.0f};
 
     public static final RequiemFx INSTANCE = new RequiemFx();
@@ -70,12 +65,11 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
 
     private final MinecraftClient mc = MinecraftClient.getInstance();
     private final ManagedShaderEffect spectreShader = ShaderEffectManager.getInstance().manage(SPECTRE_SHADER_ID);
-    private final ManagedShaderEffect fishEyeShader = ShaderEffectManager.getInstance().manage(FISH_EYE_SHADER_ID);
+    private final ManagedShaderEffect zoomShader = ShaderEffectManager.getInstance().manage(ZOOM_SHADER_ID);
+    private final ManagedFramebuffer zoomFramebuffer = zoomShader.getTarget("zoom_focus");
     private float accentColorR;
     private float accentColorG;
     private float accentColorB;
-    @Nullable
-    private Framebuffer framebuffer;
 
     private int fishEyeAnimation = -1;
     private int etherealAnimation = 0;
@@ -85,19 +79,16 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
      * Incremented every tick for animations
      */
     private int ticks = 0;
-    @Nullable
-    private WeakReference<Entity> possessionTarget;
+    private WeakReference<Entity> possessionTarget = new WeakReference<>(null);
     private final Uniform3f uniformOverlayColor = spectreShader.findUniform3f("OverlayColor");
     private final Uniform1f uniformZoom = spectreShader.findUniform1f("Zoom");
     private final Uniform1f uniformRaysIntensity = spectreShader.findUniform1f("RaysIntensity");
     private final Uniform1f uniformSolidIntensity = spectreShader.findUniform1f("SolidIntensity");
-    private final Uniform1f uniformSlider = fishEyeShader.findUniform1f("Slider");
+    private final Uniform1f uniformSlider = zoomShader.findUniform1f("Slider");
     private final Uniform1f uniformSTime = spectreShader.findUniform1f("STime");
 
     void registerCallbacks() {
         ShaderEffectRenderCallback.EVENT.register(this);
-        EntitiesPostRenderCallback.EVENT.register(this);
-        ResolutionChangeCallback.EVENT.register(this);
         ClientTickEvents.END_CLIENT_TICK.register(this::update);
     }
 
@@ -115,18 +106,18 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
             }
             assert client.player != null;
             if (!RemnantComponent.get(client.player).isIncorporeal()) {
-                this.possessionTarget = null;
+                this.possessionTarget.clear();
             }
         }
     }
 
     public void onPossessionAck() {
-        this.possessionTarget = null;
+        this.possessionTarget.clear();
     }
 
     @Nullable
     public Entity getAnimationEntity() {
-        return this.possessionTarget != null ? this.possessionTarget.get() : null;
+        return this.possessionTarget.get();
     }
 
     public void beginFishEyeAnimation(Entity possessed) {
@@ -149,18 +140,12 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
 
     @Override
     public void renderShaderEffects(float tickDelta) {
-        drawZoomFramebuffer();
-
-        if (this.possessionTarget != null && this.possessionTarget.get() != null) {
+        if (this.possessionTarget.get() != null) {
             uniformSlider.set((fishEyeAnimation - tickDelta) / 40 + 0.25f);
-            fishEyeShader.render(tickDelta);
-            if (this.possessionTarget != null && this.framebuffer != null) {
-                RenderSystem.enableBlend();
-                RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
-                this.framebuffer.draw(this.mc.getWindow().getWidth(), this.mc.getWindow().getHeight(), false);
-                MinecraftClient.getInstance().worldRenderer.drawEntityOutlinesFramebuffer();
-            }
+            zoomShader.render(tickDelta);
+            zoomFramebuffer.clear();
         }
+
         assert mc.player != null;
         boolean incorporeal = RemnantComponent.get(mc.player).isIncorporeal();
         if (incorporeal || this.etherealAnimation > 0 || this.pulseAnimation >= 0) {
@@ -192,35 +177,8 @@ public final class RequiemFx implements EntitiesPostRenderCallback, ResolutionCh
         }
     }
 
-    private boolean canDrawEntityOutlines() {
-        return this.framebuffer != null && !this.fishEyeShader.isErrored() && MinecraftClient.getInstance().player != null;
+    public RenderLayer getZoomFx(RenderLayer base) {
+        return this.zoomFramebuffer.getRenderLayer(base);
     }
 
-    private void drawZoomFramebuffer() {
-        if (this.canDrawEntityOutlines()) {
-            RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
-            RequiemBuilderStorage.INSTANCE.getRequiemVertexConsumers().draw();
-            RenderSystem.disableBlend();
-        }
-    }
-
-    @Override
-    public void onEntitiesRendered(Camera camera, Frustum frustum, float tickDelta) {
-
-    }
-
-    @Override
-    public void onResolutionChanged(int newWidth, int newHeight) {
-        if (this.framebuffer != null) {
-            this.framebuffer.resize(newWidth, newHeight, MinecraftClient.IS_SYSTEM_MAC);
-        }
-    }
-
-    public Framebuffer getFramebuffer() {
-        if (this.framebuffer == null) {
-            this.framebuffer = new Framebuffer(mc.getWindow().getWidth(), mc.getWindow().getHeight(), true, MinecraftClient.IS_SYSTEM_MAC);
-        }
-        return framebuffer;
-    }
 }

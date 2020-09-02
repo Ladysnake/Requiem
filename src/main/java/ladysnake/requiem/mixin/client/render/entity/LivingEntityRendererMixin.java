@@ -35,18 +35,23 @@
 package ladysnake.requiem.mixin.client.render.entity;
 
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.client.RequiemFx;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
 
 @Mixin(LivingEntityRenderer.class)
-public abstract class LivingEntityRendererMixin {
+public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extends EntityModel<T>> {
 
     @SuppressWarnings("UnresolvedMixinReference")   // Minecraft dev plugin is an idiot sandwich
     @Nullable
@@ -67,5 +72,12 @@ public abstract class LivingEntityRendererMixin {
             return possessor.hasVehicle();
         }
         return entity.hasVehicle();
+    }
+
+    @Inject(method = "getRenderLayer", at = @At("RETURN"), cancellable = true)
+    private void replaceRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl, CallbackInfoReturnable<RenderLayer> cir) {
+        if (entity == RequiemFx.INSTANCE.getAnimationEntity()) {
+            cir.setReturnValue(RequiemFx.INSTANCE.getZoomFx(cir.getReturnValue()));
+        }
     }
 }

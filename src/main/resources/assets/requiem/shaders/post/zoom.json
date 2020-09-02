@@ -1,0 +1,24 @@
+{
+  "targets": [
+    "swap",
+    "zoom_focus"
+  ],
+  "passes": [
+    {
+      "name": "requiem:fish_eye",
+      "intarget": "minecraft:main",
+      "outtarget": "swap"
+    },
+    {
+      "name": "requiem:combine",
+      "intarget": "swap",
+      "outtarget": "minecraft:main",
+      "auxtargets": [
+        {
+          "name": "OverlaySampler",
+          "id": "zoom_focus"
+        }
+      ]
+    }
+  ]
+}
