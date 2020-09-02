@@ -40,7 +40,7 @@ import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import ladysnake.requiem.mixin.common.entity.mob.EndermanEntityAccessor;
+import ladysnake.requiem.mixin.common.access.EndermanEntityAccessor;
 import nerdhub.cardinal.components.api.event.TrackingStartCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.EndermanEntity;
