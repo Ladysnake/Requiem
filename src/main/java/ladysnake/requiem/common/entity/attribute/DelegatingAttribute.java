@@ -34,8 +34,8 @@
  */
 package ladysnake.requiem.common.entity.attribute;
 
-import ladysnake.requiem.mixin.common.entity.attribute.AttributeContainerAccessor;
-import ladysnake.requiem.mixin.common.entity.attribute.EntityAttributeInstanceAccessor;
+import ladysnake.requiem.mixin.common.access.AttributeContainerAccessor;
+import ladysnake.requiem.mixin.common.access.EntityAttributeInstanceAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.attribute.AttributeContainer;

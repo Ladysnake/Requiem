@@ -32,34 +32,33 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common;
+package ladysnake.requiem.mixin.common.attrition;
 
-import com.mojang.serialization.Lifecycle;
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.remnant.RemnantState;
-import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.remnant.RemnantTypes;
-import ladysnake.requiem.mixin.common.access.RegistryAccessor;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.DefaultedRegistry;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import org.apiguardian.api.API;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+@Mixin(StatusEffectInstance.class)
+public abstract class StatusEffectInstanceMixin {
+    @Shadow
+    public abstract StatusEffect getEffectType();
 
-/**
- * Entry point for the possession mechanic.
- * Everything here is subject to be moved to a more specialized place.
- */
-@API(status = EXPERIMENTAL)
-public final class RequiemRegistries {
+    @Shadow
+    private int duration;
 
-    public static final RegistryKey<Registry<RemnantType>> REMNANT_STATE_KEY = RegistryKey.ofRegistry(Requiem.id("remnant_states"));
-    public static final DefaultedRegistry<RemnantType> REMNANT_STATES = RegistryAccessor.create(REMNANT_STATE_KEY, RemnantState.NULL_STATE_ID, Lifecycle.stable(), () -> RemnantTypes.MORTAL);
-
-    public static void init() {
-        Registry.register(REMNANT_STATES, new Identifier(RemnantState.NULL_STATE_ID), RemnantTypes.MORTAL);
+    @Inject(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/effect/StatusEffectInstance;updateDuration()I"))
+    private void preventSoulboundCountdown(LivingEntity livingEntity, Runnable r, CallbackInfoReturnable<Boolean> cir) {
+        if (RemnantComponent.isSoul(livingEntity)) {
+            if (SoulbindingRegistry.instance().isSoulbound(this.getEffectType())) {
+                this.duration++; // revert the duration decrement
+            }
+        }
     }
-
 }
