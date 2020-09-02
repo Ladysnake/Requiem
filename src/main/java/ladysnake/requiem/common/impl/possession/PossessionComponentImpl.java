@@ -37,7 +37,7 @@ package ladysnake.requiem.common.impl.possession;
 import com.google.common.collect.MapMaker;
 import dev.onyxstudios.cca.api.v3.component.AutoSyncedComponent;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
@@ -147,7 +147,7 @@ public final class PossessionComponentImpl implements PossessionComponent, AutoS
         // Update some attributes
         this.player.copyPositionAndRotation(host);
         this.player.calculateDimensions(); // update size
-        ((RequiemPlayer) this.player).getMovementAlterer().setConfig(MovementRegistry.get(this.player.world).getEntityMovementConfig(host.getType()));
+        MovementAlterer.get(this.player).setConfig(MovementRegistry.get(this.player.world).getEntityMovementConfig(host.getType()));
         if (!attributeUpdated.contains(this.player)) {
             this.swapAttributes(this.player);
             attributeUpdated.add(this.player);
@@ -262,7 +262,7 @@ public final class PossessionComponentImpl implements PossessionComponent, AutoS
 
     private void resetState() {
         this.possessed = null;
-        ((RequiemPlayer) this.player).getMovementAlterer().setConfig(RemnantComponent.get(this.player).isSoul() ? SerializableMovementConfig.SOUL : null);
+        MovementAlterer.get(this.player).setConfig(RemnantComponent.get(this.player).isSoul() ? SerializableMovementConfig.SOUL : null);
         this.player.calculateDimensions(); // update size
         this.player.setAir(this.player.getMaxAir());
         PossessionComponent.KEY.sync(this.player);

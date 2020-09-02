@@ -24,6 +24,7 @@
     "cardinal-components": [
       "requiem:remnant",
       "requiem:possessor",
+      "requiem:movement_alterer",
       "requiem:death_suspension"
     ]
   }

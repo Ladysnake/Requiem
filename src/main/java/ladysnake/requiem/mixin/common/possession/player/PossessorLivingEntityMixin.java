@@ -34,10 +34,8 @@
  */
 package ladysnake.requiem.mixin.common.possession.player;
 
-import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.util.math.BlockPos;
@@ -51,7 +49,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class PossessorLivingEntityMixin extends Entity {
@@ -78,24 +75,11 @@ public abstract class PossessorLivingEntityMixin extends Entity {
         ordinal = 0
     )
     private float fixUnderwaterVelocity(float /* float_4 */ speedAmount) {
-        if (this instanceof RequiemPlayer) {
-            return ((RequiemPlayer) this).getMovementAlterer().getSwimmingAcceleration(speedAmount);
+        MovementAlterer alterer = MovementAlterer.KEY.getNullable(this);
+        if (alterer != null) {
+            return alterer.getSwimmingAcceleration(speedAmount);
         }
         return speedAmount;
-    }
-
-    @Inject(method = "collides", at = @At("RETURN"), cancellable = true)
-    private void preventSoulsCollision(CallbackInfoReturnable<Boolean> info) {
-        if (RemnantComponent.isSoul(this)) {
-            info.setReturnValue(false);
-        }
-    }
-
-    @Inject(method = "isClimbing", at = @At("RETURN"), cancellable = true)
-    private void canClimb(CallbackInfoReturnable<Boolean> cir) {
-        if (!cir.getReturnValueZ() && this instanceof RequiemPlayer && this.horizontalCollision) {
-            cir.setReturnValue(((RequiemPlayer) this).getMovementAlterer().canClimbWalls());
-        }
     }
 
     @Inject(
@@ -114,18 +98,6 @@ public abstract class PossessorLivingEntityMixin extends Entity {
             // We know that possessed is a LivingEntity, Mixin will translate to that type automatically
             //noinspection ConstantConditions
             ((PossessorLivingEntityMixin) possessed).fall(fallY, onGround, floorBlock, floorPos);
-        }
-    }
-
-    @Inject(method = "getEyeHeight", at = @At("HEAD"), cancellable = true)
-    private void adjustEyeHeight(EntityPose pose, EntityDimensions size, CallbackInfoReturnable<Float> cir) {
-        // This method can be called in the Entity constructor
-        if (ComponentProvider.fromEntity(this).getComponentContainer() != null) {
-            LivingEntity possessed = PossessionComponent.getPossessedEntity(this);
-            if (possessed != null) {
-                //noinspection ConstantConditions
-                cir.setReturnValue(((PossessorLivingEntityMixin) (Object) possessed).getEyeHeight(pose, possessed.getDimensions(pose)));
-            }
         }
     }
 }
