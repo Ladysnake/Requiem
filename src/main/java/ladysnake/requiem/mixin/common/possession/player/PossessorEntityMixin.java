@@ -36,7 +36,6 @@ package ladysnake.requiem.mixin.common.possession.player;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -45,18 +44,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
 public abstract class PossessorEntityMixin {
-    @Inject(method = "getMaxAir", at = @At("HEAD"), cancellable = true)
-    private void delegateMaxBreath(CallbackInfoReturnable<Integer> cir) {
-        Entity self = (Entity) (Object) this;
-        // This method can be called in the constructor
-        if (ComponentProvider.fromEntity(self).getComponentContainer() != null) {
-            Entity possessedEntity = PossessionComponent.getPossessedEntity(self);
-            if (possessedEntity != null) {
-                cir.setReturnValue(possessedEntity.getMaxAir());
-            }
-        }
-    }
-
+    /**
+     * Delegates the air getter for possessing entities.
+     *
+     * <p>TBD: whether it is faster to put this method in {@link PossessorPlayerEntityMixin}
+     * (no unnecessary branching but polymorphism cost) or keep it here (single impl, but branching)
+     */
     @Inject(method = "getAir", at = @At("HEAD"), cancellable = true)
     private void delegateBreath(CallbackInfoReturnable<Integer> cir) {
         Entity self = (Entity) (Object) this;
@@ -67,10 +60,5 @@ public abstract class PossessorEntityMixin {
                 cir.setReturnValue(possessedEntity.getAir());
             }
         }
-    }
-
-    @Inject(method = "canAvoidTraps", at = @At("RETURN"), cancellable = true)
-    private void soulsAvoidTraps(CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(cir.getReturnValueZ() || RemnantComponent.isIncorporeal((Entity) (Object) this));
     }
 }

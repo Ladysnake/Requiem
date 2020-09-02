@@ -18,7 +18,7 @@
 package ladysnake.requiem.api.v1;
 
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
-import ladysnake.requiem.api.v1.entity.MovementAlterer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import org.jetbrains.annotations.Contract;
 
@@ -31,13 +31,10 @@ import org.jetbrains.annotations.Contract;
  */
 public interface RequiemPlayer {
 
-    /**
-     * Return the {@link MovementAlterer} altering this player's movement.
-     * @return the player's {@link MovementAlterer}
-     * @since 1.0.0
-     */
-    @Contract(pure = true)
-    MovementAlterer getMovementAlterer();
+    // exists because Immersive Portals still uses it
+    default PossessionComponent asPossessor() {
+        return PossessionComponent.KEY.get(this);
+    }
 
     /**
      * Return the {@link DialogueTracker} handling cutscene dialogues for this player.

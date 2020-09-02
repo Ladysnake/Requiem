@@ -35,6 +35,7 @@
     "possession.player.LivingEntityAccessor",
     "possession.player.PossessorEntityMixin",
     "possession.player.PossessorLivingEntityMixin",
+    "possession.player.PossessorPlayerEntityMixin",
     "possession.player.PossessorServerPlayerEntityMixin",
     "registration.CriteriaAccessor",
     "registration.RegistryAccessor",

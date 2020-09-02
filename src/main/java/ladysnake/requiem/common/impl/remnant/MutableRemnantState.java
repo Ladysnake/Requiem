@@ -38,7 +38,7 @@ import io.github.ladysnake.pal.AbilitySource;
 import io.github.ladysnake.pal.Pal;
 import io.github.ladysnake.pal.VanillaAbilities;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
@@ -95,7 +95,7 @@ public class MutableRemnantState implements RemnantState {
                 }
                 PossessionComponent.get(this.player).stopPossessing(false);
             }
-            ((RequiemPlayer)this.player).getMovementAlterer().setConfig(config);
+            MovementAlterer.get(this.player).setConfig(config);
             RemnantComponent.KEY.sync(this.player);
         }
     }

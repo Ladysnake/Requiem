@@ -17,6 +17,11 @@
  */
 package ladysnake.requiem.api.v1.entity;
 
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
+import dev.onyxstudios.cca.api.v3.component.ComponentV3;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.CheckForNull;
@@ -25,7 +30,12 @@ import javax.annotation.CheckForNull;
  * A {@link MovementAlterer} alters the movement of an {@link net.minecraft.entity.Entity}
  * according to a {@link MovementConfig}.
  */
-public interface MovementAlterer {
+public interface MovementAlterer extends ComponentV3 {
+    ComponentKey<MovementAlterer> KEY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("requiem", "movement_alterer"), MovementAlterer.class);
+
+    static MovementAlterer get(PlayerEntity player) {
+        return KEY.get(player);
+    }
 
     void setConfig(@CheckForNull MovementConfig config);
 

@@ -46,6 +46,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.CheckForNull;
@@ -155,5 +156,15 @@ public class PlayerMovementAlterer implements MovementAlterer {
     private Vec3d applyInertia(Vec3d velocity, float inertia) {
         // velocity = velocity * (1 - inertia) + lastVelocity * inertia
         return velocity.multiply(1 - inertia).add(this.lastVelocity.multiply(inertia));
+    }
+
+    @Override
+    public void readFromNbt(CompoundTag tag) {
+        // NO-OP
+    }
+
+    @Override
+    public void writeToNbt(CompoundTag tag) {
+        // NO-OP
     }
 }
