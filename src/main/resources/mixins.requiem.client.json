@@ -13,7 +13,6 @@
     "item.ItemStackTooltipMixin",
     "network.ClientPlayerEntityMixin",
     "render.GameRendererMixin",
-    "render.WorldRendererMixin",
     "render.entity.AccessibleTextureEntityRenderer",
     "render.entity.EntityRenderDispatcherMixin",
     "render.entity.LivingEntityRendererMixin",

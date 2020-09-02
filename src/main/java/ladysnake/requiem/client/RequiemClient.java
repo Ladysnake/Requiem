@@ -47,14 +47,12 @@ import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.network.ClientMessageHandling;
-import ladysnake.requiem.client.render.RequiemBuilderStorage;
 import ladysnake.requiem.client.render.entity.HorologistEntityRenderer;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
-import ladysnake.satin.api.event.BufferBuildersInitCallback;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -123,7 +121,6 @@ public class RequiemClient implements ClientModInitializer {
         ShadowPlayerFx.INSTANCE.registerCallbacks();
         ZaWorldFx.INSTANCE.registerCallbacks();
 
-        BufferBuildersInitCallback.EVENT.register(RequiemBuilderStorage.INSTANCE);
         ClientTickEvents.END_CLIENT_TICK.register(RequiemClient::clientTick);
         PickEntityShaderCallback.EVENT.register(RequiemClient::pickEntityShader);
         // Start possession on right click
