@@ -41,6 +41,7 @@ import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.event.minecraft.ItemPickupCallback;
 import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
+import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
@@ -57,7 +58,6 @@ import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import nerdhub.cardinal.components.api.event.PlayerCopyCallback;
 import net.fabricmc.fabric.api.event.player.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -129,7 +129,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> !player.world.isClient && isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
         UseItemCallback.EVENT.register((player, world, hand) -> new TypedActionResult<>(getInteractionResult(player), player.getStackInHand(hand)));
         // Make players respawn in the right place with the right state
-        PlayerCopyCallback.EVENT.register((original, clone, returnFromEnd) -> {
+        PlayerCloneCallback.EVENT.register((original, clone, returnFromEnd) -> {
             RemnantComponent requiemClone = RemnantComponent.get(clone);
             requiemClone.become(RemnantComponent.get(original).getRemnantType());
             requiemClone.copyFrom(original, returnFromEnd);
