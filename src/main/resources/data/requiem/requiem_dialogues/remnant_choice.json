@@ -2,48 +2,120 @@
   "start_at": "introduction",
   "states": {
     "introduction": {
-      "text": "requiem:dialogue.first_contact.introduction.text",
-      "choices": {
-        "requiem:dialogue.first_contact.introduction.explain": "explanation",
-        "requiem:dialogue.first_contact.introduction.yes": "interested",
-        "requiem:dialogue.first_contact.introduction.no": "disinterested"
-      }
+      "text": {
+        "translate": "requiem:dialogue.first_contact.introduction.text"
+      },
+      "choices": [
+        {
+          "text": {
+            "translate": "requiem:dialogue.first_contact.introduction.explain"
+          },
+          "next": "explanation"
+        },
+        {
+          "text": {
+            "translate": "requiem:dialogue.first_contact.introduction.yes"
+          },
+          "next": "interested"
+        },
+        {
+          "text": {
+            "translate": "requiem:dialogue.first_contact.introduction.no"
+          },
+          "next": "disinterested"
+        }
+      ]
     },
     "explanation": {
-      "text": "requiem:dialogue.first_contact.explanation.text",
-      "choices": {
-        "requiem:dialogue.first_contact.explanation.ok": "introduction"
-      }
+      "text": {
+        "translate": "requiem:dialogue.first_contact.explanation.text"
+      },
+      "choices": [
+        {
+          "text": {
+            "translate": "requiem:dialogue.first_contact.explanation.ok"
+          },
+          "next": "introduction"
+        }
+      ]
     },
     "interested": {
-      "text": "requiem:dialogue.first_contact.interested.text",
-      "choices": {
-        "requiem:dialogue.first_contact.doubt": "introduction",
-        "requiem:dialogue.first_contact.confirm": "very_interested"
-      }
+      "text": {
+        "translate": "requiem:dialogue.first_contact.interested.text"
+      },
+      "choices": [
+        {
+          "text": {
+            "translate": "requiem:dialogue.first_contact.doubt"
+          },
+          "next": "introduction"
+        },
+        {
+          "text": {
+            "translate": "requiem:dialogue.first_contact.confirm"
+          },
+          "next": "very_interested"
+        }
+      ]
     },
     "disinterested": {
-      "text": "requiem:dialogue.first_contact.disinterested.text",
-      "choices": {
-        "requiem:dialogue.first_contact.doubt": "introduction",
-        "requiem:dialogue.first_contact.confirm": "very_disinterested"
-      }
+      "text": {
+        "translate": "requiem:dialogue.first_contact.disinterested.text"
+      },
+      "choices": [
+        {
+          "text": {
+            "translate": "requiem:dialogue.first_contact.doubt"
+          },
+          "next": "introduction"
+        },
+        {
+          "text": {
+            "translate": "requiem:dialogue.first_contact.confirm"
+          },
+          "next": "very_disinterested"
+        }
+      ]
     },
     "very_interested": {
       "type": "ask_confirmation",
-      "text": "requiem:dialogue.first_contact.very_interested.text",
-      "choices": {
-        "requiem:dialogue.first_contact.final_doubt": "interested",
-        "requiem:dialogue.first_contact.final_confirm": "accept"
-      }
+      "text": {
+        "translate": "requiem:dialogue.first_contact.very_interested.text"
+      },
+      "choices": [
+        {
+          "text": {
+            "translate": "requiem:dialogue.first_contact.final_doubt"
+          },
+          "next": "interested"
+        },
+        {
+          "text": {
+            "translate": "requiem:dialogue.first_contact.final_confirm"
+          },
+          "next": "accept"
+        }
+      ]
     },
     "very_disinterested": {
       "type": "ask_confirmation",
-      "text": "requiem:dialogue.first_contact.very_disinterested.text",
-      "choices": {
-        "requiem:dialogue.first_contact.final_doubt": "disinterested",
-        "requiem:dialogue.first_contact.final_confirm": "refuse"
-      }
+      "text": {
+        "translate": "requiem:dialogue.first_contact.very_disinterested.text"
+      },
+      "choices": [
+        {
+          "text": {
+            "translate": "requiem:dialogue.first_contact.final_doubt"
+          },
+          "next": "disinterested"
+        },
+        {
+          "text": {
+            "translate": "requiem:dialogue.first_contact.final_confirm"
+          },
+          "next": "refuse"
+        }
+      ]
     },
     "accept": {
       "type": "end_dialogue",

@@ -36,7 +36,6 @@ package ladysnake.requiem.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
@@ -141,7 +140,7 @@ public class RequiemClient implements ClientModInitializer {
         if (client.player != null && client.currentScreen == null) {
             if (DeathSuspender.get(client.player).isLifeTransient()) {
                 if (--timeBeforeDialogueGui == 0) {
-                    DialogueTracker dialogueTracker = ((RequiemPlayer) client.player).getDialogueTracker();
+                    DialogueTracker dialogueTracker = DialogueTracker.get(client.player);
                     dialogueTracker.startDialogue(Requiem.id("remnant_choice"));
                     client.openScreen(new CutsceneDialogueScreen(new TranslatableText("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue()));
                 } else if (timeBeforeDialogueGui < 0) {

@@ -43,22 +43,22 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 
 public final class DialogueState {
     private Text text;
-    private LinkedHashMap<Text, Text> choices;
+    private List<Choice> choices;
     @Nullable
     private Identifier action;
     private ChoiceResult type;
 
     @CalledThroughReflection
     public DialogueState() {
-        this(LiteralText.EMPTY, new LinkedHashMap<>(), null, ChoiceResult.DEFAULT);
+        this(LiteralText.EMPTY, Collections.emptyList(), null, ChoiceResult.DEFAULT);
     }
 
-    private DialogueState(Text text, LinkedHashMap<Text, Text> choices, @Nullable Identifier action, ChoiceResult type) {
+    private DialogueState(Text text, List<Choice> choices, @Nullable Identifier action, ChoiceResult type) {
         this.text = text;
         this.choices = choices;
         this.action = action;
@@ -70,11 +70,15 @@ public final class DialogueState {
     }
 
     public ImmutableList<Text> getAvailableChoices() {
-        return ImmutableList.copyOf(choices.keySet());
+        ImmutableList.Builder<Text> ret = ImmutableList.builder();
+        for (Choice choice : this.choices) {
+            ret.add(choice.text);
+        }
+        return ret.build();
     }
 
-    public Text getNextState(Text choice) {
-        return this.choices.get(choice);
+    public String getNextState(int choice) {
+        return this.choices.get(choice).next;
     }
 
     public ChoiceResult getType() {
@@ -89,10 +93,11 @@ public final class DialogueState {
     public DialogueState readFromPacket(PacketByteBuf buf) {
         this.text = buf.readText();
         int nbChoices = buf.readByte();
-        this.choices = new LinkedHashMap<>(nbChoices);
+        ImmutableList.Builder<Choice> choices = ImmutableList.builder();
         for (int i = 0; i < nbChoices; i++) {
-            choices.put(buf.readText(), buf.readText());
+            choices.add(new Choice(buf.readText(), buf.readString()));
         }
+        this.choices = choices.build();
         String actionStr = buf.readString();
         if (!actionStr.isEmpty()) {
             this.action = new Identifier(actionStr);
@@ -104,9 +109,9 @@ public final class DialogueState {
     public void writeToPacket(PacketByteBuf buf) {
         buf.writeText(this.text);
         buf.writeByte((byte)this.choices.size());
-        for (Map.Entry<Text, Text> choice : this.choices.entrySet()) {
-            buf.writeText(choice.getKey());
-            buf.writeText(choice.getValue());
+        for (Choice choice : this.choices) {
+            buf.writeText(choice.text);
+            buf.writeString(choice.next);
         }
         buf.writeString(this.action == null ? "" : this.action.toString());
         buf.writeEnumConstant(this.type);
@@ -122,5 +127,15 @@ public final class DialogueState {
             representation += ", action=" + action;
         }
         return representation + '}';
+    }
+
+    public static final class Choice {
+        private final Text text;
+        private final String next;
+
+        private Choice(Text text, String next) {
+            this.text = text;
+            this.next = next;
+        }
     }
 }
