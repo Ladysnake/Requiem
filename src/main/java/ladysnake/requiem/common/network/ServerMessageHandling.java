@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.common.network;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
@@ -120,8 +120,8 @@ public class ServerMessageHandling {
             });
         });
         ServerSidePacketRegistry.INSTANCE.register(DIALOGUE_ACTION, (context, buffer) -> {
-            Identifier choice = buffer.readIdentifier();
-            context.getTaskQueue().execute(() -> ((RequiemPlayer) context.getPlayer()).getDialogueTracker().handleAction(choice));
+            Identifier action = buffer.readIdentifier();
+            context.getTaskQueue().execute(() -> DialogueTracker.get(context.getPlayer()).handleAction(action));
         });
     }
 

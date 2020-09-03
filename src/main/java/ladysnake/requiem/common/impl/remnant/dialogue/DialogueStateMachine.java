@@ -40,7 +40,6 @@ import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -51,17 +50,17 @@ import java.util.Objects;
 
 public class DialogueStateMachine implements CutsceneDialogue {
     @SerializedName("start_at")
-    private Text start;
-    private Map<Text, DialogueState> states;
+    private String start;
+    private Map<String, DialogueState> states;
     @Nullable
     private transient DialogueState currentState;
     private transient ImmutableList<Text> currentChoices = ImmutableList.of();
 
     public DialogueStateMachine() {
-        this(LiteralText.EMPTY, new HashMap<>());
+        this("", new HashMap<>());
     }
 
-    private DialogueStateMachine(Text start, Map<Text, DialogueState> states) {
+    private DialogueStateMachine(String start, Map<String, DialogueState> states) {
         this.start = start;
         this.states = states;
     }
@@ -86,11 +85,11 @@ public class DialogueStateMachine implements CutsceneDialogue {
     }
 
     @Override
-    public ChoiceResult choose(Text choice) {
+    public ChoiceResult choose(int choice) {
         return this.selectState(this.getCurrentState().getNextState(choice));
     }
 
-    private ChoiceResult selectState(Text state) {
+    private ChoiceResult selectState(String state) {
         if (!this.states.containsKey(state)) {
             throw new IllegalArgumentException(state + " is not an available dialogue state");
         }
@@ -104,20 +103,20 @@ public class DialogueStateMachine implements CutsceneDialogue {
     }
 
     public DialogueStateMachine readFromPacket(PacketByteBuf buf) {
-        this.start = buf.readText();
+        this.start = buf.readString();
         int nbStates = buf.readVarInt();
         this.states = new HashMap<>(nbStates);
         for (int i = 0; i < nbStates; i++) {
-            this.states.put(buf.readText(), new DialogueState().readFromPacket(buf));
+            this.states.put(buf.readString(), new DialogueState().readFromPacket(buf));
         }
         return this;
     }
 
     public void writeToPacket(PacketByteBuf buf) {
-        buf.writeText(this.start);
+        buf.writeString(this.start);
         buf.writeVarInt((byte) this.states.size());
-        for (Map.Entry<Text, DialogueState> entry : this.states.entrySet()) {
-            buf.writeText(entry.getKey());
+        for (Map.Entry<String, DialogueState> entry : this.states.entrySet()) {
+            buf.writeString(entry.getKey());
             entry.getValue().writeToPacket(buf);
         }
     }

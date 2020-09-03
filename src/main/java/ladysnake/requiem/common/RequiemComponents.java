@@ -36,6 +36,7 @@ package ladysnake.requiem.common;
 
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
+import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
@@ -44,16 +45,19 @@ import ladysnake.requiem.common.impl.movement.PlayerMovementAlterer;
 import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.remnant.RemnantComponentImpl;
 import ladysnake.requiem.common.impl.remnant.RevivingDeathSuspender;
+import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 
 public final class RequiemComponents implements EntityComponentInitializer {
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-        registry.registerForPlayers(MovementAlterer.KEY, PlayerMovementAlterer::new);
-        registry.registerForPlayers(DeathSuspender.KEY, RevivingDeathSuspender::new, RespawnCopyStrategy.LOSSLESS_ONLY);
-        // the order is important, possession must be synced/deserialized after remnant
+        // the order here is important, possession must be synced/deserialized after remnant
         registry.registerForPlayers(RemnantComponent.KEY, RemnantComponentImpl::new, RespawnCopyStrategy.NEVER_COPY);    // custom copy
         registry.registerForPlayers(PossessionComponent.KEY, PossessionComponentImpl::new, RespawnCopyStrategy.NEVER_COPY); // custom copy
+        // order does not matter for the other components
+        registry.registerForPlayers(MovementAlterer.KEY, PlayerMovementAlterer::new);
+        registry.registerForPlayers(DeathSuspender.KEY, RevivingDeathSuspender::new);
+        registry.registerForPlayers(DialogueTracker.KEY, PlayerDialogueTracker::new);
     }
 }

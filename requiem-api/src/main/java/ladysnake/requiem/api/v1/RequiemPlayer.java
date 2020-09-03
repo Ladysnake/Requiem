@@ -17,10 +17,8 @@
  */
 package ladysnake.requiem.api.v1;
 
-import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.player.PlayerEntity;
-import org.jetbrains.annotations.Contract;
 
 /**
  * A player with extended capabilities allowing interaction with specific Requiem
@@ -35,13 +33,5 @@ public interface RequiemPlayer {
     default PossessionComponent asPossessor() {
         return PossessionComponent.KEY.get(this);
     }
-
-    /**
-     * Return the {@link DialogueTracker} handling cutscene dialogues for this player.
-     * @return the player's {@link DialogueTracker}
-     * @since 1.0.0
-     */
-    @Contract(pure = true)
-    DialogueTracker getDialogueTracker();
 
 }
