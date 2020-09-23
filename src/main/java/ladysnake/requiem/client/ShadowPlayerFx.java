@@ -40,10 +40,8 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.satin.api.event.EntitiesPreRenderCallback;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
-import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
 import ladysnake.satin.api.managed.ManagedFramebuffer;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
-import ladysnake.satin.api.managed.ManagedShaderProgram;
 import ladysnake.satin.api.managed.ShaderEffectManager;
 import ladysnake.satin.api.managed.uniform.Uniform1f;
 import ladysnake.satin.api.util.RenderLayerHelper;
@@ -57,8 +55,6 @@ import net.minecraft.client.render.RenderPhase;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import java.io.IOException;
@@ -75,30 +71,16 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
     public static final int ETHEREAL_DESATURATE_RANGE_SQ = ETHEREAL_DESATURATE_RANGE * ETHEREAL_DESATURATE_RANGE;
 
     private final MinecraftClient client = MinecraftClient.getInstance();
-    private final ManagedShaderEffect shadowPlayerEffect = ShaderEffectManager.getInstance().manage(SHADOW_PLAYER_SHADER_ID, shader -> {
-        this.assignDepthTexture();
-        shader.setSamplerUniform("DepthSampler", ((ReadableDepthFramebuffer)MinecraftClient.getInstance().getFramebuffer()).getStillDepthMap());
-    });
+    private final ManagedShaderEffect shadowPlayerEffect = ShaderEffectManager.getInstance().manage(SHADOW_PLAYER_SHADER_ID, this::assignDepthTexture);
     private final ManagedShaderEffect desaturateEffect = ShaderEffectManager.getInstance().manage(DESATURATE_SHADER_ID);
-    private final ManagedShaderProgram depthAccumulator = ShaderEffectManager.getInstance().manageProgram(Requiem.id("depth_accumulator"));
 
     private final ManagedFramebuffer playersFramebuffer = shadowPlayerEffect.getTarget("players");
     private final RenderPhase.Target target = new RenderPhase.Target(
         "requiem:shadow_players_target",
+        this::beginPlayersFbWrite,
         () -> {
-            this.beginPlayersFbWrite();
-            RenderSystem.disableDepthTest();
-            depthAccumulator.enable();
-            // this method does not have equivalents in Blaze3D, so direct call it is
-            RenderSystem.enableBlend();
-            GL20.glBlendEquationSeparate(GL14.GL_MIN, GL14.GL_FUNC_ADD);
-        },
-        () -> {
-            // Not using GlStateManager because we did not go through it the first time
-            GL14.glBlendEquation(GL14.GL_FUNC_ADD);
-            depthAccumulator.disable();
-            RenderSystem.enableDepthTest();
             MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+            RenderSystem.depthMask(true);
         }
     );
     private boolean renderedSoulPlayers;
@@ -128,7 +110,7 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
         }
     }
 
-    private void assignDepthTexture() {
+    private void assignDepthTexture(ManagedShaderEffect shader) {
         client.getFramebuffer().beginWrite(false);
         int depthTexture = client.getFramebuffer().getDepthAttachment();
         if (depthTexture > -1) {
@@ -138,13 +120,14 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
         }
     }
 
-    private void beginPlayersFbWrite() {
+    public void beginPlayersFbWrite() {
         Framebuffer playersFramebuffer = this.playersFramebuffer.getFramebuffer();
         if (playersFramebuffer != null) {
             playersFramebuffer.beginWrite(false);
+            RenderSystem.depthMask(false);
             if (!this.renderedSoulPlayers) {
                 // no depth clearing
-                RenderSystem.clearColor(1f, 1f, 1f, 0f);
+                RenderSystem.clearColor(playersFramebuffer.clearColor[0], playersFramebuffer.clearColor[1], playersFramebuffer.clearColor[2], playersFramebuffer.clearColor[3]);
                 RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
 
                 this.renderedSoulPlayers = true;
