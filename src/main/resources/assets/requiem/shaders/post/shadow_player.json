@@ -48,10 +48,6 @@
         {
           "name": "PlayerSampler",
           "id": "blurred_players"
-        },
-        {
-          "name": "PlayerDepthSampler",
-          "id": "players"
         }
       ]
     },

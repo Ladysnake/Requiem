@@ -4,7 +4,6 @@
   "attributes": [ "Position" ],
   "samplers": [
     { "name": "DiffuseSampler" },
-    { "name": "DepthSampler" },
     { "name": "PlayerSampler"  }
   ],
   "uniforms": [
