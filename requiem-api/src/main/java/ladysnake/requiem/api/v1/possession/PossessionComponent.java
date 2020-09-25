@@ -20,6 +20,7 @@ package ladysnake.requiem.api.v1.possession;
 import dev.onyxstudios.cca.api.v3.component.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
+import dev.onyxstudios.cca.api.v3.component.ServerTickingComponent;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import net.minecraft.entity.Entity;
@@ -34,7 +35,7 @@ import javax.annotation.CheckForNull;
 /**
  * A {@link PossessionComponent} handles a player's possession status.
  */
-public interface PossessionComponent extends AutoSyncedComponent {
+public interface PossessionComponent extends AutoSyncedComponent, ServerTickingComponent {
     ComponentKey<PossessionComponent> KEY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("requiem", "possessor"), PossessionComponent.class);
 
     /**
@@ -134,7 +135,5 @@ public interface PossessionComponent extends AutoSyncedComponent {
     boolean isPossessing();
 
     void startCuring();
-
-    void update();
 
 }

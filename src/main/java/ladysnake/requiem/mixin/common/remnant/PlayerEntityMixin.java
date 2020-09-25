@@ -35,8 +35,6 @@
 package ladysnake.requiem.mixin.common.remnant;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.api.v1.entity.MovementAlterer;
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -62,13 +60,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     @Shadow @Final public PlayerAbilities abilities;
     private static final EntityDimensions REQUIEM$SOUL_SNEAKING_SIZE = EntityDimensions.changing(0.6f, 0.6f);
-
-    @Inject(method = "tickMovement", at = @At("HEAD"))
-    private void updateComponents(CallbackInfo info) {
-        MovementAlterer.KEY.get(this).update();
-        RemnantComponent.KEY.get(this).update();
-        PossessionComponent.KEY.get(this).update();
-    }
 
     /* Actual modifications of vanilla behaviour */
 

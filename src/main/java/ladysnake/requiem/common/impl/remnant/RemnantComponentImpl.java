@@ -55,8 +55,8 @@ public final class RemnantComponentImpl implements RemnantComponent, AutoSyncedC
     }
 
     @Override
-    public void update() {
-        this.state.update();
+    public void tick() {
+        this.state.serverTick();
     }
 
     @Override

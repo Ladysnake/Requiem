@@ -60,7 +60,7 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Re
         super(world, pos, yaw, profile);
     }
 
-    @Inject(method = "method_30674", at = @At(value = "RETURN"), cancellable = true)
+    @Inject(method = "wouldCollideAt", at = @At(value = "RETURN"), cancellable = true)
     private void stopPushingOutOfBlocks(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValue()) {
             Entity possessed = PossessionComponent.get(this).getPossessedEntity();

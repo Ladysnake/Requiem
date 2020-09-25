@@ -101,16 +101,14 @@ public class MutableRemnantState implements RemnantState {
     }
 
     @Override
-    public void update() {
+    public void serverTick() {
         boolean incorporeal = this.isIncorporeal();
         if (incorporeal) {
-            if (!player.world.isClient) {
-                if (!this.lastTickIncorporeal) {
-                    this.closedSpaceDetector.reset(false);
-                }
-                if (player.world.getGameRules().getBoolean(RequiemGamerules.SPAWN_HELP_ENDERMEN)) {
-                    this.closedSpaceDetector.tick();
-                }
+            if (!this.lastTickIncorporeal) {
+                this.closedSpaceDetector.reset(false);
+            }
+            if (player.world.getGameRules().getBoolean(RequiemGamerules.SPAWN_HELP_ENDERMEN)) {
+                this.closedSpaceDetector.tick();
             }
         }
         this.lastTickIncorporeal = incorporeal;

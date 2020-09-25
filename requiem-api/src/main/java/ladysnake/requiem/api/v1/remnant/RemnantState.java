@@ -49,7 +49,7 @@ public interface RemnantState {
 
     void fromTag(CompoundTag tag);
 
-    default void update() {
+    default void serverTick() {
         // NO-OP
     }
 
