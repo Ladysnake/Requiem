@@ -76,7 +76,7 @@ public abstract class PlayerManagerMixin {
 
     @ModifyVariable(
         method = "respawnPlayer",
-        slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;doesNotCollide(Lnet/minecraft/entity/Entity;)Z")),
+        slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;isSpaceEmpty(Lnet/minecraft/entity/Entity;)Z")),
         at = @At(
             value = "FIELD",
             opcode = Opcodes.GETFIELD,
@@ -89,7 +89,7 @@ public abstract class PlayerManagerMixin {
         PlayerCloneCallback.EVENT.invoker().onPlayerClone(original, clone, returnFromEnd);
         REQUIEM$RESPAWN_WORLD.set(clone.getServerWorld());
         // Prevent players from respawning in fairly bad conditions
-        while(!clone.world.doesNotCollide(clone) && clone.getY() < 256.0D) {
+        while(!clone.world.isSpaceEmpty(clone) && clone.getY() < 256.0D) {
             clone.updatePosition(clone.getX(), clone.getY() + 1.0D, clone.getZ());
         }
         return clone;
@@ -97,7 +97,7 @@ public abstract class PlayerManagerMixin {
 
     @ModifyVariable(
         method = "respawnPlayer",
-        slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;doesNotCollide(Lnet/minecraft/entity/Entity;)Z")),
+        slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;isSpaceEmpty(Lnet/minecraft/entity/Entity;)Z")),
         at = @At(
             value = "FIELD",
             opcode = Opcodes.GETFIELD,

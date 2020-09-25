@@ -56,8 +56,8 @@ public final class RequiemComponents implements EntityComponentInitializer {
         registry.registerForPlayers(RemnantComponent.KEY, RemnantComponentImpl::new, RespawnCopyStrategy.NEVER_COPY);    // custom copy
         registry.registerForPlayers(PossessionComponent.KEY, PossessionComponentImpl::new, RespawnCopyStrategy.NEVER_COPY); // custom copy
         // order does not matter for the other components
-        registry.registerForPlayers(MovementAlterer.KEY, PlayerMovementAlterer::new);
-        registry.registerForPlayers(DeathSuspender.KEY, RevivingDeathSuspender::new);
-        registry.registerForPlayers(DialogueTracker.KEY, PlayerDialogueTracker::new);
+        registry.registerForPlayers(MovementAlterer.KEY, PlayerMovementAlterer::new, RespawnCopyStrategy.LOSSLESS_ONLY);
+        registry.registerForPlayers(DeathSuspender.KEY, RevivingDeathSuspender::new, RespawnCopyStrategy.LOSSLESS_ONLY);
+        registry.registerForPlayers(DialogueTracker.KEY, PlayerDialogueTracker::new, RespawnCopyStrategy.LOSSLESS_ONLY);
     }
 }

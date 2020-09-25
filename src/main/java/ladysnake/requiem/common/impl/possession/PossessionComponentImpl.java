@@ -286,8 +286,8 @@ public final class PossessionComponentImpl implements PossessionComponent, AutoS
     }
 
     @Override
-    public void update() {
-        if (!this.player.world.isClient && this.conversionTimer > 0) {
+    public void tick() {
+        if (this.conversionTimer > 0) {
             this.conversionTimer--;
             if (this.conversionTimer == 0) {
                 MobEntity possessedEntity = this.getPossessedEntity();

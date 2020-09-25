@@ -2,7 +2,7 @@ package ladysnake.requiem.api.v1.remnant;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
-import dev.onyxstudios.cca.api.v3.component.ComponentV3;
+import dev.onyxstudios.cca.api.v3.component.ServerTickingComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Contract;
 /**
  * @since 2.0.0
  */
-public interface RemnantComponent extends ComponentV3 {
+public interface RemnantComponent extends ServerTickingComponent {
     ComponentKey<RemnantComponent> KEY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("requiem", "remnant"), RemnantComponent.class);
 
     static boolean isIncorporeal(Entity entity) {
@@ -74,6 +74,4 @@ public interface RemnantComponent extends ComponentV3 {
      * @param lossless false if the original player is dead, true otherwise
      */
     void copyFrom(ServerPlayerEntity original, boolean lossless);
-
-    void update();
 }
