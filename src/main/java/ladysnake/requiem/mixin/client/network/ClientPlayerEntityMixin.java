@@ -72,7 +72,7 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Re
 
     @ModifyArg(
             method = "tickMovement",
-            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;isSwimming()Z", ordinal = 0)),
+            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;isSwimming()Z", ordinal = 1)),
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;setSprinting(Z)V", ordinal = 0)
     )
     private boolean continueFlyingLikeSuperman(boolean value) {
