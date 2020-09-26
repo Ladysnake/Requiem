@@ -35,6 +35,7 @@
 package ladysnake.requiem.common.network;
 
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
+import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
@@ -42,7 +43,6 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.item.OpusDemoniumItem;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantTypes;
-import net.fabricmc.fabric.api.network.PacketContext;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
@@ -50,7 +50,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -58,22 +57,20 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
 public class ServerMessageHandling {
 
     public static void init() {
-        register(LEFT_CLICK_AIR, (context, buf) -> {
-            PlayerEntity player = context.getPlayer();
+        register(LEFT_CLICK_AIR, (player) -> {
             Possessable possessed = (Possessable) PossessionComponent.get(player).getPossessedEntity();
             if (possessed != null) {
                 possessed.getMobAbilityController().useIndirect(AbilityType.ATTACK);
             }
         });
-        register(RIGHT_CLICK_AIR, (context, buf) -> {
-            PlayerEntity player = context.getPlayer();
+        register(RIGHT_CLICK_AIR, (player) -> {
             Possessable possessed = (Possessable) PossessionComponent.get(player).getPossessedEntity();
             if (possessed != null) {
                 possessed.getMobAbilityController().useIndirect(AbilityType.INTERACT);
@@ -123,12 +120,18 @@ public class ServerMessageHandling {
             Identifier action = buffer.readIdentifier();
             context.getTaskQueue().execute(() -> DialogueTracker.get(context.getPlayer()).handleAction(action));
         });
+        ServerSidePacketRegistry.INSTANCE.register(HUGGING_WALL, (context, buf) -> {
+            boolean yes = buf.readBoolean();
+            // Possible failure points: the player may not actually be against a block, or it may not have the right movement
+            // we do not handle those right now, as movement is entirely done clientside
+            context.getTaskQueue().execute(() -> MovementAlterer.get(context.getPlayer()).hugWall(yes));
+        });
     }
 
-    private static void register(Identifier id, BiConsumer<PacketContext, PacketByteBuf> handler) {
+    private static void register(Identifier id, Consumer<PlayerEntity> handler) {
         ServerSidePacketRegistry.INSTANCE.register(
                 id,
-                (context, packet) -> context.getTaskQueue().execute(() -> handler.accept(context, packet))
+                (context, packet) -> context.getTaskQueue().execute(() -> handler.accept(context.getPlayer()))
         );
     }
 }

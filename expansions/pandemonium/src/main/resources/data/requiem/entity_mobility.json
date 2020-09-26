@@ -71,7 +71,8 @@
     "flopsOnLand": true
   },
   "minecraft:vex": {
-    "flightMode": "FORCED"
+    "flightMode": "FORCED",
+    "phasesThroughWalls": true
   },
   "minecraft:wither": {
     "flightMode": "ENABLED",

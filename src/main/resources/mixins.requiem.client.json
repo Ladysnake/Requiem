@@ -8,6 +8,7 @@
     "gui.container.LecternScreenMixin",
     "gui.container.WrittenBookScreenContentsMixin",
     "gui.hud.InGameHudMixin",
+    "gui.hud.InGameOverlayRendererMixin",
     "gui.ingame.AbstractInventoryScreenMixin",
     "gui.ingame.EditBookScreenAccessor",
     "item.ItemStackTooltipMixin",

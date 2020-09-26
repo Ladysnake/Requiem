@@ -61,6 +61,8 @@ public interface MovementConfig {
 
     boolean canClimbWalls();
 
+    boolean canPhaseThroughWalls();
+
     enum MovementMode {
         /**
          * The entity cannot use this movement
