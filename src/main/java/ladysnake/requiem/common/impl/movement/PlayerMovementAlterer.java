@@ -52,8 +52,11 @@ import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -63,6 +66,8 @@ import static ladysnake.requiem.api.v1.entity.MovementConfig.MovementMode.*;
 public class PlayerMovementAlterer implements MovementAlterer {
     public static final AbilitySource MOVEMENT_ALTERER_ABILITIES = Pal.getAbilitySource(Requiem.id("movement_alterer"));
     public static final int SYNC_NO_CLIP = 1;
+    public static final int SYNC_PHASING_PARTICLES = 2;
+
     @Nullable
     private MovementConfig config;
     private final PlayerEntity player;
@@ -107,15 +112,19 @@ public class PlayerMovementAlterer implements MovementAlterer {
 
     @Override
     public void clientTick() {
-        if (this.config != null && !this.player.noClip && this.player == MinecraftClient.getInstance().player && this.config.canPhaseThroughWalls()) {
-            float verticalMovement = ((ClientPlayerEntity) this.player).input.jumping ? 1 : 0;
-            Vec3d movement = EntityAccessor.invokeMovementInputToVelocity(new Vec3d(this.player.sidewaysSpeed, verticalMovement, this.player.forwardSpeed), 1, this.player.yaw);
-            Vec3d adjusted = ((EntityAccessor)this.player).invokeAdjustMovementForCollisions(movement);
-            // 10.0 is a magic constant that corresponds to mostly blocked movement
-            if (movement.length() / adjusted.length() > 10.0) {
-                RequiemNetworking.sendHugWallMessage(true);
-            } else if (this.ticksAgainstWall > 0) {
-                RequiemNetworking.sendHugWallMessage(false);
+        if (this.config != null && this.player == MinecraftClient.getInstance().player && this.config.canPhaseThroughWalls()) {
+            if (!this.player.noClip) {
+                Vec3d movement = getIntendedMovement(player);
+                Vec3d adjusted = ((EntityAccessor) this.player).invokeAdjustMovementForCollisions(movement);
+                // 10.0 is a magic constant that corresponds to mostly blocked movement
+                if (movement.length() / adjusted.length() > 10.0) {
+                    this.ticksAgainstWall++;
+                    RequiemNetworking.sendHugWallMessage(true);
+                } else if (this.ticksAgainstWall > 0) {
+                    RequiemNetworking.sendHugWallMessage(false);
+                }
+            } else if (this.noClipping && this.player.getRandom().nextFloat() > 0.8f) {
+                this.playPhaseEffects();
             }
         }
         if (this.ticksAgainstWall < 0) {
@@ -124,6 +133,16 @@ public class PlayerMovementAlterer implements MovementAlterer {
             RequiemNetworking.sendHugWallMessage(false);
         }
         this.tick();
+    }
+
+    @NotNull
+    private static Vec3d getIntendedMovement(PlayerEntity player) {
+        if (player instanceof ClientPlayerEntity) {
+            float verticalMovement = ((ClientPlayerEntity) player).input.jumping ? 1 : 0;
+            return EntityAccessor.invokeMovementInputToVelocity(new Vec3d(player.sidewaysSpeed, verticalMovement, player.forwardSpeed), 1, player.yaw);
+        } else {
+            return Vec3d.ZERO;
+        }
     }
 
     @Override
@@ -159,12 +178,15 @@ public class PlayerMovementAlterer implements MovementAlterer {
             if (this.ticksAgainstWall > 60 && !this.noClipping) {
                 this.noClipping = true;
                 this.ticksAgainstWall = 0;
+                KEY.sync(this.player, SYNC_NO_CLIP);
+            } else if (this.ticksAgainstWall % 10 == 0){
+                KEY.sync(this.player, SYNC_PHASING_PARTICLES);
             }
         } else {
             this.ticksAgainstWall = 0;
             this.noClipping = false;
+            KEY.sync(this.player, SYNC_NO_CLIP);
         }
-        KEY.sync(this.player, SYNC_NO_CLIP);
     }
 
     @Override
@@ -174,7 +196,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
 
     @Override
     public boolean shouldSyncWith(ServerPlayerEntity player, int syncOp) {
-        return player == this.player && syncOp == SYNC_NO_CLIP;
+        return ((player == this.player) && (syncOp == SYNC_NO_CLIP)) || ((syncOp == SYNC_PHASING_PARTICLES) && (player.squaredDistanceTo(this.player) < (16 * 16)));
     }
 
     @Override
@@ -190,8 +212,27 @@ public class PlayerMovementAlterer implements MovementAlterer {
         byte syncOp = buf.readByte();
         if (syncOp == SYNC_NO_CLIP) {
             this.noClipping = buf.readBoolean();
-            this.ticksAgainstWall = -5;
+            this.ticksAgainstWall = this.noClipping ? -5 : 0;
+        } else if (syncOp == SYNC_PHASING_PARTICLES) {
+            this.playPhaseEffects();
         }
+    }
+
+    private void playPhaseEffects() {
+        for (int i = 0; i < 10; i++) {
+            Vec3d intendedMovement = getIntendedMovement(this.player);
+            this.player.world.addParticle(
+                ParticleTypes.SOUL,
+                this.player.getParticleX(0.5),
+                this.player.getRandomBodyY(),
+                this.player.getParticleZ(0.5),
+                intendedMovement.x * 0.2,
+                intendedMovement.y * 0.2,
+                intendedMovement.z * 0.2
+            );
+        }
+        this.player.playSound(SoundEvents.PARTICLE_SOUL_ESCAPE, 3f, 0.6F + this.player.getRandom().nextFloat() * 0.4F);
+        this.player.playSound(SoundEvents.PARTICLE_SOUL_ESCAPE, 3f, 0.6F + this.player.getRandom().nextFloat() * 0.4F);
     }
 
     private Vec3d applyGravity(Vec3d velocity, float addedGravity) {
