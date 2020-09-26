@@ -48,10 +48,12 @@ import java.util.function.Predicate;
 public abstract class WorldMixin {
     @ModifyVariable(method = "getOtherEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;", at = @At(value = "HEAD"), argsOnly = true)
     private Predicate<Entity> ignorePossessed(Predicate<Entity> predicate, Entity ignored) {
-        LivingEntity possessed = PossessionComponent.getPossessedEntity(ignored);
-        if (possessed != null) {
-            Predicate<Entity> appendedPredicate = e -> e != possessed;
-            return predicate == null ? appendedPredicate : predicate.and(appendedPredicate);
+        if (ignored != null) {
+            LivingEntity possessed = PossessionComponent.getPossessedEntity(ignored);
+            if (possessed != null) {
+                Predicate<Entity> appendedPredicate = e -> e != possessed;
+                return predicate == null ? appendedPredicate : predicate.and(appendedPredicate);
+            }
         }
         return predicate;
     }
