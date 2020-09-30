@@ -36,7 +36,6 @@ package ladysnake.requiem.client;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
-import ladysnake.requiem.common.entity.HorologistEntity;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.satin.api.event.PostWorldRenderCallback;
 import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
@@ -50,8 +49,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -63,7 +60,6 @@ public class ZaWorldFx implements PostWorldRenderCallback {
     public static final Identifier ZA_WARUDO_SHADER_ID = Requiem.id("shaders/post/za_warudo.json");
     public static final ZaWorldFx INSTANCE = new ZaWorldFx();
 
-    private final MinecraftClient mc = MinecraftClient.getInstance();
     private int ticks;
     private float prevRadius;
     private float radius;
@@ -87,24 +83,6 @@ public class ZaWorldFx implements PostWorldRenderCallback {
         ClientTickEvents.END_CLIENT_TICK.register(this::update);
     }
 
-    private void turnToFace(Entity entity) {
-        PlayerEntity player = mc.player;
-        assert player != null;
-        double dx = player.getX() - entity.getX();
-        double dz = player.getZ() - entity.getZ();
-        double angle = Math.atan2(dz, dx) * 180 / Math.PI;
-        double pitch = Math.atan2(
-            (player.getY() + player.getEyeHeight(player.getPose())) - (entity.getY() + (entity.getEyeHeight(entity.getPose()) / 2.0F)),
-            Math.sqrt(dx * dx + dz * dz)
-        ) * 180 / Math.PI;
-        double distance = player.distanceTo(entity) / 2;
-        float rYaw = MathHelper.wrapDegrees((float)angle) + 90F;
-        float rPitch = (float) pitch - (float)(10.0F / Math.sqrt(distance)) + (float)(distance * Math.PI / 90);
-        player.yaw = (player.yaw + rYaw) / 2;
-        player.pitch = (player.pitch + rPitch) / 2;
-        player.changeLookDirection(0, 0);
-    }
-
     private void update(MinecraftClient client) {
         if (client.player != null && DeathSuspender.get(client.player).isLifeTransient()) {
             if (!this.renderingEffect) {
@@ -124,18 +102,6 @@ public class ZaWorldFx implements PostWorldRenderCallback {
                 this.radius += expansionRate;
             } else if (ticks < 2 * inversion) {
                 this.radius -= expansionRate;
-            }
-            HorologistEntity horologist = client.player.world.getClosestEntity(
-                HorologistEntity.class,
-                TargetPredicate.DEFAULT,
-                client.player,
-                client.player.getX(),
-                client.player.getY(),
-                client.player.getZ(),
-                client.player.getBoundingBox().expand(10)
-            );
-            if (horologist != null) {
-                this.turnToFace(horologist);
             }
         } else {
             this.renderingEffect = false;
