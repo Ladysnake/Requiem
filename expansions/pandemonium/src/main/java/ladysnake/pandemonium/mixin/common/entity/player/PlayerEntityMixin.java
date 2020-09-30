@@ -23,11 +23,10 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private void update(CallbackInfo info) {
         // TODO move to a player tick event when we have one
         if (!this.world.isClient && this.isSneaking()) {
-            PossessionComponent poss = this.asPossessor();
+            PossessionComponent poss = PossessionComponent.KEY.get(this);
             if (poss.getPossessedEntity() instanceof ShulkerEntity) {
                 poss.stopPossessing();
             }
         }
     }
-
 }

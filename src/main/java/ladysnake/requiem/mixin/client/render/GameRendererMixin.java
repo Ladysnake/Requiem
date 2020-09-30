@@ -14,16 +14,36 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.mixin.client.render;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -51,7 +71,7 @@ public abstract class GameRendererMixin {
     )
     private static void unselectPossessedEntity(Entity tested, CallbackInfoReturnable<Boolean> info) {
         Entity camera = MinecraftClient.getInstance().getCameraEntity();
-        if (camera instanceof RequiemPlayer && ((RequiemPlayer) camera).asPossessor().getPossessedEntity() == tested) {
+        if (camera != null && PossessionComponent.getPossessedEntity(camera) == tested) {
             info.setReturnValue(false);
         }
     }
@@ -64,7 +84,7 @@ public abstract class GameRendererMixin {
     @Inject(method = "shouldRenderBlockOutline", at = @At("HEAD"), cancellable = true)
     private void cancelBlockOutlineRender(CallbackInfoReturnable<Boolean> cir) {
         Entity camera = this.client.getCameraEntity();
-        if (camera instanceof RequiemPlayer && (((RequiemPlayer) camera).getDeathSuspender().isLifeTransient() || ((RequiemPlayer) camera).asRemnant().isIncorporeal())) {
+        if (camera instanceof PlayerEntity && (DeathSuspender.get((PlayerEntity) camera).isLifeTransient() || RemnantComponent.get((PlayerEntity) camera).isIncorporeal())) {
             cir.setReturnValue(false);
         }
     }

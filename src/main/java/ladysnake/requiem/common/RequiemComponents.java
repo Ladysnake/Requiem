@@ -14,47 +14,50 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.common;
 
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
+import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
+import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
+import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
+import ladysnake.requiem.api.v1.entity.MovementAlterer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
-import ladysnake.requiem.api.v1.util.SubDataManager;
-import ladysnake.requiem.common.impl.movement.MovementAltererManager;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.impl.movement.PlayerMovementAlterer;
+import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
+import ladysnake.requiem.common.impl.remnant.RemnantComponentImpl;
 import ladysnake.requiem.common.impl.remnant.RevivingDeathSuspender;
-import nerdhub.cardinal.components.api.ComponentRegistry;
-import nerdhub.cardinal.components.api.ComponentType;
-import nerdhub.cardinal.components.api.component.ComponentProvider;
-import nerdhub.cardinal.components.api.event.EntityComponentCallback;
-import nerdhub.cardinal.components.api.util.ObjectPath;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
+import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 
-public final class RequiemComponents {
-    @SuppressWarnings("rawtypes")
-    public static final ComponentType<SubDataManager> DIALOGUES = ComponentRegistry.INSTANCE.registerIfAbsent(
-            Requiem.id("dialogue_registry"), SubDataManager.class
-    );
-    @SuppressWarnings("rawtypes")
-    public static final ComponentType<SubDataManager> MOVEMENT_ALTERERS = ComponentRegistry.INSTANCE.registerIfAbsent(
-            Requiem.id("movement_alterer"), SubDataManager.class
-    );
-    public static final ObjectPath<World, DialogueRegistry> DIALOGUE_REGISTRY = DIALOGUES
-            .asComponentPath()
-            .compose(ComponentProvider::fromWorld)
-            .thenCastTo(DialogueRegistry.class);
-    public static final ObjectPath<World, MovementAltererManager> MOVEMENT_ALTERER_MANAGER = MOVEMENT_ALTERERS
-            .asComponentPath()
-            .compose(ComponentProvider::fromWorld)
-            .thenCastTo(MovementAltererManager.class);
-    public static final ComponentType<DeathSuspender> DEATH_SUSPENDER = ComponentRegistry.INSTANCE.registerIfAbsent(
-            Requiem.id("death_suspension"), DeathSuspender.class
-    );
+public final class RequiemComponents implements EntityComponentInitializer {
 
-    public static void initComponents() {
-        EntityComponentCallback.event(PlayerEntity.class).register((player, components) -> {
-            components.put(DEATH_SUSPENDER, new RevivingDeathSuspender(player));
-        });
+    @Override
+    public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
+        // the order here is important, possession must be synced/deserialized after remnant
+        registry.registerForPlayers(RemnantComponent.KEY, RemnantComponentImpl::new, RespawnCopyStrategy.NEVER_COPY);    // custom copy
+        registry.registerForPlayers(PossessionComponent.KEY, PossessionComponentImpl::new, RespawnCopyStrategy.NEVER_COPY); // custom copy
+        // order does not matter for the other components
+        registry.registerForPlayers(MovementAlterer.KEY, PlayerMovementAlterer::new, RespawnCopyStrategy.LOSSLESS_ONLY);
+        registry.registerForPlayers(DeathSuspender.KEY, RevivingDeathSuspender::new, RespawnCopyStrategy.LOSSLESS_ONLY);
+        registry.registerForPlayers(DialogueTracker.KEY, PlayerDialogueTracker::new, RespawnCopyStrategy.LOSSLESS_ONLY);
     }
 }

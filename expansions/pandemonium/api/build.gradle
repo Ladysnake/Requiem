@@ -1,0 +1,6 @@
+archivesBaseName = "${rootProject.archivesBaseName}-${project.name.toLowerCase(Locale.ROOT)}"
+group = "${rootProject.group}.${rootProject.archivesBaseName}"
+
+dependencies {
+    compile project(":requiem-api")
+}

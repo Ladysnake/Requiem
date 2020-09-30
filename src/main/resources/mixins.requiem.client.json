@@ -1,16 +1,14 @@
 {
-  "required": true,
+  "parent": "mixins.requiem.common.json",
   "package": "ladysnake.requiem.mixin.client",
-  "compatibilityLevel": "JAVA_8",
-  "minVersion": "0.7.11-SNAPSHOT",
   "mixins": [
     "MinecraftClientMixin",
-    "compat.healthoverlay.HealthRendererMixin",
     "entity.ClientEntityMixin",
     "gui.container.BookScreenMixin",
     "gui.container.LecternScreenMixin",
     "gui.container.WrittenBookScreenContentsMixin",
     "gui.hud.InGameHudMixin",
+    "gui.ingame.AbstractInventoryScreenMixin",
     "gui.ingame.EditBookScreenAccessor",
     "item.ItemStackTooltipMixin",
     "network.ClientPlayerEntityMixin",
@@ -18,9 +16,9 @@
     "render.entity.AccessibleTextureEntityRenderer",
     "render.entity.EntityRenderDispatcherMixin",
     "render.entity.LivingEntityRendererMixin",
-    "render.entity.PlayerEntityRendererMixin"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+    "render.entity.PlayerEntityRendererMixin",
+    "render.entity.PlayerRendererLayerMixin",
+    "render.model.ModelLoaderMixin",
+    "texture.SpriteAtlasHolderAccessor"
+  ]
 }

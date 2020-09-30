@@ -14,12 +14,32 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.common.item;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.common.impl.remnant.dialogue.DialogueTrackerImpl;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.common.remnant.RemnantTypes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -41,21 +61,25 @@ public class DebugItem extends Item {
         if (player.isSneaking()) {
             if (!world.isClient) {
                 debugMode = (debugMode + 1) % 2;
-                player.addChatMessage(new TranslatableText("Switched mode to %s", debugMode), true);
+                player.sendMessage(new TranslatableText("Switched mode to %s", debugMode), true);
             }
         } else {
             switch (debugMode) {
                 case 0:
                     if (world.isClient) {
-                        if (((RequiemPlayer) player).getDeathSuspender().isLifeTransient()) {
-                            RequiemNetworking.sendToServer(RequiemNetworking.createDialogueActionMessage(DialogueTrackerImpl.BECOME_REMNANT));
-                            ((RequiemPlayer) player).getDeathSuspender().setLifeTransient(false);
+                        if (DeathSuspender.get(player).isLifeTransient()) {
+                            RequiemNetworking.sendToServer(RequiemNetworking.createDialogueActionMessage(PlayerDialogueTracker.BECOME_REMNANT));
+                            DeathSuspender.get(player).setLifeTransient(false);
                         } else {
-                            ((RequiemPlayer) player).getDeathSuspender().setLifeTransient(true);
+                            DeathSuspender.get(player).setLifeTransient(true);
                         }
                     }
                     break;
                 case 1:
+                    if (!world.isClient) {
+                        RemnantComponent.get(player).become(RemnantTypes.MORTAL);
+                        DeathSuspender.get(player).suspendDeath(DamageSource.CACTUS);
+                    }
                     break;
             }
         }

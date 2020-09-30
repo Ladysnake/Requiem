@@ -14,10 +14,28 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.mixin.client.render.entity;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Model;
@@ -59,9 +77,9 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
      */
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void cancelRender(AbstractClientPlayerEntity renderedPlayer, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int lightmap, CallbackInfo ci) {
-        LivingEntity possessedEntity = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
+        LivingEntity possessedEntity = PossessionComponent.get(renderedPlayer).getPossessedEntity();
         if (possessedEntity != null) {
-            EntityRenderDispatcher renderManager = MinecraftClient.getInstance().getEntityRenderManager();
+            EntityRenderDispatcher renderManager = MinecraftClient.getInstance().getEntityRenderDispatcher();
 //            matrices.pop(); // discard transforms made for the player rendering
             // TODO display the nameplate when some gamerule is enabled (yog)
             if (((VariableMobilityEntity)possessedEntity).requiem_isImmovable()) {
@@ -86,50 +104,6 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * Player rendering hijack part 2
-     * We render incorporeal players on a different framebuffer for reuse.
-     * The main framebuffer's depth has been previously copied to the alternate's,
-     * so rendering should be visually equivalent.
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/* TODO reimplement using Blaze3D
-    @Inject(
-            method = "method_4215",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;method_4054(Lnet/minecraft/entity/LivingEntity;DDDFFLnet/minecraft/util/math/MatrixStack;Lnet/minecraft/client/render/LayeredVertexConsumerStorage;)V"
-            )
-    )
-    private void preRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, LayeredVertexConsumerStorage vertexConsumers, CallbackInfo info) {
-        if (((RequiemPlayer) renderedPlayer).asRemnant().isIncorporeal()) {
-            Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
-            boolean isObserverRemnant = cameraEntity instanceof RequiemPlayer && ((RequiemPlayer) cameraEntity).asRemnant().getType().isDemon();
-            float alpha = isObserverRemnant ? 1.0f : 0.05f;
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, alpha);
-            RenderSystem.depthMask(false);
-            ShadowPlayerFx.INSTANCE.beginPlayersFbWrite();
-        } else if (((RequiemPlayer) renderedPlayer).getDeathSuspender().isLifeTransient()) {
-            RenderSystem.color4f(1f, 1f, 1f, 0.5f);
-            RenderSystem.depthMask(false);
-        }
-    }
-
-    @Inject(
-            method = "method_4215",
-            at = @At(
-                    value = "INVOKE",
-                    shift = AFTER,
-                    target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;method_4054(Lnet/minecraft/entity/LivingEntity;DDDFFLnet/minecraft/util/math/MatrixStack;Lnet/minecraft/client/render/LayeredVertexConsumerStorage;)V"
-            )
-    )
-    private void postRender(AbstractClientPlayerEntity renderedPlayer, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, LayeredVertexConsumerStorage vertexConsumers, CallbackInfo info) {
-        MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
-        RenderSystem.depthMask(true);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-    }
-*/
-
-    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Hand rendering hijack
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -152,27 +126,25 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
     @Unique
     private boolean requiem_renderPossessedArm(MatrixStack matrices, VertexConsumerProvider vertices, AbstractClientPlayerEntity renderedPlayer, int lightmapCoordinates, boolean rightArm) {
-        if (((RequiemPlayer) renderedPlayer).asRemnant().isSoul()) {
-            if (((RequiemPlayer) renderedPlayer).asPossessor().isPossessing()) {
-                LivingEntity possessed = ((RequiemPlayer) renderedPlayer).asPossessor().getPossessedEntity();
-                if (possessed != null) {
-                    EntityRenderer<? super LivingEntity> possessedRenderer = MinecraftClient.getInstance().getEntityRenderManager().getRenderer(possessed);
-                    // If the mob has an arm, render it instead of the player's
-                    if (possessedRenderer instanceof FeatureRendererContext) {
-                        Model possessedModel = ((LivingEntityRenderer<?, ?>) possessedRenderer).getModel();
-                        if (possessedModel instanceof BipedEntityModel) {
-                            @SuppressWarnings("unchecked") BipedEntityModel<LivingEntity> bipedModel = (BipedEntityModel<LivingEntity>) possessedModel;
-                            PlayerEntityModel<AbstractClientPlayerEntity> playerModel = this.getModel();
-                            ModelPart arm = rightArm ? bipedModel.rightArm : bipedModel.leftArm;
-                            this.setModelPose(renderedPlayer);
-                            bipedModel.leftArmPose = playerModel.leftArmPose;
-                            bipedModel.rightArmPose = playerModel.rightArmPose;
-                            bipedModel.handSwingProgress = 0.0F;
-                            bipedModel.isSneaking = false;
-                            bipedModel.setAngles(possessed, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
-                            arm.pitch = 0.0F;
-                            arm.render(matrices, vertices.getBuffer(possessedModel.getLayer(possessedRenderer.getTexture(possessed))), lightmapCoordinates, OverlayTexture.DEFAULT_UV);
-                        }
+        if (RemnantComponent.get(renderedPlayer).isSoul()) {
+            LivingEntity possessed = PossessionComponent.get(renderedPlayer).getPossessedEntity();
+            if (possessed != null) {
+                EntityRenderer<? super LivingEntity> possessedRenderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(possessed);
+                // If the mob has an arm, render it instead of the player's
+                if (possessedRenderer instanceof FeatureRendererContext) {
+                    Model possessedModel = ((LivingEntityRenderer<?, ?>) possessedRenderer).getModel();
+                    if (possessedModel instanceof BipedEntityModel) {
+                        @SuppressWarnings("unchecked") BipedEntityModel<LivingEntity> bipedModel = (BipedEntityModel<LivingEntity>) possessedModel;
+                        PlayerEntityModel<AbstractClientPlayerEntity> playerModel = this.getModel();
+                        ModelPart arm = rightArm ? bipedModel.rightArm : bipedModel.leftArm;
+                        this.setModelPose(renderedPlayer);
+                        bipedModel.leftArmPose = playerModel.leftArmPose;
+                        bipedModel.rightArmPose = playerModel.rightArmPose;
+                        bipedModel.handSwingProgress = 0.0F;
+                        bipedModel.sneaking = false;
+                        bipedModel.setAngles(possessed, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+                        arm.pitch = 0.0F;
+                        arm.render(matrices, vertices.getBuffer(possessedModel.getLayer(possessedRenderer.getTexture(possessed))), lightmapCoordinates, OverlayTexture.DEFAULT_UV);
                     }
                 }
             }

@@ -14,6 +14,23 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.common.impl.movement;
 
@@ -24,13 +41,14 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.MovementConfig;
+import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.common.util.EntityTypeAdapter;
 import net.minecraft.entity.EntityType;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 
@@ -42,7 +60,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public final class MovementAltererManager implements SubDataManager<Map<EntityType<?>, SerializableMovementConfig>> {
+public final class MovementAltererManager implements SubDataManager<Map<EntityType<?>, SerializableMovementConfig>>, MovementRegistry {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(new TypeToken<EntityType<?>>() {}.getType(), new EntityTypeAdapter()).create();
     public static final Identifier LOCATION = Requiem.id("entity_mobility.json");
     private static final Type TYPE = new TypeToken<Map<EntityType<?>, SerializableMovementConfig>>() {}.getType();
@@ -102,6 +120,7 @@ public final class MovementAltererManager implements SubDataManager<Map<EntityTy
         return LISTENER_ID;
     }
 
+    @Override
     public MovementConfig getEntityMovementConfig(EntityType<?> type) {
         return this.entityMovementConfigs.getOrDefault(type, new SerializableMovementConfig());
     }

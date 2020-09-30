@@ -14,6 +14,23 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.common.impl.movement;
 
@@ -21,14 +38,15 @@ import io.github.ladysnake.pal.AbilitySource;
 import io.github.ladysnake.pal.Pal;
 import io.github.ladysnake.pal.VanillaAbilities;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.MovementConfig;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.CheckForNull;
@@ -55,10 +73,12 @@ public class PlayerMovementAlterer implements MovementAlterer {
 
     @Override
     public void applyConfig() {
-        if (getActualFlightMode(config, player) == DISABLED) {
-            Pal.revokeAbility(player, VanillaAbilities.ALLOW_FLYING, MOVEMENT_ALTERER_ABILITIES);
-        } else {
-            Pal.grantAbility(player, VanillaAbilities.ALLOW_FLYING, MOVEMENT_ALTERER_ABILITIES);
+        if (!this.player.world.isClient) {
+            if (getActualFlightMode(config, player) == DISABLED) {
+                Pal.revokeAbility(player, VanillaAbilities.ALLOW_FLYING, MOVEMENT_ALTERER_ABILITIES);
+            } else {
+                Pal.grantAbility(player, VanillaAbilities.ALLOW_FLYING, MOVEMENT_ALTERER_ABILITIES);
+            }
         }
     }
 
@@ -76,7 +96,12 @@ public class PlayerMovementAlterer implements MovementAlterer {
     }
 
     @Override
-    public void update() {
+    public void clientTick() {
+        this.tick();
+    }
+
+    @Override
+    public void tick() {
         if (this.config == null) {
             return;
         }
@@ -89,7 +114,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
         if (getActualFlightMode(config, getPlayerOrPossessed(player)) == FORCED) {
             this.player.abilities.flying = true;
         }
-        if (this.player.onGround && config.shouldFlopOnLand() && this.player.world.getBlockState(this.player.getBlockPos()).isAir()) {
+        if (this.player.isOnGround() && config.shouldFlopOnLand() && this.player.world.getBlockState(this.player.getBlockPos()).isAir()) {
             this.player.jump();
         }
         Vec3d velocity = this.player.getVelocity();
@@ -105,14 +130,14 @@ public class PlayerMovementAlterer implements MovementAlterer {
     }
 
     private Vec3d applyFallSpeedModifier(Vec3d velocity, float fallSpeedModifier) {
-        if (!this.player.onGround && velocity.y < 0) {
+        if (!this.player.isOnGround() && velocity.y < 0) {
             velocity = velocity.multiply(1.0, fallSpeedModifier, 1.0);
         }
         return velocity;
     }
 
     private static LivingEntity getPlayerOrPossessed(PlayerEntity player) {
-        LivingEntity possessed = ((RequiemPlayer)player).asPossessor().getPossessedEntity();
+        LivingEntity possessed = PossessionComponent.get(player).getPossessedEntity();
         return possessed == null ? player : possessed;
     }
 
@@ -136,5 +161,15 @@ public class PlayerMovementAlterer implements MovementAlterer {
     private Vec3d applyInertia(Vec3d velocity, float inertia) {
         // velocity = velocity * (1 - inertia) + lastVelocity * inertia
         return velocity.multiply(1 - inertia).add(this.lastVelocity.multiply(inertia));
+    }
+
+    @Override
+    public void readFromNbt(CompoundTag tag) {
+        // NO-OP
+    }
+
+    @Override
+    public void writeToNbt(CompoundTag tag) {
+        // NO-OP
     }
 }

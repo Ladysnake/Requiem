@@ -14,39 +14,50 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.common.network;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
+import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.packet.CustomPayloadC2SPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 import org.jetbrains.annotations.Contract;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static io.netty.buffer.Unpooled.buffer;
 
 public class RequiemNetworking {
-    // Server -> Client
-    public static final Identifier POSSESSION_SYNC = Requiem.id("possession_sync");
-    public static final Identifier REMNANT_SYNC = Requiem.id("remnant_sync");
     public static final Identifier POSSESSION_ACK = Requiem.id("possession_ack");
     public static final Identifier OPUS_USE = Requiem.id("opus_use");
     public static final Identifier DATA_SYNC = Requiem.id("data_sync");
@@ -85,31 +96,6 @@ public class RequiemNetworking {
         if (player.networkHandler != null) {
             player.networkHandler.sendPacket(message);
         }
-    }
-
-    @Contract(pure = true)
-    public static CustomPayloadS2CPacket createCorporealityMessage(PlayerEntity synchronizedPlayer) {
-        RemnantType remnantType = ((RequiemPlayer) synchronizedPlayer).asRemnant().getType();
-        boolean incorporeal = ((RequiemPlayer)synchronizedPlayer).asRemnant().isSoul();
-        UUID playerUuid = synchronizedPlayer.getUuid();
-        return createCorporealityMessage(playerUuid, remnantType, incorporeal);
-    }
-
-    @Contract(pure = true)
-    private static CustomPayloadS2CPacket createCorporealityMessage(UUID playerUuid, RemnantType remnantType, boolean incorporeal) {
-        PacketByteBuf buf = createEmptyBuffer();
-        buf.writeUuid(playerUuid);
-        buf.writeVarInt(RemnantTypes.getRawId(remnantType));
-        buf.writeBoolean(incorporeal);
-        return new CustomPayloadS2CPacket(REMNANT_SYNC, buf);
-    }
-
-    @Contract(pure = true)
-    public static CustomPayloadS2CPacket createPossessionMessage(UUID playerUuid, int possessedId) {
-        PacketByteBuf buf = createEmptyBuffer();
-        buf.writeUuid(playerUuid);
-        buf.writeInt(possessedId);
-        return new CustomPayloadS2CPacket(POSSESSION_SYNC, buf);
     }
 
     public static CustomPayloadS2CPacket createOpusUsePacket(boolean cure, boolean showBook) {

@@ -143,7 +143,7 @@ public class RayHelper {
     }
 
     /**
-     * @see net.minecraft.entity.ProjectileUtil#rayTrace(Entity, Vec3d, Vec3d, Box, Predicate, double)
+     * @see net.minecraft.entity.projectile.ProjectileUtil#rayTrace(Entity, Vec3d, Vec3d, Box, Predicate, double)
      */
     public static EntityHitResult rayTrace(Entity watcher, Vec3d startPoint, Vec3d endPoint, Box box, Predicate<Entity> predicate, double range) {
         World world = watcher.world;
@@ -151,7 +151,7 @@ public class RayHelper {
         Entity target = null;
         Vec3d pos = null;
 
-        for (Entity entity : world.getEntities(watcher, box, predicate)) {
+        for (Entity entity : world.getOtherEntities(watcher, box, predicate)) {
             Box bb = entity.getBoundingBox().expand(entity.getTargetingMargin());
             Optional<Vec3d> hitPosition = bb.rayTrace(startPoint, endPoint);
             if (bb.contains(startPoint)) {

@@ -14,10 +14,28 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.mixin.client;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -47,7 +65,7 @@ public abstract class MinecraftClientMixin {
             )
     )
     private void onShakeFistAtAir(CallbackInfo info) {
-        if (((RequiemPlayer) player).asPossessor().isPossessing()) {
+        if (PossessionComponent.get( player).isPossessing()) {
             sendToServer(LEFT_CLICK_AIR, createEmptyBuffer());
         }
     }
@@ -59,7 +77,7 @@ public abstract class MinecraftClientMixin {
     private void onInteractWithAir(CallbackInfo info) {
         // Check that the player is qualified to interact with something
         if (!this.interactionManager.isBreakingBlock() && !this.player.isRiding()) {
-            if (((RequiemPlayer) player).asPossessor().isPossessing() && player.getMainHandStack().isEmpty()) {
+            if (PossessionComponent.get( player).isPossessing() && player.getMainHandStack().isEmpty()) {
                 sendToServer(RIGHT_CLICK_AIR, createEmptyBuffer());
             }
         }
@@ -72,7 +90,7 @@ public abstract class MinecraftClientMixin {
     )
     private void skipDeathScreen(Screen screen, CallbackInfo ci) {
         if (screen instanceof DeathScreen) {
-            if (RequiemPlayer.from(this.player).asRemnant().getType().isDemon()) {
+            if (RemnantComponent.get(this.player).getRemnantType().isDemon()) {
                 this.player.requestRespawn();
                 ci.cancel();
             }

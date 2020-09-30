@@ -1,4 +1,31 @@
 ------------------------------------------------------
+Version 1.2.0
+------------------------------------------------------
+Additions  
+- Added the Attrition status effect  
+    - Upon losing a body, one level of attrition will be gained  
+    - Each level of attrition removes 20% of future bodies' maximum health  
+        - Caps at Attrition IV (80%)  
+        - If you die in hardcore with Attrition IV, your soul is forever put to rest  
+    - Attrition is cleared upon recovering your own human body  
+
+- Added the Humanity enchantment  
+    - When a possessed entity wields a weapon with this enchantment, killed mobs start dropping normal "human" player loot  
+        - With Level I, mobs start dropping items as if a player killed them  
+        - With Level II, mobs start dropping XP as if a player killed them  
+    - Books with this enchantment can only be found in Nether chests  
+
+- Added a command selector argument for possessed entities (see readme for usage information)  
+
+API
+- Made access to most Requiem registries a lot more sane  
+- Added a `MovementRegistry` and a `SoulbindingRegistry`  
+- Deprecated `TransientComponent`  
+
+Bugfixes
+- Fixed weakness status effect not being cleared clientside after possession cure ends
+
+------------------------------------------------------
 Version 1.1.4
 ------------------------------------------------------
 Bug Fixes

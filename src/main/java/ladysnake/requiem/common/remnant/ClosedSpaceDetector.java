@@ -14,6 +14,23 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.common.remnant;
 
@@ -25,7 +42,8 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -48,13 +66,13 @@ public class ClosedSpaceDetector {
     /**The player for which this detector is running*/
     private final PlayerEntity player;
     /**All blocks that have already been scanned*/
-    private Set<BlockPos> scannedBlocks = new HashSet<>();
+    private final Set<BlockPos> scannedBlocks = new HashSet<>();
     /** All blocks that should be scanned */
-    private FloodfillQueue<BlockPos> toScan = new FloodfillQueue<>();
+    private final FloodfillQueue<BlockPos> toScan = new FloodfillQueue<>();
     private int counter;
     // We do initialize it
     @SuppressWarnings("NotNullFieldNotInitialized")
-    private DimensionType scanDimension;
+    private RegistryKey<World> scanDimension;
     private boolean scanning;
 
     public ClosedSpaceDetector(PlayerEntity player) {
@@ -69,7 +87,7 @@ public class ClosedSpaceDetector {
             this.scannedBlocks.clear();
             this.toScan.clear();
             this.toScan.add(this.player.getBlockPos());
-            this.scanDimension = this.player.dimension;
+            this.scanDimension = this.player.world.getRegistryKey();
         }
     }
 
@@ -81,7 +99,7 @@ public class ClosedSpaceDetector {
         if (!this.scanning) {
             return;
         }
-        if (this.scanDimension != this.player.dimension) {
+        if (this.scanDimension != this.player.world.getRegistryKey()) {
             this.reset(false);
         }
         scanSurroundings();
