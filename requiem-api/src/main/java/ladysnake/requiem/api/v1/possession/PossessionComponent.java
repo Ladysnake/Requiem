@@ -43,7 +43,7 @@ public interface PossessionComponent extends AutoSyncedComponent, ServerTickingC
      * live, and every modification made to it is reflected on the player.
      *
      * @return the player's possession component
-     * @since 2.0.0
+     * @since 1.2.0
      */
     @Contract(pure = true)
     static PossessionComponent get(PlayerEntity player) {
