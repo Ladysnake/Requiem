@@ -14,48 +14,71 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.common.impl.remnant.dialogue;
 
 import com.google.common.collect.ImmutableList;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 
 import javax.annotation.Nullable;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 
-public class DialogueState {
-    private String text;
-    private LinkedHashMap<String, String> choices;
+public final class DialogueState {
+    private Text text;
+    private List<Choice> choices;
     @Nullable
     private Identifier action;
     private ChoiceResult type;
 
     @CalledThroughReflection
     public DialogueState() {
-        this("", new LinkedHashMap<>(), null, ChoiceResult.DEFAULT);
+        this(LiteralText.EMPTY, Collections.emptyList(), null, ChoiceResult.DEFAULT);
     }
 
-    private DialogueState(String text, LinkedHashMap<String, String> choices, @Nullable Identifier action, ChoiceResult type) {
+    private DialogueState(Text text, List<Choice> choices, @Nullable Identifier action, ChoiceResult type) {
         this.text = text;
         this.choices = choices;
         this.action = action;
         this.type = type;
     }
 
-    public String getText() {
+    public Text getText() {
         return text;
     }
 
-    public ImmutableList<String> getAvailableChoices() {
-        return ImmutableList.copyOf(choices.keySet());
+    public ImmutableList<Text> getAvailableChoices() {
+        ImmutableList.Builder<Text> ret = ImmutableList.builder();
+        for (Choice choice : this.choices) {
+            ret.add(choice.text);
+        }
+        return ret.build();
     }
 
-    public String getNextState(String choice) {
-        return this.choices.get(choice);
+    public String getNextState(int choice) {
+        return this.choices.get(choice).next;
     }
 
     public ChoiceResult getType() {
@@ -68,12 +91,13 @@ public class DialogueState {
     }
 
     public DialogueState readFromPacket(PacketByteBuf buf) {
-        this.text = buf.readString();
+        this.text = buf.readText();
         int nbChoices = buf.readByte();
-        this.choices = new LinkedHashMap<>(nbChoices);
+        ImmutableList.Builder<Choice> choices = ImmutableList.builder();
         for (int i = 0; i < nbChoices; i++) {
-            choices.put(buf.readString(), buf.readString());
+            choices.add(new Choice(buf.readText(), buf.readString()));
         }
+        this.choices = choices.build();
         String actionStr = buf.readString();
         if (!actionStr.isEmpty()) {
             this.action = new Identifier(actionStr);
@@ -83,11 +107,11 @@ public class DialogueState {
     }
 
     public void writeToPacket(PacketByteBuf buf) {
-        buf.writeString(this.text);
+        buf.writeText(this.text);
         buf.writeByte((byte)this.choices.size());
-        for (Map.Entry<String, String> choice : this.choices.entrySet()) {
-            buf.writeString(choice.getKey());
-            buf.writeString(choice.getValue());
+        for (Choice choice : this.choices) {
+            buf.writeText(choice.text);
+            buf.writeString(choice.next);
         }
         buf.writeString(this.action == null ? "" : this.action.toString());
         buf.writeEnumConstant(this.type);
@@ -103,5 +127,15 @@ public class DialogueState {
             representation += ", action=" + action;
         }
         return representation + '}';
+    }
+
+    public static final class Choice {
+        private final Text text;
+        private final String next;
+
+        private Choice(Text text, String next) {
+            this.text = text;
+            this.next = next;
+        }
     }
 }

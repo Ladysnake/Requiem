@@ -24,7 +24,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -48,7 +48,7 @@ public class RayHelper {
      * @param tickDeltaTime the delta tick time (partial render tick)
      */
     @Nonnull
-    public static HitResult rayTraceEntity(Entity entity, double range, RayTraceContext.ShapeType shapeType, RayTraceContext.FluidHandling fluidHandling, float tickDeltaTime) {
+    public static HitResult rayTraceEntity(Entity entity, double range, RaycastContext.ShapeType shapeType, RaycastContext.FluidHandling fluidHandling, float tickDeltaTime) {
         Vec3d startPoint = entity.getCameraPosVec(tickDeltaTime);
         Vec3d lookVec = entity.getRotationVec(tickDeltaTime);
         Vec3d endPoint = startPoint.add(lookVec.x * range, lookVec.y * range, lookVec.z * range);
@@ -65,8 +65,8 @@ public class RayHelper {
      * @param fluidHandling how to handle fluids
      */
     @Nonnull
-    public static HitResult rayTrace(World world, Entity source, Vec3d start, Vec3d end, RayTraceContext.ShapeType shapeType, RayTraceContext.FluidHandling fluidHandling) {
-        return world.rayTrace(new RayTraceContext(start, end, shapeType, fluidHandling, source));
+    public static HitResult rayTrace(World world, Entity source, Vec3d start, Vec3d end, RaycastContext.ShapeType shapeType, RaycastContext.FluidHandling fluidHandling) {
+        return world.raycast(new RaycastContext(start, end, shapeType, fluidHandling, source));
     }
 
     /**
@@ -79,10 +79,10 @@ public class RayHelper {
      */
     public static Vec3d findBlinkPos(Entity entity, float deltaTime, double range) {
         World world = entity.world;
-        HitResult trace = rayTraceEntity(entity, range, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.SOURCE_ONLY, deltaTime);
+        HitResult trace = rayTraceEntity(entity, range, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.SOURCE_ONLY, deltaTime);
         boolean secondPass;
         if (trace.getType() == HitResult.Type.MISS) {
-            trace = rayTrace(world, entity, trace.getPos(), trace.getPos().subtract(0, 1, 0), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.SOURCE_ONLY);
+            trace = rayTrace(world, entity, trace.getPos(), trace.getPos().subtract(0, 1, 0), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.SOURCE_ONLY);
             secondPass = false;
         } else {
             secondPass = true;
@@ -116,10 +116,10 @@ public class RayHelper {
                             default: //should never happen, but better safe than sorry
                                 throw new RaytraceException("hit result had wrong value: " + result.getSide());
                         }
-                        if (!world.doesNotCollide(null, entity.getBoundingBox().offset(testPos.getX() - entity.getX(), testPos.getY() - entity.getY(), testPos.getZ() - entity.getZ()))) {
+                        if (!world.isSpaceEmpty(null, entity.getBoundingBox().offset(testPos.getX() - entity.getX(), testPos.getY() - entity.getY(), testPos.getZ() - entity.getZ()))) {
                             toTarget = toTarget.multiply(Math.max((toTarget.length() + 0.8D) / toTarget.length(), 1.0D));
                             pos = new Vec3d(entityPos.x + toTarget.x, testPos.getY() + 0.1D, entityPos.z + toTarget.z);
-                            HitResult result1 = rayTrace(world, entity, pos, pos.subtract(0.0D, 1.0D, 0.0D), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.SOURCE_ONLY);
+                            HitResult result1 = rayTrace(world, entity, pos, pos.subtract(0.0D, 1.0D, 0.0D), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.SOURCE_ONLY);
                             pos = result1.getPos();
                             secondPass = false;
                         }
@@ -127,14 +127,14 @@ public class RayHelper {
                     if (secondPass) {
                         toTarget = toTarget.multiply((toTarget.length() - (entity.getWidth() * 1.3F)) / toTarget.length());
                         pos = entityPos.add(toTarget);
-                        HitResult result1 = rayTrace(world, entity, pos, pos.subtract(0.0D, 1.0D, 0.0D), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.SOURCE_ONLY);
+                        HitResult result1 = rayTrace(world, entity, pos, pos.subtract(0.0D, 1.0D, 0.0D), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.SOURCE_ONLY);
                         pos = result1.getPos();
                     }
             }
         }
         if (secondPass) {
             Vec3d tempPos = pos.subtract(0.0D, 0.0001D, 0.0D);
-            HitResult flagTrace = rayTrace(world, entity, tempPos, pos.add(0.0D, entity.getHeight(), 0.0D), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.SOURCE_ONLY);
+            HitResult flagTrace = rayTrace(world, entity, tempPos, pos.add(0.0D, entity.getHeight(), 0.0D), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.SOURCE_ONLY);
             if (flagTrace.getPos().y - tempPos.y < entity.getHeight()) {
                 pos = flagTrace.getPos().subtract(0, entity.getHeight(), 0);
             }
@@ -143,7 +143,7 @@ public class RayHelper {
     }
 
     /**
-     * @see net.minecraft.entity.ProjectileUtil#rayTrace(Entity, Vec3d, Vec3d, Box, Predicate, double)
+     * @see net.minecraft.entity.projectile.ProjectileUtil#raycast(Entity, Vec3d, Vec3d, Box, Predicate, double)
      */
     public static EntityHitResult rayTrace(Entity watcher, Vec3d startPoint, Vec3d endPoint, Box box, Predicate<Entity> predicate, double range) {
         World world = watcher.world;
@@ -151,9 +151,9 @@ public class RayHelper {
         Entity target = null;
         Vec3d pos = null;
 
-        for (Entity entity : world.getEntities(watcher, box, predicate)) {
+        for (Entity entity : world.getOtherEntities(watcher, box, predicate)) {
             Box bb = entity.getBoundingBox().expand(entity.getTargetingMargin());
-            Optional<Vec3d> hitPosition = bb.rayTrace(startPoint, endPoint);
+            Optional<Vec3d> hitPosition = bb.raycast(startPoint, endPoint);
             if (bb.contains(startPoint)) {
                 if (r >= 0.0D) {
                     target = entity;

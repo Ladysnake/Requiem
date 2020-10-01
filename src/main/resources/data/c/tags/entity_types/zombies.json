@@ -5,7 +5,7 @@
     "minecraft:giant",
     "minecraft:husk",
     "minecraft:zombie",
-    "minecraft:zombie_pigman",
+    "minecraft:zombified_piglin",
     "minecraft:zombie_villager"
   ]
 }

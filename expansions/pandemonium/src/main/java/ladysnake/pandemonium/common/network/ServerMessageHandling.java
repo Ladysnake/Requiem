@@ -1,14 +1,11 @@
 package ladysnake.pandemonium.common.network;
 
-import ladysnake.pandemonium.api.PandemoniumWorld;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.impl.anchor.AnchorFactories;
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.api.v1.remnant.RemnantState;
-import ladysnake.requiem.common.impl.remnant.MutableRemnantState;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,10 +18,10 @@ public class ServerMessageHandling {
     public static void init() {
         ServerSidePacketRegistry.INSTANCE.register(ETHEREAL_FRACTURE, (context, buf) -> context.getTaskQueue().execute(() -> {
             PlayerEntity player = context.getPlayer();
-            RemnantState remnantState = ((RequiemPlayer)player).asRemnant();
-            if (remnantState instanceof MutableRemnantState) {
-                PossessionComponent possessionComponent = ((RequiemPlayer) player).asPossessor();
-                FractureAnchorManager anchorManager = ((PandemoniumWorld) player.world).getAnchorManager();
+            RemnantComponent remnantState = RemnantComponent.get(player);
+            if (remnantState.getRemnantType().isDemon()) {
+                PossessionComponent possessionComponent = PossessionComponent.get(player);
+                FractureAnchorManager anchorManager = FractureAnchorManager.get(player.world);
                 if (!remnantState.isSoul()) {
                     PlayerShellEntity shellEntity = PlayerShellEntity.fromPlayer(player);
                     player.world.spawnEntity(shellEntity);

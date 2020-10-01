@@ -14,25 +14,43 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.common.impl.movement;
 
 import com.google.gson.Gson;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.entity.MovementConfig;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 import org.apiguardian.api.API;
 
 /**
  * A {@link MovementConfig} that can be easily manipulated by {@link Gson} and equivalent.
  */
 public class SerializableMovementConfig implements MovementConfig {
-    public static final SerializableMovementConfig SOUL = new SerializableMovementConfig(MovementMode.ENABLED, MovementMode.ENABLED, false, 0, 1f, 0.1F);
+    public static final SerializableMovementConfig SOUL = new SerializableMovementConfig(MovementMode.ENABLED, MovementMode.ENABLED, false, true, 0, 1f, 0.1F);
 
     private MovementMode flightMode;
     private MovementMode swimMode;
     private boolean flopsOnLand;
     private boolean climbsWalls;
+    private boolean phasesThroughWalls;
     private float gravity;
     private float fallSpeedModifier;
     private float inertia;
@@ -40,14 +58,15 @@ public class SerializableMovementConfig implements MovementConfig {
     @CalledThroughReflection
     @API(status = API.Status.INTERNAL)
     public SerializableMovementConfig() {
-        this(MovementMode.UNSPECIFIED, MovementMode.UNSPECIFIED, false, 0, 1f, 0);
+        this(MovementMode.UNSPECIFIED, MovementMode.UNSPECIFIED, false, false, 0, 1f, 0);
     }
 
     @API(status = API.Status.INTERNAL)
-    public SerializableMovementConfig(MovementMode flightMode, MovementMode swimMode, boolean flopsOnLand, float gravity, float fallSpeedModifier, float inertia) {
+    public SerializableMovementConfig(MovementMode flightMode, MovementMode swimMode, boolean flopsOnLand, boolean phasesThroughWalls, float gravity, float fallSpeedModifier, float inertia) {
         this.flightMode = flightMode;
         this.swimMode = swimMode;
         this.flopsOnLand = flopsOnLand;
+        this.phasesThroughWalls = phasesThroughWalls;
         this.gravity = gravity;
         this.fallSpeedModifier = fallSpeedModifier;
         this.inertia = inertia;
@@ -58,6 +77,7 @@ public class SerializableMovementConfig implements MovementConfig {
         buf.writeEnumConstant(this.swimMode);
         buf.writeBoolean(this.flopsOnLand);
         buf.writeBoolean(this.climbsWalls);
+        buf.writeBoolean(this.phasesThroughWalls);
         buf.writeFloat(this.gravity);
         buf.writeFloat(this.fallSpeedModifier);
         buf.writeFloat(this.inertia);
@@ -68,6 +88,7 @@ public class SerializableMovementConfig implements MovementConfig {
         this.swimMode = buf.readEnumConstant(MovementMode.class);
         this.flopsOnLand = buf.readBoolean();
         this.climbsWalls = buf.readBoolean();
+        this.phasesThroughWalls = buf.readBoolean();
         this.gravity = buf.readFloat();
         this.fallSpeedModifier = buf.readFloat();
         this.inertia = buf.readFloat();
@@ -106,5 +127,10 @@ public class SerializableMovementConfig implements MovementConfig {
     @Override
     public boolean canClimbWalls() {
         return this.climbsWalls;
+    }
+
+    @Override
+    public boolean canPhaseThroughWalls() {
+        return this.phasesThroughWalls;
     }
 }

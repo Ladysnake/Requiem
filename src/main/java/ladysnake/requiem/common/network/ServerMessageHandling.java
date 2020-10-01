@@ -14,49 +14,64 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.common.network;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
+import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.item.OpusDemoniumItem;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantTypes;
-import net.fabricmc.fabric.api.network.PacketContext;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
-import net.minecraft.client.network.packet.ExperienceBarUpdateS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
 public class ServerMessageHandling {
 
     public static void init() {
-        register(LEFT_CLICK_AIR, (context, buf) -> {
-            PlayerEntity player = context.getPlayer();
-            Possessable possessed = (Possessable) ((RequiemPlayer)player).asPossessor().getPossessedEntity();
+        register(LEFT_CLICK_AIR, (player) -> {
+            Possessable possessed = (Possessable) PossessionComponent.get(player).getPossessedEntity();
             if (possessed != null) {
                 possessed.getMobAbilityController().useIndirect(AbilityType.ATTACK);
             }
         });
-        register(RIGHT_CLICK_AIR, (context, buf) -> {
-            PlayerEntity player = context.getPlayer();
-            Possessable possessed = (Possessable) ((RequiemPlayer)player).asPossessor().getPossessedEntity();
+        register(RIGHT_CLICK_AIR, (player) -> {
+            Possessable possessed = (Possessable) PossessionComponent.get(player).getPossessedEntity();
             if (possessed != null) {
                 possessed.getMobAbilityController().useIndirect(AbilityType.INTERACT);
             }
@@ -67,7 +82,7 @@ public class ServerMessageHandling {
                 PlayerEntity player = context.getPlayer();
                 Entity entity = player.world.getEntityById(requestedId);
                 if (entity instanceof MobEntity && entity.distanceTo(player) < 20) {
-                    ((RequiemPlayer) player).asPossessor().startPossessing((MobEntity) entity);
+                    PossessionComponent.get(player).startPossessing((MobEntity) entity);
                 }
                 sendTo((ServerPlayerEntity) player, createEmptyMessage(POSSESSION_ACK));
             });
@@ -102,15 +117,21 @@ public class ServerMessageHandling {
             });
         });
         ServerSidePacketRegistry.INSTANCE.register(DIALOGUE_ACTION, (context, buffer) -> {
-            Identifier choice = buffer.readIdentifier();
-            context.getTaskQueue().execute(() -> ((RequiemPlayer) context.getPlayer()).getDialogueTracker().handleAction(choice));
+            Identifier action = buffer.readIdentifier();
+            context.getTaskQueue().execute(() -> DialogueTracker.get(context.getPlayer()).handleAction(action));
+        });
+        ServerSidePacketRegistry.INSTANCE.register(HUGGING_WALL, (context, buf) -> {
+            boolean yes = buf.readBoolean();
+            // Possible failure points: the player may not actually be against a block, or it may not have the right movement
+            // we do not handle those right now, as movement is entirely done clientside
+            context.getTaskQueue().execute(() -> MovementAlterer.get(context.getPlayer()).hugWall(yes));
         });
     }
 
-    private static void register(Identifier id, BiConsumer<PacketContext, PacketByteBuf> handler) {
+    private static void register(Identifier id, Consumer<PlayerEntity> handler) {
         ServerSidePacketRegistry.INSTANCE.register(
                 id,
-                (context, packet) -> context.getTaskQueue().execute(() -> handler.accept(context, packet))
+                (context, packet) -> context.getTaskQueue().execute(() -> handler.accept(context.getPlayer()))
         );
     }
 }

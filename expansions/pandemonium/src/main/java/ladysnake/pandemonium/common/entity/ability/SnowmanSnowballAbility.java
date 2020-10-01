@@ -3,7 +3,7 @@ package ladysnake.pandemonium.common.entity.ability;
 import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.thrown.SnowballEntity;
+import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.sound.SoundEvents;
 
 public class SnowmanSnowballAbility<T extends MobEntity> extends IndirectAbilityBase<T> {

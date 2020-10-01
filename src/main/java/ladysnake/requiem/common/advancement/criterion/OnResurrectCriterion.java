@@ -14,71 +14,68 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.common.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import net.minecraft.advancement.PlayerAdvancementTracker;
+import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.entity.Entity;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
-public class OnResurrectCriterion extends CriterionBase<OnResurrectCriterion.Conditions, OnResurrectCriterion.Handler> {
+public class OnResurrectCriterion extends AbstractCriterion<OnResurrectCriterion.Conditions> {
+    private final Identifier id;
+
     public OnResurrectCriterion(Identifier id) {
-        super(id, Handler::new);
-    }
-
-    public void handle(ServerPlayerEntity player, Entity body) {
-        Handler handler = this.getHandler(player.getAdvancementTracker());
-        if (handler != null) {
-            handler.handle(player, body);
-        }
+        this.id = id;
     }
 
     @Override
-    public Conditions conditionsFromJson(JsonObject json, JsonDeserializationContext ctx) {
-        return new Conditions(this.getId(), EntityPredicate.fromJson(json.get("body")));
+    public Identifier getId() {
+        return this.id;
+    }
+
+    public void handle(ServerPlayerEntity player, Entity body) {
+        this.test(player, conditions -> conditions.test(player, body));
+    }
+
+    @Override
+    public Conditions conditionsFromJson(JsonObject json, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer ctx) {
+        return new Conditions(this.getId(), playerPredicate, EntityPredicate.fromJson(json.get("body")));
     }
 
     static class Conditions extends AbstractCriterionConditions {
         private final EntityPredicate entity;
 
-        public Conditions(Identifier id, EntityPredicate entity) {
-            super(id);
+        public Conditions(Identifier id, EntityPredicate.Extended playerPredicate, EntityPredicate entity) {
+            super(id, playerPredicate);
             this.entity = entity;
         }
 
         public boolean test(ServerPlayerEntity player, @Nullable Entity body) {
             return this.entity.test(player, body);
-        }
-    }
-
-    static class Handler extends CriterionBase.Handler<Conditions> {
-        public Handler(PlayerAdvancementTracker tracker) {
-            super(tracker);
-        }
-
-        public void handle(ServerPlayerEntity player, Entity body) {
-            List<ConditionsContainer<Conditions>> conditionsContainers = null;
-
-            for (ConditionsContainer<Conditions> condition : this.conditions) {
-                if (condition.getConditions().test(player, body)) {
-                    if (conditionsContainers == null) {
-                        conditionsContainers = new ArrayList<>();
-                    }
-
-                    conditionsContainers.add(condition);
-                }
-            }
-
-            this.grant(conditionsContainers);
         }
     }
 }

@@ -2,9 +2,9 @@ package ladysnake.pandemonium.common.network;
 
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.requiem.Requiem;
-import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 import org.jetbrains.annotations.Contract;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.createEmptyBuffer;

@@ -14,23 +14,41 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.common.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.command.CommandException;
-import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Util;
 import net.minecraft.world.GameRules;
 
 import java.util.Collection;
@@ -104,7 +122,7 @@ public class RequiemCommand {
     }
 
     private static int queryEthereal(ServerCommandSource source, ServerPlayerEntity player) {
-        boolean remnant = ((RequiemPlayer) player).asRemnant().isSoul();
+        boolean remnant = RemnantComponent.get(player).isSoul();
         Text remnantState = new TranslatableText("requiem:" + (remnant ? "ethereal" : "not_ethereal"));
         source.sendFeedback(new TranslatableText("requiem:commands.query.success." + (source.getEntity() == player ? "self" : "other"), remnantState), true);
         return remnant ? 1 : 0;
@@ -113,11 +131,11 @@ public class RequiemCommand {
     private static int setEthereal(ServerCommandSource source, Collection<ServerPlayerEntity> players, boolean ethereal) {
         int count = 0;
         for (ServerPlayerEntity player : players) {
-            if (((RequiemPlayer) player).asRemnant().isSoul() != ethereal) {
+            if (RemnantComponent.get(player).isSoul() != ethereal) {
                 if (!isRemnant(player)) {
                     throw new CommandException(new TranslatableText("requiem:commands.ethereal.set.fail", player.getDisplayName()));
                 }
-                ((RequiemPlayer) player).asRemnant().setSoul(ethereal);
+                RemnantComponent.get(player).setSoul(ethereal);
                 sendSetEtherealFeedback(source, player, ethereal);
                 ++count;
             }
@@ -131,7 +149,7 @@ public class RequiemCommand {
             source.sendFeedback(new TranslatableText("requiem:commands.ethereal.set.success.self", name), true);
         } else {
             if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                player.sendMessage(new TranslatableText("requiem:commands.ethereal.set.target", name));
+                player.sendSystemMessage(new TranslatableText("requiem:commands.ethereal.set.target", name), Util.NIL_UUID);
             }
 
             source.sendFeedback(new TranslatableText("requiem:commands.ethereal.set.success.other", player.getDisplayName(), name), true);
@@ -142,10 +160,10 @@ public class RequiemCommand {
         if (!(possessed instanceof MobEntity)) {
             throw new CommandException(new TranslatableText("requiem:commands.possession.start.fail.not_mob", possessed.getDisplayName()));
         }
-        if (!((RequiemPlayer) player).asRemnant().isIncorporeal()) {
+        if (!RemnantComponent.get(player).isIncorporeal()) {
             throw new CommandException(new TranslatableText("requiem:commands.possession.start.fail.not_incorporeal", player.getDisplayName()));
         }
-        boolean success = ((RequiemPlayer) player).asPossessor().startPossessing((MobEntity) possessed);
+        boolean success = PossessionComponent.get(player).startPossessing((MobEntity) possessed);
         if (!success) {
             throw new CommandException(new TranslatableText("requiem:commands.possession.start.fail", possessed.getDisplayName()));
         }
@@ -163,7 +181,7 @@ public class RequiemCommand {
     private static int stopPossession(ServerCommandSource source, Collection<ServerPlayerEntity> players) {
         int count = 0;
         for (ServerPlayerEntity player : players) {
-            PossessionComponent possessionComponent = ((RequiemPlayer) player).asPossessor();
+            PossessionComponent possessionComponent = PossessionComponent.get(player);
             if (possessionComponent.isPossessing()) {
                 Entity possessed = Objects.requireNonNull(possessionComponent.getPossessedEntity());
                 possessionComponent.stopPossessing();
@@ -195,7 +213,7 @@ public class RequiemCommand {
         for (ServerPlayerEntity player : players) {
             if (isRemnant(player) != remnant) {
                 RemnantType remnance = remnant ? RemnantTypes.REMNANT : RemnantTypes.MORTAL;
-                ((RequiemPlayer) player).become(remnance);
+                RemnantComponent.get(player).become(remnance);
                 sendSetRemnantFeedback(source, player, remnant);
                 ++count;
             }
@@ -204,7 +222,7 @@ public class RequiemCommand {
     }
 
     private static boolean isRemnant(ServerPlayerEntity player) {
-        return RequiemPlayer.from(player).asRemnant().getType().isDemon();
+        return RemnantComponent.get(player).getRemnantType().isDemon();
     }
 
     private static void sendSetRemnantFeedback(ServerCommandSource source, ServerPlayerEntity player, boolean remnant) {
@@ -213,7 +231,7 @@ public class RequiemCommand {
             source.sendFeedback(new TranslatableText("requiem:commands.remnant.set.success.self", name), true);
         } else {
             if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                player.sendMessage(new TranslatableText("requiem:commands.remnant.set.target", name));
+                player.sendSystemMessage(new TranslatableText("requiem:commands.remnant.set.target", name), Util.NIL_UUID);
             }
 
             source.sendFeedback(new TranslatableText("requiem:commands.remnant.set.success.other", player.getDisplayName(), name), true);

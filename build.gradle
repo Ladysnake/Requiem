@@ -1,32 +1,28 @@
 // Credits to UpcraftLP for the base build script
 
 
-import net.fabricmc.loom.task.RemapJarTask
-
 import java.time.Year
 
 plugins {
-    id 'fabric-loom' version '0.2.7-SNAPSHOT'
+    id "fabric-loom" version "0.4-SNAPSHOT"
+    id "com.github.fudge.forgedflowerloom" version "2.0.0"
     id 'net.minecrell.licenser' version '0.4.1'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
     id "com.jfrog.bintray" version '1.8.4'
-    id 'maven-publish'
     id 'org.ajoberstar.grgit' version '3.1.1'
     id 'com.github.breadmoirai.github-release' version '2.2.9'
-    id 'com.wynprice.cursemaven' version '1.2.3'
+    id "com.wynprice.cursemaven" version "2.1.5"
+    id 'maven-publish'
 }
 
 group = rootProject.maven_group
-archivesBaseName = rootProject.name.toLowerCase(Locale.ROOT)
+archivesBaseName = rootProject.name
 version = mod_version
 
 subprojects {
     apply plugin: 'fabric-loom'
     apply plugin: 'com.matthewprenger.cursegradle'
     apply plugin: 'maven-publish'
-
-    archivesBaseName = "${rootProject.archivesBaseName}-${project.name.toLowerCase(Locale.ROOT)}"
-    group = "${rootProject.group}.${rootProject.archivesBaseName}"
 }
 
 allprojects {
@@ -39,16 +35,9 @@ allprojects {
     // Adds a few utility methods like getProjectProperty
     apply from: 'https://raw.githubusercontent.com/NerdHubMC/Gradle-Scripts/master/scripts/utilities.gradle'
 
-    sourceSets {
-        api
-    }
-
     repositories {
+        mavenLocal()
         mavenCentral()
-        maven {
-            url 'http://maven.fabricmc.net/'
-            name 'Fabric'
-        }
     }
 
     // ensure that the encoding is set to UTF-8, no matter what the system default is
@@ -73,40 +62,7 @@ allprojects {
         from sourceSets.main.allSource
     }
 
-    task apiJar(type: Jar, dependsOn: apiClasses) {
-        archiveClassifier = 'api-dev'
-        from sourceSets.api.allJava
-        from(sourceSets.api.output) {
-            include 'fabric.mod.json'
-            expand 'version': project.version
-        }
-        from(sourceSets.api.output) {
-            exclude 'fabric.mod.json'
-        }
-    }
-
-    task remapApiJar(type: RemapJarTask, dependsOn: project.apiJar) {
-        input = apiJar.archiveFile
-        archiveClassifier = 'api'
-        addNestedDependencies = false
-    }
-
-    task apiProdJar(type: Jar, dependsOn: project.remapApiJar) {
-        archiveClassifier = 'api-prod'
-        from(zipTree(remapApiJar.archiveFile)) {
-            exclude '**/*.java'
-            exclude '**/package-info.class'
-        }
-    }
-
-    remapJar.dependsOn(apiProdJar)
-
-    javadoc {
-        source += sourceSets.api.allJava
-    }
-
-    apply from: 'https://raw.githubusercontent.com/NerdHubMC/Gradle-Scripts/master/scripts/fabric/publish/changelog.gradle'
-    apply from: 'https://raw.githubusercontent.com/NerdHubMC/Gradle-Scripts/master/scripts/fabric/publish/maven_base.gradle'
+    apply from: 'https://raw.githubusercontent.com/OnyxStudios/Gradle-Scripts/master/scripts/fabric/publish/changelog.gradle'
 
     dependencies {
         //to change the versions see the gradle.properties file
@@ -117,15 +73,10 @@ allprojects {
         // Fabric API. This is technically optional, but you probably want it anyway.
         modApi "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-        // Lazily evaluated callable returning a non-live (unlike a FileCollection) list of files
-        sourceSets.api.compileClasspath += files({ sourceSets.main.compileClasspath.toList() })
-
-        compile sourceSets.api.output
-        include files(apiProdJar.archiveFile)
-
         compileOnly "com.google.code.findbugs:jsr305:3.0.2"
         compileOnly "org.jetbrains:annotations:${jb_annotations_version}"
         compileOnly "org.apiguardian:apiguardian-api:${apiguardian_version}"
+        compileOnly "com.demonwav.mcdev:annotations:1.0"
 
         testImplementation "org.junit.jupiter:junit-jupiter-api:5.4.0-M1"
     }
@@ -143,7 +94,7 @@ allprojects {
         //export variables
         ext {
             year = Year.now()
-            projectDisplayName = rootProject.name
+            projectDisplayName = rootProject.display_name
             projectOwners = rootProject.owners
             gplVersion = rootProject.gpl_version
         }
@@ -154,11 +105,13 @@ allprojects {
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                artifact(remapApiJar) {
-                    classifier = 'api'
+                artifact(remapJar)
+                artifact(sourcesJar) {
+                    builtBy(remapSourcesJar)
                 }
-                artifact(apiProdJar) {
-                    classifier = 'api-prod'
+
+                if (project.tasks.findByName('javadocJar')) {
+                    artifact project.tasks.getByName('javadocJar')
                 }
             }
         }
@@ -166,51 +119,57 @@ allprojects {
 }
 
 repositories {
+    jcenter()
     maven {
         name = 'Ladysnake Libs'
         url = 'https://dl.bintray.com/ladysnake/libs'
-    }
-    maven {
-        name = 'NerdHubMC'
-        url = 'https://maven.abusedmaster.xyz'
     }
     maven {
         name = 'CottonMC'
         url = 'http://server.bbkr.space:8081/artifactory/libs-release'
     }
     maven {
+        url "https://maven.jamieswhiteshirt.com/libs-release/"
+    }
+    maven {
         name = 'JitPack'
         url = 'https://jitpack.io'
     }
+    mavenLocal()
 }
 
 dependencies {
-    modApi("com.github.Ladysnake:Satin:${rootProject.satin_version}")
-    include "com.github.Ladysnake:Satin:${satin_version}"
+    compile project(":requiem-api")
+    // including too early causes a circular dependency somehow
+    afterEvaluate {
+        include project(":requiem-api")
+    }
+
+    modApi("io.github.ladysnake:Satin:${rootProject.satin_version}")
+    include "io.github.ladysnake:Satin:${satin_version}"
     modRuntime ("io.github.prospector:modmenu:${modmenu_version}") {
         transitive = false
     }
-    modApi "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}"
-    include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-base:${cca_version}"
-    modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
-    include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
-    modImplementation "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
-    include "com.github.NerdHubMC.Cardinal-Components-API:cardinal-components-world:${cca_version}"
-    modImplementation "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
+    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${cca_version}"
+    modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}")
+    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
+    modImplementation ("io.github.ladysnake:PlayerAbilityLib:${pal_version}")
     include "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
-    // libcd
-    modRuntime ("io.github.cottonmc:Jankson-Fabric:${jankson_version}") {
-        transitive = false
-    }
-    modRuntime ("io.github.CottonMC:LibCD:${libcd_version}") {
-        transitive = false
-    }
-    include "io.github.CottonMC:LibCD:${libcd_version}"
 
 //    modRuntime curse.resolve('immersive-portals-mod', 2845123)
-    modRuntime curse.resolve('mobz', 2841266)
-    modCompileOnly "io.github.Terrails:Health-Overlay:1.15-SNAPSHOT"
+//    modRuntime "curse.maven:mobz:2965825"
+    modCompileOnly("io.github.Terrails:Health-Overlay:1.16-Fabric-SNAPSHOT")
+
+    modRuntime "com.jamieswhiteshirt:reach-entity-attributes:1.0.1"
+    modCompileOnly("io.github.apace100:origins-fabric:v0.3.6") {
+        transitive = false
+    }
+    modRuntime("io.github.apace100:origins-fabric:v0.3.6") {
+        transitive = false
+    }
 }
+
+remapJar.dependsOn(project(":requiem-api").tasks.remapJar)
 
 jar {
     from 'LICENSE-CODE'
@@ -358,7 +317,7 @@ curseforge {
 
 tasks.curseforge.dependsOn(checkGitStatus)
 
-task release(dependsOn: [tasks.clean, tasks.publish, tasks.githubRelease, tasks.bintrayUpload, tasks.curseforge]) {
+task release(dependsOn: [tasks.publish, tasks.githubRelease, tasks.bintrayUpload, tasks.curseforge]) {
     group = 'publishing'
     description = 'Releases a new version to Maven, Github and Curseforge'
 }

@@ -17,8 +17,8 @@
  */
 package ladysnake.pandemonium.common.remnant;
 
-import ladysnake.pandemonium.api.PandemoniumWorld;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
+import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.pandemonium.common.impl.anchor.EntityFractureAnchor;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.impl.remnant.MutableRemnantState;
@@ -45,29 +45,29 @@ public class FracturableRemnantState extends MutableRemnantState {
     }
 
     @Override
-    public void update() {
+    public void serverTick() {
         FractureAnchor anchor = this.getAnchor();
-        if (this.player instanceof ServerPlayerEntity) {
-            if (anchor instanceof EntityFractureAnchor) {
-                Entity anchorEntity = ((EntityFractureAnchor) anchor).getEntity();
-                if (anchorEntity instanceof LivingEntity) {
-                    float health = ((LivingEntity) anchorEntity).getHealth();
-                    if (health < this.previousAnchorHealth) {
-                        RequiemNetworking.sendTo((ServerPlayerEntity) this.player, createAnchorDamageMessage(false));
-                    }
-                    this.previousAnchorHealth = health;
+        assert this.player instanceof ServerPlayerEntity;
+
+        if (anchor instanceof EntityFractureAnchor) {
+            Entity anchorEntity = ((EntityFractureAnchor) anchor).getEntity();
+            if (anchorEntity instanceof LivingEntity) {
+                float health = ((LivingEntity) anchorEntity).getHealth();
+                if (health < this.previousAnchorHealth) {
+                    RequiemNetworking.sendTo((ServerPlayerEntity) this.player, createAnchorDamageMessage(false));
                 }
-            } else if (this.previousAnchorHealth > 0) {
-                RequiemNetworking.sendTo((ServerPlayerEntity) this.player, createAnchorDamageMessage(true));
-                this.previousAnchorHealth = -1;
+                this.previousAnchorHealth = health;
             }
+        } else if (this.previousAnchorHealth > 0) {
+            RequiemNetworking.sendTo((ServerPlayerEntity) this.player, createAnchorDamageMessage(true));
+            this.previousAnchorHealth = -1;
         }
     }
 
     @Nullable
     public FractureAnchor getAnchor() {
         return this.anchorUuid != null
-                ? ((PandemoniumWorld) player.world).getAnchorManager().getAnchor(this.anchorUuid)
+                ? FractureAnchorManager.get(this.player.world).getAnchor(this.anchorUuid)
                 : null;
     }
 
