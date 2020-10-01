@@ -34,31 +34,59 @@
  */
 package ladysnake.requiem.mixin.common.possession.possessor;
 
-import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
 public abstract class PossessorEntityMixin {
+    @Shadow
+    public float fallDistance;
+    @Shadow
+    public World world;
+
+    @Shadow
+    protected abstract void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition);
+
+    @Shadow
+    public abstract double getX();
+
+    @Shadow
+    public abstract double getY();
+
+    @Shadow
+    public abstract double getZ();
+
+    @Shadow
+    public float yaw;
+
+    @Shadow
+    public float pitch;
+
+    @Shadow
+    public boolean horizontalCollision;
+
     /**
      * Delegates the air getter for possessing entities.
-     *
-     * <p>TBD: whether it is faster to put this method in {@link PossessorPlayerEntityMixin}
-     * (no unnecessary branching but polymorphism cost) or keep it here (single impl, but branching)
      */
     @Inject(method = "getAir", at = @At("HEAD"), cancellable = true)
-    private void delegateBreath(CallbackInfoReturnable<Integer> cir) {
-        Entity self = (Entity) (Object) this;
-        // This method can be called in the constructor
-        if (ComponentProvider.fromEntity(self).getComponentContainer() != null) {
-            Entity possessedEntity = PossessionComponent.getPossessedEntity(self);
-            if (possessedEntity != null) {
-                cir.setReturnValue(possessedEntity.getAir());
-            }
-        }
+    protected void requiem$delegateBreath(CallbackInfoReturnable<Integer> cir) {
+        // overridden by PossessorPlayerEntityMixin
+    }
+
+    @Inject(method = "getMaxAir", at = @At("HEAD"), cancellable = true)
+    protected void requiem$delegateMaxBreath(CallbackInfoReturnable<Integer> cir) {
+        // overridden by PossessorPlayerEntityMixin
+    }
+
+    @Inject(method = "canAvoidTraps", at = @At("RETURN"), cancellable = true)
+    protected void requiem$soulsAvoidTraps(CallbackInfoReturnable<Boolean> cir) {
+        // overridden by PossessorPlayerEntityMixin
     }
 }

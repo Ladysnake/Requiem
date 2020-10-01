@@ -38,26 +38,16 @@ import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.client.ShadowPlayerFx;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import javax.annotation.Nullable;
 
 // Note: this cannot use the right generics because of bridge methods
 @Mixin(PlayerEntityRenderer.class)
-public abstract class PlayerRendererLayerMixin<T extends LivingEntity, M extends EntityModel<T>> extends LivingEntityRenderer<T, M> {
-    public PlayerRendererLayerMixin(EntityRenderDispatcher dispatcher, M model, float shadowRadius) {
-        super(dispatcher, model, shadowRadius);
-    }
+public abstract class PlayerRendererLayerMixin<T extends LivingEntity, M extends EntityModel<T>> extends LivingEntityRendererMixin<T, M> {
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Player rendering hijack part 2
@@ -66,19 +56,13 @@ public abstract class PlayerRendererLayerMixin<T extends LivingEntity, M extends
      * so rendering should be visually equivalent.
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    @Nullable
-    @Intrinsic
     @Override
-    protected RenderLayer getRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl) {
-        return super.getRenderLayer(entity, showBody, translucent, bl);
-    }
-
-    @SuppressWarnings("UnresolvedMixinReference")   // the method is injected through the intrinsic above
-    @Inject(method = "getRenderLayer", at = @At("RETURN"), cancellable = true)
-    private void replaceRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl, CallbackInfoReturnable<RenderLayer> cir) {
+    protected void requiem$replaceRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl, CallbackInfoReturnable<RenderLayer> cir) {
         PlayerEntity player = (PlayerEntity) entity;
         if (RemnantComponent.get(player).isIncorporeal() || DeathSuspender.get(player).isLifeTransient()) {
             cir.setReturnValue(ShadowPlayerFx.INSTANCE.getRenderLayer(cir.getReturnValue()));
+        } else {
+            super.requiem$replaceRenderLayer(entity, showBody, translucent, bl, cir);
         }
     }
 }
