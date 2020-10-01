@@ -1,6 +1,8 @@
 ------------------------------------------------------
 Version 1.2.0
 ------------------------------------------------------
+Updated to 1.16.3
+
 Additions  
 - Added the Attrition status effect  
     - Upon losing a body, one level of attrition will be gained  
@@ -17,10 +19,17 @@ Additions
 
 - Added a command selector argument for possessed entities (see readme for usage information)  
 
+- Added a `spawnHelpEnderman` gamerule to toggle the helpful enderman feature
+
+- Abilities from the Origins mod now get disabled when playing as a soul or while possessing a mob  
+
+Bugfixes
+- Restored all graphical effects from the 1.14 version
+
 API
 - Made access to most Requiem registries a lot more sane  
 - Added a `MovementRegistry` and a `SoulbindingRegistry`  
-- Deprecated `TransientComponent`  
+- Moved everything that could be to components
 
 Bugfixes
 - Fixed weakness status effect not being cleared clientside after possession cure ends
