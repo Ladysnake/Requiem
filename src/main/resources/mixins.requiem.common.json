@@ -47,7 +47,8 @@
     "remnant.HungerManagerMixin",
     "remnant.LivingEntityMixin",
     "remnant.PlayerEntityMixin",
-    "remnant.ServerPlayerEntityMixin"
+    "remnant.ServerPlayerEntityMixin",
+    "remnant.ServerPlayNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
