@@ -67,7 +67,6 @@ public class AttritionStatusEffect extends StatusEffect {
             ));
         } else {
             if (target.world.getLevelProperties().isHardcore()) {
-                RemnantComponent.get(target).become(RemnantTypes.MORTAL);
                 target.damage(ATTRITION_HARDCORE_DEATH, Float.MAX_VALUE);
             }
         }
