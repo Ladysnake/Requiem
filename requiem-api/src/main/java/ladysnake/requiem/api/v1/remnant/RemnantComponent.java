@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Contract;
 
 /**
- * @since 2.0.0
+ * @since 1.2.0
  */
 public interface RemnantComponent extends ServerTickingComponent {
     ComponentKey<RemnantComponent> KEY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("requiem", "remnant"), RemnantComponent.class);
@@ -30,7 +30,7 @@ public interface RemnantComponent extends ServerTickingComponent {
      * every modification made to it is reflected on the player.
      *
      * @return the player's remnant state
-     * @since 2.0.0
+     * @since 1.2.0
      */
     @Contract(pure = true)
     static RemnantComponent get(PlayerEntity player) {
@@ -49,7 +49,7 @@ public interface RemnantComponent extends ServerTickingComponent {
      *
      * @param type the remnant type to become
      * @see #getRemnantType()
-     * @since 2.0.0
+     * @since 1.2.0
      */
     void become(RemnantType type);
 

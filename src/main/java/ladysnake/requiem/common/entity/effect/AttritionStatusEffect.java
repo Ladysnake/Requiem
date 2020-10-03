@@ -35,8 +35,6 @@
 package ladysnake.requiem.common.entity.effect;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
@@ -47,7 +45,7 @@ import net.minecraft.util.Identifier;
 
 public class AttritionStatusEffect extends StatusEffect {
     public static final Identifier ATTRITION_BACKGROUND = Requiem.id("textures/gui/attrition_background.png");
-    public static final DamageSource ATTRITION_HARDCORE_DEATH = new DamageSource("requiem.attrition") {{
+    public static final DamageSource ATTRITION_HARDCORE_DEATH = new DamageSource("requiem.attrition.hardcore") {{
         // We need this dirty anonymous initializer because everything is protected
         this.setBypassesArmor();
         this.setOutOfWorld();
@@ -67,7 +65,6 @@ public class AttritionStatusEffect extends StatusEffect {
             ));
         } else {
             if (target.world.getLevelProperties().isHardcore()) {
-                RemnantComponent.get(target).become(RemnantTypes.MORTAL);
                 target.damage(ATTRITION_HARDCORE_DEATH, Float.MAX_VALUE);
             }
         }

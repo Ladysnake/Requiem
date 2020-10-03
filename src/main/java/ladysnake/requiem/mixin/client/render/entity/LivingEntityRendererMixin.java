@@ -75,7 +75,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     }
 
     @Inject(method = "getRenderLayer", at = @At("RETURN"), cancellable = true)
-    private void replaceRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl, CallbackInfoReturnable<RenderLayer> cir) {
+    protected void requiem$replaceRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl, CallbackInfoReturnable<RenderLayer> cir) {
         if (entity == RequiemFx.INSTANCE.getAnimationEntity()) {
             cir.setReturnValue(RequiemFx.INSTANCE.getZoomFx(cir.getReturnValue()));
         }

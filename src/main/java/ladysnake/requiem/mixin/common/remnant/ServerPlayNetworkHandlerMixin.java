@@ -32,61 +32,27 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.possession.possessor;
+package ladysnake.requiem.mixin.common.remnant;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Entity.class)
-public abstract class PossessorEntityMixin {
+@Mixin(ServerPlayNetworkHandler.class)
+public abstract class ServerPlayNetworkHandlerMixin {
     @Shadow
-    public float fallDistance;
-    @Shadow
-    public World world;
+    public ServerPlayerEntity player;
 
-    @Shadow
-    protected abstract void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition);
-
-    @Shadow
-    public abstract double getX();
-
-    @Shadow
-    public abstract double getY();
-
-    @Shadow
-    public abstract double getZ();
-
-    @Shadow
-    public float yaw;
-
-    @Shadow
-    public float pitch;
-
-    @Shadow
-    public boolean horizontalCollision;
-
-    /**
-     * Delegates the air getter for possessing entities.
-     */
-    @Inject(method = "getAir", at = @At("HEAD"), cancellable = true)
-    protected void requiem$delegateBreath(CallbackInfoReturnable<Integer> cir) {
-        // overridden by PossessorPlayerEntityMixin
-    }
-
-    @Inject(method = "getMaxAir", at = @At("HEAD"), cancellable = true)
-    protected void requiem$delegateMaxBreath(CallbackInfoReturnable<Integer> cir) {
-        // overridden by PossessorPlayerEntityMixin
-    }
-
-    @Inject(method = "canAvoidTraps", at = @At("RETURN"), cancellable = true)
-    protected void requiem$soulsAvoidTraps(CallbackInfoReturnable<Boolean> cir) {
-        // overridden by PossessorPlayerEntityMixin
+    @Inject(method = "onClientStatus", at = @At(value = "FIELD", target = "Lnet/minecraft/world/GameMode;SPECTATOR:Lnet/minecraft/world/GameMode;"), cancellable = true)
+    private void postponeHardcoreConsequences(ClientStatusC2SPacket packet, CallbackInfo ci) {
+        if (RemnantComponent.isSoul(this.player)) {
+            ci.cancel();
+        }
     }
 }
