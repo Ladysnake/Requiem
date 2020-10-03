@@ -14,17 +14,34 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.common.impl.remnant.dialogue;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.annotations.SerializedName;
-import ladysnake.requiem.api.v1.annotation.Unlocalized;
 import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -37,7 +54,7 @@ public class DialogueStateMachine implements CutsceneDialogue {
     private Map<String, DialogueState> states;
     @Nullable
     private transient DialogueState currentState;
-    private transient ImmutableList<@Unlocalized String> currentChoices = ImmutableList.of();
+    private transient ImmutableList<Text> currentChoices = ImmutableList.of();
 
     public DialogueStateMachine() {
         this("", new HashMap<>());
@@ -58,17 +75,17 @@ public class DialogueStateMachine implements CutsceneDialogue {
     }
 
     @Override
-    public @Unlocalized String getCurrentText() {
+    public Text getCurrentText() {
         return this.getCurrentState().getText();
     }
 
     @Override
-    public ImmutableList<@Unlocalized String> getCurrentChoices() {
+    public ImmutableList<Text> getCurrentChoices() {
         return this.currentChoices;
     }
 
     @Override
-    public ChoiceResult choose(String choice) {
+    public ChoiceResult choose(int choice) {
         return this.selectState(this.getCurrentState().getNextState(choice));
     }
 

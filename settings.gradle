@@ -9,9 +9,13 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'Requiem'
+rootProject.name = 'requiem'
+
+include "requiem-api"
 
 ['pandemonium'].forEach {
     include it
-    project(":$it").projectDir = file("expansions/" + it)
+    include "${it}-api"
+    project(":$it").projectDir = file("expansions/$it")
+    project(":${it}-api").projectDir = file("expansions/$it/api")
 }

@@ -4,6 +4,8 @@
   "requiem:advancements.adventure.the_choice.title": "A devilish conundrum",
   "requiem:advancements.adventure.the_choice.description": "Choose between an ordinary life and a bizarre eternity",
 
+  "requiem:argument.entity.options.possessor.description": "Entities possessed by",
+
   "requiem:commands.query.success.other": "%2$s is %1$s",
   "requiem:commands.query.success.self": "You are %s",
   "requiem:commands.ethereal.set.fail": "Failed to make %s ethereal as they are Mortal",
@@ -58,6 +60,13 @@
   "requiem:tooltip.drowned_grip": "Drowned Grip",
   "requiem:tooltip.skeletal_efficiency": "Skeletal Efficiency",
   "requiem:tooltip.zombie_food": "Zombie Snack",
+
+  "death.attack.requiem.attrition.hardcore": "%1$s was put to rest, forever.",
+  "death.attack.requiem.attrition.hardcore.player": "%2$s put %1$s to rest, forever.",
+
+  "effect.requiem.attrition": "Attrition",
+
+  "enchantment.requiem.humanity": "Humanity",
 
   "item.requiem.human_flesh": "Human Flesh",
   "item.requiem.opus_daemonium": "Opus Daemonium",

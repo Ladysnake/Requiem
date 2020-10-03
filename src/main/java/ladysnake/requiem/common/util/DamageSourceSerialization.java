@@ -14,6 +14,23 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.common.util;
 
@@ -38,10 +55,10 @@ public final class DamageSourceSerialization {
         // God I wish we had a registry for this
         for (DamageSource damage : new DamageSource[]{IN_FIRE, LIGHTNING_BOLT, ON_FIRE, LAVA, HOT_FLOOR, IN_WALL,
                 CRAMMING, DROWN, STARVE, CACTUS, FALL, FLY_INTO_WALL, OUT_OF_WORLD, GENERIC, MAGIC, WITHER, ANVIL,
-                FALLING_BLOCK, DRAGON_BREATH, FIREWORKS, DRYOUT, SWEET_BERRY_BUSH}) {
+                FALLING_BLOCK, DRAGON_BREATH, DRYOUT, SWEET_BERRY_BUSH}) {
             DAMAGE_FACTORIES.put(damage.name, (e1, e2) -> damage);
         }
-        for (String name : new String[] {"mob", "arrow", "trident", "fireball", "thrown", "indirectMagic"}) {
+        for (String name : new String[] {"mob", "arrow", "trident", "fireball", "thrown", "indirectMagic", "fireworks"}) {
             DAMAGE_FACTORIES.put(name, (e1, e2) -> new ProjectileDamageSource(name, e1, e2));
         }
     }

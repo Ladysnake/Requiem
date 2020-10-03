@@ -1,6 +1,5 @@
 package ladysnake.pandemonium.client;
 
-import ladysnake.pandemonium.api.PandemoniumWorld;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.requiem.client.RequiemFx;
@@ -18,7 +17,7 @@ public class ClientMessageHandling {
         ClientSidePacketRegistry.INSTANCE.register(ANCHOR_DAMAGE, ((context, buf) -> {
             boolean dead = buf.readBoolean();
             context.getTaskQueue().execute(() -> RequiemFx.INSTANCE.playEtherealPulseAnimation(
-                    dead ? 4 : 1, ETHEREAL_DAMAGE_COLOR[0], ETHEREAL_DAMAGE_COLOR[1], ETHEREAL_DAMAGE_COLOR[2]
+                dead ? 4 : 1, ETHEREAL_DAMAGE_COLOR[0], ETHEREAL_DAMAGE_COLOR[1], ETHEREAL_DAMAGE_COLOR[2]
             ));
         }));
         ClientSidePacketRegistry.INSTANCE.register(ANCHOR_SYNC, ((context, buf) -> {
@@ -27,13 +26,13 @@ public class ClientMessageHandling {
             double y = buf.readDouble();
             double z = buf.readDouble();
             context.getTaskQueue().execute(() ->
-                    ((ClientAnchorManager) ((PandemoniumWorld) context.getPlayer().world).getAnchorManager())
-                            .getOrCreate(id).setPosition(x, y, z));
+                ((ClientAnchorManager) FractureAnchorManager.get(context.getPlayer().world)).getOrCreate(id).setPosition(x, y, z)
+            );
         }));
         ClientSidePacketRegistry.INSTANCE.register(ANCHOR_REMOVE, ((context, buf) -> {
             int id = buf.readInt();
             context.getTaskQueue().execute(() -> {
-                FractureAnchorManager manager = ((PandemoniumWorld) context.getPlayer().world).getAnchorManager();
+                FractureAnchorManager manager = FractureAnchorManager.get(context.getPlayer().world);
                 FractureAnchor anchor = manager.getAnchor(id);
                 if (anchor != null) {
                     anchor.invalidate();

@@ -9,10 +9,10 @@ import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.common.entity.ability.MeleeAbility;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.LlamaEntity;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public class PandemoniumRequiemPlugin implements RequiemPlugin {
@@ -32,7 +32,7 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
         PossessionStartCallback.EVENT.register(Requiem.id("shulker"), (target, possessor, simulate) -> {
             if (!simulate && target instanceof ShulkerEntity && target.world.isClient) {
                 MinecraftClient client = MinecraftClient.getInstance();
-                client.inGameHud.setOverlayMessage(I18n.translate("requiem:shulker.onboard", client.options.keySneak.getLocalizedName()), false);
+                client.inGameHud.setOverlayMessage(new TranslatableText("requiem:shulker.onboard", client.options.keySneak.getBoundKeyLocalizedText()), false);
             }
             return PossessionStartCallback.Result.PASS;
         });

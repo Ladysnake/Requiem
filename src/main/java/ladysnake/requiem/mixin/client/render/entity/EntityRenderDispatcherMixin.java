@@ -14,10 +14,28 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.mixin.client.render.entity;
 
-import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
@@ -25,7 +43,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.spongepowered.asm.mixin.Mixin;
@@ -48,15 +65,7 @@ public abstract class EntityRenderDispatcherMixin {
     private void updateCamerasPossessedEntity(World w, Camera c, Entity e, CallbackInfo ci) {
         MinecraftClient client = MinecraftClient.getInstance();
         Entity camera = client.getCameraEntity();
-        if (camera instanceof RequiemPlayer) {
-            requiem_camerasPossessed = ((RequiemPlayer) camera).asPossessor().getPossessedEntity();
-            // TODO restore when custom render layer is done
-//            if (requiem_camerasPossessed == null) {
-//                requiem_camerasPossessed = RequiemFx.INSTANCE.getAnimationEntity();
-//            }
-        } else {
-            requiem_camerasPossessed = null;
-        }
+        requiem_camerasPossessed = camera == null ? null : PossessionComponent.getPossessedEntity(camera);
     }
 
     /**
@@ -71,10 +80,8 @@ public abstract class EntityRenderDispatcherMixin {
 
     @Inject(method = "renderShadow", at = @At("HEAD"), cancellable = true)
     private static void preventShadowRender(MatrixStack matrices, VertexConsumerProvider vertices, Entity rendered, float distance, float tickDelta, WorldView world, float radius, CallbackInfo ci) {
-        if (rendered instanceof PlayerEntity) {
-            if (((RequiemPlayer)rendered).asRemnant().isSoul()) {
-                ci.cancel();
-            }
+        if (RemnantComponent.isSoul(rendered)) {
+            ci.cancel();
         }
     }
 }

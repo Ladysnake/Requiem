@@ -14,25 +14,56 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.requiem.common.remnant;
 
+import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
+import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import ladysnake.requiem.mixin.entity.mob.EndermanEntityAccessor;
-import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
+import ladysnake.requiem.mixin.common.access.EndermanEntityAccessor;
+import nerdhub.cardinal.components.api.event.TrackingStartCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 public class BasePossessionHandlers {
 
     public static void register() {
+        TrackingStartCallback.EVENT.register((player, tracked) -> {
+            if (tracked instanceof Possessable) {
+                // Synchronize possessed entities with their possessor / other players
+                PlayerEntity possessor = ((Possessable) tracked).getPossessor();
+                if (possessor != null) {
+                    PossessionComponent.KEY.syncWith(player, ComponentProvider.fromEntity(possessor));
+                }
+            }
+        });
         PossessionStartCallback.EVENT.register(Requiem.id("blacklist"), (target, possessor, simulate) -> {
             if (!target.world.isClient && RequiemEntityTypeTags.POSSESSION_BLACKLIST.contains(target.getType())) {
                 return PossessionStartCallback.Result.DENY;
@@ -52,7 +83,8 @@ public class BasePossessionHandlers {
         if (!target.world.isClient && target instanceof EndermanEntity) {
             if (!simulate) {
                 Entity tpDest;
-                if (possessor.world.dimension.getType() != DimensionType.THE_END/* == DimensionType.OVERWORLD*/) {
+                // Maybe consider making the dimensional teleportation work in any dimension other than the overworld ?
+                if (possessor.world.getRegistryKey() != World.END/* == DimensionType.OVERWORLD*/) {
                     // Retry a few times
                     for (int i = 0; i < 20; i++) {
                         if (((EndermanEntityAccessor) target).invokeTeleportRandomly()) {
@@ -62,13 +94,13 @@ public class BasePossessionHandlers {
                     }
                     tpDest = target;
                 } else {
-                    // TODO when the dimension API is merged, use a custom teleporter to make the END path work with any dimension
                     possessor.world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
                     // Set the variable in advance to avoid game credits
                     ((ServerPlayerEntity) possessor).notInAnyWorld = true;
-                    possessor.changeDimension(DimensionType.OVERWORLD);
-                    ((ServerPlayerEntity) possessor).networkHandler.sendPacket(new GameStateChangeS2CPacket(4, 0.0F));
-                    tpDest = target.changeDimension(DimensionType.OVERWORLD);
+                    ServerWorld destination = ((ServerPlayerEntity) possessor).server.getWorld(World.OVERWORLD);
+                    possessor.moveToWorld(destination);
+                    ((ServerPlayerEntity) possessor).networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_WON, 0.0F));
+                    tpDest = target.moveToWorld(destination);
                 }
                 if (tpDest != null) {
                     possessor.teleport(tpDest.getX(), tpDest.getY(), tpDest.getZ(), true);

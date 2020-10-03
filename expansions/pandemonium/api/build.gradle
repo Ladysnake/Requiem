@@ -1,0 +1,13 @@
+archivesBaseName = "${rootProject.archivesBaseName}-${project.name.toLowerCase(Locale.ROOT)}"
+group = "${rootProject.group}.${rootProject.archivesBaseName}"
+
+repositories {
+    maven {
+        name = 'Ladysnake Libs'
+        url = 'https://dl.bintray.com/ladysnake/libs'
+    }
+}
+
+dependencies {
+    compile project(":requiem-api")
+}

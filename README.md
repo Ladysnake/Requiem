@@ -30,6 +30,8 @@
     - [Opus Daemonium](#opus-daemonium)
       - [Variants](#variants)
       - [Recipe (shapeless)](#recipe-shapeless)
+  - [Admin Commands](#admin-commands)
+    - [Target Selector Arguments](#target-selector-arguments)
 
 # Introduction
 
@@ -157,3 +159,15 @@ of the command will be the command executor.
 On top of those commands, Requiem adds a few gamerules to help customize a server's gameplay:
     - `requiem:showPossessorNameTag`: if set to `true`, shows the name of the possessor above the head of possessed entities. (default: `false`)
     - `requiem:startingRemnantType`: can be set to `FORCE_REMNANT` or `FORCE_VANILLA` to enforce all players to be respectively a demon or a normal player at the start of the game. (default: `CHOOSE`)
+
+### Target Selector Arguments
+Requiem also adds a new [Target Selector Argument](https://minecraft.gamepedia.com/Commands#Target_selector_arguments) - `"requiem:possessor"`.
+Any command that can target entities can use this argument to select entities based on their possessor.
+The argument uses the name of the possessor, or empty string to match entities that are not possessed.
+It can be negated by prepending the `'!'` character.
+
+Example:
+```mcfunction
+# Makes every possessed entity say "Hello, World!"
+execute as @e["requiem:possessor"=!] run say Hello, World!
+```

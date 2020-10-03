@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "id": "pandemonium",
   "version": "${version}",
-
   "environment": "*",
   "entrypoints": {
     "client": [
@@ -10,6 +9,14 @@
     ],
     "main": [
       "ladysnake.pandemonium.Pandemonium"
+    ],
+    "cardinal-components-world": [
+      "ladysnake.pandemonium.Pandemonium"
+    ]
+  },
+  "custom": {
+    "cardinal-components": [
+      "pandemonium:anchor_provider"
     ]
   },
   "mixins": [
@@ -22,12 +29,10 @@
       "config": "mixins.pandemonium.common.json"
     }
   ],
-
   "depends": {
     "requiemapi": "${version}",
     "satin": "^1.2.0"
   },
-
   "name": "Requiem: Pandemonium",
   "description": "Death revamped and ethereal powers",
   "authors": [

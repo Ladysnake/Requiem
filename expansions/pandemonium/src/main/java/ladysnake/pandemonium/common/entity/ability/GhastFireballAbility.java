@@ -22,7 +22,6 @@ import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class GhastFireballAbility extends IndirectAbilityBase<MobEntity> {
@@ -42,10 +41,10 @@ public class GhastFireballAbility extends IndirectAbilityBase<MobEntity> {
         if (this.fireballCooldown >= 20) {
             Vec3d scaledRot = this.owner.getRotationVec(1.0F);
             Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
-            this.owner.world.playLevelEvent(null, 1016, new BlockPos(this.owner), 0);
+            this.owner.world.syncWorldEvent(null, 1016, this.owner.getBlockPos(), 0);
             FireballEntity fireball = new FireballEntity(this.owner.world, this.owner, rot.x, rot.y, rot.z);
             fireball.explosionPower = this.owner instanceof GhastEntity ? ((GhastEntity) this.owner).getFireballStrength() : 1;
-            fireball.setPosition(
+            fireball.updatePosition(
                 this.owner.getX() + scaledRot.x * 4.0D,
                 this.owner.getY() + (double)(this.owner.getHeight() / 2.0F) + 0.5D,
                 this.owner.getZ() + scaledRot.z * 4.0D

@@ -1,5 +1,19 @@
+archivesBaseName = "${rootProject.archivesBaseName}-${project.name.toLowerCase(Locale.ROOT)}"
+group = "${rootProject.group}.${rootProject.archivesBaseName}"
+
+repositories {
+    maven {
+        name = 'Ladysnake Libs'
+        url = 'https://dl.bintray.com/ladysnake/libs'
+    }
+}
+
 dependencies {
     compile rootProject
+    compile project(":pandemonium-api")
+    include project(":pandemonium-api")
+    modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
+    include ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
 }
 
 jar {
