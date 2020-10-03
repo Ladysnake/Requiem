@@ -152,8 +152,10 @@ public final class PossessionComponentImpl implements PossessionComponent, AutoS
             this.swapAttributes(this.player);
             attributeUpdated.add(this.player);
         }
+        // Ensure health matches max health (attrition)
+        host.setHealth(host.getHealth());
 
-        // 6- Make the mob react a bit
+        // Make the mob react a bit
         host.playAmbientSound();
     }
 
