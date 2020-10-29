@@ -35,7 +35,6 @@
 package ladysnake.requiem.common.impl.possession;
 
 import com.google.common.collect.MapMaker;
-import dev.onyxstudios.cca.api.v3.component.AutoSyncedComponent;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.MovementRegistry;
@@ -77,7 +76,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-public final class PossessionComponentImpl implements PossessionComponent, AutoSyncedComponent {
+public final class PossessionComponentImpl implements PossessionComponent {
     // Identity weak map. Should probably be made into its own util class.
     private static final Set<PlayerEntity> attributeUpdated = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
 
@@ -216,12 +215,12 @@ public final class PossessionComponentImpl implements PossessionComponent, AutoS
     }
 
     @Override
-    public void writeToPacket(PacketByteBuf buf, ServerPlayerEntity recipient, int syncOp) {
+    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
         buf.writeInt(this.possessed == null ? -1 : this.possessed.getEntityId());
     }
 
     @Override
-    public void readFromPacket(PacketByteBuf buf) {
+    public void applySyncPacket(PacketByteBuf buf) {
         MinecraftClient client = MinecraftClient.getInstance();
         int possessedId = buf.readInt();
         Entity entity = player.world.getEntityById(possessedId);
@@ -288,7 +287,7 @@ public final class PossessionComponentImpl implements PossessionComponent, AutoS
     }
 
     @Override
-    public void tick() {
+    public void serverTick() {
         if (this.conversionTimer > 0) {
             this.conversionTimer--;
             if (this.conversionTimer == 0) {
