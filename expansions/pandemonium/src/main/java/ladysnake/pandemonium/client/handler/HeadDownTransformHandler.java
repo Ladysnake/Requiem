@@ -17,6 +17,7 @@
  */
 package ladysnake.pandemonium.client.handler;
 
+import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.client.render.Camera;
@@ -28,6 +29,8 @@ import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
 
+import javax.annotation.Nullable;
+
 public class HeadDownTransformHandler implements ApplyCameraTransformsCallback {
 
     public static final Quaternion QUATERNION_180_X = Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F);
@@ -36,11 +39,18 @@ public class HeadDownTransformHandler implements ApplyCameraTransformsCallback {
     @Override
     public void applyCameraTransformations(Camera camera, MatrixStack matrices, float tickDelta) {
         if (!camera.isThirdPerson()) {
-            Entity possessed = PossessionComponent.getPossessedEntity(camera.getFocusedEntity());
-            if (possessed instanceof ShulkerEntity && ((ShulkerEntity) possessed).getAttachedFace() == Direction.UP || possessed instanceof BatEntity && ((BatEntity) possessed).isRoosting()) {
-                matrices.multiply(QUATERNION_180_X);
-                matrices.multiply(QUATERNION_180_Y);
+            Entity focusedEntity = camera.getFocusedEntity();
+            if (focusedEntity != null && ComponentProvider.fromEntity(focusedEntity).getComponentContainer() != null) {
+                Entity possessed = PossessionComponent.getPossessedEntity(focusedEntity);
+                if (isUpsideDown(possessed)) {
+                    matrices.multiply(QUATERNION_180_X);
+                    matrices.multiply(QUATERNION_180_Y);
+                }
             }
         }
+    }
+
+    private static boolean isUpsideDown(@Nullable Entity possessed) {
+        return possessed instanceof ShulkerEntity && ((ShulkerEntity) possessed).getAttachedFace() == Direction.UP || possessed instanceof BatEntity && ((BatEntity) possessed).isRoosting();
     }
 }
