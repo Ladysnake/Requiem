@@ -34,7 +34,6 @@
  */
 package ladysnake.requiem.common.impl.remnant;
 
-import dev.onyxstudios.cca.api.v3.component.AutoSyncedComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
@@ -45,7 +44,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-public final class RemnantComponentImpl implements RemnantComponent, AutoSyncedComponent {
+public final class RemnantComponentImpl implements RemnantComponent {
     private final PlayerEntity player;
 
     private RemnantState state = NullRemnantState.NULL_STATE;
@@ -89,7 +88,7 @@ public final class RemnantComponentImpl implements RemnantComponent, AutoSyncedC
     }
 
     @Override
-    public void tick() {
+    public void serverTick() {
         this.state.serverTick();
     }
 
@@ -99,13 +98,13 @@ public final class RemnantComponentImpl implements RemnantComponent, AutoSyncedC
     }
 
     @Override
-    public void writeToPacket(PacketByteBuf buf, ServerPlayerEntity recipient, int syncOp) {
+    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
         buf.writeVarInt(RemnantTypes.getRawId(this.remnantType));
         buf.writeBoolean(this.isSoul());
     }
 
     @Override
-    public void readFromPacket(PacketByteBuf buf) {
+    public void applySyncPacket(PacketByteBuf buf) {
         int remnantId = buf.readVarInt();
         boolean soul = buf.readBoolean();
 

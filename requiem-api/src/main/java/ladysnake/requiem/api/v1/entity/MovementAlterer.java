@@ -17,10 +17,9 @@
  */
 package ladysnake.requiem.api.v1.entity;
 
-import dev.onyxstudios.cca.api.v3.component.ClientTickingComponent;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
-import dev.onyxstudios.cca.api.v3.component.ServerTickingComponent;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
@@ -31,8 +30,8 @@ import javax.annotation.CheckForNull;
  * A {@link MovementAlterer} alters the movement of an {@link net.minecraft.entity.Entity}
  * according to a {@link MovementConfig}.
  */
-public interface MovementAlterer extends ServerTickingComponent, ClientTickingComponent {
-    ComponentKey<MovementAlterer> KEY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("requiem", "movement_alterer"), MovementAlterer.class);
+public interface MovementAlterer extends CommonTickingComponent {
+    ComponentKey<MovementAlterer> KEY = ComponentRegistry.getOrCreate(new Identifier("requiem", "movement_alterer"), MovementAlterer.class);
 
     static MovementAlterer get(PlayerEntity player) {
         return KEY.get(player);

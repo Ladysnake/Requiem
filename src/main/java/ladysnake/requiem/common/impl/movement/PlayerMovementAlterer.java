@@ -96,11 +96,6 @@ public class PlayerMovementAlterer implements MovementAlterer {
     }
 
     @Override
-    public void clientTick() {
-        this.tick();
-    }
-
-    @Override
     public void tick() {
         if (this.config == null) {
             return;
