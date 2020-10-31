@@ -34,10 +34,12 @@
  */
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -77,6 +79,21 @@ public abstract class ItemMixin {
                     heldStack.decrement(1);
                     player.getItemCooldownManager().set(heldStack.getItem(), 40);
                 }
+            }
+        }
+    }
+
+    @Inject(method = "useOnEntity", at = @At("RETURN"), cancellable = true)
+    private void useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+        if (RequiemItemTags.UNDEAD_CURES.contains((Item)(Object)this)) {
+            PlayerEntity possessor = ((Possessable) entity).getPossessor();
+            if (possessor != null && VanillaRequiemPlugin.canCure(entity, stack)) {
+                if (!user.abilities.creativeMode) {
+                    stack.decrement(1);
+                }
+
+                PossessionComponent.KEY.get(possessor).startCuring();
+                cir.setReturnValue(ActionResult.SUCCESS);
             }
         }
     }
