@@ -95,7 +95,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     );
 
     public static boolean canCure(LivingEntity possessedEntity, ItemStack cure) {
-        return !(possessedEntity.world.getLevelProperties().isHardcore() && possessedEntity.world.getGameRules().getBoolean(RequiemGamerules.NO_HARDCORE_CURE))
+        return !possessedEntity.world.getGameRules().getBoolean(RequiemGamerules.NO_CURE)
             && possessedEntity.isUndead()
             && RequiemItemTags.UNDEAD_CURES.contains(cure.getItem())
             && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS);
