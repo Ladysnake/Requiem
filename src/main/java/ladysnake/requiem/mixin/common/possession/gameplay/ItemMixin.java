@@ -35,9 +35,9 @@
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -60,7 +60,7 @@ public abstract class ItemMixin {
         if (possessedEntity != null) {
             ItemStack heldStack = player.getStackInHand(hand);
 
-            if (possessedEntity.isUndead() && RequiemItemTags.UNDEAD_CURES.contains(heldStack.getItem()) && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)) {
+            if (VanillaRequiemPlugin.canCure(possessedEntity, heldStack)) {
                 player.setCurrentHand(hand);
                 cir.setReturnValue(new TypedActionResult<>(ActionResult.SUCCESS, heldStack));
             } else if (RequiemEntityTypeTags.ZOMBIES.contains(possessedEntity.getType())) {

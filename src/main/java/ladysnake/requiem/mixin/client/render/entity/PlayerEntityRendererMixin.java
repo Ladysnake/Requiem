@@ -80,8 +80,6 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         LivingEntity possessedEntity = PossessionComponent.get(renderedPlayer).getPossessedEntity();
         if (possessedEntity != null) {
             EntityRenderDispatcher renderManager = MinecraftClient.getInstance().getEntityRenderDispatcher();
-//            matrices.pop(); // discard transforms made for the player rendering
-            // TODO display the nameplate when some gamerule is enabled (yog)
             if (((VariableMobilityEntity)possessedEntity).requiem_isImmovable()) {
                 double relativeX = possessedEntity.getX() - renderedPlayer.getX();
                 double relativeY = possessedEntity.getY() - renderedPlayer.getY();
@@ -98,7 +96,6 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                 possessedEntity.prevHeadYaw = renderedPlayer.prevHeadYaw;
                 renderManager.render(possessedEntity, 0, 0, 0, yaw, tickDelta, matrices, vertexConsumers, lightmap);
             }
-//            matrices.push();
             ci.cancel();
         }
     }
