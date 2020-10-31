@@ -70,7 +70,7 @@
   "gamerule.requiem:disableCure.description": "Remove the ability to cure players possessing undeads",
   "gamerule.requiem:spawnHelpEndermen": "(Requiem) Spawn Help Enderman",
   "gamerule.requiem:spawnHelpEndermen.description": "Spawn a helpful enderman when ghost players are stuck in a small space",
-  "gamerule.requiem:startingRemnantType": "(Requiem) Starting Remnant Type",
+  "gamerule.requiem:startingRemnantType": "(Requiem) Remnant Type",
   "gamerule.requiem:startingRemnantType.description": "Replaces the choice at first death between demon and mortal",
 
   "effect.requiem.attrition": "Attrition",
