@@ -64,6 +64,15 @@
   "death.attack.requiem.attrition.hardcore": "%1$s was put to rest, forever.",
   "death.attack.requiem.attrition.hardcore.player": "%2$s put %1$s to rest, forever.",
 
+  "gamerule.requiem:showPossessorNameTag": "(Requiem) Show Possessor Nameplates",
+  "gamerule.requiem:showPossessorNameTag.description": "Show the nameplates of players possessing entities",
+  "gamerule.requiem:disableCure": "(Requiem) Disable Cure",
+  "gamerule.requiem:disableCure.description": "Remove the ability to cure players possessing undeads",
+  "gamerule.requiem:spawnHelpEndermen": "(Requiem) Spawn Help Enderman",
+  "gamerule.requiem:spawnHelpEndermen.description": "Spawn a helpful enderman when ghost players are stuck in a small space",
+  "gamerule.requiem:startingRemnantType": "(Requiem) Starting Remnant Type",
+  "gamerule.requiem:startingRemnantType.description": "Replaces the choice at first death between demon and mortal",
+
   "effect.requiem.attrition": "Attrition",
 
   "enchantment.requiem.humanity": "Humanity",
