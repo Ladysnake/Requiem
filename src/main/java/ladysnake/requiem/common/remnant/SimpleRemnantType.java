@@ -48,7 +48,7 @@ public class SimpleRemnantType implements RemnantType {
     protected final Function<PlayerEntity, RemnantState> factory;
     protected final String conversionSentence;
     protected final Supplier<Item> conversionBook;
-    private final boolean remnant;
+    private boolean remnant;
 
     public SimpleRemnantType(Function<PlayerEntity, RemnantState> factory, boolean remnant, String conversionSentence, Supplier<Item> conversionBook) {
         this.factory = factory;

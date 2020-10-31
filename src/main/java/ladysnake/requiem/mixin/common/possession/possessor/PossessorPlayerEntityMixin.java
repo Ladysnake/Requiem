@@ -39,6 +39,7 @@ import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
@@ -46,7 +47,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -135,7 +135,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
                 possessedEntity.heal(food.getHunger());
             }
         }
-        if (possessedEntity != null && possessedEntity.isUndead() && RequiemItemTags.UNDEAD_CURES.contains(stack.getItem()) && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)) {
+        if (possessedEntity != null && VanillaRequiemPlugin.canCure(possessedEntity, stack)) {
             PossessionComponent.KEY.get(this).startCuring();
         }
     }

@@ -69,7 +69,6 @@ public class RequiemNetworking {
     public static final Identifier ETHEREAL_FRACTURE = Requiem.id("ethereal_fracture");
     public static final Identifier OPUS_UPDATE = Requiem.id("opus_update");
     public static final Identifier DIALOGUE_ACTION = Requiem.id("dialogue_action");
-    public static final Identifier HUGGING_WALL = Requiem.id("hugging_wall");
 
     public static void sendToServer(Identifier identifier, PacketByteBuf data) {
         sendToServer(new CustomPayloadC2SPacket(identifier, data));
@@ -150,12 +149,6 @@ public class RequiemNetworking {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeIdentifier(action);
         return new CustomPayloadC2SPacket(DIALOGUE_ACTION, buf);
-    }
-
-    public static void sendHugWallMessage(boolean hugging) {
-        PacketByteBuf buf = new PacketByteBuf(buffer());
-        buf.writeBoolean(hugging);
-        sendToServer(new CustomPayloadC2SPacket(HUGGING_WALL, buf));
     }
 
 }

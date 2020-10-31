@@ -51,6 +51,7 @@ import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
+import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.impl.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.common.network.RequiemNetworking;
@@ -58,15 +59,18 @@ import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.fabricmc.fabric.api.event.player.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
@@ -84,11 +88,18 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
      * Mobs do not use 100% of their movement speed attribute, so we compensate with this modifier when they are possessed
      */
     public static final EntityAttributeModifier INHERENT_MOB_SLOWNESS = new EntityAttributeModifier(
-            INHERENT_MOB_SLOWNESS_UUID,
-            "Inherent Mob Slowness",
-            -0.66,
-            EntityAttributeModifier.Operation.MULTIPLY_TOTAL
+        INHERENT_MOB_SLOWNESS_UUID,
+        "Inherent Mob Slowness",
+        -0.66,
+        EntityAttributeModifier.Operation.MULTIPLY_TOTAL
     );
+
+    public static boolean canCure(LivingEntity possessedEntity, ItemStack cure) {
+        return !(possessedEntity.world.getLevelProperties().isHardcore() && possessedEntity.world.getGameRules().getBoolean(RequiemGamerules.NO_HARDCORE_CURE))
+            && possessedEntity.isUndead()
+            && RequiemItemTags.UNDEAD_CURES.contains(cure.getItem())
+            && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS);
+    }
 
     @Override
     public void onRequiemInitialize() {
@@ -137,7 +148,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> {
             player.sendAbilitiesUpdate();
             RemnantComponent.KEY.sync(player);
-            ((MobResurrectable)player).spawnResurrectionEntity();
+            ((MobResurrectable) player).spawnResurrectionEntity();
             if (!returnFromEnd && RemnantComponent.get(player).isIncorporeal()) {
                 AttritionStatusEffect.apply(player);
             }
@@ -159,7 +170,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         AttackEntityCallback.EVENT.register((playerEntity, world, hand, target, hitResult) -> {
             LivingEntity possessed = PossessionComponent.get(playerEntity).getPossessedEntity();
             if (possessed != null && !possessed.removed) {
-                if (possessed.world.isClient || target != possessed && ((Possessable)possessed).getMobAbilityController().useDirect(AbilityType.ATTACK, target)) {
+                if (possessed.world.isClient || target != possessed && ((Possessable) possessed).getMobAbilityController().useDirect(AbilityType.ATTACK, target)) {
                     playerEntity.resetLastAttackedTicks();
                     return ActionResult.SUCCESS;
                 }

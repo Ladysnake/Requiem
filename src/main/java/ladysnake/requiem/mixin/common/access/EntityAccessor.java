@@ -37,7 +37,6 @@ package ladysnake.requiem.mixin.common.access;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
@@ -48,12 +47,4 @@ public interface EntityAccessor {
      */
     @Invoker
     float invokeGetEyeHeight(EntityPose pose, EntityDimensions dimensions);
-
-    @Invoker
-    Vec3d invokeAdjustMovementForCollisions(Vec3d movement);
-
-    @Invoker
-    static Vec3d invokeMovementInputToVelocity(Vec3d movementInput, float speed, float yaw) {
-        throw new IllegalStateException(movementInput + "" + speed + "" + yaw);
-    }
 }
