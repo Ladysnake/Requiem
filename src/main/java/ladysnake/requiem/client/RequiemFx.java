@@ -54,13 +54,12 @@ import java.lang.ref.WeakReference;
 import static ladysnake.requiem.client.FxHelper.impulse;
 import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
-public final class RequiemFx implements ShaderEffectRenderCallback {
+public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEvents.EndTick {
     public static final Identifier SPECTRE_SHADER_ID = Requiem.id("shaders/post/spectre.json");
     public static final Identifier FISH_EYE_SHADER_ID = Requiem.id("shaders/post/fish_eye.json");
     public static final Identifier ZOOM_SHADER_ID = Requiem.id("shaders/post/zoom.json");
     private static final float[] ETHEREAL_COLOR = {0.0f, 0.7f, 1.0f};
 
-    public static final RequiemFx INSTANCE = new RequiemFx();
     public static final int PULSE_ANIMATION_TIME = 20;
 
     private final MinecraftClient mc = MinecraftClient.getInstance();
@@ -89,10 +88,11 @@ public final class RequiemFx implements ShaderEffectRenderCallback {
 
     void registerCallbacks() {
         ShaderEffectRenderCallback.EVENT.register(this);
-        ClientTickEvents.END_CLIENT_TICK.register(this::update);
+        ClientTickEvents.END_CLIENT_TICK.register(this);
     }
 
-    public void update(@SuppressWarnings("unused") MinecraftClient client) {
+    @Override
+    public void onEndTick(MinecraftClient client) {
         ++ticks;
         --etherealAnimation;
         if (--pulseAnimation < 0 && spectreShader.isInitialized()) {

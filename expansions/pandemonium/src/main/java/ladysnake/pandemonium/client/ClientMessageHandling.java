@@ -2,7 +2,7 @@ package ladysnake.pandemonium.client;
 
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
-import ladysnake.requiem.client.RequiemFx;
+import ladysnake.requiem.client.RequiemClient;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.sound.SoundCategory;
@@ -16,7 +16,7 @@ public class ClientMessageHandling {
     public static void init() {
         ClientSidePacketRegistry.INSTANCE.register(ANCHOR_DAMAGE, ((context, buf) -> {
             boolean dead = buf.readBoolean();
-            context.getTaskQueue().execute(() -> RequiemFx.INSTANCE.playEtherealPulseAnimation(
+            context.getTaskQueue().execute(() -> RequiemClient.INSTANCE.getRequiemFxRenderer().playEtherealPulseAnimation(
                 dead ? 4 : 1, ETHEREAL_DAMAGE_COLOR[0], ETHEREAL_DAMAGE_COLOR[1], ETHEREAL_DAMAGE_COLOR[2]
             ));
         }));
@@ -44,7 +44,7 @@ public class ClientMessageHandling {
             assert mc != null;
             assert mc.player != null;
             mc.player.world.playSound(mc.player, mc.player.getX(), mc.player.getY(), mc.player.getZ(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2, 0.6f);
-            RequiemFx.INSTANCE.beginEtherealAnimation();
+            RequiemClient.INSTANCE.getRequiemFxRenderer().beginEtherealAnimation();
         })));
     }
 

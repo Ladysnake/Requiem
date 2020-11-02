@@ -35,6 +35,7 @@
 package ladysnake.requiem.mixin.client.render.entity;
 
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.client.RequiemFx;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -76,8 +77,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
     @Inject(method = "getRenderLayer", at = @At("RETURN"), cancellable = true)
     protected void requiem$replaceRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl, CallbackInfoReturnable<RenderLayer> cir) {
-        if (entity == RequiemFx.INSTANCE.getAnimationEntity()) {
-            cir.setReturnValue(RequiemFx.INSTANCE.getZoomFx(cir.getReturnValue()));
+        RequiemFx requiemFxRenderer = RequiemClient.INSTANCE.getRequiemFxRenderer();
+        if (entity == requiemFxRenderer.getAnimationEntity()) {
+            cir.setReturnValue(requiemFxRenderer.getZoomFx(cir.getReturnValue()));
         }
     }
 }
