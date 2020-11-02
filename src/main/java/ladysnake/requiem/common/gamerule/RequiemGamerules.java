@@ -49,7 +49,7 @@ public class RequiemGamerules {
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
                 Possessable possessed = (Possessable) PossessionComponent.get(player).getPossessedEntity();
                 if (possessed != null) {
-                    possessed.refreshPossession();
+                    possessed.refreshPossessorNameTag();
                 }
             }
         }), GameRules.Category.PLAYER);

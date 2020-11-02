@@ -85,7 +85,12 @@ public interface Possessable extends ProtoPossessable {
      */
     default void setPossessor(@Nullable PlayerEntity possessor) {}
 
-    default void refreshPossession() {}
+    /**
+     * Refreshes this entity's nametag according to the value of the "requiem:showPossessorNameTag" gamerule
+     *
+     * @throws IllegalStateException if this entity is not being possessed
+     */
+    default void refreshPossessorNameTag() {}
 
     /**
      * Whether this entity behaves like a player with regard to hunger (hunger bar, hunger damage, food regen)
