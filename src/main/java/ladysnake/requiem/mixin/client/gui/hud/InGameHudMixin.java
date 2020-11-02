@@ -42,6 +42,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
+import ladysnake.requiem.common.tag.RequiemFluidTags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -81,6 +82,9 @@ public abstract class InGameHudMixin extends DrawableHelper {
     private int scaledWidth;
     @Shadow
     private int scaledHeight;
+
+    @Shadow
+    protected abstract PlayerEntity getCameraPlayer();
 
     @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$SrcFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DstFactor;Lcom/mojang/blaze3d/platform/GlStateManager$SrcFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DstFactor;)V"), cancellable = true)
     private void colorCrosshair(MatrixStack matrices, CallbackInfo ci) {
@@ -174,21 +178,24 @@ public abstract class InGameHudMixin extends DrawableHelper {
         return mountHeartCount;
     }
 
-    @Redirect(
+    @ModifyArg(
         method = "renderStatusBars",
         slice = @Slice(from = @At(value = "CONSTANT", args = "stringValue=air")),
         at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSubmergedIn(Lnet/minecraft/tag/Tag;)Z")
     )
-    private boolean preventAirRender(PlayerEntity playerEntity, Tag<Fluid> fluid) {
+    private Tag<Fluid> preventAirRender(Tag<Fluid> fluid) {
+        PlayerEntity playerEntity = this.getCameraPlayer();
+
         if (RemnantComponent.get(playerEntity).isSoul()) {
-            LivingEntity possessed = PossessionComponent.get( playerEntity).getPossessedEntity();
+            LivingEntity possessed = PossessionComponent.get(playerEntity).getPossessedEntity();
             if (possessed == null) {
-                return false;
+                return RequiemFluidTags.EMPTY;  // will cause isSubmergedIn to return false
             } else if (possessed.canBreatheInWater()) {
-                return false;
+                return RequiemFluidTags.EMPTY;  // same as above
             }
         }
-        return playerEntity.isSubmergedIn(fluid);
+
+        return fluid;
     }
 
     @ModifyVariable(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J"), ordinal = 0)
