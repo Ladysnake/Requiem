@@ -1,5 +1,6 @@
 package ladysnake.pandemonium.client;
 
+import ladysnake.pandemonium.Pandemonium;
 import ladysnake.pandemonium.client.handler.HeadDownTransformHandler;
 import ladysnake.pandemonium.client.render.entity.PlayerShellEntityRenderer;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
@@ -32,6 +33,7 @@ public class PandemoniumClient implements ClientModInitializer {
         FractureKeyBinding.init();
         ApplyCameraTransformsCallback.EVENT.register(new HeadDownTransformHandler());
         EntityRendererRegistry.INSTANCE.register(PandemoniumEntities.PLAYER_SHELL, (r, it) -> new PlayerShellEntityRenderer(r));
+        ClientTickEvents.END_WORLD_TICK.register(Pandemonium::tickAnchors);
         registerCallbacks();
     }
 
