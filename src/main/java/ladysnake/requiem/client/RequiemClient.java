@@ -44,6 +44,9 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -53,6 +56,8 @@ public final class RequiemClient implements ClientModInitializer {
 
     @AccessedThroughReflection
     public static final RequiemClient INSTANCE = new RequiemClient();
+
+    private final MinecraftClient mc = MinecraftClient.getInstance();
 
     private final ClientMessageHandler messageHandler;
     private final RequiemClientListener listener;
@@ -67,6 +72,12 @@ public final class RequiemClient implements ClientModInitializer {
         this.requiemFxRenderer = new RequiemFx();
         this.shadowPlayerFxRenderer = new ShadowPlayerFx();
         this.worldFreezeFxRenderer = new ZaWorldFx();
+    }
+
+    public void updateCamera(PlayerEntity player, Entity cameraEntity) {
+        if (this.mc.options.getPerspective().isFirstPerson() && player == this.mc.player) {
+            this.mc.gameRenderer.onCameraEntitySet(cameraEntity);
+        }
     }
 
     public ShadowPlayerFx getShadowPlayerFxRenderer() {

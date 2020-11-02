@@ -43,6 +43,7 @@ import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
+import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.common.entity.attribute.DelegatingAttribute;
 import ladysnake.requiem.common.entity.attribute.PossessionDelegatingAttribute;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
@@ -51,7 +52,6 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.util.InventoryHelper;
 import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -221,18 +221,15 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     @Override
     public void applySyncPacket(PacketByteBuf buf) {
-        MinecraftClient client = MinecraftClient.getInstance();
         int possessedId = buf.readInt();
         Entity entity = player.world.getEntityById(possessedId);
 
         if (entity instanceof MobEntity) {
             this.startPossessing((MobEntity) entity);
-            if (client.options.getPerspective().isFirstPerson()) {
-                client.gameRenderer.onCameraEntitySet(entity);
-            }
+            RequiemClient.INSTANCE.updateCamera(this.player, entity);
         } else {
             this.stopPossessing();
-            client.gameRenderer.onCameraEntitySet(player);
+            RequiemClient.INSTANCE.updateCamera(this.player, this.player);
         }
     }
 
