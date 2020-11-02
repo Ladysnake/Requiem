@@ -45,7 +45,6 @@ import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
-import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -220,23 +219,16 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
     @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
     private void writeCustomDataToTag(CompoundTag tag, CallbackInfo ci) {
-        Text text = this.requiem_previousCustomName;
-        if (text != null) {
-            tag.putString("requiem_PreviousCustomName", Text.Serializer.toJson(text));
-        }
+        if (this.isBeingPossessed()) {
+            Text text = this.requiem_previousCustomName;
+            if (text != null) {
+                tag.putString("CustomName", Text.Serializer.toJson(text));
+            } else {
+                tag.remove("CustomName");
+            }
 
-        if (this.requiem_wasCustomNameVisible) {
-            tag.putBoolean("requiem_WasCustomNameVisible", true);
+            tag.putBoolean("CustomNameVisible", this.requiem_wasCustomNameVisible);
         }
-    }
-
-    @Inject(method = "readCustomDataFromTag", at = @At("RETURN"))
-    private void readCustomDataFromTag(CompoundTag tag, CallbackInfo ci) {
-        if (tag.contains("requiem_PreviousCustomName", NbtType.STRING)) {
-            this.setCustomName(Text.Serializer.fromJson(tag.getString("requiem_PreviousCustomName")));
-        }
-
-        this.setCustomNameVisible(tag.getBoolean("requiem_WasCustomNameVisible"));
     }
 
     @Inject(method = "canMoveVoluntarily", at = @At("HEAD"), cancellable = true)
