@@ -37,7 +37,7 @@ package ladysnake.requiem.client.network;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
-import ladysnake.requiem.client.RequiemFx;
+import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.common.item.RequiemItems;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
@@ -56,23 +56,29 @@ import java.util.stream.Collectors;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
-public class ClientMessageHandling {
-    public static void init() {
-        ClientSidePacketRegistry.INSTANCE.register(POSSESSION_ACK, (context, buf) -> context.getTaskQueue().execute(RequiemFx.INSTANCE::onPossessionAck));
+public class ClientMessageHandler {
+    private final MinecraftClient mc = MinecraftClient.getInstance();
+    private final RequiemClient rc;
+
+    public ClientMessageHandler(RequiemClient requiemClient) {
+        this.rc = requiemClient;
+    }
+
+    public void init() {
+        ClientSidePacketRegistry.INSTANCE.register(POSSESSION_ACK, (context, buf) -> context.getTaskQueue().execute(this.rc.getRequiemFxRenderer()::onPossessionAck));
         ClientSidePacketRegistry.INSTANCE.register(OPUS_USE, ((context, buf) -> {
             boolean cure = buf.readBoolean();
             boolean showBook = buf.readBoolean();
             context.getTaskQueue().execute(() -> {
                 PlayerEntity player = context.getPlayer();
-                MinecraftClient mc = MinecraftClient.getInstance();
                 if (showBook) {
                     mc.particleManager.addEmitter(player, ParticleTypes.PORTAL, 120);
                     mc.gameRenderer.showFloatingItem(new ItemStack(cure ? RequiemItems.OPUS_DEMONIUM_CURE : RequiemItems.OPUS_DEMONIUM_CURSE));
                 }
                 if (cure) {
-                    RequiemFx.INSTANCE.playEtherealPulseAnimation(16, 0.0f, 0.8f, 0.6f);
+                    this.rc.getRequiemFxRenderer().playEtherealPulseAnimation(16, 0.0f, 0.8f, 0.6f);
                 } else {
-                    RequiemFx.INSTANCE.playEtherealPulseAnimation(16, 1.0f, 0.25f, 0.27f);
+                    this.rc.getRequiemFxRenderer().playEtherealPulseAnimation(16, 1.0f, 0.25f, 0.27f);
                 }
             });
         }));

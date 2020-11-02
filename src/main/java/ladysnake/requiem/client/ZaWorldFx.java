@@ -55,21 +55,19 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 
-public class ZaWorldFx implements PostWorldRenderCallback {
+public class ZaWorldFx implements PostWorldRenderCallback, ClientTickEvents.EndTick {
 
     public static final Identifier ZA_WARUDO_SHADER_ID = Requiem.id("shaders/post/za_warudo.json");
-    public static final ZaWorldFx INSTANCE = new ZaWorldFx();
 
-    private int ticks;
-    private float prevRadius;
-    private float radius;
-    private boolean renderingEffect;
+    private final MinecraftClient mc = MinecraftClient.getInstance();
+
     private final Matrix4f projectionMatrix = new Matrix4f();
+
     private final ManagedShaderEffect shader = ShaderEffectManager.getInstance().manage(ZA_WARUDO_SHADER_ID, shader -> {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        shader.setSamplerUniform("DepthSampler", ((ReadableDepthFramebuffer)mc.getFramebuffer()).getStillDepthMap());
-        shader.setUniformValue("ViewPort", 0, 0, mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight());
+        shader.setSamplerUniform("DepthSampler", ((ReadableDepthFramebuffer) this.mc.getFramebuffer()).getStillDepthMap());
+        shader.setUniformValue("ViewPort", 0, 0, this.mc.getWindow().getFramebufferWidth(), this.mc.getWindow().getFramebufferHeight());
     });
+
     private final Uniform1f uniformOuterSat = shader.findUniform1f("OuterSat");
     private final Uniform1f uniformSTime = shader.findUniform1f("STime");
     private final UniformMat4 uniformInverseTransformMatrix = shader.findUniformMat4("InverseTransformMatrix");
@@ -77,13 +75,18 @@ public class ZaWorldFx implements PostWorldRenderCallback {
     private final Uniform3f uniformCenter = shader.findUniform3f("Center");
     private final Uniform1f uniformRadius = shader.findUniform1f("Radius");
 
+    private int ticks;
+    private float prevRadius;
+    private float radius;
+    private boolean renderingEffect;
 
     void registerCallbacks() {
         PostWorldRenderCallback.EVENT.register(this);
-        ClientTickEvents.END_CLIENT_TICK.register(this::update);
+        ClientTickEvents.END_CLIENT_TICK.register(this);
     }
 
-    private void update(MinecraftClient client) {
+    @Override
+    public void onEndTick(MinecraftClient client) {
         if (client.player != null && DeathSuspender.get(client.player).isLifeTransient()) {
             if (!this.renderingEffect) {
                 this.uniformOuterSat.set(1f);
