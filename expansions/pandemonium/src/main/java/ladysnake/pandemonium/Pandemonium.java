@@ -10,7 +10,6 @@ import ladysnake.pandemonium.common.network.ServerMessageHandling;
 import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
@@ -24,7 +23,7 @@ public class Pandemonium implements ModInitializer, WorldComponentInitializer {
         return new Identifier(MOD_ID, path);
     }
 
-    private static void tickAnchors(World world) {
+    public static void tickAnchors(World world) {
         Profiler profiler = world.getProfiler();
         profiler.push("requiem_ethereal_anchors");
         FractureAnchorManager.get(world).updateAnchors(world.getLevelProperties().getTime());
@@ -37,7 +36,6 @@ public class Pandemonium implements ModInitializer, WorldComponentInitializer {
         ServerMessageHandling.init();
         RequiemApi.registerPlugin(new PandemoniumRequiemPlugin());
         ServerTickEvents.END_WORLD_TICK.register(Pandemonium::tickAnchors);
-        ClientTickEvents.END_WORLD_TICK.register(Pandemonium::tickAnchors);
     }
 
     @Override
