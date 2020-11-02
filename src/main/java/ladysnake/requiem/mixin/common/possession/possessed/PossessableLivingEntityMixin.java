@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.mixin.common.possession.possessed;
 
+import com.google.common.base.Preconditions;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
@@ -172,16 +173,11 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
             throw new IllegalStateException("Players must stop possessing an entity before it can change possessor!");
         }
         this.possessor = possessor;
-        refreshPossession();
-    }
-
-    @Override
-    public void refreshPossession() {
         this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).removeModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS_UUID);
-        if (this.possessor != null) {
+        if (possessor != null) {
             this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).addTemporaryModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS);
         }
-        updateName(this.possessor);
+        updateName(possessor);
     }
 
     @Unique
@@ -191,15 +187,24 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
                 this.requiem_wasCustomNameVisible = this.isCustomNameVisible();
                 this.requiem_previousCustomName = this.getCustomName();
             }
-            if (world.getGameRules().getBoolean(RequiemGamerules.SHOW_POSSESSOR_NAMETAG)) {
-                this.setCustomNameVisible(true);
-                this.setCustomName(possessor.getName());
-            }
+            this.refreshPossessorNameTag();
         } else {
             this.setCustomNameVisible(this.requiem_wasCustomNameVisible);
             this.setCustomName(this.requiem_previousCustomName);
             this.requiem_wasCustomNameVisible = false;
             this.requiem_previousCustomName = null;
+        }
+    }
+
+    public void refreshPossessorNameTag() {
+        Preconditions.checkState(this.possessor != null);
+
+        if (world.getGameRules().getBoolean(RequiemGamerules.SHOW_POSSESSOR_NAMETAG)) {
+            this.setCustomName(this.possessor.getName());
+            this.setCustomNameVisible(true);
+        } else {
+            this.setCustomName(this.requiem_previousCustomName);
+            this.setCustomNameVisible(this.requiem_wasCustomNameVisible);
         }
     }
 
