@@ -85,6 +85,8 @@ public interface Possessable extends ProtoPossessable {
      */
     default void setPossessor(@Nullable PlayerEntity possessor) {}
 
+    default void refreshPossession() {}
+
     /**
      * Whether this entity behaves like a player with regard to hunger (hunger bar, hunger damage, food regen)
      */

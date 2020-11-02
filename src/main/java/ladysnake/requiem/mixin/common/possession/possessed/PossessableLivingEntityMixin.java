@@ -173,11 +173,16 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
             throw new IllegalStateException("Players must stop possessing an entity before it can change possessor!");
         }
         this.possessor = possessor;
+        refreshPossession();
+    }
+
+    @Override
+    public void refreshPossession() {
         this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).removeModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS_UUID);
-        if (possessor != null) {
+        if (this.possessor != null) {
             this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).addTemporaryModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS);
         }
-        updateName(possessor);
+        updateName(this.possessor);
     }
 
     @Unique

@@ -35,14 +35,24 @@
 package ladysnake.requiem.common.gamerule;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameRules;
 
 public class RequiemGamerules {
     public static final GameRules.Key<GameRules.BooleanRule> SHOW_POSSESSOR_NAMETAG =
-        register("showPossessorNameTag", GameRuleFactory.createBooleanRule(false), GameRules.Category.PLAYER);
+        register("showPossessorNameTag", GameRuleFactory.createBooleanRule(false, (server, rule) -> {
+            for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                Possessable possessed = (Possessable) PossessionComponent.get(player).getPossessedEntity();
+                if (possessed != null) {
+                    possessed.refreshPossession();
+                }
+            }
+        }), GameRules.Category.PLAYER);
     public static final GameRules.Key<GameRules.BooleanRule> NO_CURE =
         register("disableCure", GameRuleFactory.createBooleanRule(false), GameRules.Category.PLAYER);
     public static final GameRules.Key<GameRules.BooleanRule> SPAWN_HELP_ENDERMEN =
