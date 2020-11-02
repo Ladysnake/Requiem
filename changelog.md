@@ -1,4 +1,17 @@
 ------------------------------------------------------
+Version 1.2.2
+------------------------------------------------------
+Additions
+- Added the `requiem:disableCure` gamerule to disable any form of cure
+- Added the ability for other players to cure a possessed undead
+- Added descriptions for gamerules in the Edit Gamerules screen
+
+Fixes
+- Fixed server crash with Pandemonium
+- Fixed changes to the `requiem:showPossessorNameTag` not updating ongoing possessions
+- You will no longer share your mob vision with everyone around you when you start possessing a mob with a shader (about time)
+
+------------------------------------------------------
 Version 1.2.1
 ------------------------------------------------------
 - Fixed pandemonium crashing at launch  
