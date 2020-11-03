@@ -46,16 +46,16 @@ public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity> {
 
     @Override
     public boolean trigger(PlayerEntity player, Entity entity) {
-        boolean success = false;
         if (entity instanceof LivingEntity) {
             LivingEntity target = (LivingEntity) entity;
             owner.setTarget(target);
             if (fireBeamGoal.canStart()) {
                 fireBeamGoal.start();
-                success = true;
+                started = true;
+                return true;
             }
         }
-        return success;
+        return false;
     }
 
     @Override
