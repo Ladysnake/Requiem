@@ -61,7 +61,7 @@ public class ShulkerShootAbility implements IndirectAbility<ShulkerEntity>, Dire
 
     @Override
     public boolean trigger(PlayerEntity player, @Nullable Entity target) {
-        if (target instanceof LivingEntity) {
+        if (target instanceof LivingEntity && this.shulker.getPeekAmount() > 50) {
             if (player.world.isClient) return true;
 
             if (this.bulletCooldown <= 0) {
