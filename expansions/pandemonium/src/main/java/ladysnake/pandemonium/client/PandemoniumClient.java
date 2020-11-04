@@ -8,19 +8,12 @@ import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.event.requiem.client.RenderSelfPossessedEntityCallback;
 import ladysnake.requiem.client.RequiemFx;
-import ladysnake.satin.api.event.EntitiesPostRenderCallback;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.render.entity.ShulkerEntityRenderer;
-import net.minecraft.client.render.entity.model.ShulkerEntityModel;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.util.Identifier;
@@ -47,25 +40,6 @@ public class PandemoniumClient implements ClientModInitializer {
             }
         });
         CrosshairRenderCallback.EVENT.unregister(new Identifier("requiem:enderman_color"));
-        EntitiesPostRenderCallback.EVENT.register((camera, frustum, tickDelta) -> {
-            if (!camera.isThirdPerson()) {
-                MinecraftClient client = MinecraftClient.getInstance();
-                assert client.player != null;
-                Entity possessed = PossessionComponent.get(client.player).getPossessedEntity();
-                if (possessed instanceof ShulkerEntity) {
-                    ShulkerEntity shulker = (ShulkerEntity) possessed;
-                    EntityRenderDispatcher renderManager = client.getEntityRenderDispatcher();
-                    ShulkerEntityRenderer renderer = (ShulkerEntityRenderer) renderManager.getRenderer(shulker);
-                    if (renderer != null) {
-                        ShulkerEntityModel<?> model = renderer.getModel();
-                        ModelPart nerdFace = model.getHead();
-                        nerdFace.visible = false;
-                        // TODO update to blaze3D
-//                        renderManager.render(shulker, tickDelta, true);
-                        nerdFace.visible = true;
-                    }
-                }
-            }
-        });
+        RenderSelfPossessedEntityCallback.EVENT.register(possessed -> possessed instanceof ShulkerEntity);
     }
 }

@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.mixin.client.render.entity;
 
+import ladysnake.requiem.api.v1.event.requiem.client.RenderSelfPossessedEntityCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.client.MinecraftClient;
@@ -46,6 +47,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -55,6 +57,8 @@ import javax.annotation.Nullable;
 
 @Mixin(EntityRenderDispatcher.class)
 public abstract class EntityRenderDispatcherMixin {
+    @Shadow
+    public Camera camera;
     @Nullable
     private Entity requiem_camerasPossessed;
 
@@ -74,7 +78,9 @@ public abstract class EntityRenderDispatcherMixin {
     @Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true)
     private void preventPossessedRender(Entity entity, Frustum visibleRegion, double x, double y, double z, CallbackInfoReturnable<Boolean> info) {
         if (requiem_camerasPossessed == entity) {
-            info.setReturnValue(false);
+            if (camera.isThirdPerson() || !RenderSelfPossessedEntityCallback.EVENT.invoker().allowRender(entity)) {
+                info.setReturnValue(false);
+            }
         }
     }
 

@@ -3,6 +3,7 @@
   "package": "ladysnake.pandemonium.mixin.client",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "render.ShulkerEntityModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1
