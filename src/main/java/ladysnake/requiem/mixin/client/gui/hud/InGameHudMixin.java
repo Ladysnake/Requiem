@@ -34,12 +34,14 @@
  */
 package ladysnake.requiem.mixin.client.gui.hud;
 
+import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
+import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.tag.RequiemFluidTags;
@@ -89,6 +91,21 @@ public abstract class InGameHudMixin extends DrawableHelper {
     @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$SrcFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DstFactor;Lcom/mojang/blaze3d/platform/GlStateManager$SrcFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DstFactor;)V"), cancellable = true)
     private void colorCrosshair(MatrixStack matrices, CallbackInfo ci) {
         CrosshairRenderCallback.EVENT.invoker().onCrosshairRender(matrices, this.scaledWidth, this.scaledHeight);
+    }
+
+    @ModifyVariable(
+        method = "renderCrosshair",
+        slice = @Slice(
+            from = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;getAttackCooldownProgressPerTick()F"),
+            to = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isAlive()Z")
+        ),
+        at = @At(value = "STORE")
+    )
+    private boolean cancelAttackIndicatorRender(boolean shouldRender) {
+        if (RequiemClient.INSTANCE.getTargetHandler().getTargetedEntity(AbilityType.ATTACK) != null) {
+            return false;
+        }
+        return shouldRender;
     }
 
     @ModifyVariable(
