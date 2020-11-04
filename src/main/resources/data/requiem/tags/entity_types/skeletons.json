@@ -1,22 +1,9 @@
 {
   "replace": false,
   "values": [
-    "#minecraft:skeletons"
-  ],
-  "libcd": {
-    "entries": [
-      {
-        "when": [
-          {
-            "libcd:mod_loaded": "mobz"
-          }
-        ],
-        "values": [
-          "mobz:skeli1_entity",
-          "mobz:skeli2_entity",
-          "mobz:skeli3_entity"
-        ]
-      }
-    ]
-  }
+    "#minecraft:skeletons",
+    {"id": "mobz:skeli1_entity", "required": false},
+    {"id": "mobz:skeli2_entity", "required": false},
+    {"id": "mobz:skeli3_entity", "required": false}
+  ]
 }
