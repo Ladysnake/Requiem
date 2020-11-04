@@ -17,14 +17,25 @@
  */
 package ladysnake.requiem.api.v1.entity.ability;
 
+import dev.onyxstudios.cca.api.v3.component.Component;
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import ladysnake.requiem.api.v1.internal.DummyMobAbilityController;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.Identifier;
 
 /**
  * A {@link MobAbilityController} is interacted with by a player to use special {@link MobAbility mob abilities}
  */
-public interface MobAbilityController {
-    MobAbilityController DUMMY = new DummyMobAbilityController();
+public interface MobAbilityController extends Component {
+    ComponentKey<MobAbilityController> KEY = ComponentRegistry.getOrCreate(new Identifier("requiem", "ability_controller"), MobAbilityController.class);
+
+    static MobAbilityController get(Entity entity) {
+        MobAbilityController c = KEY.getNullable(entity);
+        return c != null ? c : DummyMobAbilityController.INSTANCE;
+    }
+
+    double getRange(AbilityType type);
 
     boolean useDirect(AbilityType type, Entity target);
 

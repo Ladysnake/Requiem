@@ -35,6 +35,7 @@
 package ladysnake.requiem.mixin.common.remnant;
 
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -45,11 +46,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -67,6 +70,32 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
     private void flyLikeSuperman(CallbackInfoReturnable<Boolean> cir) {
         if (this.abilities.flying && this.isSprinting() && RemnantComponent.KEY.get(this).isIncorporeal()) {
             cir.setReturnValue(true);
+        }
+    }
+
+    @Inject(method = "tick", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/entity/player/PlayerEntity;noClip:Z", shift = At.Shift.AFTER))
+    private void allowNoClip(CallbackInfo ci) {
+        if (!this.noClip && MovementAlterer.KEY.get(this).isNoClipping()) {
+            this.noClip = true;
+        }
+    }
+
+    @Inject(method = "travel",
+        slice = @Slice(
+            from = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/player/PlayerAbilities;flying:Z"),
+            to = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;setFlag(IZ)V")
+        ),
+        at = @At(
+            value = "FIELD",
+            opcode = Opcodes.PUTFIELD,
+            target = "Lnet/minecraft/entity/player/PlayerEntity;flyingSpeed:F",
+            ordinal = 0,
+            shift = At.Shift.AFTER
+        )
+    )
+    private void slowGhosts(Vec3d movementInput, CallbackInfo ci) {
+        if (MovementAlterer.KEY.get(this).isNoClipping()) {
+            this.flyingSpeed *= 0.1;
         }
     }
 

@@ -52,7 +52,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderEffect;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -157,11 +156,7 @@ public final class RequiemClientListener implements
         assert client.player != null;
         if (RemnantComponent.get(client.player).isIncorporeal()) {
             if (client.targetedEntity instanceof MobEntity) {
-                int x = (scaledWidth - 32) / 2 + 8;
-                int y = (scaledHeight - 16) / 2 + 16;
-                client.getTextureManager().bindTexture(POSSESSION_ICON);
-                DrawableHelper.drawTexture(matrices, x, y, 16, 16, 0, 0, 16, 16, 16, 16);
-                client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
+                RequiemTargetHandler.drawCrosshairIcon(client.getTextureManager(), matrices, scaledWidth, scaledHeight, POSSESSION_ICON);
             }
         }
     }

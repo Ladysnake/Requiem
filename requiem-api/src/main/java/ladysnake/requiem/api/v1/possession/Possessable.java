@@ -17,7 +17,6 @@
  */
 package ladysnake.requiem.api.v1.possession;
 
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.internal.ProtoPossessable;
 import net.minecraft.entity.player.PlayerEntity;
 
@@ -75,8 +74,6 @@ public interface Possessable extends ProtoPossessable {
      * @implNote The default implementation checks whether it has no current possessor and it is alive
      */
     default boolean canBePossessedBy(PlayerEntity player) { return true; }
-
-    default MobAbilityController getMobAbilityController() { return MobAbilityController.DUMMY; }
 
     /**
      * Sets the player possessing this entity.

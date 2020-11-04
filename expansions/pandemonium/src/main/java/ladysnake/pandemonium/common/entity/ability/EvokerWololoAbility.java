@@ -17,6 +17,7 @@
  */
 package ladysnake.pandemonium.common.entity.ability;
 
+import ladysnake.pandemonium.mixin.common.entity.mob.EvokerEntityAccessor;
 import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.EvokerEntity;
@@ -33,28 +34,34 @@ public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity> {
     }
 
     @Override
+    public double getRange() {
+        return 16;
+    }
+
+    @Override
     public boolean trigger(PlayerEntity player, Entity entity) {
-        boolean success = false;
         if (entity instanceof SheepEntity) {
-            if (wololoGoal.canStart()) {
-                wololoGoal.start();
-                started = true;
-                success = true;
+            if (player.world.isClient) return true;
+
+            if (this.wololoGoal.canStart()) {
+                this.wololoGoal.start();
+                ((EvokerEntityAccessor) this.owner).invokeSetWololoTarget((SheepEntity) entity);
+                this.started = true;
+                return true;
             }
         }
-        return success;
+        return false;
     }
 
     @Override
     public void update() {
-        if (started) {
-            if (wololoGoal.shouldContinue()) {
-                wololoGoal.tick();
+        if (this.started) {
+            if (this.wololoGoal.shouldContinue()) {
+                this.wololoGoal.tick();
             } else {
-                started = false;
-                wololoGoal.stop();
+                this.started = false;
+                this.wololoGoal.stop();
             }
         }
     }
-
 }

@@ -15,25 +15,22 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.requiem.api.v1.entity.ability;
+package ladysnake.requiem.api.v1.event.requiem;
 
-import net.minecraft.entity.Entity;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
-/**
- * A {@link DirectAbility} targets a specific entity
- *
- * @param <E> The type of mobs that can wield this ability
- */
-public interface DirectAbility<E extends MobEntity> extends MobAbility<E> {
-    double getRange();
-    /**
-     * Triggers the ability on a known entity.
-     *
-     * @param player the player commanding the ability
-     * @param target the targeted entity
-     * @return <code>true</code> if the ability has been successfully used
-     */
-    boolean trigger(PlayerEntity player, Entity target);
+import javax.annotation.Nullable;
+
+public interface PossessionStateChangeCallback {
+    void onPossessionStateChange(PlayerEntity player, @Nullable MobEntity possessed);
+
+    Event<PossessionStateChangeCallback> EVENT = EventFactory.createArrayBacked(PossessionStateChangeCallback.class,
+            (listeners) -> (player, possessed) -> {
+                for (PossessionStateChangeCallback callback : listeners) {
+                    callback.onPossessionStateChange(player, possessed);
+                }
+            });
 }

@@ -38,13 +38,13 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
+import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.event.minecraft.ItemPickupCallback;
 import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
-import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.*;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
@@ -170,7 +170,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         AttackEntityCallback.EVENT.register((playerEntity, world, hand, target, hitResult) -> {
             LivingEntity possessed = PossessionComponent.get(playerEntity).getPossessedEntity();
             if (possessed != null && !possessed.removed) {
-                if (possessed.world.isClient || target != possessed && ((Possessable) possessed).getMobAbilityController().useDirect(AbilityType.ATTACK, target)) {
+                if (possessed.world.isClient || target != possessed && MobAbilityController.get(possessed).useDirect(AbilityType.ATTACK, target)) {
                     playerEntity.resetLastAttackedTicks();
                     return ActionResult.SUCCESS;
                 }

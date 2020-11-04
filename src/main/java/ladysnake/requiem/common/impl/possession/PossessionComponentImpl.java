@@ -39,6 +39,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
+import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
@@ -148,15 +149,20 @@ public final class PossessionComponentImpl implements PossessionComponent {
         this.player.copyPositionAndRotation(host);
         this.player.calculateDimensions(); // update size
         MovementAlterer.get(this.player).setConfig(MovementRegistry.get(this.player.world).getEntityMovementConfig(host.getType()));
+
         if (!attributeUpdated.contains(this.player)) {
             this.swapAttributes(this.player);
             attributeUpdated.add(this.player);
         }
+
         // Ensure health matches max health (attrition)
         host.setHealth(host.getHealth());
 
         // Make the mob react a bit
         host.playAmbientSound();
+
+        // Fire event
+        PossessionStateChangeCallback.EVENT.invoker().onPossessionStateChange(this.player, host);
     }
 
     private void swapAttributes(PlayerEntity player) {
@@ -265,6 +271,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
         this.player.calculateDimensions(); // update size
         this.player.setAir(this.player.getMaxAir());
         PossessionComponent.KEY.sync(this.player);
+        PossessionStateChangeCallback.EVENT.invoker().onPossessionStateChange(this.player, null);
     }
 
     /**

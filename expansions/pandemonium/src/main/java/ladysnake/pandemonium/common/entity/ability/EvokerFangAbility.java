@@ -47,9 +47,16 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity> {
     }
 
     @Override
+    public double getRange() {
+        return 12;
+    }
+
+    @Override
     public boolean trigger(PlayerEntity player, Entity entity) {
         boolean success = false;
         if (entity instanceof LivingEntity) {
+            if (player.world.isClient) return true;
+
             LivingEntity target = (LivingEntity) entity;
             owner.setTarget(target);
             if (conjureFangsGoal.canStart()) {

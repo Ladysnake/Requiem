@@ -20,8 +20,15 @@ package ladysnake.requiem.api.v1.internal;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.CompoundTag;
 
 public class DummyMobAbilityController implements MobAbilityController {
+    public static final MobAbilityController INSTANCE = new DummyMobAbilityController();
+
+    @Override
+    public double getRange(AbilityType type) {
+        return 0;
+    }
 
     @Override
     public boolean useDirect(AbilityType type, Entity target) {
@@ -35,6 +42,16 @@ public class DummyMobAbilityController implements MobAbilityController {
 
     @Override
     public void updateAbilities() {
+        // NO-OP
+    }
+
+    @Override
+    public void readFromNbt(CompoundTag compoundTag) {
+        // NO-OP
+    }
+
+    @Override
+    public void writeToNbt(CompoundTag compoundTag) {
         // NO-OP
     }
 }

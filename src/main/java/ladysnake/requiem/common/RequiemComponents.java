@@ -38,15 +38,20 @@ import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
+import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
+import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityController;
 import ladysnake.requiem.common.impl.movement.PlayerMovementAlterer;
 import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.remnant.RemnantComponentImpl;
 import ladysnake.requiem.common.impl.remnant.RevivingDeathSuspender;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
+import net.minecraft.entity.mob.MobEntity;
 
 public final class RequiemComponents implements EntityComponentInitializer {
 
@@ -59,5 +64,7 @@ public final class RequiemComponents implements EntityComponentInitializer {
         registry.registerForPlayers(MovementAlterer.KEY, PlayerMovementAlterer::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerForPlayers(DeathSuspender.KEY, RevivingDeathSuspender::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerForPlayers(DialogueTracker.KEY, PlayerDialogueTracker::new, RespawnCopyStrategy.LOSSLESS_ONLY);
+        registry.registerFor(MobEntity.class, MobAbilityController.KEY,
+            e -> new ImmutableMobAbilityController<>(MobAbilityRegistry.instance().getConfig(e), (MobEntity & Possessable) e));
     }
 }

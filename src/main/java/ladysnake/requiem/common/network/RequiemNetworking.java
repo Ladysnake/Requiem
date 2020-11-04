@@ -35,6 +35,7 @@
 package ladysnake.requiem.common.network;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
@@ -63,12 +64,13 @@ public class RequiemNetworking {
     public static final Identifier DATA_SYNC = Requiem.id("data_sync");
 
     // Client -> Server
-    public static final Identifier LEFT_CLICK_AIR = Requiem.id("attack_air");
-    public static final Identifier RIGHT_CLICK_AIR = Requiem.id("interact_air");
+    public static final Identifier USE_DIRECT_ABILITY = Requiem.id("direct_ability");
+    public static final Identifier USE_INDIRECT_ABILITY = Requiem.id("indirect_ability");
     public static final Identifier POSSESSION_REQUEST = Requiem.id("possession_request");
     public static final Identifier ETHEREAL_FRACTURE = Requiem.id("ethereal_fracture");
     public static final Identifier OPUS_UPDATE = Requiem.id("opus_update");
     public static final Identifier DIALOGUE_ACTION = Requiem.id("dialogue_action");
+    public static final Identifier HUGGING_WALL = Requiem.id("hugging_wall");
 
     public static void sendToServer(Identifier identifier, PacketByteBuf data) {
         sendToServer(new CustomPayloadC2SPacket(identifier, data));
@@ -149,6 +151,25 @@ public class RequiemNetworking {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeIdentifier(action);
         return new CustomPayloadC2SPacket(DIALOGUE_ACTION, buf);
+    }
+
+    public static void sendAbilityUseMessage(AbilityType type, Entity entity) {
+        PacketByteBuf buf = new PacketByteBuf(buffer());
+        buf.writeEnumConstant(type);
+        buf.writeVarInt(entity.getEntityId());
+        sendToServer(USE_DIRECT_ABILITY, buf);
+    }
+
+    public static void sendAbilityUseMessage(AbilityType type) {
+        PacketByteBuf buf = new PacketByteBuf(buffer());
+        buf.writeEnumConstant(type);
+        sendToServer(USE_INDIRECT_ABILITY, buf);
+    }
+
+    public static void sendHugWallMessage(boolean hugging) {
+        PacketByteBuf buf = new PacketByteBuf(buffer());
+        buf.writeBoolean(hugging);
+        sendToServer(new CustomPayloadC2SPacket(HUGGING_WALL, buf));
     }
 
 }

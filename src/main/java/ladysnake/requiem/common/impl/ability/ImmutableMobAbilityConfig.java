@@ -39,7 +39,9 @@ import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
 import ladysnake.requiem.api.v1.entity.ability.IndirectAbility;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.common.entity.ability.MeleeAbility;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import org.apiguardian.api.API;
 
 import java.util.function.Function;
@@ -48,7 +50,17 @@ public class ImmutableMobAbilityConfig<E extends MobEntity> implements MobAbilit
 
     @API(status = API.Status.EXPERIMENTAL)
     public static <T extends MobEntity> Function<T, DirectAbility<? super T>> noneDirect(){
-        return (mob) -> (p, t) -> false;
+        return (mob) -> new DirectAbility<T>() {
+            @Override
+            public double getRange() {
+                return 0;
+            }
+
+            @Override
+            public boolean trigger(PlayerEntity player, Entity target) {
+                return false;
+            }
+        };
     }
 
     @API(status = API.Status.EXPERIMENTAL)

@@ -34,13 +34,17 @@
  */
 package ladysnake.requiem.mixin.client;
 
+import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.client.RequiemClient;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.util.Hand;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -48,14 +52,20 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static ladysnake.requiem.common.network.RequiemNetworking.*;
-
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin {
     @Shadow
     public ClientPlayerEntity player;
 
     @Shadow public ClientPlayerInteractionManager interactionManager;
+
+    @Inject(method = "doAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/hit/HitResult;getType()Lnet/minecraft/util/hit/HitResult$Type;"), cancellable = true)
+    private void tryUseDirectAttackAbility(CallbackInfo ci) {
+        if (RequiemClient.INSTANCE.getTargetHandler().useDirectAbility(AbilityType.ATTACK)) {
+            this.player.swingHand(Hand.MAIN_HAND);
+            ci.cancel();
+        }
+    }
 
     @Inject(
             method = "doAttack",
@@ -66,7 +76,15 @@ public abstract class MinecraftClientMixin {
     )
     private void onShakeFistAtAir(CallbackInfo info) {
         if (PossessionComponent.get( player).isPossessing()) {
-            sendToServer(LEFT_CLICK_AIR, createEmptyBuffer());
+            RequiemNetworking.sendAbilityUseMessage(AbilityType.ATTACK);
+        }
+    }
+
+    @Inject(method = "doItemUse", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Hand;values()[Lnet/minecraft/util/Hand;"), cancellable = true)
+    private void tryUseDirectAbility(CallbackInfo ci) {
+        if (RequiemClient.INSTANCE.getTargetHandler().useDirectAbility(AbilityType.INTERACT)) {
+            this.player.swingHand(Hand.OFF_HAND);
+            ci.cancel();
         }
     }
 
@@ -77,8 +95,8 @@ public abstract class MinecraftClientMixin {
     private void onInteractWithAir(CallbackInfo info) {
         // Check that the player is qualified to interact with something
         if (!this.interactionManager.isBreakingBlock() && !this.player.isRiding()) {
-            if (PossessionComponent.get( player).isPossessing() && player.getMainHandStack().isEmpty()) {
-                sendToServer(RIGHT_CLICK_AIR, createEmptyBuffer());
+            if (PossessionComponent.get(player).isPossessing() && player.getMainHandStack().isEmpty()) {
+                RequiemNetworking.sendAbilityUseMessage(AbilityType.INTERACT);
             }
         }
     }

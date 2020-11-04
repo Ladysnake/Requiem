@@ -36,6 +36,7 @@ package ladysnake.requiem.mixin.common.possession.possessed;
 
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
+import ladysnake.requiem.api.v1.internal.DummyMobAbilityController;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityController;
@@ -67,7 +68,7 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
     protected abstract void mobTick();
 
     @Unique
-    private MobAbilityController abilityController = MobAbilityController.DUMMY;
+    private MobAbilityController abilityController = DummyMobAbilityController.INSTANCE;
     @Unique
     private int attackingCountdown;
 
@@ -80,11 +81,6 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
         if (world != null && !world.isClient) {
             this.abilityController = new ImmutableMobAbilityController<>(MobAbilityRegistry.instance().getConfig((MobEntity)(Object)this), (MobEntity & Possessable)(Object)this);
         }
-    }
-
-    @Override
-    public MobAbilityController getMobAbilityController() {
-        return abilityController;
     }
 
     @Inject(method = "setAttacking", at = @At("RETURN"))

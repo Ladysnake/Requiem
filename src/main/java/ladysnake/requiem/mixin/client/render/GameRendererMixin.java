@@ -35,6 +35,7 @@
 package ladysnake.requiem.mixin.client.render;
 
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
+import ladysnake.requiem.api.v1.event.minecraft.client.UpdateTargetedEntityCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
@@ -58,6 +59,11 @@ public abstract class GameRendererMixin {
     @Shadow @Final private Camera camera;
 
     @Shadow @Final private MinecraftClient client;
+
+    @Inject(method = "updateTargetedEntity", at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;targetedEntity:Lnet/minecraft/entity/Entity;", ordinal = 0))
+    private void updateTargetedEntity(float tickDelta, CallbackInfo ci) {
+        UpdateTargetedEntityCallback.EVENT.invoker().updateTargetedEntity(tickDelta);
+    }
 
     @SuppressWarnings("UnresolvedMixinReference") // Synthetic method
     @Inject(

@@ -35,6 +35,8 @@
 package ladysnake.requiem.common.entity.effect;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
@@ -65,6 +67,7 @@ public class AttritionStatusEffect extends StatusEffect {
             ));
         } else {
             if (target.world.getLevelProperties().isHardcore()) {
+                RemnantComponent.get(target).become(RemnantTypes.MORTAL);
                 target.damage(ATTRITION_HARDCORE_DEATH, Float.MAX_VALUE);
             }
         }

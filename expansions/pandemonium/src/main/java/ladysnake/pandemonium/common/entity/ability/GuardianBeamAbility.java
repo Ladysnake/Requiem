@@ -45,8 +45,15 @@ public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity> {
     }
 
     @Override
+    public double getRange() {
+        return 15;
+    }
+
+    @Override
     public boolean trigger(PlayerEntity player, Entity entity) {
         if (entity instanceof LivingEntity) {
+            if (player.world.isClient) return true;
+
             LivingEntity target = (LivingEntity) entity;
             owner.setTarget(target);
             if (fireBeamGoal.canStart()) {

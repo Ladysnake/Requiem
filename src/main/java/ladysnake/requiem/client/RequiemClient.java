@@ -61,6 +61,7 @@ public final class RequiemClient implements ClientModInitializer {
 
     private final ClientMessageHandler messageHandler;
     private final RequiemClientListener listener;
+    private final RequiemTargetHandler targetHandler;
 
     private final RequiemFx requiemFxRenderer;
     private final ShadowPlayerFx shadowPlayerFxRenderer;
@@ -69,6 +70,7 @@ public final class RequiemClient implements ClientModInitializer {
     private RequiemClient() {
         this.messageHandler = new ClientMessageHandler(this);
         this.listener = new RequiemClientListener(this);
+        this.targetHandler = new RequiemTargetHandler();
         this.requiemFxRenderer = new RequiemFx();
         this.shadowPlayerFxRenderer = new ShadowPlayerFx();
         this.worldFreezeFxRenderer = new ZaWorldFx();
@@ -78,6 +80,10 @@ public final class RequiemClient implements ClientModInitializer {
         if (this.mc.options.getPerspective().isFirstPerson() && player == this.mc.player) {
             this.mc.gameRenderer.onCameraEntitySet(cameraEntity);
         }
+    }
+
+    public RequiemTargetHandler getTargetHandler() {
+        return targetHandler;
     }
 
     public ShadowPlayerFx getShadowPlayerFxRenderer() {
@@ -133,5 +139,6 @@ public final class RequiemClient implements ClientModInitializer {
         this.shadowPlayerFxRenderer.registerCallbacks();
         this.worldFreezeFxRenderer.registerCallbacks();
         this.listener.registerCallbacks();
+        this.targetHandler.registerCallbacks();
     }
 }

@@ -36,6 +36,7 @@ package ladysnake.requiem.mixin.client.network;
 
 import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.api.v1.RequiemPlayer;
+import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.client.input.Input;
@@ -58,6 +59,21 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Re
 
     public ClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
         super(world, pos, yaw, profile);
+    }
+
+    @ModifyArg(method = "tickMovement",
+        slice = @Slice(
+            from = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;getVelocity()Lnet/minecraft/util/math/Vec3d;"),
+            to = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V")
+        ),
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;add(DDD)Lnet/minecraft/util/math/Vec3d;"),
+        index = 1
+    )
+    private double changeVerticalVelocity(double v) {
+        if (MovementAlterer.get(this).isNoClipping()) {
+            return v * 0.1;
+        }
+        return v;
     }
 
     @Inject(method = "wouldCollideAt", at = @At(value = "RETURN"), cancellable = true)

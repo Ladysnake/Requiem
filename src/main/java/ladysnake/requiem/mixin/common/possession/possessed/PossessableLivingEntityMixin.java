@@ -166,11 +166,6 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     }
 
     @Override
-    public MobAbilityController getMobAbilityController() {
-        return MobAbilityController.DUMMY;
-    }
-
-    @Override
     public void setPossessor(@CheckForNull PlayerEntity possessor) {
         if (possessor == this.possessor) {
             return;
@@ -316,7 +311,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
     @Inject(method = "baseTick", at = @At("TAIL"))
     private void baseTick(CallbackInfo ci) {
-        this.getMobAbilityController().updateAbilities();
+        MobAbilityController.get(this).updateAbilities();
     }
 
     @Inject(method = {"pushAwayFrom", "pushAway"}, at = @At("HEAD"), cancellable = true)

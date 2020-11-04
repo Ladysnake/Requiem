@@ -53,7 +53,14 @@ public class MeleeAbility extends DirectAbilityBase<MobEntity> {
     }
 
     @Override
+    public double getRange() {
+        return 0;
+    }
+
+    @Override
     public boolean trigger(PlayerEntity player, Entity target) {
+        if (player.world.isClient) return true;
+
         // We actually need to check if the entity has an attack damage attribute, because mojang doesn't.
         boolean success = (ignoreDamageAttribute || owner.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE) != null) && owner.tryAttack(target);
         if (success && target instanceof LivingEntity) {
