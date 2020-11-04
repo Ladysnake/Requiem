@@ -75,16 +75,8 @@ public abstract class MinecraftClientMixin {
             )
     )
     private void onShakeFistAtAir(CallbackInfo info) {
-        if (PossessionComponent.get( player).isPossessing()) {
+        if (PossessionComponent.get(player).isPossessing()) {
             RequiemNetworking.sendAbilityUseMessage(AbilityType.ATTACK);
-        }
-    }
-
-    @Inject(method = "doItemUse", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Hand;values()[Lnet/minecraft/util/Hand;"), cancellable = true)
-    private void tryUseDirectAbility(CallbackInfo ci) {
-        if (RequiemClient.INSTANCE.getTargetHandler().useDirectAbility(AbilityType.INTERACT)) {
-            this.player.swingHand(Hand.OFF_HAND);
-            ci.cancel();
         }
     }
 
@@ -95,7 +87,9 @@ public abstract class MinecraftClientMixin {
     private void onInteractWithAir(CallbackInfo info) {
         // Check that the player is qualified to interact with something
         if (!this.interactionManager.isBreakingBlock() && !this.player.isRiding()) {
-            if (PossessionComponent.get(player).isPossessing() && player.getMainHandStack().isEmpty()) {
+            if (RequiemClient.INSTANCE.getTargetHandler().useDirectAbility(AbilityType.INTERACT)) {
+                this.player.swingHand(Hand.OFF_HAND);
+            } else if (PossessionComponent.get(player).isPossessing() && player.getMainHandStack().isEmpty()) {
                 RequiemNetworking.sendAbilityUseMessage(AbilityType.INTERACT);
             }
         }
