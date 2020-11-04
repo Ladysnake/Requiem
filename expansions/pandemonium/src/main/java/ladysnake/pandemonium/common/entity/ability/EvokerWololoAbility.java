@@ -21,6 +21,7 @@ import ladysnake.pandemonium.mixin.common.entity.mob.EvokerEntityAccessor;
 import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.EvokerEntity;
+import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
@@ -61,6 +62,7 @@ public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity> {
             } else {
                 this.started = false;
                 this.wololoGoal.stop();
+                this.owner.setSpell(SpellcastingIllagerEntity.Spell.NONE);
             }
         }
     }

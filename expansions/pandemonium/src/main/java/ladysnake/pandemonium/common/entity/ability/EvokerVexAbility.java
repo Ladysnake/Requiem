@@ -62,8 +62,9 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
             if (summonVexGoal.shouldContinue()) {
                 summonVexGoal.tick();
             } else {
-                owner.setSpell(SpellcastingIllagerEntity.Spell.NONE);
                 started = false;
+                this.summonVexGoal.stop();
+                owner.setSpell(SpellcastingIllagerEntity.Spell.NONE);
             }
             owner.setTarget(null);
         }

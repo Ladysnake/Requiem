@@ -36,6 +36,7 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity> {
     private static final Method CAST_SPELL_GOAL$CAST_SPELL;
 
     private final SpellcastingIllagerEntity.CastSpellGoal conjureFangsGoal;
+    private int countdown = 0;
 
     public EvokerFangAbility(EvokerEntity owner) {
         super(owner);
@@ -65,11 +66,20 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity> {
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     throw new UncheckedReflectionException("Failed to trigger evoker fang ability", e);
                 }
+                owner.setSpell(SpellcastingIllagerEntity.Spell.FANGS);
+                countdown = 40;
                 success = true;
             }
             owner.setTarget(null);
         }
         return success;
+    }
+
+    @Override
+    public void update() {
+        if (countdown > 0 && --countdown == 0) {
+            this.owner.setSpell(SpellcastingIllagerEntity.Spell.NONE);
+        }
     }
 
     static {
