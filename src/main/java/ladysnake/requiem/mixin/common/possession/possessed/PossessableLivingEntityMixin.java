@@ -39,6 +39,7 @@ import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
+import ladysnake.requiem.common.entity.ai.DisableableBrain;
 import ladysnake.requiem.common.entity.attribute.CooldownStrengthAttribute;
 import ladysnake.requiem.common.entity.attribute.DelegatingAttribute;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
@@ -50,6 +51,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -119,6 +121,13 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     @Shadow
     @Final
     private AttributeContainer attributes;
+
+    @Shadow
+    public abstract boolean isUsingItem();
+
+    @Shadow
+    public abstract Brain<?> getBrain();
+
     @Nullable
     private PlayerEntity possessor;
 
@@ -173,10 +182,14 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
             throw new IllegalStateException("Players must stop possessing an entity before it can change possessor!");
         }
         this.possessor = possessor;
+
+        ((DisableableBrain) this.getBrain()).requiem_setDisabled(this.possessor != null);
+
         this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).removeModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS_UUID);
         if (possessor != null) {
             this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).addTemporaryModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS);
         }
+
         updateName(possessor);
     }
 
@@ -234,6 +247,17 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
             tag.putBoolean("CustomNameVisible", this.requiem_wasCustomNameVisible);
         }
+    }
+
+    @Inject(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;canMoveVoluntarily()Z", ordinal = 1))
+    private void requiem_mobTick(CallbackInfo ci) {
+        if (this.isBeingPossessed() && !world.isClient) {
+            this.requiem_mobTick();
+        }
+    }
+
+    protected void requiem_mobTick() {
+        // NO-OP
     }
 
     @Inject(method = "canMoveVoluntarily", at = @At("HEAD"), cancellable = true)

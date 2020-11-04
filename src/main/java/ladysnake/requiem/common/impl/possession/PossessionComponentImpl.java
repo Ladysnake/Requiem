@@ -138,6 +138,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 ((MobEntity) possessable).stopRiding();
                 player.startRiding(ridden);
             }
+            host.setTarget(null);
         }
         // Actually set the possessed entity
         this.possessed = host;

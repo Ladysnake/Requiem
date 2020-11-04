@@ -32,6 +32,7 @@
     "possession.gameplay.TridentItemMixin",
     "possession.gameplay.WitchEntityMixin",
     "possession.possessed.BowItemMixin",
+    "possession.possessed.BrainMixin",
     "possession.possessed.IronGolemEntityMixin",
     "possession.possessed.PossessableEntityMixin",
     "possession.possessed.PossessableLivingEntityMixin",
