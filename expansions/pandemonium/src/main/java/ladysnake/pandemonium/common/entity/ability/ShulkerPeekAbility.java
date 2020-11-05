@@ -28,10 +28,12 @@ public class ShulkerPeekAbility extends IndirectAbilityBase<ShulkerEntity> {
 
     @Override
     public boolean trigger(PlayerEntity player) {
-        if (this.owner.getPeekAmount() > 0) {
-            this.owner.setPeekAmount(0);
-        } else {
-            this.owner.setPeekAmount(100);
+        if (!player.world.isClient) {
+            if (this.owner.getPeekAmount() > 0) {
+                this.owner.setPeekAmount(0);
+            } else {
+                this.owner.setPeekAmount(100);
+            }
         }
         return true;
     }

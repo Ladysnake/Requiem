@@ -35,7 +35,6 @@
 package ladysnake.requiem.mixin.common.possession.possessed;
 
 import com.google.common.base.Preconditions;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
@@ -307,11 +306,6 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
                 this.limbDistance = player.limbDistance;
             }
         }
-    }
-
-    @Inject(method = "baseTick", at = @At("TAIL"))
-    private void baseTick(CallbackInfo ci) {
-        MobAbilityController.get(this).updateAbilities();
     }
 
     @Inject(method = {"pushAwayFrom", "pushAway"}, at = @At("HEAD"), cancellable = true)

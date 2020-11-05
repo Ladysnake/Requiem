@@ -44,6 +44,8 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
 
     @Override
     public boolean trigger(PlayerEntity player) {
+        if (player.world.isClient) return true;
+
         boolean success = false;
         owner.setTarget(owner); // The target needs to be non null to let the goal run
         if (summonVexGoal.canStart()) {

@@ -17,9 +17,9 @@
  */
 package ladysnake.requiem.api.v1.entity.ability;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import ladysnake.requiem.api.v1.internal.DummyMobAbilityController;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
@@ -27,7 +27,7 @@ import net.minecraft.util.Identifier;
 /**
  * A {@link MobAbilityController} is interacted with by a player to use special {@link MobAbility mob abilities}
  */
-public interface MobAbilityController extends Component {
+public interface MobAbilityController extends CommonTickingComponent {
     ComponentKey<MobAbilityController> KEY = ComponentRegistry.getOrCreate(new Identifier("requiem", "ability_controller"), MobAbilityController.class);
 
     static MobAbilityController get(Entity entity) {
@@ -41,5 +41,6 @@ public interface MobAbilityController extends Component {
 
     boolean useIndirect(AbilityType type);
 
-    void updateAbilities();
+    @Override
+    void tick();
 }

@@ -40,7 +40,7 @@ public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity> {
         try {
             this.fireBeamGoal = BEAM_GOAL_FACTORY.newInstance(owner);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new UncheckedReflectionException("Failed to instanciate FireBeamGoal", e);
+            throw new UncheckedReflectionException("Failed to instantiate FireBeamGoal", e);
         }
     }
 

@@ -41,7 +41,7 @@ public class DummyMobAbilityController implements MobAbilityController {
     }
 
     @Override
-    public void updateAbilities() {
+    public void tick() {
         // NO-OP
     }
 

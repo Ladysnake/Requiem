@@ -89,13 +89,11 @@ public class ImmutableMobAbilityController<T extends MobEntity & Possessable> im
     }
 
     @Override
-    public void updateAbilities() {
-        if (!this.owner.world.isClient) {
-            this.directAttack.update();
-            this.indirectAttack.update();
-            this.directInteraction.update();
-            this.indirectInteraction.update();
-        }
+    public void tick() {
+        this.directAttack.update();
+        this.indirectAttack.update();
+        this.directInteraction.update();
+        this.indirectInteraction.update();
     }
 
     @Override

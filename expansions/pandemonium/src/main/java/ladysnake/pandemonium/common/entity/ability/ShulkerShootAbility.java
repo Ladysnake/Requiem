@@ -77,7 +77,9 @@ public class ShulkerShootAbility implements IndirectAbility<ShulkerEntity>, Dire
 
     @Override
     public void update() {
-        this.bulletCooldown--;
+        if (this.bulletCooldown > 0) {
+            this.bulletCooldown--;
+        }
     }
 
     private Box getSearchBox() {

@@ -17,8 +17,8 @@
  */
 package ladysnake.pandemonium.common.entity.ability;
 
-import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
 import ladysnake.pandemonium.common.util.RayHelper;
+import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvents;
@@ -33,7 +33,9 @@ public class BlinkAbility extends IndirectAbilityBase<MobEntity> {
 
     @Override
     public void update() {
-        cooldown--;
+        if (this.cooldown > 0) {
+            cooldown--;
+        }
     }
 
     @Override

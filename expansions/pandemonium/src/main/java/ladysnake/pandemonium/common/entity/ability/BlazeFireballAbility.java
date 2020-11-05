@@ -36,31 +36,33 @@ public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
 
     @Override
     public void update() {
-        if (this.owner instanceof BlazeEntity && ((BlazeEntityAccessor) this.owner).invokeIsFireActive() && --fireTicks < 0) {
+        if (!this.owner.world.isClient && this.owner instanceof BlazeEntity && ((BlazeEntityAccessor) this.owner).invokeIsFireActive() && --fireTicks < 0) {
             ((BlazeEntityAccessor) this.owner).invokeSetFireActive(false);
         }
     }
 
     @Override
     public boolean trigger(PlayerEntity player) {
-        double d = 25.0;
-        float f = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5F;
-        Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
+        if (!player.world.isClient) {
+            double d = 25.0;
+            float f = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5F;
+            Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
 
-        this.owner.world.syncWorldEvent(null, 1018, new BlockPos((int)this.owner.getX(), (int)this.owner.getY(), (int)this.owner.getZ()), 0);
-        if (this.owner instanceof BlazeEntity) {
-            this.fireTicks = 200;
-            ((BlazeEntityAccessor) this.owner).invokeSetFireActive(true);
+            this.owner.world.syncWorldEvent(null, 1018, new BlockPos((int)this.owner.getX(), (int)this.owner.getY(), (int)this.owner.getZ()), 0);
+            if (this.owner instanceof BlazeEntity) {
+                this.fireTicks = 200;
+                ((BlazeEntityAccessor) this.owner).invokeSetFireActive(true);
+            }
+            SmallFireballEntity fireball = new SmallFireballEntity(
+                    this.owner.world,
+                    this.owner,
+                    rot.x + this.owner.getRandom().nextGaussian() * (double)f,
+                    rot.y,
+                    rot.z + this.owner.getRandom().nextGaussian() * (double)f
+            );
+            fireball.updatePosition(this.owner.getX(), this.owner.getY() + (double)(this.owner.getHeight() / 2.0F) + 0.5D, this.owner.getZ());
+            this.owner.world.spawnEntity(fireball);
         }
-        SmallFireballEntity fireball = new SmallFireballEntity(
-                this.owner.world,
-                this.owner,
-                rot.x + this.owner.getRandom().nextGaussian() * (double)f,
-                rot.y,
-                rot.z + this.owner.getRandom().nextGaussian() * (double)f
-        );
-        fireball.updatePosition(this.owner.getX(), this.owner.getY() + (double)(this.owner.getHeight() / 2.0F) + 0.5D, this.owner.getZ());
-        this.owner.world.spawnEntity(fireball);
         return true;
     }
 }

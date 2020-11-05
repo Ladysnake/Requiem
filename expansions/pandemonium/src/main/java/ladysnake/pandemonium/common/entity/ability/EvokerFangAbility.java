@@ -77,8 +77,11 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity> {
 
     @Override
     public void update() {
-        if (countdown > 0 && --countdown == 0) {
-            this.owner.setSpell(SpellcastingIllagerEntity.Spell.NONE);
+        if (countdown > 0) {
+            --countdown;
+            if (countdown == 0 && !this.owner.world.isClient) {
+                this.owner.setSpell(SpellcastingIllagerEntity.Spell.NONE);
+            }
         }
     }
 

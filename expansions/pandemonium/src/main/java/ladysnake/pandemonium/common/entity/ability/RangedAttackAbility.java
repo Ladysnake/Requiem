@@ -17,38 +17,47 @@
  */
 package ladysnake.pandemonium.common.entity.ability;
 
-import ladysnake.pandemonium.common.util.RayHelper;
-import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
+import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
 
-public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> extends IndirectAbilityBase<T> {
+public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> implements DirectAbility<T> {
+
+    private final T owner;
+    private final double range = 64.0;
+    private final int intervalTicks = 40;
+    private int cooldown = 0;
 
     public RangedAttackAbility(T owner) {
-        super(owner);
+        this.owner = owner;
     }
 
     @Override
-    public boolean trigger(PlayerEntity player) {
-        double range = 64.0;
-        Vec3d startPoint = this.owner.getCameraPosVec(1.0f);
-        Vec3d lookVec = this.owner.getRotationVec(1.0f);
-        Vec3d endPoint = startPoint.add(lookVec.x * range, lookVec.y * range, lookVec.z * range);
-        Vec3d rot = this.owner.getRotationVec(1.0F);
-        Box bb = this.owner.getBoundingBox().stretch(rot.x * range, rot.y * range, rot.z * range).expand(1.0D, 1.0D, 1.0D);
-        EntityHitResult trace = RayHelper.raycast(this.owner, startPoint, endPoint, bb, (e) -> e != player && !e.isSpectator() && e.collides(), range);
-        if (trace != null) {
-            Entity traced = trace.getEntity();
-            if (traced instanceof LivingEntity) {
-                this.owner.attack((LivingEntity) traced, 1f);
+    public double getRange() {
+        return range;
+    }
+
+    @Override
+    public boolean trigger(PlayerEntity player, Entity target) {
+        if (this.cooldown == 0 && target instanceof LivingEntity) {
+            this.cooldown = this.intervalTicks;
+
+            if (!player.world.isClient) {
+                this.owner.attack((LivingEntity) target, 1f);
             }
+
+            return true;
         }
         return false;
+    }
+
+    @Override
+    public void update() {
+        if (this.cooldown > 0) {
+            this.cooldown--;
+        }
     }
 }

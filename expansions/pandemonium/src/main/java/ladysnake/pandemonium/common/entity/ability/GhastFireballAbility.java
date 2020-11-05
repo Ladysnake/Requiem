@@ -39,18 +39,20 @@ public class GhastFireballAbility extends IndirectAbilityBase<MobEntity> {
     @Override
     public boolean trigger(PlayerEntity player) {
         if (this.fireballCooldown >= 20) {
-            Vec3d scaledRot = this.owner.getRotationVec(1.0F);
-            Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
-            this.owner.world.syncWorldEvent(null, 1016, this.owner.getBlockPos(), 0);
-            FireballEntity fireball = new FireballEntity(this.owner.world, this.owner, rot.x, rot.y, rot.z);
-            fireball.explosionPower = this.owner instanceof GhastEntity ? ((GhastEntity) this.owner).getFireballStrength() : 1;
-            fireball.updatePosition(
-                this.owner.getX() + scaledRot.x * 4.0D,
-                this.owner.getY() + (double)(this.owner.getHeight() / 2.0F) + 0.5D,
-                this.owner.getZ() + scaledRot.z * 4.0D
-            );
-            this.owner.world.spawnEntity(fireball);
-            this.fireballCooldown = -40;
+            if (!player.world.isClient) {
+                Vec3d scaledRot = this.owner.getRotationVec(1.0F);
+                Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
+                this.owner.world.syncWorldEvent(null, 1016, this.owner.getBlockPos(), 0);
+                FireballEntity fireball = new FireballEntity(this.owner.world, this.owner, rot.x, rot.y, rot.z);
+                fireball.explosionPower = this.owner instanceof GhastEntity ? ((GhastEntity) this.owner).getFireballStrength() : 1;
+                fireball.updatePosition(
+                    this.owner.getX() + scaledRot.x * 4.0D,
+                    this.owner.getY() + (double) (this.owner.getHeight() / 2.0F) + 0.5D,
+                    this.owner.getZ() + scaledRot.z * 4.0D
+                );
+                this.owner.world.spawnEntity(fireball);
+                this.fireballCooldown = -40;
+            }
             return true;
         }
         return false;
