@@ -39,7 +39,6 @@ import ladysnake.requiem.api.v1.possession.Possessable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
 
 public class ImmutableMobAbilityController<T extends MobEntity & Possessable> implements MobAbilityController {
     private final IndirectAbility<? super T> indirectAttack;
@@ -94,15 +93,5 @@ public class ImmutableMobAbilityController<T extends MobEntity & Possessable> im
         this.indirectAttack.update();
         this.directInteraction.update();
         this.indirectInteraction.update();
-    }
-
-    @Override
-    public void readFromNbt(CompoundTag compoundTag) {
-        // NO-OP
-    }
-
-    @Override
-    public void writeToNbt(CompoundTag compoundTag) {
-        // NO-OP
     }
 }

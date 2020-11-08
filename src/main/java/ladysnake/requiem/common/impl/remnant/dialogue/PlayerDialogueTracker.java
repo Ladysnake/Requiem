@@ -39,7 +39,6 @@ import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -82,15 +81,5 @@ public final class PlayerDialogueTracker implements DialogueTracker {
     @Override
     public CutsceneDialogue getCurrentDialogue() {
         return this.currentDialogue;
-    }
-
-    @Override
-    public void readFromNbt(CompoundTag tag) {
-        // Nothing to read
-    }
-
-    @Override
-    public void writeToNbt(CompoundTag tag) {
-        // Nothing to write
     }
 }

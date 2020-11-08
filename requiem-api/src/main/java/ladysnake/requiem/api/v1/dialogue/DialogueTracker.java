@@ -17,9 +17,9 @@
  */
 package ladysnake.requiem.api.v1.dialogue;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import dev.onyxstudios.cca.api.v3.component.TransientComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import org.apiguardian.api.API;
@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
-public interface DialogueTracker extends Component {
+public interface DialogueTracker extends TransientComponent {
     ComponentKey<DialogueTracker> KEY = ComponentRegistry.getOrCreate(new Identifier("requiem", "dialogue_tracker"), DialogueTracker.class);
 
     static DialogueTracker get(PlayerEntity player) {
