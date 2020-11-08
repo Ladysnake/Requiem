@@ -18,16 +18,10 @@
 package ladysnake.pandemonium.common.impl.anchor;
 
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
-import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 
+import java.util.Collections;
 import java.util.UUID;
-
-import static ladysnake.pandemonium.common.network.PandemoniumNetworking.createAnchorDeleteMessage;
-import static ladysnake.pandemonium.common.network.PandemoniumNetworking.createAnchorUpdateMessage;
 
 public class TrackedFractureAnchor extends InertFractureAnchor {
     public TrackedFractureAnchor(FractureAnchorManager manager, UUID uuid, int id) {
@@ -41,19 +35,15 @@ public class TrackedFractureAnchor extends InertFractureAnchor {
     @Override
     public void setPosition(double x, double y, double z) {
         super.setPosition(x, y, z);
-        syncWithWorld(createAnchorUpdateMessage(this));
+        FractureAnchorManager.KEY.sync(this.manager.getWorld(),
+            (buf, p) -> CommonAnchorManager.writeToPacket(buf, Collections.singleton(this), CommonAnchorManager.ANCHOR_SYNC));
     }
 
     @Override
     public void invalidate() {
         super.invalidate();
-        syncWithWorld(createAnchorDeleteMessage(this.getId()));
-    }
-
-    protected void syncWithWorld(CustomPayloadS2CPacket packet) {
-        for (ServerPlayerEntity player : ((ServerWorld) this.manager.getWorld()).getPlayers()) {
-            RequiemNetworking.sendTo(player, packet);
-        }
+        FractureAnchorManager.KEY.sync(this.manager.getWorld(),
+            (buf, p) -> CommonAnchorManager.writeToPacket(buf, Collections.singleton(this), CommonAnchorManager.ANCHOR_REMOVE));
     }
 
     @Override

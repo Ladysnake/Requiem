@@ -6,13 +6,11 @@ import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.impl.anchor.AnchorFactories;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.common.network.RequiemNetworking;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.ETHEREAL_FRACTURE;
-import static ladysnake.requiem.common.network.RequiemNetworking.createEmptyMessage;
 
 public class ServerMessageHandling {
     public static void init() {
@@ -34,7 +32,7 @@ public class ServerMessageHandling {
                 } else {
                     return;
                 }
-                RequiemNetworking.sendTo((ServerPlayerEntity)player, createEmptyMessage(PandemoniumNetworking.ETHEREAL_ANIMATION));
+                PandemoniumNetworking.sendEtherealAnimationMessage((ServerPlayerEntity) player);
             }
         }));
     }

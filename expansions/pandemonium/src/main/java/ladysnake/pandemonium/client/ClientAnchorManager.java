@@ -20,7 +20,9 @@ package ladysnake.pandemonium.client;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.common.impl.anchor.CommonAnchorManager;
 import ladysnake.pandemonium.common.impl.anchor.InertFractureAnchor;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -29,7 +31,7 @@ public class ClientAnchorManager extends CommonAnchorManager {
         super(world);
     }
 
-    public FractureAnchor getOrCreate(int id) {
+    private FractureAnchor getOrCreate(int id) {
         FractureAnchor ret = this.getAnchor(id);
         if (ret == null) {
             ret = addAnchor(InertFractureAnchor::new, UUID.randomUUID(), id);
@@ -37,4 +39,30 @@ public class ClientAnchorManager extends CommonAnchorManager {
         return ret;
     }
 
+    @Override
+    public void applySyncPacket(PacketByteBuf buf) {
+        int size = buf.readVarInt();
+        for (int i = 0; i < size; i++) {
+            int id = buf.readInt();
+            byte action = buf.readByte();
+            if (action == CommonAnchorManager.ANCHOR_SYNC) {
+                updatePosition(buf, this.getOrCreate(id));
+            } else if (action == CommonAnchorManager.ANCHOR_REMOVE) {
+                removeAnchor(this.getAnchor(id));
+            }
+        }
+    }
+
+    private void removeAnchor(@Nullable FractureAnchor anchor) {
+        if (anchor != null) {
+            anchor.invalidate();
+        }
+    }
+
+    private void updatePosition(PacketByteBuf buf, FractureAnchor anchor) {
+        double x = buf.readDouble();
+        double y = buf.readDouble();
+        double z = buf.readDouble();
+        anchor.setPosition(x, y, z);
+    }
 }

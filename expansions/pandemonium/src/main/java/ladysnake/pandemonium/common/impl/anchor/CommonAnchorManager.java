@@ -17,18 +17,18 @@
  */
 package ladysnake.pandemonium.common.impl.anchor;
 
+import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorFactory;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.common.network.RequiemNetworking;
-import nerdhub.cardinal.components.api.util.sync.WorldSyncedComponent;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
@@ -38,9 +38,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static ladysnake.pandemonium.common.network.PandemoniumNetworking.createAnchorUpdateMessage;
+public class CommonAnchorManager implements FractureAnchorManager, AutoSyncedComponent {
+    public static final byte ANCHOR_SYNC = 0;
+    public static final byte ANCHOR_REMOVE = 1;
 
-public class CommonAnchorManager implements FractureAnchorManager, WorldSyncedComponent {
     private final Map<UUID, FractureAnchor> anchorsByUuid = new HashMap<>();
     private final Int2ObjectMap<FractureAnchor> anchorsById = new Int2ObjectOpenHashMap<>();
     private final World world;
@@ -111,9 +112,21 @@ public class CommonAnchorManager implements FractureAnchorManager, WorldSyncedCo
     }
 
     @Override
-    public void syncWith(ServerPlayerEntity player) {
-        for (FractureAnchor anchor : FractureAnchorManager.get(world).getAnchors()) {
-            RequiemNetworking.sendTo(player, createAnchorUpdateMessage(anchor));
+    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
+        writeToPacket(buf, this.getAnchors(), ANCHOR_SYNC);
+    }
+
+    public static void writeToPacket(PacketByteBuf buf, Collection<FractureAnchor> anchors, byte action) {
+        buf.writeVarInt(anchors.size());
+        for (FractureAnchor anchor : anchors) {
+            buf.writeVarInt(anchor.getId());
+            buf.writeByte(action);
+
+            if (action == ANCHOR_SYNC) {
+                buf.writeDouble(anchor.getX());
+                buf.writeDouble(anchor.getY());
+                buf.writeDouble(anchor.getZ());
+            }
         }
     }
 
