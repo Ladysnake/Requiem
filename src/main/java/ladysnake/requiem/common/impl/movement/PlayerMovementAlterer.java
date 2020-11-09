@@ -142,7 +142,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
     @NotNull
     private static Vec3d getIntendedMovement(PlayerEntity player) {
         if (player instanceof ClientPlayerEntity) {
-            float verticalMovement = ((ClientPlayerEntity) player).input.jumping ? 1 : 0;
+            float verticalMovement = (((ClientPlayerEntity) player).input.jumping ? 1 : 0) - (((ClientPlayerEntity) player).input.sneaking ? 1 : 0);
             return EntityAccessor.invokeMovementInputToVelocity(new Vec3d(player.sidewaysSpeed, verticalMovement, player.forwardSpeed), 1, player.yaw);
         } else {
             return Vec3d.ZERO;
@@ -183,7 +183,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
                 this.noClipping = true;
                 this.ticksAgainstWall = 0;
                 KEY.sync(this.player, (buf, player) -> writeToPacket(buf, SYNC_NO_CLIP), player -> shouldSyncWith(player, SYNC_NO_CLIP));
-            } else if (this.ticksAgainstWall % 10 == 0){
+            } else if (this.ticksAgainstWall % 10 == 0) {
                 KEY.sync(this.player, (buf, player) -> writeToPacket(buf, SYNC_PHASING_PARTICLES), player -> shouldSyncWith(player, SYNC_PHASING_PARTICLES));
             }
         } else {
