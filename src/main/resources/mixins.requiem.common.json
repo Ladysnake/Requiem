@@ -44,12 +44,15 @@
     "possession.possessor.PossessorPlayerEntityMixin",
     "possession.possessor.PossessorServerPlayerEntityMixin",
     "possession.possessor.PotionItemMixin",
+    "remnant.AbstractBlockStateMixin",
     "remnant.DamageTrackerMixin",
+    "remnant.EntityShapeContextMixin",
     "remnant.HungerManagerMixin",
     "remnant.LivingEntityMixin",
     "remnant.PlayerEntityMixin",
     "remnant.ServerPlayerEntityMixin",
-    "remnant.ServerPlayNetworkHandlerMixin"
+    "remnant.ServerPlayNetworkHandlerMixin",
+    "remnant.ShapeContextMixin"
   ],
   "injectors": {
     "defaultRequire": 1

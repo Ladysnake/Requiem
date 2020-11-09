@@ -113,7 +113,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
     @Override
     public void clientTick() {
         if (this.config != null && this.player == MinecraftClient.getInstance().player && this.config.canPhaseThroughWalls()) {
-            if (!this.player.noClip) {
+            if (!this.noClipping && !this.player.noClip) {
                 Vec3d movement = getIntendedMovement(player);
                 Vec3d adjusted = ((EntityAccessor) this.player).invokeAdjustMovementForCollisions(movement);
                 // 10.0 is a magic constant that corresponds to mostly blocked movement
@@ -129,8 +129,12 @@ public class PlayerMovementAlterer implements MovementAlterer {
         }
         if (this.ticksAgainstWall < 0) {
             this.ticksAgainstWall++;
-        } else if (this.noClipping && this.player.world.isSpaceEmpty(this.player)) {
-            RequiemNetworking.sendHugWallMessage(false);
+        } else if (this.noClipping) {
+            this.noClipping = false;    // disable to check whether there really are blocks
+            if (this.player.world.isSpaceEmpty(this.player)) {
+                RequiemNetworking.sendHugWallMessage(false);
+            }
+            this.noClipping = true;
         }
         this.tick();
     }
