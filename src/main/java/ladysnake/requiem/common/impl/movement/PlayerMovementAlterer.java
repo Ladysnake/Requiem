@@ -117,7 +117,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
                 Vec3d movement = getIntendedMovement(player);
                 Vec3d adjusted = ((EntityAccessor) this.player).invokeAdjustMovementForCollisions(movement);
                 // 10.0 is a magic constant that corresponds to mostly blocked movement
-                if (movement.length() / adjusted.length() > 10.0) {
+                if (movement.length() / adjusted.length() > 10.0 && player.getRotationVector().dotProduct(movement.normalize()) > 0.5) {
                     this.ticksAgainstWall++;
                     RequiemNetworking.sendHugWallMessage(true);
                 } else if (this.ticksAgainstWall > 0) {
