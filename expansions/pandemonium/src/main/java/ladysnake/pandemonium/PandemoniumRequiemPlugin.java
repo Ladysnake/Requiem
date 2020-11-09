@@ -56,14 +56,14 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
         abilityRegistry.register(EntityType.GUARDIAN, MobAbilityConfig.<GuardianEntity>builder().directAttack(GuardianBeamAbility::new).build());
         abilityRegistry.register(EntityType.ELDER_GUARDIAN, MobAbilityConfig.<GuardianEntity>builder().directAttack(GuardianBeamAbility::new).build());
         abilityRegistry.register(EntityType.IRON_GOLEM, MobAbilityConfig.builder().directAttack(e -> new MeleeAbility(e, true)).build());
-        abilityRegistry.register(EntityType.LLAMA, MobAbilityConfig.<LlamaEntity>builder().indirectAttack(RangedAttackAbility::new).build());
+        abilityRegistry.register(EntityType.LLAMA, MobAbilityConfig.<LlamaEntity>builder().directAttack(RangedAttackAbility::new).build());
         abilityRegistry.register(EntityType.OCELOT, MobAbilityConfig.builder().directAttack(e -> new MeleeAbility(e, true)).build());
         abilityRegistry.register(EntityType.SHULKER, MobAbilityConfig.<ShulkerEntity>builder()
                 .directAttack(ShulkerShootAbility::new)
                 .indirectAttack(ShulkerShootAbility::new)
                 .indirectInteract(ShulkerPeekAbility::new).build());
         abilityRegistry.register(EntityType.SNOW_GOLEM, MobAbilityConfig.builder().indirectInteract(SnowmanSnowballAbility::new).build());
-        abilityRegistry.register(EntityType.TRADER_LLAMA, MobAbilityConfig.<LlamaEntity>builder().indirectAttack(RangedAttackAbility::new).build());
-        abilityRegistry.register(EntityType.WITCH, MobAbilityConfig.<WitchEntity>builder().indirectAttack(RangedAttackAbility::new).build());
+        abilityRegistry.register(EntityType.TRADER_LLAMA, MobAbilityConfig.<LlamaEntity>builder().directAttack(RangedAttackAbility::new).build());
+        abilityRegistry.register(EntityType.WITCH, MobAbilityConfig.<WitchEntity>builder().directAttack(RangedAttackAbility::new).build());
     }
 }

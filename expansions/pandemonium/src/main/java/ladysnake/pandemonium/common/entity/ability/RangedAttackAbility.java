@@ -27,7 +27,7 @@ import net.minecraft.entity.player.PlayerEntity;
 public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> implements DirectAbility<T> {
 
     private final T owner;
-    private final double range = 64.0;
+    private final double range = 20.0;
     private final int intervalTicks = 40;
     private int cooldown = 0;
 
