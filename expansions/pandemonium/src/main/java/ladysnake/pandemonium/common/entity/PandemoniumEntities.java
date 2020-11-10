@@ -18,7 +18,6 @@
 package ladysnake.pandemonium.common.entity;
 
 import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
@@ -27,7 +26,10 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.registry.Registry;
 
 public class PandemoniumEntities {
-    public static final EntityType<PlayerShellEntity> PLAYER_SHELL = FabricEntityTypeBuilder.create(SpawnGroup.MISC, PlayerShellEntity::new)
+    public static final EntityType<PlayerShellEntity> PLAYER_SHELL = FabricEntityTypeBuilder.createMob()
+        .spawnGroup(SpawnGroup.MISC)
+        .entityFactory(PlayerShellEntity::new)
+        .defaultAttributes(MobEntity::createMobAttributes)
         .dimensions(EntityDimensions.changing(EntityType.PLAYER.getWidth(), EntityType.PLAYER.getHeight()))
         .trackRangeBlocks(64)
         .trackedUpdateRate(1)
@@ -36,6 +38,5 @@ public class PandemoniumEntities {
 
     public static void init() {
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("player_shell"), PLAYER_SHELL);
-        FabricDefaultAttributeRegistry.register(PLAYER_SHELL, MobEntity.createMobAttributes());
     }
 }
