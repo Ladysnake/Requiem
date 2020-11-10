@@ -43,7 +43,7 @@ public class ClientAnchorManager extends CommonAnchorManager {
     public void applySyncPacket(PacketByteBuf buf) {
         int size = buf.readVarInt();
         for (int i = 0; i < size; i++) {
-            int id = buf.readInt();
+            int id = buf.readVarInt();
             byte action = buf.readByte();
             if (action == CommonAnchorManager.ANCHOR_SYNC) {
                 updatePosition(buf, this.getOrCreate(id));
