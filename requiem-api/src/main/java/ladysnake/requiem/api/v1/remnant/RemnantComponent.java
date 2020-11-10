@@ -74,5 +74,5 @@ public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComp
      * @param original the player's clone
      * @param lossless false if the original player is dead, true otherwise
      */
-    void copyFrom(ServerPlayerEntity original, boolean lossless);
+    void prepareRespawn(ServerPlayerEntity original, boolean lossless);
 }

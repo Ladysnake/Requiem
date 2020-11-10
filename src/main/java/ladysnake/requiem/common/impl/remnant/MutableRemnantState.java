@@ -115,12 +115,8 @@ public class MutableRemnantState implements RemnantState {
     }
 
     @Override
-    public void copyFrom(ServerPlayerEntity original, boolean lossless) {
-        RemnantComponent ogState = RemnantComponent.get(original);
-        if (lossless || ogState.isSoul()) {
-            // Copy state
-            this.setSoul(ogState.isSoul());
-        } else {
+    public void prepareRespawn(ServerPlayerEntity original, boolean lossless) {
+        if (!lossless && !this.isSoul()) {
             this.setSoul(true);
             this.copyGlobalPos(original);
         }

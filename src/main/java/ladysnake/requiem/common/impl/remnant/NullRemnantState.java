@@ -75,7 +75,7 @@ public final class NullRemnantState implements RemnantState {
     }
 
     @Override
-    public void copyFrom(ServerPlayerEntity original, boolean lossless) {
+    public void prepareRespawn(ServerPlayerEntity original, boolean lossless) {
         // NO-OP
     }
 }

@@ -58,8 +58,8 @@ public final class RequiemComponents implements EntityComponentInitializer {
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         // the order here is important, possession must be synced/deserialized after remnant
-        registry.registerForPlayers(RemnantComponent.KEY, RemnantComponentImpl::new, RespawnCopyStrategy.NEVER_COPY);    // custom copy
-        registry.registerForPlayers(PossessionComponent.KEY, PossessionComponentImpl::new, RespawnCopyStrategy.NEVER_COPY); // custom copy
+        registry.registerForPlayers(RemnantComponent.KEY, RemnantComponentImpl::new, RespawnCopyStrategy.ALWAYS_COPY);
+        registry.registerForPlayers(PossessionComponent.KEY, PossessionComponentImpl::new, RespawnCopyStrategy.INVENTORY);
         // order does not matter for the other components
         registry.registerForPlayers(MovementAlterer.KEY, PlayerMovementAlterer::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerForPlayers(DeathSuspender.KEY, RevivingDeathSuspender::new, RespawnCopyStrategy.LOSSLESS_ONLY);

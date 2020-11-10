@@ -93,8 +93,8 @@ public final class RemnantComponentImpl implements RemnantComponent {
     }
 
     @Override
-    public void copyFrom(ServerPlayerEntity original, boolean lossless) {
-        this.state.copyFrom(original, lossless);
+    public void prepareRespawn(ServerPlayerEntity original, boolean lossless) {
+        this.state.prepareRespawn(original, lossless);
     }
 
     @Override

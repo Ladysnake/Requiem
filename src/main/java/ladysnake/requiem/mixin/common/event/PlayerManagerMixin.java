@@ -34,8 +34,8 @@
  */
 package ladysnake.requiem.mixin.common.event;
 
-import ladysnake.requiem.api.v1.event.minecraft.PlayerCloneCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
+import ladysnake.requiem.api.v1.event.minecraft.PrepareRespawnCallback;
 import ladysnake.requiem.api.v1.event.minecraft.SyncServerResourcesCallback;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.PlayerManager;
@@ -85,8 +85,8 @@ public abstract class PlayerManagerMixin {
         ),
         ordinal = 1
     )
-    private ServerPlayerEntity firePlayerCloneEvent(ServerPlayerEntity clone, ServerPlayerEntity original, boolean returnFromEnd) {
-        PlayerCloneCallback.EVENT.invoker().onPlayerClone(original, clone, returnFromEnd);
+    private ServerPlayerEntity firePrepareRespawnEvent(ServerPlayerEntity clone, ServerPlayerEntity original, boolean returnFromEnd) {
+        PrepareRespawnCallback.EVENT.invoker().prepareRespawn(original, clone, returnFromEnd);
         REQUIEM$RESPAWN_WORLD.set(clone.getServerWorld());
         // Prevent players from respawning in fairly bad conditions
         while(!clone.world.isSpaceEmpty(clone) && clone.getY() < 256.0D) {
