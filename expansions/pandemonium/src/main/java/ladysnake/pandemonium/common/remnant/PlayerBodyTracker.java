@@ -17,12 +17,14 @@
  */
 package ladysnake.pandemonium.common.remnant;
 
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.pandemonium.common.impl.anchor.EntityFractureAnchor;
 import ladysnake.pandemonium.common.network.PandemoniumNetworking;
-import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.impl.remnant.MutableRemnantState;
+import ladysnake.requiem.Requiem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,13 +35,20 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class FracturableRemnantState extends MutableRemnantState {
+public final class PlayerBodyTracker implements ServerTickingComponent {
+    public static final ComponentKey<PlayerBodyTracker> KEY = ComponentRegistry.getOrCreate(Requiem.id("body_tracker"), PlayerBodyTracker.class);
+
+    public static PlayerBodyTracker get(PlayerEntity player) {
+        return KEY.get(player);
+    }
+
+    private final PlayerEntity player;
     @Nullable
     private UUID anchorUuid;
     private float previousAnchorHealth = -1;
 
-    public FracturableRemnantState(RemnantType type, PlayerEntity owner) {
-        super(type, owner);
+    public PlayerBodyTracker(PlayerEntity player) {
+        this.player = player;
     }
 
     @Override
@@ -62,6 +71,10 @@ public class FracturableRemnantState extends MutableRemnantState {
         }
     }
 
+    public void setAnchor(FractureAnchor anchor) {
+        this.anchorUuid = anchor.getUuid();
+    }
+
     @Nullable
     public FractureAnchor getAnchor() {
         return this.anchorUuid != null
@@ -69,19 +82,15 @@ public class FracturableRemnantState extends MutableRemnantState {
                 : null;
     }
 
-    @Nonnull
     @Override
-    public CompoundTag toTag(@Nonnull CompoundTag tag) {
-        super.toTag(tag);
+    public void writeToNbt(@Nonnull CompoundTag tag) {
         if (this.anchorUuid != null) {
             tag.putUuid("AnchorUuid", this.anchorUuid);
         }
-        return tag;
     }
 
     @Override
-    public void fromTag(@Nonnull CompoundTag tag) {
-        super.fromTag(tag);
+    public void readFromNbt(@Nonnull CompoundTag tag) {
         if (tag.containsUuid("AnchorUuid")) {
             this.anchorUuid = tag.getUuid("AnchorUuid");
         }

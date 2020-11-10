@@ -10,6 +10,9 @@
     "main": [
       "ladysnake.pandemonium.Pandemonium"
     ],
+    "cardinal-components-entity": [
+      "ladysnake.pandemonium.Pandemonium"
+    ],
     "cardinal-components-world": [
       "ladysnake.pandemonium.Pandemonium"
     ]

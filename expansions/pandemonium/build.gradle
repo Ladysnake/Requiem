@@ -12,6 +12,7 @@ dependencies {
     compile rootProject
     compile project(":pandemonium-api")
     include project(":pandemonium-api")
+    modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${rootProject.cca_version}")
     modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
     include ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
 }

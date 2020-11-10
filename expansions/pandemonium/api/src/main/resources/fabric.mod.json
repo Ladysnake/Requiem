@@ -18,6 +18,9 @@
   "environment": "*",
 
   "custom": {
-    "modmenu:api": true
+    "modmenu:api": true,
+    "cardinal-components": [
+      "requiem:body_tracker"
+    ]
   }
 }
