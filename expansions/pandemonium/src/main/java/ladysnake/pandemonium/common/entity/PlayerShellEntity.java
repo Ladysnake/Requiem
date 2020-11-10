@@ -254,7 +254,9 @@ public class PlayerShellEntity extends MobEntity {
         if (tag.contains("PlayerNbt")) {
             this.playerNbt = tag.getCompound("PlayerNbt");
         }
-        this.setPlayerUuid(tag.getUuid("Player"));
+        if (tag.contains("Player")) {
+            this.setPlayerUuid(tag.getUuid("Player"));
+        }
     }
 
     @Override
