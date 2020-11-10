@@ -65,6 +65,7 @@ public final class RequiemClient implements ClientModInitializer {
 
     private final RequiemFx requiemFxRenderer;
     private final ShadowPlayerFx shadowPlayerFxRenderer;
+    private final ParticleGridFx soulPhaseFxRenderer;
     private final ZaWorldFx worldFreezeFxRenderer;
 
     private RequiemClient() {
@@ -73,6 +74,7 @@ public final class RequiemClient implements ClientModInitializer {
         this.targetHandler = new RequiemTargetHandler();
         this.requiemFxRenderer = new RequiemFx();
         this.shadowPlayerFxRenderer = new ShadowPlayerFx();
+        this.soulPhaseFxRenderer = new ParticleGridFx();
         this.worldFreezeFxRenderer = new ZaWorldFx();
     }
 
@@ -137,6 +139,7 @@ public final class RequiemClient implements ClientModInitializer {
         this.messageHandler.init();
         this.requiemFxRenderer.registerCallbacks();
         this.shadowPlayerFxRenderer.registerCallbacks();
+        this.soulPhaseFxRenderer.registerCallbacks();
         this.worldFreezeFxRenderer.registerCallbacks();
         this.listener.registerCallbacks();
         this.targetHandler.registerCallbacks();
