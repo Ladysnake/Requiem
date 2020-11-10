@@ -12,7 +12,6 @@
     "gui.ingame.EditBookScreenAccessor",
     "item.ItemStackTooltipMixin",
     "network.ClientPlayerEntityMixin",
-    "render.GameRendererAccessor",
     "render.GameRendererMixin",
     "render.entity.AccessibleTextureEntityRenderer",
     "render.entity.EntityRenderDispatcherMixin",

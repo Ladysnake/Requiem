@@ -39,6 +39,7 @@ import ladysnake.requiem.api.v1.event.minecraft.client.UpdateTargetedEntityCallb
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.client.GameRendererAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
@@ -54,11 +55,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(GameRenderer.class)
-public abstract class GameRendererMixin {
+public abstract class GameRendererMixin implements GameRendererAccessor {
 
     @Shadow @Final private Camera camera;
 
     @Shadow @Final private MinecraftClient client;
+
+    // synthetic method corresponding to the lambda in updateTargetedEntity
+    @SuppressWarnings("ShadowTarget")
+    @Shadow(remap = false)
+    private static boolean method_18144(Entity tested) {
+        return false;
+    }
+
+    @Override
+    public boolean requiem_isEligibleForTargeting(Entity tested) {
+        return method_18144(tested);
+    }
 
     @Inject(method = "updateTargetedEntity", at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;targetedEntity:Lnet/minecraft/entity/Entity;", ordinal = 0))
     private void updateTargetedEntity(float tickDelta, CallbackInfo ci) {

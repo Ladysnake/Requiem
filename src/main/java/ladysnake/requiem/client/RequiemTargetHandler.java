@@ -7,7 +7,6 @@ import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.UpdateTargetedEntityCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.common.network.RequiemNetworking;
-import ladysnake.requiem.mixin.client.render.GameRendererAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.texture.TextureManager;
@@ -110,7 +109,7 @@ public final class RequiemTargetHandler implements UpdateTargetedEntityCallback,
                 startPoint,
                 endPoint,
                 box,
-                GameRendererAccessor::isEligibleForTargeting,
+                ((GameRendererAccessor) client.gameRenderer)::requiem_isEligibleForTargeting,
                 effectiveRangeSq
             );
 
