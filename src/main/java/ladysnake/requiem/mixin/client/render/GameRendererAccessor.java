@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface GameRendererAccessor {
     // synthetic method corresponding to the lambda in updateTargetedEntity
     @SuppressWarnings("InvokerTarget")
-    @Invoker("method_18144")
+    @Invoker(value = "method_18144", remap = false)
     static boolean isEligibleForTargeting(Entity tested) {
         return false;
     }
