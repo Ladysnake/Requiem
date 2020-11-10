@@ -4,14 +4,17 @@ import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.world.WorldComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer;
+import io.github.ladysnake.impersonate.Impersonate;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.pandemonium.client.ClientAnchorManager;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.impl.anchor.CommonAnchorManager;
 import ladysnake.pandemonium.common.network.ServerMessageHandling;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
+import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -22,6 +25,7 @@ import net.minecraft.world.World;
 @CalledThroughReflection
 public class Pandemonium implements ModInitializer, EntityComponentInitializer, WorldComponentInitializer {
     public static final String MOD_ID = "pandemonium";
+    public static final Identifier BODY_IMPERSONATION = Requiem.id("body_impersonation");
 
     public static Identifier id(String path) {
         return new Identifier(MOD_ID, path);
@@ -40,6 +44,9 @@ public class Pandemonium implements ModInitializer, EntityComponentInitializer, 
         ServerMessageHandling.init();
         RequiemApi.registerPlugin(new PandemoniumRequiemPlugin());
         ServerTickEvents.END_WORLD_TICK.register(Pandemonium::tickAnchors);
+        PlayerRespawnCallback.EVENT.register((player, returnFromEnd) -> {
+            if (!returnFromEnd) Impersonate.IMPERSONATION.get(player).stopImpersonation(BODY_IMPERSONATION);
+        });
     }
 
     @Override

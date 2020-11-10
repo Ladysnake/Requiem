@@ -18,6 +18,8 @@
 package ladysnake.pandemonium.common.entity;
 
 import com.mojang.authlib.GameProfile;
+import io.github.ladysnake.impersonate.Impersonate;
+import ladysnake.pandemonium.Pandemonium;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.util.InventoryHelper;
 import net.minecraft.entity.Entity;
@@ -47,6 +49,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -120,6 +123,10 @@ public class PlayerShellEntity extends MobEntity {
                 InventoryHelper.transferEquipment(this, possessor);
                 this.remove();
                 RemnantComponent.get(possessor).setSoul(false);
+
+                if (!Objects.equals(this.profile, possessor.getGameProfile())) {
+                    Impersonate.IMPERSONATION.get(possessor).impersonate(Pandemonium.BODY_IMPERSONATION, this.profile);
+                }
             }
         }
     }

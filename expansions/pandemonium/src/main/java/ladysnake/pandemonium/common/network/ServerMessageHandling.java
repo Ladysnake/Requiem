@@ -1,5 +1,7 @@
 package ladysnake.pandemonium.common.network;
 
+import io.github.ladysnake.impersonate.Impersonate;
+import ladysnake.pandemonium.Pandemonium;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
@@ -29,6 +31,7 @@ public class ServerMessageHandling {
                     FractureAnchor anchor = anchorManager.addAnchor(AnchorFactories.fromEntityUuid(shellEntity.getUuid()));
                     anchor.setPosition(shellEntity.getX(), shellEntity.getY(), shellEntity.getZ());
                     bodyTracker.setAnchor(anchor);
+                    Impersonate.IMPERSONATION.get(player).stopImpersonation(Pandemonium.BODY_IMPERSONATION);
                     remnantState.setSoul(true);
                 } else if (possessionComponent.isPossessing() && bodyTracker.getAnchor() != null) {
                     // TODO make a gamerule to keep the inventory when leaving a mob
