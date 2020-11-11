@@ -18,6 +18,7 @@
 package ladysnake.pandemonium.client.render.entity;
 
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
+import ladysnake.requiem.client.RequiemFx;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -40,7 +41,8 @@ public class PlayerShellEntityRenderer extends EntityRenderer<PlayerShellEntity>
     @Override
     public void render(PlayerShellEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         ShellClientPlayerEntity renderedPlayer = entity.getRenderedPlayer();
-        this.dispatcher.getRenderer(renderedPlayer).render(renderedPlayer, yaw, tickDelta, matrices, vertexConsumers, light);
+        RequiemFx.setupRenderDelegate(entity, renderedPlayer);
+        this.dispatcher.render(renderedPlayer, 0, 0, 0, yaw, tickDelta, matrices, vertexConsumers, light);
     }
 
     @Override

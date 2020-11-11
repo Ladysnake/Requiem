@@ -36,6 +36,7 @@ package ladysnake.requiem.mixin.client.render.entity;
 
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.client.RequiemFx;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Model;
@@ -79,22 +80,14 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     private void cancelRender(AbstractClientPlayerEntity renderedPlayer, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int lightmap, CallbackInfo ci) {
         LivingEntity possessedEntity = PossessionComponent.get(renderedPlayer).getPossessedEntity();
         if (possessedEntity != null) {
-            EntityRenderDispatcher renderManager = MinecraftClient.getInstance().getEntityRenderDispatcher();
             if (((VariableMobilityEntity)possessedEntity).requiem_isImmovable()) {
                 double relativeX = possessedEntity.getX() - renderedPlayer.getX();
                 double relativeY = possessedEntity.getY() - renderedPlayer.getY();
                 double relativeZ = possessedEntity.getZ() - renderedPlayer.getZ();
-                renderManager.render(possessedEntity, relativeX, relativeY, relativeZ, yaw, tickDelta, matrices, vertexConsumers, lightmap);
+                this.dispatcher.render(possessedEntity, relativeX, relativeY, relativeZ, yaw, tickDelta, matrices, vertexConsumers, lightmap);
             } else {
-                possessedEntity.bodyYaw = renderedPlayer.bodyYaw;
-                possessedEntity.prevBodyYaw = renderedPlayer.prevBodyYaw;
-                possessedEntity.yaw = renderedPlayer.yaw;
-                possessedEntity.prevYaw = renderedPlayer.prevYaw;
-                possessedEntity.pitch = renderedPlayer.pitch;
-                possessedEntity.prevPitch = renderedPlayer.prevPitch;
-                possessedEntity.headYaw = renderedPlayer.headYaw;
-                possessedEntity.prevHeadYaw = renderedPlayer.prevHeadYaw;
-                renderManager.render(possessedEntity, 0, 0, 0, yaw, tickDelta, matrices, vertexConsumers, lightmap);
+                RequiemFx.setupRenderDelegate(renderedPlayer, possessedEntity);
+                this.dispatcher.render(possessedEntity, 0, 0, 0, yaw, tickDelta, matrices, vertexConsumers, lightmap);
             }
             ci.cancel();
         }

@@ -317,6 +317,14 @@ public class PlayerShellEntity extends MobEntity {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        if (this.world.isClient && this.renderedPlayer != null) {
+            this.renderedPlayer.copyPositionAndRotation(this);
+        }
+    }
+
+    @Override
     public void tickMovement() {
         super.tickMovement();
         this.updateShoulderEntity(this.getShoulderEntityLeft());

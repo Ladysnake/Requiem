@@ -46,6 +46,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
@@ -85,6 +86,17 @@ public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEv
     private final Uniform1f uniformSolidIntensity = spectreShader.findUniform1f("SolidIntensity");
     private final Uniform1f uniformSlider = zoomShader.findUniform1f("Slider");
     private final Uniform1f uniformSTime = spectreShader.findUniform1f("STime");
+
+    public static void setupRenderDelegate(LivingEntity rendered, LivingEntity delegate) {
+        delegate.bodyYaw = rendered.bodyYaw;
+        delegate.prevBodyYaw = rendered.prevBodyYaw;
+        delegate.yaw = rendered.yaw;
+        delegate.prevYaw = rendered.prevYaw;
+        delegate.pitch = rendered.pitch;
+        delegate.prevPitch = rendered.prevPitch;
+        delegate.headYaw = rendered.headYaw;
+        delegate.prevHeadYaw = rendered.prevHeadYaw;
+    }
 
     void registerCallbacks() {
         ShaderEffectRenderCallback.EVENT.register(this);
