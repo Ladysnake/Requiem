@@ -1,5 +1,6 @@
 package ladysnake.pandemonium;
 
+import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.entity.ability.*;
 import ladysnake.requiem.Requiem;
@@ -12,6 +13,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.LlamaEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
@@ -21,8 +23,8 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
     public void onRequiemInitialize() {
         PossessionStartCallback.EVENT.register(Pandemonium.id("shell_interaction"), (target, possessor, simulate) -> {
             if (target instanceof PlayerShellEntity) {
-                if (!simulate) {
-                    ((PlayerShellEntity) target).onSoulInteract(possessor);
+                if (!simulate && !possessor.world.isClient) {
+                    PlayerSplitter.merge(((PlayerShellEntity) target), (ServerPlayerEntity) possessor);
                 }
                 return PossessionStartCallback.Result.HANDLED;
             }

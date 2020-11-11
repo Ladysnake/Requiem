@@ -18,18 +18,10 @@
 package ladysnake.pandemonium.common.entity;
 
 import com.mojang.authlib.GameProfile;
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
-import io.github.ladysnake.impersonate.Impersonate;
-import ladysnake.pandemonium.Pandemonium;
 import ladysnake.pandemonium.client.render.entity.ShellClientPlayerEntity;
 import ladysnake.pandemonium.mixin.common.entity.mob.LivingEntityAccessor;
 import ladysnake.pandemonium.mixin.common.entity.player.PlayerEntityAccessor;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.util.InventoryHelper;
-import nerdhub.cardinal.components.api.util.EntityComponents;
-import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
-import nerdhub.cardinal.components.api.util.container.AbstractComponentContainer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.PlayerModelPart;
@@ -53,13 +45,11 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.apiguardian.api.API;
 
@@ -67,8 +57,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
-import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 import static org.apiguardian.api.API.Status.MAINTAINED;
@@ -92,7 +80,7 @@ public class PlayerShellEntity extends MobEntity {
     protected CompoundTag playerNbt;
 
     @API(status = MAINTAINED)
-    protected PlayerShellEntity(EntityType<? extends PlayerShellEntity> entityType_1, World world_1) {
+    public PlayerShellEntity(EntityType<? extends PlayerShellEntity> entityType_1, World world_1) {
         super(entityType_1, world_1);
     }
 
@@ -178,20 +166,8 @@ public class PlayerShellEntity extends MobEntity {
 
     /* * * * * * * * * * * * common stuff * * * * * * * * * * * * * * */
 
-    public void onSoulInteract(@Nullable PlayerEntity possessor) {
-        if (possessor != null) {
-            if (!world.isClient) {
-                possessor.inventory.dropAll();
-                this.restorePlayerData((ServerPlayerEntity) possessor);
-                this.remove();
-                RemnantComponent.get(possessor).setSoul(false);
-
-                if (!Objects.equals(this.playerUuid, possessor.getUuid())) {
-                    GameProfile gameProfile = this.getGameProfile();
-                    Impersonate.IMPERSONATION.get(possessor).impersonate(Pandemonium.BODY_IMPERSONATION, gameProfile == null ? new GameProfile(this.playerUuid, null) : gameProfile);
-                }
-            }
-        }
+    public UUID getPlayerUuid() {
+        return playerUuid;
     }
 
     public void restorePlayerData(ServerPlayerEntity possessor) {
@@ -210,20 +186,16 @@ public class PlayerShellEntity extends MobEntity {
         InventoryHelper.transferEquipment(this, possessor);
     }
 
-    public void storePlayerData(ServerPlayerEntity player) {
+    public void storePlayerData(ServerPlayerEntity player, CompoundTag respawnNbt) {
+        // Save the complete representation of the player
+        performNbtCopy(respawnNbt, this);
+        this.playerNbt = respawnNbt;
+
         // Transfer inventory
         InventoryHelper.transferEquipment(player, this);
         int invSize = player.inventory.main.size();
         inventory = new SimpleInventory(invSize);
         transferInventory(player.inventory, inventory, invSize);
-
-        // Save the complete representation of the player
-        RespawnNbt respawnNbt = gatherRespawnData(player);
-        performNbtCopy(respawnNbt.leftoverData, this);
-        this.playerNbt = respawnNbt.leftoverData;
-
-        // player keeps everything that goes through death
-        player.fromTag(respawnNbt.persistentData);
 
         setPlayerModelParts(player.getDataTracker().get(PlayerEntityAccessor.getPlayerModelPartsTrackedData()));
 
@@ -478,13 +450,7 @@ public class PlayerShellEntity extends MobEntity {
 
     /* Static Methods */
 
-    public static PlayerShellEntity fromPlayer(ServerPlayerEntity player) {
-        PlayerShellEntity shell = new PlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, player.world);
-        shell.storePlayerData(player);
-        return shell;
-    }
-
-    private static CompoundTag performNbtCopy(CompoundTag from, Entity to) {
+    private static void performNbtCopy(CompoundTag from, Entity to) {
         UUID fromUuid = to.getUuid();
         // Save the complete representation of the player
         CompoundTag serialized = new CompoundTag();
@@ -495,93 +461,6 @@ public class PlayerShellEntity extends MobEntity {
         to.fromTag(serialized);
         // Restore UUID
         to.setUuid(fromUuid);
-        return serialized;
     }
 
-    private static RespawnNbt gatherRespawnData(ServerPlayerEntity player) {
-        //Setup location for dummy
-        GameRules.BooleanRule keepInventory = player.world.getGameRules().get(GameRules.KEEP_INVENTORY);
-        boolean keepInv = keepInventory.get();
-
-        try {
-            keepInventory.set(false, player.getServer());
-
-            //Setup location for dummy
-            ServerPlayerEntity dummy = new ServerPlayerEntity(
-                Objects.requireNonNull(player.getServer()),
-                player.getServerWorld(),
-                player.getGameProfile(),
-                new ServerPlayerInteractionManager(player.getServerWorld())
-            );
-            dummy.networkHandler = player.networkHandler;
-            dummy.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch);
-            dummy.fallDistance = 0F;
-
-            CompoundTag baseData = dummy.toTag(new CompoundTag());
-
-            //Clone data
-            dummy.copyFrom(player, false);
-            dummy.setEntityId(player.getEntityId());
-
-            CompoundTag persistentData = dummy.toTag(new CompoundTag());
-            CompoundTag leftoverData = player.toTag(new CompoundTag());
-
-            RespawnNbt respawnNbt = new RespawnNbt(baseData, persistentData, leftoverData);
-            respawnNbt.deduplicateVanillaData();
-            respawnNbt.deduplicateComponents(ComponentProvider.fromEntity(player).getComponentContainer().keys());
-            return respawnNbt;
-        } finally {
-            keepInventory.set(keepInv, player.getServer());
-        }
-    }
-
-    private static final class RespawnNbt {
-        private final CompoundTag baseData;
-        private final CompoundTag persistentData;
-        private final CompoundTag leftoverData;
-
-        private RespawnNbt(CompoundTag baseData, CompoundTag persistentData, CompoundTag leftoverData) {
-            this.baseData = baseData;
-            this.persistentData = persistentData;
-            this.leftoverData = leftoverData;
-        }
-
-        private void deduplicateComponents(Set<ComponentKey<?>> keys) {
-            CompoundTag baseComponents = baseData.getCompound(AbstractComponentContainer.NBT_KEY);
-            CompoundTag persistentComponents = persistentData.getCompound(AbstractComponentContainer.NBT_KEY);
-            CompoundTag leftoverComponents = leftoverData.getCompound(AbstractComponentContainer.NBT_KEY);
-
-            for (ComponentKey<?> key : keys) {
-                String keyId = key.getId().toString();
-                if (EntityComponents.getRespawnCopyStrategy(key) == RespawnCopyStrategy.ALWAYS_COPY) {
-                    // avoid duplicating fully soulbound data
-                    leftoverComponents.remove(keyId);
-                } else if (persistentComponents.contains(keyId)){
-                    persistentComponents.put(keyId, baseComponents.getCompound(keyId));
-                }
-            }
-        }
-
-        private void deduplicateVanillaData() {
-            leftoverData.remove("UUID");
-            leftoverData.remove("SpawnX");
-            leftoverData.remove("SpawnY");
-            leftoverData.remove("SpawnZ");
-            leftoverData.remove("SpawnForced");
-            leftoverData.remove("SpawnAngle");
-            leftoverData.remove("SpawnDimension");
-            leftoverData.remove("EnderItems");
-            leftoverData.remove("abilities");
-            leftoverData.remove("playerGameType");
-            leftoverData.remove("previousPlayerGameType");
-            leftoverData.remove("seenCredits");
-            persistentData.remove("playerGameType");
-            persistentData.remove("previousPlayerGameType");
-            persistentData.remove("abilities");
-            persistentData.remove("seenCredits");
-            persistentData.put("ShoulderEntityLeft", baseData.get("ShoulderEntityLeft"));
-            persistentData.put("ShoulderEntityRight", baseData.get("ShoulderEntityRight"));
-            persistentData.put("Attributes", baseData.get("Attributes"));
-        }
-    }
 }
