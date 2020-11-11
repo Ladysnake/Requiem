@@ -5,9 +5,11 @@ import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import org.jetbrains.annotations.Nullable;
 
 public class ShellClientPlayerEntity extends OtherClientPlayerEntity {
     private final PlayerShellEntity shell;
@@ -36,5 +38,26 @@ public class ShellClientPlayerEntity extends OtherClientPlayerEntity {
     @Override
     public CompoundTag getShoulderEntityRight() {
         return this.shell.getShoulderEntityRight();
+    }
+
+    @Override
+    public boolean isOnFire() {
+        return this.shell.isOnFire();
+    }
+
+    @Override
+    public boolean hasVehicle() {
+        return this.shell.hasVehicle();
+    }
+
+    @Override
+    public @Nullable Entity getVehicle() {
+        return this.shell.getVehicle();
+    }
+
+    public void updateData() {
+        this.copyPositionAndRotation(this.shell);
+        this.hurtTime = this.shell.hurtTime;
+        this.deathTime = this.shell.deathTime;
     }
 }

@@ -164,6 +164,11 @@ public class PlayerShellEntity extends MobEntity {
         this.dataTracker.set(PLAYER_MODEL_PARTS, b);
     }
 
+    @Override
+    public boolean doesRenderOnFire() {
+        return false;
+    }
+
     /* * * * * * * * * * * * common stuff * * * * * * * * * * * * * * */
 
     public UUID getPlayerUuid() {
@@ -320,7 +325,7 @@ public class PlayerShellEntity extends MobEntity {
     public void tick() {
         super.tick();
         if (this.world.isClient && this.renderedPlayer != null) {
-            this.renderedPlayer.copyPositionAndRotation(this);
+            this.renderedPlayer.updateData();
         }
     }
 
