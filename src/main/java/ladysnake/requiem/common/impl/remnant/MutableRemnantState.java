@@ -43,6 +43,7 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
 import ladysnake.requiem.common.remnant.ClosedSpaceDetector;
@@ -119,6 +120,10 @@ public class MutableRemnantState implements RemnantState {
         if (!lossless && !this.isSoul()) {
             this.setSoul(true);
             this.copyGlobalPos(original);
+
+            if (original.isDead()) {
+                AttritionStatusEffect.apply(player);
+            }
         }
     }
 

@@ -49,7 +49,6 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.*;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
-import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
@@ -145,9 +144,6 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             player.sendAbilitiesUpdate();
             RemnantComponent.KEY.sync(player);
             ((MobResurrectable) player).spawnResurrectionEntity();
-            if (!returnFromEnd && RemnantComponent.get(player).isIncorporeal()) {
-                AttritionStatusEffect.apply(player);
-            }
         }));
     }
 
