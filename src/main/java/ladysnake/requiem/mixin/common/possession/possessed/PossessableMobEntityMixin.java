@@ -34,12 +34,8 @@
  */
 package ladysnake.requiem.mixin.common.possession.possessed;
 
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.api.v1.internal.DummyMobAbilityController;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityController;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
@@ -68,19 +64,10 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
     protected abstract void mobTick();
 
     @Unique
-    private MobAbilityController abilityController = DummyMobAbilityController.INSTANCE;
-    @Unique
     private int attackingCountdown;
 
     public PossessableMobEntityMixin(EntityType<? extends MobEntity> type, World world) {
         super(type, world);
-    }
-
-    @Inject(method = "<init>", at = @At("RETURN"))
-    private void initAbilities(CallbackInfo ci) {
-        if (world != null && !world.isClient) {
-            this.abilityController = new ImmutableMobAbilityController<>(MobAbilityRegistry.instance().getConfig((MobEntity)(Object)this), (MobEntity & Possessable)(Object)this);
-        }
     }
 
     @Inject(method = "setAttacking", at = @At("RETURN"))
