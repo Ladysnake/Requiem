@@ -17,37 +17,41 @@
  */
 package ladysnake.pandemonium.client.render.entity;
 
-import ladysnake.pandemonium.client.RequiemSkinManager;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
-import net.minecraft.client.render.entity.BipedEntityRenderer;
+import net.minecraft.client.render.Frustum;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.render.entity.feature.*;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 
-public class PlayerShellEntityRenderer extends BipedEntityRenderer<PlayerShellEntity, PlayerEntityModel<PlayerShellEntity>> {
-
+public class PlayerShellEntityRenderer extends EntityRenderer<PlayerShellEntity> {
     public PlayerShellEntityRenderer(EntityRenderDispatcher renderManagerIn) {
-        super(renderManagerIn, new PlayerEntityModel<>(0.0F, true), 0.5F);
-        this.addFeature(new ArmorFeatureRenderer<>(this, new BipedEntityModel<>(0.5F), new BipedEntityModel<>(1.0F)));
-        this.addFeature(new HeldItemFeatureRenderer<>(this));
-        this.addFeature(new StuckArrowsFeatureRenderer<>(this));
-        this.addFeature(new HeadFeatureRenderer<>(this));
-        this.addFeature(new ElytraFeatureRenderer<>(this));
-        this.addFeature(new TridentRiptideFeatureRenderer<>(this));
-        this.addFeature(new StuckStingersFeatureRenderer<>(this));
+        super(renderManagerIn);
+    }
+
+    @Override
+    public boolean shouldRender(PlayerShellEntity entity, Frustum frustum, double x, double y, double z) {
+        ShellClientPlayerEntity renderedPlayer = entity.getRenderedPlayer();
+        return this.dispatcher.getRenderer(renderedPlayer).shouldRender(renderedPlayer, frustum, x, y, z);
+    }
+
+    @Override
+    public void render(PlayerShellEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+        ShellClientPlayerEntity renderedPlayer = entity.getRenderedPlayer();
+        this.dispatcher.getRenderer(renderedPlayer).render(renderedPlayer, yaw, tickDelta, matrices, vertexConsumers, light);
+    }
+
+    @Override
+    public Vec3d getPositionOffset(PlayerShellEntity entity, float tickDelta) {
+        ShellClientPlayerEntity renderedPlayer = entity.getRenderedPlayer();
+        return this.dispatcher.getRenderer(renderedPlayer).getPositionOffset(renderedPlayer, tickDelta);
     }
 
     @Override
     public Identifier getTexture(PlayerShellEntity entity) {
-        return RequiemSkinManager.get(entity.getProfile());
+        ShellClientPlayerEntity renderedPlayer = entity.getRenderedPlayer();
+        return this.dispatcher.getRenderer(renderedPlayer).getTexture(renderedPlayer);
     }
-
-    @Override
-    protected void scale(PlayerShellEntity shell, MatrixStack matrices, float tickDelta) {
-        matrices.scale(0.9375F, 0.9375F, 0.9375F);
-    }
-
 }

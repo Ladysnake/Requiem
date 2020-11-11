@@ -26,7 +26,7 @@ public class ServerMessageHandling {
                 PossessionComponent possessionComponent = PossessionComponent.get(player);
                 FractureAnchorManager anchorManager = FractureAnchorManager.get(player.world);
                 if (!remnantState.isSoul()) {
-                    PlayerShellEntity shellEntity = PlayerShellEntity.fromPlayer(player);
+                    PlayerShellEntity shellEntity = PlayerShellEntity.fromPlayer((ServerPlayerEntity) player);
                     player.world.spawnEntity(shellEntity);
                     FractureAnchor anchor = anchorManager.addAnchor(AnchorFactories.fromEntityUuid(shellEntity.getUuid()));
                     anchor.setPosition(shellEntity.getX(), shellEntity.getY(), shellEntity.getZ());
