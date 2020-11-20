@@ -38,6 +38,7 @@ import ladysnake.requiem.api.v1.internal.ProtoPossessable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -87,6 +88,13 @@ public abstract class PossessableEntityMixin implements ProtoPossessable {
         PlayerEntity player = this.getPossessor();
         if (player != null) {
             cir.setReturnValue(player.startRiding(mount, force));
+        }
+    }
+
+    @Inject(method = "saveToTag", at = @At("HEAD"), cancellable = true)
+    private void cancelPossessableSave(CompoundTag tag, CallbackInfoReturnable<Boolean> cir) {
+        if (this.isBeingPossessed()) {
+            cir.setReturnValue(false);
         }
     }
 }
