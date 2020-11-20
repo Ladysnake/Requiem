@@ -44,9 +44,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
-import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
-import ladysnake.requiem.common.remnant.ClosedSpaceDetector;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -58,14 +56,11 @@ public class MutableRemnantState implements RemnantState {
 
     private final RemnantType type;
     protected final PlayerEntity player;
-    protected final ClosedSpaceDetector closedSpaceDetector;
     protected boolean ethereal;
-    private boolean lastTickIncorporeal;
 
     public MutableRemnantState(RemnantType type, PlayerEntity player) {
         this.type = type;
         this.player = player;
-        this.closedSpaceDetector = new ClosedSpaceDetector(player);
     }
 
     @Override
@@ -99,20 +94,6 @@ public class MutableRemnantState implements RemnantState {
             MovementAlterer.get(this.player).setConfig(config);
             RemnantComponent.KEY.sync(this.player);
         }
-    }
-
-    @Override
-    public void serverTick() {
-        boolean incorporeal = this.isIncorporeal();
-        if (incorporeal) {
-            if (!this.lastTickIncorporeal) {
-                this.closedSpaceDetector.reset(false);
-            }
-            if (player.world.getGameRules().getBoolean(RequiemGamerules.SPAWN_HELP_ENDERMEN)) {
-                this.closedSpaceDetector.tick();
-            }
-        }
-        this.lastTickIncorporeal = incorporeal;
     }
 
     @Override

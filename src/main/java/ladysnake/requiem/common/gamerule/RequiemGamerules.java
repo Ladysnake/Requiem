@@ -55,8 +55,6 @@ public class RequiemGamerules {
         }), GameRules.Category.PLAYER);
     public static final GameRules.Key<GameRules.BooleanRule> NO_CURE =
         register("disableCure", GameRuleFactory.createBooleanRule(false), GameRules.Category.PLAYER);
-    public static final GameRules.Key<GameRules.BooleanRule> SPAWN_HELP_ENDERMEN =
-        register("spawnHelpEndermen", GameRuleFactory.createBooleanRule(true), GameRules.Category.MISC);
     public static final GameRules.Key<EnumRule<StartingRemnantType>> STARTING_SOUL_MODE =
         register("startingRemnantType", GameRuleFactory.createEnumRule(StartingRemnantType.CHOOSE), GameRules.Category.PLAYER);
 
