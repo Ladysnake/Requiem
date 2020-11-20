@@ -22,14 +22,14 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.registry.Registry;
 
 public class PandemoniumEntities {
     public static final EntityType<PlayerShellEntity> PLAYER_SHELL = FabricEntityTypeBuilder.createMob()
         .spawnGroup(SpawnGroup.MISC)
         .entityFactory(PlayerShellEntity::new)
-        .defaultAttributes(MobEntity::createMobAttributes)
+        .defaultAttributes(PlayerEntity::createPlayerAttributes)
         .dimensions(EntityDimensions.changing(EntityType.PLAYER.getWidth(), EntityType.PLAYER.getHeight()))
         .trackRangeBlocks(64)
         .trackedUpdateRate(1)
