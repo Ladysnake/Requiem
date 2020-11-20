@@ -32,7 +32,7 @@ public abstract class PlayerInventoryMixin {
         }
     }
 
-    @Inject(method = "addStack(ILnet/minecraft/item/ItemStack;)I", at = @At("HEAD"))
+    @Inject(method = "addStack(ILnet/minecraft/item/ItemStack;)I", at = @At("HEAD"), cancellable = true)
     private void preventAddStack(int slot, ItemStack stack, CallbackInfoReturnable<Integer> cir) {
         if (InventoryLimiter.KEY.get(this.player).isSlotLocked(slot)) {
             cir.setReturnValue(stack.getCount());
