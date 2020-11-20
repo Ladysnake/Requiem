@@ -20,9 +20,14 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
     }
 
     @Override
+    public boolean isMainInventoryLocked() {
+        return !this.player.isCreative() && this.mainInventoryLocked;
+    }
+
+    @Override
     public boolean isSlotLocked(int index) {
         // First slot is the main hand
-        return this.mainInventoryLocked && index > MAINHAND_SLOT && index < player.inventory.main.size();
+        return this.isMainInventoryLocked() && index > MAINHAND_SLOT && index < player.inventory.main.size();
     }
 
     @Override

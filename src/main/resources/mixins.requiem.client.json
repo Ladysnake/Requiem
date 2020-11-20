@@ -13,6 +13,7 @@
     "item.ItemStackTooltipMixin",
     "network.ClientPlayerEntityMixin",
     "possession.ClientPlayerInteractionManagerMixin",
+    "possession.InGameHudMixin",
     "possession.MinecraftClientMixin",
     "possession.PlayerInventoryMixin",
     "render.GameRendererMixin",
