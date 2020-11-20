@@ -4,7 +4,9 @@ import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -20,7 +22,7 @@ public class ServerMessageHandling {
                 PossessionComponent possessionComponent = PossessionComponent.get(player);
                 if (!remnantState.isSoul()) {
                     PlayerSplitter.split((ServerPlayerEntity) player);
-                } else if (possessionComponent.isPossessing() && PlayerBodyTracker.get(player).getAnchor() != null) {
+                } else if (canStopPossession(player)) {
                     // TODO make a gamerule to keep the inventory when leaving a mob
                     possessionComponent.stopPossessing();
                 } else {
@@ -29,6 +31,13 @@ public class ServerMessageHandling {
                 PandemoniumNetworking.sendEtherealAnimationMessage((ServerPlayerEntity) player);
             }
         }));
+    }
+
+    private static boolean canStopPossession(PlayerEntity player) {
+        MobEntity possessedEntity = PossessionComponent.get(player).getPossessedEntity();
+        return possessedEntity != null && (PlayerBodyTracker.get(player).getAnchor() != null
+            || RequiemEntityTypeTags.IMMOVABLE.contains(possessedEntity.getType())
+        );
     }
 
 }

@@ -1,5 +1,6 @@
 package ladysnake.pandemonium;
 
+import ladysnake.pandemonium.client.FractureKeyBinding;
 import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.entity.ability.*;
@@ -9,6 +10,7 @@ import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.common.entity.ability.MeleeAbility;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.*;
@@ -30,11 +32,11 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
             }
             return PossessionStartCallback.Result.PASS;
         });
-        // Shulkers are a specific kind of boring, so we let players leave them regardless of their level
+        // Immovable mobs are a specific kind of boring, so we let players leave them regardless of their condition
         PossessionStartCallback.EVENT.register(Requiem.id("shulker"), (target, possessor, simulate) -> {
-            if (!simulate && target instanceof ShulkerEntity && target.world.isClient) {
+            if (!simulate && RequiemEntityTypeTags.IMMOVABLE.contains(target.getType()) && target.world.isClient) {
                 MinecraftClient client = MinecraftClient.getInstance();
-                client.inGameHud.setOverlayMessage(new TranslatableText("requiem:shulker.onboard", client.options.keySneak.getBoundKeyLocalizedText()), false);
+                client.inGameHud.setOverlayMessage(new TranslatableText("requiem:shulker.onboard", FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
             }
             return PossessionStartCallback.Result.PASS;
         });

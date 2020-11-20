@@ -9,8 +9,7 @@
     "entity.mob.LivingEntityAccessor",
     "entity.mob.PandaEntityMixin",
     "entity.mob.WitchEntityMixin",
-    "entity.player.PlayerEntityAccessor",
-    "entity.player.PlayerEntityMixin"
+    "entity.player.PlayerEntityAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
