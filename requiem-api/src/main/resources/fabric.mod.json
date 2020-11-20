@@ -27,7 +27,8 @@
       "requiem:movement_alterer",
       "requiem:death_suspension",
       "requiem:dialogue_tracker",
-      "requiem:ability_controller"
+      "requiem:ability_controller",
+      "requiem:inventory_limiter"
     ]
   }
 }

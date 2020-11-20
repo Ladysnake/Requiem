@@ -37,6 +37,7 @@ package ladysnake.requiem.common;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
+import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
@@ -45,6 +46,7 @@ import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PrepareRespawnCallback;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
+import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.*;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
@@ -182,6 +184,9 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             }
             return ActionResult.PASS;
         });
+        PossessionStateChangeCallback.EVENT.register((player, possessed) ->
+            InventoryLimiter.KEY.get(player).lockMainInventory(possessed != null && !RequiemEntityTypeTags.FULL_INVENTORY.contains(possessed.getType()))
+        );
     }
 
     @Override
