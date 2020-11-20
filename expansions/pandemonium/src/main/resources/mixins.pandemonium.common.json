@@ -7,6 +7,7 @@
     "entity.mob.BlazeEntityAccessor",
     "entity.mob.EvokerEntityAccessor",
     "entity.mob.LivingEntityAccessor",
+    "entity.mob.PandaEntityMixin",
     "entity.mob.WitchEntityMixin",
     "entity.player.PlayerEntityAccessor",
     "entity.player.PlayerEntityMixin"
