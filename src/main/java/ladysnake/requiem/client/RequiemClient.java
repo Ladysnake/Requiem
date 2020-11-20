@@ -54,6 +54,8 @@ import net.minecraft.util.Identifier;
 
 public final class RequiemClient implements ClientModInitializer {
 
+    public static final Identifier LOCKED_SLOT_SPRITE = new Identifier("item/barrier");
+
     @AccessedThroughReflection
     public static final RequiemClient INSTANCE = new RequiemClient();
 
