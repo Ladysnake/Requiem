@@ -28,9 +28,6 @@ public abstract class InGameHudMixin {
     @Shadow
     protected abstract PlayerEntity getCameraPlayer();
 
-    @Shadow
-    private int scaledHeight;
-
     @Inject(method = "renderHotbar", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/hud/InGameHud;WIDGETS_TEXTURE:Lnet/minecraft/util/Identifier;"))
     private void checkInventoryLimit(float tickDelta, MatrixStack matrices, CallbackInfo ci) {
         this.renderMainHandOnly = InventoryLimiter.KEY.get(this.getCameraPlayer()).isMainInventoryLocked();
@@ -50,38 +47,14 @@ public abstract class InGameHudMixin {
 
     @ModifyArg(
         method = "renderHotbar",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V", ordinal = 0),
-        index = 2
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V", ordinal = 1),
+        index = 1
     )
-    private int cropHotbar_y(int y) {
+    private int centerSelectedSlot(int x) {
         if (this.renderMainHandOnly) {
-            return this.scaledHeight - 23;
+            return x + X_CENTER_SHIFT;
         }
-        return y;
-    }
-
-    @ModifyArg(
-        method = "renderHotbar",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V", ordinal = 0),
-        index = 3
-    )
-    private int cropHotbar_u(int u) {
-        if (this.renderMainHandOnly) {
-            return 24;
-        }
-        return u;
-    }
-
-    @ModifyArg(
-        method = "renderHotbar",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V", ordinal = 0),
-        index = 4
-    )
-    private int cropHotbar_v(int v) {
-        if (this.renderMainHandOnly) {
-            return 22;
-        }
-        return v;
+        return x;
     }
 
     @ModifyArg(
@@ -91,21 +64,9 @@ public abstract class InGameHudMixin {
     )
     private int cropHotbar_width(int width) {
         if (this.renderMainHandOnly) {
-            return 29;
+            return 21;
         }
         return width;
-    }
-
-    @ModifyArg(
-        method = "renderHotbar",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V", ordinal = 0),
-        index = 6
-    )
-    private int cropHotbar_height(int height) {
-        if (this.renderMainHandOnly) {
-            return 24;
-        }
-        return height;
     }
 
     @ModifyArg(
