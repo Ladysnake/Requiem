@@ -42,6 +42,7 @@ import net.minecraft.nbt.CompoundTag;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
@@ -89,6 +90,12 @@ public abstract class PossessableEntityMixin implements ProtoPossessable {
         if (player != null) {
             cir.setReturnValue(player.startRiding(mount, force));
         }
+    }
+
+    @Inject(method = "calculateDimensions", at = @At("RETURN"))
+    private void calculatePossessorDimensions(CallbackInfo ci) {
+        PlayerEntity possessor = this.getPossessor();
+        if (possessor != null) possessor.calculateDimensions();
     }
 
     @Inject(method = "saveToTag", at = @At("HEAD"), cancellable = true)
