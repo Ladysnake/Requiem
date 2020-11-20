@@ -10,6 +10,7 @@ import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -30,18 +31,35 @@ public abstract class PlayerInventoryMixin {
     @Final
     public DefaultedList<ItemStack> main;
 
+    @Unique
+    private InventoryLimiter requiemLimiter;
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void constructor(PlayerEntity player, CallbackInfo ci) {
+        this.requiemLimiter = InventoryLimiter.KEY.get(player);
+    }
+
     @Inject(method = {"addPickBlock", "scrollInHotbar", "clone"},
         at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/entity/player/PlayerInventory;selectedSlot:I", shift = At.Shift.AFTER)
     )
     private void preventHotbarSelection(CallbackInfo ci) {
-        if (InventoryLimiter.KEY.get(this.player).isSlotLocked(this.selectedSlot)) {
+        if (this.requiemLimiter.isSlotLocked(this.selectedSlot)) {
             this.selectedSlot = PlayerInventoryLimiter.MAINHAND_SLOT;
         }
     }
 
+    @ModifyVariable(method = "getEmptySlot", at = @At(value = "LOAD", ordinal = 0))
+    private int skipLockedSlots(int slot) {
+        InventoryLimiter limiter = this.requiemLimiter;
+        while (limiter.isSlotLocked(slot) && slot < this.main.size()) {
+            slot++;
+        }
+        return slot;
+    }
+
     @Inject(method = "addStack(ILnet/minecraft/item/ItemStack;)I", at = @At("HEAD"), cancellable = true)
     private void preventAddStack(int slot, ItemStack stack, CallbackInfoReturnable<Integer> cir) {
-        if (InventoryLimiter.KEY.get(this.player).isSlotLocked(slot)) {
+        if (this.requiemLimiter.isSlotLocked(slot)) {
             cir.setReturnValue(stack.getCount());
         }
     }
@@ -59,11 +77,12 @@ public abstract class PlayerInventoryMixin {
             from = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;canStackAddMore(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)Z", ordinal = 1),
             to = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;canStackAddMore(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)Z", ordinal = 2)
         ),
-        at = @At(value = "STORE", ordinal = 0)
+        at = @At(value = "LOAD", ordinal = 0)
     )
     private int preventStackAttempt(int slot) {
-        if (InventoryLimiter.KEY.get(this.player).isMainInventoryLocked()) {
-            return this.main.size();
+        InventoryLimiter limiter = this.requiemLimiter;
+        while (limiter.isSlotLocked(slot) && slot < this.main.size()) {
+            slot++;
         }
         return slot;
     }
