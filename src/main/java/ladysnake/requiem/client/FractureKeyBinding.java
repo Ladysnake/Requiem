@@ -15,9 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.pandemonium.client;
+package ladysnake.requiem.client;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.KeyBinding;
@@ -28,7 +29,7 @@ import org.lwjgl.glfw.GLFW;
 import static ladysnake.requiem.common.network.RequiemNetworking.createEmptyBuffer;
 import static ladysnake.requiem.common.network.RequiemNetworking.sendToServer;
 
-public class FractureKeyBinding {
+public final class FractureKeyBinding {
 
     public static final Identifier ETHEREAL_FRACTURE = Requiem.id("ethereal_fracture");
 
@@ -45,7 +46,7 @@ public class FractureKeyBinding {
 
     public static void update(MinecraftClient client) {
         if (client.player != null && etherealFractureKey.wasPressed()) {
-            sendToServer(ETHEREAL_FRACTURE, createEmptyBuffer());
+            sendToServer(RequiemNetworking.ETHEREAL_FRACTURE, createEmptyBuffer());
         }
     }
 }

@@ -9,6 +9,7 @@ import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.requiem.client.RenderSelfPossessedEntityCallback;
+import ladysnake.requiem.client.FractureKeyBinding;
 import ladysnake.requiem.client.RequiemFx;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
 import net.fabricmc.api.ClientModInitializer;
@@ -23,7 +24,6 @@ public class PandemoniumClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientMessageHandling.init();
-        FractureKeyBinding.init();
         ApplyCameraTransformsCallback.EVENT.register(new HeadDownTransformHandler());
         EntityRendererRegistry.INSTANCE.register(PandemoniumEntities.PLAYER_SHELL, (r, it) -> new PlayerShellEntityRenderer(r));
         ClientTickEvents.END_WORLD_TICK.register(Pandemonium::tickAnchors);

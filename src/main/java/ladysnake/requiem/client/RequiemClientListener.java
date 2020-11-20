@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
+import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
@@ -108,6 +109,12 @@ public final class RequiemClientListener implements
         HotbarRenderCallback.EVENT.register(this);
         // Add custom tooltips to items when the player is possessing certain entities
         ItemTooltipCallback.EVENT.register(this);
+        // Immovable mobs are a specific kind of boring, so we let players leave them regardless of their condition
+        PossessionStateChangeCallback.EVENT.register((possessor, target) -> {
+            if (possessor.world.isClient && target != null && RequiemEntityTypeTags.IMMOVABLE.contains(target.getType())) {
+                this.mc.inGameHud.setOverlayMessage(new TranslatableText("requiem:shulker.onboard", FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
+            }
+        });
     }
 
     @Override

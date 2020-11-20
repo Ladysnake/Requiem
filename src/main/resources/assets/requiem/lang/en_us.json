@@ -77,6 +77,9 @@
 
   "enchantment.requiem.humanity": "Humanity",
 
+  "key.requiem.ethereal_fracture": "Ethereal Fracture",
+  "requiem:shulker.onboard": "Press %1$s to leave",
+
   "item.requiem.human_flesh": "Human Flesh",
   "item.requiem.opus_daemonium": "Opus Daemonium",
   "item.requiem.opus_daemonium_cure": "Opus Daemonium",

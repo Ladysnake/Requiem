@@ -1,22 +1,23 @@
 package ladysnake.pandemonium;
 
-import ladysnake.pandemonium.client.FractureKeyBinding;
 import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.entity.ability.*;
+import ladysnake.pandemonium.common.network.PandemoniumNetworking;
+import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
+import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.ability.MeleeAbility;
-import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public class PandemoniumRequiemPlugin implements RequiemPlugin {
@@ -32,17 +33,32 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
             }
             return PossessionStartCallback.Result.PASS;
         });
-        // Immovable mobs are a specific kind of boring, so we let players leave them regardless of their condition
-        PossessionStartCallback.EVENT.register(Requiem.id("shulker"), (target, possessor, simulate) -> {
-            if (!simulate && RequiemEntityTypeTags.IMMOVABLE.contains(target.getType()) && target.world.isClient) {
-                MinecraftClient client = MinecraftClient.getInstance();
-                client.inGameHud.setOverlayMessage(new TranslatableText("requiem:shulker.onboard", FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
-            }
-            return PossessionStartCallback.Result.PASS;
-        });
+
         // Enderman specific behaviour is unneeded now that players can possess them
         PossessionStartCallback.EVENT.unregister(new Identifier(Requiem.MOD_ID, "enderman"));
         PossessionStartCallback.EVENT.register(Pandemonium.id("allow_everything"), (target, possessor, simulate) -> PossessionStartCallback.Result.ALLOW);
+        InitiateFractureCallback.EVENT.register(player -> {
+            RemnantComponent remnantState = RemnantComponent.get(player);
+            PossessionComponent possessionComponent = PossessionComponent.get(player);
+            boolean success;
+
+            if (!remnantState.isSoul()) {
+                PlayerSplitter.split(player);
+                success = true;
+            } else if (possessionComponent.getPossessedEntity() != null && PlayerBodyTracker.get(player).getAnchor() != null) {
+                // TODO make a gamerule to keep the inventory when leaving a mob
+                possessionComponent.stopPossessing();
+                success = true;
+            } else {
+                success = false;
+            }
+
+            if (success) {
+                PandemoniumNetworking.sendEtherealAnimationMessage(player);
+            }
+
+            return success;
+        });
     }
 
     @Override

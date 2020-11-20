@@ -104,6 +104,7 @@ public final class RequiemClient implements ClientModInitializer {
         this.registerModelPredicates();
         this.registerSprites();
         this.initListeners();
+        FractureKeyBinding.init();
     }
 
     private void registerModelPredicates() {

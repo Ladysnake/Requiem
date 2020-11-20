@@ -38,11 +38,14 @@ import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
+import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.item.OpusDemoniumItem;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantTypes;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
@@ -56,8 +59,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-
-import java.util.function.Consumer;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
@@ -101,6 +102,20 @@ public class ServerMessageHandling {
                 sendTo((ServerPlayerEntity) player, createEmptyMessage(POSSESSION_ACK));
             });
         });
+        ServerSidePacketRegistry.INSTANCE.register(ETHEREAL_FRACTURE, (context, buf) -> context.getTaskQueue().execute(() -> {
+            PlayerEntity player = context.getPlayer();
+            RemnantComponent remnantState = RemnantComponent.get(player);
+
+            if (remnantState.getRemnantType().isDemon()) {
+                PossessionComponent possessionComponent = PossessionComponent.get(player);
+                MobEntity possessedEntity = possessionComponent.getPossessedEntity();
+                if (possessedEntity != null && RequiemEntityTypeTags.IMMOVABLE.contains(possessedEntity.getType())) {
+                    possessionComponent.stopPossessing();
+                } else {
+                    InitiateFractureCallback.EVENT.invoker().performFracture((ServerPlayerEntity) player);
+                }
+            }
+        }));
         ServerSidePacketRegistry.INSTANCE.register(OPUS_UPDATE, (context, buf) -> {
             String content = buf.readString(32767);
             boolean sign = buf.readBoolean();
@@ -140,12 +155,5 @@ public class ServerMessageHandling {
             // we do not handle those right now, as movement is entirely done clientside
             context.getTaskQueue().execute(() -> MovementAlterer.get(context.getPlayer()).hugWall(yes));
         });
-    }
-
-    private static void register(Identifier id, Consumer<PlayerEntity> handler) {
-        ServerSidePacketRegistry.INSTANCE.register(
-                id,
-                (context, packet) -> context.getTaskQueue().execute(() -> handler.accept(context.getPlayer()))
-        );
     }
 }
