@@ -14,6 +14,7 @@
     "network.ClientPlayerEntityMixin",
     "possession.ClientPlayerInteractionManagerMixin",
     "possession.InGameHudMixin",
+    "possession.InventoryScreenMixin",
     "possession.MinecraftClientMixin",
     "possession.PlayerInventoryMixin",
     "render.GameRendererMixin",

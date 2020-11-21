@@ -3,6 +3,8 @@ package ladysnake.requiem.mixin.common.possession.possessor;
 import com.mojang.datafixers.util.Pair;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.client.RequiemClient;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -52,8 +54,15 @@ public abstract class SlotMixin {
         if (this.shouldBeLocked()) cir.setReturnValue(false);
     }
 
+    @Environment(EnvType.CLIENT)    // TODO confirm that this does not crash servers
     @Inject(method = "getBackgroundSprite", at = @At("HEAD"), cancellable = true)
     private void getLockedSprite(CallbackInfoReturnable<@Nullable Pair<Identifier, Identifier>> cir) {
         if (this.shouldBeLocked()) cir.setReturnValue(LOCKED_SPRITE_REF);
+    }
+
+    @Environment(EnvType.CLIENT)    // TODO confirm that this does not crash servers
+    @Inject(method = "doDrawHoveringEffect", at = @At("HEAD"), cancellable = true)
+    private void preventSpecialRender(CallbackInfoReturnable<Boolean> cir) {
+        if (this.shouldBeLocked()) cir.setReturnValue(false);
     }
 }
