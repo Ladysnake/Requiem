@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
 import ladysnake.requiem.client.network.ClientMessageHandler;
@@ -45,6 +46,7 @@ import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.Window;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.EnchantedBookItem;
@@ -143,5 +145,22 @@ public final class RequiemClient implements ClientModInitializer {
         this.worldFreezeFxRenderer.registerCallbacks();
         this.listener.registerCallbacks();
         this.targetHandler.registerCallbacks();
+    }
+
+    /**
+     * Sets up cropping before rendering an entity in the inventory
+     */
+    public static void setupInventoryCrop(int screenX, int screenY, int screenWidth, int screenHeight) {
+        Window window = MinecraftClient.getInstance().getWindow();
+        int scissorX = unscale(screenX + 17, window.getScaledWidth(), window.getWidth());
+        // mc screen coordinates start at the top, but scissor coordinates start at the bottom
+        int scissorY = unscale(window.getScaledHeight() - (screenY + screenHeight - 13), window.getScaledHeight(), window.getHeight());
+        int scissorWidth = unscale(screenWidth - 33, window.getScaledWidth(), window.getWidth());
+        int scissorHeight = unscale(89, window.getScaledHeight(), window.getHeight());
+        RenderSystem.enableScissor(scissorX, scissorY, scissorWidth, scissorHeight);
+    }
+
+    private static int unscale(int scaled, float windowScaled, int windowReal) {
+        return (int) ((scaled / windowScaled) * windowReal);
     }
 }
