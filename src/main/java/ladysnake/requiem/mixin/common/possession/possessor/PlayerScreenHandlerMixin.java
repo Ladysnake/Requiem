@@ -20,6 +20,6 @@ public abstract class PlayerScreenHandlerMixin extends AbstractRecipeScreenHandl
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void shiftMainHandSlot(PlayerInventory inventory, boolean onServer, PlayerEntity owner, CallbackInfo ci) {
-        this.addSlot(new MainHandSlot(owner, 50, 62));
+        this.addSlot(new MainHandSlot(owner, 47, 62));
     }
 }
