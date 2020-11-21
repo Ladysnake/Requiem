@@ -12,4 +12,5 @@ public interface InventoryLimiter extends Component {
     boolean isMainInventoryLocked();
     boolean isSlotLocked(int playerSlot);
     boolean isSlotInvisible(int playerSlot);
+    boolean useAlternativeInventory();
 }

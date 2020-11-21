@@ -37,6 +37,11 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
     }
 
     @Override
+    public boolean useAlternativeInventory() {
+        return this.isMainInventoryLocked();
+    }
+
+    @Override
     public void readFromNbt(CompoundTag compoundTag) {
 
     }
