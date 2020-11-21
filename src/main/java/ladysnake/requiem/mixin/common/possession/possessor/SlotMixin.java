@@ -44,6 +44,11 @@ public abstract class SlotMixin {
         return this.limiter != null && this.limiter.isSlotLocked(this.index);
     }
 
+    @Unique
+    private boolean shouldBeInvisible() {
+        return this.limiter != null && this.limiter.isSlotInvisible(this.index);
+    }
+
     @Inject(method = "canInsert", at = @At("HEAD"), cancellable = true)
     private void canInsert(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
         if (this.shouldBeLocked()) cir.setReturnValue(false);
@@ -63,6 +68,6 @@ public abstract class SlotMixin {
     @Environment(EnvType.CLIENT)    // TODO confirm that this does not crash servers
     @Inject(method = "doDrawHoveringEffect", at = @At("HEAD"), cancellable = true)
     private void preventSpecialRender(CallbackInfoReturnable<Boolean> cir) {
-        if (this.shouldBeLocked()) cir.setReturnValue(false);
+        if (this.shouldBeInvisible()) cir.setReturnValue(false);
     }
 }

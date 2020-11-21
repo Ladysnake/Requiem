@@ -31,6 +31,12 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
     }
 
     @Override
+    public boolean isSlotInvisible(int playerSlot) {
+        return this.player.currentScreenHandler == this.player.playerScreenHandler
+            && (this.isSlotLocked(playerSlot) || (playerSlot == MAINHAND_SLOT && this.isMainInventoryLocked()));
+    }
+
+    @Override
     public void readFromNbt(CompoundTag compoundTag) {
 
     }
