@@ -39,12 +39,16 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
 
     @Inject(method = "drawBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/InventoryScreen;drawEntity(IIIFFLnet/minecraft/entity/LivingEntity;)V"))
     private void scissorEntity(MatrixStack matrices, float delta, int mouseX, int mouseY, CallbackInfo ci) {
-        RequiemClient.setupInventoryCrop(this.x, this.y, this.backgroundWidth, this.backgroundHeight);
+        if (this.limiter.useAlternativeInventory()) {
+            RequiemClient.setupInventoryCrop(this.x, this.y, this.backgroundWidth, this.backgroundHeight);
+        }
     }
 
     @Inject(method = "drawBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/InventoryScreen;drawEntity(IIIFFLnet/minecraft/entity/LivingEntity;)V", shift = At.Shift.AFTER))
     private void disableScissor(MatrixStack matrices, float delta, int mouseX, int mouseY, CallbackInfo ci) {
-        RenderSystem.disableScissor();
+        if (this.limiter.useAlternativeInventory()) {
+            RenderSystem.disableScissor();
+        }
     }
 
     @ModifyArg(method = "drawBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/texture/TextureManager;bindTexture(Lnet/minecraft/util/Identifier;)V"))
