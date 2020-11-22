@@ -11,6 +11,7 @@
     "#requiem:humanoid_skeletons",
     "#requiem:humans",
     "#requiem:piglins",
+    {"id": "betterend:shadow_walker", "required": false},
     {"id": "thehallow:mummy", "required": false}
   ]
 }
