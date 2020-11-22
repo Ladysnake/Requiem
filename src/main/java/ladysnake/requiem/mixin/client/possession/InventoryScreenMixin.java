@@ -6,10 +6,12 @@ import ladysnake.requiem.api.v1.entity.InventoryPart;
 import ladysnake.requiem.api.v1.entity.InventoryShape;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.client.InventoryScreenAccessor;
+import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.MobEntity;
@@ -20,6 +22,7 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,8 +33,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenMixin extends AbstractInventoryScreen<PlayerScreenHandler> implements InventoryScreenAccessor {
     @Unique
-    private static final Identifier CRAFTING_BUTTON_TEXTURE = Requiem.id("textures/gui/crafting_button.png");
-    @Unique
     private static final Identifier INVENTORY_SLOTS = Requiem.id("textures/gui/inventory_slots.png");
 
     @Unique
@@ -40,6 +41,8 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     private PossessionComponent possessionComponent;
     @Unique
     private AbstractButtonWidget craftingBookButton;
+    @Unique
+    private TexturedButtonWidget supercrafterButton;
 
     public InventoryScreenMixin(PlayerScreenHandler screenHandler, PlayerInventory playerInventory, Text text) {
         super(screenHandler, playerInventory, text);
@@ -64,18 +67,24 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     @Inject(method = "init", at = @At("RETURN"))
     private void addSupercrafterButton(CallbackInfo ci) {
         if (this.possessionComponent.getPossessedEntity() instanceof VillagerEntity) {
-            this.addButton(new TexturedButtonWidget(
-                this.x + 124,
+            this.supercrafterButton = this.addButton(new TexturedButtonWidget(
+                this.x + 131,
                 this.height / 2 - 22,
                 20,
                 18,
                 0,
                 0,
                 19,
-                CRAFTING_BUTTON_TEXTURE,
-                (buttonWidget) -> RequiemNetworking.sendToServer(RequiemNetworking.OPEN_CRAFTING_MENU, RequiemNetworking.createEmptyBuffer()))
+                RequiemClient.CRAFTING_BUTTON_TEXTURE,
+                (buttonWidget) -> RequiemNetworking.sendSupercrafterMessage())
             );
         }
+    }
+
+    @Dynamic("Lambda method, implementation of PressAction for the crafting book button")
+    @Inject(method = "method_19891", at = @At("RETURN"), remap = false)
+    private void repositionCraftingButton(ButtonWidget button, CallbackInfo ci) {
+        this.supercrafterButton.setPos(this.x + 131, this.height / 2 - 22);
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))

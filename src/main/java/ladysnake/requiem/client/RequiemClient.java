@@ -55,6 +55,7 @@ import net.minecraft.util.Identifier;
 public final class RequiemClient implements ClientModInitializer {
 
     public static final Identifier LOCKED_SLOT_SPRITE = new Identifier("item/barrier");
+    public static final Identifier CRAFTING_BUTTON_TEXTURE = Requiem.id("textures/gui/crafting_button.png");
 
     @AccessedThroughReflection
     public static final RequiemClient INSTANCE = new RequiemClient();

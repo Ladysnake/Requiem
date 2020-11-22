@@ -173,4 +173,8 @@ public class RequiemNetworking {
         sendToServer(new CustomPayloadC2SPacket(HUGGING_WALL, buf));
     }
 
+    public static void sendSupercrafterMessage() {
+        sendToServer(new CustomPayloadC2SPacket(OPEN_CRAFTING_MENU, createEmptyBuffer()));
+    }
+
 }
