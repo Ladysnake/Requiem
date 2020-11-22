@@ -16,7 +16,7 @@ public interface InventoryLimiter extends Component {
     HotbarAvailability getHotbarAvailability();
     boolean isSlotLocked(int playerSlot);
     boolean isSlotInvisible(int playerSlot);
-    boolean useAlternativeInventory();
+    InventoryShape getInventoryShape();
 
     enum HotbarAvailability {
         FULL, HANDS, NONE

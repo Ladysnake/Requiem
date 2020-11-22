@@ -2,6 +2,7 @@ package ladysnake.requiem.common.impl.inventory;
 
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.InventoryPart;
+import ladysnake.requiem.api.v1.entity.InventoryShape;
 import ladysnake.requiem.api.v1.event.requiem.InventoryLockingChangeCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -82,8 +83,16 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
     }
 
     @Override
-    public boolean useAlternativeInventory() {
-        return this.isMainInventoryLocked() && PossessionComponent.get(this.player).isPossessing();
+    public InventoryShape getInventoryShape() {
+        if (this.isEnabled() && PossessionComponent.get(this.player).isPossessing()) {
+            if (this.lockedParts.size() == InventoryPart.VALUES.size()) {
+                return InventoryShape.ALT_LARGE;
+            } else if (this.lockedParts.contains(InventoryPart.MAIN)) {
+                return InventoryShape.ALT;
+            }
+            return InventoryShape.ALT_SMALL;
+        }
+        return InventoryShape.NORMAL;
     }
 
     private boolean isMainInventoryLocked() {

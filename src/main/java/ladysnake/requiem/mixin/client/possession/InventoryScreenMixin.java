@@ -1,12 +1,11 @@
 package ladysnake.requiem.mixin.client.possession;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.InventoryPart;
+import ladysnake.requiem.api.v1.entity.InventoryShape;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.client.InventoryScreenAccessor;
-import ladysnake.requiem.client.RequiemClient;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -28,16 +27,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenMixin extends AbstractInventoryScreen<PlayerScreenHandler> implements InventoryScreenAccessor {
     @Unique
-    private static final Identifier ALT_INVENTORY = Requiem.id("textures/gui/alt_inventory.png");
-    @Unique
     private static final Identifier INVENTORY_SLOTS = Requiem.id("textures/gui/inventory_slots.png");
 
     @Unique
     private InventoryLimiter limiter;
     @Unique
     private PossessionComponent possessionComponent;
-    @Unique
-    private int previousBackgroundHeight;
     @Unique
     private AbstractButtonWidget craftingBookButton;
 
@@ -78,31 +73,17 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
 
     @Inject(method = "drawBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/InventoryScreen;drawEntity(IIIFFLnet/minecraft/entity/LivingEntity;)V"))
     private void scissorEntity(MatrixStack matrices, float delta, int mouseX, int mouseY, CallbackInfo ci) {
-        if (this.limiter.useAlternativeInventory()) {
-            RequiemClient.setupInventoryCrop(this.x, this.y, this.backgroundWidth, this.backgroundHeight);
-        }
+        this.limiter.getInventoryShape().setupEntityCrop(this.x, this.y);
     }
 
     @Inject(method = "drawBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/InventoryScreen;drawEntity(IIIFFLnet/minecraft/entity/LivingEntity;)V", shift = At.Shift.AFTER))
     private void disableScissor(MatrixStack matrices, float delta, int mouseX, int mouseY, CallbackInfo ci) {
-        if (this.limiter.useAlternativeInventory()) {
-            RenderSystem.disableScissor();
-        }
+        this.limiter.getInventoryShape().tearDownEntityCrop();
     }
 
     @ModifyArg(method = "drawBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/texture/TextureManager;bindTexture(Lnet/minecraft/util/Identifier;)V"))
     private Identifier swapBackground(Identifier background) {
-        if (this.limiter.useAlternativeInventory()) {
-            if (this.backgroundHeight < 185) {
-                this.previousBackgroundHeight = this.backgroundHeight;
-                this.backgroundHeight = 185;
-            }
-            return ALT_INVENTORY;
-        } else if (this.previousBackgroundHeight > 0) {
-            this.backgroundHeight = this.previousBackgroundHeight;
-            this.previousBackgroundHeight = 0;
-        }
-        return background;
+        return this.limiter.getInventoryShape().swapBackground(background);
     }
 
     @Inject(
@@ -116,7 +97,8 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     private void drawSlots(MatrixStack matrices, float delta, int mouseX, int mouseY, CallbackInfo ci) {
         assert this.client != null;
 
-        if (this.limiter.useAlternativeInventory()) {
+        InventoryShape inventoryShape = this.limiter.getInventoryShape();
+        if (inventoryShape.isAltShape()) {
             this.client.getTextureManager().bindTexture(INVENTORY_SLOTS);
             int x = this.x;
             int y = this.y;
@@ -124,10 +106,17 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
                 this.drawTexture(matrices, x + 7, y + 7, 7, 7, 18, 72);
             }
             if (!this.limiter.isLocked(InventoryPart.HANDS)) {
-                this.drawTexture(matrices, x + 46, y + 61, 46, 61, 48, 18);
+                if (inventoryShape == InventoryShape.ALT_SMALL) {
+                    this.drawTexture(matrices, x + 76, y + 61, 76, 61, 18, 18);
+                } else {
+                    this.drawTexture(matrices, x + 46, y + 61, 46, 61, 48, 18);
+                }
             }
             if (!this.limiter.isLocked(InventoryPart.CRAFTING)) {
                 this.drawTexture(matrices, x + 97, y + 17, 97, 17, 75, 36);
+            }
+            if (!this.limiter.isLocked(InventoryPart.MAIN)) {
+                this.drawTexture(matrices, x + 7, y + 83, 7, 83, 162, 76);
             }
         }
     }
@@ -138,10 +127,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
         index = 0
     )
     private int shiftPossessedEntityX(int x) {
-        if (this.limiter.useAlternativeInventory()) {
-            return x + 40;
-        }
-        return x;
+        return this.limiter.getInventoryShape().shiftEntityX(x);
     }
 
     @ModifyArg(
@@ -150,9 +136,24 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
         index = 1
     )
     private int shiftPossessedEntityY(int y) {
-        if (this.limiter.useAlternativeInventory()) {
-            return y + 75;
-        }
-        return y;
+        return this.limiter.getInventoryShape().shiftEntityY(y);
+    }
+
+    @ModifyArg(
+        method = "drawBackground",
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/InventoryScreen;drawEntity(IIIFFLnet/minecraft/entity/LivingEntity;)V"),
+        index = 3
+    )
+    private int shiftPossessedEntityLookX(int x) {
+        return this.limiter.getInventoryShape().shiftEntityX(x);
+    }
+
+    @ModifyArg(
+        method = "drawBackground",
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/InventoryScreen;drawEntity(IIIFFLnet/minecraft/entity/LivingEntity;)V"),
+        index = 4
+    )
+    private int shiftPossessedEntityLookY(int y) {
+        return this.limiter.getInventoryShape().shiftEntityY(y);
     }
 }

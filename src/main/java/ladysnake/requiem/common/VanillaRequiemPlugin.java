@@ -180,7 +180,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         PossessionStateChangeCallback.EVENT.register((player, possessed) -> {
                 InventoryLimiter inventoryLimiter = InventoryLimiter.KEY.get(player);
                 if (possessed == null) {
-                    for (InventoryPart part : InventoryPart.values()) {
+                    for (InventoryPart part : InventoryPart.VALUES) {
                         inventoryLimiter.lock(part);
                     }
                 } else {
