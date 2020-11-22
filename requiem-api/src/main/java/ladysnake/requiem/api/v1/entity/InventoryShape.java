@@ -30,7 +30,7 @@ public enum InventoryShape {
     },
     ALT(background("alt_inventory.png"), 16, 83, 144, 70, 40, 75),
     ALT_SMALL(background("alt_inventory_small.png"), 26, 8, 49, 70, 0, 0),
-    ALT_LARGE(background("alt_inventory_large.png"), 16, 14, 144, 139, 40, 75);
+    ALT_LARGE(background("alt_inventory_large.png"), 16, 18, 144, 135, 40, 75);
 
     private final int entityX;
     private final int entityY;
@@ -71,7 +71,7 @@ public enum InventoryShape {
         Window window = MinecraftClient.getInstance().getWindow();
         int scissorX = unscale(screenX + entityX, window.getScaledWidth(), window.getWidth());
         // mc screen coordinates start at the top, but scissor coordinates start at the bottom
-        int scissorY = unscale(screenY + entityY, window.getScaledHeight(), window.getHeight());
+        int scissorY = unscale(window.getScaledHeight() - (screenY + entityY + entityHeight), window.getScaledHeight(), window.getHeight());
         int scissorWidth = unscale(entityWidth, window.getScaledWidth(), window.getWidth());
         int scissorHeight = unscale(entityHeight, window.getScaledHeight(), window.getHeight());
         RenderSystem.enableScissor(scissorX, scissorY, scissorWidth, scissorHeight);
