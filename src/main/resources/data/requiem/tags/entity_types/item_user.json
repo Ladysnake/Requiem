@@ -1,13 +1,5 @@
 {
   "replace": false,
   "values": [
-    "minecraft:enderman",
-    "minecraft:panda",
-    "minecraft:dolphin",
-
-    "#requiem:zombies",
-    "#requiem:skeletons",
-    "#requiem:humans",
-    {"id": "thehallow:mummy", "required": false}
   ]
 }

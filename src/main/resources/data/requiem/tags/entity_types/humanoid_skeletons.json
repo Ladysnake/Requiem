@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:skeletons",
+    {"id": "mobz:skeli1_entity", "required": false},
+    {"id": "mobz:skeli2_entity", "required": false},
+    {"id": "mobz:skeli3_entity", "required": false}
+  ]
+}

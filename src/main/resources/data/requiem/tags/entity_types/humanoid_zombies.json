@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:drowned",
+    "minecraft:giant",
+    "minecraft:husk",
+    "minecraft:zombie",
+    "minecraft:zombified_piglin",
+    "minecraft:zombie_villager",
+    {"id": "mobz:enderzombie_entity", "required": false},
+    {"id": "mobz:tank_entity", "required": false},
+    {"id": "mobz:armored_entity", "required": false},
+    {"id": "mobz:smallzombie_entity", "required": false},
+    {"id": "mobz:fast_entity", "required": false}
+  ]
+}

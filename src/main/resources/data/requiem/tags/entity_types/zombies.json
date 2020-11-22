@@ -1,11 +1,6 @@
 {
   "replace": false,
   "values": [
-    "#c:zombies",
-    {"id": "mobz:enderzombie_entity", "required": false},
-    {"id": "mobz:tank_entity", "required": false},
-    {"id": "mobz:armored_entity", "required": false},
-    {"id": "mobz:smallzombie_entity", "required": false},
-    {"id": "mobz:fast_entity", "required": false}
+    "#requiem:humanoid_zombies"
   ]
 }

@@ -92,7 +92,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     @Unique
     private final boolean requiem_immovable = RequiemEntityTypeTags.IMMOVABLE.contains(this.getType());
     @Unique
-    private final boolean requiem_regularEater = RequiemEntityTypeTags.EATER.contains(this.getType());
+    private final boolean requiem_regularEater = RequiemEntityTypeTags.EATERS.contains(this.getType());
     @Unique
     private boolean requiem_wasCustomNameVisible;
     @Unique

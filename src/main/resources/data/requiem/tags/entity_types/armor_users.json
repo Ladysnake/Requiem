@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    "#requiem:humanoid_zombies",
+    "#requiem:humanoid_skeletons",
+    "minecraft:pillager",
+    "minecraft:vindicator",
+    {"id": "mobz:archer_entity", "required": false},
+    {"id": "mobz:archer2_entity", "required": false},
+    {"id": "mobz:dwarf_entity", "required": false},
+    {"id": "mobz:friend_entity", "required": false},
+    {"id": "mobz:knight_entity", "required": false},
+    {"id": "mobz:knight2_entity", "required": false},
+    {"id": "mobz:knight4_entity", "required": false},
+    {"id": "mobz:mage_entity", "required": false},
+    {"id": "mobz:mage2_entity", "required": false}
+  ]
+}

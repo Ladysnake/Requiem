@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:enderman",
+    "minecraft:panda",
+    "minecraft:dolphin",
+
+    "#requiem:item_user",
+    "#requiem:humanoid_zombies",
+    "#requiem:humanoid_skeletons",
+    "#requiem:humans",
+    {"id": "thehallow:mummy", "required": false}
+  ]
+}
