@@ -38,15 +38,16 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
+import ladysnake.requiem.api.v1.entity.InventoryPart;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.api.v1.event.minecraft.ItemPickupCallback;
 import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PrepareRespawnCallback;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
+import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.*;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
@@ -63,7 +64,6 @@ import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.fabricmc.fabric.api.event.player.*;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffects;
@@ -122,16 +122,6 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     private void registerEtherealEventHandlers() {
-        // Prevent incorporeal players from picking up anything
-        ItemPickupCallback.EVENT.register((player, pickedUp) -> {
-            if (isInteractionForbidden(player) || RemnantComponent.get(player).isSoul() && !player.isCreative()) {
-                Entity possessed = PossessionComponent.get(player).getPossessedEntity();
-                if (possessed == null || !RequiemEntityTypeTags.ITEM_USER.contains(possessed.getType())) {
-                    return ActionResult.FAIL;
-                }
-            }
-            return ActionResult.PASS;
-        });
         // Prevent incorporeal players from breaking anything
         AttackBlockCallback.EVENT.register((player, world, hand, blockPos, facing) -> getInteractionResult(player));
         // Prevent incorporeal players from hitting anything
@@ -147,6 +137,9 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             RemnantComponent.KEY.sync(player);
             ((MobResurrectable) player).spawnResurrectionEntity();
         }));
+        RemnantStateChangeCallback.EVENT.register((player, remnant) ->
+            InventoryLimiter.KEY.get(player).setEnabled(remnant.isSoul())
+        );
     }
 
     @Nonnull
@@ -184,8 +177,25 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             }
             return ActionResult.PASS;
         });
-        PossessionStateChangeCallback.EVENT.register((player, possessed) ->
-            InventoryLimiter.KEY.get(player).lockMainInventory(possessed != null && !RequiemEntityTypeTags.FULL_INVENTORY.contains(possessed.getType()))
+        PossessionStateChangeCallback.EVENT.register((player, possessed) -> {
+                InventoryLimiter inventoryLimiter = InventoryLimiter.KEY.get(player);
+                if (possessed == null) {
+                    for (InventoryPart part : InventoryPart.values()) {
+                        inventoryLimiter.lock(part);
+                    }
+                } else {
+                    if (RequiemEntityTypeTags.FULL_INVENTORY.contains(possessed.getType())) {
+                        inventoryLimiter.unlock(InventoryPart.MAIN);
+                    } else {
+                        inventoryLimiter.lock(InventoryPart.MAIN);
+                    }
+                    if (RequiemEntityTypeTags.ITEM_USER.contains(possessed.getType())) {
+                        inventoryLimiter.unlock(InventoryPart.HANDS);
+                    } else {
+                        inventoryLimiter.lock(InventoryPart.HANDS);
+                    }
+                }
+            }
         );
     }
 

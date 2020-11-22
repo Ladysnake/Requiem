@@ -14,6 +14,6 @@ public class MainHandSlot extends Slot {
 
     @Override
     public boolean doDrawHoveringEffect() {
-        return limiter.isSlotInvisible(PlayerInventoryLimiter.MAINHAND_SLOT);
+        return !limiter.isSlotLocked(PlayerInventoryLimiter.MAINHAND_SLOT) && limiter.isSlotInvisible(PlayerInventoryLimiter.MAINHAND_SLOT);
     }
 }

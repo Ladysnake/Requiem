@@ -28,9 +28,18 @@ public abstract class InGameHudMixin {
     @Shadow
     protected abstract PlayerEntity getCameraPlayer();
 
-    @Inject(method = "renderHotbar", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/hud/InGameHud;WIDGETS_TEXTURE:Lnet/minecraft/util/Identifier;"))
+    @Inject(
+        method = "renderHotbar",
+        at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/hud/InGameHud;WIDGETS_TEXTURE:Lnet/minecraft/util/Identifier;"),
+        cancellable = true
+    )
     private void checkInventoryLimit(float tickDelta, MatrixStack matrices, CallbackInfo ci) {
-        this.renderMainHandOnly = InventoryLimiter.KEY.get(this.getCameraPlayer()).isMainInventoryLocked();
+        InventoryLimiter.HotbarAvailability hotbarAvailability = InventoryLimiter.KEY.get(this.getCameraPlayer()).getHotbarAvailability();
+        if (hotbarAvailability == InventoryLimiter.HotbarAvailability.NONE) {
+            ci.cancel();
+        } else {
+            this.renderMainHandOnly = hotbarAvailability == InventoryLimiter.HotbarAvailability.HANDS;
+        }
     }
 
     @ModifyArg(

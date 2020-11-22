@@ -46,12 +46,10 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class MutableRemnantState implements RemnantState {
-    public static final String ETHEREAL_TAG = "ethereal";
     public static final AbilitySource SOUL_STATE = Pal.getAbilitySource(Requiem.id("soul_state"));
 
     private final RemnantType type;
@@ -74,7 +72,7 @@ public class MutableRemnantState implements RemnantState {
     }
 
     @Override
-    public void setSoul(boolean incorporeal) {
+    public boolean setSoul(boolean incorporeal) {
         if (this.ethereal != incorporeal) {
             this.ethereal = incorporeal;
             SerializableMovementConfig config;
@@ -93,7 +91,9 @@ public class MutableRemnantState implements RemnantState {
             }
             MovementAlterer.get(this.player).setConfig(config);
             RemnantComponent.KEY.sync(this.player);
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -121,14 +121,4 @@ public class MutableRemnantState implements RemnantState {
         return this.type;
     }
 
-    @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        tag.putBoolean(ETHEREAL_TAG, this.isSoul());
-        return tag;
-    }
-
-    @Override
-    public void fromTag(CompoundTag tag) {
-        this.setSoul(tag.getBoolean(ETHEREAL_TAG));
-    }
 }

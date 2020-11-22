@@ -17,7 +17,6 @@
  */
 package ladysnake.requiem.api.v1.remnant;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public interface RemnantState {
@@ -33,7 +32,7 @@ public interface RemnantState {
 
     boolean isSoul();
 
-    void setSoul(boolean incorporeal);
+    boolean setSoul(boolean incorporeal);
 
     RemnantType getType();
 
@@ -44,13 +43,4 @@ public interface RemnantState {
      * @param lossless false if the original player is dead, true otherwise
      */
     void prepareRespawn(ServerPlayerEntity original, boolean lossless);
-
-    CompoundTag toTag(CompoundTag tag);
-
-    void fromTag(CompoundTag tag);
-
-    default void serverTick() {
-        // NO-OP
-    }
-
 }

@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.common.impl.remnant;
 
+import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
@@ -45,6 +46,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public final class RemnantComponentImpl implements RemnantComponent {
+    public static final String ETHEREAL_TAG = "ethereal";
+
     private final PlayerEntity player;
 
     private RemnantState state = NullRemnantState.NULL_STATE;
@@ -65,6 +68,7 @@ public final class RemnantComponentImpl implements RemnantComponent {
         this.state = handler;
         this.remnantType = type;
         RemnantComponent.KEY.sync(this.player);
+        RemnantStateChangeCallback.EVENT.invoker().onRemnantStateChange(this.player, this);
     }
 
     @Override
@@ -84,12 +88,9 @@ public final class RemnantComponentImpl implements RemnantComponent {
 
     @Override
     public void setSoul(boolean incorporeal) {
-        this.state.setSoul(incorporeal);
-    }
-
-    @Override
-    public void serverTick() {
-        this.state.serverTick();
+        if (this.state.setSoul(incorporeal)) {
+            RemnantStateChangeCallback.EVENT.invoker().onRemnantStateChange(this.player, this);
+        }
     }
 
     @Override
@@ -116,12 +117,12 @@ public final class RemnantComponentImpl implements RemnantComponent {
     public void readFromNbt(CompoundTag compoundTag) {
         RemnantType remnantType = RemnantTypes.get(new Identifier(compoundTag.getString("id")));
         this.become(remnantType);
-        this.state.fromTag(compoundTag);
+        this.setSoul(compoundTag.getBoolean(ETHEREAL_TAG));
     }
 
     @Override
     public void writeToNbt(CompoundTag compoundTag) {
         compoundTag.putString("id", RemnantTypes.getId(this.remnantType).toString());
-        this.state.toTag(compoundTag);
+        compoundTag.putBoolean(ETHEREAL_TAG, this.isSoul());
     }
 }

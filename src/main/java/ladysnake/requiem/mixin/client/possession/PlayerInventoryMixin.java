@@ -11,10 +11,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Slice;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -62,6 +59,38 @@ public abstract class PlayerInventoryMixin {
         if (this.requiemLimiter.isSlotLocked(slot)) {
             cir.setReturnValue(stack.getCount());
         }
+    }
+
+    @ModifyArg(
+        method = "getOccupiedSlotWithRoomForStack",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/entity/player/PlayerInventory;canStackAddMore(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)Z",
+            ordinal = 0
+        ),
+        index = 0
+    )
+    private ItemStack preventMainHandStackAttempt(ItemStack stack) {
+        if (this.requiemLimiter.isSlotLocked(PlayerInventoryLimiter.MAINHAND_SLOT)) {
+            return ItemStack.EMPTY;
+        }
+        return stack;
+    }
+
+    @ModifyArg(
+        method = "getOccupiedSlotWithRoomForStack",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/entity/player/PlayerInventory;canStackAddMore(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)Z",
+            ordinal = 1
+        ),
+        index = 0
+    )
+    private ItemStack preventOffHandStackAttempt(ItemStack stack) {
+        if (this.requiemLimiter.isSlotLocked(PlayerInventoryLimiter.OFFHAND_SLOT)) {
+            return ItemStack.EMPTY;
+        }
+        return stack;
     }
 
     /**

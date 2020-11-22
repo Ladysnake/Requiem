@@ -36,7 +36,6 @@ package ladysnake.requiem.mixin.client.gui.hud;
 
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
-import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
@@ -57,7 +56,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.tag.Tag;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -218,18 +216,11 @@ public abstract class InGameHudMixin extends DrawableHelper {
     @ModifyVariable(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J"), ordinal = 0)
     private int substituteHealth(int health) {
         assert client.player != null;
-        LivingEntity entity = PossessionComponent.get( client.player).getPossessedEntity();
+        LivingEntity entity = PossessionComponent.get(client.player).getPossessedEntity();
         if (entity != null) {
             return MathHelper.ceil(entity.getHealth());
         }
         return health;
-    }
-
-    @Inject(method = "renderHotbar", at = @At("HEAD"), cancellable = true)
-    private void fireHotBarRenderEvent(float tickDelta, MatrixStack matrices, CallbackInfo info) {
-        if (HotbarRenderCallback.EVENT.invoker().onHotbarRender(matrices, tickDelta) != ActionResult.PASS) {
-            info.cancel();
-        }
     }
 
     // ModifyVariable is only used to capture the local variable more easily
