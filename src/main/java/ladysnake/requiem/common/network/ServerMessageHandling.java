@@ -47,6 +47,7 @@ import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -155,5 +156,12 @@ public class ServerMessageHandling {
             // we do not handle those right now, as movement is entirely done clientside
             context.getTaskQueue().execute(() -> MovementAlterer.get(context.getPlayer()).hugWall(yes));
         });
+        ServerSidePacketRegistry.INSTANCE.register(OPEN_CRAFTING_MENU, (context, buf) -> context.getTaskQueue().execute(() -> {
+            PlayerEntity player = context.getPlayer();
+            MobEntity possessed = PossessionComponent.get(player).getPossessedEntity();
+            if (possessed != null && RequiemEntityTypeTags.SUPERCRAFTERS.contains(possessed.getType())) {
+                player.openHandledScreen(Blocks.CRAFTING_TABLE.getDefaultState().createScreenHandlerFactory(player.world, player.getBlockPos()));
+            }
+        }));
     }
 }

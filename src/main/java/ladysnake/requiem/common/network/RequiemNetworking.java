@@ -71,6 +71,7 @@ public class RequiemNetworking {
     public static final Identifier OPUS_UPDATE = Requiem.id("opus_update");
     public static final Identifier DIALOGUE_ACTION = Requiem.id("dialogue_action");
     public static final Identifier HUGGING_WALL = Requiem.id("hugging_wall");
+    public static final Identifier OPEN_CRAFTING_MENU = Requiem.id("open_crafting");
 
     public static void sendToServer(Identifier identifier, PacketByteBuf data) {
         sendToServer(new CustomPayloadC2SPacket(identifier, data));

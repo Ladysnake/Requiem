@@ -6,11 +6,14 @@ import ladysnake.requiem.api.v1.entity.InventoryPart;
 import ladysnake.requiem.api.v1.entity.InventoryShape;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.client.InventoryScreenAccessor;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -26,6 +29,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenMixin extends AbstractInventoryScreen<PlayerScreenHandler> implements InventoryScreenAccessor {
+    @Unique
+    private static final Identifier CRAFTING_BUTTON_TEXTURE = Requiem.id("textures/gui/crafting_button.png");
     @Unique
     private static final Identifier INVENTORY_SLOTS = Requiem.id("textures/gui/inventory_slots.png");
 
@@ -54,6 +59,23 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
         }
 
         return button;
+    }
+
+    @Inject(method = "init", at = @At("RETURN"))
+    private void addSupercrafterButton(CallbackInfo ci) {
+        if (this.possessionComponent.getPossessedEntity() instanceof VillagerEntity) {
+            this.addButton(new TexturedButtonWidget(
+                this.x + 124,
+                this.height / 2 - 22,
+                20,
+                18,
+                0,
+                0,
+                19,
+                CRAFTING_BUTTON_TEXTURE,
+                (buttonWidget) -> RequiemNetworking.sendToServer(RequiemNetworking.OPEN_CRAFTING_MENU, RequiemNetworking.createEmptyBuffer()))
+            );
+        }
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))

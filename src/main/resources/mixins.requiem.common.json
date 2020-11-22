@@ -26,6 +26,7 @@
     "possession.WorldMixin",
     "possession.command.EntitySelectorOptionsMixin",
     "possession.gameplay.BowItemMixin",
+    "possession.gameplay.CraftingScreenHandlerMixin",
     "possession.gameplay.HorseBaseEntityMixin",
     "possession.gameplay.ItemMixin",
     "possession.gameplay.MilkBucketItemMixin",
