@@ -10,6 +10,7 @@
     "#requiem:humanoid_zombies",
     "#requiem:humanoid_skeletons",
     "#requiem:humans",
+    "#requiem:piglins",
     {"id": "thehallow:mummy", "required": false}
   ]
 }

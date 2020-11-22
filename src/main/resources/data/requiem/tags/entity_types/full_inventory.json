@@ -3,6 +3,7 @@
   "values": [
     "#requiem:humans",
     "#requiem:humanoid_zombies",
-    "#requiem:humanoid_skeletons"
+    "#requiem:humanoid_skeletons",
+    "#requiem:piglins"
   ]
 }

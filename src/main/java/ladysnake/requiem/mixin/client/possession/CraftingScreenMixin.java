@@ -2,12 +2,13 @@ package ladysnake.requiem.mixin.client.possession;
 
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.client.RequiemClient;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.client.gui.screen.ingame.CraftingScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
-import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.CraftingScreenHandler;
 import net.minecraft.text.Text;
@@ -29,7 +30,8 @@ public abstract class CraftingScreenMixin extends HandledScreen<CraftingScreenHa
 
     @Inject(method = "init", at = @At("RETURN"))
     private void addSupercrafterButton(CallbackInfo ci) {
-        if (PossessionComponent.get(this.playerInventory.player).getPossessedEntity() instanceof VillagerEntity) {
+        MobEntity possessedEntity = PossessionComponent.get(this.playerInventory.player).getPossessedEntity();
+        if (possessedEntity != null && RequiemEntityTypeTags.SUPERCRAFTERS.contains(possessedEntity.getType())) {
             this.supercrafterButton = this.addButton(new TexturedButtonWidget(
                 this.x + 5,
                 this.height / 2 - 30,
@@ -51,6 +53,8 @@ public abstract class CraftingScreenMixin extends HandledScreen<CraftingScreenHa
     @Dynamic("Lambda method, implementation of PressAction for the crafting book button")
     @Inject(method = "method_19890", at = @At("RETURN"), remap = false)
     private void repositionCraftingButton(ButtonWidget button, CallbackInfo ci) {
-        this.supercrafterButton.setPos(this.x + 5, this.height / 2 - 30);
+        if (this.supercrafterButton != null) {
+            this.supercrafterButton.setPos(this.x + 5, this.height / 2 - 30);
+        }
     }
 }

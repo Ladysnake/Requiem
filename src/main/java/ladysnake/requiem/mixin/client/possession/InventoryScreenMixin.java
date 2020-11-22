@@ -8,6 +8,7 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.client.InventoryScreenAccessor;
 import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -15,7 +16,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -66,7 +66,8 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
 
     @Inject(method = "init", at = @At("RETURN"))
     private void addSupercrafterButton(CallbackInfo ci) {
-        if (this.possessionComponent.getPossessedEntity() instanceof VillagerEntity) {
+        MobEntity possessedEntity = this.possessionComponent.getPossessedEntity();
+        if (possessedEntity != null && RequiemEntityTypeTags.SUPERCRAFTERS.contains(possessedEntity.getType())) {
             this.supercrafterButton = this.addButton(new TexturedButtonWidget(
                 this.x + 131,
                 this.height / 2 - 22,
@@ -84,7 +85,9 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     @Dynamic("Lambda method, implementation of PressAction for the crafting book button")
     @Inject(method = "method_19891", at = @At("RETURN"), remap = false)
     private void repositionCraftingButton(ButtonWidget button, CallbackInfo ci) {
-        this.supercrafterButton.setPos(this.x + 131, this.height / 2 - 22);
+        if (this.supercrafterButton != null) {
+            this.supercrafterButton.setPos(this.x + 131, this.height / 2 - 22);
+        }
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))

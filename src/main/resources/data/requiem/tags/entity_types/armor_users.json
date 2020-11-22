@@ -3,6 +3,7 @@
   "values": [
     "#requiem:humanoid_zombies",
     "#requiem:humanoid_skeletons",
+    "#requiem:piglins",
     "minecraft:pillager",
     "minecraft:vindicator",
     {"id": "mobz:archer_entity", "required": false},

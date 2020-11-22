@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "minecraft:villager"
+    "minecraft:villager",
+    "minecraft:piglin"
   ]
 }
