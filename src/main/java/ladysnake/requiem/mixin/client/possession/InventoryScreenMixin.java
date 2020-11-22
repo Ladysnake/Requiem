@@ -4,17 +4,20 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.InventoryPart;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.client.InventoryScreenAccessor;
 import ladysnake.requiem.client.RequiemClient;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,6 +35,8 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     @Unique
     private InventoryLimiter limiter;
     @Unique
+    private PossessionComponent possessionComponent;
+    @Unique
     private int previousBackgroundHeight;
     @Unique
     private AbstractButtonWidget craftingBookButton;
@@ -41,7 +46,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     }
 
     @Override
-    public AbstractButtonWidget requiem_getRecipeBookButton() {
+    public @NotNull AbstractButtonWidget requiem_getRecipeBookButton() {
         return this.craftingBookButton;
     }
 
@@ -59,6 +64,16 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     @Inject(method = "<init>", at = @At("RETURN"))
     private void constructor(PlayerEntity player, CallbackInfo ci) {
         this.limiter = InventoryLimiter.KEY.get(player);
+        this.possessionComponent = PossessionComponent.get(player);
+    }
+
+    @ModifyArg(method = "drawForeground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;draw(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/text/Text;FFI)I"))
+    private Text swapScreenName(Text name) {
+        MobEntity possessedEntity = this.possessionComponent.getPossessedEntity();
+        if (possessedEntity != null) {
+            return possessedEntity.getName();
+        }
+        return name;
     }
 
     @Inject(method = "drawBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/InventoryScreen;drawEntity(IIIFFLnet/minecraft/entity/LivingEntity;)V"))
