@@ -3,6 +3,7 @@ package ladysnake.requiem.mixin.client.possession;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
+import ladysnake.requiem.api.v1.entity.InventoryPart;
 import ladysnake.requiem.client.RequiemClient;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
@@ -21,7 +22,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenMixin extends AbstractInventoryScreen<PlayerScreenHandler> {
-    private static final Identifier POSSESSED_INVENTORY = Requiem.id("textures/gui/no_inventory.png");
+    @Unique
+    private static final Identifier ALT_INVENTORY = Requiem.id("textures/gui/alt_inventory.png");
+    @Unique
+    private static final Identifier INVENTORY_SLOTS = Requiem.id("textures/gui/inventory_slots.png");
 
     @Unique
     private InventoryLimiter limiter;
@@ -58,12 +62,39 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
                 this.previousBackgroundHeight = this.backgroundHeight;
                 this.backgroundHeight = 185;
             }
-            return POSSESSED_INVENTORY;
+            return ALT_INVENTORY;
         } else if (this.previousBackgroundHeight > 0) {
             this.backgroundHeight = this.previousBackgroundHeight;
             this.previousBackgroundHeight = 0;
         }
         return background;
+    }
+
+    @Inject(
+        method = "drawBackground",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/screen/ingame/InventoryScreen;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V",
+            shift = At.Shift.AFTER
+        )
+    )
+    private void drawSlots(MatrixStack matrices, float delta, int mouseX, int mouseY, CallbackInfo ci) {
+        assert this.client != null;
+
+        if (this.limiter.useAlternativeInventory()) {
+            this.client.getTextureManager().bindTexture(INVENTORY_SLOTS);
+            int x = this.x;
+            int y = this.y;
+            if (!this.limiter.isLocked(InventoryPart.ARMOR)) {
+                this.drawTexture(matrices, x + 7, y + 7, 7, 7, 18, 72);
+            }
+            if (!this.limiter.isLocked(InventoryPart.HANDS)) {
+                this.drawTexture(matrices, x + 46, y + 61, 46, 61, 48, 18);
+            }
+            if (!this.limiter.isLocked(InventoryPart.CRAFTING)) {
+                this.drawTexture(matrices, x + 97, y + 17, 97, 17, 75, 36);
+            }
+        }
     }
 
     @ModifyArg(

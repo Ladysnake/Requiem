@@ -10,8 +10,9 @@ public interface InventoryLimiter extends Component {
 
     void setEnabled(boolean enabled);
     boolean isEnabled();
-    void unlock(InventoryPart parts);
-    void lock(InventoryPart parts);
+    void unlock(InventoryPart part);
+    void lock(InventoryPart part);
+    boolean isLocked(InventoryPart part);
     HotbarAvailability getHotbarAvailability();
     boolean isSlotLocked(int playerSlot);
     boolean isSlotInvisible(int playerSlot);

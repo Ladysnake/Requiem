@@ -41,10 +41,14 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
     }
 
     @Override
+    public boolean isLocked(InventoryPart part) {
+        return this.isEnabled() && this.lockedParts.contains(part);
+    }
+
+    @Override
     public HotbarAvailability getHotbarAvailability() {
-        if (!isEnabled()) return HotbarAvailability.FULL;
-        if (this.lockedParts.contains(InventoryPart.HANDS)) return HotbarAvailability.NONE;
-        return this.lockedParts.contains(InventoryPart.MAIN) ? HotbarAvailability.HANDS : HotbarAvailability.FULL;
+        if (this.isLocked(InventoryPart.HANDS)) return HotbarAvailability.NONE;
+        return this.isLocked(InventoryPart.MAIN) ? HotbarAvailability.HANDS : HotbarAvailability.FULL;
     }
 
     @Override
@@ -53,17 +57,17 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
 
         int mainSize = player.inventory.main.size();
 
-        if (this.lockedParts.contains(InventoryPart.MAIN) && index > MAINHAND_SLOT && index < mainSize) {
+        if (this.isLocked(InventoryPart.MAIN) && index > MAINHAND_SLOT && index < mainSize) {
             return true;
         }
 
         int armorSize = player.inventory.armor.size();
 
-        if (this.lockedParts.contains(InventoryPart.ARMOR) && index >= mainSize && index < mainSize + armorSize) {
+        if (this.isLocked(InventoryPart.ARMOR) && index >= mainSize && index < mainSize + armorSize) {
             return true;
         }
 
-        return this.lockedParts.contains(InventoryPart.HANDS) && (index == MAINHAND_SLOT || index == OFFHAND_SLOT);
+        return this.isLocked(InventoryPart.HANDS) && (index == MAINHAND_SLOT || index == OFFHAND_SLOT);
     }
 
     @Override
