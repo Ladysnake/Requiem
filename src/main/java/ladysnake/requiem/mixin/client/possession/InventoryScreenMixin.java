@@ -127,7 +127,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
         index = 0
     )
     private int shiftPossessedEntityX(int x) {
-        return this.limiter.getInventoryShape().shiftEntityX(x);
+        return (int) this.limiter.getInventoryShape().shiftEntityX(x);
     }
 
     @ModifyArg(
@@ -136,7 +136,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
         index = 1
     )
     private int shiftPossessedEntityY(int y) {
-        return this.limiter.getInventoryShape().shiftEntityY(y);
+        return (int) this.limiter.getInventoryShape().shiftEntityY(y);
     }
 
     @ModifyArg(
@@ -144,7 +144,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
         at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/InventoryScreen;drawEntity(IIIFFLnet/minecraft/entity/LivingEntity;)V"),
         index = 3
     )
-    private int shiftPossessedEntityLookX(int x) {
+    private float shiftPossessedEntityLookX(float x) {
         return this.limiter.getInventoryShape().shiftEntityX(x);
     }
 
@@ -153,7 +153,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
         at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/InventoryScreen;drawEntity(IIIFFLnet/minecraft/entity/LivingEntity;)V"),
         index = 4
     )
-    private int shiftPossessedEntityLookY(int y) {
+    private float shiftPossessedEntityLookY(float y) {
         return this.limiter.getInventoryShape().shiftEntityY(y);
     }
 }

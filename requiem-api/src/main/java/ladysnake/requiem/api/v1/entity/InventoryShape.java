@@ -85,11 +85,11 @@ public enum InventoryShape {
         RenderSystem.disableScissor();
     }
 
-    public int shiftEntityX(int x) {
+    public float shiftEntityX(float x) {
         return x + this.entityShiftX;
     }
 
-    public int shiftEntityY(int y) {
+    public float shiftEntityY(float y) {
         return y + this.entityShiftY;
     }
 }
