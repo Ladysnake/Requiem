@@ -40,7 +40,6 @@ import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.entity.InventoryPart;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
-import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
 import ladysnake.requiem.api.v1.event.requiem.InventoryLockingChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
@@ -85,7 +84,6 @@ public final class RequiemClientListener implements
     ClientTickEvents.EndTick,
     PickEntityShaderCallback,
     UseEntityCallback,
-    HotbarRenderCallback,
     ItemTooltipCallback,
     InventoryLockingChangeCallback {
 
@@ -108,8 +106,6 @@ public final class RequiemClientListener implements
         CrosshairRenderCallback.EVENT.register(Requiem.id("possession_indicator"), this::drawPossessionIndicator);
         // Make the crosshair purple when able to teleport to the Overworld using an enderman
         CrosshairRenderCallback.EVENT.register(Requiem.id("enderman_color"), this::drawEnderCrosshair);
-        // Prevents the hotbar from being rendered when the player cannot use items
-        HotbarRenderCallback.EVENT.register(this);
         // Update the visibility of the crafting book button
         InventoryLockingChangeCallback.EVENT.register(this);
         // Add custom tooltips to items when the player is possessing certain entities
@@ -189,19 +185,6 @@ public final class RequiemClientListener implements
                 ((InventoryScreenAccessor) this.mc.currentScreen).requiem_getRecipeBookButton().visible = !locked;
             }
         }
-    }
-
-    @Override
-    public ActionResult onHotbarRender(MatrixStack matrices, float tickDelta) {
-        MinecraftClient client = this.mc;
-        assert client.player != null;
-        if (!client.player.isCreative() && RemnantComponent.get(client.player).isSoul()) {
-            Entity possessed = PossessionComponent.get(client.player).getPossessedEntity();
-            if (possessed == null || !RequiemEntityTypeTags.ITEM_USER.contains(possessed.getType())) {
-                return ActionResult.SUCCESS;
-            }
-        }
-        return ActionResult.PASS;
     }
 
     @Override
