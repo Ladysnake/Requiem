@@ -87,7 +87,7 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
     }
 
     private boolean isMainInventoryLocked() {
-        return this.isEnabled() && this.lockedParts.contains(InventoryPart.ARMOR);
+        return this.isEnabled() && this.lockedParts.contains(InventoryPart.MAIN);
     }
 
     @Override
