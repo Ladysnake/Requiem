@@ -196,6 +196,11 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                         inventoryLimiter.lock(InventoryPart.HANDS);
                         inventoryLimiter.lock(InventoryPart.CRAFTING);
                     }
+                    if (RequiemEntityTypeTags.ARMOR_USERS.contains(possessed.getType())) {
+                        inventoryLimiter.unlock(InventoryPart.ARMOR);
+                    } else {
+                        inventoryLimiter.lock(InventoryPart.ARMOR);
+                    }
                 }
             }
         );
