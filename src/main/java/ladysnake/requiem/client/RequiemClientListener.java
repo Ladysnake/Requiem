@@ -37,9 +37,11 @@ package ladysnake.requiem.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
+import ladysnake.requiem.api.v1.entity.InventoryPart;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.HotbarRenderCallback;
+import ladysnake.requiem.api.v1.event.requiem.InventoryLockingChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
@@ -84,7 +86,8 @@ public final class RequiemClientListener implements
     PickEntityShaderCallback,
     UseEntityCallback,
     HotbarRenderCallback,
-    ItemTooltipCallback {
+    ItemTooltipCallback,
+    InventoryLockingChangeCallback {
 
     private static final Identifier POSSESSION_ICON = Requiem.id("textures/gui/possession_icon.png");
 
@@ -107,6 +110,8 @@ public final class RequiemClientListener implements
         CrosshairRenderCallback.EVENT.register(Requiem.id("enderman_color"), this::drawEnderCrosshair);
         // Prevents the hotbar from being rendered when the player cannot use items
         HotbarRenderCallback.EVENT.register(this);
+        // Update the visibility of the crafting book button
+        InventoryLockingChangeCallback.EVENT.register(this);
         // Add custom tooltips to items when the player is possessing certain entities
         ItemTooltipCallback.EVENT.register(this);
         // Immovable mobs are a specific kind of boring, so we let players leave them regardless of their condition
@@ -174,6 +179,15 @@ public final class RequiemClientListener implements
         if (client.targetedEntity instanceof EndermanEntity && client.player.world.getRegistryKey() == World.END) {
             // TODO probably replace with a proper texture
             RenderSystem.color3f(0.4f, 0.0f, 1.0f);
+        }
+    }
+
+    @Override
+    public void onInventoryLockingChange(PlayerEntity player, InventoryPart part, boolean locked) {
+        if (part == InventoryPart.CRAFTING && player == this.mc.player) {
+            if (this.mc.currentScreen instanceof InventoryScreenAccessor) {
+                ((InventoryScreenAccessor) this.mc.currentScreen).requiem_getRecipeBookButton().visible = !locked;
+            }
         }
     }
 

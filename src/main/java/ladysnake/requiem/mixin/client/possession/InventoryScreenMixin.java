@@ -4,9 +4,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.InventoryPart;
+import ladysnake.requiem.client.InventoryScreenAccessor;
 import ladysnake.requiem.client.RequiemClient;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -21,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InventoryScreen.class)
-public abstract class InventoryScreenMixin extends AbstractInventoryScreen<PlayerScreenHandler> {
+public abstract class InventoryScreenMixin extends AbstractInventoryScreen<PlayerScreenHandler> implements InventoryScreenAccessor {
     @Unique
     private static final Identifier ALT_INVENTORY = Requiem.id("textures/gui/alt_inventory.png");
     @Unique
@@ -31,9 +33,27 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     private InventoryLimiter limiter;
     @Unique
     private int previousBackgroundHeight;
+    @Unique
+    private AbstractButtonWidget craftingBookButton;
 
     public InventoryScreenMixin(PlayerScreenHandler screenHandler, PlayerInventory playerInventory, Text text) {
         super(screenHandler, playerInventory, text);
+    }
+
+    @Override
+    public AbstractButtonWidget requiem_getRecipeBookButton() {
+        return this.craftingBookButton;
+    }
+
+    @ModifyArg(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/InventoryScreen;addButton(Lnet/minecraft/client/gui/widget/AbstractButtonWidget;)Lnet/minecraft/client/gui/widget/AbstractButtonWidget;"), allow = 1)
+    private AbstractButtonWidget captureCraftingBookButton(AbstractButtonWidget button) {
+        this.craftingBookButton = button;
+
+        if (this.limiter.isLocked(InventoryPart.CRAFTING)) {
+            button.visible = false;
+        }
+
+        return button;
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))
