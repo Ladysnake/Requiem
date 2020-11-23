@@ -41,10 +41,12 @@ public class RequiemCriteria {
     public static final OnResurrectCriterion PLAYER_RESURRECTED_AS_ENTITY = new OnResurrectCriterion(Requiem.id("player_resurrected_as_entity"));
     public static final OnRemnantChoiceCriterion MADE_REMNANT_CHOICE = new OnRemnantChoiceCriterion(Requiem.id("made_remnant_choice"));
     public static final OnPossessionCriterion PLAYER_POSSESSED_ENTITY = new OnPossessionCriterion(Requiem.id("player_possessed_entity"));
+    public static final OnDeathAfterPossessionCriterion DEATH_AFTER_POSSESSION = new OnDeathAfterPossessionCriterion(Requiem.id("entity_died_after_possession"));
 
     public static void init() {
         CriterionRegistry.register(PLAYER_RESURRECTED_AS_ENTITY);
         CriterionRegistry.register(MADE_REMNANT_CHOICE);
         CriterionRegistry.register(PLAYER_POSSESSED_ENTITY);
+        CriterionRegistry.register(DEATH_AFTER_POSSESSION);
     }
 }

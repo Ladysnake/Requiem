@@ -38,6 +38,7 @@ import com.google.common.base.Preconditions;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.entity.ai.DisableableBrain;
 import ladysnake.requiem.common.entity.attribute.CooldownStrengthAttribute;
 import ladysnake.requiem.common.entity.attribute.DelegatingAttribute;
@@ -98,6 +99,9 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     @Unique
     @Nullable
     private Text requiem_previousCustomName;
+    @Unique
+    @Nullable
+    private UUID requiem_previousPossessorUuid;
 
     @Shadow
     public abstract EntityAttributeInstance getAttributeInstance(EntityAttribute entityAttribute_1);
@@ -175,6 +179,12 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         if ((this.possessor != null && PossessionComponent.get(this.possessor).getPossessedEntity() == (Entity) this) && !this.world.isClient) {
             throw new IllegalStateException("Players must stop possessing an entity before it can change possessor!");
         }
+
+        if (possessor == null) {
+            assert this.possessor != null;
+            this.requiem_previousPossessorUuid = this.possessor.getUuid();
+        }
+
         this.possessor = possessor;
 
         ((DisableableBrain) this.getBrain()).requiem_setDisabled(this.possessor != null);
@@ -323,6 +333,12 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
             PossessionComponent.get(possessor).stopPossessing();
             possessor.setAttacker(this.getAttacker());
             AttritionStatusEffect.apply(possessor);
+        } else if (this.requiem_previousPossessorUuid != null) {
+            PlayerEntity previousPossessor = this.world.getPlayerByUuid(this.requiem_previousPossessorUuid);
+
+            if (previousPossessor != null) {
+                RequiemCriteria.DEATH_AFTER_POSSESSION.handle((ServerPlayerEntity) previousPossessor, this, deathCause);
+            }
         }
     }
 
