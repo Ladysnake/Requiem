@@ -179,6 +179,11 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             }
             return ActionResult.PASS;
         });
+        PossessionStateChangeCallback.EVENT.register(((player, possessed) -> {
+            if (player instanceof ServerPlayerEntity && possessed != null) {
+                RequiemCriteria.PLAYER_POSSESSED_ENTITY.handle((ServerPlayerEntity) player, possessed);
+            }
+        }));
         PossessionStateChangeCallback.EVENT.register((player, possessed) -> {
                 InventoryLimiter inventoryLimiter = InventoryLimiter.KEY.get(player);
                 if (possessed == null) {

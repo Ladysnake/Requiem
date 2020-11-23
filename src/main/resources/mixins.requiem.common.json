@@ -6,7 +6,6 @@
   "mixins": [
     "access.ArrowShooter",
     "access.AttributeContainerAccessor",
-    "access.CriteriaAccessor",
     "access.EndermanEntityAccessor",
     "access.EntityAccessor",
     "access.EntityAttributeInstanceAccessor",
