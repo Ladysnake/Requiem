@@ -99,7 +99,7 @@ public class MutableRemnantState implements RemnantState {
     @Override
     public void prepareRespawn(ServerPlayerEntity original, boolean lossless) {
         if (!lossless && !this.isSoul()) {
-            this.setSoul(true);
+            RemnantComponent.get(this.player).setSoul(true);
             this.copyGlobalPos(original);
 
             if (original.isDead()) {
