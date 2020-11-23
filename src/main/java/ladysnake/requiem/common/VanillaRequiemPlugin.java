@@ -64,6 +64,7 @@ import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.fabricmc.fabric.api.event.player.*;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffects;
@@ -72,6 +73,7 @@ import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
@@ -189,14 +191,14 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                     } else {
                         inventoryLimiter.lock(InventoryPart.MAIN);
                     }
-                    if (RequiemEntityTypeTags.ITEM_USERS.contains(possessed.getType())) {
+                    if (canUseItems(possessed)) {
                         inventoryLimiter.unlock(InventoryPart.HANDS);
                         inventoryLimiter.unlock(InventoryPart.CRAFTING);
                     } else {
                         inventoryLimiter.lock(InventoryPart.HANDS);
                         inventoryLimiter.lock(InventoryPart.CRAFTING);
                     }
-                    if (RequiemEntityTypeTags.ARMOR_USERS.contains(possessed.getType())) {
+                    if (canWearArmor(possessed)) {
                         inventoryLimiter.unlock(InventoryPart.ARMOR);
                     } else {
                         inventoryLimiter.lock(InventoryPart.ARMOR);
@@ -204,6 +206,20 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                 }
             }
         );
+    }
+
+    private static boolean canUseItems(MobEntity possessed) {
+        if (RequiemEntityTypeTags.ITEM_USERS.contains(possessed.getType())) {
+            return true;
+        }
+        return possessed.canPickUpLoot();
+    }
+
+    private static boolean canWearArmor(MobEntity possessed) {
+        if (RequiemEntityTypeTags.ARMOR_USERS.contains(possessed.getType())) {
+            return true;
+        }
+        return !possessed.getEquippedStack(EquipmentSlot.HEAD).isEmpty() || possessed.canEquip(new ItemStack(Items.LEATHER_HELMET));
     }
 
     @Override
