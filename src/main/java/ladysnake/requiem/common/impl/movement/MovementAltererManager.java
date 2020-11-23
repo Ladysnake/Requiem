@@ -104,6 +104,7 @@ public final class MovementAltererManager implements SubDataManager<Map<EntityTy
                 for (Resource resource : manager.getAllResources(LOCATION)) {
                     try {
                         ret.putAll(GSON.fromJson(new InputStreamReader(resource.getInputStream()), TYPE));
+                        ret.remove(null);   // Any EntityType that does not exist gets mapped to null
                     } catch (JsonIOException | JsonSyntaxException e) {
                         Requiem.LOGGER.warn("Could not read movement config from JSON file", e);
                     }

@@ -46,6 +46,7 @@ import ladysnake.requiem.mixin.common.access.EntityAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
@@ -275,7 +276,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
             return DISABLED;
         }
         if (config.getFlightMode() == UNSPECIFIED) {
-            return entity instanceof FlyingEntity ? FORCED : DISABLED;
+            return (entity instanceof FlyingEntity || entity instanceof Flutterer) ? FORCED : DISABLED;
         }
         return config.getFlightMode();
     }
