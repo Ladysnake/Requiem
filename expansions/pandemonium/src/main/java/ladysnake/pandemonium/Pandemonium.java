@@ -8,6 +8,7 @@ import io.github.ladysnake.impersonate.Impersonate;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.pandemonium.client.ClientAnchorManager;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
+import ladysnake.pandemonium.common.entity.WololoComponent;
 import ladysnake.pandemonium.common.impl.anchor.CommonAnchorManager;
 import ladysnake.pandemonium.common.network.ServerMessageHandling;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
@@ -18,6 +19,7 @@ import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.World;
@@ -52,6 +54,7 @@ public class Pandemonium implements ModInitializer, EntityComponentInitializer, 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         registry.registerForPlayers(PlayerBodyTracker.KEY, PlayerBodyTracker::new, RespawnCopyStrategy.ALWAYS_COPY);
+        registry.registerFor(EndermanEntity.class, WololoComponent.KEY, WololoComponent::create);
     }
 
     @Override

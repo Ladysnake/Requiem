@@ -17,6 +17,7 @@
  */
 package ladysnake.pandemonium.common.entity.ability;
 
+import ladysnake.pandemonium.common.entity.WololoComponent;
 import ladysnake.pandemonium.mixin.common.entity.mob.EvokerEntityAccessor;
 import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
 import net.minecraft.entity.Entity;
@@ -24,14 +25,15 @@ import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import org.jetbrains.annotations.Nullable;
 
 public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity> {
-    private final EvokerEntity.WololoGoal wololoGoal;
+    private final CustomWololoGoal wololoGoal;
     private boolean started;
 
     public EvokerWololoAbility(EvokerEntity owner) {
         super(owner);
-        wololoGoal = owner.new WololoGoal();
+        this.wololoGoal = new CustomWololoGoal(owner);
     }
 
     @Override
@@ -41,14 +43,17 @@ public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity> {
 
     @Override
     public boolean trigger(PlayerEntity player, Entity entity) {
-        if (entity instanceof SheepEntity) {
+        if (this.isValidTarget(entity)) {
             if (player.world.isClient) return true;
+
+            this.wololoGoal.target = entity;
 
             if (this.wololoGoal.canStart()) {
                 this.wololoGoal.start();
-                ((EvokerEntityAccessor) this.owner).invokeSetWololoTarget((SheepEntity) entity);
                 this.started = true;
                 return true;
+            } else {
+                this.wololoGoal.target = null;
             }
         }
         return false;
@@ -64,6 +69,48 @@ public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity> {
                 this.wololoGoal.stop();
                 this.owner.setSpell(SpellcastingIllagerEntity.Spell.NONE);
             }
+        }
+    }
+
+    private boolean isValidTarget(Entity entity) {
+        if (entity instanceof SheepEntity) {
+            return this.wololoGoal.requiem_getConvertibleSheepPredicate().test(null, (SheepEntity) entity);
+        }
+        return WololoComponent.canBeConverted(entity);
+    }
+
+    class CustomWololoGoal extends EvokerEntity.WololoGoal implements ExtendedWololoGoal {
+        private @Nullable Entity target;
+
+        private CustomWololoGoal(EvokerEntity evoker) {
+            evoker.super();
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            return this.requiem_hasValidTarget() && this.spellCooldown > 0;
+        }
+
+        @Override
+        protected void castSpell() {
+            assert this.target != null;
+            if (this.target instanceof SheepEntity) {
+                ((EvokerEntityAccessor) EvokerWololoAbility.this.owner).invokeSetWololoTarget((SheepEntity) this.target);
+                super.castSpell();
+            } else {
+                WololoComponent.KEY.maybeGet(this.target).ifPresent(WololoComponent::wololo);
+            }
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            this.target = null;
+        }
+
+        @Override
+        public boolean requiem_hasValidTarget() {
+            return this.target != null && EvokerWololoAbility.this.isValidTarget(this.target);
         }
     }
 }
