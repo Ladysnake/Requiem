@@ -1,14 +1,14 @@
 {
-  "parent": "requiem:adventure/first_possession",
+  "parent": "requiem:requiem/first_possession",
   "display": {
     "icon": {
       "item": "minecraft:ender_pearl"
     },
     "title": {
-      "translate": "requiem:advancements.adventure.classic_look.title"
+      "translate": "requiem:advancements.requiem.classic_look.title"
     },
     "description": {
-      "translate": "requiem:advancements.adventure.classic_look.description"
+      "translate": "requiem:advancements.requiem.classic_look.description"
     },
     "frame": "challenge",
     "show_toast": true,

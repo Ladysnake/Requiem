@@ -1,0 +1,31 @@
+{
+  "display": {
+    "icon": {
+      "item": "requiem:opus_daemonium_curse"
+    },
+    "title": {
+      "translate": "requiem:advancements.requiem.root.title"
+    },
+    "description": {
+      "translate": "requiem:advancements.requiem.root.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false,
+    "background": "requiem:textures/gui/advancements/backgrounds/requiem.png"
+  },
+  "criteria": {
+    "remnant_choice": {
+      "trigger": "requiem:made_remnant_choice",
+      "conditions": {
+        "remnant_type": "requiem:remnant"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "remnant_choice"
+    ]
+  ]
+}

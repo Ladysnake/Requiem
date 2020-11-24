@@ -28,6 +28,8 @@ import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -52,10 +54,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.apiguardian.api.API;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.UUID;
 
@@ -71,8 +72,8 @@ public class PlayerShellEntity extends MobEntity {
     /**
      * Saves the content of the inventory the player had when this shell was created
      */
-    protected SimpleInventory inventory;
-    private UUID playerUuid;
+    protected @Nullable SimpleInventory inventory;
+    private @Nullable UUID playerUuid;
     /**
      * The full NBT data representing the player when this shell was created
      */
@@ -82,6 +83,14 @@ public class PlayerShellEntity extends MobEntity {
     @API(status = MAINTAINED)
     public PlayerShellEntity(EntityType<? extends PlayerShellEntity> entityType_1, World world_1) {
         super(entityType_1, world_1);
+    }
+
+    public static DefaultAttributeContainer.Builder createPlayerShellAttributes() {
+        return createMobAttributes()
+            .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0D)
+            .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.1D)
+            .add(EntityAttributes.GENERIC_ATTACK_SPEED)
+            .add(EntityAttributes.GENERIC_LUCK);
     }
 
     @Override
@@ -116,6 +125,7 @@ public class PlayerShellEntity extends MobEntity {
         super.onTrackedDataSet(key);
     }
 
+    @Nullable
     public GameProfile getGameProfile() {
         CompoundTag tag = this.getDataTracker().get(PLAYER_PROFILE);
         return NbtHelper.toGameProfile(tag);
@@ -171,7 +181,7 @@ public class PlayerShellEntity extends MobEntity {
 
     /* * * * * * * * * * * * common stuff * * * * * * * * * * * * * * */
 
-    public UUID getPlayerUuid() {
+    public @Nullable UUID getPlayerUuid() {
         return playerUuid;
     }
 
@@ -221,7 +231,6 @@ public class PlayerShellEntity extends MobEntity {
     /**
      * Applies the given player interaction to this Entity.
      */
-    @Nonnull
     @Override
     public ActionResult interactAt(PlayerEntity player, Vec3d vec, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);

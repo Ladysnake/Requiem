@@ -1,14 +1,14 @@
 {
-  "parent": "requiem:adventure/first_possession",
+  "parent": "requiem:requiem/first_possession",
   "display": {
     "icon": {
       "item": "minecraft:netherite_sword"
     },
     "title": {
-      "translate": "requiem:advancements.adventure.piglin_seppukku.title"
+      "translate": "requiem:advancements.requiem.piglin_seppukku.title"
     },
     "description": {
-      "translate": "requiem:advancements.adventure.piglin_seppukku.description"
+      "translate": "requiem:advancements.requiem.piglin_seppukku.description"
     },
     "frame": "challenge",
     "show_toast": true,
@@ -36,7 +36,9 @@
   },
   "requirements": [
     [
-      "zombified_piglin_possess",
+      "zombified_piglin_possess"
+    ],
+    [
       "zombified_piglin_seppukku"
     ]
   ]

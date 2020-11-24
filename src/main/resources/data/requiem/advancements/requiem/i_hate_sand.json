@@ -1,14 +1,14 @@
 {
-  "parent": "requiem:adventure/first_possession",
+  "parent": "requiem:requiem/first_possession",
   "display": {
     "icon": {
       "item": "minecraft:sand"
     },
     "title": {
-      "translate": "requiem:advancements.adventure.i_hate_sand.title"
+      "translate": "requiem:advancements.requiem.i_hate_sand.title"
     },
     "description": {
-      "translate": "requiem:advancements.adventure.i_hate_sand.description"
+      "translate": "requiem:advancements.requiem.i_hate_sand.description"
     },
     "frame": "task",
     "show_toast": true,

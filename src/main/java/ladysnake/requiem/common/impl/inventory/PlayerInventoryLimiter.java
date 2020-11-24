@@ -127,7 +127,7 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
                 }
                 return InventoryShape.ALT_SMALL;
             }
-            return InventoryShape.ALT_SMALL;
+//            return InventoryShape.ALT_SMALL;
         }
         return InventoryShape.NORMAL;
     }
