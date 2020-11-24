@@ -32,39 +32,21 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.entity.effect;
+package ladysnake.requiem.mixin.client.possession;
 
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.mixin.client.attrition.SpriteAtlasHolderAccessor;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffectType;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import net.minecraft.entity.Entity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-public final class RequiemStatusEffects {
-    public static final StatusEffect ATTRITION = new AttritionStatusEffect(StatusEffectType.HARMFUL, 0xAA3322)
-        .addAttributeModifier(EntityAttributes.GENERIC_MAX_HEALTH, "069ae0b1-4014-41dd-932f-a5da4417d711", -0.2, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
-
-    public static void init() {
-        registerEffect(ATTRITION, "attrition");
-    }
-
-    public static void registerEffect(StatusEffect effect, String name) {
-        Registry.register(Registry.STATUS_EFFECT, Requiem.id(name), effect);
-    }
-
-    public static Sprite substituteSprite(Sprite baseSprite, StatusEffectInstance renderedEffect) {
-        int amplifier = renderedEffect.getAmplifier();
-        if (renderedEffect.getEffectType() == ATTRITION && amplifier < 4) {
-            Identifier baseId = baseSprite.getId();
-            return ((SpriteAtlasHolderAccessor) MinecraftClient.getInstance().getStatusEffectSpriteManager())
-                .getAtlas().getSprite(new Identifier(baseId.getNamespace(), baseId.getPath() + '_' + (amplifier + 1)));
+@Mixin(Entity.class)
+public abstract class ClientEntityMixin {
+    @Inject(method = "shouldLeaveSwimmingPose", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isTouchingWater()Z"), cancellable = true)
+    private void isCrawling(CallbackInfoReturnable<Boolean> cir) {
+        if (RemnantComponent.isIncorporeal((Entity) (Object) this)) {
+            cir.setReturnValue(false);
         }
-        return baseSprite;
     }
 }

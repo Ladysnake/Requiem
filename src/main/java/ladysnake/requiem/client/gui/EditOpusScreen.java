@@ -39,7 +39,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.item.OpusDemoniumItem;
 import ladysnake.requiem.common.network.RequiemNetworking;
-import ladysnake.requiem.mixin.client.gui.ingame.EditBookScreenAccessor;
+import ladysnake.requiem.mixin.client.opus.EditBookScreenAccessor;
 import net.minecraft.client.gui.screen.ingame.BookEditScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;

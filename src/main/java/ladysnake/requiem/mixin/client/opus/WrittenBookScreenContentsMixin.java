@@ -32,39 +32,25 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.entity.effect;
+package ladysnake.requiem.mixin.client.opus;
 
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.mixin.client.attrition.SpriteAtlasHolderAccessor;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffectType;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.client.gui.screen.ingame.BookScreen;
+import org.spongepowered.asm.mixin.Mixin;
 
-public final class RequiemStatusEffects {
-    public static final StatusEffect ATTRITION = new AttritionStatusEffect(StatusEffectType.HARMFUL, 0xAA3322)
-        .addAttributeModifier(EntityAttributes.GENERIC_MAX_HEALTH, "069ae0b1-4014-41dd-932f-a5da4417d711", -0.2, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
-
-    public static void init() {
-        registerEffect(ATTRITION, "attrition");
-    }
-
-    public static void registerEffect(StatusEffect effect, String name) {
-        Registry.register(Registry.STATUS_EFFECT, Requiem.id(name), effect);
-    }
-
-    public static Sprite substituteSprite(Sprite baseSprite, StatusEffectInstance renderedEffect) {
-        int amplifier = renderedEffect.getAmplifier();
-        if (renderedEffect.getEffectType() == ATTRITION && amplifier < 4) {
-            Identifier baseId = baseSprite.getId();
-            return ((SpriteAtlasHolderAccessor) MinecraftClient.getInstance().getStatusEffectSpriteManager())
-                .getAtlas().getSprite(new Identifier(baseId.getNamespace(), baseId.getPath() + '_' + (amplifier + 1)));
+@Mixin(BookScreen.Contents.class)
+public interface WrittenBookScreenContentsMixin {
+    // Interface mixins must be public
+    // FIXME when asie does their magic
+/*
+    @SuppressWarnings("PublicStaticMixinMember")
+    @Inject(method = "create", at = @At("TAIL"), cancellable = true)
+    static void handleOpusDaemonium(ItemStack book, CallbackInfoReturnable<WrittenBookScreen.Contents> cir) {
+        Item item = book.getItem();
+        if (item instanceof OpusDemoniumItem) {
+            cir.setReturnValue(new WrittenBookScreen.WritableBookContents(book));
+        } else if (item instanceof WrittenOpusItem) {
+            cir.setReturnValue(new WrittenOpusContents((WrittenOpusItem) item));
         }
-        return baseSprite;
     }
+*/
 }

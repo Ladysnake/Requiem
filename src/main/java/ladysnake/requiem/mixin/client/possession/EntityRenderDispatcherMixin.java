@@ -34,60 +34,60 @@
  */
 package ladysnake.requiem.mixin.client.possession;
 
-import ladysnake.requiem.api.v1.entity.ability.AbilityType;
+import ladysnake.requiem.api.v1.event.requiem.client.RenderSelfPossessedEntityCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.client.RequiemClient;
-import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.util.Hand;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.Frustum;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(MinecraftClient.class)
-public abstract class MinecraftClientMixin {
+import javax.annotation.Nullable;
+
+@Mixin(EntityRenderDispatcher.class)
+public abstract class EntityRenderDispatcherMixin {
     @Shadow
-    public ClientPlayerEntity player;
+    public Camera camera;
+    @Nullable
+    private Entity requiem_camerasPossessed;
 
-    @Shadow public ClientPlayerInteractionManager interactionManager;
-
-    @Inject(method = "doAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/hit/HitResult;getType()Lnet/minecraft/util/hit/HitResult$Type;"), cancellable = true)
-    private void tryUseDirectAttackAbility(CallbackInfo ci) {
-        if (RequiemClient.INSTANCE.getTargetHandler().useDirectAbility(AbilityType.ATTACK)) {
-            this.player.swingHand(Hand.MAIN_HAND);
-            ci.cancel();
-        }
-    }
-
-    @Inject(
-            method = "doAttack",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/network/ClientPlayerEntity;resetLastAttackedTicks()V"
-            )
-    )
-    private void onShakeFistAtAir(CallbackInfo info) {
-        if (PossessionComponent.get(player).isPossessing()) {
-            RequiemNetworking.sendAbilityUseMessage(AbilityType.ATTACK);
-        }
+    /**
+     * Called once per frame, used to update the entity
+     */
+    @Inject(method = "configure", at = @At("HEAD"))
+    private void updateCamerasPossessedEntity(World w, Camera c, Entity e, CallbackInfo ci) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        Entity camera = client.getCameraEntity();
+        requiem_camerasPossessed = camera == null ? null : PossessionComponent.getPossessedEntity(camera);
     }
 
     /**
-     * Calls special interact abilities when the player cannot interact with anything else
+     * Prevents the camera's possessed entity from rendering
      */
-    @Inject(method = "doItemUse", at=@At("TAIL"))
-    private void onInteractWithAir(CallbackInfo info) {
-        // Check that the player is qualified to interact with something
-        if (!this.interactionManager.isBreakingBlock() && !this.player.isRiding()) {
-            if (RequiemClient.INSTANCE.getTargetHandler().useDirectAbility(AbilityType.INTERACT)) {
-                this.player.swingHand(Hand.OFF_HAND);
-            } else if (PossessionComponent.get(player).isPossessing() && player.getMainHandStack().isEmpty()) {
-                RequiemNetworking.sendAbilityUseMessage(AbilityType.INTERACT);
+    @Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true)
+    private void preventPossessedRender(Entity entity, Frustum visibleRegion, double x, double y, double z, CallbackInfoReturnable<Boolean> info) {
+        if (requiem_camerasPossessed == entity) {
+            if (camera.isThirdPerson() || !RenderSelfPossessedEntityCallback.EVENT.invoker().allowRender(entity)) {
+                info.setReturnValue(false);
             }
+        }
+    }
+
+    @Inject(method = "renderShadow", at = @At("HEAD"), cancellable = true)
+    private static void preventShadowRender(MatrixStack matrices, VertexConsumerProvider vertices, Entity rendered, float distance, float tickDelta, WorldView world, float radius, CallbackInfo ci) {
+        if (RemnantComponent.isSoul(rendered)) {
+            ci.cancel();
         }
     }
 }

@@ -32,39 +32,34 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.entity.effect;
+package ladysnake.requiem.mixin.client.humanity;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.mixin.client.attrition.SpriteAtlasHolderAccessor;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.json.JsonUnbakedModel;
+import net.minecraft.client.render.model.json.ModelOverride;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-public final class RequiemStatusEffects {
-    public static final StatusEffect ATTRITION = new AttritionStatusEffect(StatusEffectType.HARMFUL, 0xAA3322)
-        .addAttributeModifier(EntityAttributes.GENERIC_MAX_HEALTH, "069ae0b1-4014-41dd-932f-a5da4417d711", -0.2, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+import java.util.HashMap;
+import java.util.Map;
 
-    public static void init() {
-        registerEffect(ATTRITION, "attrition");
-    }
+@Mixin(ModelLoader.class)
+public abstract class ModelLoaderMixin {
 
-    public static void registerEffect(StatusEffect effect, String name) {
-        Registry.register(Registry.STATUS_EFFECT, Requiem.id(name), effect);
-    }
+    @Unique
+    private static final Identifier ENCHANTED_BOOK_ID = new Identifier("item/enchanted_book");
 
-    public static Sprite substituteSprite(Sprite baseSprite, StatusEffectInstance renderedEffect) {
-        int amplifier = renderedEffect.getAmplifier();
-        if (renderedEffect.getEffectType() == ATTRITION && amplifier < 4) {
-            Identifier baseId = baseSprite.getId();
-            return ((SpriteAtlasHolderAccessor) MinecraftClient.getInstance().getStatusEffectSpriteManager())
-                .getAtlas().getSprite(new Identifier(baseId.getNamespace(), baseId.getPath() + '_' + (amplifier + 1)));
+    @ModifyVariable(method = "loadModelFromJson", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/render/model/json/JsonUnbakedModel;deserialize(Ljava/io/Reader;)Lnet/minecraft/client/render/model/json/JsonUnbakedModel;"))
+    private JsonUnbakedModel addEnchantedBookOverride(JsonUnbakedModel model, Identifier id) {
+        if (ENCHANTED_BOOK_ID.equals(id)) {
+            Map<Identifier, Float> minPropertyValues = new HashMap<>();
+            minPropertyValues.put(Requiem.id("humanity"), 1F);
+            model.getOverrides().add(new ModelOverride(Requiem.id("item/humanity_enchanted_book"), minPropertyValues));
         }
-        return baseSprite;
+        return model;
     }
 }
