@@ -136,7 +136,6 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         PrepareRespawnCallback.EVENT.register((original, clone, returnFromEnd) -> RemnantComponent.get(clone).prepareRespawn(original, returnFromEnd));
         PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> {
             player.sendAbilitiesUpdate();
-            RemnantComponent.KEY.sync(player);
             ((MobResurrectable) player).spawnResurrectionEntity();
         }));
         RemnantStateChangeCallback.EVENT.register((player, remnant) ->
