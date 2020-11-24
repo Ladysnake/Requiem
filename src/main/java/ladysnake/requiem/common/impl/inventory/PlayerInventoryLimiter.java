@@ -84,11 +84,14 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
 
     @Override
     public InventoryShape getInventoryShape() {
-        if (this.isEnabled() && PossessionComponent.get(this.player).isPossessing()) {
-            if (this.lockedParts.size() == InventoryPart.VALUES.size()) {
-                return InventoryShape.ALT_LARGE;
-            } else if (this.lockedParts.contains(InventoryPart.MAIN)) {
-                return InventoryShape.ALT;
+        if (this.isEnabled()) {
+            if (PossessionComponent.get(this.player).isPossessing()) {
+                if (this.lockedParts.size() == InventoryPart.VALUES.size()) {
+                    return InventoryShape.ALT_LARGE;
+                } else if (this.lockedParts.contains(InventoryPart.MAIN)) {
+                    return InventoryShape.ALT;
+                }
+                return InventoryShape.ALT_SMALL;
             }
             return InventoryShape.ALT_SMALL;
         }
