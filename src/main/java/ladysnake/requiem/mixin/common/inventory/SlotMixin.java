@@ -36,14 +36,17 @@ package ladysnake.requiem.mixin.common.inventory;
 
 import com.mojang.datafixers.util.Pair;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
+import ladysnake.requiem.api.v1.entity.InventoryPart;
 import ladysnake.requiem.client.RequiemClient;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -64,23 +67,31 @@ public abstract class SlotMixin {
     @Final
     private int index;
     @Unique
-    private @Nullable InventoryLimiter limiter;
+    protected @Nullable InventoryLimiter limiter;
+    @Unique
+    protected boolean craftingSlot;
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void constructor(Inventory inventory, int index, int x, int y, CallbackInfo ci) {
         if (inventory instanceof PlayerInventory) {
             this.limiter = InventoryLimiter.KEY.get(((PlayerInventory) inventory).player);
+        } else if (inventory instanceof CraftingInventory) {
+            ScreenHandler handler = ((CraftingInventoryAccessor) inventory).getHandler();
+            if (handler instanceof PlayerScreenHandlerAccessor) {
+                this.limiter = InventoryLimiter.KEY.get(((PlayerScreenHandlerAccessor) handler).getOwner());
+                this.craftingSlot = true;
+            }
         }
     }
 
     @Unique
     private boolean shouldBeLocked() {
-        return this.limiter != null && this.limiter.isSlotLocked(this.index);
+        return this.limiter != null && ((this.craftingSlot && this.limiter.isLocked(InventoryPart.CRAFTING)) || this.limiter.isSlotLocked(this.index));
     }
 
     @Unique
     private boolean shouldBeInvisible() {
-        return this.limiter != null && this.limiter.isSlotInvisible(this.index);
+        return this.limiter != null && ((this.craftingSlot && this.limiter.isLocked(InventoryPart.CRAFTING)) || this.limiter.isSlotInvisible(this.index));
     }
 
     @Inject(method = "canInsert", at = @At("HEAD"), cancellable = true)
