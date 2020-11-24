@@ -156,7 +156,7 @@ public class PlayerShellEntity extends MobEntity {
 
     @Environment(EnvType.CLIENT)
     public ShellClientPlayerEntity getRenderedPlayer() {
-        if (this.renderedPlayer == null) this.renderedPlayer = new ShellClientPlayerEntity(this, new GameProfile(UUID.randomUUID(), null));
+        if (this.renderedPlayer == null) this.renderedPlayer = new ShellClientPlayerEntity(this, new GameProfile(UUID.randomUUID(), ""));
         return this.renderedPlayer;
     }
 
