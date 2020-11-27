@@ -34,6 +34,42 @@
  */
 package ladysnake.requiem.client.render;
 
-public class RequiemRenderPhases {
+import ladysnake.requiem.Requiem;
+import ladysnake.satin.api.managed.ManagedFramebuffer;
+import ladysnake.satin.api.managed.ManagedShaderEffect;
+import ladysnake.satin.api.managed.ShaderEffectManager;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderPhase;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.texture.SpriteAtlasTexture;
+import org.lwjgl.opengl.GL11;
 
+public final class RequiemRenderPhases extends RenderLayer {
+    public static final ManagedShaderEffect GHOST_PARTICLE_SHADER = ShaderEffectManager.getInstance().manage(Requiem.id("shaders/post/ghost_particles.json"));
+    public static final ManagedFramebuffer GHOST_PARTICLE_FRAMEBUFFER = GHOST_PARTICLE_SHADER.getTarget("ghost_particles");
+    public static final RenderLayer GHOST_PARTICLE_LAYER = RenderLayer.of(
+        "requiem:ghost_particle",
+        VertexFormats.POSITION_TEXTURE_COLOR_LIGHT,
+        GL11.GL_QUADS,
+        256,
+        false,
+        true,
+        RenderLayer.MultiPhaseParameters.builder()
+            .texture(new Texture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE, false, false))
+            .alpha(RenderPhase.ONE_TENTH_ALPHA)
+            .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
+            .lightmap(RenderPhase.ENABLE_LIGHTMAP)
+            .depthTest(RenderPhase.ALWAYS_DEPTH_TEST)
+            .writeMaskState(RenderPhase.COLOR_MASK)
+            .target(new Target("requiem:ghost_particles_target",
+                () -> GHOST_PARTICLE_FRAMEBUFFER.beginWrite(false),
+                () -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false)))
+            .build(false)
+    );
+
+    private RequiemRenderPhases(String name, VertexFormat vertexFormat, int drawMode, int expectedBufferSize, boolean hasCrumbling, boolean translucent, Runnable startAction, Runnable endAction) {
+        super(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, startAction, endAction);
+    }
 }

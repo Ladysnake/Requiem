@@ -37,10 +37,14 @@ package ladysnake.requiem.client;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
 import ladysnake.requiem.client.network.ClientMessageHandler;
+import ladysnake.requiem.client.particle.GhostParticle;
 import ladysnake.requiem.client.render.entity.HorologistEntityRenderer;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.RequiemEntities;
+import ladysnake.requiem.common.particle.RequiemParticleTypes;
+import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
@@ -105,9 +109,14 @@ public final class RequiemClient implements ClientModInitializer {
     public void onInitializeClient() {
         this.registerEntityRenderers();
         this.registerModelPredicates();
+        this.registerParticleFactories();
         this.registerSprites();
         this.initListeners();
         FractureKeyBinding.init();
+    }
+
+    private void registerParticleFactories() {
+        ParticleFactoryRegistry.getInstance().register(RequiemParticleTypes.GHOST, GhostParticle.Factory::new);
     }
 
     private void registerModelPredicates() {
@@ -138,6 +147,7 @@ public final class RequiemClient implements ClientModInitializer {
     }
 
     private void initListeners() {
+        ShaderEffectRenderCallback.EVENT.register(GhostParticle::draw);
         this.messageHandler.init();
         this.requiemFxRenderer.registerCallbacks();
         this.shadowPlayerFxRenderer.registerCallbacks();

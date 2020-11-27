@@ -1,0 +1,26 @@
+{
+  "textures": [
+    "requiem:ghost_0",
+    "requiem:ghost_1",
+    "requiem:ghost_2",
+    "requiem:ghost_3",
+    "requiem:ghost_4",
+    "requiem:ghost_5",
+    "requiem:ghost_6",
+    "requiem:ghost_7",
+    "requiem:ghost_8",
+    "requiem:ghost_9",
+    "requiem:ghost_10",
+    "requiem:gold_ghost_0",
+    "requiem:gold_ghost_1",
+    "requiem:gold_ghost_2",
+    "requiem:gold_ghost_3",
+    "requiem:gold_ghost_4",
+    "requiem:gold_ghost_5",
+    "requiem:gold_ghost_6",
+    "requiem:gold_ghost_7",
+    "requiem:gold_ghost_8",
+    "requiem:gold_ghost_9",
+    "requiem:gold_ghost_10"
+  ]
+}

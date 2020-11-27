@@ -54,6 +54,7 @@ import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.loot.RequiemLootTables;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.network.ServerMessageHandling;
+import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.fabricmc.api.ModInitializer;
@@ -83,6 +84,7 @@ public final class Requiem implements ModInitializer {
         RequiemGamerules.init();
         RequiemItems.init();
         RequiemLootTables.init();
+        RequiemParticleTypes.init();
         RequiemRegistries.init();
         RequiemSoundEvents.init();
         RequiemStatusEffects.init();

@@ -42,6 +42,7 @@ import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.MovementConfig;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.mixin.common.access.EntityAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -53,7 +54,6 @@ import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
@@ -235,7 +235,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
         for (int i = 0; i < 10; i++) {
             Vec3d intendedMovement = getIntendedMovement(this.player);
             this.player.world.addParticle(
-                ParticleTypes.SOUL,
+                RequiemParticleTypes.GHOST,
                 this.player.getParticleX(0.5),
                 this.player.getRandomBodyY(),
                 this.player.getParticleZ(0.5),
