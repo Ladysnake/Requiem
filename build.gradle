@@ -31,9 +31,6 @@ allprojects {
 
     version = rootProject.mod_version
 
-    // Adds a few utility methods like getProjectProperty
-    apply from: 'https://raw.githubusercontent.com/NerdHubMC/Gradle-Scripts/master/scripts/utilities.gradle'
-
     repositories {
         mavenLocal()
         mavenCentral()
@@ -61,7 +58,7 @@ allprojects {
         from sourceSets.main.allSource
     }
 
-    apply from: 'https://raw.githubusercontent.com/OnyxStudios/Gradle-Scripts/master/scripts/fabric/publish/changelog.gradle'
+    apply from: rootProject.file('utilities.gradle')
 
     dependencies {
         //to change the versions see the gradle.properties file
