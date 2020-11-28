@@ -43,6 +43,7 @@ import ladysnake.requiem.api.v1.entity.MovementConfig;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
+import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.mixin.common.access.EntityAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -55,7 +56,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 
@@ -244,8 +244,8 @@ public class PlayerMovementAlterer implements MovementAlterer {
                 intendedMovement.z * 0.2
             );
         }
-        this.player.playSound(SoundEvents.PARTICLE_SOUL_ESCAPE, 3f, 0.6F + this.player.getRandom().nextFloat() * 0.4F);
-        this.player.playSound(SoundEvents.PARTICLE_SOUL_ESCAPE, 3f, 0.6F + this.player.getRandom().nextFloat() * 0.4F);
+        this.player.playSound(RequiemSoundEvents.EFFECT_PHASE, 3f, 0.6F + this.player.getRandom().nextFloat() * 0.4F);
+        this.player.playSound(RequiemSoundEvents.EFFECT_PHASE, 3f, 0.6F + this.player.getRandom().nextFloat() * 0.4F);
     }
 
     private Vec3d applyGravity(Vec3d velocity, float addedGravity) {
