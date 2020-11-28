@@ -12,7 +12,6 @@
     "inventory.InGameHudMixin",
     "inventory.InventoryScreenMixin",
     "inventory.MinecraftClientMixin",
-    "inventory.PlayerInventoryMixin",
     "opus.BookScreenMixin",
     "opus.EditBookScreenAccessor",
     "opus.LecternScreenMixin",

@@ -32,10 +32,12 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.client.inventory;
+package ladysnake.requiem.mixin.common.inventory;
 
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.common.impl.inventory.PlayerInventoryLimiter;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -70,7 +72,17 @@ public abstract class PlayerInventoryMixin {
         this.requiemLimiter = InventoryLimiter.KEY.get(player);
     }
 
-    @Inject(method = {"addPickBlock", "scrollInHotbar", "clone"},
+    @Environment(EnvType.CLIENT)
+    @Inject(method = {"addPickBlock", "scrollInHotbar"},
+        at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/entity/player/PlayerInventory;selectedSlot:I", shift = At.Shift.AFTER)
+    )
+    private void preventClientHotbarSelection(CallbackInfo ci) {
+        if (this.requiemLimiter.isSlotLocked(this.selectedSlot)) {
+            this.selectedSlot = PlayerInventoryLimiter.MAINHAND_SLOT;
+        }
+    }
+
+    @Inject(method = "clone",
         at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/entity/player/PlayerInventory;selectedSlot:I", shift = At.Shift.AFTER)
     )
     private void preventHotbarSelection(CallbackInfo ci) {

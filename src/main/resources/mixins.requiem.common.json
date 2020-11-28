@@ -22,6 +22,7 @@
     "humanity.LivingEntityMixin",
     "inventory.CraftingInventoryAccessor",
     "inventory.CraftingResultSlotMixin",
+    "inventory.PlayerInventoryMixin",
     "inventory.PlayerScreenHandlerAccessor",
     "inventory.PlayerScreenHandlerMixin",
     "inventory.ScreenHandlerMixin",
