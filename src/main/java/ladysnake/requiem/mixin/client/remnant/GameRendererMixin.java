@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.mixin.client.remnant;
 
+import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.UpdateTargetedEntityCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
@@ -41,6 +42,7 @@ import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.client.GameRendererAccessor;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.InGameOverlayRenderer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -51,6 +53,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -105,6 +108,18 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         Entity camera = this.client.getCameraEntity();
         if (camera instanceof PlayerEntity && (DeathSuspender.get((PlayerEntity) camera).isLifeTransient() || RemnantComponent.get((PlayerEntity) camera).isIncorporeal())) {
             cir.setReturnValue(false);
+        }
+    }
+
+    @Inject(
+        method = "renderHand",
+        slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;pop()V")),
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/options/Perspective;isFirstPerson()Z")
+    )
+    private void forceOverlayWhenIntangible(MatrixStack matrices, Camera camera, float tickDelta, CallbackInfo ci) {
+        assert this.client.player != null;
+        if (!this.client.options.getPerspective().isFirstPerson() && MovementAlterer.get(this.client.player).isNoClipping()) {
+            InGameOverlayRenderer.renderOverlays(this.client, matrices);
         }
     }
 }
