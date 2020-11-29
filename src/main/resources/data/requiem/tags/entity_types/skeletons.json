@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#requiem:humanoid_skeletons"
+    "#requiem:humanoid_skeletons",
+    "minecraft:skeleton_horse"
   ]
 }

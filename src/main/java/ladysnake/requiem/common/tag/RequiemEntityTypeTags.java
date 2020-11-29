@@ -41,6 +41,7 @@ import net.minecraft.tag.Tag;
 
 public final class RequiemEntityTypeTags {
     public static final Tag<EntityType<?>> POSSESSION_BLACKLIST = register("possession_blacklist");
+    public static final Tag<EntityType<?>> POSSESSABLES = register("possessables");
     public static final Tag<EntityType<?>> ITEM_USERS = register("item_users");
     public static final Tag<EntityType<?>> ARMOR_USERS = register("armor_users");
     public static final Tag<EntityType<?>> FULL_INVENTORY = register("full_inventory");

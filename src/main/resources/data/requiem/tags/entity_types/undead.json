@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "#requiem:skeletons",
+    "#requiem:zombies",
+    "minecraft:phantom",
+    "minecraft:wither",
+    "minecraft:zoglin"
+  ]
+}
