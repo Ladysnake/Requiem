@@ -39,18 +39,22 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.entity.InventoryPart;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
+import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.requiem.InventoryLockingChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
+import ladysnake.requiem.api.v1.event.requiem.client.RenderSelfPossessedEntityCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
+import ladysnake.requiem.client.particle.GhostParticle;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import ladysnake.requiem.common.util.ItemUtil;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
+import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.MinecraftClient;
@@ -101,6 +105,11 @@ public final class RequiemClientListener implements
     void registerCallbacks() {
         ClientTickEvents.END_CLIENT_TICK.register(this);
         PickEntityShaderCallback.EVENT.register(this);
+        PickEntityShaderCallback.EVENT.register((camera, loadShaderFunc, appliedShaderGetter) -> {
+            if (camera instanceof WaterCreatureEntity) {
+                loadShaderFunc.accept(RequiemFx.FISH_EYE_SHADER_ID);
+            }
+        });
         // Start possession on right click
         UseEntityCallback.EVENT.register(this);
         // Draw a possession indicator under the crosshair
@@ -117,6 +126,9 @@ public final class RequiemClientListener implements
                 this.mc.inGameHud.setOverlayMessage(new TranslatableText("requiem:shulker.onboard", FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
             }
         });
+        ApplyCameraTransformsCallback.EVENT.register(new HeadDownTransformHandler());
+        RenderSelfPossessedEntityCallback.EVENT.register(possessed -> possessed instanceof ShulkerEntity);
+        ShaderEffectRenderCallback.EVENT.register(GhostParticle::draw);
     }
 
     @Override

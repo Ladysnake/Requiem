@@ -42,7 +42,6 @@ import ladysnake.requiem.client.render.entity.HorologistEntityRenderer;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
-import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
@@ -147,7 +146,6 @@ public final class RequiemClient implements ClientModInitializer {
     }
 
     private void initListeners() {
-        ShaderEffectRenderCallback.EVENT.register(GhostParticle::draw);
         this.messageHandler.init();
         this.requiemFxRenderer.registerCallbacks();
         this.shadowPlayerFxRenderer.registerCallbacks();
