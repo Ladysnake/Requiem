@@ -49,6 +49,7 @@ import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
+import ladysnake.requiem.common.util.ItemUtil;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
@@ -211,6 +212,8 @@ public final class RequiemClientListener implements
                 key = "requiem:tooltip.cure_reagent";
             } else if (possessed.isUndead() && item.getItem() == Items.POTION && isWeaknessPotion(item)) {
                 key = "requiem:tooltip.cure_catalyst";
+            } else if (possessed instanceof WitchEntity && ItemUtil.isWaterBottle(item)) {
+                key = "pandemonium:tooltip.witch_brew_base";
             } else {
                 return;
             }

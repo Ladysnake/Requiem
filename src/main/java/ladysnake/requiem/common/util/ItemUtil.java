@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.pandemonium.common.util;
+package ladysnake.requiem.common.util;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;

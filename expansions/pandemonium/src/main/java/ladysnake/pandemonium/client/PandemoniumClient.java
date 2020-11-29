@@ -5,7 +5,6 @@ import ladysnake.pandemonium.client.handler.HeadDownTransformHandler;
 import ladysnake.pandemonium.client.render.entity.PlayerShellEntityRenderer;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
-import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.requiem.client.RenderSelfPossessedEntityCallback;
@@ -31,8 +30,6 @@ public class PandemoniumClient implements ClientModInitializer {
     }
 
     private void registerCallbacks() {
-        // Add custom tooltips to items when the player is possessing certain entities
-        ItemTooltipCallback.EVENT.register(new PossessionTooltipCallback());
         ClientTickEvents.END_CLIENT_TICK.register(FractureKeyBinding::update);
         PickEntityShaderCallback.EVENT.register((camera, loadShaderFunc, appliedShaderGetter) -> {
             if (camera instanceof WaterCreatureEntity) {

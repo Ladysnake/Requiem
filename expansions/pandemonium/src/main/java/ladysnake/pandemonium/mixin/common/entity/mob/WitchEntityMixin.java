@@ -17,8 +17,8 @@
  */
 package ladysnake.pandemonium.mixin.common.entity.mob;
 
-import ladysnake.pandemonium.common.util.ItemUtil;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.common.util.ItemUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.HostileEntity;
