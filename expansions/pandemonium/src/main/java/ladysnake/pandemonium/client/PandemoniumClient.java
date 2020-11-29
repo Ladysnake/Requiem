@@ -8,7 +8,6 @@ import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.requiem.client.RenderSelfPossessedEntityCallback;
-import ladysnake.requiem.client.FractureKeyBinding;
 import ladysnake.requiem.client.RequiemFx;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
 import net.fabricmc.api.ClientModInitializer;
@@ -30,7 +29,6 @@ public class PandemoniumClient implements ClientModInitializer {
     }
 
     private void registerCallbacks() {
-        ClientTickEvents.END_CLIENT_TICK.register(FractureKeyBinding::update);
         PickEntityShaderCallback.EVENT.register((camera, loadShaderFunc, appliedShaderGetter) -> {
             if (camera instanceof WaterCreatureEntity) {
                 loadShaderFunc.accept(RequiemFx.FISH_EYE_SHADER_ID);

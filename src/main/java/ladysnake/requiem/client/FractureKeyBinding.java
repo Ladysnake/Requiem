@@ -36,6 +36,7 @@ package ladysnake.requiem.client;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.KeyBinding;
@@ -59,6 +60,7 @@ public final class FractureKeyBinding {
 
     public static void init() {
         KeyBindingHelper.registerKeyBinding(etherealFractureKey);
+        ClientTickEvents.END_CLIENT_TICK.register(FractureKeyBinding::update);
     }
 
     public static void update(MinecraftClient client) {
