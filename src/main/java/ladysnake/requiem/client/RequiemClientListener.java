@@ -66,6 +66,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.*;
+import net.minecraft.entity.passive.BatEntity;
+import net.minecraft.entity.passive.CatEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.potion.PotionUtil;
@@ -104,12 +107,16 @@ public final class RequiemClientListener implements
 
     void registerCallbacks() {
         ClientTickEvents.END_CLIENT_TICK.register(this);
-        PickEntityShaderCallback.EVENT.register(this);
+        // make players use their possessed entity's shader
         PickEntityShaderCallback.EVENT.register((camera, loadShaderFunc, appliedShaderGetter) -> {
-            if (camera instanceof WaterCreatureEntity) {
-                loadShaderFunc.accept(RequiemFx.FISH_EYE_SHADER_ID);
+            if (camera != null) {
+                Entity possessed = PossessionComponent.getPossessedEntity(camera);
+                if (possessed != null) {
+                    this.mc.gameRenderer.onCameraEntitySet(possessed);
+                }
             }
         });
+        PickEntityShaderCallback.EVENT.register(this);
         // Start possession on right click
         UseEntityCallback.EVENT.register(this);
         // Draw a possession indicator under the crosshair
@@ -152,11 +159,10 @@ public final class RequiemClientListener implements
 
     @Override
     public void pickEntityShader(@Nullable Entity camera, Consumer<Identifier> loadShaderFunc, Supplier<ShaderEffect> appliedShaderGetter) {
-        if (camera != null) {
-            Entity possessed = PossessionComponent.getPossessedEntity(camera);
-            if (possessed != null) {
-                this.mc.gameRenderer.onCameraEntitySet(possessed);
-            }
+        if (camera instanceof WaterCreatureEntity) {
+            loadShaderFunc.accept(RequiemFx.FISH_EYE_SHADER_ID);
+        } else if (camera instanceof BatEntity || camera instanceof WolfEntity || camera instanceof CatEntity) {
+            loadShaderFunc.accept(RequiemFx.DICHROMATIC_SHADER_ID);
         }
     }
 

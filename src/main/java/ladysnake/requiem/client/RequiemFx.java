@@ -58,6 +58,7 @@ import static ladysnake.requiem.common.network.RequiemNetworking.*;
 public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEvents.EndTick {
     public static final Identifier SPECTRE_SHADER_ID = Requiem.id("shaders/post/spectre.json");
     public static final Identifier FISH_EYE_SHADER_ID = Requiem.id("shaders/post/fish_eye.json");
+    public static final Identifier DICHROMATIC_SHADER_ID = Requiem.id("shaders/post/dichromatic.json");
     public static final Identifier ZOOM_SHADER_ID = Requiem.id("shaders/post/zoom.json");
     private static final float[] ETHEREAL_COLOR = {0.0f, 0.7f, 1.0f};
 
