@@ -4,7 +4,7 @@
   ],
   "passes": [
     {
-      "name": "requiem:dichromatic",
+      "name": "requiem:tetrachromatic",
       "intarget": "minecraft:main",
       "outtarget": "swap"
     },

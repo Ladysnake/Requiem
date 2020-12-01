@@ -40,6 +40,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.tag.Tag;
 
 public final class RequiemEntityTypeTags {
+    public static final Tag<EntityType<?>> DICHROMATS = register("dichromats");
+    public static final Tag<EntityType<?>> TETRACHROMATS = register("tetrachromats");
+
     public static final Tag<EntityType<?>> POSSESSION_BLACKLIST = register("possession_blacklist");
     public static final Tag<EntityType<?>> POSSESSABLES = register("possessables");
     public static final Tag<EntityType<?>> ITEM_USERS = register("item_users");

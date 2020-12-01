@@ -53,12 +53,10 @@ import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import ladysnake.requiem.common.util.ItemUtil;
-import ladysnake.satin.api.event.PickEntityShaderCallback;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -66,9 +64,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.*;
-import net.minecraft.entity.passive.BatEntity;
-import net.minecraft.entity.passive.CatEntity;
-import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.potion.PotionUtil;
@@ -85,12 +80,9 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public final class RequiemClientListener implements
     ClientTickEvents.EndTick,
-    PickEntityShaderCallback,
     UseEntityCallback,
     ItemTooltipCallback,
     InventoryLockingChangeCallback {
@@ -107,16 +99,6 @@ public final class RequiemClientListener implements
 
     void registerCallbacks() {
         ClientTickEvents.END_CLIENT_TICK.register(this);
-        // make players use their possessed entity's shader
-        PickEntityShaderCallback.EVENT.register((camera, loadShaderFunc, appliedShaderGetter) -> {
-            if (camera != null) {
-                Entity possessed = PossessionComponent.getPossessedEntity(camera);
-                if (possessed != null) {
-                    this.mc.gameRenderer.onCameraEntitySet(possessed);
-                }
-            }
-        });
-        PickEntityShaderCallback.EVENT.register(this);
         // Start possession on right click
         UseEntityCallback.EVENT.register(this);
         // Draw a possession indicator under the crosshair
@@ -154,15 +136,6 @@ public final class RequiemClientListener implements
             if (possessedEntity != null && possessedEntity.isOnFire()) {
                 client.player.setOnFireFor(1);
             }
-        }
-    }
-
-    @Override
-    public void pickEntityShader(@Nullable Entity camera, Consumer<Identifier> loadShaderFunc, Supplier<ShaderEffect> appliedShaderGetter) {
-        if (camera instanceof WaterCreatureEntity) {
-            loadShaderFunc.accept(RequiemFx.FISH_EYE_SHADER_ID);
-        } else if (camera instanceof BatEntity || camera instanceof WolfEntity || camera instanceof CatEntity) {
-            loadShaderFunc.accept(RequiemFx.DICHROMATIC_SHADER_ID);
         }
     }
 
