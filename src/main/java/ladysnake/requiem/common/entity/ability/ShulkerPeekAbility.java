@@ -38,7 +38,7 @@ import net.minecraft.entity.mob.ShulkerEntity;
 
 public class ShulkerPeekAbility extends IndirectAbilityBase<ShulkerEntity> {
     public ShulkerPeekAbility(ShulkerEntity owner) {
-        super(owner);
+        super(owner, 0);
     }
 
     @Override

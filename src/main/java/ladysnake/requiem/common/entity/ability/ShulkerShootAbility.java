@@ -34,7 +34,9 @@
  */
 package ladysnake.requiem.common.entity.ability;
 
+import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.IndirectAbility;
+import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.ShulkerEntity;
@@ -44,15 +46,14 @@ import net.minecraft.util.math.Box;
 
 public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, LivingEntity> implements IndirectAbility<ShulkerEntity> {
     public static final int COOLDOWN = 20;
-    private int bulletCooldown = COOLDOWN;
 
     public ShulkerShootAbility(ShulkerEntity owner) {
-        super(owner, 16, LivingEntity.class);
+        super(owner, 16, LivingEntity.class, COOLDOWN);
     }
 
     @Override
-    public boolean canTrigger(LivingEntity target) {
-        return this.bulletCooldown == 0 && this.owner.getPeekAmount() > 50;
+    public boolean canTarget(LivingEntity target) {
+        return this.owner.getPeekAmount() > 50;
     }
 
     @Override
@@ -67,7 +68,7 @@ public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, Living
             this.owner.getZ(),
             this.getSearchBox());
         if (target != null) {
-            return this.trigger(target);
+            return MobAbilityController.get(this.owner).useDirect(AbilityType.ATTACK, target);
         }
         return false;
     }
@@ -79,21 +80,12 @@ public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, Living
             this.owner.playSound(SoundEvents.ENTITY_SHULKER_SHOOT, 2.0F, (this.owner.world.random.nextFloat() - this.owner.world.random.nextFloat()) * 0.2F + 1.0F);
         }
 
-        this.bulletCooldown = COOLDOWN;
         return true;
 
-    }
-
-    @Override
-    public void update() {
-        if (this.bulletCooldown > 0) {
-            this.bulletCooldown--;
-        }
     }
 
     private Box getSearchBox() {
         double range = this.getRange();
         return this.owner.getBoundingBox().expand(range, 4.0D, range);
     }
-
 }

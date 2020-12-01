@@ -34,7 +34,7 @@ public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity, Livin
     private boolean started;
 
     public GuardianBeamAbility(GuardianEntity owner) {
-        super(owner, 15, LivingEntity.class);
+        super(owner, 15, LivingEntity.class, 0);
         try {
             this.fireBeamGoal = BEAM_GOAL_FACTORY.newInstance(owner);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -43,7 +43,7 @@ public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity, Livin
     }
 
     @Override
-    public boolean canTrigger(LivingEntity target) {
+    public boolean canTarget(LivingEntity target) {
         return target.isAlive();
     }
 
@@ -61,7 +61,7 @@ public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity, Livin
     }
 
     @Override
-    public void update() {
+    public void update(int cooldown) {
         if (started) {
             if (fireBeamGoal.shouldContinue()) {
                 fireBeamGoal.tick();

@@ -33,7 +33,7 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
     private boolean started;
 
     public EvokerVexAbility(EvokerEntity owner) {
-        super(owner);
+        super(owner, 0);
         try {
             summonVexGoal = VEX_GOAL_FACTORY.newInstance(owner);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -57,7 +57,7 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
     }
 
     @Override
-    public void update() {
+    public void update(int cooldown) {
         if (started) {
             owner.setTarget(owner);
             if (summonVexGoal.shouldContinue()) {

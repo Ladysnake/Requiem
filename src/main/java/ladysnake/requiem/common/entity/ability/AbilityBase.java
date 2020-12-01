@@ -39,8 +39,15 @@ import net.minecraft.entity.mob.MobEntity;
 
 public abstract class AbilityBase<E extends MobEntity> implements MobAbility<E> {
     protected final E owner;
+    private final int cooldown;
 
-    public AbilityBase(E owner) {
+    public AbilityBase(E owner, int cooldown) {
         this.owner = owner;
+        this.cooldown = cooldown;
+    }
+
+    @Override
+    public int getCooldown() {
+        return cooldown;
     }
 }

@@ -11,7 +11,7 @@ public interface DirectAbility<E extends MobEntity, T extends Entity> extends Mo
 
     Class<T> getTargetType();
 
-    boolean canTrigger(T target);
+    boolean canTarget(T target);
 
     boolean trigger(T target);
 }

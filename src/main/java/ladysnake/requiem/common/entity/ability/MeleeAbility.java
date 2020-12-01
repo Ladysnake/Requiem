@@ -49,12 +49,12 @@ public class MeleeAbility extends DirectAbilityBase<MobEntity, Entity> {
     }
 
     public MeleeAbility(MobEntity owner, boolean ignoreDamageAttribute) {
-        super(owner, 0, Entity.class);
+        super(owner, 0, Entity.class, 0);
         this.ignoreDamageAttribute = ignoreDamageAttribute;
     }
 
     @Override
-    public boolean canTrigger(Entity target) {
+    public boolean canTarget(Entity target) {
         return true;
     }
 

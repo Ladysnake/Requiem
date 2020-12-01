@@ -30,6 +30,11 @@ import net.minecraft.entity.mob.MobEntity;
 public interface MobAbility<E extends MobEntity> {
     /**
      * Called each tick. Allows abilities to span over some time.
+     * @param cooldown the current ability cooldown
      */
-    default void update() { }
+    default void update(int cooldown) { }
+
+    default int getCooldown() {
+        return 0;
+    }
 }

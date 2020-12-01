@@ -31,12 +31,12 @@ public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity, Entity>
     private boolean started;
 
     public EvokerWololoAbility(EvokerEntity owner) {
-        super(owner, 16, Entity.class);
+        super(owner, 16, Entity.class, 0);
         this.wololoGoal = new CustomWololoGoal(owner);
     }
 
     @Override
-    public boolean canTrigger(Entity target) {
+    public boolean canTarget(Entity target) {
         return this.isValidTarget(target);
     }
 
@@ -57,7 +57,7 @@ public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity, Entity>
     }
 
     @Override
-    public void update() {
+    public void update(int cooldown) {
         if (this.started) {
             if (this.wololoGoal.shouldContinue()) {
                 this.wololoGoal.tick();

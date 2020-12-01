@@ -22,7 +22,7 @@ import net.minecraft.entity.mob.CreeperEntity;
 
 public class CreeperPrimingAbility extends IndirectAbilityBase<CreeperEntity> {
     public CreeperPrimingAbility(CreeperEntity owner) {
-        super(owner);
+        super(owner, 0);
     }
 
     @Override

@@ -24,34 +24,21 @@ import net.minecraft.entity.mob.MobEntity;
 
 public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> extends DirectAbilityBase<T, LivingEntity> {
 
-    private final int intervalTicks;
-    private int cooldown = 0;
-
     public RangedAttackAbility(T owner) {
-        super(owner, 20.0, LivingEntity.class);
-        intervalTicks = 40;
+        super(owner, 20.0, LivingEntity.class, 40);
     }
 
     @Override
-    public boolean canTrigger(LivingEntity target) {
-        return this.cooldown == 0;
+    public boolean canTarget(LivingEntity target) {
+        return true;
     }
 
     @Override
     public boolean run(LivingEntity target) {
-        this.cooldown = this.intervalTicks;
-
         if (!this.owner.world.isClient) {
             this.owner.attack(target, 1f);
         }
 
         return true;
-    }
-
-    @Override
-    public void update() {
-        if (this.cooldown > 0) {
-            this.cooldown--;
-        }
     }
 }

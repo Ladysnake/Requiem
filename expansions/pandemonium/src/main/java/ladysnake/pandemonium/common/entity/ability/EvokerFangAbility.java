@@ -34,10 +34,9 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEnt
     private static final Method CAST_SPELL_GOAL$CAST_SPELL;
 
     private final SpellcastingIllagerEntity.CastSpellGoal conjureFangsGoal;
-    private int cooldown = 0;
 
     public EvokerFangAbility(EvokerEntity owner) {
-        super(owner, 12, LivingEntity.class);
+        super(owner, 12, LivingEntity.class, 40);
         try {
             this.conjureFangsGoal = FANGS_GOAL_FACTORY.newInstance(owner);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -46,7 +45,7 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEnt
     }
 
     @Override
-    public boolean canTrigger(LivingEntity target) {
+    public boolean canTarget(LivingEntity target) {
         return target.isAlive();
     }
 
@@ -65,7 +64,6 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEnt
                 throw new UncheckedReflectionException("Failed to trigger evoker fang ability", e);
             }
             this.owner.setSpell(SpellcastingIllagerEntity.Spell.FANGS);
-            this.cooldown = 40;
             success = true;
         } else {
             success = false;
@@ -75,12 +73,9 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEnt
     }
 
     @Override
-    public void update() {
-        if (cooldown > 0) {
-            --cooldown;
-            if (cooldown == 0 && !this.owner.world.isClient) {
-                this.owner.setSpell(SpellcastingIllagerEntity.Spell.NONE);
-            }
+    public void update(int cooldown) {
+        if (cooldown == 1 && !this.owner.world.isClient) {
+            this.owner.setSpell(SpellcastingIllagerEntity.Spell.NONE);
         }
     }
 

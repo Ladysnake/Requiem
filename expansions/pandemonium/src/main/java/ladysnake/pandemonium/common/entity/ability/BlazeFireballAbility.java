@@ -31,23 +31,19 @@ public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
     public static final int FIRE_TICKS = 200;
     public static final int BLAZE_SHOOT_EVENT = 1018;
 
-    private int fireTicks = 0;
     private int fireballs = CONSECUTIVE_FIREBALLS;
 
     public BlazeFireballAbility(MobEntity owner) {
-        super(owner);
+        super(owner, FIRE_TICKS);
     }
 
     @Override
-    public void update() {
-        if (fireTicks > 0) {
-            fireTicks--;
-            if (!this.owner.world.isClient && fireTicks == 0) {
-                if (this.owner instanceof BlazeEntity && ((BlazeEntityAccessor) this.owner).invokeIsFireActive()) {
-                    ((BlazeEntityAccessor) this.owner).invokeSetFireActive(false);
-                }
-                this.fireballs = CONSECUTIVE_FIREBALLS;
+    public void update(int fireTicks) {
+        if (!this.owner.world.isClient && fireTicks == 1) {
+            if (this.owner instanceof BlazeEntity && ((BlazeEntityAccessor) this.owner).invokeIsFireActive()) {
+                ((BlazeEntityAccessor) this.owner).invokeSetFireActive(false);
             }
+            this.fireballs = CONSECUTIVE_FIREBALLS;
         }
     }
 
@@ -69,7 +65,6 @@ public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
             );
             fireball.updatePosition(this.owner.getX(), this.owner.getY() + (double)(this.owner.getHeight() / 2.0F) + 0.5D, this.owner.getZ());
             this.owner.world.spawnEntity(fireball);
-            this.fireTicks = FIRE_TICKS;
             this.fireballs--;
         }
         return true;

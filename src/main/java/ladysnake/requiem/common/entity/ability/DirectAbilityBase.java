@@ -26,13 +26,12 @@ import net.minecraft.entity.mob.MobEntity;
  *
  * @param <E> The type of mobs that can wield this ability
  */
-public abstract class DirectAbilityBase<E extends MobEntity, T extends Entity> implements DirectAbility<E, T> {
-    protected final E owner;
+public abstract class DirectAbilityBase<E extends MobEntity, T extends Entity> extends AbilityBase<E> implements DirectAbility<E, T> {
     private final double range;
     private final Class<T> targetType;
 
-    protected DirectAbilityBase(E owner, double range, Class<T> targetType) {
-        this.owner = owner;
+    protected DirectAbilityBase(E owner, double range, Class<T> targetType, int cooldown) {
+        super(owner, cooldown);
         this.range = range;
         this.targetType = targetType;
     }
@@ -55,7 +54,7 @@ public abstract class DirectAbilityBase<E extends MobEntity, T extends Entity> i
      */
     @Override
     public boolean trigger(T target) {
-        if (this.canTrigger(target)) {
+        if (this.canTarget(target)) {
             return this.run(target);
         }
         return false;

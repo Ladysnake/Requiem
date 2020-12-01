@@ -61,7 +61,7 @@ public class ImmutableMobAbilityConfig<E extends MobEntity> implements MobAbilit
             }
 
             @Override
-            public boolean canTrigger(Entity target) {
+            public boolean canTarget(Entity target) {
                 return false;
             }
 

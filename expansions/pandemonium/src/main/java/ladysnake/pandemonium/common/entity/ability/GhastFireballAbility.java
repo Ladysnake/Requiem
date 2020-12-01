@@ -27,11 +27,11 @@ public class GhastFireballAbility extends IndirectAbilityBase<MobEntity> {
     private int fireballCooldown = 0;
 
     public GhastFireballAbility(MobEntity owner) {
-        super(owner);
+        super(owner, 0);
     }
 
     @Override
-    public void update() {
+    public void update(int cooldown) {
         if (this.fireballCooldown > 0) {
             this.fireballCooldown--;
 
