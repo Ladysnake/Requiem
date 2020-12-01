@@ -24,39 +24,36 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 import net.minecraft.entity.passive.SheepEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import org.jetbrains.annotations.Nullable;
 
-public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity> {
+public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity, Entity> {
     private final CustomWololoGoal wololoGoal;
     private boolean started;
 
     public EvokerWololoAbility(EvokerEntity owner) {
-        super(owner);
+        super(owner, 16, Entity.class);
         this.wololoGoal = new CustomWololoGoal(owner);
     }
 
     @Override
-    public double getRange() {
-        return 16;
+    public boolean canTrigger(Entity target) {
+        return this.isValidTarget(target);
     }
 
     @Override
-    public boolean trigger(PlayerEntity player, Entity entity) {
-        if (this.isValidTarget(entity)) {
-            if (player.world.isClient) return true;
+    public boolean run(Entity target) {
+        if (this.owner.world.isClient) return true;
 
-            this.wololoGoal.target = entity;
+        this.wololoGoal.target = target;
 
-            if (this.wololoGoal.canStart()) {
-                this.wololoGoal.start();
-                this.started = true;
-                return true;
-            } else {
-                this.wololoGoal.target = null;
-            }
+        if (this.wololoGoal.canStart()) {
+            this.wololoGoal.start();
+            this.started = true;
+            return true;
+        } else {
+            this.wololoGoal.target = null;
+            return false;
         }
-        return false;
     }
 
     @Override

@@ -28,7 +28,7 @@ import java.util.function.Function;
  * @param <E> The type of entities for which this config can be applied
  */
 public interface MobAbilityConfig<E extends MobEntity> {
-    DirectAbility<? super E> getDirectAbility(E mob, AbilityType type);
+    DirectAbility<? super E, ?> getDirectAbility(E mob, AbilityType type);
 
     IndirectAbility<? super E> getIndirectAbility(E mob, AbilityType type);
 
@@ -37,11 +37,11 @@ public interface MobAbilityConfig<E extends MobEntity> {
     }
 
     interface Builder<E extends MobEntity> {
-        default Builder<E> directAttack(Function<E, DirectAbility<? super E>> factory) {
+        default Builder<E> directAttack(Function<E, DirectAbility<? super E, ?>> factory) {
             return direct(AbilityType.ATTACK, factory);
         }
 
-        default Builder<E> directInteract(Function<E, DirectAbility<? super E>> factory) {
+        default Builder<E> directInteract(Function<E, DirectAbility<? super E, ?>> factory) {
             return direct(AbilityType.INTERACT, factory);
         }
 
@@ -53,7 +53,7 @@ public interface MobAbilityConfig<E extends MobEntity> {
             return indirect(AbilityType.INTERACT, factory);
         }
 
-        Builder<E> direct(AbilityType type, Function<E, DirectAbility<? super E>> factory);
+        Builder<E> direct(AbilityType type, Function<E, DirectAbility<? super E, ?>> factory);
 
         Builder<E> indirect(AbilityType type, Function<E, IndirectAbility<? super E>> factory);
 

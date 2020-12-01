@@ -72,6 +72,7 @@ public class ServerMessageHandling {
             context.getTaskQueue().execute(() -> {
                 PlayerEntity player = context.getPlayer();
                 Entity possessed = PossessionComponent.get(player).getPossessedEntity();
+
                 if (possessed != null) {
                     MobAbilityController abilityController = MobAbilityController.get(possessed);
                     Entity targetedEntity = player.world.getEntityById(entityId);

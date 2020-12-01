@@ -34,13 +34,14 @@
  */
 package ladysnake.requiem.common.entity.ability;
 
+import ladysnake.requiem.api.v1.possession.Possessable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
-public class MeleeAbility extends DirectAbilityBase<MobEntity> {
+public class MeleeAbility extends DirectAbilityBase<MobEntity, Entity> {
     private final boolean ignoreDamageAttribute;
 
     public MeleeAbility(MobEntity owner) {
@@ -48,26 +49,30 @@ public class MeleeAbility extends DirectAbilityBase<MobEntity> {
     }
 
     public MeleeAbility(MobEntity owner, boolean ignoreDamageAttribute) {
-        super(owner);
+        super(owner, 0, Entity.class);
         this.ignoreDamageAttribute = ignoreDamageAttribute;
     }
 
     @Override
-    public double getRange() {
-        return 0;
+    public boolean canTrigger(Entity target) {
+        return true;
     }
 
     @Override
-    public boolean trigger(PlayerEntity player, Entity target) {
-        if (player.world.isClient) return true;
+    public boolean run(Entity target) {
+        if (this.owner.world.isClient) return true;
 
         // We actually need to check if the entity has an attack damage attribute, because mojang doesn't.
         boolean success = (ignoreDamageAttribute || owner.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE) != null) && owner.tryAttack(target);
         if (success && target instanceof LivingEntity) {
             this.owner.setAttacking(true);
-            player.getMainHandStack().postHit((LivingEntity) target, player);
-            // Reset cooldown
-            player.resetLastAttackedTicks();
+            PlayerEntity player = ((Possessable) this.owner).getPossessor();
+
+            if (player != null) {
+                player.getMainHandStack().postHit((LivingEntity) target, player);
+                // Reset cooldown
+                player.resetLastAttackedTicks();
+            }
         }
         return success;
     }

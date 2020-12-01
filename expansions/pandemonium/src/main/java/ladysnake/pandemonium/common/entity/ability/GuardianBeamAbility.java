@@ -20,23 +20,21 @@ package ladysnake.pandemonium.common.entity.ability;
 import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
 import ladysnake.requiem.common.util.reflection.ReflectionHelper;
 import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.GuardianEntity;
-import net.minecraft.entity.player.PlayerEntity;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity> {
+public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity, LivingEntity> {
     private static final Constructor<? extends Goal> BEAM_GOAL_FACTORY;
 
     private final Goal fireBeamGoal;
     private boolean started;
 
     public GuardianBeamAbility(GuardianEntity owner) {
-        super(owner);
+        super(owner, 15, LivingEntity.class);
         try {
             this.fireBeamGoal = BEAM_GOAL_FACTORY.newInstance(owner);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -45,22 +43,19 @@ public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity> {
     }
 
     @Override
-    public double getRange() {
-        return 15;
+    public boolean canTrigger(LivingEntity target) {
+        return target.isAlive();
     }
 
     @Override
-    public boolean trigger(PlayerEntity player, Entity entity) {
-        if (entity instanceof LivingEntity) {
-            if (player.world.isClient) return true;
+    public boolean run(LivingEntity entity) {
+        if (this.owner.world.isClient) return true;
 
-            LivingEntity target = (LivingEntity) entity;
-            owner.setTarget(target);
-            if (fireBeamGoal.canStart()) {
-                fireBeamGoal.start();
-                started = true;
-                return true;
-            }
+        owner.setTarget(entity);
+        if (fireBeamGoal.canStart()) {
+            fireBeamGoal.start();
+            started = true;
+            return true;
         }
         return false;
     }

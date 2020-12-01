@@ -19,7 +19,6 @@ package ladysnake.pandemonium.common.entity.ability;
 
 import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
 import net.minecraft.entity.mob.CreeperEntity;
-import net.minecraft.entity.player.PlayerEntity;
 
 public class CreeperPrimingAbility extends IndirectAbilityBase<CreeperEntity> {
     public CreeperPrimingAbility(CreeperEntity owner) {
@@ -27,8 +26,8 @@ public class CreeperPrimingAbility extends IndirectAbilityBase<CreeperEntity> {
     }
 
     @Override
-    public boolean trigger(PlayerEntity player) {
-        if (!player.world.isClient) {
+    public boolean trigger() {
+        if (!this.owner.world.isClient) {
             this.owner.setFuseSpeed(this.owner.getFuseSpeed() > 0 ? -1 : 1);
         }
         return true;

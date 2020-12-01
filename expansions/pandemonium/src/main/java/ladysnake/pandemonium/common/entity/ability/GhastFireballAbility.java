@@ -20,7 +20,6 @@ package ladysnake.pandemonium.common.entity.ability;
 import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.util.math.Vec3d;
 
@@ -43,9 +42,9 @@ public class GhastFireballAbility extends IndirectAbilityBase<MobEntity> {
     }
 
     @Override
-    public boolean trigger(PlayerEntity player) {
+    public boolean trigger() {
         if (this.fireballCooldown >= 20) {
-            if (!player.world.isClient) {
+            if (!this.owner.world.isClient) {
                 Vec3d scaledRot = this.owner.getRotationVec(1.0F);
                 Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
                 this.owner.world.syncWorldEvent(null, 1016, this.owner.getBlockPos(), 0);

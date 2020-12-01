@@ -35,7 +35,6 @@
 package ladysnake.requiem.common.entity.ability;
 
 import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.entity.player.PlayerEntity;
 
 public class ShulkerPeekAbility extends IndirectAbilityBase<ShulkerEntity> {
     public ShulkerPeekAbility(ShulkerEntity owner) {
@@ -43,8 +42,8 @@ public class ShulkerPeekAbility extends IndirectAbilityBase<ShulkerEntity> {
     }
 
     @Override
-    public boolean trigger(PlayerEntity player) {
-        if (!player.world.isClient) {
+    public boolean trigger() {
+        if (!this.owner.world.isClient) {
             if (this.owner.getPeekAmount() > 0) {
                 this.owner.setPeekAmount(0);
             } else {

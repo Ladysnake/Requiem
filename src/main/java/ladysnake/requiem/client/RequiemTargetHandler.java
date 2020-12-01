@@ -46,8 +46,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -99,17 +97,20 @@ public final class RequiemTargetHandler implements UpdateTargetedEntityCallback,
     @Override
     public void onPossessionStateChange(PlayerEntity player, @Nullable MobEntity possessed) {
         if (player == client.player) {
-            this.abilityController = null;
-            this.targets.clear();
-
-            if (possessed != null) {
-                MobAbilityController c = MobAbilityController.get(possessed);
-                AbilityType[] a = this.sortedAbilities.clone();
-                Arrays.sort(a, Comparator.comparingDouble(c::getRange));
-                this.sortedAbilities = a;
-                this.abilityController = c;
-            }
+            setAbilities(MobAbilityController.KEY.maybeGet(possessed).orElse(null));
         }
+    }
+
+    public void setAbilities(@Nullable MobAbilityController c) {
+        this.targets.clear();
+
+        if (c != null) {
+            AbilityType[] a = this.sortedAbilities.clone();
+            Arrays.sort(a, Comparator.comparingDouble(c::getRange));
+            this.sortedAbilities = a;
+        }
+
+        this.abilityController = c;
     }
 
     @Override
@@ -153,11 +154,13 @@ public final class RequiemTargetHandler implements UpdateTargetedEntityCallback,
                 double distanceToHitSq = startPoint.squaredDistanceTo(hitPos);
 
                 if (distanceToHitSq < effectiveRangeSq || blockResult == null) {
-                    if (hitEntity instanceof LivingEntity || hitEntity instanceof ItemFrameEntity) {
-                        WeakReference<Entity> ref = new WeakReference<>(hitEntity);
-                        // Every target after this one must have a higher range, so they will target the same entity
-                        for (; i < abilityTypes.length; i++) {
-                            targets.put(abilityTypes[i], ref);
+                    WeakReference<Entity> ref = new WeakReference<>(hitEntity);
+                    // Every target after this one must have a higher range, so they will target the same entity
+                    for (; i < abilityTypes.length; i++) {
+                        AbilityType eligibleAbility = abilityTypes[i];
+
+                        if (abilityController.canTarget(eligibleAbility, hitEntity)) {
+                            targets.put(eligibleAbility, ref);
                         }
                     }
                 }

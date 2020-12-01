@@ -40,11 +40,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
+import javax.annotation.Nullable;
+
 public class ImmutableMobAbilityController<T extends MobEntity & Possessable> implements MobAbilityController {
     private final IndirectAbility<? super T> indirectAttack;
     private final IndirectAbility<? super T> indirectInteraction;
-    private final DirectAbility<? super T> directAttack;
-    private final DirectAbility<? super T> directInteraction;
+    private final DirectAbility<? super T, ?> directAttack;
+    private final DirectAbility<? super T, ?> directInteraction;
     private final T owner;
 
     public ImmutableMobAbilityController(MobAbilityConfig<? super T> config, T owner) {
@@ -57,34 +59,22 @@ public class ImmutableMobAbilityController<T extends MobEntity & Possessable> im
 
     @Override
     public double getRange(AbilityType type) {
-        if (type == AbilityType.ATTACK) {
-            return this.directAttack.getRange();
-        } else if (type == AbilityType.INTERACT) {
-            return this.directInteraction.getRange();
-        }
-        return 0;
+        return this.getDirect(type).getRange();
+    }
+
+    @Override
+    public boolean canTarget(AbilityType type, Entity target) {
+        return this.canTarget(target, this.getDirect(type));
     }
 
     @Override
     public boolean useDirect(AbilityType type, Entity target) {
-        PlayerEntity p = this.owner.getPossessor();
-        if (type == AbilityType.ATTACK) {
-            return p != null && directAttack.trigger(p, target);
-        } else if (type == AbilityType.INTERACT) {
-            return p != null && directInteraction.trigger(p, target);
-        }
-        return false;
+        return this.use(this.owner.getPossessor(), this.getDirect(type));
     }
 
     @Override
     public boolean useIndirect(AbilityType type) {
-        PlayerEntity p = this.owner.getPossessor();
-        if (type == AbilityType.ATTACK) {
-            return p != null && indirectAttack.trigger(p);
-        } else if (type == AbilityType.INTERACT) {
-            return p != null && indirectInteraction.trigger(p);
-        }
-        return false;
+        return this.getIndirect(type).trigger();
     }
 
     @Override
@@ -93,5 +83,40 @@ public class ImmutableMobAbilityController<T extends MobEntity & Possessable> im
         this.indirectAttack.update();
         this.directInteraction.update();
         this.indirectInteraction.update();
+    }
+
+    private DirectAbility<? super T, ?> getDirect(AbilityType type) {
+        switch (type) {
+            case ATTACK:
+                return this.directAttack;
+            case INTERACT:
+                return this.directInteraction;
+        }
+        throw new IllegalArgumentException("Unrecognized ability type " + type);
+    }
+
+    private IndirectAbility<? super T> getIndirect(AbilityType type) {
+        switch (type) {
+            case ATTACK:
+                return this.indirectAttack;
+            case INTERACT:
+                return this.indirectInteraction;
+        }
+        throw new IllegalArgumentException("Unrecognized ability type " + type);
+    }
+
+    private <E extends Entity> boolean canTarget(Entity target, DirectAbility<? super T, E> ability) {
+        Class<E> targetType = ability.getTargetType();
+        if (targetType.isInstance(target)) {
+            return ability.canTrigger(targetType.cast(target));
+        }
+        return false;
+    }
+
+    private <E extends Entity> boolean use(@Nullable PlayerEntity p, DirectAbility<? super T, E> ability) {
+        if (ability.getTargetType().isInstance(p)) {
+            return ability.trigger(ability.getTargetType().cast(p));
+        }
+        return false;
     }
 }

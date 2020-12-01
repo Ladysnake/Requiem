@@ -17,41 +17,35 @@
  */
 package ladysnake.pandemonium.common.entity.ability;
 
-import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
-import net.minecraft.entity.Entity;
+import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 
-public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> implements DirectAbility<T> {
+public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> extends DirectAbilityBase<T, LivingEntity> {
 
-    private final T owner;
-    private final double range = 20.0;
-    private final int intervalTicks = 40;
+    private final int intervalTicks;
     private int cooldown = 0;
 
     public RangedAttackAbility(T owner) {
-        this.owner = owner;
+        super(owner, 20.0, LivingEntity.class);
+        intervalTicks = 40;
     }
 
     @Override
-    public double getRange() {
-        return range;
+    public boolean canTrigger(LivingEntity target) {
+        return this.cooldown == 0;
     }
 
     @Override
-    public boolean trigger(PlayerEntity player, Entity target) {
-        if (this.cooldown == 0 && target instanceof LivingEntity) {
-            this.cooldown = this.intervalTicks;
+    public boolean run(LivingEntity target) {
+        this.cooldown = this.intervalTicks;
 
-            if (!player.world.isClient) {
-                this.owner.attack((LivingEntity) target, 1f);
-            }
-
-            return true;
+        if (!this.owner.world.isClient) {
+            this.owner.attack(target, 1f);
         }
-        return false;
+
+        return true;
     }
 
     @Override

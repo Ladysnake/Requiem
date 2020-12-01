@@ -38,6 +38,8 @@ public interface MobAbilityController extends TransientComponent, CommonTickingC
 
     double getRange(AbilityType type);
 
+    boolean canTarget(AbilityType type, Entity target);
+
     boolean useDirect(AbilityType type, Entity target);
 
     boolean useIndirect(AbilityType type);

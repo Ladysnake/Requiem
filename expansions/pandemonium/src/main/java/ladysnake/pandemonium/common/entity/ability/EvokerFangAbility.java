@@ -21,17 +21,15 @@ import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
 import ladysnake.requiem.common.util.reflection.ReflectionHelper;
 import ladysnake.requiem.common.util.reflection.UnableToFindMethodException;
 import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.SpellcastingIllagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity> {
+public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEntity> {
     private static final Constructor<? extends SpellcastingIllagerEntity.CastSpellGoal> FANGS_GOAL_FACTORY;
     private static final Method CAST_SPELL_GOAL$CAST_SPELL;
 
@@ -39,7 +37,7 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity> {
     private int countdown = 0;
 
     public EvokerFangAbility(EvokerEntity owner) {
-        super(owner);
+        super(owner, 12, LivingEntity.class);
         try {
             this.conjureFangsGoal = FANGS_GOAL_FACTORY.newInstance(owner);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -48,30 +46,31 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity> {
     }
 
     @Override
-    public double getRange() {
-        return 12;
+    public boolean canTrigger(LivingEntity target) {
+        return target.isAlive();
     }
 
     @Override
-    public boolean trigger(PlayerEntity player, Entity entity) {
-        boolean success = false;
-        if (entity instanceof LivingEntity) {
-            if (player.world.isClient) return true;
+    public boolean run(LivingEntity entity) {
+        if (this.owner.world.isClient) return true;
 
-            LivingEntity target = (LivingEntity) entity;
-            owner.setTarget(target);
-            if (conjureFangsGoal.canStart()) {
-                try {
-                    CAST_SPELL_GOAL$CAST_SPELL.invoke(conjureFangsGoal);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new UncheckedReflectionException("Failed to trigger evoker fang ability", e);
-                }
-                owner.setSpell(SpellcastingIllagerEntity.Spell.FANGS);
-                countdown = 40;
-                success = true;
+        this.owner.setTarget(entity);
+
+        boolean success;
+
+        if (this.conjureFangsGoal.canStart()) {
+            try {
+                CAST_SPELL_GOAL$CAST_SPELL.invoke(conjureFangsGoal);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new UncheckedReflectionException("Failed to trigger evoker fang ability", e);
             }
-            owner.setTarget(null);
+            this.owner.setSpell(SpellcastingIllagerEntity.Spell.FANGS);
+            this.countdown = 40;
+            success = true;
+        } else {
+            success = false;
         }
+        owner.setTarget(null);
         return success;
     }
 

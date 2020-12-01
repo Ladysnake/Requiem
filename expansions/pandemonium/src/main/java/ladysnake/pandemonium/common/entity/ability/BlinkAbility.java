@@ -20,7 +20,6 @@ package ladysnake.pandemonium.common.entity.ability;
 import ladysnake.pandemonium.common.util.RayHelper;
 import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
@@ -39,7 +38,7 @@ public class BlinkAbility extends IndirectAbilityBase<MobEntity> {
     }
 
     @Override
-    public boolean trigger(PlayerEntity player) {
+    public boolean trigger() {
         if (cooldown <= 0) {
             Vec3d blinkPos = RayHelper.findBlinkPos(this.owner, 1F, 32D);
             if (this.owner.teleport(blinkPos.x, blinkPos.y, blinkPos.z, true)) {

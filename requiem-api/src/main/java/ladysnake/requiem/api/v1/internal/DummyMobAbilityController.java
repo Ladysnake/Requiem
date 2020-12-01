@@ -31,6 +31,11 @@ public class DummyMobAbilityController implements MobAbilityController {
     }
 
     @Override
+    public boolean canTarget(AbilityType type, Entity target) {
+        return false;
+    }
+
+    @Override
     public boolean useDirect(AbilityType type, Entity target) {
         return false;
     }

@@ -41,7 +41,6 @@ import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.common.entity.ability.MeleeAbility;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import org.apiguardian.api.API;
 
 import java.util.function.Function;
@@ -49,15 +48,25 @@ import java.util.function.Function;
 public class ImmutableMobAbilityConfig<E extends MobEntity> implements MobAbilityConfig<E> {
 
     @API(status = API.Status.EXPERIMENTAL)
-    public static <T extends MobEntity> Function<T, DirectAbility<? super T>> noneDirect(){
-        return (mob) -> new DirectAbility<T>() {
+    public static <T extends MobEntity> Function<T, DirectAbility<? super T, ?>> noneDirect(){
+        return (mob) -> new DirectAbility<T, Entity>() {
             @Override
             public double getRange() {
                 return 0;
             }
 
             @Override
-            public boolean trigger(PlayerEntity player, Entity target) {
+            public Class<Entity> getTargetType() {
+                return Entity.class;
+            }
+
+            @Override
+            public boolean canTrigger(Entity target) {
+                return false;
+            }
+
+            @Override
+            public boolean trigger(Entity target) {
                 return false;
             }
         };
@@ -65,23 +74,23 @@ public class ImmutableMobAbilityConfig<E extends MobEntity> implements MobAbilit
 
     @API(status = API.Status.EXPERIMENTAL)
     public static <T extends MobEntity> Function<T, IndirectAbility<? super T>> noneIndirect(){
-        return (mob) -> (p) -> false;
+        return (mob) -> () -> false;
     }
 
     public static final MobAbilityConfig<MobEntity> DEFAULT = MobAbilityConfig.builder().build();
 
-    private final Function<E, DirectAbility<? super E>> directAttackFactory;
+    private final Function<E, DirectAbility<? super E, ?>> directAttackFactory;
     private final Function<E, IndirectAbility<? super E>> indirectAttackFactory;
-    private final Function<E, DirectAbility<? super E>> directInteractionFactory;
+    private final Function<E, DirectAbility<? super E, ?>> directInteractionFactory;
     private final Function<E, IndirectAbility<? super E>> indirectInteractionFactory;
 
     @API(status = API.Status.EXPERIMENTAL)
-    public ImmutableMobAbilityConfig(Function<E, DirectAbility<? super E>> directAttackFactory, Function<E, IndirectAbility<? super E>> indirectAttackFactory) {
+    public ImmutableMobAbilityConfig(Function<E, DirectAbility<? super E, ?>> directAttackFactory, Function<E, IndirectAbility<? super E>> indirectAttackFactory) {
         this(directAttackFactory, indirectAttackFactory, noneDirect(), noneIndirect());
     }
 
     @API(status = API.Status.EXPERIMENTAL)
-    public ImmutableMobAbilityConfig(Function<E, DirectAbility<? super E>> directAttackFactory, Function<E, IndirectAbility<? super E>> indirectAttackFactory, Function<E, DirectAbility<? super E>> directInteractionFactory, Function<E, IndirectAbility<? super E>> indirectInteractionFactory) {
+    public ImmutableMobAbilityConfig(Function<E, DirectAbility<? super E, ?>> directAttackFactory, Function<E, IndirectAbility<? super E>> indirectAttackFactory, Function<E, DirectAbility<? super E, ?>> directInteractionFactory, Function<E, IndirectAbility<? super E>> indirectInteractionFactory) {
         this.directAttackFactory = directAttackFactory;
         this.indirectAttackFactory = indirectAttackFactory;
         this.directInteractionFactory = directInteractionFactory;
@@ -89,7 +98,7 @@ public class ImmutableMobAbilityConfig<E extends MobEntity> implements MobAbilit
     }
 
     @Override
-    public DirectAbility<? super E> getDirectAbility(E mob, AbilityType type) {
+    public DirectAbility<? super E, ?> getDirectAbility(E mob, AbilityType type) {
         return (type == AbilityType.ATTACK ? directAttackFactory : directInteractionFactory).apply(mob);
     }
 
@@ -99,13 +108,13 @@ public class ImmutableMobAbilityConfig<E extends MobEntity> implements MobAbilit
     }
 
     public static class Builder<E extends MobEntity> implements MobAbilityConfig.Builder<E> {
-        private Function<E, DirectAbility<? super E>> directAttackFactory = MeleeAbility::new;
+        private Function<E, DirectAbility<? super E, ?>> directAttackFactory = MeleeAbility::new;
         private Function<E, IndirectAbility<? super E>> indirectAttackFactory = noneIndirect();
-        private Function<E, DirectAbility<? super E>> directInteractionFactory = noneDirect();
+        private Function<E, DirectAbility<? super E, ?>> directInteractionFactory = noneDirect();
         private Function<E, IndirectAbility<? super E>> indirectInteractionFactory = noneIndirect();
 
         @Override
-        public MobAbilityConfig.Builder<E> direct(AbilityType type, Function<E, DirectAbility<? super E>> factory) {
+        public MobAbilityConfig.Builder<E> direct(AbilityType type, Function<E, DirectAbility<? super E, ?>> factory) {
             switch (type) {
                 case ATTACK: directAttackFactory = factory; break;
                 case INTERACT: directInteractionFactory = factory; break;

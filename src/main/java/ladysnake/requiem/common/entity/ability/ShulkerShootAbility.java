@@ -34,62 +34,53 @@
  */
 package ladysnake.requiem.common.entity.ability;
 
-import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
 import ladysnake.requiem.api.v1.entity.ability.IndirectAbility;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Box;
 
-import javax.annotation.Nullable;
-
-public class ShulkerShootAbility implements IndirectAbility<ShulkerEntity>, DirectAbility<ShulkerEntity> {
-    private final ShulkerEntity shulker;
+public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, LivingEntity> implements IndirectAbility<ShulkerEntity> {
     private int bulletCooldown = 20;
 
-    public ShulkerShootAbility(ShulkerEntity shulker) {
-        this.shulker = shulker;
+    public ShulkerShootAbility(ShulkerEntity owner) {
+        super(owner, 16, LivingEntity.class);
     }
 
     @Override
-    public double getRange() {
-        return 16;
+    public boolean canTrigger(LivingEntity target) {
+        return this.bulletCooldown <= 0 && this.owner.getPeekAmount() > 50;
     }
 
     @Override
-    public boolean trigger(PlayerEntity player) {
-        if (this.bulletCooldown <= 0) {
-            // method_21727 = getClosestEntity
-            return this.trigger(player, this.shulker.world.getClosestEntityIncludingUngeneratedChunks(
-                    LivingEntity.class,
-                    new TargetPredicate(),
-                    this.shulker,
-                    this.shulker.getX(),
-                    this.shulker.getY() + (double)this.shulker.getStandingEyeHeight(),
-                    this.shulker.getZ(),
-                    this.getSearchBox()));
+    public boolean trigger() {
+        // method_21727 = getClosestEntity
+        LivingEntity target = this.owner.world.getClosestEntityIncludingUngeneratedChunks(
+            LivingEntity.class,
+            new TargetPredicate(),
+            this.owner,
+            this.owner.getX(),
+            this.owner.getY() + (double) this.owner.getStandingEyeHeight(),
+            this.owner.getZ(),
+            this.getSearchBox());
+        if (target != null) {
+            return this.trigger(target);
         }
         return false;
     }
 
     @Override
-    public boolean trigger(PlayerEntity player, @Nullable Entity target) {
-        if (target instanceof LivingEntity && this.shulker.getPeekAmount() > 50) {
-            if (player.world.isClient) return true;
-
-            if (this.bulletCooldown <= 0) {
-                this.shulker.world.spawnEntity(new ShulkerBulletEntity(this.shulker.world, this.shulker, target, this.shulker.getAttachedFace().getAxis()));
-                this.shulker.playSound(SoundEvents.ENTITY_SHULKER_SHOOT, 2.0F, (this.shulker.world.random.nextFloat() - this.shulker.world.random.nextFloat()) * 0.2F + 1.0F);
-                this.bulletCooldown = 20;
-                return true;
-            }
+    public boolean run(LivingEntity target) {
+        if (!this.owner.world.isClient) {
+            this.owner.world.spawnEntity(new ShulkerBulletEntity(this.owner.world, this.owner, target, this.owner.getAttachedFace().getAxis()));
+            this.owner.playSound(SoundEvents.ENTITY_SHULKER_SHOOT, 2.0F, (this.owner.world.random.nextFloat() - this.owner.world.random.nextFloat()) * 0.2F + 1.0F);
         }
 
-        return false;
+        this.bulletCooldown = 20;
+        return true;
+
     }
 
     @Override
@@ -101,7 +92,7 @@ public class ShulkerShootAbility implements IndirectAbility<ShulkerEntity>, Dire
 
     private Box getSearchBox() {
         double range = this.getRange();
-        return this.shulker.getBoundingBox().expand(range, 4.0D, range);
+        return this.owner.getBoundingBox().expand(range, 4.0D, range);
     }
 
 }

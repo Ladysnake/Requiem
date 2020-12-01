@@ -21,7 +21,6 @@ import ladysnake.pandemonium.mixin.common.entity.mob.BlazeEntityAccessor;
 import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
 import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -42,8 +41,8 @@ public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
     }
 
     @Override
-    public boolean trigger(PlayerEntity player) {
-        if (!player.world.isClient) {
+    public boolean trigger() {
+        if (!this.owner.world.isClient) {
             double d = 25.0;
             float f = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5F;
             Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);

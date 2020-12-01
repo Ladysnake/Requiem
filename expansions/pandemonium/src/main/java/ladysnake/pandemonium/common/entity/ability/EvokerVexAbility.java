@@ -22,7 +22,6 @@ import ladysnake.requiem.common.util.reflection.ReflectionHelper;
 import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.SpellcastingIllagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -43,8 +42,8 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
     }
 
     @Override
-    public boolean trigger(PlayerEntity player) {
-        if (player.world.isClient) return true;
+    public boolean trigger() {
+        if (this.owner.world.isClient) return true;
 
         boolean success = false;
         owner.setTarget(owner); // The target needs to be non null to let the goal run
