@@ -43,7 +43,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Box;
 
 public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, LivingEntity> implements IndirectAbility<ShulkerEntity> {
-    private int bulletCooldown = 20;
+    public static final int COOLDOWN = 20;
+    private int bulletCooldown = COOLDOWN;
 
     public ShulkerShootAbility(ShulkerEntity owner) {
         super(owner, 16, LivingEntity.class);
@@ -51,7 +52,7 @@ public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, Living
 
     @Override
     public boolean canTrigger(LivingEntity target) {
-        return this.bulletCooldown <= 0 && this.owner.getPeekAmount() > 50;
+        return this.bulletCooldown == 0 && this.owner.getPeekAmount() > 50;
     }
 
     @Override
@@ -78,7 +79,7 @@ public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, Living
             this.owner.playSound(SoundEvents.ENTITY_SHULKER_SHOOT, 2.0F, (this.owner.world.random.nextFloat() - this.owner.world.random.nextFloat()) * 0.2F + 1.0F);
         }
 
-        this.bulletCooldown = 20;
+        this.bulletCooldown = COOLDOWN;
         return true;
 
     }

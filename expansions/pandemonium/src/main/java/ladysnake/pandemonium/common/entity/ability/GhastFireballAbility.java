@@ -24,7 +24,7 @@ import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.util.math.Vec3d;
 
 public class GhastFireballAbility extends IndirectAbilityBase<MobEntity> {
-    private int fireballCooldown = -40;
+    private int fireballCooldown = 0;
 
     public GhastFireballAbility(MobEntity owner) {
         super(owner);
@@ -32,18 +32,18 @@ public class GhastFireballAbility extends IndirectAbilityBase<MobEntity> {
 
     @Override
     public void update() {
-        if (this.fireballCooldown < 20) {
-            this.fireballCooldown++;
+        if (this.fireballCooldown > 0) {
+            this.fireballCooldown--;
 
             if (this.owner instanceof GhastEntity) {
-                ((GhastEntity) this.owner).setShooting(this.fireballCooldown < 0);
+                ((GhastEntity) this.owner).setShooting(this.fireballCooldown > 20);
             }
         }
     }
 
     @Override
     public boolean trigger() {
-        if (this.fireballCooldown >= 20) {
+        if (this.fireballCooldown == 0) {
             if (!this.owner.world.isClient) {
                 Vec3d scaledRot = this.owner.getRotationVec(1.0F);
                 Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
@@ -56,8 +56,8 @@ public class GhastFireballAbility extends IndirectAbilityBase<MobEntity> {
                     this.owner.getZ() + scaledRot.z * 4.0D
                 );
                 this.owner.world.spawnEntity(fireball);
-                this.fireballCooldown = -40;
             }
+            this.fireballCooldown = 60;
             return true;
         }
         return false;

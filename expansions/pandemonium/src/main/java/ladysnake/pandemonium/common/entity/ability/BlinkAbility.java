@@ -24,6 +24,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
 public class BlinkAbility extends IndirectAbilityBase<MobEntity> {
+    public static final int COOLDOWN = 400;
+
     private int cooldown;
 
     public BlinkAbility(MobEntity owner) {
@@ -39,12 +41,15 @@ public class BlinkAbility extends IndirectAbilityBase<MobEntity> {
 
     @Override
     public boolean trigger() {
-        if (cooldown <= 0) {
-            Vec3d blinkPos = RayHelper.findBlinkPos(this.owner, 1F, 32D);
-            if (this.owner.teleport(blinkPos.x, blinkPos.y, blinkPos.z, true)) {
-                this.owner.world.playSound(null, this.owner.prevX, this.owner.prevY, this.owner.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.owner.getSoundCategory(), 1.0F, 1.0F);
-                this.owner.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
+        if (cooldown == 0) {
+            if (!this.owner.world.isClient) {
+                Vec3d blinkPos = RayHelper.findBlinkPos(this.owner, 1F, 32D);
+                if (this.owner.teleport(blinkPos.x, blinkPos.y, blinkPos.z, true)) {
+                    this.owner.world.playSound(null, this.owner.prevX, this.owner.prevY, this.owner.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.owner.getSoundCategory(), 1.0F, 1.0F);
+                    this.owner.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
+                }
             }
+            this.cooldown = COOLDOWN;
         }
         return false;
     }

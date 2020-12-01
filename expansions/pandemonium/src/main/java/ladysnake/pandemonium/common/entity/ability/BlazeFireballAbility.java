@@ -22,12 +22,17 @@ import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
 import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
-    private int fireTicks;
+    public static final double HORIZONTAL_VELOCITY_FACTOR = MathHelper.sqrt(MathHelper.sqrt(25.0)) * 0.5F;
+    public static final int CONSECUTIVE_FIREBALLS = 3;
+    public static final int FIRE_TICKS = 200;
+    public static final int BLAZE_SHOOT_EVENT = 1018;
+
+    private int fireTicks = 0;
+    private int fireballs = CONSECUTIVE_FIREBALLS;
 
     public BlazeFireballAbility(MobEntity owner) {
         super(owner);
@@ -35,32 +40,37 @@ public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
 
     @Override
     public void update() {
-        if (!this.owner.world.isClient && this.owner instanceof BlazeEntity && ((BlazeEntityAccessor) this.owner).invokeIsFireActive() && --fireTicks < 0) {
-            ((BlazeEntityAccessor) this.owner).invokeSetFireActive(false);
+        if (fireTicks > 0) {
+            fireTicks--;
+            if (!this.owner.world.isClient && fireTicks == 0) {
+                if (this.owner instanceof BlazeEntity && ((BlazeEntityAccessor) this.owner).invokeIsFireActive()) {
+                    ((BlazeEntityAccessor) this.owner).invokeSetFireActive(false);
+                }
+                this.fireballs = CONSECUTIVE_FIREBALLS;
+            }
         }
     }
 
     @Override
     public boolean trigger() {
-        if (!this.owner.world.isClient) {
-            double d = 25.0;
-            float f = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5F;
+        if (!this.owner.world.isClient && this.fireballs > 0) {
             Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
 
-            this.owner.world.syncWorldEvent(null, 1018, new BlockPos((int)this.owner.getX(), (int)this.owner.getY(), (int)this.owner.getZ()), 0);
+            this.owner.world.syncWorldEvent(BLAZE_SHOOT_EVENT, this.owner.getBlockPos(), 0);
             if (this.owner instanceof BlazeEntity) {
-                this.fireTicks = 200;
                 ((BlazeEntityAccessor) this.owner).invokeSetFireActive(true);
             }
             SmallFireballEntity fireball = new SmallFireballEntity(
                     this.owner.world,
                     this.owner,
-                    rot.x + this.owner.getRandom().nextGaussian() * (double)f,
+                    rot.x + this.owner.getRandom().nextGaussian() * HORIZONTAL_VELOCITY_FACTOR,
                     rot.y,
-                    rot.z + this.owner.getRandom().nextGaussian() * (double)f
+                    rot.z + this.owner.getRandom().nextGaussian() * HORIZONTAL_VELOCITY_FACTOR
             );
             fireball.updatePosition(this.owner.getX(), this.owner.getY() + (double)(this.owner.getHeight() / 2.0F) + 0.5D, this.owner.getZ());
             this.owner.world.spawnEntity(fireball);
+            this.fireTicks = FIRE_TICKS;
+            this.fireballs--;
         }
         return true;
     }
