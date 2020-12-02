@@ -1,18 +1,19 @@
 package ladysnake.requiem.common.impl.ability;
 
 import ladysnake.requiem.api.v1.entity.ability.IndirectAbility;
-import net.minecraft.entity.mob.MobEntity;
+import ladysnake.requiem.api.v1.entity.ability.MobAbility;
+import net.minecraft.entity.LivingEntity;
 
-public class IndirectAbilityContainer<O extends MobEntity> extends AbilityContainer<IndirectAbility<O>> {
+public class IndirectAbilityContainer<O extends LivingEntity> extends AbilityContainer<IndirectAbility<O>> {
     protected IndirectAbilityContainer(IndirectAbility<O> ability) {
         super(ability);
     }
 
     public boolean trigger() {
-        if (this.ability.trigger()) {
+        MobAbility.Result result = this.ability.trigger();
+        if (result.resetsCooldown()) {
             this.setCooldown(this.ability.getCooldown());
-            return true;
         }
-        return false;
+        return result.isSuccess();
     }
 }

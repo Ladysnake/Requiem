@@ -37,13 +37,12 @@ package ladysnake.requiem.common.impl.ability;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
-import ladysnake.requiem.api.v1.possession.Possessable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class ImmutableMobAbilityController<T extends MobEntity & Possessable> implements MobAbilityController {
+public class ImmutableMobAbilityController<T extends LivingEntity> implements MobAbilityController {
     private final IndirectAbilityContainer<? super T> indirectAttack;
     private final IndirectAbilityContainer<? super T> indirectInteraction;
     private final DirectAbilityContainer<? super T, ?> directAttack;

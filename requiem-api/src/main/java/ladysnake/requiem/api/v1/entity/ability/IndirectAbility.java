@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.api.v1.entity.ability;
 
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.LivingEntity;
 
 /**
  * An {@link IndirectAbility} can be used without any specific target.
@@ -27,11 +27,11 @@ import net.minecraft.entity.mob.MobEntity;
  * @param <E> The type of mobs that can wield this ability
  */
 @FunctionalInterface
-public interface IndirectAbility<E extends MobEntity> extends MobAbility<E> {
+public interface IndirectAbility<E extends LivingEntity> extends MobAbility<E> {
     /**
      * Triggers an indirect ability.
      *
      * @return <code>true</code> if the ability has been successfully used
      */
-    boolean trigger();
+    Result trigger();
 }

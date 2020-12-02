@@ -42,7 +42,7 @@ public class ShulkerPeekAbility extends IndirectAbilityBase<ShulkerEntity> {
     }
 
     @Override
-    public boolean trigger() {
+    public Result trigger() {
         if (!this.owner.world.isClient) {
             if (this.owner.getPeekAmount() > 0) {
                 this.owner.setPeekAmount(0);
@@ -50,6 +50,6 @@ public class ShulkerPeekAbility extends IndirectAbilityBase<ShulkerEntity> {
                 this.owner.setPeekAmount(100);
             }
         }
-        return true;
+        return Result.SUCCESS;
     }
 }

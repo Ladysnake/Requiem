@@ -26,10 +26,10 @@ public class CreeperPrimingAbility extends IndirectAbilityBase<CreeperEntity> {
     }
 
     @Override
-    public boolean trigger() {
+    public Result trigger() {
         if (!this.owner.world.isClient) {
             this.owner.setFuseSpeed(this.owner.getFuseSpeed() > 0 ? -1 : 1);
         }
-        return true;
+        return Result.SUCCESS;
     }
 }

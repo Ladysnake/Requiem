@@ -34,10 +34,7 @@
  */
 package ladysnake.requiem.common.impl.ability;
 
-import ladysnake.requiem.api.v1.entity.ability.AbilityType;
-import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
-import ladysnake.requiem.api.v1.entity.ability.IndirectAbility;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
+import ladysnake.requiem.api.v1.entity.ability.*;
 import ladysnake.requiem.common.entity.ability.MeleeAbility;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
@@ -74,7 +71,7 @@ public class ImmutableMobAbilityConfig<E extends MobEntity> implements MobAbilit
 
     @API(status = API.Status.EXPERIMENTAL)
     public static <T extends MobEntity> Function<T, IndirectAbility<? super T>> noneIndirect(){
-        return (mob) -> () -> false;
+        return (mob) -> () -> MobAbility.Result.FAIL;
     }
 
     public static final MobAbilityConfig<MobEntity> DEFAULT = MobAbilityConfig.builder().build();

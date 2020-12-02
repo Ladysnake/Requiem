@@ -31,7 +31,7 @@ public class BlinkAbility extends IndirectAbilityBase<MobEntity> {
     }
 
     @Override
-    public boolean trigger() {
+    public Result trigger() {
         if (!this.owner.world.isClient) {
             Vec3d blinkPos = RayHelper.findBlinkPos(this.owner, 1F, 32D);
             if (this.owner.teleport(blinkPos.x, blinkPos.y, blinkPos.z, true)) {
@@ -39,6 +39,6 @@ public class BlinkAbility extends IndirectAbilityBase<MobEntity> {
                 this.owner.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
             }
         }
-        return true;
+        return Result.SUCCESS;
     }
 }

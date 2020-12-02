@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.api.v1.entity.ability;
 
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.LivingEntity;
 
 /**
  * A {@link MobAbility} is a special ability wielded by some entities,
@@ -27,7 +27,7 @@ import net.minecraft.entity.mob.MobEntity;
  * @param <E> The type of mobs that can wield this ability
  * @see net.minecraft.entity.ai.goal.Goal
  */
-public interface MobAbility<E extends MobEntity> {
+public interface MobAbility<E extends LivingEntity> {
     /**
      * Called each tick. Allows abilities to span over some time.
      * @param cooldown the current ability cooldown
@@ -36,5 +36,21 @@ public interface MobAbility<E extends MobEntity> {
 
     default int getCooldown() {
         return 0;
+    }
+
+    enum Result {
+        SUCCESS, SUCCESS_NO_COOLDOWN, FAIL;
+
+        public static Result of(boolean bool) {
+            return bool ? SUCCESS : FAIL;
+        }
+
+        public boolean resetsCooldown() {
+            return this == SUCCESS;
+        }
+
+        public boolean isSuccess() {
+            return this == SUCCESS || this == SUCCESS_NO_COOLDOWN;
+        }
     }
 }

@@ -1,9 +1,9 @@
 package ladysnake.requiem.api.v1.entity.ability;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.LivingEntity;
 
-public interface DirectAbility<E extends MobEntity, T extends Entity> extends MobAbility<E> {
+public interface DirectAbility<E extends LivingEntity, T extends Entity> extends MobAbility<E> {
     /**
      * If the range is 0, the vanilla targeting system is used
      */

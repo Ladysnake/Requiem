@@ -42,7 +42,7 @@ public class GhastFireballAbility extends IndirectAbilityBase<MobEntity> {
     }
 
     @Override
-    public boolean trigger() {
+    public Result trigger() {
         if (this.fireballCooldown == 0) {
             if (!this.owner.world.isClient) {
                 Vec3d scaledRot = this.owner.getRotationVec(1.0F);
@@ -58,8 +58,8 @@ public class GhastFireballAbility extends IndirectAbilityBase<MobEntity> {
                 this.owner.world.spawnEntity(fireball);
             }
             this.fireballCooldown = 60;
-            return true;
+            return Result.SUCCESS;
         }
-        return false;
+        return Result.FAIL;
     }
 }

@@ -42,8 +42,8 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
     }
 
     @Override
-    public boolean trigger() {
-        if (this.owner.world.isClient) return true;
+    public Result trigger() {
+        if (this.owner.world.isClient) return Result.SUCCESS;
 
         boolean success = false;
         owner.setTarget(owner); // The target needs to be non null to let the goal run
@@ -53,7 +53,7 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
             success = true;
         }
         owner.setTarget(null);
-        return success;
+        return success ? Result.SUCCESS : Result.SUCCESS_NO_COOLDOWN;
     }
 
     @Override

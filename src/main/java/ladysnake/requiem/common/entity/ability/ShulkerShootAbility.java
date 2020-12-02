@@ -57,7 +57,7 @@ public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, Living
     }
 
     @Override
-    public boolean trigger() {
+    public Result trigger() {
         // method_21727 = getClosestEntity
         LivingEntity target = this.owner.world.getClosestEntityIncludingUngeneratedChunks(
             LivingEntity.class,
@@ -68,9 +68,9 @@ public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, Living
             this.owner.getZ(),
             this.getSearchBox());
         if (target != null) {
-            return MobAbilityController.get(this.owner).useDirect(AbilityType.ATTACK, target);
+            return Result.of(MobAbilityController.get(this.owner).useDirect(AbilityType.ATTACK, target));
         }
-        return false;
+        return Result.FAIL;
     }
 
     @Override

@@ -2,9 +2,9 @@ package ladysnake.requiem.common.impl.ability;
 
 import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.LivingEntity;
 
-public class DirectAbilityContainer<O extends MobEntity, T extends Entity> extends AbilityContainer<DirectAbility<O, T>> {
+public class DirectAbilityContainer<O extends LivingEntity, T extends Entity> extends AbilityContainer<DirectAbility<O, T>> {
     public DirectAbilityContainer(DirectAbility<O, T> ability) {
         super(ability);
     }

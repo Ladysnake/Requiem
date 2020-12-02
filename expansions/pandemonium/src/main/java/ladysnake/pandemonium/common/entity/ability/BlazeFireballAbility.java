@@ -48,7 +48,7 @@ public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
     }
 
     @Override
-    public boolean trigger() {
+    public Result trigger() {
         if (!this.owner.world.isClient && this.fireballs > 0) {
             Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
 
@@ -67,6 +67,6 @@ public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
             this.owner.world.spawnEntity(fireball);
             this.fireballs--;
         }
-        return true;
+        return this.fireballs == 0 ? Result.SUCCESS : Result.SUCCESS_NO_COOLDOWN;
     }
 }
