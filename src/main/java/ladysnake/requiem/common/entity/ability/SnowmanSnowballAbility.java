@@ -34,11 +34,11 @@
  */
 package ladysnake.requiem.common.entity.ability;
 
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.sound.SoundEvents;
 
-public class SnowmanSnowballAbility<T extends MobEntity> extends IndirectAbilityBase<T> {
+public class SnowmanSnowballAbility<T extends LivingEntity> extends IndirectAbilityBase<T> {
     public SnowmanSnowballAbility(T owner) {
         super(owner, 5);
     }

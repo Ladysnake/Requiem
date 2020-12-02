@@ -18,13 +18,13 @@
 package ladysnake.pandemonium.common.entity.ability;
 
 import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.GhastEntity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.util.math.Vec3d;
 
-public class GhastFireballAbility extends IndirectAbilityBase<MobEntity> {
-    public GhastFireballAbility(MobEntity owner) {
+public class GhastFireballAbility extends IndirectAbilityBase<LivingEntity> {
+    public GhastFireballAbility(LivingEntity owner) {
         super(owner, 60);
     }
 

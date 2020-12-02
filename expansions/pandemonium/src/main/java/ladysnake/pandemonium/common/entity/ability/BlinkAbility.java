@@ -19,14 +19,14 @@ package ladysnake.pandemonium.common.entity.ability;
 
 import ladysnake.pandemonium.common.util.RayHelper;
 import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
-public class BlinkAbility extends IndirectAbilityBase<MobEntity> {
+public class BlinkAbility extends IndirectAbilityBase<LivingEntity> {
     public static final int COOLDOWN = 400;
 
-    public BlinkAbility(MobEntity owner) {
+    public BlinkAbility(LivingEntity owner) {
         super(owner, COOLDOWN);
     }
 

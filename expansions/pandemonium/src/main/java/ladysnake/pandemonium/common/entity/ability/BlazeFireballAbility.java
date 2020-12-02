@@ -19,13 +19,13 @@ package ladysnake.pandemonium.common.entity.ability;
 
 import ladysnake.pandemonium.mixin.common.entity.mob.BlazeEntityAccessor;
 import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.BlazeEntity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
+public class BlazeFireballAbility extends IndirectAbilityBase<LivingEntity> {
     public static final double HORIZONTAL_VELOCITY_FACTOR = MathHelper.sqrt(MathHelper.sqrt(25.0)) * 0.5F;
     public static final int CONSECUTIVE_FIREBALLS = 3;
     public static final int FIRE_TICKS = 200;
@@ -33,7 +33,7 @@ public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
 
     private int fireballs = CONSECUTIVE_FIREBALLS;
 
-    public BlazeFireballAbility(MobEntity owner) {
+    public BlazeFireballAbility(LivingEntity owner) {
         super(owner, FIRE_TICKS);
     }
 
