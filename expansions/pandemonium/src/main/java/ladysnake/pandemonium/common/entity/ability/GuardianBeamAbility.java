@@ -32,7 +32,7 @@ public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity, Livin
     private boolean started;
 
     public GuardianBeamAbility(GuardianEntity owner) {
-        super(owner, 15, LivingEntity.class, 0);
+        super(owner, 0, 15, LivingEntity.class);
         this.fireBeamGoal = makeGoal(owner);
     }
 

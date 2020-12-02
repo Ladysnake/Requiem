@@ -31,13 +31,16 @@ public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity, Entity>
     private boolean started;
 
     public EvokerWololoAbility(EvokerEntity owner) {
-        super(owner, 16, Entity.class, 0);
+        super(owner, 0, 16, Entity.class);
         this.wololoGoal = new CustomWololoGoal(owner);
     }
 
     @Override
     public boolean canTarget(Entity target) {
-        return this.isValidTarget(target);
+        if (target instanceof SheepEntity) {
+            return this.wololoGoal.requiem_getConvertibleSheepPredicate().test(null, (SheepEntity) target);
+        }
+        return WololoComponent.canBeConverted(target);
     }
 
     @Override
@@ -71,13 +74,6 @@ public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity, Entity>
         }
     }
 
-    private boolean isValidTarget(Entity entity) {
-        if (entity instanceof SheepEntity) {
-            return this.wololoGoal.requiem_getConvertibleSheepPredicate().test(null, (SheepEntity) entity);
-        }
-        return WololoComponent.canBeConverted(entity);
-    }
-
     class CustomWololoGoal extends EvokerEntity.WololoGoal implements ExtendedWololoGoal {
         private @Nullable Entity target;
 
@@ -109,7 +105,7 @@ public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity, Entity>
 
         @Override
         public boolean requiem_hasValidTarget() {
-            return this.target != null && EvokerWololoAbility.this.isValidTarget(this.target);
+            return this.target != null && EvokerWololoAbility.this.canTarget(this.target);
         }
     }
 }

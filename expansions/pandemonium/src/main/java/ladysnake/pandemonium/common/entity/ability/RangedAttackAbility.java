@@ -24,8 +24,10 @@ import net.minecraft.entity.mob.MobEntity;
 
 public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> extends DirectAbilityBase<T, LivingEntity> {
 
+    public static final int ATTACK_COOLDOWN = 40;
+
     public RangedAttackAbility(T owner) {
-        super(owner, 20.0, LivingEntity.class, 40);
+        super(owner, ATTACK_COOLDOWN, 20.0, LivingEntity.class);
     }
 
     @Override

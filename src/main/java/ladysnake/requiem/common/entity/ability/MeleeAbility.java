@@ -49,7 +49,7 @@ public class MeleeAbility extends DirectAbilityBase<MobEntity, Entity> {
     }
 
     public MeleeAbility(MobEntity owner, boolean ignoreDamageAttribute) {
-        super(owner, 0, Entity.class, 0);
+        super(owner, 0, 0, Entity.class);
         this.ignoreDamageAttribute = ignoreDamageAttribute;
     }
 
@@ -79,7 +79,6 @@ public class MeleeAbility extends DirectAbilityBase<MobEntity, Entity> {
                 player.resetLastAttackedTicks();
             }
         }
-
         return success;
     }
 }

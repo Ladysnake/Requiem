@@ -28,6 +28,7 @@ import net.minecraft.network.PacketByteBuf;
  * @param <E> The type of mobs that can wield this ability
  * @see net.minecraft.entity.ai.goal.Goal
  */
+@SuppressWarnings("unused")
 public interface MobAbility<E extends LivingEntity> {
     default void update() {
         // NO-OP

@@ -73,20 +73,12 @@ public class ImmutableMobAbilityController<T extends LivingEntity> implements Mo
 
     @Override
     public boolean useDirect(AbilityType type, Entity target) {
-        if (this.use(this.getDirect(type), target)) {
-            MobAbilityController.KEY.sync(this.owner);
-            return true;
-        }
-        return false;
+        return this.use(this.getDirect(type), target);
     }
 
     @Override
     public boolean useIndirect(AbilityType type) {
-        if (this.getIndirect(type).trigger()) {
-            MobAbilityController.KEY.sync(this.owner);
-            return true;
-        }
-        return false;
+        return this.getIndirect(type).trigger();
     }
 
     @Override
@@ -124,8 +116,9 @@ public class ImmutableMobAbilityController<T extends LivingEntity> implements Mo
     }
 
     private <E extends Entity> boolean use(DirectAbility<? super T, E> ability, Entity target) {
-        if (ability.getTargetType().isInstance(target)) {
-            return ability.trigger(ability.getTargetType().cast(target));
+        Class<E> targetType = ability.getTargetType();
+        if (targetType.isInstance(target)) {
+            return ability.trigger(targetType.cast(target));
         }
         return false;
     }

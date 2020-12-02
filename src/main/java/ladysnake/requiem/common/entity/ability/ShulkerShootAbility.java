@@ -43,7 +43,7 @@ public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, Living
     public static final int BULLET_COOLDOWN = 20;
 
     public ShulkerShootAbility(ShulkerEntity owner) {
-        super(owner, 16, LivingEntity.class, BULLET_COOLDOWN);
+        super(owner, BULLET_COOLDOWN, 16, LivingEntity.class);
     }
 
     @Override

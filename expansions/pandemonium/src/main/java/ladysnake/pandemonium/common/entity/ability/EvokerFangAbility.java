@@ -32,11 +32,12 @@ import java.lang.reflect.Method;
 public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEntity> {
     private static final Constructor<? extends SpellcastingIllagerEntity.CastSpellGoal> FANGS_GOAL_FACTORY;
     private static final Method CAST_SPELL_GOAL$CAST_SPELL;
+    public static final int FANG_COOLDOWN = 40;
 
     private final SpellcastingIllagerEntity.CastSpellGoal conjureFangsGoal;
 
     public EvokerFangAbility(EvokerEntity owner) {
-        super(owner, 12, LivingEntity.class, 40);
+        super(owner, FANG_COOLDOWN, 12, LivingEntity.class);
         conjureFangsGoal = makeGoal(owner);
     }
 
