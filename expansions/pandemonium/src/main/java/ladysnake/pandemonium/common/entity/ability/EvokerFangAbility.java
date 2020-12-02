@@ -37,11 +37,7 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEnt
 
     public EvokerFangAbility(EvokerEntity owner) {
         super(owner, 12, LivingEntity.class, 40);
-        try {
-            this.conjureFangsGoal = FANGS_GOAL_FACTORY.newInstance(owner);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new UncheckedReflectionException(e);
-        }
+        conjureFangsGoal = makeGoal(owner);
     }
 
     @Override
@@ -55,27 +51,40 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEnt
 
         this.owner.setTarget(entity);
 
-        boolean success;
-
-        if (this.conjureFangsGoal.canStart()) {
-            try {
-                CAST_SPELL_GOAL$CAST_SPELL.invoke(conjureFangsGoal);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new UncheckedReflectionException("Failed to trigger evoker fang ability", e);
+        try {
+            if (this.conjureFangsGoal.canStart()) {
+                this.castSpell();
+                this.owner.setSpell(SpellcastingIllagerEntity.Spell.FANGS);
+                this.beginCooldown();
+                return true;
+            } else {
+                return false;
             }
-            this.owner.setSpell(SpellcastingIllagerEntity.Spell.FANGS);
-            success = true;
-        } else {
-            success = false;
+        } finally {
+            owner.setTarget(null);
         }
-        owner.setTarget(null);
-        return success;
+    }
+
+    private void castSpell() {
+        try {
+            CAST_SPELL_GOAL$CAST_SPELL.invoke(conjureFangsGoal);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new UncheckedReflectionException("Failed to trigger evoker fang ability", e);
+        }
     }
 
     @Override
-    public void update(int cooldown) {
-        if (cooldown == 1 && !this.owner.world.isClient) {
+    public void onCooldownEnd() {
+        if (!this.owner.world.isClient) {
             this.owner.setSpell(SpellcastingIllagerEntity.Spell.NONE);
+        }
+    }
+
+    private static SpellcastingIllagerEntity.CastSpellGoal makeGoal(EvokerEntity owner) {
+        try {
+            return FANGS_GOAL_FACTORY.newInstance(owner);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new UncheckedReflectionException(e);
         }
     }
 

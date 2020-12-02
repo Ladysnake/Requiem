@@ -19,7 +19,7 @@ public class AutoAimAbility<E extends LivingEntity> extends IndirectAbilityBase<
     }
 
     @Override
-    public Result trigger() {
+    public boolean run() {
         // method_21727 = getClosestEntity
         LivingEntity target = this.owner.world.getClosestEntityIncludingUngeneratedChunks(
             LivingEntity.class,
@@ -30,9 +30,9 @@ public class AutoAimAbility<E extends LivingEntity> extends IndirectAbilityBase<
             this.owner.getZ(),
             this.getSearchBox());
         if (target != null) {
-            return Result.of(MobAbilityController.get(this.owner).useDirect(type, target));
+            return MobAbilityController.get(this.owner).useDirect(type, target);
         }
-        return Result.FAIL;
+        return false;
     }
 
     private Box getSearchBox() {

@@ -40,17 +40,18 @@ import net.minecraft.sound.SoundEvents;
 
 public class SnowmanSnowballAbility<T extends MobEntity> extends IndirectAbilityBase<T> {
     public SnowmanSnowballAbility(T owner) {
-        super(owner, 0);
+        super(owner, 5);
     }
 
     @Override
-    public Result trigger() {
+    public boolean run() {
         if (!this.owner.world.isClient) {
             SnowballEntity snowball = new SnowballEntity(this.owner.world, this.owner);
             snowball.setProperties(this.owner, this.owner.pitch, this.owner.yaw, 0.0F, 1.5F, 1.0F);
             this.owner.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0F, 1.0F / (this.owner.getRandom().nextFloat() * 0.4F + 0.8F));
             this.owner.world.spawnEntity(snowball);
+            this.beginCooldown();
         }
-        return Result.SUCCESS;
+        return true;
     }
 }

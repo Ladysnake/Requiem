@@ -60,10 +60,15 @@ public class MeleeAbility extends DirectAbilityBase<MobEntity, Entity> {
 
     @Override
     public boolean run(Entity target) {
+        // We actually need to check if the entity has an attack damage attribute, because mojang doesn't.
+        if (!ignoreDamageAttribute && owner.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE) == null) {
+            return false;
+        }
+
         if (this.owner.world.isClient) return true;
 
-        // We actually need to check if the entity has an attack damage attribute, because mojang doesn't.
-        boolean success = (ignoreDamageAttribute || owner.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE) != null) && owner.tryAttack(target);
+        boolean success = owner.tryAttack(target);
+
         if (success && target instanceof LivingEntity) {
             this.owner.setAttacking(true);
             PlayerEntity player = ((Possessable) this.owner).getPossessor();
@@ -74,6 +79,7 @@ public class MeleeAbility extends DirectAbilityBase<MobEntity, Entity> {
                 player.resetLastAttackedTicks();
             }
         }
+
         return success;
     }
 }

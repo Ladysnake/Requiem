@@ -34,26 +34,30 @@
  */
 package ladysnake.requiem.common.impl.ability;
 
-import ladysnake.requiem.api.v1.entity.ability.AbilityType;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
+import ladysnake.requiem.api.v1.entity.ability.*;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class ImmutableMobAbilityController<T extends LivingEntity> implements MobAbilityController {
-    private final IndirectAbilityContainer<? super T> indirectAttack;
-    private final IndirectAbilityContainer<? super T> indirectInteraction;
-    private final DirectAbilityContainer<? super T, ?> directAttack;
-    private final DirectAbilityContainer<? super T, ?> directInteraction;
+    private final List<MobAbility<? super T>> abilities;
+    private final IndirectAbility<? super T> indirectAttack;
+    private final IndirectAbility<? super T> indirectInteraction;
+    private final DirectAbility<? super T, ?> directAttack;
+    private final DirectAbility<? super T, ?> directInteraction;
     private final T owner;
 
     public ImmutableMobAbilityController(MobAbilityConfig<? super T> config, T owner) {
-        this.directAttack = new DirectAbilityContainer<>(config.getDirectAbility(owner, AbilityType.ATTACK));
-        this.directInteraction = new DirectAbilityContainer<>(config.getDirectAbility(owner, AbilityType.INTERACT));
-        this.indirectAttack = new IndirectAbilityContainer<>(config.getIndirectAbility(owner, AbilityType.ATTACK));
-        this.indirectInteraction = new IndirectAbilityContainer<>(config.getIndirectAbility(owner, AbilityType.INTERACT));
+        this.directAttack = config.getDirectAbility(owner, AbilityType.ATTACK);
+        this.directInteraction = config.getDirectAbility(owner, AbilityType.INTERACT);
+        this.indirectAttack = config.getIndirectAbility(owner, AbilityType.ATTACK);
+        this.indirectInteraction = config.getIndirectAbility(owner, AbilityType.INTERACT);
+        this.abilities = Arrays.asList(this.directAttack, this.directInteraction, this.indirectAttack, this.indirectInteraction);
         this.owner = owner;
     }
 
@@ -64,12 +68,12 @@ public class ImmutableMobAbilityController<T extends LivingEntity> implements Mo
 
     @Override
     public boolean canTarget(AbilityType type, Entity target) {
-        return this.getDirect(type).canTrigger(target);
+        return this.canTarget(target, this.getDirect(type));
     }
 
     @Override
     public boolean useDirect(AbilityType type, Entity target) {
-        if (this.getDirect(type).trigger(target)) {
+        if (this.use(this.getDirect(type), target)) {
             MobAbilityController.KEY.sync(this.owner);
             return true;
         }
@@ -86,30 +90,47 @@ public class ImmutableMobAbilityController<T extends LivingEntity> implements Mo
     }
 
     @Override
+    public boolean shouldSyncWith(ServerPlayerEntity player) {
+        return player == ((Possessable) this.owner).getPossessor();
+    }
+
+    @Override
     public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
-        buf.writeVarInt(this.directAttack.getCooldown());
-        buf.writeVarInt(this.directInteraction.getCooldown());
-        buf.writeVarInt(this.indirectAttack.getCooldown());
-        buf.writeVarInt(this.indirectInteraction.getCooldown());
+        for (MobAbility<? super T> ability : this.abilities) {
+            ability.writeToPacket(buf);
+        }
     }
 
     @Override
     public void applySyncPacket(PacketByteBuf buf) {
-        this.directAttack.setCooldown(buf.readVarInt());
-        this.directInteraction.setCooldown(buf.readVarInt());
-        this.indirectAttack.setCooldown(buf.readVarInt());
-        this.indirectInteraction.setCooldown(buf.readVarInt());
+        for (MobAbility<? super T> ability : this.abilities) {
+            ability.readFromPacket(buf);
+        }
     }
 
     @Override
     public void tick() {
-        this.directAttack.update();
-        this.indirectAttack.update();
-        this.directInteraction.update();
-        this.indirectInteraction.update();
+        for (MobAbility<? super T> ability : this.abilities) {
+            ability.update();
+        }
     }
 
-    private DirectAbilityContainer<? super T, ?> getDirect(AbilityType type) {
+    private <E extends Entity> boolean canTarget(Entity target, DirectAbility<? super T, E> ability) {
+        Class<E> targetType = ability.getTargetType();
+        if (targetType.isInstance(target)) {
+            return ability.canTarget(targetType.cast(target));
+        }
+        return false;
+    }
+
+    private <E extends Entity> boolean use(DirectAbility<? super T, E> ability, Entity target) {
+        if (ability.getTargetType().isInstance(target)) {
+            return ability.trigger(ability.getTargetType().cast(target));
+        }
+        return false;
+    }
+
+    private DirectAbility<? super T, ?> getDirect(AbilityType type) {
         switch (type) {
             case ATTACK:
                 return this.directAttack;
@@ -119,7 +140,7 @@ public class ImmutableMobAbilityController<T extends LivingEntity> implements Mo
         throw new IllegalArgumentException("Unrecognized ability type " + type);
     }
 
-    private IndirectAbilityContainer<? super T> getIndirect(AbilityType type) {
+    private IndirectAbility<? super T> getIndirect(AbilityType type) {
         switch (type) {
             case ATTACK:
                 return this.indirectAttack;

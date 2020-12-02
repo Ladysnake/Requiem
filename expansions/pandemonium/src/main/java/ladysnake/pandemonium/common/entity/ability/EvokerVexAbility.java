@@ -42,22 +42,26 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
     }
 
     @Override
-    public Result trigger() {
-        if (this.owner.world.isClient) return Result.SUCCESS;
+    public boolean run() {
+        if (this.owner.world.isClient) return true;
 
-        boolean success = false;
-        owner.setTarget(owner); // The target needs to be non null to let the goal run
-        if (summonVexGoal.canStart()) {
-            summonVexGoal.start();
-            started = true;
-            success = true;
+        this.owner.setTarget(owner); // The target needs to be non null to let the goal run
+        try {
+            if (this.summonVexGoal.canStart()) {
+                this.summonVexGoal.start();
+                this.started = true;
+                this.beginCooldown();
+                return true;
+            }
+        } finally {
+            owner.setTarget(null);
         }
-        owner.setTarget(null);
-        return success ? Result.SUCCESS : Result.SUCCESS_NO_COOLDOWN;
+        return false;
     }
 
     @Override
-    public void update(int cooldown) {
+    public void update() {
+        super.update();
         if (started) {
             owner.setTarget(owner);
             if (summonVexGoal.shouldContinue()) {

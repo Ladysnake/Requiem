@@ -33,5 +33,5 @@ public interface IndirectAbility<E extends LivingEntity> extends MobAbility<E> {
      *
      * @return <code>true</code> if the ability has been successfully used
      */
-    Result trigger();
+    boolean trigger();
 }

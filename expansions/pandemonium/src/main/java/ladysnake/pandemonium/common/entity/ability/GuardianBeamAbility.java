@@ -28,18 +28,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity, LivingEntity> {
-    private static final Constructor<? extends Goal> BEAM_GOAL_FACTORY;
-
     private final Goal fireBeamGoal;
     private boolean started;
 
     public GuardianBeamAbility(GuardianEntity owner) {
         super(owner, 15, LivingEntity.class, 0);
-        try {
-            this.fireBeamGoal = BEAM_GOAL_FACTORY.newInstance(owner);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new UncheckedReflectionException("Failed to instantiate FireBeamGoal", e);
-        }
+        this.fireBeamGoal = makeGoal(owner);
     }
 
     @Override
@@ -53,15 +47,17 @@ public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity, Livin
 
         owner.setTarget(entity);
         if (fireBeamGoal.canStart()) {
-            fireBeamGoal.start();
-            started = true;
+            this.fireBeamGoal.start();
+            this.beginCooldown();
+            this.started = true;
             return true;
         }
         return false;
     }
 
     @Override
-    public void update(int cooldown) {
+    public void update() {
+        super.update();
         if (started) {
             if (fireBeamGoal.shouldContinue()) {
                 fireBeamGoal.tick();
@@ -69,6 +65,16 @@ public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity, Livin
                 started = false;
                 fireBeamGoal.stop();
             }
+        }
+    }
+
+    private static final Constructor<? extends Goal> BEAM_GOAL_FACTORY;
+
+    private static Goal makeGoal(GuardianEntity owner) {
+        try {
+            return BEAM_GOAL_FACTORY.newInstance(owner);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new UncheckedReflectionException("Failed to instantiate FireBeamGoal", e);
         }
     }
 

@@ -38,8 +38,8 @@ public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
     }
 
     @Override
-    public void update(int fireTicks) {
-        if (!this.owner.world.isClient && fireTicks == 1) {
+    public void onCooldownEnd() {
+        if (!this.owner.world.isClient) {
             if (this.owner instanceof BlazeEntity && ((BlazeEntityAccessor) this.owner).invokeIsFireActive()) {
                 ((BlazeEntityAccessor) this.owner).invokeSetFireActive(false);
             }
@@ -48,25 +48,40 @@ public class BlazeFireballAbility extends IndirectAbilityBase<MobEntity> {
     }
 
     @Override
-    public Result trigger() {
+    public boolean run() {
         if (!this.owner.world.isClient && this.fireballs > 0) {
-            Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
-
-            this.owner.world.syncWorldEvent(BLAZE_SHOOT_EVENT, this.owner.getBlockPos(), 0);
-            if (this.owner instanceof BlazeEntity) {
-                ((BlazeEntityAccessor) this.owner).invokeSetFireActive(true);
-            }
-            SmallFireballEntity fireball = new SmallFireballEntity(
-                    this.owner.world,
-                    this.owner,
-                    rot.x + this.owner.getRandom().nextGaussian() * HORIZONTAL_VELOCITY_FACTOR,
-                    rot.y,
-                    rot.z + this.owner.getRandom().nextGaussian() * HORIZONTAL_VELOCITY_FACTOR
-            );
-            fireball.updatePosition(this.owner.getX(), this.owner.getY() + (double)(this.owner.getHeight() / 2.0F) + 0.5D, this.owner.getZ());
-            this.owner.world.spawnEntity(fireball);
-            this.fireballs--;
+            this.playFireballEffects();
+            this.spawnFireball();
+            this.consumeFireball();
         }
-        return this.fireballs == 0 ? Result.SUCCESS : Result.SUCCESS_NO_COOLDOWN;
+        return true;
+    }
+
+    private void spawnFireball() {
+        Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
+        SmallFireballEntity fireball = new SmallFireballEntity(
+                this.owner.world,
+                this.owner,
+                rot.x + this.owner.getRandom().nextGaussian() * HORIZONTAL_VELOCITY_FACTOR,
+                rot.y,
+                rot.z + this.owner.getRandom().nextGaussian() * HORIZONTAL_VELOCITY_FACTOR
+        );
+        fireball.updatePosition(this.owner.getX(), this.owner.getY() + (double)(this.owner.getHeight() / 2.0F) + 0.5D, this.owner.getZ());
+        this.owner.world.spawnEntity(fireball);
+    }
+
+    private void playFireballEffects() {
+        this.owner.world.syncWorldEvent(BLAZE_SHOOT_EVENT, this.owner.getBlockPos(), 0);
+        if (this.owner instanceof BlazeEntity) {
+            ((BlazeEntityAccessor) this.owner).invokeSetFireActive(true);
+        }
+    }
+
+    private void consumeFireball() {
+        this.fireballs--;
+
+        if (this.fireballs == 0) {
+            this.beginCooldown();
+        }
     }
 }

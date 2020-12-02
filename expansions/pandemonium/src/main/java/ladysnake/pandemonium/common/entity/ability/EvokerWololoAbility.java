@@ -48,6 +48,7 @@ public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity, Entity>
 
         if (this.wololoGoal.canStart()) {
             this.wololoGoal.start();
+            this.beginCooldown();
             this.started = true;
             return true;
         } else {
@@ -57,7 +58,8 @@ public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity, Entity>
     }
 
     @Override
-    public void update(int cooldown) {
+    public void update() {
+        super.update();
         if (this.started) {
             if (this.wololoGoal.shouldContinue()) {
                 this.wololoGoal.tick();

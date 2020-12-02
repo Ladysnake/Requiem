@@ -41,4 +41,14 @@ public abstract class IndirectAbilityBase<E extends LivingEntity> extends Abilit
     public IndirectAbilityBase(E owner, int cooldown) {
         super(owner, cooldown);
     }
+
+    @Override
+    public boolean trigger() {
+        if (this.getCooldown() == 0) {
+            return this.run();
+        }
+        return false;
+    }
+
+    protected abstract boolean run();
 }

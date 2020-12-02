@@ -41,7 +41,6 @@ import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
@@ -67,7 +66,7 @@ public final class RequiemComponents implements EntityComponentInitializer {
         registry.registerForPlayers(DeathSuspender.KEY, RevivingDeathSuspender::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerForPlayers(DialogueTracker.KEY, PlayerDialogueTracker::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerFor(MobEntity.class, MobAbilityController.KEY,
-            e -> new ImmutableMobAbilityController<>(MobAbilityRegistry.instance().getConfig(e), (MobEntity & Possessable) e));
+            e -> new ImmutableMobAbilityController<>(MobAbilityRegistry.instance().getConfig(e), e));
         registry.registerForPlayers(InventoryLimiter.KEY, PlayerInventoryLimiter::new, RespawnCopyStrategy.INVENTORY);
     }
 }

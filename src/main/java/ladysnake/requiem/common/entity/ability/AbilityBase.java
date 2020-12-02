@@ -34,20 +34,68 @@
  */
 package ladysnake.requiem.common.entity.ability;
 
+import com.google.common.base.Preconditions;
 import ladysnake.requiem.api.v1.entity.ability.MobAbility;
+import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.network.PacketByteBuf;
 
 public abstract class AbilityBase<E extends LivingEntity> implements MobAbility<E> {
     protected final E owner;
-    private final int cooldown;
+    private final int cooldownTime;
+    protected int cooldown;
 
-    public AbilityBase(E owner, int cooldown) {
+    public AbilityBase(E owner, int cooldownTime) {
         this.owner = owner;
-        this.cooldown = cooldown;
+        this.cooldownTime = cooldownTime;
+    }
+
+    public void beginCooldown() {
+        this.setCooldown(this.getCooldownTime());
+    }
+
+    public void setCooldown(int cooldown) {
+        Preconditions.checkArgument(cooldown >= 0);
+
+        if (this.cooldown != cooldown) {
+            this.cooldown = cooldown;
+
+            if (cooldown == 0) {
+                this.onCooldownEnd();
+            }
+
+            MobAbilityController.KEY.sync(this.owner);
+        }
+    }
+
+    public int getCooldown() {
+        return cooldown;
+    }
+
+    public int getCooldownTime() {
+        return cooldownTime;
     }
 
     @Override
-    public int getCooldown() {
-        return cooldown;
+    public void update() {
+        int cooldown = this.getCooldown();
+
+        if (cooldown > 0 && !this.owner.world.isClient) {
+            this.setCooldown(cooldown - 1);
+        }
+    }
+
+    protected void onCooldownEnd() {
+        // NO-OP
+    }
+
+    @Override
+    public void writeToPacket(PacketByteBuf buf) {
+        buf.writeVarInt(this.getCooldown());
+    }
+
+    @Override
+    public void readFromPacket(PacketByteBuf buf) {
+        this.setCooldown(buf.readVarInt());
     }
 }

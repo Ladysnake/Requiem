@@ -54,7 +54,7 @@ public abstract class DirectAbilityBase<E extends MobEntity, T extends Entity> e
      */
     @Override
     public boolean trigger(T target) {
-        if (this.canTarget(target)) {
+        if (this.getCooldown() == 0 && this.canTarget(target)) {
             return this.run(target);
         }
         return false;

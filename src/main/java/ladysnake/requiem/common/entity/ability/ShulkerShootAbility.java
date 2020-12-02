@@ -40,10 +40,10 @@ import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.sound.SoundEvents;
 
 public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, LivingEntity> {
-    public static final int COOLDOWN = 20;
+    public static final int BULLET_COOLDOWN = 20;
 
     public ShulkerShootAbility(ShulkerEntity owner) {
-        super(owner, 16, LivingEntity.class, COOLDOWN);
+        super(owner, 16, LivingEntity.class, BULLET_COOLDOWN);
     }
 
     @Override
@@ -56,6 +56,7 @@ public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, Living
         if (!this.owner.world.isClient) {
             this.owner.world.spawnEntity(new ShulkerBulletEntity(this.owner.world, this.owner, target, this.owner.getAttachedFace().getAxis()));
             this.owner.playSound(SoundEvents.ENTITY_SHULKER_SHOOT, 2.0F, (this.owner.world.random.nextFloat() - this.owner.world.random.nextFloat()) * 0.2F + 1.0F);
+            this.beginCooldown();
         }
 
         return true;
