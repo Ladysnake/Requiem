@@ -35,9 +35,9 @@
 package ladysnake.requiem.common.entity.ability;
 
 import ladysnake.requiem.api.v1.entity.ability.MobAbility;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.LivingEntity;
 
-public abstract class AbilityBase<E extends MobEntity> implements MobAbility<E> {
+public abstract class AbilityBase<E extends LivingEntity> implements MobAbility<E> {
     protected final E owner;
     private final int cooldown;
 

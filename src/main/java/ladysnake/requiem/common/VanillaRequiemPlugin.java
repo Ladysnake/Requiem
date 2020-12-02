@@ -53,6 +53,7 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.*;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
+import ladysnake.requiem.common.entity.ability.AutoAimAbility;
 import ladysnake.requiem.common.entity.ability.ShulkerPeekAbility;
 import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
 import ladysnake.requiem.common.entity.ability.SnowmanSnowballAbility;
@@ -236,7 +237,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     public void registerMobAbilities(MobAbilityRegistry abilityRegistry) {
         abilityRegistry.register(EntityType.SHULKER, MobAbilityConfig.<ShulkerEntity>builder()
             .directAttack(ShulkerShootAbility::new)
-            .indirectAttack(ShulkerShootAbility::new)
+            .indirectAttack(shulker -> new AutoAimAbility<>(shulker, AbilityType.ATTACK, 16.0, 4.0))
             .indirectInteract(ShulkerPeekAbility::new).build());
         abilityRegistry.register(EntityType.SNOW_GOLEM, MobAbilityConfig.builder().indirectInteract(SnowmanSnowballAbility::new).build());
     }

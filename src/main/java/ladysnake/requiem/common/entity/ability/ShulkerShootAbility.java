@@ -34,17 +34,12 @@
  */
 package ladysnake.requiem.common.entity.ability;
 
-import ladysnake.requiem.api.v1.entity.ability.AbilityType;
-import ladysnake.requiem.api.v1.entity.ability.IndirectAbility;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.Box;
 
-public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, LivingEntity> implements IndirectAbility<ShulkerEntity> {
+public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, LivingEntity> {
     public static final int COOLDOWN = 20;
 
     public ShulkerShootAbility(ShulkerEntity owner) {
@@ -57,23 +52,6 @@ public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, Living
     }
 
     @Override
-    public Result trigger() {
-        // method_21727 = getClosestEntity
-        LivingEntity target = this.owner.world.getClosestEntityIncludingUngeneratedChunks(
-            LivingEntity.class,
-            new TargetPredicate(),
-            this.owner,
-            this.owner.getX(),
-            this.owner.getY() + (double) this.owner.getStandingEyeHeight(),
-            this.owner.getZ(),
-            this.getSearchBox());
-        if (target != null) {
-            return Result.of(MobAbilityController.get(this.owner).useDirect(AbilityType.ATTACK, target));
-        }
-        return Result.FAIL;
-    }
-
-    @Override
     public boolean run(LivingEntity target) {
         if (!this.owner.world.isClient) {
             this.owner.world.spawnEntity(new ShulkerBulletEntity(this.owner.world, this.owner, target, this.owner.getAttachedFace().getAxis()));
@@ -81,11 +59,5 @@ public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, Living
         }
 
         return true;
-
-    }
-
-    private Box getSearchBox() {
-        double range = this.getRange();
-        return this.owner.getBoundingBox().expand(range, 4.0D, range);
     }
 }
