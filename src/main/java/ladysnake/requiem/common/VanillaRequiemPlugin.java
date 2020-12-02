@@ -69,6 +69,7 @@ import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.fabricmc.fabric.api.event.player.*;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -138,7 +139,17 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         // Prevent incorporeal players from interacting with anything
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> getInteractionResult(player));
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> !player.world.isClient && isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
-        UseItemCallback.EVENT.register((player, world, hand) -> new TypedActionResult<>(getInteractionResult(player), player.getStackInHand(hand)));
+        UseItemCallback.EVENT.register((player, world, hand) -> {
+            if (isInteractionForbidden(player) || (!player.isCreative() && PossessionComponent.KEY.maybeGet(player)
+                .map(PossessionComponent::getPossessedEntity)
+                .map(Entity::getType)
+                .filter(entry -> !RequiemEntityTypeTags.ITEM_USERS.contains(entry))
+                .isPresent())
+            ) {
+                return new TypedActionResult<>(ActionResult.FAIL, player.getStackInHand(hand));
+            }
+            return new TypedActionResult<>(ActionResult.PASS, player.getStackInHand(hand));
+        });
         // Make players respawn in the right place with the right state
         PrepareRespawnCallback.EVENT.register((original, clone, returnFromEnd) -> RemnantComponent.get(clone).prepareRespawn(original, returnFromEnd));
         PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> {
