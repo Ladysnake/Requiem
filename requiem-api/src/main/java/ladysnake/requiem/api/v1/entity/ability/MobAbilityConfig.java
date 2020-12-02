@@ -18,7 +18,7 @@
 package ladysnake.requiem.api.v1.entity.ability;
 
 import ladysnake.requiem.api.v1.internal.ApiInternals;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.LivingEntity;
 
 import java.util.function.Function;
 
@@ -27,16 +27,16 @@ import java.util.function.Function;
  *
  * @param <E> The type of entities for which this config can be applied
  */
-public interface MobAbilityConfig<E extends MobEntity> {
+public interface MobAbilityConfig<E extends LivingEntity> {
     DirectAbility<? super E, ?> getDirectAbility(E mob, AbilityType type);
 
     IndirectAbility<? super E> getIndirectAbility(E mob, AbilityType type);
 
-    static <T extends MobEntity> Builder<T> builder() {
+    static <T extends LivingEntity> Builder<T> builder() {
         return ApiInternals.mobAbilityConfig$builderImpl();
     }
 
-    interface Builder<E extends MobEntity> {
+    interface Builder<E extends LivingEntity> {
         default Builder<E> directAttack(Function<E, DirectAbility<? super E, ?>> factory) {
             return direct(AbilityType.ATTACK, factory);
         }
