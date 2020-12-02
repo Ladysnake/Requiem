@@ -37,6 +37,7 @@ package ladysnake.requiem.client.particle;
 import ladysnake.requiem.client.render.RequiemRenderPhases;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
@@ -55,6 +56,8 @@ public class GhostParticle extends AbstractSlowingParticle {
         if (renderedGhostParticle) {
             RequiemRenderPhases.GHOST_PARTICLE_SHADER.render(tickDelta);
             RequiemRenderPhases.GHOST_PARTICLE_FRAMEBUFFER.clear();
+            // Somehow, the GL state is really broken after the shader render
+            MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().enable();
             renderedGhostParticle = false;
         }
     }
