@@ -82,6 +82,11 @@ public class ImmutableMobAbilityController<T extends LivingEntity> implements Mo
     }
 
     @Override
+    public float getCooldownProgress(AbilityType type) {
+        return this.getDirect(type).getCooldownProgress();
+    }
+
+    @Override
     public boolean shouldSyncWith(ServerPlayerEntity player) {
         return player == ((Possessable) this.owner).getPossessor();
     }

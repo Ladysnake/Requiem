@@ -77,6 +77,12 @@ public abstract class AbilityBase<E extends LivingEntity> implements MobAbility<
     }
 
     @Override
+    public float getCooldownProgress() {
+        if (this.getCooldownTime() == 0) return 1.0F;
+        return 1.0f - (float) this.getCooldown() / this.getCooldownTime();
+    }
+
+    @Override
     public void update() {
         int cooldown = this.getCooldown();
 

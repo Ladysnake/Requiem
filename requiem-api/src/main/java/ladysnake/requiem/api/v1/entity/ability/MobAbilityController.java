@@ -45,6 +45,8 @@ public interface MobAbilityController extends TransientComponent, CommonTickingC
 
     boolean useIndirect(AbilityType type);
 
+    float getCooldownProgress(AbilityType type);
+
     @Override
     void tick();
 }

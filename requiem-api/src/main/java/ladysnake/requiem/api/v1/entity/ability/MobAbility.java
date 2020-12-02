@@ -34,6 +34,10 @@ public interface MobAbility<E extends LivingEntity> {
         // NO-OP
     }
 
+    default float getCooldownProgress() {
+        return 1.0F;
+    }
+
     default void writeToPacket(PacketByteBuf buf) {
         // NO-OP
     }

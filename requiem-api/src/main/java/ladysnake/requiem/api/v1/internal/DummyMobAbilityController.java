@@ -46,6 +46,11 @@ public class DummyMobAbilityController implements MobAbilityController {
     }
 
     @Override
+    public float getCooldownProgress(AbilityType type) {
+        return 1.0F;
+    }
+
+    @Override
     public void tick() {
         // NO-OP
     }

@@ -156,7 +156,7 @@ public final class RequiemClientListener implements
         assert client.player != null;
         if (RemnantComponent.get(client.player).isIncorporeal()) {
             if (client.targetedEntity instanceof MobEntity) {
-                RequiemTargetHandler.drawCrosshairIcon(client.getTextureManager(), matrices, scaledWidth, scaledHeight, POSSESSION_ICON);
+                RequiemTargetHandler.drawCrosshairIcon(client.getTextureManager(), matrices, scaledWidth, scaledHeight, POSSESSION_ICON, 1.0f);
             }
         }
     }

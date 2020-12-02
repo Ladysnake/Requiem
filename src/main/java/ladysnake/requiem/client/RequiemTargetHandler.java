@@ -62,7 +62,7 @@ import java.util.Comparator;
 import java.util.EnumMap;
 
 public final class RequiemTargetHandler implements UpdateTargetedEntityCallback, PossessionStateChangeCallback, CrosshairRenderCallback {
-    private static final Identifier ABILITY_ICON = Requiem.id("textures/gui/possession_icon.png");
+    private static final Identifier ABILITY_ICON = Requiem.id("textures/gui/ability_icon.png");
 
     private final MinecraftClient client = MinecraftClient.getInstance();
 
@@ -170,16 +170,21 @@ public final class RequiemTargetHandler implements UpdateTargetedEntityCallback,
 
     @Override
     public void onCrosshairRender(MatrixStack matrices, int scaledWidth, int scaledHeight) {
-        if (this.getTargetedEntity(AbilityType.ATTACK) instanceof MobEntity) {
-            drawCrosshairIcon(client.getTextureManager(), matrices, scaledWidth, scaledHeight, ABILITY_ICON);
+        if (this.abilityController != null) {
+            float f = this.abilityController.getCooldownProgress(AbilityType.ATTACK);
+            if (f < 1 || this.getTargetedEntity(AbilityType.ATTACK) != null) {
+                drawCrosshairIcon(client.getTextureManager(), matrices, scaledWidth, scaledHeight, ABILITY_ICON, f);
+            }
         }
     }
 
-    static void drawCrosshairIcon(TextureManager textureManager, MatrixStack matrices, int scaledWidth, int scaledHeight, Identifier abilityIcon) {
+    static void drawCrosshairIcon(TextureManager textureManager, MatrixStack matrices, int scaledWidth, int scaledHeight, Identifier abilityIcon, float progress) {
         int x = (scaledWidth - 32) / 2 + 8;
         int y = (scaledHeight - 16) / 2 + 16;
         textureManager.bindTexture(abilityIcon);
-        DrawableHelper.drawTexture(matrices, x, y, 16, 16, 0, 0, 16, 16, 16, 16);
+        int height = (int)(progress * 8.0F);
+        DrawableHelper.drawTexture(matrices, x, y, 16, 8, 0, 0, 16, 8, 16, 16);
+        DrawableHelper.drawTexture(matrices, x, y + 8 - height, 16, height, 0, 16 - height, 16, height, 16, 16);
         textureManager.bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
     }
 }
