@@ -34,12 +34,17 @@
  */
 package ladysnake.requiem.mixin.common.remnant;
 
+import ladysnake.requiem.api.v1.event.minecraft.AllowUseEntityCallback;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -48,6 +53,32 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ServerPlayNetworkHandlerMixin {
     @Shadow
     public ServerPlayerEntity player;
+
+    @Inject(method = "onPlayerInteractEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;interact(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/ActionResult;"), cancellable = true)
+    private void onPlayerInteractEntity(PlayerInteractEntityC2SPacket packet, CallbackInfo info) {
+        checkInteraction(packet, info);
+    }
+
+    // Injecting before the FAPI event
+    @Inject(method = "onPlayerInteractEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;interactAt(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/ActionResult;", shift = At.Shift.BEFORE), cancellable = true)
+    private void onPlayerInteractEntity2(PlayerInteractEntityC2SPacket packet, CallbackInfo info) {
+        checkInteraction(packet, info);
+    }
+
+    @Unique
+    private void checkInteraction(PlayerInteractEntityC2SPacket packet, CallbackInfo info) {
+        World world = player.getEntityWorld();
+        Entity entity = packet.getEntity(world);
+
+        if (entity != null) {
+            assert packet.getHand() != null;
+            boolean result = AllowUseEntityCallback.EVENT.invoker().allow(player, world, packet.getHand(), entity);
+
+            if (!result) {
+                info.cancel();
+            }
+        }
+    }
 
     @Inject(method = "onClientStatus", at = @At(value = "FIELD", target = "Lnet/minecraft/world/GameMode;SPECTATOR:Lnet/minecraft/world/GameMode;"), cancellable = true)
     private void postponeHardcoreConsequences(ClientStatusC2SPacket packet, CallbackInfo ci) {

@@ -43,6 +43,7 @@ import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
+import ladysnake.requiem.api.v1.event.minecraft.AllowUseEntityCallback;
 import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PrepareRespawnCallback;
@@ -145,7 +146,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         });
         // Prevent incorporeal players from interacting with anything
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> getInteractionResult(player));
-        UseEntityCallback.EVENT.register((player, world, hand, target, hitResult) -> getInteractionResult(player));
+        AllowUseEntityCallback.EVENT.register((player, world, hand, target) -> !isInteractionForbidden(player));
         UseItemCallback.EVENT.register((player, world, hand) -> new TypedActionResult<>(getInteractionResult(player), player.getStackInHand(hand)));
         // Make players respawn in the right place with the right state
         PrepareRespawnCallback.EVENT.register((original, clone, returnFromEnd) -> RemnantComponent.get(clone).prepareRespawn(original, returnFromEnd));
