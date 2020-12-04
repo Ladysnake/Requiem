@@ -22,16 +22,17 @@ import com.demonwav.mcdev.annotations.Env;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.TransientComponent;
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import ladysnake.requiem.api.v1.internal.DummyMobAbilityController;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 /**
  * A {@link MobAbilityController} is interacted with by a player to use special {@link MobAbility mob abilities}
  */
-public interface MobAbilityController extends TransientComponent, CommonTickingComponent, AutoSyncedComponent {
+public interface MobAbilityController extends TransientComponent, CommonTickingComponent {
     ComponentKey<MobAbilityController> KEY = ComponentRegistry.getOrCreate(new Identifier("requiem", "ability_controller"), MobAbilityController.class);
 
     static MobAbilityController get(Entity entity) {
@@ -51,6 +52,11 @@ public interface MobAbilityController extends TransientComponent, CommonTickingC
 
     @Override
     void tick();
+
+    void writeSyncPacket(PacketByteBuf packetByteBuf, ServerPlayerEntity serverPlayerEntity);
+
+    @CheckEnv(Env.CLIENT)
+    void applySyncPacket(PacketByteBuf buf);
 
     @CheckEnv(Env.CLIENT)
     Identifier getIconTexture(AbilityType type);

@@ -35,7 +35,6 @@
 package ladysnake.requiem.common.impl.ability;
 
 import ladysnake.requiem.api.v1.entity.ability.*;
-import ladysnake.requiem.api.v1.possession.Possessable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketByteBuf;
@@ -51,7 +50,6 @@ public class ImmutableMobAbilityController<T extends LivingEntity> implements Mo
     private final IndirectAbility<? super T> indirectInteraction;
     private final DirectAbility<? super T, ?> directAttack;
     private final DirectAbility<? super T, ?> directInteraction;
-    private final T owner;
 
     public ImmutableMobAbilityController(MobAbilityConfig<? super T> config, T owner) {
         this.directAttack = config.getDirectAbility(owner, AbilityType.ATTACK);
@@ -59,7 +57,6 @@ public class ImmutableMobAbilityController<T extends LivingEntity> implements Mo
         this.indirectAttack = config.getIndirectAbility(owner, AbilityType.ATTACK);
         this.indirectInteraction = config.getIndirectAbility(owner, AbilityType.INTERACT);
         this.abilities = Arrays.asList(this.directAttack, this.directInteraction, this.indirectAttack, this.indirectInteraction);
-        this.owner = owner;
     }
 
     @Override
@@ -85,11 +82,6 @@ public class ImmutableMobAbilityController<T extends LivingEntity> implements Mo
     @Override
     public float getCooldownProgress(AbilityType type) {
         return this.getDirect(type).getCooldownProgress();
-    }
-
-    @Override
-    public boolean shouldSyncWith(ServerPlayerEntity player) {
-        return player == ((Possessable) this.owner).getPossessor();
     }
 
     @Override

@@ -22,6 +22,8 @@ import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class DummyMobAbilityController implements MobAbilityController {
@@ -64,6 +66,16 @@ public class DummyMobAbilityController implements MobAbilityController {
 
     @Override
     public void writeToNbt(CompoundTag compoundTag) {
+        // NO-OP
+    }
+
+    @Override
+    public void applySyncPacket(PacketByteBuf buf) {
+        // NO-OP
+    }
+
+    @Override
+    public void writeSyncPacket(PacketByteBuf packetByteBuf, ServerPlayerEntity serverPlayerEntity) {
         // NO-OP
     }
 

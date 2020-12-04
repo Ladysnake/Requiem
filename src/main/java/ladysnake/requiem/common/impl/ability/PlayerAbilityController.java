@@ -3,6 +3,7 @@ package ladysnake.requiem.common.impl.ability;
 import com.demonwav.mcdev.annotations.CheckEnv;
 import com.demonwav.mcdev.annotations.Env;
 import com.google.common.base.Preconditions;
+import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
@@ -13,6 +14,8 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,13 +24,14 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumMap;
 
-public class PlayerAbilityController implements MobAbilityController {
+public class PlayerAbilityController implements MobAbilityController, AutoSyncedComponent {
     private static final MobAbilityConfig<PlayerEntity> SOUL_CONFIG = MobAbilityConfig.<PlayerEntity>builder()
         .directAttack(player -> new DelegatingDirectAbility<>(player, MobEntity.class, AbilityType.INTERACT))
         .directInteract(SoulPossessAbility::new)
         .build();
 
     private final MobAbilityController soulAbilities;
+    private final PlayerEntity player;
     private final EnumMap<AbilityType, WeakReference<Entity>> targets = new EnumMap<>(AbilityType.class);
     private AbilityType[] sortedAbilities = AbilityType.values();
 
@@ -35,6 +39,7 @@ public class PlayerAbilityController implements MobAbilityController {
 
     public PlayerAbilityController(PlayerEntity player) {
         soulAbilities = new ImmutableMobAbilityController<>(SOUL_CONFIG, player);
+        this.player = player;
     }
 
     public static PlayerAbilityController get(PlayerEntity player) {
@@ -133,5 +138,20 @@ public class PlayerAbilityController implements MobAbilityController {
     @Override
     public void tick() {
         delegate.tick();
+    }
+
+    @Override
+    public boolean shouldSyncWith(ServerPlayerEntity player) {
+        return player == this.player;
+    }
+
+    @Override
+    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
+        this.delegate.writeSyncPacket(buf, recipient);
+    }
+
+    @Override
+    public void applySyncPacket(PacketByteBuf buf) {
+        this.delegate.applySyncPacket(buf);
     }
 }
