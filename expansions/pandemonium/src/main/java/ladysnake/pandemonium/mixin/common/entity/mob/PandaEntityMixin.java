@@ -10,6 +10,7 @@ import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -42,12 +43,20 @@ public abstract class PandaEntityMixin extends AnimalEntity implements Possessab
     @Shadow
     private float lastScaredAnimationProgress;
 
+    @Shadow
+    public abstract void setLyingOnBack(boolean lyingOnBack);
+
     @ModifyArg(method = "updateEatingAnimation", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/PandaEntity;setEating(Z)V", ordinal = 0))
     private boolean stopEatingConcrete(boolean eat) {
         if (!this.canEat(this.getEquippedStack(EquipmentSlot.MAINHAND))) {
             return false;
         }
         return eat;
+    }
+
+    @Override
+    public void onPossessorSet(@Nullable PlayerEntity possessor) {
+        this.setLyingOnBack(false);
     }
 
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/PandaEntity;updateScaredAnimation()V"))
