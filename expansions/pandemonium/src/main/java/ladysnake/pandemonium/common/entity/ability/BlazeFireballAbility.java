@@ -26,7 +26,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class BlazeFireballAbility extends IndirectAbilityBase<LivingEntity> {
-    public static final double HORIZONTAL_VELOCITY_FACTOR = MathHelper.sqrt(MathHelper.sqrt(25.0)) * 0.5F;
+    public static final double RANDOM_SKEW_FACTOR = MathHelper.sqrt(MathHelper.sqrt(25.0)) * 0.25F;
     public static final int CONSECUTIVE_FIREBALLS = 3;
     public static final int FIRE_TICKS = 200;
     public static final int BLAZE_SHOOT_EVENT = 1018;
@@ -62,9 +62,9 @@ public class BlazeFireballAbility extends IndirectAbilityBase<LivingEntity> {
         SmallFireballEntity fireball = new SmallFireballEntity(
                 this.owner.world,
                 this.owner,
-                rot.x + this.owner.getRandom().nextGaussian() * HORIZONTAL_VELOCITY_FACTOR,
+                rot.x + this.owner.getRandom().nextGaussian() * RANDOM_SKEW_FACTOR,
                 rot.y,
-                rot.z + this.owner.getRandom().nextGaussian() * HORIZONTAL_VELOCITY_FACTOR
+                rot.z + this.owner.getRandom().nextGaussian() * RANDOM_SKEW_FACTOR
         );
         fireball.updatePosition(this.owner.getX(), this.owner.getY() + (double)(this.owner.getHeight() / 2.0F) + 0.5D, this.owner.getZ());
         this.owner.world.spawnEntity(fireball);
