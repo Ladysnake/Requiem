@@ -80,7 +80,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
@@ -143,11 +142,6 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     * * * * * * * * * * * * * * * */
 
     @Override
-    public Optional<UUID> getPossessorUuid() {
-        return Optional.ofNullable(this.possessor).map(PlayerEntity::getUuid);
-    }
-
-    @Override
     public boolean isBeingPossessed() {
         return this.possessor != null;
     }
@@ -194,7 +188,8 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
             this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).addTemporaryModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS);
         }
 
-        updateName(possessor);
+        this.updateName(possessor);
+        this.onPossessorSet(possessor);
     }
 
     @Unique

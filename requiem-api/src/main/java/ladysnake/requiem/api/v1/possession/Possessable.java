@@ -18,11 +18,11 @@
 package ladysnake.requiem.api.v1.possession;
 
 import ladysnake.requiem.api.v1.internal.ProtoPossessable;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * A {@link Possessable} entity can be possessed by a player through a {@link PossessionComponent}.
@@ -36,21 +36,8 @@ import java.util.UUID;
 public interface Possessable extends ProtoPossessable {
 
     /**
-     * Returns an {@link Optional} describing the {@link UUID unique id} of the
-     * player possessing this entity, or an empty {@code Optional} if this
-     * entity is not being possessed.
-     *
-     * @return an {@code Optional} describing the UUID of the possessor player
-     */
-    default Optional<UUID> getPossessorUuid() { return Optional.empty(); }
-
-    /**
      * Returns the {@link PlayerEntity} currently possessing this entity,
      * or {@code null} if there is no player possessing this entity.
-     * <p>
-     * This method can return {@code null} if the player
-     * associated with the {@link #getPossessorUuid() possessor uuid}
-     * cannot be found in the world this entity is in.
      *
      * @return the player currently possessing this entity.
      */
@@ -59,7 +46,7 @@ public interface Possessable extends ProtoPossessable {
     default PlayerEntity getPossessor() { return null; }
 
     /**
-     * Returns whether this entity has a defined {@link #getPossessorUuid() possessor}.
+     * Returns whether this entity has a defined {@link #getPossessor() possessor}.
      *
      * @return {@code true} if this entity has a defined possessor, otherwise {@code false}
      */
@@ -76,11 +63,18 @@ public interface Possessable extends ProtoPossessable {
     default boolean canBePossessedBy(PlayerEntity player) { return true; }
 
     /**
-     * Sets the player possessing this entity.
+     * Sets the player possessing this entity. Called by {@link PossessionComponent#startPossessing(MobEntity)}
      *
      * @param possessor the new possessor of this entity
      */
+    @ApiStatus.Internal
     default void setPossessor(@Nullable PlayerEntity possessor) {}
+
+    /**
+     * called by {@link #setPossessor(PlayerEntity)}, can be overridden to implement special behaviour
+     */
+    @ApiStatus.OverrideOnly
+    default void onPossessorSet(@Nullable PlayerEntity possessor) {}
 
     /**
      * Refreshes this entity's nametag according to the value of the "requiem:showPossessorNameTag" gamerule
