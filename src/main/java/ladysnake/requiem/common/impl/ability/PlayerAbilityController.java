@@ -7,10 +7,13 @@ import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.internal.DummyMobAbilityController;
+import ladysnake.requiem.common.entity.ability.DelegatingDirectAbility;
+import ladysnake.requiem.common.entity.ability.SoulPossessAbility;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
@@ -20,8 +23,8 @@ import java.util.EnumMap;
 
 public class PlayerAbilityController implements MobAbilityController {
     private static final MobAbilityConfig<PlayerEntity> SOUL_CONFIG = MobAbilityConfig.<PlayerEntity>builder()
-        .directAttack(ImmutableMobAbilityConfig.noneDirect())
-        // TODO soul abilities
+        .directAttack(player -> new DelegatingDirectAbility<>(player, MobEntity.class, AbilityType.INTERACT))
+        .directInteract(SoulPossessAbility::new)
         .build();
 
     private final MobAbilityController soulAbilities;
@@ -95,6 +98,11 @@ public class PlayerAbilityController implements MobAbilityController {
         AbilityType[] a = this.sortedAbilities.clone();
         Arrays.sort(a, Comparator.comparingDouble(this::getRange));
         this.sortedAbilities = a;
+    }
+
+    @Override
+    public Identifier getIconTexture(AbilityType type) {
+        return this.delegate.getIconTexture(type);
     }
 
     @Override

@@ -35,7 +35,7 @@
 package ladysnake.requiem.mixin.client.possession;
 
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.client.MinecraftClient;
@@ -71,8 +71,8 @@ public abstract class MinecraftClientMixin {
             )
     )
     private void onShakeFistAtAir(CallbackInfo info) {
-        if (PossessionComponent.get(player).isPossessing()) {
-            RequiemNetworking.sendAbilityUseMessage(AbilityType.ATTACK);
+        if (MobAbilityController.get(player).useIndirect(AbilityType.ATTACK)) {
+            RequiemNetworking.sendIndirectAbilityUseMessage(AbilityType.ATTACK);
         }
     }
 
@@ -85,8 +85,8 @@ public abstract class MinecraftClientMixin {
         if (!this.interactionManager.isBreakingBlock() && !this.player.isRiding()) {
             if (PlayerAbilityController.get(this.player).useDirectAbility(AbilityType.INTERACT)) {
                 this.player.swingHand(Hand.OFF_HAND);
-            } else if (PossessionComponent.get(player).isPossessing() && player.getMainHandStack().isEmpty()) {
-                RequiemNetworking.sendAbilityUseMessage(AbilityType.INTERACT);
+            } else if (player.getMainHandStack().isEmpty() && MobAbilityController.get(player).useIndirect(AbilityType.INTERACT)) {
+                RequiemNetworking.sendIndirectAbilityUseMessage(AbilityType.INTERACT);
             }
         }
     }

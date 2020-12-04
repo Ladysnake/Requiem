@@ -60,11 +60,11 @@ public abstract class AbilityBase<E extends LivingEntity> implements MobAbility<
         if (this.cooldown != cooldown) {
             this.cooldown = cooldown;
 
+            MobAbilityController.KEY.sync(this.owner);
+
             if (cooldown == 0) {
                 this.onCooldownEnd();
             }
-
-            MobAbilityController.KEY.sync(this.owner);
         }
     }
 

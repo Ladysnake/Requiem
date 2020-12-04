@@ -18,9 +18,11 @@
 package ladysnake.requiem.api.v1.internal;
 
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
+import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
 
 public class DummyMobAbilityController implements MobAbilityController {
     public static final MobAbilityController INSTANCE = new DummyMobAbilityController();
@@ -63,5 +65,10 @@ public class DummyMobAbilityController implements MobAbilityController {
     @Override
     public void writeToNbt(CompoundTag compoundTag) {
         // NO-OP
+    }
+
+    @Override
+    public Identifier getIconTexture(AbilityType type) {
+        return DirectAbility.ABILITY_ICON;
     }
 }

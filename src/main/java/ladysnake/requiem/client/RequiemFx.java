@@ -53,7 +53,6 @@ import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 
 import static ladysnake.requiem.client.FxHelper.impulse;
-import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
 public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEvents.EndTick {
     public static final Identifier SPECTRE_SHADER_ID = Requiem.id("shaders/post/spectre.json");
@@ -111,11 +110,8 @@ public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEv
             uniformOverlayColor.set(ETHEREAL_COLOR[0], ETHEREAL_COLOR[1], ETHEREAL_COLOR[2]);
         }
         Entity possessed = getAnimationEntity();
-        if (possessed != null) {
-            if (--fishEyeAnimation == 2) {
-                sendToServer(POSSESSION_REQUEST, createPossessionRequestBuffer(possessed));
-            }
-            assert client.player != null;
+        if (possessed != null && client.player != null) {
+            --this.fishEyeAnimation;
             if (!RemnantComponent.get(client.player).isIncorporeal()) {
                 this.possessionTarget.clear();
             }

@@ -44,6 +44,7 @@ import net.minecraft.entity.LivingEntity;
  * @param <E> The type of mobs that can wield this ability
  */
 public abstract class DirectAbilityBase<E extends LivingEntity, T extends Entity> extends AbilityBase<E> implements DirectAbility<E, T> {
+
     private final double range;
     private final Class<T> targetType;
 

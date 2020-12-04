@@ -40,6 +40,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 
 import java.util.Arrays;
 import java.util.List;
@@ -110,6 +111,11 @@ public class ImmutableMobAbilityController<T extends LivingEntity> implements Mo
         for (MobAbility<? super T> ability : this.abilities) {
             ability.update();
         }
+    }
+
+    @Override
+    public Identifier getIconTexture(AbilityType type) {
+        return this.getDirect(type).getIconTexture();
     }
 
     private <E extends Entity> boolean canTarget(Entity target, DirectAbility<? super T, E> ability) {

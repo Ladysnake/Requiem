@@ -54,7 +54,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static ladysnake.requiem.common.network.RequiemNetworking.*;
+import static ladysnake.requiem.common.network.RequiemNetworking.DATA_SYNC;
+import static ladysnake.requiem.common.network.RequiemNetworking.OPUS_USE;
 
 public class ClientMessageHandler {
     private final MinecraftClient mc = MinecraftClient.getInstance();
@@ -65,7 +66,6 @@ public class ClientMessageHandler {
     }
 
     public void init() {
-        ClientSidePacketRegistry.INSTANCE.register(POSSESSION_ACK, (context, buf) -> context.getTaskQueue().execute(this.rc.getRequiemFxRenderer()::onPossessionAck));
         ClientSidePacketRegistry.INSTANCE.register(OPUS_USE, ((context, buf) -> {
             boolean cure = buf.readBoolean();
             boolean showBook = buf.readBoolean();

@@ -78,22 +78,14 @@ public class ServerMessageHandling {
                 if (targetedEntity != null && (abilityController.getRange(type) + 3) > targetedEntity.distanceTo(player)) {
                     abilityController.useDirect(type, targetedEntity);
                 }
+
+                // sync abilities in case the server disagrees with the client's guess
+                MobAbilityController.KEY.sync(player);
             });
         });
         ServerSidePacketRegistry.INSTANCE.register(USE_INDIRECT_ABILITY, (context, buf) -> {
             AbilityType type = buf.readEnumConstant(AbilityType.class);
             context.getTaskQueue().execute(() -> MobAbilityController.get(context.getPlayer()).useIndirect(type));
-        });
-        ServerSidePacketRegistry.INSTANCE.register(POSSESSION_REQUEST, (context, buf) -> {
-            int requestedId = buf.readInt();
-            context.getTaskQueue().execute(() -> {
-                PlayerEntity player = context.getPlayer();
-                Entity entity = player.world.getEntityById(requestedId);
-                if (entity instanceof MobEntity && entity.distanceTo(player) < 20) {
-                    PossessionComponent.get(player).startPossessing((MobEntity) entity);
-                }
-                sendTo((ServerPlayerEntity) player, createEmptyMessage(POSSESSION_ACK));
-            });
         });
         ServerSidePacketRegistry.INSTANCE.register(ETHEREAL_FRACTURE, (context, buf) -> context.getTaskQueue().execute(() -> {
             PlayerEntity player = context.getPlayer();
@@ -112,7 +104,7 @@ public class ServerMessageHandling {
         ServerSidePacketRegistry.INSTANCE.register(OPUS_UPDATE, (context, buf) -> {
             String content = buf.readString(32767);
             boolean sign = buf.readBoolean();
-            RemnantType type = sign ? RemnantTypes.get(new Identifier(buf.readString(32767))) : null;
+            RemnantType type = sign ? RemnantTypes.get(buf.readIdentifier()) : null;
             Hand hand = buf.readEnumConstant(Hand.class);
             context.getTaskQueue().execute(() -> {
                 PlayerEntity player = context.getPlayer();

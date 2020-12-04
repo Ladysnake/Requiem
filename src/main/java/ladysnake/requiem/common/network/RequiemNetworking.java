@@ -59,14 +59,12 @@ import java.util.stream.Collectors;
 import static io.netty.buffer.Unpooled.buffer;
 
 public class RequiemNetworking {
-    public static final Identifier POSSESSION_ACK = Requiem.id("possession_ack");
     public static final Identifier OPUS_USE = Requiem.id("opus_use");
     public static final Identifier DATA_SYNC = Requiem.id("data_sync");
 
     // Client -> Server
     public static final Identifier USE_DIRECT_ABILITY = Requiem.id("direct_ability");
     public static final Identifier USE_INDIRECT_ABILITY = Requiem.id("indirect_ability");
-    public static final Identifier POSSESSION_REQUEST = Requiem.id("possession_request");
     public static final Identifier ETHEREAL_FRACTURE = Requiem.id("ethereal_fracture");
     public static final Identifier OPUS_UPDATE = Requiem.id("opus_update");
     public static final Identifier DIALOGUE_ACTION = Requiem.id("dialogue_action");
@@ -161,7 +159,7 @@ public class RequiemNetworking {
         sendToServer(USE_DIRECT_ABILITY, buf);
     }
 
-    public static void sendAbilityUseMessage(AbilityType type) {
+    public static void sendIndirectAbilityUseMessage(AbilityType type) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeEnumConstant(type);
         sendToServer(USE_INDIRECT_ABILITY, buf);

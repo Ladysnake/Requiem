@@ -52,8 +52,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 public final class RequiemTargetHandler implements UpdateTargetedEntityCallback, CrosshairRenderCallback {
-    private static final Identifier ABILITY_ICON = Requiem.id("textures/gui/ability_icon.png");
-
     private final MinecraftClient client = MinecraftClient.getInstance();
 
     void registerCallbacks() {
@@ -116,10 +114,12 @@ public final class RequiemTargetHandler implements UpdateTargetedEntityCallback,
     public void onCrosshairRender(MatrixStack matrices, int scaledWidth, int scaledHeight) {
         if (this.client.player != null) {
             PlayerAbilityController abilityController = PlayerAbilityController.get(this.client.player);
-            float f = abilityController.getCooldownProgress(AbilityType.ATTACK);
+            AbilityType renderedType = AbilityType.ATTACK;
 
-            if (f < 1 || abilityController.getTargetedEntity(AbilityType.ATTACK) != null) {
-                drawCrosshairIcon(client.getTextureManager(), matrices, scaledWidth, scaledHeight, ABILITY_ICON, f);
+            float f = abilityController.getCooldownProgress(renderedType);
+
+            if (f < 1 || abilityController.getTargetedEntity(renderedType) != null) {
+                drawCrosshairIcon(client.getTextureManager(), matrices, scaledWidth, scaledHeight, abilityController.getIconTexture(renderedType), f);
             }
         }
     }

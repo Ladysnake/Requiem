@@ -145,7 +145,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         });
         // Prevent incorporeal players from interacting with anything
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> getInteractionResult(player));
-        UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> !player.world.isClient && isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
+        UseEntityCallback.EVENT.register((player, world, hand, target, hitResult) -> getInteractionResult(player));
         UseItemCallback.EVENT.register((player, world, hand) -> new TypedActionResult<>(getInteractionResult(player), player.getStackInHand(hand)));
         // Make players respawn in the right place with the right state
         PrepareRespawnCallback.EVENT.register((original, clone, returnFromEnd) -> RemnantComponent.get(clone).prepareRespawn(original, returnFromEnd));

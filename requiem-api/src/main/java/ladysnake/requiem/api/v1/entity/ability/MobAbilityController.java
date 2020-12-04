@@ -17,6 +17,8 @@
  */
 package ladysnake.requiem.api.v1.entity.ability;
 
+import com.demonwav.mcdev.annotations.CheckEnv;
+import com.demonwav.mcdev.annotations.Env;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.TransientComponent;
@@ -49,4 +51,7 @@ public interface MobAbilityController extends TransientComponent, CommonTickingC
 
     @Override
     void tick();
+
+    @CheckEnv(Env.CLIENT)
+    Identifier getIconTexture(AbilityType type);
 }

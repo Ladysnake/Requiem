@@ -46,20 +46,16 @@ import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.client.RenderSelfPossessedEntityCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.particle.GhostParticle;
-import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import ladysnake.requiem.common.util.ItemUtil;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -67,15 +63,10 @@ import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.potion.PotionUtil;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -83,11 +74,8 @@ import java.util.List;
 
 public final class RequiemClientListener implements
     ClientTickEvents.EndTick,
-    UseEntityCallback,
     ItemTooltipCallback,
     InventoryLockingChangeCallback {
-
-    private static final Identifier POSSESSION_ICON = Requiem.id("textures/gui/possession_icon.png");
 
     private final RequiemClient rc;
     private final MinecraftClient mc = MinecraftClient.getInstance();
@@ -99,10 +87,6 @@ public final class RequiemClientListener implements
 
     void registerCallbacks() {
         ClientTickEvents.END_CLIENT_TICK.register(this);
-        // Start possession on right click
-        UseEntityCallback.EVENT.register(this);
-        // Draw a possession indicator under the crosshair
-        CrosshairRenderCallback.EVENT.register(Requiem.id("possession_indicator"), this::drawPossessionIndicator);
         // Make the crosshair purple when able to teleport to the Overworld using an enderman
         CrosshairRenderCallback.EVENT.register(Requiem.id("enderman_color"), this::drawEnderCrosshair);
         // Update the visibility of the crafting book button
@@ -135,28 +119,6 @@ public final class RequiemClientListener implements
             MobEntity possessedEntity = PossessionComponent.get(client.player).getPossessedEntity();
             if (possessedEntity != null && possessedEntity.isOnFire()) {
                 client.player.setOnFireFor(1);
-            }
-        }
-    }
-
-    @Override
-    public ActionResult interact(PlayerEntity player, World world, Hand hand, Entity target, @Nullable EntityHitResult hitPosition) {
-        if (player == this.mc.getCameraEntity() && RemnantComponent.get(player).isIncorporeal()) {
-            if (target instanceof MobEntity && target.world.isClient) {
-                target.world.playSound(player, target.getX(), target.getY(), target.getZ(), RequiemSoundEvents.EFFECT_POSSESSION_ATTEMPT, SoundCategory.PLAYERS, 2, 0.6f);
-                this.rc.getRequiemFxRenderer().beginFishEyeAnimation(target);
-            }
-            return ActionResult.SUCCESS;
-        }
-        return ActionResult.PASS;
-    }
-
-    public void drawPossessionIndicator(MatrixStack matrices, int scaledWidth, int scaledHeight) {
-        MinecraftClient client = this.mc;
-        assert client.player != null;
-        if (RemnantComponent.get(client.player).isIncorporeal()) {
-            if (client.targetedEntity instanceof MobEntity) {
-                RequiemTargetHandler.drawCrosshairIcon(client.getTextureManager(), matrices, scaledWidth, scaledHeight, POSSESSION_ICON, 1.0f);
             }
         }
     }
