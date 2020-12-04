@@ -37,6 +37,7 @@ public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity, Entity>
 
     @Override
     public boolean canTarget(Entity target) {
+        if (!super.canTarget(target)) return false;
         if (target instanceof SheepEntity) {
             return this.wololoGoal.requiem_getConvertibleSheepPredicate().test(null, (SheepEntity) target);
         }

@@ -31,11 +31,6 @@ public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> extends 
     }
 
     @Override
-    public boolean canTarget(LivingEntity target) {
-        return true;
-    }
-
-    @Override
     public boolean run(LivingEntity target) {
         if (!this.owner.world.isClient) {
             this.owner.attack(target, 1f);

@@ -43,7 +43,7 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEnt
 
     @Override
     public boolean canTarget(LivingEntity target) {
-        return target.isAlive();
+        return super.canTarget(target) && target.isAlive();
     }
 
     @Override

@@ -38,43 +38,35 @@ import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
 import ladysnake.requiem.api.v1.entity.ability.IndirectAbility;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
+import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
 import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
 import ladysnake.requiem.common.entity.ability.MeleeAbility;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import org.apiguardian.api.API;
 
 import java.util.function.Function;
 
-public class ImmutableMobAbilityConfig<E extends MobEntity> implements MobAbilityConfig<E> {
+public class ImmutableMobAbilityConfig<E extends LivingEntity> implements MobAbilityConfig<E> {
 
     @API(status = API.Status.EXPERIMENTAL)
-    public static <T extends MobEntity> Function<T, DirectAbility<? super T, ?>> noneDirect(){
-        return (mob) -> new DirectAbility<T, Entity>() {
-            @Override
-            public double getRange() {
-                return 0;
-            }
-
-            @Override
-            public Class<Entity> getTargetType() {
-                return Entity.class;
-            }
-
+    public static <T extends LivingEntity> Function<T, DirectAbility<? super T, ?>> noneDirect(){
+        return (mob) -> new DirectAbilityBase<T, Entity>(mob, 0, 0, Entity.class) {
             @Override
             public boolean canTarget(Entity target) {
                 return false;
             }
 
             @Override
-            public boolean trigger(Entity target) {
+            public boolean run(Entity target) {
                 return false;
             }
         };
     }
 
     @API(status = API.Status.EXPERIMENTAL)
-    public static <T extends MobEntity> Function<T, IndirectAbility<? super T>> noneIndirect(){
+    public static <T extends LivingEntity> Function<T, IndirectAbility<? super T>> noneIndirect(){
         return (mob) -> new IndirectAbilityBase<T>(mob, 0) {
             @Override
             protected boolean run() {
@@ -83,7 +75,7 @@ public class ImmutableMobAbilityConfig<E extends MobEntity> implements MobAbilit
         };
     }
 
-    public static final MobAbilityConfig<MobEntity> DEFAULT = MobAbilityConfig.builder().build();
+    public static final MobAbilityConfig<MobEntity> DEFAULT = MobAbilityConfig.<MobEntity>builder().build();
 
     private final Function<E, DirectAbility<? super E, ?>> directAttackFactory;
     private final Function<E, IndirectAbility<? super E>> indirectAttackFactory;

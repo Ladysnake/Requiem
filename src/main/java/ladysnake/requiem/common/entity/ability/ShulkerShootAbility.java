@@ -48,7 +48,7 @@ public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, Living
 
     @Override
     public boolean canTarget(LivingEntity target) {
-        return this.owner.getPeekAmount() > 50;
+        return super.canTarget(target) && this.owner.getPeekAmount() > 50;
     }
 
     @Override

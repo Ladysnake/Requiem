@@ -71,27 +71,18 @@ public class ServerMessageHandling {
             int entityId = buf.readVarInt();
             context.getTaskQueue().execute(() -> {
                 PlayerEntity player = context.getPlayer();
-                Entity possessed = PossessionComponent.get(player).getPossessedEntity();
+                MobAbilityController abilityController = MobAbilityController.get(player);
+                Entity targetedEntity = player.world.getEntityById(entityId);
 
-                if (possessed != null) {
-                    MobAbilityController abilityController = MobAbilityController.get(possessed);
-                    Entity targetedEntity = player.world.getEntityById(entityId);
-
-                    // allow a slightly longer reach in case of lag
-                    if (targetedEntity != null && (abilityController.getRange(type) + 3) > targetedEntity.distanceTo(player)) {
-                        abilityController.useDirect(type, targetedEntity);
-                    }
+                // allow a slightly longer reach in case of lag
+                if (targetedEntity != null && (abilityController.getRange(type) + 3) > targetedEntity.distanceTo(player)) {
+                    abilityController.useDirect(type, targetedEntity);
                 }
             });
         });
         ServerSidePacketRegistry.INSTANCE.register(USE_INDIRECT_ABILITY, (context, buf) -> {
             AbilityType type = buf.readEnumConstant(AbilityType.class);
-            context.getTaskQueue().execute(() -> {
-                Entity possessed = PossessionComponent.get(context.getPlayer()).getPossessedEntity();
-                if (possessed != null) {
-                    MobAbilityController.get(possessed).useIndirect(type);
-                }
-            });
+            context.getTaskQueue().execute(() -> MobAbilityController.get(context.getPlayer()).useIndirect(type));
         });
         ServerSidePacketRegistry.INSTANCE.register(POSSESSION_REQUEST, (context, buf) -> {
             int requestedId = buf.readInt();

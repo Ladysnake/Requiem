@@ -36,14 +36,14 @@ package ladysnake.requiem.common.entity.ability;
 
 import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.LivingEntity;
 
 /**
  * A {@link DirectAbility} targets a specific entity
  *
  * @param <E> The type of mobs that can wield this ability
  */
-public abstract class DirectAbilityBase<E extends MobEntity, T extends Entity> extends AbilityBase<E> implements DirectAbility<E, T> {
+public abstract class DirectAbilityBase<E extends LivingEntity, T extends Entity> extends AbilityBase<E> implements DirectAbility<E, T> {
     private final double range;
     private final Class<T> targetType;
 
@@ -61,6 +61,12 @@ public abstract class DirectAbilityBase<E extends MobEntity, T extends Entity> e
     @Override
     public double getRange() {
         return range;
+    }
+
+    @Override
+    public boolean canTarget(T target) {
+        // Stop hurting yourself
+        return target != this.owner;
     }
 
     /**

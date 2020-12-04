@@ -54,11 +54,6 @@ public class MeleeAbility extends DirectAbilityBase<MobEntity, Entity> {
     }
 
     @Override
-    public boolean canTarget(Entity target) {
-        return true;
-    }
-
-    @Override
     public boolean run(Entity target) {
         // We actually need to check if the entity has an attack damage attribute, because mojang doesn't.
         if (!ignoreDamageAttribute && owner.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE) == null) {

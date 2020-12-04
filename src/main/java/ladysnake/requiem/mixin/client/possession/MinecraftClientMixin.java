@@ -36,7 +36,7 @@ package ladysnake.requiem.mixin.client.possession;
 
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.client.RequiemClient;
+import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -57,7 +57,7 @@ public abstract class MinecraftClientMixin {
 
     @Inject(method = "doAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/hit/HitResult;getType()Lnet/minecraft/util/hit/HitResult$Type;"), cancellable = true)
     private void tryUseDirectAttackAbility(CallbackInfo ci) {
-        if (RequiemClient.INSTANCE.getTargetHandler().useDirectAbility(AbilityType.ATTACK)) {
+        if (PlayerAbilityController.get(this.player).useDirectAbility(AbilityType.ATTACK)) {
             this.player.swingHand(Hand.MAIN_HAND);
             ci.cancel();
         }
@@ -83,7 +83,7 @@ public abstract class MinecraftClientMixin {
     private void onInteractWithAir(CallbackInfo info) {
         // Check that the player is qualified to interact with something
         if (!this.interactionManager.isBreakingBlock() && !this.player.isRiding()) {
-            if (RequiemClient.INSTANCE.getTargetHandler().useDirectAbility(AbilityType.INTERACT)) {
+            if (PlayerAbilityController.get(this.player).useDirectAbility(AbilityType.INTERACT)) {
                 this.player.swingHand(Hand.OFF_HAND);
             } else if (PossessionComponent.get(player).isPossessing() && player.getMainHandStack().isEmpty()) {
                 RequiemNetworking.sendAbilityUseMessage(AbilityType.INTERACT);

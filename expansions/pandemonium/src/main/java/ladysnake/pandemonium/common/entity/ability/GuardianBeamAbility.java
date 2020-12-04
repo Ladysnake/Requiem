@@ -38,7 +38,7 @@ public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity, Livin
 
     @Override
     public boolean canTarget(LivingEntity target) {
-        return target.isAlive();
+        return super.canTarget(target) && target.isAlive();
     }
 
     @Override

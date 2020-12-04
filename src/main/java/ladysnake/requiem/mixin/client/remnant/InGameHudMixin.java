@@ -39,7 +39,7 @@ import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.client.RequiemClient;
+import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
 import ladysnake.requiem.common.tag.RequiemFluidTags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -90,7 +90,8 @@ public abstract class InGameHudMixin extends DrawableHelper {
         at = @At(value = "STORE")
     )
     private boolean cancelAttackIndicatorRender(boolean shouldRender) {
-        if (RequiemClient.INSTANCE.getTargetHandler().getTargetedEntity(AbilityType.ATTACK) != null) {
+        assert this.client.player != null;
+        if (PlayerAbilityController.get(this.client.player).getTargetedEntity(AbilityType.ATTACK) != null) {
             return false;
         }
         return shouldRender;

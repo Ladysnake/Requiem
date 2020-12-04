@@ -59,6 +59,7 @@ import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
 import ladysnake.requiem.common.entity.ability.SnowmanSnowballAbility;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
+import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.impl.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.common.network.RequiemNetworking;
@@ -69,7 +70,6 @@ import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.fabricmc.fabric.api.event.player.*;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -135,30 +135,28 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         // Prevent incorporeal players from breaking anything
         AttackBlockCallback.EVENT.register((player, world, hand, blockPos, facing) -> getInteractionResult(player));
         // Prevent incorporeal players from hitting anything
-        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> getInteractionResult(player));
+        AttackEntityCallback.EVENT.register((player, world, hand, target, hitResult) -> {
+            // Proxy melee attacks
+            if (MobAbilityController.get(player).useDirect(AbilityType.ATTACK, target)) {
+                player.resetLastAttackedTicks();
+                return ActionResult.SUCCESS;
+            }
+            return isInteractionForbidden(player, true) ? ActionResult.FAIL : ActionResult.PASS;
+        });
         // Prevent incorporeal players from interacting with anything
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> getInteractionResult(player));
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> !player.world.isClient && isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS);
-        UseItemCallback.EVENT.register((player, world, hand) -> {
-            if (isInteractionForbidden(player) || (!player.isCreative() && PossessionComponent.KEY.maybeGet(player)
-                .map(PossessionComponent::getPossessedEntity)
-                .map(Entity::getType)
-                .filter(entry -> !RequiemEntityTypeTags.ITEM_USERS.contains(entry))
-                .isPresent())
-            ) {
-                return new TypedActionResult<>(ActionResult.FAIL, player.getStackInHand(hand));
-            }
-            return new TypedActionResult<>(ActionResult.PASS, player.getStackInHand(hand));
-        });
+        UseItemCallback.EVENT.register((player, world, hand) -> new TypedActionResult<>(getInteractionResult(player), player.getStackInHand(hand)));
         // Make players respawn in the right place with the right state
         PrepareRespawnCallback.EVENT.register((original, clone, returnFromEnd) -> RemnantComponent.get(clone).prepareRespawn(original, returnFromEnd));
         PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> {
             player.sendAbilitiesUpdate();
             ((MobResurrectable) player).spawnResurrectionEntity();
         }));
-        RemnantStateChangeCallback.EVENT.register((player, remnant) ->
-            InventoryLimiter.KEY.get(player).setEnabled(remnant.isSoul())
-        );
+        RemnantStateChangeCallback.EVENT.register((player, remnant) -> {
+            InventoryLimiter.KEY.get(player).setEnabled(remnant.isSoul());
+            PlayerAbilityController.get(player).resetAbilities(remnant.isIncorporeal());
+        });
     }
 
     @Nonnull
@@ -167,23 +165,16 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     private boolean isInteractionForbidden(PlayerEntity player) {
-        return !player.isCreative() && RemnantComponent.get(player).isIncorporeal() || DeathSuspender.get(player).isLifeTransient();
+        return isInteractionForbidden(player, false);
+    }
+
+    private boolean isInteractionForbidden(PlayerEntity player, boolean includeSouls) {
+        RemnantComponent c = RemnantComponent.get(player);
+        return !player.isCreative() && ((includeSouls && c.isSoul()) || c.isIncorporeal()) || DeathSuspender.get(player).isLifeTransient();
     }
 
     private void registerPossessionEventHandlers() {
         BasePossessionHandlers.register();
-        // Proxy melee attacks
-        AttackEntityCallback.EVENT.register((playerEntity, world, hand, target, hitResult) -> {
-            LivingEntity possessed = PossessionComponent.get(playerEntity).getPossessedEntity();
-            if (possessed != null && !possessed.removed) {
-                if (possessed.world.isClient || target != possessed && MobAbilityController.get(possessed).useDirect(AbilityType.ATTACK, target)) {
-                    playerEntity.resetLastAttackedTicks();
-                    return ActionResult.SUCCESS;
-                }
-                return ActionResult.FAIL;
-            }
-            return ActionResult.PASS;
-        });
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (entity instanceof SpiderEntity) {
                 LivingEntity possessed = PossessionComponent.get(player).getPossessedEntity();
@@ -196,6 +187,13 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             }
             return ActionResult.PASS;
         });
+        UseItemCallback.EVENT.register((player, world, hand) -> {
+            LivingEntity possessed = PossessionComponent.getPossessedEntity(player);
+            if (possessed != null && !RequiemEntityTypeTags.ITEM_USERS.contains(possessed.getType()) && !player.isCreative()) {
+                return new TypedActionResult<>(ActionResult.FAIL, player.getStackInHand(hand));
+            }
+            return new TypedActionResult<>(ActionResult.PASS, player.getStackInHand(hand));
+        });
         PossessionStateChangeCallback.EVENT.register(((player, possessed) -> {
             if (player instanceof ServerPlayerEntity && possessed != null) {
                 RequiemCriteria.PLAYER_POSSESSED_ENTITY.handle((ServerPlayerEntity) player, possessed);
@@ -207,6 +205,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                     for (InventoryPart part : InventoryPart.VALUES) {
                         inventoryLimiter.lock(part);
                     }
+                    PlayerAbilityController.get(player).resetAbilities(RemnantComponent.isIncorporeal(player));
                 } else {
                     if (RequiemEntityTypeTags.FULL_INVENTORY.contains(possessed.getType())) {
                         inventoryLimiter.unlock(InventoryPart.MAIN);
@@ -225,6 +224,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                     } else {
                         inventoryLimiter.lock(InventoryPart.ARMOR);
                     }
+                    PlayerAbilityController.get(player).usePossessedAbilities(possessed);
                 }
             }
         );

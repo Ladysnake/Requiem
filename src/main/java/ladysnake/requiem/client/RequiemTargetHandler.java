@@ -36,18 +36,14 @@ package ladysnake.requiem.client;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.UpdateTargetedEntityCallback;
-import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
-import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.EntityHitResult;
@@ -55,73 +51,25 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
-import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.EnumMap;
-
-public final class RequiemTargetHandler implements UpdateTargetedEntityCallback, PossessionStateChangeCallback, CrosshairRenderCallback {
+public final class RequiemTargetHandler implements UpdateTargetedEntityCallback, CrosshairRenderCallback {
     private static final Identifier ABILITY_ICON = Requiem.id("textures/gui/ability_icon.png");
 
     private final MinecraftClient client = MinecraftClient.getInstance();
 
-    private final EnumMap<AbilityType, WeakReference<Entity>> targets = new EnumMap<>(AbilityType.class);
-    private AbilityType[] sortedAbilities = AbilityType.values();
-    private @Nullable MobAbilityController abilityController;
-
     void registerCallbacks() {
         CrosshairRenderCallback.EVENT.register(Requiem.id("target_handler"), this);
         UpdateTargetedEntityCallback.EVENT.register(this);
-        PossessionStateChangeCallback.EVENT.register(this);
-    }
-
-    public boolean useDirectAbility(AbilityType type) {
-        Entity targetedEntity = this.getTargetedEntity(type);
-        if (targetedEntity != null) {
-            assert this.abilityController != null : "A target was found but no ability should be active";
-
-            if (abilityController.useDirect(type, targetedEntity)) {
-                RequiemNetworking.sendAbilityUseMessage(type, targetedEntity);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public @Nullable Entity getTargetedEntity(AbilityType type) {
-        WeakReference<Entity> ref = targets.get(type);
-        return ref == null ? null : ref.get();
-    }
-
-    @Override
-    public void onPossessionStateChange(PlayerEntity player, @Nullable MobEntity possessed) {
-        if (player == client.player) {
-            setAbilities(MobAbilityController.KEY.maybeGet(possessed).orElse(null));
-        }
-    }
-
-    public void setAbilities(@Nullable MobAbilityController c) {
-        this.targets.clear();
-
-        if (c != null) {
-            AbilityType[] a = this.sortedAbilities.clone();
-            Arrays.sort(a, Comparator.comparingDouble(c::getRange));
-            this.sortedAbilities = a;
-        }
-
-        this.abilityController = c;
     }
 
     @Override
     public void updateTargetedEntity(float tickDelta) {
-        if (this.abilityController == null) return;
-        MobAbilityController abilityController = this.abilityController;
+        if (this.client.player == null) return;
+        PlayerAbilityController abilityController = PlayerAbilityController.get(this.client.player);
 
         Entity entity = this.client.getCameraEntity();
         assert entity != null;
 
-        AbilityType[] abilityTypes = this.sortedAbilities;
+        AbilityType[] abilityTypes = abilityController.getSortedAbilities();
         double maxRange = abilityController.getRange(abilityTypes[abilityTypes.length - 1]);
 
         HitResult blockResult = entity.raycast(maxRange, tickDelta, false);
@@ -129,7 +77,7 @@ public final class RequiemTargetHandler implements UpdateTargetedEntityCallback,
         double distanceToBlockSq = blockResult != null ? blockResult.getPos().squaredDistanceTo(startPoint) : Double.POSITIVE_INFINITY;
         Vec3d rotationVec = entity.getRotationVec(1.0F);
 
-        this.targets.clear();
+        abilityController.clearTargets();
 
         for (int i = 0; i < abilityTypes.length; i++) {
             AbilityType k = abilityTypes[i];
@@ -154,14 +102,10 @@ public final class RequiemTargetHandler implements UpdateTargetedEntityCallback,
                 double distanceToHitSq = startPoint.squaredDistanceTo(hitPos);
 
                 if (distanceToHitSq < effectiveRangeSq || blockResult == null) {
-                    WeakReference<Entity> ref = new WeakReference<>(hitEntity);
                     // Every target after this one must have a higher range, so they will target the same entity
                     for (; i < abilityTypes.length; i++) {
                         AbilityType eligibleAbility = abilityTypes[i];
-
-                        if (abilityController.canTarget(eligibleAbility, hitEntity)) {
-                            targets.put(eligibleAbility, ref);
-                        }
+                        abilityController.tryTarget(eligibleAbility, hitEntity);
                     }
                 }
             }
@@ -170,9 +114,11 @@ public final class RequiemTargetHandler implements UpdateTargetedEntityCallback,
 
     @Override
     public void onCrosshairRender(MatrixStack matrices, int scaledWidth, int scaledHeight) {
-        if (this.abilityController != null) {
-            float f = this.abilityController.getCooldownProgress(AbilityType.ATTACK);
-            if (f < 1 || this.getTargetedEntity(AbilityType.ATTACK) != null) {
+        if (this.client.player != null) {
+            PlayerAbilityController abilityController = PlayerAbilityController.get(this.client.player);
+            float f = abilityController.getCooldownProgress(AbilityType.ATTACK);
+
+            if (f < 1 || abilityController.getTargetedEntity(AbilityType.ATTACK) != null) {
                 drawCrosshairIcon(client.getTextureManager(), matrices, scaledWidth, scaledHeight, ABILITY_ICON, f);
             }
         }
