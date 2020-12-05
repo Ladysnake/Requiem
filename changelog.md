@@ -1,7 +1,8 @@
 ------------------------------------------------------
 Version 1.3.0
 ------------------------------------------------------
-Additions
+**Additions**
+
 - Demons can now possess all golems, and all undead !
     - Golems are defined by the `requiem:golems` tag, and include iron golems, snow golems, and shulkers
     - Undeads are defined by the `requiem:undead` tag, and now additionally include phantoms, undead horses, and zoglins
@@ -17,33 +18,40 @@ Additions
     - `requiem:supercrafters`: gives a portable crafting table to the mob
     - `requiem:tetrachromats`: makes a mob use the `tetrachromatic` shader vision
 
-Changes
+**Changes**
+
 - You can now cure your friend (or even an enemy) who is possessing an undead
 - Added localization for all gamerules in the gamerule screen
 - Ranged abilities can now be fired from way further than 3 blocks
 - The possession icon now only appears for mobs you can possess
 
-Mod Compatibility
+**Mod Compatibility**
+
 - Made Eldritch mobs unable to be possessed
 - Fixed most Origins powers staying activated outside a human body
 
-Removals
+**Removals**
+
 - Removed Bart. You served well, but players don't need you anymore.
 
-Fixes
+**Fixes**
+
 - Piglins no longer aggro ghosts
 - Fixed Ghosts being able to interact with boats and minecarts
 - Fixed crash when trying to possess an invisible mob
 
 ### Pandemonium
-Additions
+
+**Additions**
+
 - Added special interaction between evokers and endermen
 - Villagers and piglins now have access to a portable 3x3 crafting screen
 - All mammals now have dichromatic vision
 - Chickens and parrots now have tetrachromatic vision
 - Bees now have a custom bee vision
 
-Changes
+**Changes**
+
 - Ticking is even more faithful to the possessed entity, eg.
     - Bees die after stinging
     - Piglins and hoglins zombify in the overworld
@@ -57,10 +65,10 @@ Changes
 - Blazes are more accurate with their fireballs
 - Possessed pandas now stand up when sneaking
 
-Mod Compatibility
+**Mod Compatibility**
 - Players can now teleport to and from the Bumblezone when possessing a bee
 
-Fixes
+**Fixes**
 - Fixed possessed elder guardians not getting the beam ability
 - Possessed ghasts now do the shooting face when firing
 
