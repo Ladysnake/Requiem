@@ -45,9 +45,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EntityPredicates.class)
 public abstract class EntityPredicatesMixin {
-    @Dynamic
+    @Dynamic("Lambda method injection")
     @Inject(method = {"method_5910", "method_24517"}, at = @At("RETURN"), cancellable = true)
-    private void exceptCreativeOrSpectator(Entity tested, CallbackInfoReturnable<Boolean> info) {
+    private static void exceptCreativeOrSpectator(Entity tested, CallbackInfoReturnable<Boolean> info) {
         if (info.getReturnValueZ() && RemnantComponent.isSoul(tested)) {
             info.setReturnValue(false);
         }
