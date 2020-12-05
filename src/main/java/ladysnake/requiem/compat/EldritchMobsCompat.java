@@ -40,6 +40,7 @@ import nerdhub.cardinal.components.api.component.ComponentProvider;
 import net.hyper_pigeon.eldritch_mobs.EldritchMobsMod;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.TranslatableText;
 
 public final class EldritchMobsCompat implements PossessionStartCallback {
     public static void init() {
@@ -51,6 +52,7 @@ public final class EldritchMobsCompat implements PossessionStartCallback {
     public Result onPossessionAttempted(MobEntity target, PlayerEntity possessor, boolean simulate) {
         ComponentProvider t = ComponentProvider.fromEntity(target);
         if (EldritchMobsMod.isEldritch(t) || EldritchMobsMod.isElite(t) || EldritchMobsMod.isUltra(t)) {
+            if (!simulate) possessor.sendMessage(new TranslatableText("requiem:possess.too_powerful"), true);
             return Result.DENY;
         }
         return Result.PASS;
