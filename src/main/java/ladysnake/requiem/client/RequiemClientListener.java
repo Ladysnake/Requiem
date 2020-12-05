@@ -96,7 +96,7 @@ public final class RequiemClientListener implements
         // Immovable mobs are a specific kind of boring, so we let players leave them regardless of their condition
         PossessionStateChangeCallback.EVENT.register((possessor, target) -> {
             if (possessor.world.isClient && target != null && RequiemEntityTypeTags.IMMOVABLE.contains(target.getType())) {
-                this.mc.inGameHud.setOverlayMessage(new TranslatableText("requiem:shulker.onboard", FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
+                this.mc.inGameHud.setOverlayMessage(new TranslatableText("requiem:shulker.onboard", mc.options.keySneak.getBoundKeyLocalizedText(), FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
             }
         });
         ApplyCameraTransformsCallback.EVENT.register(new HeadDownTransformHandler());

@@ -208,7 +208,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                     }
                     PlayerAbilityController.get(player).resetAbilities(RemnantComponent.isIncorporeal(player));
                 } else {
-                    if (RequiemEntityTypeTags.FULL_INVENTORY.contains(possessed.getType())) {
+                    if (RequiemEntityTypeTags.INVENTORY_CARRIERS.contains(possessed.getType())) {
                         inventoryLimiter.unlock(InventoryPart.MAIN);
                     } else {
                         inventoryLimiter.lock(InventoryPart.MAIN);

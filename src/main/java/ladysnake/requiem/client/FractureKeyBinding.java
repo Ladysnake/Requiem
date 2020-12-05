@@ -35,12 +35,16 @@
 package ladysnake.requiem.client;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
@@ -64,8 +68,18 @@ public final class FractureKeyBinding {
     }
 
     public static void update(MinecraftClient client) {
-        if (client.player != null && etherealFractureKey.wasPressed()) {
-            sendToServer(RequiemNetworking.ETHEREAL_FRACTURE, createEmptyBuffer());
+        if (client.player != null) {
+            if (etherealFractureKey.wasPressed() || pressesEmergencyFracture(client.player)) {
+                sendToServer(RequiemNetworking.ETHEREAL_FRACTURE, createEmptyBuffer());
+            }
         }
+    }
+
+    private static boolean pressesEmergencyFracture(ClientPlayerEntity player) {
+        if (player.isSneaking()) {
+            MobEntity possessedEntity = PossessionComponent.getPossessedEntity(player);
+            return possessedEntity != null && RequiemEntityTypeTags.IMMOVABLE.contains(possessedEntity.getType());
+        }
+        return false;
     }
 }
