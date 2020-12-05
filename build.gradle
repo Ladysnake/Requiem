@@ -10,7 +10,6 @@ plugins {
     id "com.jfrog.bintray" version '1.8.4'
     id 'org.ajoberstar.grgit' version '3.1.1'
     id 'com.github.breadmoirai.github-release' version '2.2.9'
-    id "com.wynprice.cursemaven" version "2.1.5"
     id 'maven-publish'
 }
 
@@ -128,6 +127,12 @@ repositories {
         url "https://maven.jamieswhiteshirt.com/libs-release/"
     }
     maven {
+        url "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven {
         name = 'JitPack'
         url = 'https://jitpack.io'
     }
@@ -164,6 +169,9 @@ dependencies {
         transitive = false
     }
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:8d45e7a209") {
+        transitive = false
+    }
+    modCompileOnly("curse.maven:the-bumblezone-fabric-363949:3119141") {
         transitive = false
     }
 }
