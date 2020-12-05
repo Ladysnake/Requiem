@@ -160,7 +160,10 @@ dependencies {
     modCompileOnly("io.github.apace100:origins-fabric:v0.3.6") {
         transitive = false
     }
-    modRuntime("io.github.apace100:origins-fabric:v0.3.6") {
+    modRuntime("io.github.apace100:origins-fabric:v0.4.5") {
+        transitive = false
+    }
+    modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:8d45e7a209") {
         transitive = false
     }
 }
