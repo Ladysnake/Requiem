@@ -71,7 +71,7 @@ public class BasePossessionHandlers {
             return PossessionStartCallback.Result.PASS;
         });
         PossessionStartCallback.EVENT.register(Requiem.id("base_mobs"), (target, possessor, simulate) -> {
-            if (!target.world.isClient && RequiemEntityTypeTags.POSSESSABLES.contains(target.getType())) {
+            if (RequiemEntityTypeTags.POSSESSABLES.contains(target.getType())) {
                 return PossessionStartCallback.Result.ALLOW;
             }
             return PossessionStartCallback.Result.PASS;
