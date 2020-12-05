@@ -55,6 +55,7 @@
     "possession.possessor.PotionItemMixin",
     "remnant.AbstractBlockStateMixin",
     "remnant.DamageTrackerMixin",
+    "remnant.EntityPredicatesMixin",
     "remnant.EntityShapeContextMixin",
     "remnant.HungerManagerMixin",
     "remnant.LivingEntityMixin",
