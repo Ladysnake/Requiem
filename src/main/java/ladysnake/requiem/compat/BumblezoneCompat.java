@@ -32,35 +32,58 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.compat.mixin.the_bumblezone;
+package ladysnake.requiem.compat;
 
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.compat.BumblezoneCompat;
-import net.minecraft.block.BeehiveBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.mob.MobEntity;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.telepathicgrunt.bumblezone.Bumblezone;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import net.telepathicgrunt.bumblezone.entities.PlayerTeleportation;
 
-@SuppressWarnings("UnusedMixin")
-@Mixin(BeehiveBlock.class)
-public abstract class BeehiveBlockMixin {
-    @Inject(method = "onUse", at = @At("HEAD"), cancellable = true)
-    private void onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
-        MobEntity possessedEntity = PossessionComponent.getPossessedEntity(player);
-        if (possessedEntity instanceof BeeEntity && player.getEntityWorld().getRegistryKey() != BumblezoneCompat.BZ_WORLD_KEY) {
-            Bumblezone.PLAYER_COMPONENT.get(player).setIsTeleporting(true);
-            cir.setReturnValue(ActionResult.SUCCESS);
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.function.Consumer;
+
+public final class BumblezoneCompat implements UseBlockCallback {
+    public static final RegistryKey<World> BZ_WORLD_KEY = RegistryKey.of(Registry.DIMENSION, Bumblezone.MOD_DIMENSION_ID);
+
+    private final Consumer<PlayerEntity> tpOutOfBz;
+
+    public static void init() throws NoSuchMethodException {
+        Method teleportOutOfBz = PlayerTeleportation.class.getDeclaredMethod("teleportOutOfBz", PlayerEntity.class);
+        teleportOutOfBz.setAccessible(true);
+        UseBlockCallback.EVENT.register(new BumblezoneCompat(p -> {
+            try {
+                teleportOutOfBz.invoke(null, p);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                Requiem.LOGGER.error("[Requiem] Failed to teleport bee out of Bumblezone", e);
+            }
+        }));
+    }
+
+    private BumblezoneCompat(Consumer<PlayerEntity> tpOutOfBz) {
+        this.tpOutOfBz = tpOutOfBz;
+    }
+
+    @Override
+    public ActionResult interact(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
+        if (world.getRegistryKey() == BumblezoneCompat.BZ_WORLD_KEY) {
+            if (PossessionComponent.getPossessedEntity(player) instanceof BeeEntity) {
+                if (world.getBlockState(hitResult.getBlockPos()).isOf(Blocks.HONEYCOMB_BLOCK)) {
+                    if (!world.isClient) this.tpOutOfBz.accept(player);
+                    return ActionResult.SUCCESS;
+                }
+            }
         }
+        return ActionResult.PASS;
     }
 }

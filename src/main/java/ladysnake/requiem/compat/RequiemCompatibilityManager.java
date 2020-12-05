@@ -41,12 +41,13 @@ public final class RequiemCompatibilityManager {
     public static void init() {
         try {
             load("eldritch_mobs", EldritchMobsCompat::init);
+            load("the_bumblezone", BumblezoneCompat::init);
         } catch (Throwable t) {
             Requiem.LOGGER.error("[Requiem] Failed to load compatibility hooks", t);
         }
     }
 
-    private static void load(String modId, Runnable action) {
+    private static void load(String modId, ThrowingRunnable action) {
         try {
             if (FabricLoader.getInstance().isModLoaded(modId)) {
                 action.run();
