@@ -72,7 +72,7 @@ public final class RequiemCompatMixinPlugin implements IMixinConfigPlugin {
     public List<String> getMixins() {
         return (new MixinCompatBuilder())
             .addClient("healthoverlay", "HealthRendererMixin")
-            .add("origins", "PowerTypeMixin")
+            .add("origins", "PowerMixin")
             .add("the_bumblezone", "BeehiveBlockMixin")
             .build();
     }
