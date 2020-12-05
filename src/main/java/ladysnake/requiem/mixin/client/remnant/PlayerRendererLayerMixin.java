@@ -59,11 +59,13 @@ public abstract class PlayerRendererLayerMixin<T extends LivingEntity, M extends
 
     @Override
     protected void requiem$replaceRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl, CallbackInfoReturnable<RenderLayer> cir) {
-        PlayerEntity player = (PlayerEntity) entity;
-        if (RemnantComponent.get(player).isIncorporeal() || DeathSuspender.get(player).isLifeTransient()) {
-            cir.setReturnValue(RequiemClient.INSTANCE.getShadowPlayerFxRenderer().getRenderLayer(cir.getReturnValue()));
-        } else {
-            super.requiem$replaceRenderLayer(entity, showBody, translucent, bl, cir);
+        if (cir.getReturnValue() != null) {
+            PlayerEntity player = (PlayerEntity) entity;
+            if (RemnantComponent.get(player).isIncorporeal() || DeathSuspender.get(player).isLifeTransient()) {
+                cir.setReturnValue(RequiemClient.INSTANCE.getShadowPlayerFxRenderer().getRenderLayer(cir.getReturnValue()));
+            } else {
+                super.requiem$replaceRenderLayer(entity, showBody, translucent, bl, cir);
+            }
         }
     }
 }

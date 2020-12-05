@@ -77,9 +77,11 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
     @Inject(method = "getRenderLayer", at = @At("RETURN"), cancellable = true)
     protected void requiem$replaceRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl, CallbackInfoReturnable<RenderLayer> cir) {
-        RequiemFx requiemFxRenderer = RequiemClient.INSTANCE.getRequiemFxRenderer();
-        if (entity == requiemFxRenderer.getAnimationEntity()) {
-            cir.setReturnValue(requiemFxRenderer.getZoomFx(cir.getReturnValue()));
+        if (cir.getReturnValue() != null) {
+            RequiemFx requiemFxRenderer = RequiemClient.INSTANCE.getRequiemFxRenderer();
+            if (entity == requiemFxRenderer.getAnimationEntity()) {
+                cir.setReturnValue(requiemFxRenderer.getZoomFx(cir.getReturnValue()));
+            }
         }
     }
 }
