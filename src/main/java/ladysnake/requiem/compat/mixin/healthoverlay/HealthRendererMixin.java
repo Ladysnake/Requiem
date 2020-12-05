@@ -32,23 +32,28 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.compat.origins;
+package ladysnake.requiem.compat.mixin.healthoverlay;
 
-import io.github.apace100.origins.power.PowerType;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import net.minecraft.entity.Entity;
+import com.demonwav.mcdev.annotations.CheckEnv;
+import com.demonwav.mcdev.annotations.Env;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import terrails.healthoverlay.HealthRenderer;
 
 @SuppressWarnings("UnusedMixin")    // compat mixin
-@Mixin(PowerType.class)
-public abstract class PowerTypeMixin {
-    @Inject(method = "isActive", at = @At("RETURN"), cancellable = true, remap = false)
-    private void cancelSoulPowers(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        if (cir.getReturnValueZ() && RemnantComponent.isSoul(entity)) {
-            cir.setReturnValue(false);
+@CheckEnv(Env.CLIENT)
+@Mixin(value = HealthRenderer.class)
+public abstract class HealthRendererMixin {
+    @Redirect(method = {"render", "renderHearts"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getHealth()F"))
+    private float substituteHealth(PlayerEntity player) {
+        LivingEntity possessed = PossessionComponent.get(player).getPossessedEntity();
+        if (possessed != null) {
+            return possessed.getHealth();
         }
+        return player.getHealth();
     }
 }

@@ -32,7 +32,7 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin;
+package ladysnake.requiem.compat;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -41,7 +41,6 @@ import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -71,10 +70,10 @@ public final class RequiemCompatMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public List<String> getMixins() {
-        return (new CompatBuilder())
+        return (new MixinCompatBuilder())
             .addClient("healthoverlay", "HealthRendererMixin")
             .add("origins", "PowerTypeMixin")
-            .mixins;
+            .build();
     }
 
     @Override
@@ -87,22 +86,4 @@ public final class RequiemCompatMixinPlugin implements IMixinConfigPlugin {
         // NO-OP
     }
 
-    private static final class CompatBuilder {
-        private final List<String> mixins = new ArrayList<>();
-        private final FabricLoader loader = FabricLoader.getInstance();
-
-        CompatBuilder add(String modId, String path) {
-            if (loader.isModLoaded(modId)) {
-                this.mixins.add(modId + "." + path);
-            }
-            return this;
-        }
-
-        CompatBuilder addClient(String modId, String path) {
-            if (CLIENT) {
-                this.add(modId, path);
-            }
-            return this;
-        }
-    }
 }

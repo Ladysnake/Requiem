@@ -1,6 +1,6 @@
 {
   "parent": "mixins.requiem.common.json",
-  "package": "ladysnake.requiem.mixin.compat",
-  "plugin": "ladysnake.requiem.mixin.RequiemCompatMixinPlugin",
+  "package": "ladysnake.requiem.compat.mixin",
+  "plugin": "ladysnake.requiem.compat.RequiemCompatMixinPlugin",
   "required": false
 }
