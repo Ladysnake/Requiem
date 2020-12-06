@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.mixin.common.remnant;
 
+import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -48,7 +49,8 @@ public abstract class EntityPredicatesMixin {
     @Dynamic("Lambda method injection")
     @Inject(method = {"method_5910", "method_24517"}, at = @At("RETURN"), cancellable = true)
     private static void exceptCreativeOrSpectator(Entity tested, CallbackInfoReturnable<Boolean> info) {
-        if (info.getReturnValueZ() && RemnantComponent.isSoul(tested)) {
+        // Can apparently be called in the constructor, so need to check that components have been initialized
+        if (info.getReturnValueZ() && ComponentProvider.fromEntity(tested).getComponentContainer() != null && RemnantComponent.isSoul(tested)) {
             info.setReturnValue(false);
         }
     }
