@@ -37,7 +37,9 @@ package ladysnake.requiem.common.entity.ability;
 import com.google.common.base.Preconditions;
 import ladysnake.requiem.api.v1.entity.ability.MobAbility;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 
 public abstract class AbilityBase<E extends LivingEntity> implements MobAbility<E> {
@@ -60,10 +62,23 @@ public abstract class AbilityBase<E extends LivingEntity> implements MobAbility<
         if (this.cooldown != cooldown) {
             this.cooldown = cooldown;
 
-            MobAbilityController.KEY.sync(this.owner);
+            this.sync();
 
             if (cooldown == 0) {
                 this.onCooldownEnd();
+            }
+        }
+    }
+
+    protected void sync() {
+        E owner = this.owner;
+
+        if (owner instanceof PlayerEntity) {
+            MobAbilityController.KEY.sync(owner);
+        } else {
+            PlayerEntity possessor = ((Possessable) owner).getPossessor();
+            if (possessor != null) {
+                MobAbilityController.KEY.sync(possessor);
             }
         }
     }
