@@ -17,6 +17,7 @@
  */
 package ladysnake.pandemonium.common.entity.ability;
 
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
 import ladysnake.requiem.common.util.reflection.ReflectionHelper;
 import ladysnake.requiem.common.util.reflection.UnableToFindMethodException;
@@ -33,8 +34,10 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEnt
     private static final Constructor<? extends SpellcastingIllagerEntity.CastSpellGoal> FANGS_GOAL_FACTORY;
     private static final Method CAST_SPELL_GOAL$CAST_SPELL;
     public static final int FANG_COOLDOWN = 40;
+    public static final int HOSTILE_TIME = 200;
 
     private final SpellcastingIllagerEntity.CastSpellGoal conjureFangsGoal;
+    private int hostileTime;
 
     public EvokerFangAbility(EvokerEntity owner) {
         super(owner, FANG_COOLDOWN, 12, LivingEntity.class);
@@ -50,19 +53,29 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEnt
     public boolean run(LivingEntity entity) {
         if (this.owner.world.isClient) return true;
 
+        // We are not resetting the target afterwards, as the vexes need it
         this.owner.setTarget(entity);
 
-        try {
-            if (this.conjureFangsGoal.canStart()) {
-                this.castSpell();
-                this.owner.setSpell(SpellcastingIllagerEntity.Spell.FANGS);
-                this.beginCooldown();
-                return true;
-            } else {
-                return false;
+        if (this.conjureFangsGoal.canStart()) {
+            this.castSpell();
+            this.owner.setSpell(SpellcastingIllagerEntity.Spell.FANGS);
+            this.beginCooldown();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void update() {
+        super.update();
+
+        if (this.hostileTime > 0) {
+            this.hostileTime--;
+
+            if (this.hostileTime == 0 || !((Possessable)this.owner).isBeingPossessed()) {
+                this.owner.setTarget(null);
             }
-        } finally {
-            owner.setTarget(null);
         }
     }
 

@@ -45,7 +45,9 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
     public boolean run() {
         if (this.owner.world.isClient) return true;
 
-        this.owner.setTarget(owner); // The target needs to be non null to let the goal run
+        boolean hasTarget = owner.getTarget() != null;
+        if (!hasTarget) owner.setTarget(owner); // Need to have some kind of target to cast the spell
+
         try {
             if (this.summonVexGoal.canStart()) {
                 this.summonVexGoal.start();
@@ -54,8 +56,9 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
                 return true;
             }
         } finally {
-            owner.setTarget(null);
+            if (!hasTarget) owner.setTarget(null);
         }
+
         return false;
     }
 
@@ -63,15 +66,20 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
     public void update() {
         super.update();
         if (started) {
-            owner.setTarget(owner);
-            if (summonVexGoal.shouldContinue()) {
-                summonVexGoal.tick();
-            } else {
-                started = false;
-                this.summonVexGoal.stop();
-                owner.setSpell(SpellcastingIllagerEntity.Spell.NONE);
+            boolean hasTarget = owner.getTarget() != null;
+            if (!hasTarget) owner.setTarget(owner); // Need to have some kind of target to cast the spell
+
+            try {
+                if (summonVexGoal.shouldContinue()) {
+                    summonVexGoal.tick();
+                } else {
+                    started = false;
+                    this.summonVexGoal.stop();
+                    owner.setSpell(SpellcastingIllagerEntity.Spell.NONE);
+                }
+            } finally {
+                if (!hasTarget) owner.setTarget(null);
             }
-            owner.setTarget(null);
         }
     }
 
