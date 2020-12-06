@@ -42,6 +42,12 @@ import javax.annotation.Nullable;
 public enum StartingRemnantType {
     CHOOSE(null), FORCE_REMNANT(RemnantTypes.REMNANT), FORCE_VANILLA(RemnantTypes.MORTAL);
 
+    public static StartingRemnantType of(@Nullable RemnantType type) {
+        if (type == RemnantTypes.REMNANT) return FORCE_REMNANT;
+        if (type == RemnantTypes.MORTAL) return FORCE_VANILLA;
+        return CHOOSE;
+    }
+
     private final RemnantType remnantType;
 
     StartingRemnantType(@Nullable RemnantType remnantType) {

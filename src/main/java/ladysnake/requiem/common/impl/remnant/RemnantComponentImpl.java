@@ -38,12 +38,14 @@ import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 public final class RemnantComponentImpl implements RemnantComponent {
     public static final String ETHEREAL_TAG = "ethereal";
@@ -52,6 +54,8 @@ public final class RemnantComponentImpl implements RemnantComponent {
 
     private RemnantState state = NullRemnantState.NULL_STATE;
     private RemnantType remnantType = RemnantTypes.MORTAL;
+    private boolean uninitializedDefaultRemnantType = true;
+    private @Nullable RemnantType defaultRemnantType;
 
     public RemnantComponentImpl(PlayerEntity player) {
         this.player = player;
@@ -99,18 +103,37 @@ public final class RemnantComponentImpl implements RemnantComponent {
     }
 
     @Override
+    public void setDefaultRemnantType(@Nullable RemnantType defaultRemnantType) {
+        this.uninitializedDefaultRemnantType = false;
+        this.defaultRemnantType = defaultRemnantType;
+    }
+
+    @Override
+    public @Nullable RemnantType getDefaultRemnantType() {
+        if (this.uninitializedDefaultRemnantType) {
+            this.defaultRemnantType = this.player.world.getGameRules().get(RequiemGamerules.STARTING_SOUL_MODE).get().getRemnantType();
+            this.uninitializedDefaultRemnantType = false;
+        }
+        return this.defaultRemnantType;
+    }
+
+    @Override
     public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
         buf.writeVarInt(RemnantTypes.getRawId(this.remnantType));
         buf.writeBoolean(this.isSoul());
+        RemnantType defaultRemnantType = this.getDefaultRemnantType();
+        buf.writeVarInt(defaultRemnantType == null ? 0 : RemnantTypes.getRawId(defaultRemnantType) + 1);
     }
 
     @Override
     public void applySyncPacket(PacketByteBuf buf) {
         int remnantId = buf.readVarInt();
         boolean soul = buf.readBoolean();
+        int defaultRemnantId = buf.readVarInt();
 
         this.become(RemnantTypes.get(remnantId));
         this.setSoul(soul);
+        this.setDefaultRemnantType(defaultRemnantId == 0 ? null : RemnantTypes.get(defaultRemnantId - 1));
     }
 
     @Override

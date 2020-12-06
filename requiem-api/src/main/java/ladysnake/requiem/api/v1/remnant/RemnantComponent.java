@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @since 1.2.0
@@ -74,4 +75,8 @@ public interface RemnantComponent extends AutoSyncedComponent {
      * @param lossless false if the original player is dead, true otherwise
      */
     void prepareRespawn(ServerPlayerEntity original, boolean lossless);
+
+    void setDefaultRemnantType(@Nullable RemnantType defaultType);
+
+    @Nullable RemnantType getDefaultRemnantType();
 }

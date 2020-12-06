@@ -40,9 +40,9 @@ import io.github.apace100.origins.registry.ModRegistries;
 import io.github.apace100.origins.util.SerializableData;
 import io.github.apace100.origins.util.SerializableDataType;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.RequiemRegistries;
-import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.gamerule.StartingRemnantType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
@@ -71,7 +71,7 @@ public final class OriginsCompat {
         GAMERULE_CONDITION_ID,
         new SerializableData().add("value", SerializableDataType.list(SerializableDataType.enumValue(StartingRemnantType.class)), Collections.singletonList(StartingRemnantType.CHOOSE)),
         (instance, player) -> {
-            StartingRemnantType startingRemnantType = player.world.getGameRules().get(RequiemGamerules.STARTING_SOUL_MODE).get();
+            StartingRemnantType startingRemnantType = StartingRemnantType.of(RemnantComponent.get(player).getDefaultRemnantType());
             return ((List<?>) instance.get("value")).contains(startingRemnantType);
         }
     );
