@@ -91,5 +91,21 @@
   "item.requiem.opus_daemonium_cure": "Opus Daemonium",
   "item.requiem.opus_daemonium_curse": "Opus Daemonium",
   "requiem:opus_daemonium.curse": "Curse",
-  "requiem:opus_daemonium.cure": "Cure"
+  "requiem:opus_daemonium.cure": "Cure",
+
+  "origins:layer.requiem.soul_type.name": "Soul Type",
+  "origins:origin.requiem.mortal.name": "Mortal",
+  "origins:origin.requiem.mortal.description": "A mere mortal. Your ordinary Minecraft experience awaits.",
+  "origins:origin.requiem.remnant.name": "Demon",
+  "origins:origin.requiem.remnant.description": "Tales have been told of mysterious demons taking over the bodies of the dead. No one really knows what they are, but few really want to find out.",
+  "origins:power.requiem.remnant.name": "Dissociation",
+  "origins:power.requiem.remnant.description": "When you die, your soul dissociates from your body, becoming a wandering ghost.",
+  "origins:power.requiem.phasing.name": "Freeform",
+  "origins:power.requiem.phasing.description": "Ghosts can move through the air and, with a bit of effort, even through walls.",
+  "origins:power.requiem.possession.name": "Possession",
+  "origins:power.requiem.possession.description": "As a free soul, you may take over the empty bodies that roam this world.",
+  "origins:power.requiem.resurrection.name": "Resurrection",
+  "origins:power.requiem.resurrection.description": "Under some circumstances, you may immediately respawn with a different body after dying.",
+  "origins:power.requiem.mortal.name": "Respawn",
+  "origins:power.requiem.mortal.description": "When you die, and if all goes well, you find yourself at your last resting point with a whole new body."
 }

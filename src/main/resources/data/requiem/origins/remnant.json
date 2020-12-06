@@ -1,0 +1,13 @@
+{
+  "powers": [
+    "requiem:remnant",
+    "requiem:freeform",
+    "requiem:possession",
+    "requiem:resurrection"
+  ],
+  "icon": "requiem:opus_daemonium_curse",
+  "name": "origins:origin.requiem.remnant.name",
+  "description": "origins:origin.requiem.remnant.description",
+  "order": 1,
+  "impact": 3
+}

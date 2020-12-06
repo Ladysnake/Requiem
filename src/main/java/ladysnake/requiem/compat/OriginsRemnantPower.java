@@ -34,27 +34,37 @@
  */
 package ladysnake.requiem.compat;
 
-import ladysnake.requiem.Requiem;
-import net.fabricmc.loader.api.FabricLoader;
+import io.github.apace100.origins.power.Power;
+import io.github.apace100.origins.power.PowerType;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
+import ladysnake.requiem.common.remnant.RemnantTypes;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-public final class RequiemCompatibilityManager {
-    public static void init() {
-        try {
-            load("eldritch_mobs", EldritchMobsCompat::init);
-            load("the_bumblezone", BumblezoneCompat::init);
-            load("origins", OriginsCompat::init);
-        } catch (Throwable t) {
-            Requiem.LOGGER.error("[Requiem] Failed to load compatibility hooks", t);
-        }
+public class OriginsRemnantPower extends Power {
+    private final RemnantType remnantType;
+
+    public OriginsRemnantPower(PowerType<?> type, PlayerEntity player, RemnantType remnantType) {
+        super(type, player);
+        this.remnantType = remnantType;
     }
 
-    private static void load(String modId, ThrowingRunnable action) {
-        try {
-            if (FabricLoader.getInstance().isModLoaded(modId)) {
-                action.run();
-            }
-        } catch (Throwable t) {
-            Requiem.LOGGER.error("[Requiem] Failed to load compatibility hooks for {}", modId, t);
+    @Override
+    public void onAdded() {
+        RemnantComponent.get(this.player).become(this.remnantType);
+    }
+
+    @Override
+    public void onRemoved() {
+        RemnantComponent.get(this.player).become(RemnantTypes.MORTAL);
+    }
+
+    @Override
+    public void onChosen(boolean isOrbOfOrigin) {
+        if (!this.player.world.isClient) {
+            RequiemCriteria.MADE_REMNANT_CHOICE.handle(((ServerPlayerEntity) this.player), this.remnantType);
         }
     }
 }
