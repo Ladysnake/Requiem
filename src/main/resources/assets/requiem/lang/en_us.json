@@ -106,8 +106,8 @@
   "origins:power.requiem.freeform.description": "Ghosts can move through the air and, with a bit of effort, even through walls.",
   "origins:power.requiem.possession.name": "Possession",
   "origins:power.requiem.possession.description": "As a free soul, you may take over the empty bodies that roam this world.",
-  "origins:power.requiem.resurrection.name": "Resurrection",
-  "origins:power.requiem.resurrection.description": "Under some circumstances, you may immediately respawn with a different body after dying.",
+  "origins:power.requiem.resurrection.name": "Death Grip",
+  "origins:power.requiem.resurrection.description": "Under some circumstances, your soul may hold on to your disfigured body after its death.",
   "origins:power.requiem.mortal.name": "Respawn",
   "origins:power.requiem.mortal.description": "When you die, and if all goes well, you find yourself at your last resting point with a whole new body."
 }

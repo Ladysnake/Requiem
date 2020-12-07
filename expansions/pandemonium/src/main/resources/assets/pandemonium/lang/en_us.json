@@ -1,7 +1,7 @@
 {
   "requiem:tooltip.witch_brew_base": "Witch's Brew Base",
-  "requiem:advancements.adventure.classic_look.title": "Classic Look",
-  "requiem:advancements.adventure.classic_look.description": "Possess a relooked enderman",
-  "requiem:advancements.adventure.piglin_seppukku.title": "What have I done?",
-  "requiem:advancements.adventure.piglin_seppukku.description": "Cause a zombified piglin to regret its actions"
+  "requiem:advancements.requiem.classic_look.title": "Classic Look",
+  "requiem:advancements.requiem.classic_look.description": "Possess a relooked enderman",
+  "requiem:advancements.requiem.piglin_seppukku.title": "What have I done?",
+  "requiem:advancements.requiem.piglin_seppukku.description": "Cause a zombified piglin to regret its actions"
 }
