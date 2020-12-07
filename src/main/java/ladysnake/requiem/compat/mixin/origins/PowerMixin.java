@@ -45,10 +45,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Predicate;
 
-@SuppressWarnings("UnusedMixin")    // compat mixin
 @Mixin(Power.class)
 public abstract class PowerMixin {
-    @Shadow
+    @Shadow(remap = false)
     public abstract Power addCondition(Predicate<PlayerEntity> condition);
 
     @Inject(method = "<init>*", at = @At("RETURN"), remap = false)

@@ -2,5 +2,14 @@
   "parent": "mixins.requiem.common.json",
   "package": "ladysnake.requiem.compat.mixin",
   "plugin": "ladysnake.requiem.compat.RequiemCompatMixinPlugin",
-  "required": false
+  "required": false,
+  "client": [
+    "healthoverlay.HealthRendererMixin"
+  ],
+  "mixins": [
+    "betterend.CraftingScreenHandlerMetaMixin",
+    "betternether.CraftingScreenHandlerMetaMixin",
+    "origins.PowerMixin",
+    "the_bumblezone.BeehiveBlockMixin"
+  ]
 }

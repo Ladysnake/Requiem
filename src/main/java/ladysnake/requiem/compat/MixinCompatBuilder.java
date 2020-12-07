@@ -36,16 +36,17 @@ package ladysnake.requiem.compat;
 
 import net.fabricmc.loader.api.FabricLoader;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public final class MixinCompatBuilder {
-    private final List<String> mixins = new ArrayList<>();
+    private static final String ROOT = "ladysnake.requiem.compat.mixin.";
+    private final Set<String> mixins = new LinkedHashSet<>();
     private final FabricLoader loader = FabricLoader.getInstance();
 
     public MixinCompatBuilder add(String modId, String path) {
         if (loader.isModLoaded(modId)) {
-            this.mixins.add(modId + "." + path);
+            this.mixins.add(ROOT + modId + "." + path);
         }
         return this;
     }
@@ -57,7 +58,7 @@ public final class MixinCompatBuilder {
         return this;
     }
 
-    public List<String> build() {
+    public Set<String> build() {
         return this.mixins;
     }
 }

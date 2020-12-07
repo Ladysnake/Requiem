@@ -44,7 +44,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import terrails.healthoverlay.HealthRenderer;
 
-@SuppressWarnings("UnusedMixin")    // compat mixin
 @CheckEnv(Env.CLIENT)
 @Mixin(value = HealthRenderer.class)
 public abstract class HealthRendererMixin {

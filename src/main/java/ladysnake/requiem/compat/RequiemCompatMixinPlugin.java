@@ -47,6 +47,14 @@ import java.util.Set;
 public final class RequiemCompatMixinPlugin implements IMixinConfigPlugin {
     public static final boolean CLIENT = FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
 
+    private final Set<String> targets = (new MixinCompatBuilder())
+        .addClient("healthoverlay", "HealthRendererMixin")
+        .add("origins", "PowerMixin")
+        .add("the_bumblezone", "BeehiveBlockMixin")
+        .add("betterend", "CraftingScreenHandlerMetaMixin")
+        .add("betternether", "CraftingScreenHandlerMetaMixin")
+        .build();
+
     @Override
     public void onLoad(String mixinPackage) {
         // NO-OP
@@ -60,7 +68,7 @@ public final class RequiemCompatMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        return true;
+        return this.targets.contains(mixinClassName);
     }
 
     @Override
@@ -68,15 +76,10 @@ public final class RequiemCompatMixinPlugin implements IMixinConfigPlugin {
         // NO-OP
     }
 
+    @Nullable
     @Override
     public List<String> getMixins() {
-        return (new MixinCompatBuilder())
-            .addClient("healthoverlay", "HealthRendererMixin")
-            .add("origins", "PowerMixin")
-            .add("the_bumblezone", "BeehiveBlockMixin")
-            .add("betterend", "CraftingScreenHandlerMetaMixin")
-            .add("betternether", "CraftingScreenHandlerMetaMixin")
-            .build();
+        return null;
     }
 
     @Override
