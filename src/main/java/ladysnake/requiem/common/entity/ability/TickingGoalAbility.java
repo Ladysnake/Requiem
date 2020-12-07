@@ -32,30 +32,50 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.compat;
+package ladysnake.requiem.common.entity.ability;
 
-import ladysnake.requiem.Requiem;
-import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.mob.MobEntity;
 
-public final class RequiemCompatibilityManager {
-    public static void init() {
-        try {
-            load("eldritch_mobs", EldritchMobsCompat::init);
-            load("the_bumblezone", BumblezoneCompat::init);
-            load("origins", OriginsCompat::init);
-            load("golemsgalore", GolemsGaloreCompat::init);
-        } catch (Throwable t) {
-            Requiem.LOGGER.error("[Requiem] Failed to load compatibility hooks", t);
-        }
+public class TickingGoalAbility<O extends MobEntity, T extends LivingEntity> extends DirectAbilityBase<O, T> {
+    private final Goal goal;
+    private boolean started;
+
+    public TickingGoalAbility(O owner, Goal goal, int cooldown, int range, Class<T> targetType) {
+        super(owner, cooldown, range, targetType);
+        this.goal = goal;
     }
 
-    private static void load(String modId, ThrowingRunnable action) {
-        try {
-            if (FabricLoader.getInstance().isModLoaded(modId)) {
-                action.run();
+    @Override
+    public boolean canTarget(T target) {
+        return super.canTarget(target) && target.isAlive();
+    }
+
+    @Override
+    public boolean run(T entity) {
+        if (this.owner.world.isClient) return true;
+
+        owner.setTarget(entity);
+        if (goal.canStart()) {
+            this.goal.start();
+            this.beginCooldown();
+            this.started = true;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void update() {
+        super.update();
+        if (started) {
+            if (goal.shouldContinue()) {
+                goal.tick();
+            } else {
+                started = false;
+                goal.stop();
             }
-        } catch (Throwable t) {
-            Requiem.LOGGER.error("[Requiem] Failed to load compatibility hooks for {}", modId, t);
         }
     }
 }

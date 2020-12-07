@@ -179,9 +179,8 @@ dependencies {
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:8d45e7a209") {
         transitive = false
     }
-    modCompileOnly("curse.maven:the-bumblezone-fabric-363949:3119141") {
-        transitive = false
-    }
+    modCompileOnly("curse.maven:the-bumblezone-fabric-363949:3119141")
+    modCompileOnly("curse.maven:golems-galore-387197:3048547")
 }
 
 remapJar.dependsOn(project(":requiem-api").tasks.remapJar)

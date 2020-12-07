@@ -17,7 +17,7 @@
  */
 package ladysnake.pandemonium.common.entity.ability;
 
-import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
+import ladysnake.requiem.common.entity.ability.TickingGoalAbility;
 import ladysnake.requiem.common.util.reflection.ReflectionHelper;
 import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
 import net.minecraft.entity.LivingEntity;
@@ -27,45 +27,9 @@ import net.minecraft.entity.mob.GuardianEntity;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity, LivingEntity> {
-    private final Goal fireBeamGoal;
-    private boolean started;
-
+public class GuardianBeamAbility extends TickingGoalAbility<GuardianEntity, LivingEntity> {
     public GuardianBeamAbility(GuardianEntity owner) {
-        super(owner, 0, 15, LivingEntity.class);
-        this.fireBeamGoal = makeGoal(owner);
-    }
-
-    @Override
-    public boolean canTarget(LivingEntity target) {
-        return super.canTarget(target) && target.isAlive();
-    }
-
-    @Override
-    public boolean run(LivingEntity entity) {
-        if (this.owner.world.isClient) return true;
-
-        owner.setTarget(entity);
-        if (fireBeamGoal.canStart()) {
-            this.fireBeamGoal.start();
-            this.beginCooldown();
-            this.started = true;
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void update() {
-        super.update();
-        if (started) {
-            if (fireBeamGoal.shouldContinue()) {
-                fireBeamGoal.tick();
-            } else {
-                started = false;
-                fireBeamGoal.stop();
-            }
-        }
+        super(owner, makeGoal(owner), 0, 15, LivingEntity.class);
     }
 
     private static final Constructor<? extends Goal> BEAM_GOAL_FACTORY;
