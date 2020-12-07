@@ -80,7 +80,7 @@ public final class GolemsGaloreCompat implements RequiemPlugin {
     @Override
     public void registerMobAbilities(MobAbilityRegistry registry) {
         registry.register(laserGolemType, MobAbilityConfig.<LaserGolemEntity>builder()
-            .directAttack(golem -> new TickingGoalAbility<>(golem, new FireLaserGoal(golem), 0, 15, LivingEntity.class))
+            .directAttack(golem -> new TickingGoalAbility<>(golem, new FireLaserGoal(golem), 20*2, 15, LivingEntity.class))
             .build());
     }
 }

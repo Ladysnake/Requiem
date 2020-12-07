@@ -4,8 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "render.EyesFeatureRendererMixin",
-    "render.GameRendererMixin",
-    "render.ShulkerEntityModelMixin"
+    "render.GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

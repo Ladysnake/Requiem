@@ -29,7 +29,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public class GuardianBeamAbility extends TickingGoalAbility<GuardianEntity, LivingEntity> {
     public GuardianBeamAbility(GuardianEntity owner) {
-        super(owner, makeGoal(owner), 0, 15, LivingEntity.class);
+        super(owner, makeGoal(owner), 20*4, 15, LivingEntity.class);
     }
 
     private static final Constructor<? extends Goal> BEAM_GOAL_FACTORY;

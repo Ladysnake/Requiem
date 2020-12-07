@@ -38,23 +38,23 @@ import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.client.RequiemFx;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
 
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extends EntityModel<T>> {
 
-    @SuppressWarnings("UnresolvedMixinReference")   // Minecraft dev plugin is an idiot sandwich
     @Nullable
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getVehicle()Lnet/minecraft/entity/Entity;"))
     private Entity getPossessorRiddenEntity(LivingEntity entity) {
@@ -65,7 +65,6 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         return entity.getVehicle();
     }
 
-    @SuppressWarnings("UnresolvedMixinReference")   // Minecraft dev plugin is an idiot sandwich
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;hasVehicle()Z"))
     private boolean doesPossessorHaveVehicle(LivingEntity entity) {
         PlayerEntity possessor = ((Possessable) entity).getPossessor();
@@ -75,13 +74,15 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         return entity.hasVehicle();
     }
 
-    @Inject(method = "getRenderLayer", at = @At("RETURN"), cancellable = true)
-    protected void requiem$replaceRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl, CallbackInfoReturnable<RenderLayer> cir) {
-        if (cir.getReturnValue() != null) {
+    @ModifyVariable(method = "render", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;getRenderLayer(Lnet/minecraft/entity/LivingEntity;ZZZ)Lnet/minecraft/client/render/RenderLayer;"))
+    protected @Nullable RenderLayer requiem$replaceRenderLayer(@Nullable RenderLayer base, T entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+        if (base != null) {
             RequiemFx requiemFxRenderer = RequiemClient.INSTANCE.getRequiemFxRenderer();
+
             if (entity == requiemFxRenderer.getAnimationEntity()) {
-                cir.setReturnValue(requiemFxRenderer.getZoomFx(cir.getReturnValue()));
+                return requiemFxRenderer.getZoomFx(base);
             }
         }
+        return base;
     }
 }

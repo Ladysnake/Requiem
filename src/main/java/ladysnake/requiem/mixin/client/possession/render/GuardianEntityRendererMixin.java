@@ -32,44 +32,29 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.client.remnant;
+package ladysnake.requiem.mixin.client.possession.render;
 
-import ladysnake.requiem.api.v1.remnant.DeathSuspender;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.client.RequiemClient;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.mixin.client.possession.LivingEntityRendererMixin;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.PlayerEntityRenderer;
-import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.GuardianEntityRenderer;
+import net.minecraft.client.render.entity.model.GuardianEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.mob.GuardianEntity;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
-// Note: this cannot use the right generics because of bridge methods
-@Mixin(PlayerEntityRenderer.class)
-public abstract class PlayerRendererLayerMixin<T extends LivingEntity, M extends EntityModel<T>> extends LivingEntityRendererMixin<T, M> {
-
-    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * Player rendering hijack part 2
-     * We render incorporeal players on a different framebuffer for reuse.
-     * The main framebuffer's depth has been previously copied to the alternate's,
-     * so rendering should be visually equivalent.
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
+@Mixin(GuardianEntityRenderer.class)
+public abstract class GuardianEntityRendererMixin extends LivingEntityRendererMixin<GuardianEntity, GuardianEntityModel> {
     @Nullable
     @Override
-    protected RenderLayer requiem$replaceRenderLayer(@Nullable RenderLayer base, T entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-        if (base != null) {
-            PlayerEntity player = (PlayerEntity) entity;
-
-            if (RemnantComponent.get(player).isIncorporeal() || DeathSuspender.get(player).isLifeTransient()) {
-                return RequiemClient.INSTANCE.getShadowPlayerFxRenderer().getRenderLayer(base);
-            }
+    protected RenderLayer requiem$replaceRenderLayer(@Nullable RenderLayer base, GuardianEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.options.getPerspective().isFirstPerson() && ((Possessable) entity).getPossessor() == client.player) {
+            return null;
         }
-
         return super.requiem$replaceRenderLayer(base, entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }
 }

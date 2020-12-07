@@ -100,7 +100,7 @@ public final class RequiemClientListener implements
             }
         });
         ApplyCameraTransformsCallback.EVENT.register(new HeadDownTransformHandler());
-        RenderSelfPossessedEntityCallback.EVENT.register(possessed -> possessed instanceof ShulkerEntity);
+        RenderSelfPossessedEntityCallback.EVENT.register(possessed -> possessed instanceof ShulkerEntity || possessed instanceof GuardianEntity);
         ShaderEffectRenderCallback.EVENT.register(GhostParticle::draw);
     }
 
