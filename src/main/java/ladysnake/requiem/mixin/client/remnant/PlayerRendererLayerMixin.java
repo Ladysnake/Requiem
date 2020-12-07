@@ -41,7 +41,6 @@ import ladysnake.requiem.mixin.client.possession.LivingEntityRendererMixin;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -50,7 +49,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 // Note: this cannot use the right generics because of bridge methods
 @Mixin(PlayerEntityRenderer.class)
-public abstract class PlayerRendererLayerMixin<T extends LivingEntity, M extends EntityModel<T>> extends LivingEntityRendererMixin<T, M> {
+public abstract class PlayerRendererLayerMixin extends LivingEntityRendererMixin {
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Player rendering hijack part 2
@@ -61,7 +60,7 @@ public abstract class PlayerRendererLayerMixin<T extends LivingEntity, M extends
 
     @Nullable
     @Override
-    protected RenderLayer requiem$replaceRenderLayer(@Nullable RenderLayer base, T entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+    protected RenderLayer requiem$replaceRenderLayer(@Nullable RenderLayer base, LivingEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         if (base != null) {
             PlayerEntity player = (PlayerEntity) entity;
 

@@ -40,17 +40,16 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.GuardianEntityRenderer;
-import net.minecraft.client.render.entity.model.GuardianEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.mob.GuardianEntity;
+import net.minecraft.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(GuardianEntityRenderer.class)
-public abstract class GuardianEntityRendererMixin extends LivingEntityRendererMixin<GuardianEntity, GuardianEntityModel> {
+public abstract class GuardianEntityRendererMixin extends LivingEntityRendererMixin {
     @Nullable
     @Override
-    protected RenderLayer requiem$replaceRenderLayer(@Nullable RenderLayer base, GuardianEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+    protected RenderLayer requiem$replaceRenderLayer(@Nullable RenderLayer base, LivingEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.options.getPerspective().isFirstPerson() && ((Possessable) entity).getPossessor() == client.player) {
             return null;

@@ -40,7 +40,6 @@ import ladysnake.requiem.client.RequiemFx;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -53,7 +52,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import javax.annotation.Nullable;
 
 @Mixin(LivingEntityRenderer.class)
-public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extends EntityModel<T>> {
+public abstract class LivingEntityRendererMixin {
 
     @Nullable
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getVehicle()Lnet/minecraft/entity/Entity;"))
@@ -75,7 +74,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     }
 
     @ModifyVariable(method = "render", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;getRenderLayer(Lnet/minecraft/entity/LivingEntity;ZZZ)Lnet/minecraft/client/render/RenderLayer;"))
-    protected @Nullable RenderLayer requiem$replaceRenderLayer(@Nullable RenderLayer base, T entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+    protected @Nullable RenderLayer requiem$replaceRenderLayer(@Nullable RenderLayer base, LivingEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         if (base != null) {
             RequiemFx requiemFxRenderer = RequiemClient.INSTANCE.getRequiemFxRenderer();
 
