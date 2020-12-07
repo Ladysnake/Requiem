@@ -37,6 +37,7 @@ package ladysnake.requiem.mixin.common.possession.gameplay;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
+import ladysnake.requiem.common.entity.SkeletonBoneComponent;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.entity.LivingEntity;
@@ -73,11 +74,11 @@ public abstract class ItemMixin {
                     cir.setReturnValue(new TypedActionResult<>(ActionResult.FAIL, heldStack));
                 }
             } else if (RequiemEntityTypeTags.SKELETONS.contains(possessedEntity.getType())) {
-                if (RequiemItemTags.BONES.contains(heldStack.getItem()) && possessedEntity.getHealth() < possessedEntity.getMaxHealth()) {
-                    possessedEntity.heal(4.0f);
-                    possessedEntity.playAmbientSound();
-                    heldStack.decrement(1);
-                    player.getItemCooldownManager().set(heldStack.getItem(), 40);
+                if (RequiemItemTags.BONES.contains(heldStack.getItem())) {
+                    if (SkeletonBoneComponent.KEY.get(possessedEntity).replaceBone()) {
+                        heldStack.decrement(1);
+                        player.getItemCooldownManager().set(heldStack.getItem(), 40);
+                    }
                 }
             }
         }

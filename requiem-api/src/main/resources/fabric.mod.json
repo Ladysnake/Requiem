@@ -29,6 +29,7 @@
       "requiem:dialogue_tracker",
       "requiem:ability_controller",
       "requiem:inventory_limiter",
+      "requiem:skeleton_bones",
       "requiem:wololo"
     ]
   }
