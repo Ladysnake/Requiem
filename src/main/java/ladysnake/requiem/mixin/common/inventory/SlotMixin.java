@@ -90,12 +90,12 @@ public abstract class SlotMixin {
 
     @Unique
     private boolean shouldBeLocked() {
-        return this.limiter != null && ((this.craftingSlot && this.limiter.isLocked(InventoryPart.CRAFTING)) || this.limiter.isSlotLocked(this.index));
+        return this.limiter != null && (this.craftingSlot ? this.limiter.isLocked(InventoryPart.CRAFTING) : this.limiter.isSlotLocked(this.index));
     }
 
     @Unique
     private boolean shouldBeInvisible() {
-        return this.limiter != null && ((this.craftingSlot && this.limiter.isLocked(InventoryPart.CRAFTING)) || this.limiter.isSlotInvisible(this.index));
+        return this.limiter != null && (this.craftingSlot ? this.limiter.isLocked(InventoryPart.CRAFTING) : this.limiter.isSlotInvisible(this.index));
     }
 
     @Inject(method = "canInsert", at = @At("HEAD"), cancellable = true)
