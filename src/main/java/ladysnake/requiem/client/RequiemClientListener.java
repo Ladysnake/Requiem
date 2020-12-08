@@ -77,6 +77,8 @@ public final class RequiemClientListener implements
     ItemTooltipCallback,
     InventoryLockingChangeCallback {
 
+    public static boolean skipNextGuardian =  false;
+
     private final RequiemClient rc;
     private final MinecraftClient mc = MinecraftClient.getInstance();
     private int timeBeforeDialogueGui;
@@ -100,7 +102,14 @@ public final class RequiemClientListener implements
             }
         });
         ApplyCameraTransformsCallback.EVENT.register(new HeadDownTransformHandler());
-        RenderSelfPossessedEntityCallback.EVENT.register(possessed -> possessed instanceof ShulkerEntity || possessed instanceof GuardianEntity);
+        RenderSelfPossessedEntityCallback.EVENT.register(possessed -> {
+            if (possessed instanceof ShulkerEntity) return true;
+            if (possessed instanceof GuardianEntity) {
+                skipNextGuardian = true;
+                return true;
+            }
+            return false;
+        });
         ShaderEffectRenderCallback.EVENT.register(GhostParticle::draw);
     }
 

@@ -34,9 +34,8 @@
  */
 package ladysnake.requiem.mixin.client.possession.render;
 
-import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.client.RequiemClientListener;
 import ladysnake.requiem.mixin.client.possession.LivingEntityRendererMixin;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.GuardianEntityRenderer;
@@ -50,8 +49,8 @@ public abstract class GuardianEntityRendererMixin extends LivingEntityRendererMi
     @Nullable
     @Override
     protected RenderLayer requiem$replaceRenderLayer(@Nullable RenderLayer base, LivingEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.options.getPerspective().isFirstPerson() && ((Possessable) entity).getPossessor() == client.player) {
+        if (RequiemClientListener.skipNextGuardian) {
+            RequiemClientListener.skipNextGuardian = false;
             return null;
         }
         return super.requiem$replaceRenderLayer(base, entity, yaw, tickDelta, matrices, vertexConsumers, light);
