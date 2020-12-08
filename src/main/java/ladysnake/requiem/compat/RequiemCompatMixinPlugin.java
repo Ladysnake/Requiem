@@ -51,8 +51,6 @@ public final class RequiemCompatMixinPlugin implements IMixinConfigPlugin {
         .addClient("healthoverlay", "HealthRendererMixin")
         .add("origins", "PowerMixin")
         .add("the_bumblezone", "BeehiveBlockMixin")
-        .add("betterend", "CraftingScreenHandlerMetaMixin")
-        .add("betternether", "CraftingScreenHandlerMetaMixin")
         .build();
 
     @Override
