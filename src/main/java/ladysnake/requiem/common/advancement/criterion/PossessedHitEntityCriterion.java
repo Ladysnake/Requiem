@@ -34,43 +34,39 @@
  */
 package ladysnake.requiem.common.advancement.criterion;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
-public class OnDeathAfterPossessionCriterion extends AbstractCriterion<OnDeathAfterPossessionCriterion.Conditions> {
+public class PossessedHitEntityCriterion extends AbstractCriterion<PossessedHitEntityCriterion.Conditions> {
     private final Identifier id;
 
-    public OnDeathAfterPossessionCriterion(Identifier id) {
+    public PossessedHitEntityCriterion(Identifier id) {
         this.id = id;
     }
 
     @Override
-    protected Conditions conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+    protected PossessedHitEntityCriterion.Conditions conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
         return new Conditions(
             this.id,
             playerPredicate,
-            EntityPredicate.Extended.getInJson(obj, "entity", predicateDeserializer),
-            DamageSourcePredicate.fromJson(obj.get("killing_blow")),
-            Optional.ofNullable(obj.get("seppukku")).map(JsonElement::getAsBoolean).orElse(null)
+            DamagePredicate.fromJson(obj.get("damage")),
+            EntityPredicate.Extended.getInJson(obj, "possessed", predicateDeserializer),
+            EntityPredicate.Extended.getInJson(obj, "entity", predicateDeserializer)
         );
     }
 
-    public void handle(ServerPlayerEntity player, Entity entity, DamageSource deathCause) {
-        this.test(player, (conditions) -> conditions.test(player, entity, deathCause));
+    public void handle(ServerPlayerEntity player, Entity possessed, Entity entity, DamageSource source, float dealt, float taken, boolean blocked) {
+        this.test(player, (conditions) -> conditions.test(player, source, dealt, taken, blocked, possessed, entity));
     }
 
     @Override
@@ -80,29 +76,31 @@ public class OnDeathAfterPossessionCriterion extends AbstractCriterion<OnDeathAf
 
 
     public static class Conditions extends AbstractCriterionConditions {
+        private final DamagePredicate damage;
+        private final EntityPredicate.Extended possessed;
         private final EntityPredicate.Extended entity;
-        private final DamageSourcePredicate killingBlow;
-        private final @Nullable Boolean seppukku;
 
-        public Conditions(Identifier id, EntityPredicate.Extended player, EntityPredicate.Extended entity, DamageSourcePredicate killingBlow, @Nullable Boolean seppukku) {
+        public Conditions(Identifier id, EntityPredicate.Extended player, DamagePredicate damage, EntityPredicate.Extended possessed, EntityPredicate.Extended entity) {
             super(id, player);
+            this.damage = damage;
+            this.possessed = possessed;
             this.entity = entity;
-            this.killingBlow = killingBlow;
-            this.seppukku = seppukku;
         }
 
-        public boolean test(ServerPlayerEntity player, Entity entity, DamageSource killingBlow) {
-            LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, entity);
-            return this.killingBlow.test(player, killingBlow)
-                && this.entity.test(lootContext)
-                && (seppukku == null || seppukku == (killingBlow.getAttacker() == entity));
+        public boolean test(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked, Entity possessed, Entity target) {
+            if (this.damage.test(player, source, dealt, taken, blocked)) {
+                LootContext possessedCtx = EntityPredicate.createAdvancementEntityLootContext(player, possessed);
+                LootContext targetCtx = EntityPredicate.createAdvancementEntityLootContext(player, target);
+                return this.possessed.test(possessedCtx) && this.entity.test(targetCtx);
+            }
+            return false;
         }
 
         public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
             JsonObject jsonObject = super.toJson(predicateSerializer);
+            jsonObject.add("damage", this.damage.toJson());
+            jsonObject.add("possessed", this.possessed.toJson(predicateSerializer));
             jsonObject.add("entity", this.entity.toJson(predicateSerializer));
-            jsonObject.add("killing_blow", this.killingBlow.toJson());
-            jsonObject.addProperty("seppukku", this.seppukku);
             return jsonObject;
         }
     }

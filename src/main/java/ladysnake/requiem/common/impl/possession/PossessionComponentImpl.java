@@ -45,6 +45,7 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.client.RequiemClient;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.entity.attribute.DelegatingAttribute;
 import ladysnake.requiem.common.entity.attribute.PossessionDelegatingAttribute;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
@@ -301,6 +302,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 MobEntity possessedEntity = this.getPossessedEntity();
                 if (possessedEntity != null) {
                     RemnantComponent.get(this.player).setSoul(false);
+                    RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle((ServerPlayerEntity) this.player, possessedEntity, this.player, true);
                     possessedEntity.remove();
                     this.player.removeStatusEffect(RequiemStatusEffects.ATTRITION);
                     this.player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));

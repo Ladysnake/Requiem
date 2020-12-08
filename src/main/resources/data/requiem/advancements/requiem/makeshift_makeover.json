@@ -1,0 +1,36 @@
+{
+  "parent": "requiem:requiem/first_possession",
+  "display": {
+    "icon": {
+      "item": "minecraft:skeleton_skull"
+    },
+    "title": {
+      "translate": "requiem:advancements.requiem.makeshift_makeover.title"
+    },
+    "description": {
+      "translate": "requiem:advancements.requiem.makeshift_makeover.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "makeover": {
+      "trigger": "requiem:transformed_possessed_entity",
+      "conditions": {
+        "before": {
+          "type": "minecraft:wither_skeleton"
+        },
+        "after": {
+          "type": "minecraft:skeleton"
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "makeover"
+    ]
+  ]
+}

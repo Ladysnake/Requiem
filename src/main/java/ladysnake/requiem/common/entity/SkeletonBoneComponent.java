@@ -38,11 +38,15 @@ import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public final class SkeletonBoneComponent implements Component {
     public static final ComponentKey<SkeletonBoneComponent> KEY = ComponentRegistry.getOrCreate(Requiem.id("skeleton_bones"), SkeletonBoneComponent.class);
@@ -61,15 +65,23 @@ public final class SkeletonBoneComponent implements Component {
             this.owner.playAmbientSound();
 
             if (this.shouldBeReplaced()) {
-                SkeletonEntity replacement = this.owner.method_29243(EntityType.SKELETON, true);
-                if (replacement != null) {
-                    replacement.setHealth(this.owner.getHealth());
-                }
+                this.replaceSkeleton();
             }
 
             return true;
         }
         return false;
+    }
+
+    private void replaceSkeleton() {
+        PlayerEntity possessor = ((Possessable) this.owner).getPossessor();
+        SkeletonEntity replacement = this.owner.method_29243(EntityType.SKELETON, true);
+        if (replacement != null) {
+            replacement.setHealth(this.owner.getHealth());
+            if (possessor instanceof ServerPlayerEntity) {
+                RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle(((ServerPlayerEntity) possessor), this.owner, replacement, false);
+            }
+        }
     }
 
     private boolean shouldBeReplaced() {
