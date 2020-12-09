@@ -205,7 +205,7 @@ task checkGitStatus() {
             throw new RuntimeException("Git repository not ready for release (${grgit.status()})")
         }
         def currentBranch = grgit.branch.current().getName()
-        if (currentBranch != 'master') {
+        if (currentBranch != 'master' && !currentBranch.matches(/\d\.\d{2}/)) {
             throw new RuntimeException("Need to be on the master branch to release (currently on ${currentBranch})")
         }
         grgit.fetch()
