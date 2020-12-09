@@ -343,6 +343,7 @@ task modrinth (type: TaskModrinthUpload, dependsOn: checkGitStatus){
     subprojects {
         addFile(remapJar)
     }
+    changelog = project.getChangelogText()
     "${project.curseforge_versions}".split('; ').each {
         addGameVersion it
     }
