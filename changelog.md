@@ -1,6 +1,8 @@
 ------------------------------------------------------
 Version 1.3.0
 ------------------------------------------------------
+### The Gloss and Golems Update
+
 **Additions**
 
 - Demons can now possess all golems, and all undead !
@@ -24,11 +26,16 @@ Version 1.3.0
 - Added localization for all gamerules in the gamerule screen
 - Ranged abilities can now be fired from way further than 3 blocks
 - The possession icon now only appears for mobs you can possess
+- Replacing too many bones as a Wither Skeleton will change you into a regular skeleton
 
 **Mod Compatibility**
 
+- Added an Origins screen to choose your soul type! This replaces the first death dialogue.
+  - This screen respects the `requiem:startingRemnantType` gamerule
 - Made Eldritch mobs unable to be possessed
 - Fixed most Origins powers staying activated outside a human body
+- Golems Galore's golems can be possessed by default
+- Better Nether's jungle skeletons can be possessed by default
 
 **Removals**
 
@@ -40,14 +47,14 @@ Version 1.3.0
 - Fixed Ghosts being able to interact with boats and minecarts
 - Fixed crash when trying to possess an invisible mob
 
-### Pandemonium
+#### Pandemonium
 
 **Additions**
 
 - Added special interaction between evokers and endermen
-- Villagers and piglins now have access to a portable 3x3 crafting screen
+- Villagers and piglins now have access to a portable 3x3 crafting screen *(breaks with BetterEnd and BetterNether...)*
 - All mammals now have dichromatic vision
-- Chickens and parrots now have tetrachromatic vision
+- Chickens and parrots now have "tetrachromatic" vision
 - Bees now have a custom bee vision
 
 **Changes**
@@ -64,12 +71,14 @@ Version 1.3.0
 - Foxes, pandas, and dolphins can now hold items in their "hands"
 - Blazes are more accurate with their fireballs
 - Possessed pandas now stand up when sneaking
+- Guardian beams are now visible in first person
 
 **Mod Compatibility**
 - Players can now teleport to and from the Bumblezone when possessing a bee
 
 **Fixes**
 - Fixed possessed elder guardians not getting the beam ability
+- Vexes you summon as an evoker will now properly assist you in combat
 - Possessed ghasts now do the shooting face when firing
 
 ------------------------------------------------------
