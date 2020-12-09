@@ -2,6 +2,7 @@
 
 
 import java.time.Year
+import com.modrinth.minotaur.TaskModrinthUpload
 
 plugins {
     id "fabric-loom" version "0.5-SNAPSHOT"
@@ -10,6 +11,7 @@ plugins {
     id "com.jfrog.bintray" version '1.8.4'
     id 'org.ajoberstar.grgit' version '3.1.1'
     id 'com.github.breadmoirai.github-release' version '2.2.9'
+    id "com.modrinth.minotaur" version "1.1.0"
     id 'maven-publish'
 }
 
@@ -331,7 +333,23 @@ curseforge {
 
 tasks.curseforge.dependsOn(checkGitStatus)
 
-task release(dependsOn: [tasks.publish, tasks.githubRelease, tasks.bintrayUpload, tasks.curseforge]) {
+task modrinth (type: TaskModrinthUpload, dependsOn: checkGitStatus){
+    if (project.getProjectProperty('modrinth_key') != null) {
+        token = project.getProjectProperty('modrinth_key')
+    }
+    projectId = 'bYmqMxlQ'
+    versionNumber = project.version
+    uploadFile = remapJar
+    subprojects {
+        addFile(remapJar)
+    }
+    "${project.curseforge_versions}".split('; ').each {
+        addGameVersion it
+    }
+    addLoader('fabric')
+}
+
+task release(dependsOn: [tasks.publish, tasks.githubRelease, tasks.bintrayUpload, tasks.curseforge, tasks.modrinth]) {
     group = 'publishing'
     description = 'Releases a new version to Maven, Github and Curseforge'
 }
