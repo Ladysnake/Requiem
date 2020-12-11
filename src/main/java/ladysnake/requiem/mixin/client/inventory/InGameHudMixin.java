@@ -49,7 +49,8 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(InGameHud.class)
+// Lower priority to load before Bedrockify's mixin, fix for issue Ladysnake/Requiem#198
+@Mixin(value = InGameHud.class, priority = 995)
 public abstract class InGameHudMixin {
     @Unique
     private static final int X_CENTER_SHIFT = 77;
