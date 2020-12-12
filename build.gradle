@@ -23,6 +23,7 @@ subprojects {
     apply plugin: 'fabric-loom'
     apply plugin: 'com.matthewprenger.cursegradle'
     apply plugin: 'maven-publish'
+    apply plugin: 'net.minecrell.licenser'
 }
 
 allprojects {
