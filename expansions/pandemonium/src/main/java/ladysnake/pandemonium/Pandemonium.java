@@ -12,10 +12,12 @@ import ladysnake.pandemonium.common.entity.WololoComponent;
 import ladysnake.pandemonium.common.impl.anchor.CommonAnchorManager;
 import ladysnake.pandemonium.common.network.ServerMessageHandling;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
+import ladysnake.pandemonium.compat.PandemoniumCompatibilityManager;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
+import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -28,6 +30,7 @@ import net.minecraft.world.World;
 public class Pandemonium implements ModInitializer, EntityComponentInitializer, WorldComponentInitializer {
     public static final String MOD_ID = "pandemonium";
     public static final Identifier BODY_IMPERSONATION = Requiem.id("body_impersonation");
+    public static final Pandemonium INSTANCE = new Pandemonium();
 
     public static Identifier id(String path) {
         return new Identifier(MOD_ID, path);
@@ -49,6 +52,10 @@ public class Pandemonium implements ModInitializer, EntityComponentInitializer, 
         PlayerRespawnCallback.EVENT.register((player, returnFromEnd) -> {
             if (!returnFromEnd) Impersonate.IMPERSONATION.get(player).stopImpersonation(BODY_IMPERSONATION);
         });
+        RemnantStateChangeCallback.EVENT.register((player, state) -> {
+            if (state.isSoul()) Impersonate.IMPERSONATION.get(player).stopImpersonation(BODY_IMPERSONATION);
+        });
+        PandemoniumCompatibilityManager.init();
     }
 
     @Override
@@ -63,5 +70,9 @@ public class Pandemonium implements ModInitializer, EntityComponentInitializer, 
             ? new ClientAnchorManager(world)
             : new CommonAnchorManager(world)
         );
+    }
+
+    private Pandemonium() {
+        super();
     }
 }

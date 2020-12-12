@@ -8,13 +8,14 @@
       "ladysnake.pandemonium.client.PandemoniumClient"
     ],
     "main": [
-      "ladysnake.pandemonium.Pandemonium"
+      "ladysnake.pandemonium.Pandemonium::INSTANCE"
     ],
     "cardinal-components-entity": [
-      "ladysnake.pandemonium.Pandemonium"
+      "ladysnake.pandemonium.Pandemonium::INSTANCE",
+      "ladysnake.pandemonium.compat.PandemoniumCompatibilityManager::registerEntityComponentFactories"
     ],
     "cardinal-components-world": [
-      "ladysnake.pandemonium.Pandemonium"
+      "ladysnake.pandemonium.Pandemonium::INSTANCE"
     ]
   },
   "custom": {

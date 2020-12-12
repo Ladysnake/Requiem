@@ -15,7 +15,8 @@
       "ladysnake.requiem.common.VanillaRequiemPlugin"
     ],
     "cardinal-components-entity": [
-      "ladysnake.requiem.common.RequiemComponents"
+      "ladysnake.requiem.common.RequiemComponents",
+      "ladysnake.requiem.compat.RequiemCompatibilityManager::registerEntityComponentFactories"
     ]
   },
   "mixins": [

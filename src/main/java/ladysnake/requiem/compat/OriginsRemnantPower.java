@@ -39,7 +39,6 @@ import io.github.apace100.origins.power.PowerType;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
-import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -52,17 +51,9 @@ public class OriginsRemnantPower extends Power {
     }
 
     @Override
-    public void onAdded() {
-        RemnantComponent.get(this.player).become(this.remnantType);
-    }
-
-    @Override
-    public void onRemoved() {
-        RemnantComponent.get(this.player).become(RemnantTypes.MORTAL);
-    }
-
-    @Override
     public void onChosen(boolean isOrbOfOrigin) {
+        RemnantComponent.get(this.player).become(this.remnantType);
+
         if (!this.player.world.isClient) {
             RequiemCriteria.MADE_REMNANT_CHOICE.handle(((ServerPlayerEntity) this.player), this.remnantType);
         }

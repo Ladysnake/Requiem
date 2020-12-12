@@ -73,27 +73,24 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public boolean setSoul(boolean incorporeal) {
-        if (this.ethereal != incorporeal) {
-            this.ethereal = incorporeal;
-            SerializableMovementConfig config;
-            boolean serverside = !this.player.world.isClient;
-            if (incorporeal) {
-                config = SerializableMovementConfig.SOUL;
-                if (serverside) {
-                    Pal.grantAbility(player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
-                }
-            } else {
-                config = null;
-                if (serverside) {
-                    Pal.revokeAbility(player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
-                }
-                PossessionComponent.get(this.player).stopPossessing(false);
+        this.ethereal = incorporeal;
+        SerializableMovementConfig config;
+        boolean serverside = !this.player.world.isClient;
+        if (incorporeal) {
+            config = SerializableMovementConfig.SOUL;
+            if (serverside) {
+                Pal.grantAbility(player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
             }
-            MovementAlterer.get(this.player).setConfig(config);
-            RemnantComponent.KEY.sync(this.player);
-            return true;
+        } else {
+            config = null;
+            if (serverside) {
+                Pal.revokeAbility(player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
+            }
+            PossessionComponent.get(this.player).stopPossessing(false);
         }
-        return false;
+        MovementAlterer.get(this.player).setConfig(config);
+        RemnantComponent.KEY.sync(this.player);
+        return true;
     }
 
     @Override

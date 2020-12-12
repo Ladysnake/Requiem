@@ -34,7 +34,9 @@
  */
 package ladysnake.requiem.compat;
 
+import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import ladysnake.requiem.Requiem;
+import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import net.fabricmc.loader.api.FabricLoader;
 
 public final class RequiemCompatibilityManager {
@@ -49,13 +51,19 @@ public final class RequiemCompatibilityManager {
         }
     }
 
-    private static void load(String modId, ThrowingRunnable action) {
+    public static void load(String modId, ThrowingRunnable action) {
         try {
             if (FabricLoader.getInstance().isModLoaded(modId)) {
                 action.run();
             }
         } catch (Throwable t) {
             Requiem.LOGGER.error("[Requiem] Failed to load compatibility hooks for {}", modId, t);
+        }
+    }
+
+    public static void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
+        if (FabricLoader.getInstance().isModLoaded("origins")) {
+            registry.registerForPlayers(OriginHolder.KEY, p -> new OriginHolder(), RespawnCopyStrategy.ALWAYS_COPY);
         }
     }
 }

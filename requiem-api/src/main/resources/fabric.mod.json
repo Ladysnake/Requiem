@@ -30,7 +30,8 @@
       "requiem:ability_controller",
       "requiem:inventory_limiter",
       "requiem:skeleton_bones",
-      "requiem:wololo"
+      "requiem:wololo",
+      "requiem:origin_holder"
     ]
   }
 }

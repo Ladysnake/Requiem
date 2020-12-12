@@ -40,6 +40,7 @@ import io.github.apace100.origins.registry.ModRegistries;
 import io.github.apace100.origins.util.SerializableData;
 import io.github.apace100.origins.util.SerializableDataType;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.RequiemRegistries;
@@ -79,5 +80,12 @@ public final class OriginsCompat {
     public static void init() {
         Registry.register(ModRegistries.POWER_FACTORY, FACTORY_ID, REMNANT_POWER_FACTORY);
         Registry.register(ModRegistries.PLAYER_CONDITION, GAMERULE_CONDITION_ID, GAMERULE_CONDITION_FACTORY);
+        RemnantStateChangeCallback.EVENT.register((player, state) -> {
+            if (state.isSoul()) {
+                OriginHolder.KEY.get(player).storeOrigin(player);
+            } else {
+                OriginHolder.KEY.get(player).restoreOrigin(player);
+            }
+        });
     }
 }
