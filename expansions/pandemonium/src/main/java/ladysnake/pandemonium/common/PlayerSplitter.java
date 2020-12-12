@@ -15,6 +15,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import nerdhub.cardinal.components.api.util.EntityComponents;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import nerdhub.cardinal.components.api.util.container.AbstractComponentContainer;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -30,7 +31,7 @@ public class PlayerSplitter {
     public static void split(ServerPlayerEntity whole) {
         FractureAnchorManager anchorManager = FractureAnchorManager.get(whole.world);
         PlayerShellEntity shell = new PlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, whole.world);
-        shell.storePlayerData(whole, computeRespawnNbt(whole));
+        shell.storePlayerData(whole, computeCopyNbt(whole));
         ServerPlayerEntity soul = performRespawn(whole);
         soul.world.spawnEntity(shell);
         FractureAnchor anchor = anchorManager.addAnchor(AnchorFactories.fromEntityUuid(shell.getUuid()));
@@ -75,12 +76,12 @@ public class PlayerSplitter {
     }
 
     @NotNull
-    public static CompoundTag computeRespawnNbt(ServerPlayerEntity player) {
+    public static CompoundTag computeCopyNbt(Entity template) {
         //Player keeps everything that goes through death
-        CompoundTag leftoverData = player.toTag(new CompoundTag());
-        deduplicateVanillaData(leftoverData);
-        deduplicateComponents(leftoverData, ComponentProvider.fromEntity(player).getComponentContainer().keys());
-        return leftoverData;
+        CompoundTag templateNbt = template.toTag(new CompoundTag());
+        deduplicateVanillaData(templateNbt);
+        deduplicateComponents(templateNbt, ComponentProvider.fromEntity(template).getComponentContainer().keys());
+        return templateNbt;
     }
 
     private static void deduplicateComponents(CompoundTag leftoverData, Set<ComponentKey<?>> keys) {

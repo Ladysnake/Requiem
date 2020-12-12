@@ -192,7 +192,7 @@ public class PlayerShellEntity extends MobEntity {
         }
         // override common data that may have been altered during this shell's existence
         possessor.inventory.clear();
-        performNbtCopy(this.toTag(new CompoundTag()), possessor);
+        performNbtCopy(PlayerSplitter.computeCopyNbt(this), possessor);
         possessor.networkHandler.teleportRequest(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
         if (this.inventory != null) {
             transferInventory(this.inventory, possessor.inventory, Math.min(possessor.inventory.main.size(), this.inventory.size()));
@@ -473,7 +473,6 @@ public class PlayerShellEntity extends MobEntity {
     /* Static Methods */
 
     private static void performNbtCopy(CompoundTag from, Entity to) {
-        UUID fromUuid = to.getUuid();
         // Save the complete representation of the player
         CompoundTag serialized = new CompoundTag();
         // We write every attribute of the destination entity to the tag, then we override.
@@ -481,8 +480,6 @@ public class PlayerShellEntity extends MobEntity {
         to.toTag(serialized);
         serialized.copyFrom(from);
         to.fromTag(serialized);
-        // Restore UUID
-        to.setUuid(fromUuid);
     }
 
 }
