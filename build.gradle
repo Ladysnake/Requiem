@@ -172,11 +172,11 @@ dependencies {
     modCompileOnly("io.github.Terrails:Health-Overlay:1.16-Fabric-SNAPSHOT")
 
     modRuntime "com.jamieswhiteshirt:reach-entity-attributes:1.0.1"
-    modCompileOnly("io.github.apace100:origins-fabric:v0.4.5") {
+    modCompileOnly("io.github.apace100:origins-fabric:dev-SNAPSHOT") {
         transitive = false
     }
     modRuntime "net.adriantodt.fabricmc:fallflyinglib:1.1.0"
-    modRuntime("io.github.apace100:origins-fabric:v0.4.5") {
+    modRuntime("io.github.apace100:origins-fabric:dev-SNAPSHOT") {
         transitive = false
     }
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:8d45e7a209") {

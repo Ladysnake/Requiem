@@ -34,8 +34,14 @@
  */
 package ladysnake.requiem.compat;
 
+import io.github.apace100.origins.component.OriginComponent;
+import io.github.apace100.origins.integration.OriginDataLoadedCallback;
+import io.github.apace100.origins.origin.Origin;
+import io.github.apace100.origins.origin.OriginLayer;
+import io.github.apace100.origins.origin.OriginRegistry;
 import io.github.apace100.origins.power.factory.PowerFactory;
 import io.github.apace100.origins.power.factory.condition.ConditionFactory;
+import io.github.apace100.origins.registry.ModComponents;
 import io.github.apace100.origins.registry.ModRegistries;
 import io.github.apace100.origins.util.SerializableData;
 import io.github.apace100.origins.util.SerializableDataType;
@@ -50,6 +56,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 public final class OriginsCompat {
@@ -77,15 +84,41 @@ public final class OriginsCompat {
         }
     );
 
+    private static final Identifier SOUL_TYPE_LAYER_ID = Requiem.id("soul_type");
+    private static Origin vagrant;
+
+    private static void applyVagrantOrigin(PlayerEntity player) {
+        if (vagrant != null) {
+            OriginComponent originComponent = ModComponents.ORIGIN.get(player);
+            for (OriginLayer originLayer : new HashSet<>(originComponent.getOrigins().keySet())) {
+                if (!SOUL_TYPE_LAYER_ID.equals(originLayer.getIdentifier())) {
+                    originComponent.setOrigin(originLayer, vagrant);
+                }
+            }
+        }
+    }
+
     public static void init() {
         Registry.register(ModRegistries.POWER_FACTORY, FACTORY_ID, REMNANT_POWER_FACTORY);
         Registry.register(ModRegistries.PLAYER_CONDITION, GAMERULE_CONDITION_ID, GAMERULE_CONDITION_FACTORY);
         RemnantStateChangeCallback.EVENT.register((player, state) -> {
-            if (state.isSoul()) {
-                OriginHolder.KEY.get(player).storeOrigin(player);
-            } else {
-                OriginHolder.KEY.get(player).restoreOrigin(player);
+            if (!player.world.isClient) {
+                if (state.isSoul()) {
+                    OriginHolder.KEY.get(player).storeOrigin(player);
+                    applyVagrantOrigin(player);
+                } else {
+                    OriginHolder.KEY.get(player).restoreOrigin(player);
+                }
             }
         });
+        try {
+            OriginDataLoadedCallback.EVENT.register(isClient -> {
+                vagrant = OriginRegistry.get(Requiem.id("vagrant"));
+                if (vagrant == null) throw new IllegalStateException("Special vagrant origin not found");
+                vagrant.setSpecial();
+            });
+        } catch (NoClassDefFoundError e) {
+            Requiem.LOGGER.error("[Requiem] Failed to register special Vagrant origin, consider updating Origins");
+        }
     }
 }

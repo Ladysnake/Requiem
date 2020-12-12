@@ -102,6 +102,8 @@
   "origins:origin.requiem.mortal.description": "A mere mortal. Your ordinary Minecraft experience awaits.",
   "origins:origin.requiem.remnant.name": "Demon",
   "origins:origin.requiem.remnant.description": "Tales have been told of mysterious demons taking over the bodies of the dead. No one really knows what they are, but few really want to find out.",
+  "origins:origin.requiem.vagrant.name": "Vagrant",
+  "origins:origin.requiem.vagrant.description": "A demon outside of a congruous body. Condemned to wander and take over weaker entities to act as proxies with the physical world.",
   "origins:power.requiem.remnant.name": "Dissociation",
   "origins:power.requiem.remnant.description": "When you die, your soul dissociates from your body, becoming a wandering ghost.",
   "origins:power.requiem.damned.name": "Damned",

@@ -1,0 +1,10 @@
+{
+  "powers": [
+  ],
+  "icon": "minecraft:air",
+  "name": "origins:origin.requiem.vagrant.name",
+  "description": "origins:origin.requiem.vagrant.description",
+  "order": 1,
+  "impact": 3,
+  "isChoosable": false
+}
