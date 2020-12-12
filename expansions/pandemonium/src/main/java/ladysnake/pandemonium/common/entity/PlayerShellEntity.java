@@ -19,6 +19,7 @@ package ladysnake.pandemonium.common.entity;
 
 import com.mojang.authlib.GameProfile;
 import ladysnake.pandemonium.client.render.entity.ShellClientPlayerEntity;
+import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.mixin.common.entity.mob.LivingEntityAccessor;
 import ladysnake.pandemonium.mixin.common.entity.player.PlayerEntityAccessor;
 import ladysnake.requiem.common.util.InventoryHelper;
@@ -183,6 +184,14 @@ public class PlayerShellEntity extends MobEntity {
 
     public @Nullable UUID getPlayerUuid() {
         return playerUuid;
+    }
+
+    public CompoundTag getPlayerNbt() {
+        if (this.playerNbt == null) {
+            this.playerNbt = new CompoundTag();
+        }
+
+        return this.playerNbt;
     }
 
     public void restorePlayerData(ServerPlayerEntity possessor) {

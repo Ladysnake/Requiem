@@ -7,6 +7,7 @@ import io.github.ladysnake.impersonate.Impersonate;
 import ladysnake.pandemonium.Pandemonium;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
+import ladysnake.pandemonium.api.event.PlayerShellEvents;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.impl.anchor.AnchorFactories;
@@ -27,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.Set;
 
-public class PlayerSplitter {
+public final class PlayerSplitter {
     public static void split(ServerPlayerEntity whole) {
         FractureAnchorManager anchorManager = FractureAnchorManager.get(whole.world);
         PlayerShellEntity shell = new PlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, whole.world);
@@ -37,6 +38,7 @@ public class PlayerSplitter {
         FractureAnchor anchor = anchorManager.addAnchor(AnchorFactories.fromEntityUuid(shell.getUuid()));
         anchor.setPosition(shell.getX(), shell.getY(), shell.getZ());
         PlayerBodyTracker.get(soul).setAnchor(anchor);
+        PlayerShellEvents.PLAYER_SPLIT.invoker().onPlayerSplit(whole, soul, shell, shell.getPlayerNbt());
     }
 
     public static void merge(PlayerShellEntity shell, ServerPlayerEntity soul) {
@@ -49,6 +51,8 @@ public class PlayerSplitter {
             GameProfile gameProfile = shell.getGameProfile();
             Impersonate.IMPERSONATION.get(soul).impersonate(Pandemonium.BODY_IMPERSONATION, gameProfile == null ? new GameProfile(shell.getPlayerUuid(), null) : gameProfile);
         }
+
+        PlayerShellEvents.PLAYER_MERGED.invoker().onPlayerMerge(soul, shell, shell.getGameProfile(), shell.getPlayerNbt());
     }
 
     public static ServerPlayerEntity performRespawn(ServerPlayerEntity player) {
