@@ -67,12 +67,13 @@ public final class RemnantComponentImpl implements RemnantComponent {
             return;
         }
 
+        boolean wasSoul = this.isSoul();
         RemnantState handler = type.create(this.player);
         this.state.setSoul(false);
         this.state = handler;
         this.remnantType = type;
         RemnantComponent.KEY.sync(this.player);
-        RemnantStateChangeCallback.EVENT.invoker().onRemnantStateChange(this.player, this);
+        this.fireRemnantStateChange(wasSoul);
     }
 
     @Override
@@ -92,7 +93,17 @@ public final class RemnantComponentImpl implements RemnantComponent {
 
     @Override
     public void setSoul(boolean incorporeal) {
-        if (this.state.setSoul(incorporeal)) {
+        boolean soul = this.isSoul();
+
+        if (soul != incorporeal && this.state.setSoul(incorporeal)) {
+            this.fireRemnantStateChange(soul);
+        }
+    }
+
+    private void fireRemnantStateChange(boolean wasSoul) {
+        boolean nowSoul = this.isSoul();
+
+        if (wasSoul != nowSoul) {
             RemnantStateChangeCallback.EVENT.invoker().onRemnantStateChange(this.player, this);
         }
     }

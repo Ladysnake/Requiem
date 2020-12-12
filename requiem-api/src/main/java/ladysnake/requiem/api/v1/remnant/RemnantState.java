@@ -18,18 +18,25 @@
 package ladysnake.requiem.api.v1.remnant;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.jetbrains.annotations.Contract;
 
 public interface RemnantState {
     String NULL_STATE_ID = "requiem:mortal";
 
     /**
      * Return whether this player is currently incorporeal.
-     * A player is considered incorporeal if its current corporeality
-     * is not tangible and they have no surrogate body.
+     *
+     * <p>A player is considered incorporeal if they have neither their natural body or a surrogate one.
+     * If this method returns {@code true}, the player is also {@link #isSoul() vagrant}.
+     *
      * @return true if the player is currently incorporeal, {@code false} otherwise
      */
     boolean isIncorporeal();
 
+    /**
+     * Return whether this player is currently dissociated from a natural player body.
+     */
+    @Contract(pure = true)
     boolean isSoul();
 
     boolean setSoul(boolean incorporeal);

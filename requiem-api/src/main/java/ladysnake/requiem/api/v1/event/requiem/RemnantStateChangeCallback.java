@@ -6,8 +6,11 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.player.PlayerEntity;
 
 public interface RemnantStateChangeCallback {
-    void onRemnantStateChange(PlayerEntity player, RemnantComponent remnant);
+    void onRemnantStateChange(PlayerEntity player, RemnantComponent state);
 
+    /**
+     * Fired after a player dissociates from or merges with a congruous body
+     */
     Event<RemnantStateChangeCallback> EVENT = EventFactory.createArrayBacked(RemnantStateChangeCallback.class,
         (callbacks) -> (player, remnant) -> {
             for (RemnantStateChangeCallback callback : callbacks) {
