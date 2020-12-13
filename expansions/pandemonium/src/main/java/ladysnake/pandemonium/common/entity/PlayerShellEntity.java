@@ -35,6 +35,7 @@
 package ladysnake.pandemonium.common.entity;
 
 import com.mojang.authlib.GameProfile;
+import io.github.ladysnake.impersonate.Impersonator;
 import ladysnake.pandemonium.client.render.entity.ShellClientPlayerEntity;
 import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.mixin.common.entity.mob.LivingEntityAccessor;
@@ -76,6 +77,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckForNull;
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.apiguardian.api.API.Status.MAINTAINED;
@@ -240,9 +242,10 @@ public class PlayerShellEntity extends MobEntity {
 
         setPlayerModelParts(player.getDataTracker().get(PlayerEntityAccessor.getPlayerModelPartsTrackedData()));
 
-        this.setPlayerProfile(player.getGameProfile());
+        GameProfile profile = Optional.ofNullable(Impersonator.get(player).getImpersonatedProfile()).orElse(player.getGameProfile());
+        this.setPlayerProfile(profile);
         this.setCustomName(new LiteralText(player.getEntityName()));
-        this.playerUuid = player.getUuid();
+        this.playerUuid = profile.getId();
     }
 
     public void transferInventory(Inventory from, Inventory to, int size) {

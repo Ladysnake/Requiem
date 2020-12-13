@@ -37,20 +37,25 @@ package ladysnake.pandemonium.client.render.entity;
 import com.mojang.authlib.GameProfile;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import net.minecraft.client.network.OtherClientPlayerEntity;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 
 public class ShellClientPlayerEntity extends OtherClientPlayerEntity {
     private final PlayerShellEntity shell;
+    private final PlayerListEntry playerListEntry;
 
     public ShellClientPlayerEntity(PlayerShellEntity shell, GameProfile profile) {
         super((ClientWorld) shell.world, profile);
         this.shell = shell;
+        this.playerListEntry = new PlayerListEntry(new PlayerListS2CPacket().new Entry(profile, 0, GameMode.SURVIVAL, shell.getDisplayName()));
         this.copyPositionAndRotation(shell);
     }
 
@@ -93,5 +98,11 @@ public class ShellClientPlayerEntity extends OtherClientPlayerEntity {
         this.copyPositionAndRotation(this.shell);
         this.hurtTime = this.shell.hurtTime;
         this.deathTime = this.shell.deathTime;
+    }
+
+    @Nullable
+    @Override
+    protected PlayerListEntry getPlayerListEntry() {
+        return this.playerListEntry;
     }
 }
