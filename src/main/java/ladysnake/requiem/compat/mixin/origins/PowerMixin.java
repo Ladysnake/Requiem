@@ -52,6 +52,6 @@ public abstract class PowerMixin {
 
     @Inject(method = "<init>*", at = @At("RETURN"), remap = false)
     private void cancelSoulPowers(CallbackInfo ci) {
-        this.addCondition(p -> !RemnantComponent.isSoul(p));
+        this.addCondition(p -> !RemnantComponent.isVagrant(p));
     }
 }

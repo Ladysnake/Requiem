@@ -78,7 +78,7 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
             PossessionComponent possessionComponent = PossessionComponent.get(player);
             boolean success;
 
-            if (!remnantState.isSoul()) {
+            if (!remnantState.isVagrant()) {
                 PlayerSplitter.split(player);
                 success = true;
             } else if (possessionComponent.getPossessedEntity() != null && PlayerBodyTracker.get(player).getAnchor() != null) {

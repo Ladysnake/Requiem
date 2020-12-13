@@ -122,7 +122,7 @@ public class RequiemCommand {
     }
 
     private static int queryEthereal(ServerCommandSource source, ServerPlayerEntity player) {
-        boolean remnant = RemnantComponent.get(player).isSoul();
+        boolean remnant = RemnantComponent.get(player).isVagrant();
         Text remnantState = new TranslatableText("requiem:" + (remnant ? "ethereal" : "not_ethereal"));
         source.sendFeedback(new TranslatableText("requiem:commands.query.success." + (source.getEntity() == player ? "self" : "other"), remnantState), true);
         return remnant ? 1 : 0;
@@ -131,11 +131,11 @@ public class RequiemCommand {
     private static int setEthereal(ServerCommandSource source, Collection<ServerPlayerEntity> players, boolean ethereal) {
         int count = 0;
         for (ServerPlayerEntity player : players) {
-            if (RemnantComponent.get(player).isSoul() != ethereal) {
+            if (RemnantComponent.get(player).isVagrant() != ethereal) {
                 if (!isRemnant(player)) {
                     throw new CommandException(new TranslatableText("requiem:commands.ethereal.set.fail", player.getDisplayName()));
                 }
-                RemnantComponent.get(player).setSoul(ethereal);
+                RemnantComponent.get(player).setVagrant(ethereal);
                 sendSetEtherealFeedback(source, player, ethereal);
                 ++count;
             }

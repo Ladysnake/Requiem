@@ -20,7 +20,9 @@ package ladysnake.requiem.api.v1.remnant;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -38,9 +40,12 @@ public interface RemnantComponent extends AutoSyncedComponent {
         return r != null && r.isIncorporeal();
     }
 
-    static boolean isSoul(Entity entity) {
+    /**
+     * @since 1.4.0
+     */
+    static boolean isVagrant(Entity entity) {
         RemnantComponent r = KEY.getNullable(entity);
-        return r != null && r.isSoul();
+        return r != null && r.isVagrant();
     }
 
     /**
@@ -48,7 +53,6 @@ public interface RemnantComponent extends AutoSyncedComponent {
      * every modification made to it is reflected on the player.
      *
      * @return the player's remnant state
-     * @since 1.2.0
      */
     @Contract(pure = true)
     static RemnantComponent get(PlayerEntity player) {
@@ -67,33 +71,76 @@ public interface RemnantComponent extends AutoSyncedComponent {
      *
      * @param type the remnant type to become
      * @see #getRemnantType()
-     * @since 1.2.0
      */
     void become(RemnantType type);
 
+    @Contract(pure = true)
     RemnantType getRemnantType();
 
     /**
      * Return whether this player is currently incorporeal.
      * A player is considered incorporeal if its current corporeality
      * is not tangible and they have no surrogate body.
+     *
      * @return true if the player is currently incorporeal, {@code false} otherwise
      */
     boolean isIncorporeal();
 
-    boolean isSoul();
+    @Deprecated
+    default boolean isSoul() {
+        return this.isVagrant();
+    }
 
-    void setSoul(boolean incorporeal);
+    /**
+     * Return whether this player is currently dissociated from a natural player body.
+     *
+     * <p>Vagrant players are invulnerable and can only interact with the world through a proxy body.
+     * Being vagrant is a prerequisite to being {@linkplain #isIncorporeal() incorporeal} or to
+     * {@linkplain PossessionComponent#startPossessing(MobEntity) start possessing entities}.
+     *
+     * @return {@code true} if the player is currently dissociated from a congruous body, {@code false} otherwise
+     * @since 1.4.0
+     */
+    boolean isVagrant();
+
+    @Deprecated
+    default void setSoul(boolean incorporeal) {
+        this.setVagrant(incorporeal);
+    }
+
+    /**
+     * Set whether this player is currently dissociated from a congruous body.
+     *
+     * <p>This operation may fail if this state does not support the given state.
+     *
+     * @param vagrant {@code true} to mark this player as outside a congruous body, {@code false} to mark a merged state
+     * @return {@code true} if the operation succeeded, {@code false} otherwise
+     * @see #isVagrant()
+     * @see #isIncorporeal()
+     * @since 1.4.0
+     */
+    boolean setVagrant(boolean vagrant);
 
     /**
      * Called when this remnant state's player is cloned
      *
      * @param original the player's clone
      * @param lossless false if the original player is dead, true otherwise
+     * @since 1.3.0
      */
     void prepareRespawn(ServerPlayerEntity original, boolean lossless);
 
+    /**
+     * Set the default remnant type according to the current server settings
+     *
+     * @since 1.3.0
+     */
     void setDefaultRemnantType(@Nullable RemnantType defaultType);
 
+    /**
+     * Return the default remnant type according to the current server settings
+     *
+     * @since 1.3.0
+     */
     @Nullable RemnantType getDefaultRemnantType();
 }

@@ -68,7 +68,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements St
 
     @Inject(method = "onStatusEffectRemoved", at = @At("RETURN"))
     private void onStatusEffectRemoved(StatusEffectInstance effect, CallbackInfo ci) {
-        if (RemnantComponent.get(this).isSoul()) {
+        if (RemnantComponent.get(this).isVagrant()) {
             if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
                 reappliedEffects.add(new StatusEffectInstance(effect));
             }

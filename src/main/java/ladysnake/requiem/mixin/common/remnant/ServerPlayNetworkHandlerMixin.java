@@ -82,7 +82,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
     @Inject(method = "onClientStatus", at = @At(value = "FIELD", target = "Lnet/minecraft/world/GameMode;SPECTATOR:Lnet/minecraft/world/GameMode;"), cancellable = true)
     private void postponeHardcoreConsequences(ClientStatusC2SPacket packet, CallbackInfo ci) {
-        if (RemnantComponent.isSoul(this.player)) {
+        if (RemnantComponent.isVagrant(this.player)) {
             ci.cancel();
         }
     }

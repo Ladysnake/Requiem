@@ -79,7 +79,7 @@ public final class PlayerSplitter {
         soul.inventory.dropAll();
         shell.restorePlayerData(soul);
         shell.remove();
-        RemnantComponent.get(soul).setSoul(false);
+        RemnantComponent.get(soul).setVagrant(false);
 
         if (!Objects.equals(shell.getPlayerUuid(), soul.getUuid())) {
             GameProfile gameProfile = shell.getGameProfile();

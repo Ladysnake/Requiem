@@ -87,7 +87,7 @@ public class Pandemonium implements ModInitializer, EntityComponentInitializer, 
             if (!returnFromEnd) Impersonate.IMPERSONATION.get(player).stopImpersonation(BODY_IMPERSONATION);
         });
         RemnantStateChangeCallback.EVENT.register((player, state) -> {
-            if (state.isSoul()) Impersonate.IMPERSONATION.get(player).stopImpersonation(BODY_IMPERSONATION);
+            if (state.isVagrant()) Impersonate.IMPERSONATION.get(player).stopImpersonation(BODY_IMPERSONATION);
         });
         PandemoniumCompatibilityManager.init();
     }

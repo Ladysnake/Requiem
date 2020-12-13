@@ -162,7 +162,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     private int preventFoodRender(int mountHeartCount) {
         ClientPlayerEntity player = this.client.player;
 
-        if (mountHeartCount == 0 && player != null && RemnantComponent.get(player).isSoul()) {
+        if (mountHeartCount == 0 && player != null && RemnantComponent.get(player).isVagrant()) {
             Possessable possessed = (Possessable) PossessionComponent.get(player).getPossessedEntity();
             if (possessed == null || !possessed.isRegularEater()) {
                 skippedFood = true;
@@ -192,7 +192,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     private Tag<Fluid> preventAirRender(Tag<Fluid> fluid) {
         PlayerEntity playerEntity = this.getCameraPlayer();
 
-        if (RemnantComponent.get(playerEntity).isSoul()) {
+        if (RemnantComponent.get(playerEntity).isVagrant()) {
             LivingEntity possessed = PossessionComponent.get(playerEntity).getPossessedEntity();
             if (possessed == null) {
                 return RequiemFluidTags.EMPTY;  // will cause isSubmergedIn to return false

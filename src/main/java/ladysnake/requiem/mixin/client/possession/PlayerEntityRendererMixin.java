@@ -116,7 +116,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
     @Unique
     private boolean requiem_renderPossessedArm(MatrixStack matrices, VertexConsumerProvider vertices, AbstractClientPlayerEntity renderedPlayer, int lightmapCoordinates, boolean rightArm) {
-        if (RemnantComponent.get(renderedPlayer).isSoul()) {
+        if (RemnantComponent.get(renderedPlayer).isVagrant()) {
             LivingEntity possessed = PossessionComponent.get(renderedPlayer).getPossessedEntity();
             if (possessed != null) {
                 EntityRenderer<? super LivingEntity> possessedRenderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(possessed);

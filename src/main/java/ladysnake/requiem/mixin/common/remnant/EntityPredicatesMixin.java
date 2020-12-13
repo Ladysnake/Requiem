@@ -50,7 +50,7 @@ public abstract class EntityPredicatesMixin {
     @Dynamic("Lambda method injection")
     @Inject(method = {"method_5910", "method_24517"}, at = @At("RETURN"), cancellable = true)
     private static void exceptCreativeOrSpectator(@Nullable Entity tested, CallbackInfoReturnable<Boolean> info) {
-        if (info.getReturnValueZ() && tested != null && RemnantComponent.isSoul(tested)) {
+        if (info.getReturnValueZ() && tested != null && RemnantComponent.isVagrant(tested)) {
             info.setReturnValue(false);
         }
     }

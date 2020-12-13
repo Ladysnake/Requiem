@@ -86,7 +86,7 @@ public abstract class EntityRenderDispatcherMixin {
 
     @Inject(method = "renderShadow", at = @At("HEAD"), cancellable = true)
     private static void preventShadowRender(MatrixStack matrices, VertexConsumerProvider vertices, Entity rendered, float distance, float tickDelta, WorldView world, float radius, CallbackInfo ci) {
-        if (RemnantComponent.isSoul(rendered)) {
+        if (RemnantComponent.isVagrant(rendered)) {
             ci.cancel();
         }
     }

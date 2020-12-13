@@ -67,7 +67,7 @@ public final class RemnantComponentImpl implements RemnantComponent {
             return;
         }
 
-        boolean wasSoul = this.isSoul();
+        boolean wasSoul = this.isVagrant();
         RemnantState handler = type.create(this.player);
         this.state.setVagrant(false);
         this.state = handler;
@@ -87,21 +87,26 @@ public final class RemnantComponentImpl implements RemnantComponent {
     }
 
     @Override
-    public boolean isSoul() {
+    public boolean isVagrant() {
         return this.state.isVagrant();
     }
 
     @Override
-    public void setSoul(boolean incorporeal) {
-        boolean soul = this.isSoul();
+    public boolean setVagrant(boolean vagrant) {
+        boolean soul = this.isVagrant();
 
-        if (soul != incorporeal && this.state.setVagrant(incorporeal)) {
-            this.fireRemnantStateChange(soul);
+        if (soul != vagrant) {
+            if (this.state.setVagrant(vagrant)) {
+                this.fireRemnantStateChange(soul);
+                return true;
+            }
+            return false;
         }
+        return true;
     }
 
     private void fireRemnantStateChange(boolean wasSoul) {
-        boolean nowSoul = this.isSoul();
+        boolean nowSoul = this.isVagrant();
 
         if (wasSoul != nowSoul) {
             RemnantStateChangeCallback.EVENT.invoker().onRemnantStateChange(this.player, this);
@@ -131,7 +136,7 @@ public final class RemnantComponentImpl implements RemnantComponent {
     @Override
     public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
         buf.writeVarInt(RemnantTypes.getRawId(this.remnantType));
-        buf.writeBoolean(this.isSoul());
+        buf.writeBoolean(this.isVagrant());
         RemnantType defaultRemnantType = this.getDefaultRemnantType();
         buf.writeVarInt(defaultRemnantType == null ? 0 : RemnantTypes.getRawId(defaultRemnantType) + 1);
     }
@@ -143,7 +148,7 @@ public final class RemnantComponentImpl implements RemnantComponent {
         int defaultRemnantId = buf.readVarInt();
 
         this.become(RemnantTypes.get(remnantId));
-        this.setSoul(soul);
+        this.setVagrant(soul);
         this.setDefaultRemnantType(defaultRemnantId == 0 ? null : RemnantTypes.get(defaultRemnantId - 1));
     }
 
@@ -151,12 +156,12 @@ public final class RemnantComponentImpl implements RemnantComponent {
     public void readFromNbt(CompoundTag compoundTag) {
         RemnantType remnantType = RemnantTypes.get(new Identifier(compoundTag.getString("id")));
         this.become(remnantType);
-        this.setSoul(compoundTag.getBoolean(ETHEREAL_TAG));
+        this.setVagrant(compoundTag.getBoolean(ETHEREAL_TAG));
     }
 
     @Override
     public void writeToNbt(CompoundTag compoundTag) {
         compoundTag.putString("id", RemnantTypes.getId(this.remnantType).toString());
-        compoundTag.putBoolean(ETHEREAL_TAG, this.isSoul());
+        compoundTag.putBoolean(ETHEREAL_TAG, this.isVagrant());
     }
 }

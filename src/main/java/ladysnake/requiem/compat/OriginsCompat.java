@@ -106,7 +106,7 @@ public final class OriginsCompat {
         Registry.register(ModRegistries.PLAYER_CONDITION, GAMERULE_CONDITION_ID, GAMERULE_CONDITION_FACTORY);
         RemnantStateChangeCallback.EVENT.register((player, state) -> {
             if (!player.world.isClient) {
-                if (state.isSoul()) {
+                if (state.isVagrant()) {
                     OriginHolder.KEY.get(player).storeOrigin(player);
                     applyVagrantOrigin(player);
                 } else {

@@ -268,7 +268,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     private void resetState() {
         this.possessed = null;
-        MovementAlterer.get(this.player).setConfig(RemnantComponent.get(this.player).isSoul() ? SerializableMovementConfig.SOUL : null);
+        MovementAlterer.get(this.player).setConfig(RemnantComponent.get(this.player).isVagrant() ? SerializableMovementConfig.SOUL : null);
         this.player.calculateDimensions(); // update size
         this.player.setAir(this.player.getMaxAir());
         PossessionComponent.KEY.sync(this.player);
@@ -301,7 +301,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
             if (this.conversionTimer == 0) {
                 MobEntity possessedEntity = this.getPossessedEntity();
                 if (possessedEntity != null) {
-                    RemnantComponent.get(this.player).setSoul(false);
+                    RemnantComponent.get(this.player).setVagrant(false);
                     RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle((ServerPlayerEntity) this.player, possessedEntity, this.player, true);
                     possessedEntity.remove();
                     this.player.removeStatusEffect(RequiemStatusEffects.ATTRITION);

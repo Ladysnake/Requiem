@@ -100,7 +100,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
     private void revokeLifeRights(DamageSource source, CallbackInfo ci) {
         if (this.world.getLevelProperties().isHardcore()) {
             RemnantComponent remnantComponent = RemnantComponent.get(this);
-            if (remnantComponent.isSoul()) {
+            if (remnantComponent.isVagrant()) {
                 remnantComponent.become(RemnantTypes.MORTAL);
             }
         }

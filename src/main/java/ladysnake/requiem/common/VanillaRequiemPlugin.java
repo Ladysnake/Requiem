@@ -155,7 +155,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             ((MobResurrectable) player).spawnResurrectionEntity();
         }));
         RemnantStateChangeCallback.EVENT.register((player, remnant) -> {
-            InventoryLimiter.KEY.get(player).setEnabled(remnant.isSoul());
+            InventoryLimiter.KEY.get(player).setEnabled(remnant.isVagrant());
             PlayerAbilityController.get(player).resetAbilities(remnant.isIncorporeal());
         });
     }
@@ -171,7 +171,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
     private boolean isInteractionForbidden(PlayerEntity player, boolean includeSouls) {
         RemnantComponent c = RemnantComponent.get(player);
-        return !player.isCreative() && ((includeSouls && c.isSoul()) || c.isIncorporeal()) || DeathSuspender.get(player).isLifeTransient();
+        return !player.isCreative() && ((includeSouls && c.isVagrant()) || c.isIncorporeal()) || DeathSuspender.get(player).isLifeTransient();
     }
 
     private void registerPossessionEventHandlers() {

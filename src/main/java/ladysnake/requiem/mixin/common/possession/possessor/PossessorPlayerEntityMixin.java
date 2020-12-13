@@ -173,7 +173,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
     @Override
     protected void requiem$preventSoulsCollision(CallbackInfoReturnable<Boolean> info) {
         //noinspection ConstantConditions
-        if (RemnantComponent.isSoul((Entity) (Object) this)) {
+        if (RemnantComponent.isVagrant((Entity) (Object) this)) {
             info.setReturnValue(false);
         }
     }
