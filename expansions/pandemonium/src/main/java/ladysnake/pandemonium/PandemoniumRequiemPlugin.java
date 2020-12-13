@@ -54,6 +54,7 @@ import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public class PandemoniumRequiemPlugin implements RequiemPlugin {
@@ -63,7 +64,10 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
         PossessionStartCallback.EVENT.register(Pandemonium.id("shell_interaction"), (target, possessor, simulate) -> {
             if (target instanceof PlayerShellEntity) {
                 if (!simulate && !possessor.world.isClient) {
-                    PlayerSplitter.merge(((PlayerShellEntity) target), (ServerPlayerEntity) possessor);
+                    if (!PlayerSplitter.merge(((PlayerShellEntity) target), (ServerPlayerEntity) possessor)) {
+                        possessor.sendMessage(new TranslatableText("requiem:possess.incompatible_body"), true);
+                        return PossessionStartCallback.Result.DENY;
+                    }
                 }
                 return PossessionStartCallback.Result.HANDLED;
             }

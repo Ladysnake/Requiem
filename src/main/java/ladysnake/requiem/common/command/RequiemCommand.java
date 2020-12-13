@@ -133,9 +133,11 @@ public class RequiemCommand {
         for (ServerPlayerEntity player : players) {
             if (RemnantComponent.get(player).isVagrant() != ethereal) {
                 if (!isRemnant(player)) {
+                    throw new CommandException(new TranslatableText("requiem:commands.ethereal.set.fail.mortal", player.getDisplayName()));
+                }
+                if (!RemnantComponent.get(player).setVagrant(ethereal)) {
                     throw new CommandException(new TranslatableText("requiem:commands.ethereal.set.fail", player.getDisplayName()));
                 }
-                RemnantComponent.get(player).setVagrant(ethereal);
                 sendSetEtherealFeedback(source, player, ethereal);
                 ++count;
             }

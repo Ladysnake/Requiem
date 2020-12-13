@@ -52,7 +52,7 @@ public final class EldritchMobsCompat implements PossessionStartCallback {
     public Result onPossessionAttempted(MobEntity target, PlayerEntity possessor, boolean simulate) {
         ComponentProvider t = ComponentProvider.fromEntity(target);
         if (EldritchMobsMod.isEldritch(t) || EldritchMobsMod.isElite(t) || EldritchMobsMod.isUltra(t)) {
-            if (!possessor.world.isClient) possessor.sendMessage(new TranslatableText("requiem:possess.too_powerful"), true);
+            if (!possessor.world.isClient) possessor.sendMessage(new TranslatableText("requiem:possess.incompatible_body"), true);
             return Result.DENY;
         }
         return Result.PASS;

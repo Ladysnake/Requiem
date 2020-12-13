@@ -75,18 +75,21 @@ public final class PlayerSplitter {
         PlayerShellEvents.PLAYER_SPLIT.invoker().onPlayerSplit(whole, soul, shell, shell.getPlayerNbt());
     }
 
-    public static void merge(PlayerShellEntity shell, ServerPlayerEntity soul) {
-        soul.inventory.dropAll();
-        shell.restorePlayerData(soul);
-        shell.remove();
-        RemnantComponent.get(soul).setVagrant(false);
+    public static boolean merge(PlayerShellEntity shell, ServerPlayerEntity soul) {
+        if (RemnantComponent.get(soul).setVagrant(false)) {
+            soul.inventory.dropAll();
+            shell.restorePlayerData(soul);
+            shell.remove();
 
-        if (!Objects.equals(shell.getPlayerUuid(), soul.getUuid())) {
-            GameProfile gameProfile = shell.getGameProfile();
-            Impersonate.IMPERSONATION.get(soul).impersonate(Pandemonium.BODY_IMPERSONATION, gameProfile == null ? new GameProfile(shell.getPlayerUuid(), null) : gameProfile);
+            if (!Objects.equals(shell.getPlayerUuid(), soul.getUuid())) {
+                GameProfile gameProfile = shell.getGameProfile();
+                Impersonate.IMPERSONATION.get(soul).impersonate(Pandemonium.BODY_IMPERSONATION, gameProfile == null ? new GameProfile(shell.getPlayerUuid(), null) : gameProfile);
+            }
+
+            PlayerShellEvents.PLAYER_MERGED.invoker().onPlayerMerge(soul, shell, shell.getGameProfile(), shell.getPlayerNbt());
+            return true;
         }
-
-        PlayerShellEvents.PLAYER_MERGED.invoker().onPlayerMerge(soul, shell, shell.getGameProfile(), shell.getPlayerNbt());
+        return false;
     }
 
     public static ServerPlayerEntity performRespawn(ServerPlayerEntity player) {

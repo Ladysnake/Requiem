@@ -16,7 +16,8 @@
 
   "requiem:commands.query.success.other": "%2$s is %1$s",
   "requiem:commands.query.success.self": "You are %s",
-  "requiem:commands.ethereal.set.fail": "Failed to make %s ethereal as they are Mortal",
+  "requiem:commands.ethereal.set.fail.mortal": "Failed to make %s ethereal as they are Mortal",
+  "requiem:commands.ethereal.set.fail": "Failed to change %s's ethereal status",
   "requiem:commands.ethereal.set.success.other": "Set %s's ethereal state to %s",
   "requiem:commands.ethereal.set.success.self": "Set own ethereal state to %s",
   "requiem:commands.ethereal.set.target": "Your ethereal state has been updated to %s",
@@ -88,7 +89,7 @@
 
   "key.requiem.ethereal_fracture": "Ethereal Fracture",
   "requiem:shulker.onboard": "Press %1$s to leave",
-  "requiem:possess.too_powerful": "This body is incompatible with your soul",
+  "requiem:possess.incompatible_body": "This body is incompatible with your soul",
 
   "item.requiem.human_flesh": "Human Flesh",
   "item.requiem.opus_daemonium": "Opus Daemonium",

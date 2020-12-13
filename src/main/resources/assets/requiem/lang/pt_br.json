@@ -1,6 +1,6 @@
 {
-  "requiem:advancements.adventure.i_hate_sand.title": "Eu odeio areia.",
-  "requiem:advancements.adventure.i_hate_sand.description": "Renascer como um Husk.",
+  "requiem:advancements.requiem.i_hate_sand.title": "Eu odeio areia.",
+  "requiem:advancements.requiem.i_hate_sand.description": "Renascer como um Husk.",
   "requiem:advancements.adventure.the_choice.title": "Um dilema diabólico",
   "requiem:advancements.adventure.the_choice.description": "Escolha entre uma vida normal e uma eternidade bizarra",
 
@@ -8,7 +8,7 @@
 
   "requiem:commands.query.success.other": "%2$s é %1$s",
   "requiem:commands.query.success.self": "Você é %s",
-  "requiem:commands.ethereal.set.fail": "Falha ao fazer %s etéreo porque ele já é Mortal",
+  "requiem:commands.ethereal.set.fail.mortal": "Falha ao fazer %s etéreo porque ele já é Mortal",
   "requiem:commands.ethereal.set.success.other": "O estado etéreo de %s agora é %s",
   "requiem:commands.ethereal.set.success.self": "O seu estado etéreo agora é %s",
   "requiem:commands.ethereal.set.target": "O seu estado etéreo foi atualizado para %s",
