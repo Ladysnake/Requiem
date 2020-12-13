@@ -214,6 +214,8 @@ public class PlayerShellEntity extends MobEntity {
     }
 
     public void restorePlayerData(ServerPlayerEntity possessor) {
+        // Note: the teleport request must be before deserialization, as it only encodes the required relative movement
+        possessor.networkHandler.teleportRequest(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
         // restore the player to their previous state
         if (this.playerNbt != null) {
             possessor.fromTag(this.playerNbt);
@@ -221,7 +223,6 @@ public class PlayerShellEntity extends MobEntity {
         // override common data that may have been altered during this shell's existence
         possessor.inventory.clear();
         performNbtCopy(PlayerSplitter.computeCopyNbt(this), possessor);
-        possessor.networkHandler.teleportRequest(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
         if (this.inventory != null) {
             transferInventory(this.inventory, possessor.inventory, Math.min(possessor.inventory.main.size(), this.inventory.size()));
             this.dropInventory();
