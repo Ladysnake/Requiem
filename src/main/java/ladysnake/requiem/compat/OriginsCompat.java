@@ -34,6 +34,8 @@
  */
 package ladysnake.requiem.compat;
 
+import dev.onyxstudios.cca.api.v3.component.Component;
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.integration.OriginDataLoadedCallback;
 import io.github.apace100.origins.origin.Origin;
@@ -60,6 +62,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public final class OriginsCompat {
+    public static final ComponentKey<? extends Component> ORIGIN_KEY = ModComponents.ORIGIN;
     public static final SerializableDataType<RemnantType> REMNANT_TYPE = SerializableDataType.registry(RemnantType.class, RequiemRegistries.REMNANT_STATES);
 
     // The factory for the origins power that lets player decide whether they want to be a remnant or not

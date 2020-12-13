@@ -34,25 +34,38 @@
  */
 package ladysnake.pandemonium.compat;
 
-import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
+import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
-import ladysnake.requiem.Requiem;
 import ladysnake.requiem.compat.OriginHolder;
-import ladysnake.requiem.compat.RequiemCompatibilityManager;
-import net.fabricmc.loader.api.FabricLoader;
+import ladysnake.requiem.compat.OriginsCompat;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-public final class PandemoniumCompatibilityManager {
-    public static void init() {
-        try {
-            RequiemCompatibilityManager.load("origins", PandemoniumOriginsCompat::init);
-        } catch (Throwable t) {
-            Requiem.LOGGER.error("[Pandemonium] Failed to load compatibility hooks", t);
-        }
+public class PlayerShellOriginHolder extends OriginHolder implements AutoSyncedComponent {
+    private final PlayerShellEntity shell;
+
+    public PlayerShellOriginHolder(PlayerShellEntity shell) {
+        this.shell = shell;
     }
 
-    public static void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-        if (FabricLoader.getInstance().isModLoaded("origins")) {
-            registry.registerFor(PlayerShellEntity.class, OriginHolder.KEY, PlayerShellOriginHolder::new);
+    @Override
+    public void storeOrigin(PlayerEntity player) {
+        super.storeOrigin(player);
+        KEY.sync(this.shell);
+    }
+
+    @Override
+    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
+        buf.writeCompoundTag(this.originData);
+    }
+
+    @Override
+    public void applySyncPacket(PacketByteBuf buf) {
+        CompoundTag originData = buf.readCompoundTag();
+        if (originData != null) {
+            OriginsCompat.ORIGIN_KEY.get(this.shell.getRenderedPlayer()).readFromNbt(originData);
         }
     }
 }

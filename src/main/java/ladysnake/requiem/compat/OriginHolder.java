@@ -45,10 +45,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
-public final class OriginHolder implements Component {
+public class OriginHolder implements Component {
     public static final ComponentKey<OriginHolder> KEY = ComponentRegistry.getOrCreate(Requiem.id("origin_holder"), OriginHolder.class);
 
-    private @Nullable CompoundTag originData;
+    protected @Nullable CompoundTag originData;
 
     public void storeOrigin(PlayerEntity player) {
         if (!player.world.isClient && this.originData == null) {
