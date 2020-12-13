@@ -17,6 +17,8 @@
  */
 package ladysnake.requiem.api.v1.remnant;
 
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Contract;
 
@@ -27,7 +29,7 @@ public interface RemnantState {
      * Return whether this player is currently incorporeal.
      *
      * <p>A player is considered incorporeal if they have neither their natural body or a surrogate one.
-     * If this method returns {@code true}, the player is also {@link #isSoul() vagrant}.
+     * If this method returns {@code true}, the player is also {@link #isVagrant() vagrant}.
      *
      * @return true if the player is currently incorporeal, {@code false} otherwise
      */
@@ -35,13 +37,25 @@ public interface RemnantState {
 
     /**
      * Return whether this player is currently dissociated from a natural player body.
+     *
+     * <p>Vagrant players are invulnerable and can only interact with the world through a proxy body.
+     * Being vagrant is a prerequisite to being {@linkplain #isIncorporeal() incorporeal} or to
+     * {@linkplain PossessionComponent#startPossessing(MobEntity) start possessing entities}.
      */
     @Contract(pure = true)
-    boolean isSoul();
+    boolean isVagrant();
 
-    boolean setSoul(boolean incorporeal);
-
-    RemnantType getType();
+    /**
+     * Set whether this player is currently dissociated from a congruous body.
+     *
+     * <p>This operation may fail if this state does not support the given state
+     *
+     * @param vagrant {@code true} to mark this player as outside a congruous body, {@code false} to mark a merged state
+     * @return {@code true} if the operation succeeded, {@code false} otherwise
+     * @see #isVagrant()
+     * @see #isIncorporeal()
+     */
+    boolean setVagrant(boolean vagrant);
 
     /**
      * Called when this remnant state's player is cloned

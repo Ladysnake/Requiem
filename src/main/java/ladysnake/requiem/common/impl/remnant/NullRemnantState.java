@@ -35,8 +35,6 @@
 package ladysnake.requiem.common.impl.remnant;
 
 import ladysnake.requiem.api.v1.remnant.RemnantState;
-import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public final class NullRemnantState implements RemnantState {
@@ -49,18 +47,13 @@ public final class NullRemnantState implements RemnantState {
     }
 
     @Override
-    public boolean isSoul() {
+    public boolean isVagrant() {
         return false;
     }
 
     @Override
-    public boolean setSoul(boolean incorporeal) {
+    public boolean setVagrant(boolean vagrant) {
         return false;
-    }
-
-    @Override
-    public RemnantType getType() {
-        return RemnantTypes.MORTAL;
     }
 
     @Override

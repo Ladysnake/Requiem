@@ -42,7 +42,6 @@ import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
-import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
 import net.minecraft.entity.player.PlayerEntity;
@@ -52,31 +51,29 @@ import net.minecraft.server.world.ServerWorld;
 public class MutableRemnantState implements RemnantState {
     public static final AbilitySource SOUL_STATE = Pal.getAbilitySource(Requiem.id("soul_state"));
 
-    private final RemnantType type;
     protected final PlayerEntity player;
     protected boolean ethereal;
 
-    public MutableRemnantState(RemnantType type, PlayerEntity player) {
-        this.type = type;
+    public MutableRemnantState(PlayerEntity player) {
         this.player = player;
     }
 
     @Override
     public boolean isIncorporeal() {
-        return this.isSoul() && !PossessionComponent.get(this.player).isPossessing();
+        return this.isVagrant() && !PossessionComponent.get(this.player).isPossessing();
     }
 
     @Override
-    public boolean isSoul() {
+    public boolean isVagrant() {
         return this.ethereal;
     }
 
     @Override
-    public boolean setSoul(boolean incorporeal) {
-        this.ethereal = incorporeal;
+    public boolean setVagrant(boolean vagrant) {
+        this.ethereal = vagrant;
         SerializableMovementConfig config;
         boolean serverside = !this.player.world.isClient;
-        if (incorporeal) {
+        if (vagrant) {
             config = SerializableMovementConfig.SOUL;
             if (serverside) {
                 Pal.grantAbility(player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
@@ -95,7 +92,7 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public void prepareRespawn(ServerPlayerEntity original, boolean lossless) {
-        if (!lossless && !this.isSoul()) {
+        if (!lossless && !this.isVagrant()) {
             RemnantComponent.get(this.player).setSoul(true);
             this.copyGlobalPos(original);
 
@@ -112,10 +109,4 @@ public class MutableRemnantState implements RemnantState {
         clone.interactionManager.setWorld(previousWorld);
         clone.copyPositionAndRotation(original);
     }
-
-    @Override
-    public RemnantType getType() {
-        return this.type;
-    }
-
 }

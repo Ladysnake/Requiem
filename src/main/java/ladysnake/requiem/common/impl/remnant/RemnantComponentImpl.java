@@ -69,7 +69,7 @@ public final class RemnantComponentImpl implements RemnantComponent {
 
         boolean wasSoul = this.isSoul();
         RemnantState handler = type.create(this.player);
-        this.state.setSoul(false);
+        this.state.setVagrant(false);
         this.state = handler;
         this.remnantType = type;
         RemnantComponent.KEY.sync(this.player);
@@ -88,14 +88,14 @@ public final class RemnantComponentImpl implements RemnantComponent {
 
     @Override
     public boolean isSoul() {
-        return this.state.isSoul();
+        return this.state.isVagrant();
     }
 
     @Override
     public void setSoul(boolean incorporeal) {
         boolean soul = this.isSoul();
 
-        if (soul != incorporeal && this.state.setSoul(incorporeal)) {
+        if (soul != incorporeal && this.state.setVagrant(incorporeal)) {
             this.fireRemnantStateChange(soul);
         }
     }
