@@ -36,6 +36,7 @@ package ladysnake.requiem.common.impl.possession;
 
 import com.google.common.collect.MapMaker;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.entity.CurableEntity;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
@@ -301,12 +302,18 @@ public final class PossessionComponentImpl implements PossessionComponent {
             if (this.conversionTimer == 0) {
                 MobEntity possessedEntity = this.getPossessedEntity();
                 if (possessedEntity != null) {
-                    RemnantComponent.get(this.player).setVagrant(false);
-                    RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle((ServerPlayerEntity) this.player, possessedEntity, this.player, true);
-                    possessedEntity.remove();
-                    this.player.removeStatusEffect(RequiemStatusEffects.ATTRITION);
-                    this.player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-                    this.player.world.syncWorldEvent(null, 1027, this.player.getBlockPos(), 0);
+                    if (RemnantComponent.get(this.player).setVagrant(false)) {
+                        RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle((ServerPlayerEntity) this.player, possessedEntity, this.player, true);
+                        possessedEntity.remove();
+                        this.player.removeStatusEffect(RequiemStatusEffects.ATTRITION);
+                        this.player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
+                        this.player.world.syncWorldEvent(null, 1027, this.player.getBlockPos(), 0);
+                    } else {
+                        MobEntity cured = ((CurableEntity) possessedEntity).cureAsPossessed();
+                        if (cured != null) {
+                            RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle((ServerPlayerEntity) this.player, possessedEntity, cured, true);
+                        }
+                    }
                 }
                 this.conversionTimer = -1;
             }

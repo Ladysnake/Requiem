@@ -32,31 +32,24 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.possession;
+package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import ladysnake.requiem.api.v1.internal.ProtoPossessable;
-import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.entity.mob.ZombifiedPiglinEntity;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
+@Mixin(ZombifiedPiglinEntity.class)
+public abstract class ZombifiedPiglinEntityMixin extends MobEntityMixin {
+    protected ZombifiedPiglinEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
+        super(entityType, world);
+    }
 
-@Mixin(ServerWorld.class)
-public abstract class ServerWorldMixin {
-    @Inject(method = "loadEntityUnchecked", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerChunkManager;loadEntity(Lnet/minecraft/entity/Entity;)V", shift = AFTER))
-    private void possessLoadedEntities(Entity entity, CallbackInfo ci) {
-        PlayerEntity possessor = ((ProtoPossessable) entity).getPossessor();
-
-        if (possessor != null && entity instanceof MobEntity) {
-            ((Possessable) entity).setPossessor(null);  // reset the possessor in case the possession actually fails
-            PossessionComponent.get(possessor).startPossessing((MobEntity) entity);
-        }
+    @Override
+    protected @Nullable MobEntity createCuredEntity() {
+        return this.method_29243(EntityType.PIGLIN, false);
     }
 }

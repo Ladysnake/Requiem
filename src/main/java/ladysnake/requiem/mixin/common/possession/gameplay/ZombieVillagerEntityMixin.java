@@ -32,31 +32,43 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.possession;
+package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import ladysnake.requiem.api.v1.internal.ProtoPossessable;
-import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import net.minecraft.entity.Entity;
+import ladysnake.requiem.api.v1.entity.CurableEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.mob.ZombieVillagerEntity;
+import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
+@Mixin(ZombieVillagerEntity.class)
+public abstract class ZombieVillagerEntityMixin extends ZombieEntity implements CurableEntity {
+    @Unique
+    private static final ThreadLocal<VillagerEntity> CURED_VILLAGER = new ThreadLocal<>();
 
-@Mixin(ServerWorld.class)
-public abstract class ServerWorldMixin {
-    @Inject(method = "loadEntityUnchecked", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerChunkManager;loadEntity(Lnet/minecraft/entity/Entity;)V", shift = AFTER))
-    private void possessLoadedEntities(Entity entity, CallbackInfo ci) {
-        PlayerEntity possessor = ((ProtoPossessable) entity).getPossessor();
+    public ZombieVillagerEntityMixin(EntityType<? extends ZombieEntity> entityType, World world) {
+        super(entityType, world);
+    }
 
-        if (possessor != null && entity instanceof MobEntity) {
-            ((Possessable) entity).setPossessor(null);  // reset the possessor in case the possession actually fails
-            PossessionComponent.get(possessor).startPossessing((MobEntity) entity);
-        }
+    @Shadow
+    protected abstract void finishConversion(ServerWorld world);
+
+    @ModifyVariable(method = "finishConversion", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/VillagerEntity;initialize(Lnet/minecraft/world/ServerWorldAccess;Lnet/minecraft/world/LocalDifficulty;Lnet/minecraft/entity/SpawnReason;Lnet/minecraft/entity/EntityData;Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/entity/EntityData;"))
+    private VillagerEntity finishConversion(VillagerEntity villager) {
+        CURED_VILLAGER.set(villager);
+        return villager;
+    }
+
+    @Override
+    public MobEntity cureAsPossessed() {
+        this.finishConversion(((ServerWorld) this.world));
+        return CURED_VILLAGER.get();
     }
 }
