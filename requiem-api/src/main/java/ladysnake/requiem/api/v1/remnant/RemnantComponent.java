@@ -20,6 +20,7 @@ package ladysnake.requiem.api.v1.remnant;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
@@ -32,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @since 1.2.0
  */
-public interface RemnantComponent extends AutoSyncedComponent {
+public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComponent {
     ComponentKey<RemnantComponent> KEY = ComponentRegistry.getOrCreate(new Identifier("requiem", "remnant"), RemnantComponent.class);
 
     static boolean isIncorporeal(Entity entity) {

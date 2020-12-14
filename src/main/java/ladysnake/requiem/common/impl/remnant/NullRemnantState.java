@@ -66,4 +66,9 @@ public final class NullRemnantState implements RemnantState {
     public void prepareRespawn(ServerPlayerEntity original, boolean lossless) {
         // NO-OP
     }
+
+    @Override
+    public void serverTick() {
+        // NO-OP
+    }
 }

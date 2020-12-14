@@ -116,4 +116,9 @@ public class MutableRemnantState implements RemnantState {
         clone.interactionManager.setWorld(previousWorld);
         clone.copyPositionAndRotation(original);
     }
+
+    @Override
+    public void serverTick() {
+        // NO-OP
+    }
 }

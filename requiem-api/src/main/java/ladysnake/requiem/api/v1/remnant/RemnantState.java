@@ -66,4 +66,6 @@ public interface RemnantState {
      * @param lossless false if the original player is dead, true otherwise
      */
     void prepareRespawn(ServerPlayerEntity original, boolean lossless);
+
+    void serverTick();
 }
