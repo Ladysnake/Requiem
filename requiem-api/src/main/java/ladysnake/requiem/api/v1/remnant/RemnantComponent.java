@@ -121,6 +121,8 @@ public interface RemnantComponent extends AutoSyncedComponent {
      */
     boolean setVagrant(boolean vagrant);
 
+    boolean canDissociateFrom(MobEntity possessed);
+
     /**
      * Called when this remnant state's player is cloned
      *

@@ -35,6 +35,7 @@
 package ladysnake.requiem.common.impl.remnant;
 
 import ladysnake.requiem.api.v1.remnant.RemnantState;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public final class NullRemnantState implements RemnantState {
@@ -53,6 +54,11 @@ public final class NullRemnantState implements RemnantState {
 
     @Override
     public boolean setVagrant(boolean vagrant) {
+        return false;
+    }
+
+    @Override
+    public boolean canDissociateFrom(MobEntity possessed) {
         return false;
     }
 

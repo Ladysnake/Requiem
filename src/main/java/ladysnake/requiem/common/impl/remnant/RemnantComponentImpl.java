@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.remnant.RemnantTypes;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
@@ -111,6 +112,11 @@ public final class RemnantComponentImpl implements RemnantComponent {
         if (wasSoul != nowSoul) {
             RemnantStateChangeCallback.EVENT.invoker().onRemnantStateChange(this.player, this);
         }
+    }
+
+    @Override
+    public boolean canDissociateFrom(MobEntity possessed) {
+        return this.state.canDissociateFrom(possessed);
     }
 
     @Override

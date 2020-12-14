@@ -94,7 +94,7 @@ public class ServerMessageHandling {
             if (remnantState.getRemnantType().isDemon()) {
                 PossessionComponent possessionComponent = PossessionComponent.get(player);
                 MobEntity possessedEntity = possessionComponent.getPossessedEntity();
-                if (possessedEntity != null && RequiemEntityTypeTags.IMMOVABLE.contains(possessedEntity.getType())) {
+                if (possessedEntity != null && RemnantComponent.get(player).canDissociateFrom(possessedEntity)) {
                     possessionComponent.stopPossessing();
                 } else {
                     InitiateFractureCallback.EVENT.invoker().performFracture((ServerPlayerEntity) player);

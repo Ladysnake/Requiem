@@ -44,6 +44,8 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -88,6 +90,11 @@ public class MutableRemnantState implements RemnantState {
         MovementAlterer.get(this.player).setConfig(config);
         RemnantComponent.KEY.sync(this.player);
         return true;
+    }
+
+    @Override
+    public boolean canDissociateFrom(MobEntity possessed) {
+        return RequiemEntityTypeTags.IMMOVABLE.contains(possessed.getType());
     }
 
     @Override
