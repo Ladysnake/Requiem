@@ -32,55 +32,35 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.impl.remnant.dialogue;
+package ladysnake.requiem.common.impl.remnant;
 
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
-import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
-import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
+import dev.onyxstudios.cca.mixin.scoreboard.ServerScoreboardAccessor;
+import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.ServerScoreboard;
+import net.minecraft.server.MinecraftServer;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
+import java.util.UUID;
 
-public final class PlayerDialogueTracker implements DialogueTracker {
-    public static final Identifier BECOME_REMNANT = Requiem.id("become_remnant");
-    public static final Identifier BECOME_WANDERING_SPIRIT = Requiem.id("become_wandering_spirit");
-    public static final Identifier STAY_MORTAL = Requiem.id("stay_mortal");
+public class GlobalAttritionFocus extends AttritionFocusBase {
+    private final @Nullable MinecraftServer server;
 
-    private final DialogueRegistry manager;
-    private final PlayerEntity player;
-    private @Nullable CutsceneDialogue currentDialogue;
-
-    public PlayerDialogueTracker(PlayerEntity player) {
-        this.manager = DialogueRegistry.get(player.world);
-        this.player = player;
+    public GlobalAttritionFocus(Scoreboard scoreboard) {
+        this.server = scoreboard instanceof ServerScoreboard ? ((ServerScoreboardAccessor) scoreboard).getServer() : null;
     }
 
     @Override
-    public void handleAction(Identifier action) {
-        if (!this.player.world.isClient) {
-            this.manager.getAction(action).handle((ServerPlayerEntity) this.player);
+    public void addAttrition(UUID playerUuid, int level) {
+        if (this.server == null) throw new IllegalStateException("addAttrition called clientside");
+
+        PlayerEntity player = this.server.getPlayerManager().getPlayer(playerUuid);
+
+        if (player != null) {
+            AttritionStatusEffect.apply(player, level);
         } else {
-            Requiem.LOGGER.warn("PlayerDialogueTracker#handleAction called on the wrong side !");
+            super.addAttrition(playerUuid, level);
         }
-    }
-
-    @Override
-    public void startDialogue(Identifier id) {
-        this.currentDialogue = this.manager.getDialogue(id);
-        this.currentDialogue.start();
-    }
-
-    @Override
-    public void endDialogue() {
-        this.currentDialogue = null;
-    }
-
-    @Nullable
-    @Override
-    public CutsceneDialogue getCurrentDialogue() {
-        return this.currentDialogue;
     }
 }

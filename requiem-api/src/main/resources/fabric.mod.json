@@ -31,7 +31,8 @@
       "requiem:inventory_limiter",
       "requiem:skeleton_bones",
       "requiem:wololo",
-      "requiem:origin_holder"
+      "requiem:origin_holder",
+      "requiem:attrition_focus"
     ]
   }
 }

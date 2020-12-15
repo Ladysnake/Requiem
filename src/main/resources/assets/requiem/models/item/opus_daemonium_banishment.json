@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
     "textures": {
-        "layer0": "requiem:item/opus_daemonium_curse"
+        "layer0": "requiem:item/opus_daemonium_banishment"
     }
 }

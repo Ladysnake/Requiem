@@ -13,6 +13,7 @@
     "access.ProjectileEntityAccessor",
     "access.RegistryAccessor",
     "attrition.EffectCommandMixin",
+    "attrition.LivingEntityMixin",
     "attrition.ServerPlayerEntityMixin",
     "attrition.StatusEffectInstanceMixin",
     "event.ItemEntityMixin",

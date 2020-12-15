@@ -257,6 +257,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     @Override
     public void registerRemnantStates(Registry<RemnantType> registry) {
         Registry.register(registry, Requiem.id("remnant"), RemnantTypes.REMNANT);
+        Registry.register(registry, Requiem.id("wandering_spirit"), RemnantTypes.WANDERING_SPIRIT);
     }
 
     @Override
@@ -267,6 +268,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     @Override
     public void registerDialogueActions(DialogueRegistry registry) {
         registry.registerAction(PlayerDialogueTracker.BECOME_REMNANT, p -> handleRemnantChoiceAction(p, RemnantTypes.REMNANT));
+        registry.registerAction(PlayerDialogueTracker.BECOME_WANDERING_SPIRIT, p -> handleRemnantChoiceAction(p, RemnantTypes.WANDERING_SPIRIT));
         registry.registerAction(PlayerDialogueTracker.STAY_MORTAL, p -> handleRemnantChoiceAction(p, MORTAL));
     }
 

@@ -34,7 +34,9 @@
  */
 package ladysnake.requiem.common.entity.effect;
 
+import com.google.common.base.Preconditions;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -43,7 +45,10 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+
+import javax.annotation.Nonnegative;
 
 public class AttritionStatusEffect extends StatusEffect {
     public static final Identifier ATTRITION_BACKGROUND = Requiem.id("textures/gui/attrition_background.png");
@@ -54,22 +59,47 @@ public class AttritionStatusEffect extends StatusEffect {
     }};
 
     public static void apply(PlayerEntity target) {
+        apply(target, 1);
+    }
+
+    public static void apply(PlayerEntity target, @Nonnegative int amount) {
+        Preconditions.checkArgument(amount > 0);
+
         StatusEffectInstance attrition = target.getStatusEffect(RequiemStatusEffects.ATTRITION);
-        int amplifier = attrition == null ? 0 : attrition.getAmplifier() + 1;
+        int amplifier = attrition == null ? amount - 1 : attrition.getAmplifier() + amount;
         if (amplifier <= 3) {
-            target.addStatusEffect(new StatusEffectInstance(
-                RequiemStatusEffects.ATTRITION,
-                300,
-                amplifier,
-                false,
-                false,
-                true
-            ));
+            addAttrition(target, amplifier);
         } else {
             if (target.world.getLevelProperties().isHardcore()) {
                 RemnantComponent.get(target).become(RemnantTypes.MORTAL);
                 target.damage(ATTRITION_HARDCORE_DEATH, Float.MAX_VALUE);
             }
+        }
+    }
+
+    private static void addAttrition(PlayerEntity target, int amplifier) {
+        target.addStatusEffect(new StatusEffectInstance(
+            RequiemStatusEffects.ATTRITION,
+            300,
+            amplifier,
+            false,
+            false,
+            true
+        ));
+    }
+
+    public static void reduce(ServerPlayerEntity target, @Nonnegative int amount) {
+        Preconditions.checkArgument(amount > 0);
+
+        StatusEffectInstance attrition = target.getStatusEffect(RequiemStatusEffects.ATTRITION);
+        if (attrition == null) return;
+
+        int amplifier = attrition.getAmplifier() - amount;
+        target.removeStatusEffect(RequiemStatusEffects.ATTRITION);
+        ((StatusEffectReapplicator) target).getReappliedStatusEffects().removeIf(e -> e.getEffectType() == RequiemStatusEffects.ATTRITION);
+
+        if (amplifier >= 0) {
+            addAttrition(target, amplifier);
         }
     }
 

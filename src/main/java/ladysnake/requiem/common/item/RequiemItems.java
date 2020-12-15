@@ -55,9 +55,9 @@ public class RequiemItems {
     public static final DebugItem DEBUG_ITEM = new DebugItem(new Item.Settings());
     public static final Item HUMAN_FLESH = new Item(new Item.Settings().food(HUMAN_FOOD).group(ItemGroup.FOOD));
     public static final OpusDemoniumItem OPUS_DEMONIUM = new OpusDemoniumItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1));
-    public static final WrittenOpusItem OPUS_DEMONIUM_CURE = new WrittenOpusItem(RemnantTypes.MORTAL, Formatting.AQUA, new Item.Settings().group(ItemGroup.MISC).maxCount(1));
-    public static final WrittenOpusItem OPUS_DEMONIUM_CURSE = new WrittenOpusItem(RemnantTypes.REMNANT, Formatting.RED, new Item.Settings().group(ItemGroup.MISC).maxCount(1));
-    public static final WrittenOpusItem OPUS_DEMONIUM_BANISHMENT = new WrittenOpusItem(RemnantTypes.WANDERING_SPIRIT, Formatting.GRAY, new Item.Settings().group(ItemGroup.MISC).maxCount(1));
+    public static final WrittenOpusItem OPUS_DEMONIUM_CURE = new WrittenOpusItem(RemnantTypes.MORTAL, Formatting.AQUA, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.cure");
+    public static final WrittenOpusItem OPUS_DEMONIUM_CURSE = new WrittenOpusItem(RemnantTypes.REMNANT, Formatting.RED, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.curse");
+    public static final WrittenOpusItem OPUS_DEMONIUM_BANISHMENT = new WrittenOpusItem(RemnantTypes.WANDERING_SPIRIT, Formatting.GRAY, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.banishment");
 
     public static void init() {
         registerItem(DEBUG_ITEM, "debug_item");

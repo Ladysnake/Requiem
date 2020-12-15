@@ -65,11 +65,13 @@ import java.util.List;
 public class WrittenOpusItem extends Item {
     private final RemnantType remnantType;
     private final Formatting color;
+    private final String tooltip;
 
-    public WrittenOpusItem(RemnantType remnantType, Formatting color, Settings settings) {
+    public WrittenOpusItem(RemnantType remnantType, Formatting color, Settings settings, String tooltip) {
         super(settings);
         this.remnantType = remnantType;
         this.color = color;
+        this.tooltip = tooltip;
     }
 
     public RemnantType getRemnantType() {
@@ -114,8 +116,8 @@ public class WrittenOpusItem extends Item {
     @Environment(EnvType.CLIENT)
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> lines, TooltipContext ctx) {
-        lines.add(new TranslatableText(this == RequiemItems.OPUS_DEMONIUM_CURE ? "requiem:opus_daemonium.cure" : "requiem:opus_daemonium.curse")
-                .formatted(this.getTooltipColor()));
+        lines.add(new TranslatableText(tooltip).formatted(this.getTooltipColor()));
+
         if (stack.hasTag()) {
             CompoundTag tag = stack.getTag();
             assert tag != null;
