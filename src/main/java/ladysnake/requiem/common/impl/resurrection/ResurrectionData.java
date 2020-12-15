@@ -39,16 +39,22 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import ladysnake.requiem.api.v1.event.requiem.SearchConsumableCallback;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.mixin.common.access.EntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.Hand;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import net.minecraft.world.World;
@@ -60,6 +66,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 public final class ResurrectionData implements Comparable<ResurrectionData> {
     private static final Map<String, BiPredicate<ServerPlayerEntity, DamageSource>> SPECIAL_PREDICATES = Util.make(new HashMap<>(), m -> {
@@ -71,37 +78,74 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
     });
 
     private final int priority;
-    @Nullable
-    private final EntityPredicate playerPredicate;
-    @Nullable
-    private final ExtendedDamageSourcePredicate damageSourcePredicate;
-    private final EntityType<?> entityType;
-    @Nullable
-    private final CompoundTag entityNbt;
+    private final @Nullable EntityPredicate playerPredicate;
+    private final @Nullable ExtendedDamageSourcePredicate damageSourcePredicate;
+    private final @Nullable ItemPredicate consumable;
     private final List<BiPredicate<ServerPlayerEntity, DamageSource>> specials;
 
-    private ResurrectionData(int priority, @Nullable EntityPredicate playerPredicate, @Nullable ExtendedDamageSourcePredicate damageSourcePredicate, EntityType<?> entityType, @Nullable CompoundTag entityNbt, List<BiPredicate<ServerPlayerEntity, DamageSource>> specials) {
+    private final EntityType<?> entityType;
+    private final @Nullable CompoundTag entityNbt;
+
+    private ResurrectionData(int priority, @Nullable EntityPredicate playerPredicate, @Nullable ExtendedDamageSourcePredicate damageSourcePredicate, @Nullable ItemPredicate consumable, List<BiPredicate<ServerPlayerEntity, DamageSource>> specials, EntityType<?> entityType, @Nullable CompoundTag entityNbt) {
         this.priority = priority;
         this.playerPredicate = playerPredicate;
         this.damageSourcePredicate = damageSourcePredicate;
+        this.specials = specials;
+        this.consumable = consumable;
         this.entityType = entityType;
         this.entityNbt = entityNbt;
-        this.specials = specials;
     }
 
     public boolean matches(ServerPlayerEntity player, DamageSource killingBlow) {
+        if (killingBlow.isOutOfWorld()) return false;
+
         if (damageSourcePredicate != null && !damageSourcePredicate.test(player, killingBlow)) {
             return false;
         }
+
         if (playerPredicate != null && !playerPredicate.test(player, player)) {
             return false;
         }
+
         for (BiPredicate<ServerPlayerEntity, DamageSource> specialCondition : specials) {
             if (!specialCondition.test(player, killingBlow)) {
                 return false;
             }
         }
-        return true;
+
+        return this.tryUseConsumable(player);
+    }
+
+    private boolean tryUseConsumable(ServerPlayerEntity player) {
+        if (this.consumable == null) return false;
+
+        Predicate<ItemStack> action = new Predicate<ItemStack>() {
+            private boolean found;
+
+            @Override
+            public boolean test(ItemStack stack) {
+                if (this.found) throw new IllegalStateException("Consumable already found!");
+
+                if (ResurrectionData.this.consumable.test(stack)) {
+                    ItemStack totem = stack.copy();
+                    stack.decrement(1);
+                    player.incrementStat(Stats.USED.getOrCreateStat(totem.getItem()));
+                    RequiemCriteria.USED_TOTEM.trigger(player, totem);
+                    this.found = true;
+                    return true;
+                }
+
+                return false;
+            }
+        };
+
+        for (Hand hand : Hand.values()) {
+            if (action.test(player.getStackInHand(hand))) {
+                return true;
+            }
+        }
+
+        return SearchConsumableCallback.EVENT.invoker().findConsumables(player, action);
     }
 
     @Nullable
@@ -117,9 +161,21 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
         int priority = JsonHelper.getInt(json, "priority", 100);
         @Nullable ExtendedDamageSourcePredicate damagePredicate = ExtendedDamageSourcePredicate.deserialize(json.get("killing_blow"));
         @Nullable EntityPredicate playerPredicate = EntityPredicate.fromJson(json.get("player"));
-        if (damagePredicate == null && playerPredicate == null) {
-            throw new JsonParseException("Resurrection data must have either a damage source predicate (\"killingBlow\") or an entity predicate (\"player\")");
+        @Nullable ItemPredicate consumable = json.has("consumable") ? ItemPredicate.fromJson(json.get("consumable")) : null;
+
+        if (damagePredicate == null && playerPredicate == null && consumable == null) {
+            throw new JsonParseException("Resurrection data must have at least one of a damage source predicate (\"killingBlow\"), or an entity predicate (\"player\"), or an item predicate (\"consumable\")");
         }
+
+        List<BiPredicate<ServerPlayerEntity, DamageSource>> specials = new ArrayList<>();
+        JsonArray specialConditions = JsonHelper.getArray(json, "special_conditions", null);
+
+        if (specialConditions != null) {
+            for (JsonElement specialCondition : specialConditions) {
+                specials.add(SPECIAL_PREDICATES.get(JsonHelper.asString(specialCondition, "special condition")));
+            }
+        }
+
         JsonObject entityData = JsonHelper.getObject(json, "entity");
         String typeId = JsonHelper.getString(entityData, "type");
         EntityType<?> type = EntityType.get(typeId).orElseThrow(() -> new JsonParseException("Invalid entity id " + typeId));
@@ -133,13 +189,8 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
         } else {
             nbt = null;
         }
-        List<BiPredicate<ServerPlayerEntity, DamageSource>> specials = new ArrayList<>();
-        JsonArray specialConditions = JsonHelper.getArray(json, "special_conditions", new JsonArray());
-        assert specialConditions != null;
-        for (JsonElement specialCondition : specialConditions) {
-            specials.add(SPECIAL_PREDICATES.get(JsonHelper.asString(specialCondition, "special condition")));
-        }
-        return new ResurrectionData(priority, playerPredicate, damagePredicate, type, nbt, specials);
+
+        return new ResurrectionData(priority, playerPredicate, damagePredicate, consumable, specials, type, nbt);
     }
 
     @Override
