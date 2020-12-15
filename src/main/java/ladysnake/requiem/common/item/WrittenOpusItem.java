@@ -38,6 +38,7 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
+import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.fabricmc.api.EnvType;
@@ -46,6 +47,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -96,28 +98,46 @@ public class WrittenOpusItem extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
+
         if (!world.isClient && stack.getItem() == this) {
             RemnantType currentState = RemnantComponent.get(player).getRemnantType();
-            if (currentState != this.remnantType && !PossessionComponent.get(player).isPossessing()) {
-                world.playSound(null,
-                    player.getX(), player.getY(), player.getZ(),
-                    RequiemSoundEvents.ITEM_OPUS_USE,
-                    player.getSoundCategory(), 1.0F, 0.1F
-                );
-                world.playSound(null,
-                    player.getX(), player.getY(), player.getZ(),
-                    this.remnantType.isDemon() ? RequiemSoundEvents.EFFECT_BECOME_REMNANT : RequiemSoundEvents.EFFECT_BECOME_MORTAL,
-                    player.getSoundCategory(), 1.4F, 0.1F
-                );
-                RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(this.remnantType, true));
-                RemnantComponent.get(player).become(this.remnantType);
-                player.incrementStat(Stats.USED.getOrCreateStat(this));
-                stack.decrement(1);
-                RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, this.remnantType);
+
+            if (currentState != this.remnantType) {
+                PossessionComponent possessionComponent = PossessionComponent.get(player);
+
+                if (!possessionComponent.isPossessing() || tryExpediteCuring(player, possessionComponent)) {
+                    world.playSound(null,
+                        player.getX(), player.getY(), player.getZ(),
+                        RequiemSoundEvents.ITEM_OPUS_USE,
+                        player.getSoundCategory(), 1.0F, 0.1F
+                    );
+                    world.playSound(null,
+                        player.getX(), player.getY(), player.getZ(),
+                        this.remnantType.isDemon() ? RequiemSoundEvents.EFFECT_BECOME_REMNANT : RequiemSoundEvents.EFFECT_BECOME_MORTAL,
+                        player.getSoundCategory(), 1.4F, 0.1F
+                    );
+                    RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(this.remnantType, true));
+                    RemnantComponent.get(player).become(this.remnantType);
+                    player.incrementStat(Stats.USED.getOrCreateStat(this));
+                    stack.decrement(1);
+                    RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, this.remnantType);
+                }
             }
+
             return new TypedActionResult<>(ActionResult.SUCCESS, stack);
         }
+
         return new TypedActionResult<>(ActionResult.FAIL, stack);
+    }
+
+    private static boolean tryExpediteCuring(PlayerEntity player, PossessionComponent possessionComponent) {
+        MobEntity possessedEntity = possessionComponent.getPossessedEntity();
+
+        if (possessedEntity != null && possessionComponent.isCuring()) {
+            PossessionComponentImpl.finishCuring(possessedEntity, player);
+        }
+
+        return !possessionComponent.isPossessing();
     }
 
     @Environment(EnvType.CLIENT)

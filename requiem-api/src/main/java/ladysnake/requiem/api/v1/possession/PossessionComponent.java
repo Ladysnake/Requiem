@@ -136,4 +136,6 @@ public interface PossessionComponent extends AutoSyncedComponent, ServerTickingC
 
     void startCuring();
 
+    boolean isCuring();
+
 }

@@ -85,7 +85,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     private final PlayerEntity player;
     @Nullable private MobEntity possessed;
-    private int conversionTimer = -1;
+    private int conversionTimer;
 
     public PossessionComponentImpl(PlayerEntity player) {
         this.player = player;
@@ -209,7 +209,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                         player.stopRiding();
                         possessed.startRiding(ridden);
                     }
-                    this.conversionTimer = -1;
+                    this.conversionTimer = 0;
                 }
                 // move soulbound effects from the host to the soul
                 // careful with ConcurrentModificationException
@@ -296,28 +296,40 @@ public final class PossessionComponentImpl implements PossessionComponent {
     }
 
     @Override
+    public boolean isCuring() {
+        return this.conversionTimer > 0;
+    }
+
+    @Override
     public void serverTick() {
-        if (this.conversionTimer > 0) {
-            this.conversionTimer--;
+        if (this.isCuring()) {
+            if (!this.isPossessing()) this.conversionTimer = 0;
+            else this.conversionTimer--;
+
             if (this.conversionTimer == 0) {
                 MobEntity possessedEntity = this.getPossessedEntity();
+
                 if (possessedEntity != null) {
                     if (RemnantComponent.get(this.player).setVagrant(false)) {
-                        RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle((ServerPlayerEntity) this.player, possessedEntity, this.player, true);
-                        possessedEntity.remove();
-                        this.player.removeStatusEffect(RequiemStatusEffects.ATTRITION);
-                        this.player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-                        this.player.world.syncWorldEvent(null, 1027, this.player.getBlockPos(), 0);
+                        finishCuring(possessedEntity, this.player);
                     } else {
                         MobEntity cured = ((CurableEntity) possessedEntity).cureAsPossessed();
+
                         if (cured != null) {
                             RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle((ServerPlayerEntity) this.player, possessedEntity, cured, true);
                         }
                     }
                 }
-                this.conversionTimer = -1;
             }
         }
+    }
+
+    public static void finishCuring(MobEntity possessedEntity, PlayerEntity player) {
+        RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle((ServerPlayerEntity) player, possessedEntity, player, true);
+        possessedEntity.remove();
+        player.removeStatusEffect(RequiemStatusEffects.ATTRITION);
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
+        player.world.syncWorldEvent(null, 1027, player.getBlockPos(), 0);
     }
 
     @Override
