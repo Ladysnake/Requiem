@@ -41,6 +41,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.RequiemRegistries;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
@@ -83,7 +84,7 @@ public abstract class RemnantTypePredicate {
         }
 
         public JsonElement serialize() {
-            return new JsonPrimitive(RequiemRegistries.REMNANT_STATES.getId(this.type).toString());
+            return new JsonPrimitive(RemnantTypes.getId(this.type).toString());
         }
     }
 
