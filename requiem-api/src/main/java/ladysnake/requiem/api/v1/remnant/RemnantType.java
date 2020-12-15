@@ -19,6 +19,7 @@ package ladysnake.requiem.api.v1.remnant;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import org.apiguardian.api.API;
 
 import javax.annotation.Nullable;
@@ -68,4 +69,6 @@ public interface RemnantType {
     default ItemStack getConversionBook(@Nullable PlayerEntity player) {
         return ItemStack.EMPTY; // The empty stack is a singleton
     }
+
+    Text getName();
 }

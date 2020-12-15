@@ -67,57 +67,57 @@ public class RequiemCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal(REQUIEM_ROOT_COMMAND)
-                .requires(s -> s.hasPermissionLevel(2))
-                .then(literal(POSSESSION_SUBCOMMAND)
-                        // requiem possession stop [player]
-                        .then(literal("stop")
-                                .executes(context -> stopPossession(context.getSource(), Collections.singleton(context.getSource().getPlayer())))
-                                .then(argument("target", EntityArgumentType.players())
-                                        .executes(context -> stopPossession(context.getSource(), EntityArgumentType.getPlayers(context, "target")))
-                                )
-                        )
-                        // requiem possession start <possessed> [player]
-                        .then(literal("start")
-                                .then(argument("possessed", EntityArgumentType.entity())
-                                        .executes(context -> startPossession(context.getSource(), EntityArgumentType.getEntity(context, "possessed"), context.getSource().getPlayer()))
-                                        .then(argument("possessor", EntityArgumentType.player())
-                                                .executes(context -> startPossession(context.getSource(), EntityArgumentType.getEntity(context, "possessed"), EntityArgumentType.getPlayer(context, "possessor"))))
-                                )
-                        )
+            .requires(s -> s.hasPermissionLevel(2))
+            .then(literal(POSSESSION_SUBCOMMAND)
+                // requiem possession stop [player]
+                .then(literal("stop")
+                    .executes(context -> stopPossession(context.getSource(), Collections.singleton(context.getSource().getPlayer())))
+                    .then(argument("target", EntityArgumentType.players())
+                        .executes(context -> stopPossession(context.getSource(), EntityArgumentType.getPlayers(context, "target")))
+                    )
                 )
-                .then(literal(REMNANT_SUBCOMMAND)
-                        // requiem remnant query [player]
-                        .then(literal("query")
-                                .executes(context -> queryRemnant(context.getSource(), context.getSource().getPlayer()))
-                                .then(argument("target", EntityArgumentType.player())
-                                        .executes(context -> queryRemnant(context.getSource(), EntityArgumentType.getPlayer(context, "target")))
-                                )
-                        )
-                        // requiem remnant set <true|false> [player]
-                        .then(literal("set")
-                                .then(argument("remnant", BoolArgumentType.bool())
-                                        .executes(context -> setRemnant(context.getSource(), Collections.singleton(context.getSource().getPlayer()), BoolArgumentType.getBool(context, "remnant")))
-                                        .then(argument("target", EntityArgumentType.players())
-                                                .executes(context -> setRemnant(context.getSource(), EntityArgumentType.getPlayers(context, "target"), BoolArgumentType.getBool(context, "remnant")))
-                                        )
-                                )
-                        )
+                // requiem possession start <possessed> [player]
+                .then(literal("start")
+                    .then(argument("possessed", EntityArgumentType.entity())
+                        .executes(context -> startPossession(context.getSource(), EntityArgumentType.getEntity(context, "possessed"), context.getSource().getPlayer()))
+                        .then(argument("possessor", EntityArgumentType.player())
+                            .executes(context -> startPossession(context.getSource(), EntityArgumentType.getEntity(context, "possessed"), EntityArgumentType.getPlayer(context, "possessor"))))
+                    )
                 )
-                .then(literal(ETHEREAL_SUBCOMMAND)
-                        // requiem soul query [player]
-                        .then(literal("query")
-                                .executes(context -> queryEthereal(context.getSource(), context.getSource().getPlayer()))
-                        )
-                        // requiem soul set <true|false> [player]
-                        .then(literal("set")
-                                .then(argument("ethereal", BoolArgumentType.bool())
-                                        .executes(context -> setEthereal(context.getSource(), Collections.singleton(context.getSource().getPlayer()), BoolArgumentType.getBool(context, "ethereal")))
-                                        .then(argument("target", EntityArgumentType.players())
-                                                .executes(context -> setEthereal(context.getSource(), EntityArgumentType.getPlayers(context, "target"), BoolArgumentType.getBool(context, "ethereal")))
-                                        )
-                                )
-                        )
+            )
+            .then(literal(REMNANT_SUBCOMMAND)
+                // requiem remnant query [player]
+                .then(literal("query")
+                    .executes(context -> queryRemnant(context.getSource(), context.getSource().getPlayer()))
+                    .then(argument("target", EntityArgumentType.player())
+                        .executes(context -> queryRemnant(context.getSource(), EntityArgumentType.getPlayer(context, "target")))
+                    )
                 )
+                // requiem remnant set <true|false|identifier> [player]
+                .then(literal("set")
+                    .then(argument("remnant_type", RemnantArgumentType.remnantType())
+                        .executes(context -> setRemnant(context.getSource(), Collections.singleton(context.getSource().getPlayer()), RemnantArgumentType.getRemnantType(context, "remnant_type")))
+                        .then(argument("target", EntityArgumentType.players())
+                            .executes(context -> setRemnant(context.getSource(), EntityArgumentType.getPlayers(context, "target"), RemnantArgumentType.getRemnantType(context, "remnant_type")))
+                        )
+                    )
+                )
+            )
+            .then(literal(ETHEREAL_SUBCOMMAND)
+                // requiem soul query [player]
+                .then(literal("query")
+                    .executes(context -> queryEthereal(context.getSource(), context.getSource().getPlayer()))
+                )
+                // requiem soul set <true|false> [player]
+                .then(literal("set")
+                    .then(argument("ethereal", BoolArgumentType.bool())
+                        .executes(context -> setEthereal(context.getSource(), Collections.singleton(context.getSource().getPlayer()), BoolArgumentType.getBool(context, "ethereal")))
+                        .then(argument("target", EntityArgumentType.players())
+                            .executes(context -> setEthereal(context.getSource(), EntityArgumentType.getPlayers(context, "target"), BoolArgumentType.getBool(context, "ethereal")))
+                        )
+                    )
+                )
+            )
         );
     }
 
@@ -204,19 +204,21 @@ public class RequiemCommand {
     }
 
     private static int queryRemnant(ServerCommandSource source, ServerPlayerEntity player) {
-        boolean remnant = isRemnant(player);
-        Text remnantState = new TranslatableText("requiem:" + (remnant ? "remnant" : "not_remnant"));
-        source.sendFeedback(new TranslatableText("requiem:commands.query.success." + (source.getEntity() == player ? "self" : "other"), remnantState, player.getDisplayName()), true);
-        return remnant ? 1 : 0;
+        RemnantType remnantState = RemnantComponent.get(player).getRemnantType();
+        source.sendFeedback(new TranslatableText("requiem:commands.query.success." + (source.getEntity() == player ? "self" : "other"), remnantState.getName(), player.getDisplayName()), true);
+        return remnantState.isDemon() ? 1 : 0;
     }
 
     private static int setRemnant(ServerCommandSource source, Collection<ServerPlayerEntity> players, boolean remnant) {
+        return setRemnant(source, players, remnant ? RemnantTypes.REMNANT : RemnantTypes.MORTAL);
+    }
+
+    private static int setRemnant(ServerCommandSource source, Collection<ServerPlayerEntity> players, RemnantType type) {
         int count = 0;
         for (ServerPlayerEntity player : players) {
-            if (isRemnant(player) != remnant) {
-                RemnantType remnance = remnant ? RemnantTypes.REMNANT : RemnantTypes.MORTAL;
-                RemnantComponent.get(player).become(remnance);
-                sendSetRemnantFeedback(source, player, remnant);
+            if (RemnantComponent.get(player).getRemnantType() != type) {
+                RemnantComponent.get(player).become(type);
+                sendSetRemnantFeedback(source, player, type);
                 ++count;
             }
         }
@@ -227,16 +229,15 @@ public class RequiemCommand {
         return RemnantComponent.get(player).getRemnantType().isDemon();
     }
 
-    private static void sendSetRemnantFeedback(ServerCommandSource source, ServerPlayerEntity player, boolean remnant) {
-        Text name = new TranslatableText("requiem:" + (remnant ? "remnant" : "not_remnant"));
+    private static void sendSetRemnantFeedback(ServerCommandSource source, ServerPlayerEntity player, RemnantType type) {
         if (source.getEntity() == player) {
-            source.sendFeedback(new TranslatableText("requiem:commands.remnant.set.success.self", name), true);
+            source.sendFeedback(new TranslatableText("requiem:commands.remnant.set.success.self", type.getName()), true);
         } else {
             if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                player.sendSystemMessage(new TranslatableText("requiem:commands.remnant.set.target", name), Util.NIL_UUID);
+                player.sendSystemMessage(new TranslatableText("requiem:commands.remnant.set.target", type.getName()), Util.NIL_UUID);
             }
 
-            source.sendFeedback(new TranslatableText("requiem:commands.remnant.set.success.other", player.getDisplayName(), name), true);
+            source.sendFeedback(new TranslatableText("requiem:commands.remnant.set.success.other", player.getDisplayName(), type.getName()), true);
         }
     }
 }

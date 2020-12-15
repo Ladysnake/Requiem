@@ -14,6 +14,10 @@
 
   "requiem:argument.entity.options.possessor.description": "Entities possessed by",
 
+  "requiem:remnant_type.requiem.mortal.name": "Mortal",
+  "requiem:remnant_type.requiem.remnant.name": "Remnant",
+  "requiem:remnant_type.requiem.wandering_spirit.name": "Wandering Spirit",
+
   "requiem:commands.query.success.other": "%2$s is %1$s",
   "requiem:commands.query.success.self": "You are %s",
   "requiem:commands.ethereal.set.fail.mortal": "Failed to make %s ethereal as they are Mortal",
@@ -26,8 +30,7 @@
   "requiem:commands.remnant.set.target": "Your remnant state has been updated to %s",
   "requiem:ethereal": "Ethereal",
   "requiem:not_ethereal": "Corporeal",
-  "requiem:remnant": "Remnant",
-  "requiem:not_remnant": "Mortal",
+  "requiem:remnant_type.not_found": "Unknown Remnant Type: %s",
   "requiem:commands.possession.start.fail.not_mob": "%s cannot be possessed as it is not a mob entity",
   "requiem:commands.possession.start.fail.not_incorporeal": "%s is not incorporeal",
   "requiem:commands.possession.start.fail": "Failed to possess %s",

@@ -36,9 +36,13 @@ package ladysnake.requiem.common.remnant;
 
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.RequiemRegistries;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Lazy;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
@@ -49,6 +53,9 @@ public class SimpleRemnantType implements RemnantType {
     protected final String conversionSentence;
     protected final Supplier<Item> conversionBook;
     private final boolean remnant;
+    private final Lazy<TranslatableText> name = new Lazy<>(() -> new TranslatableText(
+        "requiem:remnant_type." + RequiemRegistries.REMNANT_STATES.getId(this).toString().replace(':', '.') + ".name"
+    ));
 
     public SimpleRemnantType(Function<PlayerEntity, RemnantState> factory, boolean remnant, String conversionSentence, Supplier<Item> conversionBook) {
         this.factory = factory;
@@ -76,5 +83,10 @@ public class SimpleRemnantType implements RemnantType {
     @Override
     public ItemStack getConversionBook(@Nullable PlayerEntity player) {
         return new ItemStack(this.conversionBook.get());
+    }
+
+    @Override
+    public Text getName() {
+        return this.name.get();
     }
 }
