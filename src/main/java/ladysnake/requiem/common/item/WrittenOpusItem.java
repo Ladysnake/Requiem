@@ -104,8 +104,10 @@ public class WrittenOpusItem extends Item {
 
             if (currentState != this.remnantType) {
                 PossessionComponent possessionComponent = PossessionComponent.get(player);
+                MobEntity possessedEntity = possessionComponent.getPossessedEntity();
+                boolean cure = possessedEntity != null && possessionComponent.isCuring();
 
-                if (!possessionComponent.isPossessing() || tryExpediteCuring(player, possessionComponent)) {
+                if (possessedEntity == null || cure) {
                     world.playSound(null,
                         player.getX(), player.getY(), player.getZ(),
                         RequiemSoundEvents.ITEM_OPUS_USE,
@@ -118,6 +120,11 @@ public class WrittenOpusItem extends Item {
                     );
                     RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(this.remnantType, true));
                     RemnantComponent.get(player).become(this.remnantType);
+
+                    if (cure && RemnantComponent.get(player).setVagrant(false)) {
+                        PossessionComponentImpl.finishCuring(possessedEntity, player);
+                    }
+
                     player.incrementStat(Stats.USED.getOrCreateStat(this));
                     stack.decrement(1);
                     RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, this.remnantType);
@@ -128,16 +135,6 @@ public class WrittenOpusItem extends Item {
         }
 
         return new TypedActionResult<>(ActionResult.FAIL, stack);
-    }
-
-    private static boolean tryExpediteCuring(PlayerEntity player, PossessionComponent possessionComponent) {
-        MobEntity possessedEntity = possessionComponent.getPossessedEntity();
-
-        if (possessedEntity != null && possessionComponent.isCuring()) {
-            PossessionComponentImpl.finishCuring(possessedEntity, player);
-        }
-
-        return !possessionComponent.isPossessing();
     }
 
     @Environment(EnvType.CLIENT)
