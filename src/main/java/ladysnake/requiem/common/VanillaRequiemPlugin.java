@@ -284,7 +284,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         RemnantComponent.get(player).become(chosenType);
         if (chosenType != MORTAL) {
             player.world.playSound(null, player.getX(), player.getY(), player.getZ(), RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
-            RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(false, false));
+            RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(chosenType, false));
         }
         RequiemCriteria.MADE_REMNANT_CHOICE.handle(player, chosenType);
     }

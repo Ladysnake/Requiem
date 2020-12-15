@@ -99,9 +99,9 @@ public class RequiemNetworking {
         }
     }
 
-    public static CustomPayloadS2CPacket createOpusUsePacket(boolean cure, boolean showBook) {
+    public static CustomPayloadS2CPacket createOpusUsePacket(RemnantType chosenType, boolean showBook) {
         PacketByteBuf buf = createEmptyBuffer();
-        buf.writeBoolean(cure);
+        buf.writeVarInt(RemnantTypes.getRawId(chosenType));
         buf.writeBoolean(showBook);
         return new CustomPayloadS2CPacket(OPUS_USE, buf);
     }

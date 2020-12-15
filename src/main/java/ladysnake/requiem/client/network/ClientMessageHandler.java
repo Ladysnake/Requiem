@@ -35,15 +35,15 @@
 package ladysnake.requiem.client.network;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.RequiemClient;
-import ladysnake.requiem.common.item.RequiemItems;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Identifier;
@@ -67,13 +67,16 @@ public class ClientMessageHandler {
 
     public void init() {
         ClientSidePacketRegistry.INSTANCE.register(OPUS_USE, ((context, buf) -> {
-            boolean cure = buf.readBoolean();
+            int remnantId = buf.readVarInt();
             boolean showBook = buf.readBoolean();
+            RemnantType remnantType = RemnantTypes.get(remnantId);
+            boolean cure = !remnantType.isDemon();
+
             context.getTaskQueue().execute(() -> {
                 PlayerEntity player = context.getPlayer();
                 if (showBook) {
                     mc.particleManager.addEmitter(player, ParticleTypes.PORTAL, 120);
-                    mc.gameRenderer.showFloatingItem(new ItemStack(cure ? RequiemItems.OPUS_DEMONIUM_CURE : RequiemItems.OPUS_DEMONIUM_CURSE));
+                    mc.gameRenderer.showFloatingItem(remnantType.getConversionBook(player));
                 }
                 if (cure) {
                     this.rc.getRequiemFxRenderer().playEtherealPulseAnimation(16, 0.0f, 0.8f, 0.6f);
@@ -100,5 +103,4 @@ public class ClientMessageHandler {
         T data = subManager.loadFromPacket(buffer);
         taskQueue.execute(() -> subManager.apply(data));
     }
-
  }
