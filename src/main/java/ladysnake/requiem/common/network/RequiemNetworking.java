@@ -61,6 +61,7 @@ import static io.netty.buffer.Unpooled.buffer;
 public class RequiemNetworking {
     public static final Identifier OPUS_USE = Requiem.id("opus_use");
     public static final Identifier DATA_SYNC = Requiem.id("data_sync");
+    public static final Identifier ETHEREAL_ANIMATION = Requiem.id("ethereal_animation");
 
     // Client -> Server
     public static final Identifier USE_DIRECT_ABILITY = Requiem.id("direct_ability");
@@ -175,4 +176,7 @@ public class RequiemNetworking {
         sendToServer(new CustomPayloadC2SPacket(OPEN_CRAFTING_MENU, createEmptyBuffer()));
     }
 
+    public static void sendEtherealAnimationMessage(ServerPlayerEntity player) {
+        sendTo(player, createEmptyMessage(ETHEREAL_ANIMATION));
+    }
 }

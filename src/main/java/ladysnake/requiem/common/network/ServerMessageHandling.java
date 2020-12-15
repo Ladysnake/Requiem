@@ -88,7 +88,7 @@ public class ServerMessageHandling {
             context.getTaskQueue().execute(() -> MobAbilityController.get(context.getPlayer()).useIndirect(type));
         });
         ServerSidePacketRegistry.INSTANCE.register(ETHEREAL_FRACTURE, (context, buf) -> context.getTaskQueue().execute(() -> {
-            PlayerEntity player = context.getPlayer();
+            ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
             RemnantComponent remnantState = RemnantComponent.get(player);
 
             if (remnantState.getRemnantType().isDemon()) {
@@ -96,8 +96,9 @@ public class ServerMessageHandling {
                 MobEntity possessedEntity = possessionComponent.getPossessedEntity();
                 if (possessedEntity != null && RemnantComponent.get(player).canDissociateFrom(possessedEntity)) {
                     possessionComponent.stopPossessing();
+                    RequiemNetworking.sendEtherealAnimationMessage(player);
                 } else {
-                    InitiateFractureCallback.EVENT.invoker().performFracture((ServerPlayerEntity) player);
+                    InitiateFractureCallback.EVENT.invoker().performFracture(player);
                 }
             }
         }));

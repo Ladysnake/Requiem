@@ -37,7 +37,6 @@ package ladysnake.pandemonium;
 import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.entity.ability.*;
-import ladysnake.pandemonium.common.network.PandemoniumNetworking;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
@@ -47,6 +46,7 @@ import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.EvokerEntity;
@@ -94,7 +94,7 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
             }
 
             if (success) {
-                PandemoniumNetworking.sendEtherealAnimationMessage(player);
+                RequiemNetworking.sendEtherealAnimationMessage(player);
             }
 
             return success;

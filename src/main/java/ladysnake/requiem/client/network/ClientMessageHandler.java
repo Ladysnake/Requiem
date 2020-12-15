@@ -46,6 +46,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.thread.ThreadExecutor;
 
@@ -54,8 +56,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static ladysnake.requiem.common.network.RequiemNetworking.DATA_SYNC;
-import static ladysnake.requiem.common.network.RequiemNetworking.OPUS_USE;
+import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
 public class ClientMessageHandler {
     private final MinecraftClient mc = MinecraftClient.getInstance();
@@ -97,6 +98,13 @@ public class ClientMessageHandler {
                 syncSubDataManager(buffer, manager, context.getTaskQueue());
             }
         });
+        ClientSidePacketRegistry.INSTANCE.register(ETHEREAL_ANIMATION, ((context, buf) -> context.getTaskQueue().execute(() -> {
+            MinecraftClient mc = MinecraftClient.getInstance();
+            assert mc != null;
+            assert mc.player != null;
+            mc.player.world.playSound(mc.player, mc.player.getX(), mc.player.getY(), mc.player.getZ(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2, 0.6f);
+            RequiemClient.INSTANCE.getRequiemFxRenderer().beginEtherealAnimation();
+        })));
     }
 
     private static <T> void syncSubDataManager(PacketByteBuf buffer, SubDataManager<T> subManager, ThreadExecutor<?> taskQueue) {
