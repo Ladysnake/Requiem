@@ -126,8 +126,8 @@ public class WrittenOpusItem extends Item {
         }
     }
 
-    @Environment(EnvType.CLIENT)
-    public boolean hasEnchantmentGlint(ItemStack stack) {
+    @Override
+    public boolean hasGlint(ItemStack stack) {
         return true;
     }
 }
