@@ -45,6 +45,8 @@ import ladysnake.requiem.common.entity.attribute.DelegatingAttribute;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
+import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
+import ladysnake.requiem.common.impl.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
 import net.minecraft.entity.Entity;
@@ -58,6 +60,7 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -323,11 +326,23 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
     @Inject(method = "onDeath", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;drop(Lnet/minecraft/entity/damage/DamageSource;)V"))
     private void onDeath(DamageSource deathCause, CallbackInfo ci) {
-        PlayerEntity possessor = this.getPossessor();
+        ServerPlayerEntity possessor = (ServerPlayerEntity) this.getPossessor();
         if (possessor != null) {
-            PossessionComponent.get(possessor).stopPossessing();
+            PossessionComponent possessionComponent = PossessionComponent.get(possessor);
+            MobEntity secondLife = ResurrectionDataLoader.INSTANCE.getNextBody(possessor, (LivingEntity) (Object) this, deathCause);
             possessor.setAttacker(this.getAttacker());
             AttritionStatusEffect.apply(possessor);
+
+            if (possessor.isAlive() && secondLife != null) {    // player didn't get killed by attrition
+                possessionComponent.stopPossessing(false);
+                if (possessionComponent.startPossessing(secondLife)) {
+                    RequiemCriteria.PLAYER_RESURRECTED_AS_ENTITY.handle(possessor, secondLife);
+                } else {
+                    PossessionComponentImpl.dropEquipment((LivingEntity) (Object) this, possessor);
+                }
+            } else {
+                possessionComponent.stopPossessing();
+            }
         } else if (this.requiem_previousPossessorUuid != null) {
             PlayerEntity previousPossessor = this.world.getPlayerByUuid(this.requiem_previousPossessorUuid);
 

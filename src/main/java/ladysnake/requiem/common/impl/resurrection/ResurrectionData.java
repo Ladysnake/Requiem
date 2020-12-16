@@ -45,6 +45,7 @@ import ladysnake.requiem.mixin.common.access.EntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -79,6 +80,7 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
 
     private final int priority;
     private final @Nullable EntityPredicate playerPredicate;
+    private final @Nullable EntityPredicate possessedPredicate;
     private final @Nullable ExtendedDamageSourcePredicate damageSourcePredicate;
     private final @Nullable ItemPredicate consumable;
     private final List<BiPredicate<ServerPlayerEntity, DamageSource>> specials;
@@ -86,9 +88,10 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
     private final EntityType<?> entityType;
     private final @Nullable CompoundTag entityNbt;
 
-    private ResurrectionData(int priority, @Nullable EntityPredicate playerPredicate, @Nullable ExtendedDamageSourcePredicate damageSourcePredicate, @Nullable ItemPredicate consumable, List<BiPredicate<ServerPlayerEntity, DamageSource>> specials, EntityType<?> entityType, @Nullable CompoundTag entityNbt) {
+    private ResurrectionData(int priority, @Nullable EntityPredicate playerPredicate, @Nullable EntityPredicate possessedPredicate, @Nullable ExtendedDamageSourcePredicate damageSourcePredicate, @Nullable ItemPredicate consumable, List<BiPredicate<ServerPlayerEntity, DamageSource>> specials, EntityType<?> entityType, @Nullable CompoundTag entityNbt) {
         this.priority = priority;
         this.playerPredicate = playerPredicate;
+        this.possessedPredicate = possessedPredicate;
         this.damageSourcePredicate = damageSourcePredicate;
         this.specials = specials;
         this.consumable = consumable;
@@ -96,7 +99,7 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
         this.entityNbt = entityNbt;
     }
 
-    public boolean matches(ServerPlayerEntity player, DamageSource killingBlow) {
+    public boolean matches(ServerPlayerEntity player, @Nullable LivingEntity possessed, DamageSource killingBlow) {
         if (killingBlow.isOutOfWorld()) return false;
 
         if (damageSourcePredicate != null && !damageSourcePredicate.test(player, killingBlow)) {
@@ -104,6 +107,10 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
         }
 
         if (playerPredicate != null && !playerPredicate.test(player, player)) {
+            return false;
+        }
+
+        if (possessedPredicate == null && possessed != null || possessedPredicate != null && !possessedPredicate.test(player, possessed)) {
             return false;
         }
 
@@ -161,10 +168,11 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
         int priority = JsonHelper.getInt(json, "priority", 100);
         @Nullable ExtendedDamageSourcePredicate damagePredicate = ExtendedDamageSourcePredicate.deserialize(json.get("killing_blow"));
         @Nullable EntityPredicate playerPredicate = EntityPredicate.fromJson(json.get("player"));
+        @Nullable EntityPredicate possessedPredicate = EntityPredicate.fromJson(json.get("possessed"));
         @Nullable ItemPredicate consumable = json.has("consumable") ? ItemPredicate.fromJson(json.get("consumable")) : null;
 
-        if (damagePredicate == null && playerPredicate == null && consumable == null) {
-            throw new JsonParseException("Resurrection data must have at least one of a damage source predicate (\"killingBlow\"), or an entity predicate (\"player\"), or an item predicate (\"consumable\")");
+        if (damagePredicate == null && playerPredicate == null && possessedPredicate == null && consumable == null) {
+            throw new JsonParseException("Resurrection data must have at least one of a damage source predicate (\"killingBlow\"), or an entity predicate (\"player\" and/or \"possessed\"), or an item predicate (\"consumable\")");
         }
 
         List<BiPredicate<ServerPlayerEntity, DamageSource>> specials = new ArrayList<>();
@@ -190,7 +198,7 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
             nbt = null;
         }
 
-        return new ResurrectionData(priority, playerPredicate, damagePredicate, consumable, specials, type, nbt);
+        return new ResurrectionData(priority, playerPredicate, possessedPredicate, damagePredicate, consumable, specials, type, nbt);
     }
 
     @Override
