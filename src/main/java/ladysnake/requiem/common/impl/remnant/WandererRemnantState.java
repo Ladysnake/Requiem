@@ -35,6 +35,7 @@
 package ladysnake.requiem.common.impl.remnant;
 
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
@@ -81,6 +82,7 @@ public class WandererRemnantState implements RemnantState {
 
         if (possessedEntity != null && player.hasStatusEffect(RequiemStatusEffects.ATTRITION) && player.getRandom().nextInt(100) == 0) {
             AttritionStatusEffect.reduce(player, 1);
+            AttritionFocus.KEY.get(possessedEntity).addAttrition(this.player.getUuid(), 1);
         }
     }
 }
