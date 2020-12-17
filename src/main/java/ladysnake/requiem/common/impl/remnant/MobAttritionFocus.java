@@ -38,10 +38,10 @@ import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ClientTickingComponent;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
+import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.Random;
@@ -80,7 +80,7 @@ public class MobAttritionFocus extends AttritionFocusBase implements ClientTicki
 
             for(int i = 0; i < random.nextInt(this.focusedAttrition); ++i) {
                 this.holder.world.addParticle(
-                    ParticleTypes.PORTAL,
+                    RequiemParticleTypes.ATTRITION,
                     this.holder.getParticleX(0.5D),
                     this.holder.getRandomBodyY() - 0.25D,
                     this.holder.getParticleZ(0.5D),

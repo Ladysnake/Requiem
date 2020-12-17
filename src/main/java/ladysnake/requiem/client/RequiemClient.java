@@ -48,6 +48,7 @@ import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.particle.PortalParticle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.EnchantedBookItem;
@@ -118,6 +119,7 @@ public final class RequiemClient implements ClientModInitializer {
 
     private void registerParticleFactories() {
         ParticleFactoryRegistry.getInstance().register(RequiemParticleTypes.GHOST, GhostParticle.Factory::new);
+        ParticleFactoryRegistry.getInstance().register(RequiemParticleTypes.ATTRITION, PortalParticle.Factory::new);
     }
 
     private void registerModelPredicates() {
