@@ -34,72 +34,47 @@
  */
 package ladysnake.requiem.common.impl.remnant;
 
+import io.github.ladysnake.pal.AbilitySource;
+import io.github.ladysnake.pal.Pal;
+import io.github.ladysnake.pal.VanillaAbilities;
+import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
-import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import net.minecraft.entity.mob.MobEntity;
+import ladysnake.requiem.api.v1.remnant.RemnantState;
+import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 
-public class MutableRemnantState extends RemnantStateBase {
+public abstract class RemnantStateBase implements RemnantState {
+    public static final AbilitySource SOUL_STATE = Pal.getAbilitySource(Requiem.id("soul_state"));
 
-    protected boolean ethereal;
+    protected final PlayerEntity player;
 
-    public MutableRemnantState(PlayerEntity player) {
-        super(player);
+    protected RemnantStateBase(PlayerEntity player) {
+        this.player = player;
     }
 
     @Override
-    public void setup() {
-        // NO-OP
+    public void teardown() {
+        this.makePlayerVagrant(false);
     }
 
-    @Override
-    public boolean isIncorporeal() {
-        return this.isVagrant() && !PossessionComponent.get(this.player).isPossessing();
-    }
-
-    @Override
-    public boolean isVagrant() {
-        return this.ethereal;
-    }
-
-    @Override
-    public boolean setVagrant(boolean vagrant) {
-        this.ethereal = vagrant;
-        this.makePlayerVagrant(vagrant);
-        return true;
-    }
-
-    @Override
-    public boolean canDissociateFrom(MobEntity possessed) {
-        return RequiemEntityTypeTags.IMMOVABLE.contains(possessed.getType());
-    }
-
-    @Override
-    public void prepareRespawn(ServerPlayerEntity original, boolean lossless) {
-        if (!lossless && !this.isVagrant()) {
-            RemnantComponent.get(this.player).setVagrant(true);
-            this.copyGlobalPos(original);
-
-            if (original.isDead()) {
-                AttritionStatusEffect.apply(player);
+    protected void makePlayerVagrant(boolean vagrant) {
+        SerializableMovementConfig config;
+        boolean serverside = !this.player.world.isClient;
+        if (vagrant) {
+            config = SerializableMovementConfig.SOUL;
+            if (serverside) {
+                Pal.grantAbility(this.player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
             }
+        } else {
+            config = null;
+            if (serverside) {
+                Pal.revokeAbility(this.player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
+            }
+            PossessionComponent.get(this.player).stopPossessing(false);
         }
-    }
-
-    protected void copyGlobalPos(ServerPlayerEntity original) {
-        ServerPlayerEntity clone = (ServerPlayerEntity) this.player;
-        ServerWorld previousWorld = clone.getServerWorld();
-        clone.setWorld(previousWorld);
-        clone.interactionManager.setWorld(previousWorld);
-        clone.copyPositionAndRotation(original);
-    }
-
-    @Override
-    public void serverTick() {
-        // NO-OP
+        MovementAlterer.get(player).setConfig(config);
+        RemnantComponent.KEY.sync(player);
     }
 }

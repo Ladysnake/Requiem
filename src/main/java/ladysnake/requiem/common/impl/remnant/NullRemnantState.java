@@ -43,6 +43,16 @@ public final class NullRemnantState implements RemnantState {
     public static final RemnantState NULL_STATE = new NullRemnantState();
 
     @Override
+    public void setup() {
+        // NO-OP
+    }
+
+    @Override
+    public void teardown() {
+        // NO-OP
+    }
+
+    @Override
     public boolean isIncorporeal() {
         return false;
     }

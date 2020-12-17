@@ -36,18 +36,20 @@ package ladysnake.requiem.common.impl.remnant;
 
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
-import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class WandererRemnantState implements RemnantState {
-    private final PlayerEntity player;
-
+public class WandererRemnantState extends RemnantStateBase {
     public WandererRemnantState(PlayerEntity player) {
-        this.player = player;
+        super(player);
+    }
+
+    @Override
+    public void setup() {
+        this.makePlayerVagrant(true);
     }
 
     @Override

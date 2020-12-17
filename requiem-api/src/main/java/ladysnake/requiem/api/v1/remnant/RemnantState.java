@@ -25,6 +25,10 @@ import org.jetbrains.annotations.Contract;
 public interface RemnantState {
     String NULL_STATE_ID = "requiem:mortal";
 
+    void setup();
+
+    void teardown();
+
     /**
      * Return whether this player is currently incorporeal.
      *
@@ -32,6 +36,7 @@ public interface RemnantState {
      * If this method returns {@code true}, the player is also {@link #isVagrant() vagrant}.
      *
      * @return true if the player is currently incorporeal, {@code false} otherwise
+     * @see RemnantComponent#isIncorporeal()
      */
     boolean isIncorporeal();
 
@@ -41,6 +46,8 @@ public interface RemnantState {
      * <p>Vagrant players are invulnerable and can only interact with the world through a proxy body.
      * Being vagrant is a prerequisite to being {@linkplain #isIncorporeal() incorporeal} or to
      * {@linkplain PossessionComponent#startPossessing(MobEntity) start possessing entities}.
+     *
+     * @see RemnantComponent#isVagrant()
      */
     @Contract(pure = true)
     boolean isVagrant();
@@ -54,9 +61,13 @@ public interface RemnantState {
      * @return {@code true} if the operation succeeded, {@code false} otherwise
      * @see #isVagrant()
      * @see #isIncorporeal()
+     * @see RemnantComponent#setVagrant(boolean)
      */
     boolean setVagrant(boolean vagrant);
 
+    /**
+     * @see RemnantComponent#canDissociateFrom(MobEntity)
+     */
     boolean canDissociateFrom(MobEntity possessed);
 
     /**
@@ -64,6 +75,7 @@ public interface RemnantState {
      *
      * @param original the player's clone
      * @param lossless false if the original player is dead, true otherwise
+     * @see RemnantComponent#prepareRespawn(ServerPlayerEntity, boolean)
      */
     void prepareRespawn(ServerPlayerEntity original, boolean lossless);
 
