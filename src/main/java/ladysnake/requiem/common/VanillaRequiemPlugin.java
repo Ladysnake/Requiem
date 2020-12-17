@@ -75,6 +75,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
@@ -83,6 +84,7 @@ import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
@@ -153,6 +155,10 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> {
             player.sendAbilitiesUpdate();
             ((MobResurrectable) player).spawnResurrectionEntity();
+
+            for (StatusEffectInstance effect : player.getStatusEffects()) {
+                player.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getEntityId(), effect));
+            }
         }));
         RemnantStateChangeCallback.EVENT.register((player, remnant) -> {
             InventoryLimiter.KEY.get(player).setEnabled(remnant.isVagrant());
