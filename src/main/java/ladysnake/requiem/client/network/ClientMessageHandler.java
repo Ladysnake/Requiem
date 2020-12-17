@@ -43,13 +43,16 @@ import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.thread.ThreadExecutor;
+import net.minecraft.world.World;
 
 import java.util.Map;
 import java.util.Objects;
@@ -105,6 +108,20 @@ public class ClientMessageHandler {
             mc.player.world.playSound(mc.player, mc.player.getX(), mc.player.getY(), mc.player.getZ(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2, 0.6f);
             RequiemClient.INSTANCE.getRequiemFxRenderer().beginEtherealAnimation();
         })));
+        ClientSidePacketRegistry.INSTANCE.register(CONSUME_RESURRECTION_ITEM, (context, buf) -> {
+            int entityId = buf.readVarInt();
+            ItemStack stack = buf.readItemStack();
+            context.getTaskQueue().execute(() -> {
+                World world = context.getPlayer().world;
+                Entity entity = world.getEntityById(entityId);
+                if (entity != null) {
+                    world.playSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0F, 1.0F, false);
+                    if (entity == this.mc.player) {
+                        this.mc.gameRenderer.showFloatingItem(stack);
+                    }
+                }
+            });
+        });
     }
 
     private static <T> void syncSubDataManager(PacketByteBuf buffer, SubDataManager<T> subManager, ThreadExecutor<?> taskQueue) {

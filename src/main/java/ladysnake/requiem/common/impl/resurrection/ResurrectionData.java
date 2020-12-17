@@ -41,6 +41,7 @@ import com.google.gson.JsonParseException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import ladysnake.requiem.api.v1.event.requiem.SearchConsumableCallback;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.mixin.common.access.EntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
@@ -120,10 +121,10 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
             }
         }
 
-        return this.tryUseConsumable(player);
+        return this.tryUseConsumable(player, possessed == null ? player : possessed);
     }
 
-    private boolean tryUseConsumable(ServerPlayerEntity player) {
+    private boolean tryUseConsumable(ServerPlayerEntity player, LivingEntity user) {
         if (this.consumable == null) return false;
 
         Predicate<ItemStack> action = new Predicate<ItemStack>() {
@@ -138,6 +139,7 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
                     stack.decrement(1);
                     player.incrementStat(Stats.USED.getOrCreateStat(totem.getItem()));
                     RequiemCriteria.USED_TOTEM.trigger(player, totem);
+                    RequiemNetworking.sendItemConsumptionPacket(user, stack);
                     this.found = true;
                     return true;
                 }
@@ -147,7 +149,7 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
         };
 
         for (Hand hand : Hand.values()) {
-            if (action.test(player.getStackInHand(hand))) {
+            if (action.test(user.getStackInHand(hand))) {
                 return true;
             }
         }

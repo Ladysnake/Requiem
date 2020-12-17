@@ -43,6 +43,7 @@ import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
@@ -62,6 +63,7 @@ public class RequiemNetworking {
     public static final Identifier OPUS_USE = Requiem.id("opus_use");
     public static final Identifier DATA_SYNC = Requiem.id("data_sync");
     public static final Identifier ETHEREAL_ANIMATION = Requiem.id("ethereal_animation");
+    public static final Identifier CONSUME_RESURRECTION_ITEM = Requiem.id("consume_resurrection_item");
 
     // Client -> Server
     public static final Identifier USE_DIRECT_ABILITY = Requiem.id("direct_ability");
@@ -105,6 +107,13 @@ public class RequiemNetworking {
         buf.writeVarInt(RemnantTypes.getRawId(chosenType));
         buf.writeBoolean(showBook);
         return new CustomPayloadS2CPacket(OPUS_USE, buf);
+    }
+
+    public static void sendItemConsumptionPacket(Entity user, ItemStack stack) {
+        PacketByteBuf buf = createEmptyBuffer();
+        buf.writeVarInt(user.getEntityId());
+        buf.writeItemStack(stack);
+        sendToAllTrackingIncluding(user, new CustomPayloadS2CPacket(CONSUME_RESURRECTION_ITEM, buf));
     }
 
     @Contract(pure = true)
