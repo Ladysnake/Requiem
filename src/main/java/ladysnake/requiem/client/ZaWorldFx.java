@@ -38,6 +38,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.satin.api.event.PostWorldRenderCallback;
+import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
@@ -55,7 +56,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 
-public class ZaWorldFx implements PostWorldRenderCallback, ClientTickEvents.EndTick {
+public class ZaWorldFx implements PostWorldRenderCallback, ClientTickEvents.EndTick, ShaderEffectRenderCallback {
 
     public static final Identifier ZA_WARUDO_SHADER_ID = Requiem.id("shaders/post/za_warudo.json");
 
@@ -83,6 +84,7 @@ public class ZaWorldFx implements PostWorldRenderCallback, ClientTickEvents.EndT
     void registerCallbacks() {
         PostWorldRenderCallback.EVENT.register(this);
         ClientTickEvents.END_CLIENT_TICK.register(this);
+        ShaderEffectRenderCallback.EVENT.register(this);
     }
 
     @Override
@@ -125,6 +127,12 @@ public class ZaWorldFx implements PostWorldRenderCallback, ClientTickEvents.EndT
             Entity e = camera.getFocusedEntity();
             uniformCenter.set(lerpf(e.getX(), e.prevX, tickDelta), lerpf(e.getY(), e.prevY, tickDelta), lerpf(e.getZ(), e.prevZ, tickDelta));
             uniformRadius.set(lerpf(radius, prevRadius, tickDelta));
+        }
+    }
+
+    @Override
+    public void renderShaderEffects(float tickDelta) {
+        if (this.renderingEffect) {
             shader.render(tickDelta);
         }
     }
