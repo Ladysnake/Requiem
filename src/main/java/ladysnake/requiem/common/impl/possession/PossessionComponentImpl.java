@@ -201,9 +201,6 @@ public final class PossessionComponentImpl implements PossessionComponent {
                     dropEquipment(possessed, player);
                 }
 
-                RequiemNetworking.sendToAllTrackingIncluding(player, new EntityAttributesS2CPacket(player.getEntityId(), player.getAttributes().getAttributesToSend()));
-                this.conversionTimer = 0;
-
                 // move soulbound effects from the host to the soul
                 // careful with ConcurrentModificationException
                 for (StatusEffectInstance effect : possessed.getStatusEffects().toArray(new StatusEffectInstance[0])) {
@@ -275,9 +272,11 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     private void resetState() {
         this.possessed = null;
+        this.conversionTimer = 0;
         MovementAlterer.get(this.player).setConfig(RemnantComponent.get(this.player).isVagrant() ? SerializableMovementConfig.SOUL : null);
         this.player.calculateDimensions(); // update size
         this.player.setAir(this.player.getMaxAir());
+        RequiemNetworking.sendToAllTrackingIncluding(player, new EntityAttributesS2CPacket(player.getEntityId(), player.getAttributes().getAttributesToSend()));
         PossessionComponent.KEY.sync(this.player);
         PossessionStateChangeCallback.EVENT.invoker().onPossessionStateChange(this.player, null);
     }
