@@ -95,10 +95,13 @@ public final class RequiemClientListener implements
         InventoryLockingChangeCallback.EVENT.register(this);
         // Add custom tooltips to items when the player is possessing certain entities
         ItemTooltipCallback.EVENT.register(this);
-        // Immovable mobs are a specific kind of boring, so we let players leave them regardless of their condition
         PossessionStateChangeCallback.EVENT.register((possessor, target) -> {
-            if (possessor.world.isClient && target != null && RequiemEntityTypeTags.IMMOVABLE.contains(target.getType())) {
-                this.mc.inGameHud.setOverlayMessage(new TranslatableText("requiem:shulker.onboard", mc.options.keySneak.getBoundKeyLocalizedText(), FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
+            if (possessor.world.isClient && target != null) {
+                if (RequiemEntityTypeTags.IMMOVABLE.contains(target.getType())) {
+                    this.mc.inGameHud.setOverlayMessage(new TranslatableText("requiem:shulker.onboard", mc.options.keySneak.getBoundKeyLocalizedText(), FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
+                } else if (RequiemEntityTypeTags.FRICTIONLESS_HOSTS.contains(target.getType())) {
+                    this.mc.inGameHud.setOverlayMessage(new TranslatableText("requiem:dissociate_hint", FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
+                }
             }
         });
         ApplyCameraTransformsCallback.EVENT.register(new HeadDownTransformHandler());

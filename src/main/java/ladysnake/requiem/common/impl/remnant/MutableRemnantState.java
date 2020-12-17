@@ -75,7 +75,7 @@ public class MutableRemnantState extends RemnantStateBase {
 
     @Override
     public boolean canDissociateFrom(MobEntity possessed) {
-        return RequiemEntityTypeTags.IMMOVABLE.contains(possessed.getType());
+        return RequiemEntityTypeTags.FRICTIONLESS_HOSTS.contains(possessed.getType());
     }
 
     @Override

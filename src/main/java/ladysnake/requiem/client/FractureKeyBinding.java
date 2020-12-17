@@ -76,6 +76,7 @@ public final class FractureKeyBinding {
     }
 
     private static boolean pressesEmergencyFracture(ClientPlayerEntity player) {
+        // Immovable mobs are a specific kind of boring, so we let players leave them through a simple sneak
         if (player.isSneaking()) {
             MobEntity possessedEntity = PossessionComponent.getPossessedEntity(player);
             return possessedEntity != null && RequiemEntityTypeTags.IMMOVABLE.contains(possessedEntity.getType());

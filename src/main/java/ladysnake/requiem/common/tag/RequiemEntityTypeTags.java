@@ -45,6 +45,7 @@ public final class RequiemEntityTypeTags {
 
     public static final Tag<EntityType<?>> POSSESSION_BLACKLIST = register("possession_blacklist");
     public static final Tag<EntityType<?>> POSSESSABLES = register("possessables");
+    public static final Tag<EntityType<?>> FRICTIONLESS_HOSTS = register("frictionless_hosts");
     public static final Tag<EntityType<?>> ITEM_USERS = register("item_users");
     public static final Tag<EntityType<?>> ARMOR_USERS = register("armor_users");
     public static final Tag<EntityType<?>> INVENTORY_CARRIERS = register("inventory_carriers");
