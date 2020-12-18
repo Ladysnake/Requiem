@@ -3,7 +3,7 @@
   "origins": [
     {
       "condition": {
-        "type": "and",
+        "type": "origins:and",
         "conditions": [
           {
             "type": "origins:origin",
