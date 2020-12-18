@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "origins": [
+    {
+      "condition": {
+        "type": "and",
+        "conditions": [
+          {
+            "type": "origins:origin",
+            "origin": "requiem:remnant"
+          },
+          {
+            "type": "requiem:start_remnant_gamerule",
+            "value": ["CHOOSE"]
+          }
+        ]
+      },
+      "origins": ["requiem:remnant"]
+    }
+  ]
+}
