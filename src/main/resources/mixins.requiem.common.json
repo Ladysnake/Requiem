@@ -14,6 +14,7 @@
     "access.RegistryAccessor",
     "attrition.EffectCommandMixin",
     "attrition.LivingEntityMixin",
+    "attrition.MobEntityMixin",
     "attrition.ServerPlayerEntityMixin",
     "attrition.StatusEffectInstanceMixin",
     "event.ItemEntityMixin",
