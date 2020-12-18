@@ -40,6 +40,7 @@ import ladysnake.pandemonium.client.render.entity.ShellClientPlayerEntity;
 import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.mixin.common.entity.mob.LivingEntityAccessor;
 import ladysnake.pandemonium.mixin.common.entity.player.PlayerEntityAccessor;
+import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.common.util.InventoryHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -391,6 +392,11 @@ public class PlayerShellEntity extends MobEntity {
     public void onDeath(DamageSource source) {
         super.onDeath(source);
         this.dropShoulderEntities();
+        UUID playerUuid = this.getPlayerUuid();
+
+        if (playerUuid != null) {
+            AttritionFocus.KEY.get(this.world.getScoreboard()).addAttrition(playerUuid, 1);
+        }
     }
 
     private void updateShoulderEntity(@Nullable CompoundTag compoundTag) {
