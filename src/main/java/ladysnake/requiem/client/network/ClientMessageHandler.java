@@ -35,6 +35,7 @@
 package ladysnake.requiem.client.network;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
@@ -116,7 +117,7 @@ public class ClientMessageHandler {
                 Entity entity = world.getEntityById(entityId);
                 if (entity != null) {
                     world.playSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0F, 1.0F, false);
-                    if (entity == this.mc.player) {
+                    if (entity == this.mc.player || ((Possessable)entity).getPossessor() == this.mc.player) {
                         this.mc.gameRenderer.showFloatingItem(stack);
                     }
                 }
