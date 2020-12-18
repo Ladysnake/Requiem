@@ -23,6 +23,7 @@ import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -121,6 +122,14 @@ public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComp
      * @since 1.4.0
      */
     boolean setVagrant(boolean vagrant);
+
+    boolean canRegenerateBody(MobEntity possessedEntity);
+
+    /**
+     *
+     * @param body the body being used to regenerate a physical player
+     */
+    void curePossessed(LivingEntity body);
 
     boolean canDissociateFrom(MobEntity possessed);
 

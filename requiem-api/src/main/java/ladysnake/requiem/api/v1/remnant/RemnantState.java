@@ -18,6 +18,7 @@
 package ladysnake.requiem.api.v1.remnant;
 
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Contract;
@@ -69,6 +70,13 @@ public interface RemnantState {
      * @see RemnantComponent#canDissociateFrom(MobEntity)
      */
     boolean canDissociateFrom(MobEntity possessed);
+
+    /**
+     * @see RemnantComponent#curePossessed(LivingEntity)
+     */
+    void curePossessed(LivingEntity body);
+
+    boolean canRegenerateBodyFrom(LivingEntity body);
 
     /**
      * Called when this remnant state's player is cloned

@@ -36,7 +36,6 @@ package ladysnake.requiem.common.impl.possession;
 
 import com.google.common.collect.MapMaker;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.entity.CurableEntity;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
@@ -47,13 +46,13 @@ import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.client.RequiemClient;
-import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.entity.attribute.DelegatingAttribute;
 import ladysnake.requiem.common.entity.attribute.PossessionDelegatingAttribute;
-import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
+import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import ladysnake.requiem.common.tag.RequiemItemTags;
 import ladysnake.requiem.common.util.InventoryHelper;
 import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
 import net.minecraft.entity.Entity;
@@ -65,6 +64,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
@@ -294,6 +294,16 @@ public final class PossessionComponentImpl implements PossessionComponent {
     }
 
     @Override
+    public boolean canBeCured(ItemStack cure) {
+        MobEntity possessedEntity = this.getPossessedEntity();
+        return possessedEntity != null
+            && !this.player.world.getGameRules().getBoolean(RequiemGamerules.NO_CURE)
+            && possessedEntity.isUndead()
+            && RequiemItemTags.UNDEAD_CURES.contains(cure.getItem())
+            && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS);
+    }
+
+    @Override
     public void startCuring() {
         if (!this.player.world.isClient) {
             Random rand = this.player.getRandom();
@@ -319,26 +329,10 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 MobEntity possessedEntity = this.getPossessedEntity();
 
                 if (possessedEntity != null) {
-                    if (RemnantComponent.get(this.player).setVagrant(false)) {
-                        finishCuring(possessedEntity, this.player);
-                    } else {
-                        MobEntity cured = ((CurableEntity) possessedEntity).cureAsPossessed();
-
-                        if (cured != null) {
-                            RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle((ServerPlayerEntity) this.player, possessedEntity, cured, true);
-                        }
-                    }
+                    RemnantComponent.get(this.player).curePossessed(possessedEntity);
                 }
             }
         }
-    }
-
-    public static void finishCuring(MobEntity possessedEntity, PlayerEntity player) {
-        RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle((ServerPlayerEntity) player, possessedEntity, player, true);
-        possessedEntity.remove();
-        player.removeStatusEffect(RequiemStatusEffects.ATTRITION);
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-        player.world.syncWorldEvent(null, 1027, player.getBlockPos(), 0);
     }
 
     @Override

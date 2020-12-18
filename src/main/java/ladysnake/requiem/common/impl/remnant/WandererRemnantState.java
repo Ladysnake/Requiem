@@ -39,38 +39,29 @@ import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class WandererRemnantState extends RemnantStateBase {
+public class WandererRemnantState extends MutableRemnantState {
     public WandererRemnantState(PlayerEntity player) {
         super(player);
     }
 
     @Override
     public void setup() {
-        this.makePlayerVagrant(true);
-    }
-
-    @Override
-    public boolean isIncorporeal() {
-        return !PossessionComponent.get(this.player).isPossessing();
-    }
-
-    @Override
-    public boolean isVagrant() {
-        return true;
-    }
-
-    @Override
-    public boolean setVagrant(boolean vagrant) {
-        return vagrant; // becoming vagrant always succeeds, merging always fails
+        this.setVagrant(true);
     }
 
     @Override
     public boolean canDissociateFrom(MobEntity possessed) {
         return true;
+    }
+
+    @Override
+    public boolean canRegenerateBodyFrom(LivingEntity body) {
+        return false;
     }
 
     @Override

@@ -38,7 +38,6 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
-import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.fabricmc.api.EnvType;
@@ -100,7 +99,8 @@ public class WrittenOpusItem extends Item {
         ItemStack stack = player.getStackInHand(hand);
 
         if (!world.isClient && stack.getItem() == this) {
-            RemnantType currentState = RemnantComponent.get(player).getRemnantType();
+            RemnantComponent remnantComponent = RemnantComponent.get(player);
+            RemnantType currentState = remnantComponent.getRemnantType();
 
             if (currentState != this.remnantType) {
                 PossessionComponent possessionComponent = PossessionComponent.get(player);
@@ -119,10 +119,10 @@ public class WrittenOpusItem extends Item {
                         player.getSoundCategory(), 1.4F, 0.1F
                     );
                     RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(this.remnantType, true));
-                    RemnantComponent.get(player).become(this.remnantType);
+                    remnantComponent.become(this.remnantType);
 
-                    if (cure && RemnantComponent.get(player).setVagrant(false)) {
-                        PossessionComponentImpl.finishCuring(possessedEntity, player);
+                    if (cure && remnantComponent.canRegenerateBody(possessedEntity)) {
+                        remnantComponent.curePossessed(possessedEntity);
                     }
 
                     player.incrementStat(Stats.USED.getOrCreateStat(this));

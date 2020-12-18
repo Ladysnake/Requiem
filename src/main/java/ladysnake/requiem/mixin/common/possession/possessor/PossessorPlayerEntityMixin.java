@@ -39,7 +39,6 @@ import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
@@ -127,7 +126,8 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
 
     @Inject(method = "eatFood", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/HungerManager;eat(Lnet/minecraft/item/Item;Lnet/minecraft/item/ItemStack;)V"))
     private void eatZombieFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
-        MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
+        PossessionComponent possessionComponent = PossessionComponent.KEY.get(this);
+        MobEntity possessedEntity = possessionComponent.getPossessedEntity();
         if (possessedEntity instanceof ZombieEntity && stack.getItem().isFood()) {
             if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || RequiemItemTags.RAW_FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
                 FoodComponent food = stack.getItem().getFoodComponent();
@@ -135,8 +135,8 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
                 possessedEntity.heal(food.getHunger());
             }
         }
-        if (possessedEntity != null && VanillaRequiemPlugin.canCure(possessedEntity, stack)) {
-            PossessionComponent.KEY.get(this).startCuring();
+        if (possessedEntity != null && possessionComponent.canBeCured(stack)) {
+            possessionComponent.startCuring();
         }
     }
 

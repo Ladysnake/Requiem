@@ -34,12 +34,14 @@
  */
 package ladysnake.requiem.common.impl.remnant;
 
+import com.google.common.base.Preconditions;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.remnant.RemnantTypes;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -113,6 +115,19 @@ public final class RemnantComponentImpl implements RemnantComponent {
 
         if (wasSoul != nowSoul) {
             RemnantStateChangeCallback.EVENT.invoker().onRemnantStateChange(this.player, this);
+        }
+    }
+
+    @Override
+    public boolean canRegenerateBody(MobEntity possessedEntity) {
+        return !this.player.world.getGameRules().getBoolean(RequiemGamerules.NO_CURE) && this.state.canRegenerateBodyFrom(possessedEntity);
+    }
+
+    @Override
+    public void curePossessed(LivingEntity body) {
+        Preconditions.checkState(!this.player.world.isClient);
+        if (!this.player.world.getGameRules().getBoolean(RequiemGamerules.NO_CURE)) {
+            this.state.curePossessed(body);
         }
     }
 

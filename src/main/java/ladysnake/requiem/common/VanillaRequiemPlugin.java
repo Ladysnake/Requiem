@@ -59,7 +59,6 @@ import ladysnake.requiem.common.entity.ability.ShulkerPeekAbility;
 import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
 import ladysnake.requiem.common.entity.ability.SnowmanSnowballAbility;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
-import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.impl.resurrection.ResurrectionDataLoader;
@@ -68,7 +67,6 @@ import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.fabricmc.fabric.api.event.player.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
@@ -76,7 +74,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
@@ -107,13 +104,6 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         -0.66,
         EntityAttributeModifier.Operation.MULTIPLY_TOTAL
     );
-
-    public static boolean canCure(LivingEntity possessedEntity, ItemStack cure) {
-        return !possessedEntity.world.getGameRules().getBoolean(RequiemGamerules.NO_CURE)
-            && possessedEntity.isUndead()
-            && RequiemItemTags.UNDEAD_CURES.contains(cure.getItem())
-            && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS);
-    }
 
     @Override
     public void onRequiemInitialize() {

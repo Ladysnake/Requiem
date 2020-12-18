@@ -36,7 +36,6 @@ package ladysnake.requiem.mixin.common.possession.gameplay;
 
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
@@ -59,11 +58,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ItemMixin {
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(World world, PlayerEntity player, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        MobEntity possessedEntity = PossessionComponent.get( player).getPossessedEntity();
+        PossessionComponent possessionComponent = PossessionComponent.get(player);
+        MobEntity possessedEntity = possessionComponent.getPossessedEntity();
         if (possessedEntity != null) {
             ItemStack heldStack = player.getStackInHand(hand);
 
-            if (VanillaRequiemPlugin.canCure(possessedEntity, heldStack)) {
+            if (possessionComponent.canBeCured(heldStack)) {
                 player.setCurrentHand(hand);
                 cir.setReturnValue(new TypedActionResult<>(ActionResult.SUCCESS, heldStack));
             } else if (RequiemEntityTypeTags.ZOMBIES.contains(possessedEntity.getType())) {
@@ -88,7 +88,7 @@ public abstract class ItemMixin {
     private void useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         if (RequiemItemTags.UNDEAD_CURES.contains((Item)(Object)this)) {
             PlayerEntity possessor = ((Possessable) entity).getPossessor();
-            if (possessor != null && VanillaRequiemPlugin.canCure(entity, stack)) {
+            if (possessor != null && PossessionComponent.get(possessor).canBeCured(stack)) {
                 if (!user.abilities.creativeMode) {
                     stack.decrement(1);
                 }

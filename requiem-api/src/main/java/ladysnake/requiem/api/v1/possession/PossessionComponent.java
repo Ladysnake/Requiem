@@ -26,6 +26,7 @@ import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -133,6 +134,8 @@ public interface PossessionComponent extends AutoSyncedComponent, ServerTickingC
     MobEntity getPossessedEntity();
 
     boolean isPossessing();
+
+    boolean canBeCured(ItemStack cure);
 
     void startCuring();
 
