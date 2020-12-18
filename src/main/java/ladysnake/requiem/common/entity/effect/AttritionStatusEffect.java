@@ -37,7 +37,6 @@ package ladysnake.requiem.common.entity.effect;
 import com.google.common.base.Preconditions;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
-import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
 import ladysnake.requiem.common.remnant.RemnantTypes;
@@ -68,16 +67,14 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
         Preconditions.checkArgument(amount > 0);
 
         StatusEffectInstance attrition = target.getStatusEffect(RequiemStatusEffects.ATTRITION);
-        int amplifier = attrition == null ? amount - 1 : attrition.getAmplifier() + amount;
-        if (amplifier <= 3) {
-            addAttrition(target, amplifier);
-        } else {
-            if (!(target instanceof PlayerEntity) || target.world.getLevelProperties().isHardcore()) {
-                if (target instanceof PlayerEntity) {
-                    RemnantComponent.get((PlayerEntity) target).become(RemnantTypes.MORTAL);
-                }
-                target.damage(ATTRITION_HARDCORE_DEATH, Float.MAX_VALUE);
+        int amplifier = Math.min(3, attrition == null ? amount - 1 : attrition.getAmplifier() + amount);
+        addAttrition(target, amplifier);
+
+        if (amplifier > 3 && !(target instanceof PlayerEntity) || target.world.getLevelProperties().isHardcore()) {
+            if (target instanceof PlayerEntity) {
+                RemnantComponent.get((PlayerEntity) target).become(RemnantTypes.MORTAL);
             }
+            target.damage(ATTRITION_HARDCORE_DEATH, Float.MAX_VALUE);
         }
     }
 
@@ -118,7 +115,6 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
 
     @Override
     public boolean shouldStick(LivingEntity entity) {
-        AttritionFocus attritionFocus = AttritionFocus.KEY.getNullable(entity);
-        return attritionFocus != null && attritionFocus.hasAttrition() || RemnantComponent.isIncorporeal(entity);
+        return RemnantComponent.isVagrant(entity);
     }
 }

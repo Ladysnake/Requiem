@@ -45,11 +45,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public class GlobalAttritionFocus extends AttritionFocusBase {
+public class GlobalAttritionFocus extends SimpleAttritionFocus {
     private final @Nullable Lazy<MinecraftServer> server;
 
     public GlobalAttritionFocus(Scoreboard scoreboard) {
-        this.server = scoreboard instanceof ServerScoreboard ? new Lazy<>(() -> ((ServerScoreboardAccessor) scoreboard).getServer()) : null;
+        this.server = scoreboard instanceof ServerScoreboard ? new Lazy<>(((ServerScoreboardAccessor) scoreboard)::getServer) : null;
     }
 
     @Override

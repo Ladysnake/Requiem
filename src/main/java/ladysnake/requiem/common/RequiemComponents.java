@@ -56,9 +56,9 @@ import ladysnake.requiem.common.impl.inventory.PlayerInventoryLimiter;
 import ladysnake.requiem.common.impl.movement.PlayerMovementAlterer;
 import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.remnant.GlobalAttritionFocus;
-import ladysnake.requiem.common.impl.remnant.MobAttritionFocus;
 import ladysnake.requiem.common.impl.remnant.RemnantComponentImpl;
 import ladysnake.requiem.common.impl.remnant.RevivingDeathSuspender;
+import ladysnake.requiem.common.impl.remnant.SimpleAttritionFocus;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import net.minecraft.entity.mob.MobEntity;
@@ -79,7 +79,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerForPlayers(MobAbilityController.KEY, PlayerAbilityController::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerForPlayers(InventoryLimiter.KEY, PlayerInventoryLimiter::new, RespawnCopyStrategy.INVENTORY);
         registry.registerFor(MobEntity.class, SkeletonBoneComponent.KEY, SkeletonBoneComponent::new);
-        registry.beginRegistration(MobEntity.class, AttritionFocus.KEY).impl(MobAttritionFocus.class).end(MobAttritionFocus::new);
+        registry.registerFor(MobEntity.class, AttritionFocus.KEY, p -> new SimpleAttritionFocus());
         registry.registerForPlayers(StatusEffectReapplicator.KEY, StatusEffectReapplicatorImpl::new, RespawnCopyStrategy.LOSSLESS_ONLY);
     }
 

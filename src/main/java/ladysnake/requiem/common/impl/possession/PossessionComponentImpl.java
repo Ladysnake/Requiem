@@ -43,6 +43,7 @@ import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.client.RequiemClient;
@@ -223,6 +224,9 @@ public final class PossessionComponentImpl implements PossessionComponent {
         if (ridden != null) {
             player.stopRiding();
             possessed.startRiding(ridden);
+        }
+        if (player.world.getLevelProperties().isHardcore()) {
+            AttritionFocus.KEY.get(possessed).applyAttrition(player);
         }
     }
 

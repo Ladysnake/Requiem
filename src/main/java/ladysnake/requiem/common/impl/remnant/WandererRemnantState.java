@@ -36,7 +36,9 @@ package ladysnake.requiem.common.impl.remnant;
 
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
+import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
+import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -83,6 +85,19 @@ public class WandererRemnantState extends RemnantStateBase {
 
         if (possessedEntity != null && player.hasStatusEffect(RequiemStatusEffects.ATTRITION) && player.getRandom().nextInt(100) == 0) {
             AttritionFocus.KEY.get(possessedEntity).addAttrition(this.player.getUuid(), 1);
+            AttritionStatusEffect.reduce(player, 1);
+
+            player.getServerWorld().spawnParticles(
+                RequiemParticleTypes.ATTRITION,
+                possessedEntity.getX(),
+                possessedEntity.getBodyY(0.5),
+                possessedEntity.getZ(),
+                60,
+                possessedEntity.getWidth() * 0.8,
+                possessedEntity.getHeight() * 0.6,
+                possessedEntity.getWidth() *0.8,
+                1.0
+            );
         }
     }
 }

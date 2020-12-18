@@ -35,11 +35,9 @@
 package ladysnake.requiem.mixin.common.attrition;
 
 import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
-import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -63,15 +61,6 @@ public abstract class LivingEntityMixin extends Entity {
         StatusEffectReapplicator reapplicator = StatusEffectReapplicator.KEY.getNullable(this);
         if (reapplicator != null) {
             reapplicator.onStatusEffectRemoved(effect);
-        }
-    }
-
-    @Inject(method = "drop", at = @At("RETURN"))
-    private void releaseAttrition(DamageSource source, CallbackInfo ci) {
-        AttritionFocus attritionFocus = AttritionFocus.KEY.getNullable(this);
-
-        if (attritionFocus != null) {
-            attritionFocus.transferAttrition(AttritionFocus.KEY.get(this.world.getScoreboard()));
         }
     }
 }

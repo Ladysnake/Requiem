@@ -34,7 +34,5 @@ public interface AttritionFocus extends Component {
 
     void transferAttrition(AttritionFocus other);
 
-    int getAttrition(PlayerEntity player);
-
     boolean hasAttrition();
 }

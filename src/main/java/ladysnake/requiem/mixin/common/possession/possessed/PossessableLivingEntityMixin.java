@@ -37,7 +37,6 @@ package ladysnake.requiem.mixin.common.possession.possessed;
 import com.google.common.base.Preconditions;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.entity.ai.DisableableBrain;
@@ -181,11 +180,6 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         if (possessor == null) {
             assert this.possessor != null;
             this.requiem_previousPossessorUuid = this.possessor.getUuid();
-            int focusedAttrition = AttritionFocus.KEY.get(this).getAttrition(this.possessor);
-
-            if (focusedAttrition > 0) {
-                AttritionStatusEffect.reduce(this.possessor, focusedAttrition);
-            }
         }
 
         this.possessor = possessor;

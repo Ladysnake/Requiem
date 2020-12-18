@@ -47,7 +47,7 @@ import net.minecraft.nbt.ListTag;
 import javax.annotation.Nonnegative;
 import java.util.UUID;
 
-public abstract class AttritionFocusBase implements AttritionFocus {
+public class SimpleAttritionFocus implements AttritionFocus {
     protected final Object2IntOpenHashMap<UUID> attritionLevels = new Object2IntOpenHashMap<>();
 
     @Override
@@ -70,11 +70,6 @@ public abstract class AttritionFocusBase implements AttritionFocus {
             other.addAttrition(entry.getKey(), entry.getIntValue());
             iterator.remove();
         }
-    }
-
-    @Override
-    public int getAttrition(PlayerEntity player) {
-        return this.attritionLevels.getInt(player.getUuid());
     }
 
     @Override
