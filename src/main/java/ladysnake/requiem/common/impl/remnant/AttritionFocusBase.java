@@ -73,6 +73,11 @@ public abstract class AttritionFocusBase implements AttritionFocus {
     }
 
     @Override
+    public int getAttrition(PlayerEntity player) {
+        return this.attritionLevels.getInt(player.getUuid());
+    }
+
+    @Override
     public boolean hasAttrition() {
         return !this.attritionLevels.isEmpty();
     }
