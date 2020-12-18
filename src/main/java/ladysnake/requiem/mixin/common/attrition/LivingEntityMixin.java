@@ -34,21 +34,57 @@
  */
 package ladysnake.requiem.mixin.common.attrition;
 
+import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
+import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity {
+public abstract class LivingEntityMixin extends Entity implements StatusEffectReapplicator {
+
+    @Shadow
+    public abstract boolean addStatusEffect(StatusEffectInstance effect);
+
+    @Unique
+    private final Collection<StatusEffectInstance> reappliedEffects = new ArrayList<>();
+
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
+    }
+
+    @Inject(method = "onStatusEffectRemoved", at = @At("RETURN"))
+    private void onStatusEffectRemoved(StatusEffectInstance effect, CallbackInfo ci) {
+        if (!this.world.isClient && StickyStatusEffect.shouldStick(effect.getEffectType(), (LivingEntity) (Object) this)) {
+            reappliedEffects.add(new StatusEffectInstance(effect));
+        }
+    }
+
+    @Inject(method = "tick", at = @At("RETURN"))
+    private void restoreSoulboundEffects(CallbackInfo ci) {
+        for (Iterator<StatusEffectInstance> iterator = reappliedEffects.iterator(); iterator.hasNext(); ) {
+            this.addStatusEffect(iterator.next());
+            iterator.remove();
+        }
+    }
+
+    @Override
+    public Collection<StatusEffectInstance> getReappliedStatusEffects() {
+        return this.reappliedEffects;
     }
 
     @Inject(method = "drop", at = @At("RETURN"))

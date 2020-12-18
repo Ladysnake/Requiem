@@ -40,22 +40,23 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Lazy;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 public class GlobalAttritionFocus extends AttritionFocusBase {
-    private final @Nullable MinecraftServer server;
+    private final @Nullable Lazy<MinecraftServer> server;
 
     public GlobalAttritionFocus(Scoreboard scoreboard) {
-        this.server = scoreboard instanceof ServerScoreboard ? ((ServerScoreboardAccessor) scoreboard).getServer() : null;
+        this.server = scoreboard instanceof ServerScoreboard ? new Lazy<>(() -> ((ServerScoreboardAccessor) scoreboard).getServer()) : null;
     }
 
     @Override
     public void addAttrition(UUID playerUuid, int level) {
         if (this.server == null) throw new IllegalStateException("addAttrition called clientside");
 
-        PlayerEntity player = this.server.getPlayerManager().getPlayer(playerUuid);
+        PlayerEntity player = this.server.get().getPlayerManager().getPlayer(playerUuid);
 
         if (player != null) {
             AttritionStatusEffect.apply(player, level);

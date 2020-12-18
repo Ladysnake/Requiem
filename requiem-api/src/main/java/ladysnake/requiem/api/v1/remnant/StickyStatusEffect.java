@@ -17,22 +17,17 @@
  */
 package ladysnake.requiem.api.v1.remnant;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffect;
 
-import java.util.UUID;
+public interface StickyStatusEffect {
+    /**
+     * If this method returns {@code true}, this effect cannot be cleared by anything
+     * except the /clear command.
+     */
+    boolean shouldStick(LivingEntity entity);
 
-public interface AttritionFocus extends Component {
-    ComponentKey<AttritionFocus> KEY = ComponentRegistry.getOrCreate(new Identifier("requiem", "attrition_focus"), AttritionFocus.class);
-
-    void addAttrition(UUID playerUuid, int level);
-
-    void applyAttrition(PlayerEntity player);
-
-    void transferAttrition(AttritionFocus other);
-
-    boolean hasAttrition();
+    static boolean shouldStick(StatusEffect effect, LivingEntity affected) {
+        return effect instanceof StickyStatusEffect && ((StickyStatusEffect) effect).shouldStick(affected);
+    }
 }

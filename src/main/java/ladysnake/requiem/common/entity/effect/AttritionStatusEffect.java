@@ -37,20 +37,22 @@ package ladysnake.requiem.common.entity.effect;
 import com.google.common.base.Preconditions;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
+import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
 import ladysnake.requiem.common.remnant.RemnantTypes;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nonnegative;
 
-public class AttritionStatusEffect extends StatusEffect {
+public class AttritionStatusEffect extends StatusEffect implements StickyStatusEffect {
     public static final Identifier ATTRITION_BACKGROUND = Requiem.id("textures/gui/attrition_background.png");
     public static final DamageSource ATTRITION_HARDCORE_DEATH = new DamageSource("requiem.attrition.hardcore") {{
         // We need this dirty anonymous initializer because everything is protected
@@ -62,7 +64,7 @@ public class AttritionStatusEffect extends StatusEffect {
         apply(target, 1);
     }
 
-    public static void apply(PlayerEntity target, @Nonnegative int amount) {
+    public static void apply(LivingEntity target, @Nonnegative int amount) {
         Preconditions.checkArgument(amount > 0);
 
         StatusEffectInstance attrition = target.getStatusEffect(RequiemStatusEffects.ATTRITION);
@@ -70,14 +72,16 @@ public class AttritionStatusEffect extends StatusEffect {
         if (amplifier <= 3) {
             addAttrition(target, amplifier);
         } else {
-            if (target.world.getLevelProperties().isHardcore()) {
-                RemnantComponent.get(target).become(RemnantTypes.MORTAL);
+            if (!(target instanceof PlayerEntity) || target.world.getLevelProperties().isHardcore()) {
+                if (target instanceof PlayerEntity) {
+                    RemnantComponent.get((PlayerEntity) target).become(RemnantTypes.MORTAL);
+                }
                 target.damage(ATTRITION_HARDCORE_DEATH, Float.MAX_VALUE);
             }
         }
     }
 
-    private static void addAttrition(PlayerEntity target, int amplifier) {
+    private static void addAttrition(LivingEntity target, int amplifier) {
         target.addStatusEffect(new StatusEffectInstance(
             RequiemStatusEffects.ATTRITION,
             300,
@@ -88,7 +92,7 @@ public class AttritionStatusEffect extends StatusEffect {
         ));
     }
 
-    public static void reduce(ServerPlayerEntity target, @Nonnegative int amount) {
+    public static void reduce(LivingEntity target, @Nonnegative int amount) {
         Preconditions.checkArgument(amount > 0);
 
         StatusEffectInstance attrition = target.getStatusEffect(RequiemStatusEffects.ATTRITION);
@@ -110,5 +114,11 @@ public class AttritionStatusEffect extends StatusEffect {
     @Override
     public double adjustModifierAmount(int amplifier, EntityAttributeModifier entityAttributeModifier) {
         return super.adjustModifierAmount(Math.min(amplifier, 3), entityAttributeModifier);
+    }
+
+    @Override
+    public boolean shouldStick(LivingEntity entity) {
+        AttritionFocus attritionFocus = AttritionFocus.KEY.getNullable(entity);
+        return attritionFocus != null && attritionFocus.hasAttrition() || RemnantComponent.isIncorporeal(entity);
     }
 }

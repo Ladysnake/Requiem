@@ -35,11 +35,7 @@
 package ladysnake.requiem.mixin.common.attrition;
 
 import com.mojang.authlib.GameProfile;
-import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -47,19 +43,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
 @Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin extends PlayerEntity implements StatusEffectReapplicator {
-
-    @Unique private final Collection<StatusEffectInstance> reappliedEffects = new ArrayList<>();
+public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
     public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
         super(world, pos, yaw, profile);
@@ -67,28 +56,6 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements St
 
     @Shadow public abstract ServerWorld getServerWorld();
 
-    @Inject(method = "onStatusEffectRemoved", at = @At("RETURN"))
-    private void onStatusEffectRemoved(StatusEffectInstance effect, CallbackInfo ci) {
-        if (RemnantComponent.get(this).isVagrant()) {
-            if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
-                reappliedEffects.add(new StatusEffectInstance(effect));
-            }
-        }
-    }
-
-    @Inject(method = "playerTick", at = @At("RETURN"))
-    private void restoreSoulboundEffects(CallbackInfo ci) {
-        for (Iterator<StatusEffectInstance> iterator = reappliedEffects.iterator(); iterator.hasNext(); ) {
-            this.addStatusEffect(iterator.next());
-            iterator.remove();
-        }
-    }
-
-    @Override
-    public Collection<StatusEffectInstance> getReappliedStatusEffects() {
-        return this.reappliedEffects;
-    }
-    
     @Inject(method = "onSpawn", at = @At("RETURN"))
     private void onSpawn(CallbackInfo ci) {
         AttritionFocus.KEY.get(this.world.getScoreboard()).applyAttrition(this);

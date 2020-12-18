@@ -73,6 +73,11 @@ public abstract class AttritionFocusBase implements AttritionFocus {
     }
 
     @Override
+    public boolean hasAttrition() {
+        return !this.attritionLevels.isEmpty();
+    }
+
+    @Override
     public void readFromNbt(CompoundTag tag) {
         if (tag.contains("attrition_levels")) {
             ListTag levels = tag.getList("attrition_levels", NbtType.COMPOUND);

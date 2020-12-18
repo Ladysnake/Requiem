@@ -77,8 +77,9 @@ public class MobAttritionFocus extends AttritionFocusBase implements ClientTicki
     public void clientTick() {
         if (this.focusedAttrition > 0) {
             Random random = this.holder.getRandom();
+            int nbParticles = random.nextInt(this.focusedAttrition + 1);
 
-            for(int i = 0; i < random.nextInt(this.focusedAttrition); ++i) {
+            for(int i = 0; i < nbParticles; ++i) {
                 this.holder.world.addParticle(
                     RequiemParticleTypes.ATTRITION,
                     this.holder.getParticleX(0.5D),

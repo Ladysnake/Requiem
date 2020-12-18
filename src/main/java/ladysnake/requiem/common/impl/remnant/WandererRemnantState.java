@@ -83,7 +83,7 @@ public class WandererRemnantState extends RemnantStateBase {
         ServerPlayerEntity player = (ServerPlayerEntity) this.player;
 
         if (possessedEntity != null && player.hasStatusEffect(RequiemStatusEffects.ATTRITION) && player.getRandom().nextInt(100) == 0) {
-            AttritionStatusEffect.reduce(player, 1);
+            AttritionStatusEffect.reduce(possessedEntity, 1);
             AttritionFocus.KEY.get(possessedEntity).addAttrition(this.player.getUuid(), 1);
         }
     }
