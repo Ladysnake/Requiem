@@ -38,6 +38,7 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
+import ladysnake.requiem.common.impl.remnant.MutableRemnantState;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.fabricmc.api.EnvType;
@@ -121,8 +122,8 @@ public class WrittenOpusItem extends Item {
                     RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(this.remnantType, true));
                     remnantComponent.become(this.remnantType);
 
-                    if (cure && remnantComponent.canRegenerateBody(possessedEntity)) {
-                        remnantComponent.curePossessed(possessedEntity);
+                    if (cure && remnantComponent.canRegenerateBody()) {
+                        MutableRemnantState.regenerateBody((ServerPlayerEntity) player, possessedEntity);
                     }
 
                     player.incrementStat(Stats.USED.getOrCreateStat(this));

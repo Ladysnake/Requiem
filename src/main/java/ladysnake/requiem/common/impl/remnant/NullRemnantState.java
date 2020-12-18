@@ -79,8 +79,8 @@ public final class NullRemnantState implements RemnantState {
     }
 
     @Override
-    public boolean canRegenerateBodyFrom(LivingEntity body) {
-        return false;
+    public boolean canRegenerateBody() {
+        return true;
     }
 
     @Override

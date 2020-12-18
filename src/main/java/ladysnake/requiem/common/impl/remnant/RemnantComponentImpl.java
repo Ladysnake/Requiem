@@ -119,8 +119,8 @@ public final class RemnantComponentImpl implements RemnantComponent {
     }
 
     @Override
-    public boolean canRegenerateBody(MobEntity possessedEntity) {
-        return !this.player.world.getGameRules().getBoolean(RequiemGamerules.NO_CURE) && this.state.canRegenerateBodyFrom(possessedEntity);
+    public boolean canRegenerateBody() {
+        return this.state.canRegenerateBody();
     }
 
     @Override

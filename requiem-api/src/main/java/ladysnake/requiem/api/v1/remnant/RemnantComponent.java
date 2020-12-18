@@ -28,6 +28,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import org.apiguardian.api.API;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -123,12 +124,14 @@ public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComp
      */
     boolean setVagrant(boolean vagrant);
 
-    boolean canRegenerateBody(MobEntity possessedEntity);
+    @API(status = API.Status.EXPERIMENTAL)
+    boolean canRegenerateBody();
 
     /**
      *
      * @param body the body being used to regenerate a physical player
      */
+    @API(status = API.Status.EXPERIMENTAL)
     void curePossessed(LivingEntity body);
 
     boolean canDissociateFrom(MobEntity possessed);

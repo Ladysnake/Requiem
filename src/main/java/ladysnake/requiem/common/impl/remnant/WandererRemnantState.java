@@ -39,7 +39,6 @@ import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -60,7 +59,7 @@ public class WandererRemnantState extends MutableRemnantState {
     }
 
     @Override
-    public boolean canRegenerateBodyFrom(LivingEntity body) {
+    public boolean canRegenerateBody() {
         return false;
     }
 

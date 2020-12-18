@@ -76,7 +76,7 @@ public interface RemnantState {
      */
     void curePossessed(LivingEntity body);
 
-    boolean canRegenerateBodyFrom(LivingEntity body);
+    boolean canRegenerateBody();
 
     /**
      * Called when this remnant state's player is cloned

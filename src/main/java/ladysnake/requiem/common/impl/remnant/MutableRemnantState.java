@@ -111,15 +111,15 @@ public class MutableRemnantState implements RemnantState {
     @Override
     public void curePossessed(LivingEntity body) {
         if (this.canRegenerateBodyFrom(body)) {
-            this.regenerateBody(body);
+            regenerateBody((ServerPlayerEntity) this.player, body);
         } else {
             this.cureMob(body);
         }
     }
 
-    protected void regenerateBody(LivingEntity body) {
-        RemnantComponent.get(this.player).setVagrant(false);
-        RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle((ServerPlayerEntity) player, body, player, true);
+    public static void regenerateBody(ServerPlayerEntity player, LivingEntity body) {
+        RemnantComponent.get(player).setVagrant(false);
+        RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle(player, body, player, true);
         body.remove();
         player.removeStatusEffect(RequiemStatusEffects.ATTRITION);
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
@@ -135,8 +135,12 @@ public class MutableRemnantState implements RemnantState {
     }
 
     @Override
-    public boolean canRegenerateBodyFrom(LivingEntity body) {
-        return body.isUndead() && RequiemEntityTypeTags.ITEM_USERS.contains(body.getType());
+    public boolean canRegenerateBody() {
+        return true;
+    }
+
+    protected boolean canRegenerateBodyFrom(LivingEntity body) {
+        return this.canRegenerateBody() && body.isUndead() && RequiemEntityTypeTags.ITEM_USERS.contains(body.getType());
     }
 
     @Override
