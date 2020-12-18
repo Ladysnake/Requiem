@@ -54,11 +54,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 
 public final class RequiemClient implements ClientModInitializer {
 
-    public static final Identifier LOCKED_SLOT_SPRITE = new Identifier("item/barrier");
+    public static final Identifier LOCKED_SLOT_SPRITE = Requiem.id("gui/locked_slot");
     public static final Identifier CRAFTING_BUTTON_TEXTURE = Requiem.id("textures/gui/crafting_button.png");
 
     @AccessedThroughReflection
@@ -143,6 +144,9 @@ public final class RequiemClient implements ClientModInitializer {
                 registry.register(Requiem.id("mob_effect/attrition_" + i));
             }
         });
+        ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register((spriteAtlasTexture, registry) ->
+            registry.register(LOCKED_SLOT_SPRITE)
+        );
     }
 
     private void registerEntityRenderers() {
