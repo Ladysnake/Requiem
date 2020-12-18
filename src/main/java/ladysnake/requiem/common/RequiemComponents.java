@@ -43,11 +43,13 @@ import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
+import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
+import ladysnake.requiem.common.entity.effect.StatusEffectReapplicatorImpl;
 import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityController;
 import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
 import ladysnake.requiem.common.impl.inventory.PlayerInventoryLimiter;
@@ -78,6 +80,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerForPlayers(InventoryLimiter.KEY, PlayerInventoryLimiter::new, RespawnCopyStrategy.INVENTORY);
         registry.registerFor(MobEntity.class, SkeletonBoneComponent.KEY, SkeletonBoneComponent::new);
         registry.beginRegistration(MobEntity.class, AttritionFocus.KEY).impl(MobAttritionFocus.class).end(MobAttritionFocus::new);
+        registry.registerForPlayers(StatusEffectReapplicator.KEY, StatusEffectReapplicatorImpl::new, RespawnCopyStrategy.LOSSLESS_ONLY);
     }
 
     @Override

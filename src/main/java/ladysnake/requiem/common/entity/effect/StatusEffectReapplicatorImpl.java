@@ -32,46 +32,59 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.attrition;
+package ladysnake.requiem.common.entity.effect;
 
 import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
-import ladysnake.requiem.api.v1.remnant.AttritionFocus;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
+import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.minecraft.nbt.CompoundTag;
 
-@Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity {
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
-    @Shadow
-    public abstract boolean addStatusEffect(StatusEffectInstance effect);
+public class StatusEffectReapplicatorImpl implements StatusEffectReapplicator {
+    private final Collection<StatusEffectInstance> reappliedEffects = new ArrayList<>();
+    private final LivingEntity holder;
 
-    public LivingEntityMixin(EntityType<?> type, World world) {
-        super(type, world);
+    public StatusEffectReapplicatorImpl(LivingEntity holder) {
+        this.holder = holder;
     }
 
-    @Inject(method = "onStatusEffectRemoved", at = @At("RETURN"))
-    private void onStatusEffectRemoved(StatusEffectInstance effect, CallbackInfo ci) {
-        StatusEffectReapplicator reapplicator = StatusEffectReapplicator.KEY.getNullable(this);
-        if (reapplicator != null) {
-            reapplicator.onStatusEffectRemoved(effect);
+    @Override
+    public void onStatusEffectRemoved(StatusEffectInstance effect) {
+        if (!this.holder.world.isClient && StickyStatusEffect.shouldStick(effect.getEffectType(), this.holder)) {
+            reappliedEffects.add(new StatusEffectInstance(effect));
         }
     }
 
-    @Inject(method = "drop", at = @At("RETURN"))
-    private void releaseAttrition(DamageSource source, CallbackInfo ci) {
-        AttritionFocus attritionFocus = AttritionFocus.KEY.getNullable(this);
+    @Override
+    public void definitivelyClear() {
+        this.reappliedEffects.clear();
+    }
 
-        if (attritionFocus != null) {
-            attritionFocus.transferAttrition(AttritionFocus.KEY.get(this.world.getScoreboard()));
+    @Override
+    public void definitivelyClear(StatusEffect effect) {
+        this.reappliedEffects.removeIf(e -> e.getEffectType() == effect);
+    }
+
+    @Override
+    public void serverTick() {
+        for (Iterator<StatusEffectInstance> iterator = reappliedEffects.iterator(); iterator.hasNext(); ) {
+            this.holder.addStatusEffect(iterator.next());
+            iterator.remove();
         }
+    }
+
+    @Override
+    public void readFromNbt(CompoundTag tag) {
+        // Nothing to deserialize for now - data should not last longer than a tick
+    }
+
+    @Override
+    public void writeToNbt(CompoundTag tag) {
+        // Nothing to serialize for now - data should not last longer than a tick
     }
 }

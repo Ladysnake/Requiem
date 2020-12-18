@@ -100,7 +100,7 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
 
         int amplifier = attrition.getAmplifier() - amount;
         target.removeStatusEffect(RequiemStatusEffects.ATTRITION);
-        ((StatusEffectReapplicator) target).getReappliedStatusEffects().removeIf(e -> e.getEffectType() == RequiemStatusEffects.ATTRITION);
+        StatusEffectReapplicator.KEY.maybeGet(target).ifPresent(r -> r.definitivelyClear(RequiemStatusEffects.ATTRITION));
 
         if (amplifier >= 0) {
             addAttrition(target, amplifier);
