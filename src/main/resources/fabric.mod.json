@@ -39,7 +39,9 @@
   "depends": {
     "minecraft": ">=1.16",
     "requiemapi": "${version}",
-    "satin": "^1.4.0-"
+    "satin": "^1.4.0-",
+    "cardinal-components-base": "^2.7.0",
+    "cardinal-components-scoreboard": "^2.7.10"
   },
 
   "name": "Requiem",

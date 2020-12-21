@@ -85,6 +85,6 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
 
     @Override
     public void registerScoreboardComponentFactories(ScoreboardComponentFactoryRegistry registry) {
-        registry.registerForScoreboards(AttritionFocus.KEY, GlobalAttritionFocus.class, GlobalAttritionFocus::new);
+        registry.registerForScoreboards(AttritionFocus.KEY, GlobalAttritionFocus.class, (sc, server) -> new GlobalAttritionFocus(server));
     }
 }
