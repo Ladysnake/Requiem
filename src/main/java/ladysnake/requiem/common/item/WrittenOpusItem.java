@@ -42,6 +42,7 @@ import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.remnant.MutableRemnantState;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
+import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -131,6 +132,8 @@ public class WrittenOpusItem extends Item {
                         } else {
                             PossessionComponentImpl.dropEquipment(possessedEntity, player);
                         }
+                    } else if (remnantComponent.isIncorporeal() && ((ServerPlayerEntity) player).interactionManager.isSurvivalLike()) {
+                        ((LivingEntityAccessor)player).invokeDropInventory();
                     }
 
                     player.incrementStat(Stats.USED.getOrCreateStat(this));

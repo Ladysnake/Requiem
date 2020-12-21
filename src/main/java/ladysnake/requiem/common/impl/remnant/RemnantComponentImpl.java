@@ -77,7 +77,6 @@ public final class RemnantComponentImpl implements RemnantComponent {
         this.state = handler;
         this.remnantType = type;
         this.state.setup(oldHandler);
-        this.state.setVagrant(wasSoul); // restore vagrant state in case both the old and the new support it
         RemnantComponent.KEY.sync(this.player);
         this.fireRemnantStateChange(wasSoul);
     }
