@@ -1,6 +1,6 @@
 {
   "type": "requiem:soul_type",
   "value": "requiem:wandering_spirit",
-  "name": "origins:power.requiem.banished.name",
-  "description": "origins:power.requiem.banished.description"
+  "name": "origins:power.requiem.wandering_spirit.name",
+  "description": "origins:power.requiem.wandering_spirit.description"
 }

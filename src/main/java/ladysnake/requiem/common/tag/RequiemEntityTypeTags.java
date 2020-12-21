@@ -40,19 +40,23 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.tag.Tag;
 
 public final class RequiemEntityTypeTags {
-    public static final Tag<EntityType<?>> DICHROMATS = register("dichromats");
-    public static final Tag<EntityType<?>> TETRACHROMATS = register("tetrachromats");
+    public static final Tag<EntityType<?>> DICHROMATS = register("vision/dichromats");
+    public static final Tag<EntityType<?>> TETRACHROMATS = register("vision/tetrachromats");
 
-    public static final Tag<EntityType<?>> POSSESSION_BLACKLIST = register("possession_blacklist");
-    public static final Tag<EntityType<?>> POSSESSABLES = register("possessables");
-    public static final Tag<EntityType<?>> FRICTIONLESS_HOSTS = register("frictionless_hosts");
-    public static final Tag<EntityType<?>> ITEM_USERS = register("item_users");
-    public static final Tag<EntityType<?>> ARMOR_USERS = register("armor_users");
-    public static final Tag<EntityType<?>> INVENTORY_CARRIERS = register("inventory_carriers");
-    public static final Tag<EntityType<?>> SUPERCRAFTERS = register("supercrafters");
-    public static final Tag<EntityType<?>> IMMOVABLE = register("immovable");
-    public static final Tag<EntityType<?>> EATERS = register("regular_eaters");
-    public static final Tag<EntityType<?>> REPLACEABLE_SKELETONS = register("replaceable_skeletons");
+    public static final Tag<EntityType<?>> POSSESSION_BLACKLIST = register("possession/possession_blacklist");
+    public static final Tag<EntityType<?>> POSSESSABLES = register("possession/possessables");
+    public static final Tag<EntityType<?>> FRICTIONLESS_HOSTS = register("possession/frictionless_hosts");
+
+    public static final Tag<EntityType<?>> ITEM_USERS = register("inventory/item_users");
+    public static final Tag<EntityType<?>> ARMOR_USERS = register("inventory/armor_users");
+    public static final Tag<EntityType<?>> INVENTORY_CARRIERS = register("inventory/inventory_carriers");
+    public static final Tag<EntityType<?>> SUPERCRAFTERS = register("inventory/supercrafters");
+
+    public static final Tag<EntityType<?>> IMMOVABLE = register("behavior/immovable");
+    public static final Tag<EntityType<?>> EATERS = register("behavior/regular_eaters");
+
+    public static final Tag<EntityType<?>> REPLACEABLE_SKELETONS = register("transformation/replaceable_skeletons");
+
     public static final Tag<EntityType<?>> SKELETONS = register("skeletons");
     public static final Tag<EntityType<?>> ZOMBIES = register("zombies");
 

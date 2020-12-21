@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#requiem:immovable",
+    "#requiem:behavior/immovable",
     "#requiem:golems"
   ]
 }
