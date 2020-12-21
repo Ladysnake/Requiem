@@ -38,6 +38,7 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
+import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.remnant.MutableRemnantState;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
@@ -106,9 +107,8 @@ public class WrittenOpusItem extends Item {
             if (currentState != this.remnantType) {
                 PossessionComponent possessionComponent = PossessionComponent.get(player);
                 MobEntity possessedEntity = possessionComponent.getPossessedEntity();
-                boolean cure = possessedEntity != null && possessionComponent.isCuring();
 
-                if (possessedEntity == null || cure) {
+                if (possessedEntity == null || possessionComponent.isCuring()) {
                     world.playSound(null,
                         player.getX(), player.getY(), player.getZ(),
                         RequiemSoundEvents.ITEM_OPUS_USE,
@@ -120,10 +120,17 @@ public class WrittenOpusItem extends Item {
                         player.getSoundCategory(), 1.4F, 0.1F
                     );
                     RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(this.remnantType, true));
+
                     remnantComponent.become(this.remnantType);
 
-                    if (cure && remnantComponent.canRegenerateBody()) {
-                        MutableRemnantState.regenerateBody((ServerPlayerEntity) player, possessedEntity);
+                    if (possessedEntity != null) {
+                        if (remnantComponent.canRegenerateBody()) {
+                            MutableRemnantState.regenerateBody((ServerPlayerEntity) player, possessedEntity);
+                        } else if (remnantComponent.isVagrant()) {
+                            possessionComponent.startPossessing(possessedEntity);
+                        } else {
+                            PossessionComponentImpl.dropEquipment(possessedEntity, player);
+                        }
                     }
 
                     player.incrementStat(Stats.USED.getOrCreateStat(this));

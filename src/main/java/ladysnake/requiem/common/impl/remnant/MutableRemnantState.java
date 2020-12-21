@@ -67,8 +67,13 @@ public class MutableRemnantState implements RemnantState {
     }
 
     @Override
-    public void setup() {
-        // NO-OP
+    public void setup(RemnantState oldHandler) {
+        this.setVagrant(oldHandler.isVagrant());
+    }
+
+    @Override
+    public void teardown(RemnantState newHandler) {
+        this.updatePlayerState(false);
     }
 
     @Override
@@ -84,6 +89,11 @@ public class MutableRemnantState implements RemnantState {
     @Override
     public boolean setVagrant(boolean vagrant) {
         this.ethereal = vagrant;
+        this.updatePlayerState(vagrant);
+        return true;
+    }
+
+    private void updatePlayerState(boolean vagrant) {
         SerializableMovementConfig config;
         boolean serverside = !this.player.world.isClient;
         if (vagrant) {
@@ -96,11 +106,9 @@ public class MutableRemnantState implements RemnantState {
             if (serverside) {
                 Pal.revokeAbility(this.player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
             }
-            PossessionComponent.get(this.player).stopPossessing(false);
         }
         MovementAlterer.get(player).setConfig(config);
         RemnantComponent.KEY.sync(player);
-        return true;
     }
 
     @Override
@@ -166,10 +174,5 @@ public class MutableRemnantState implements RemnantState {
     @Override
     public void serverTick() {
         // NO-OP
-    }
-
-    @Override
-    public void teardown() {
-        this.setVagrant(false);
     }
 }

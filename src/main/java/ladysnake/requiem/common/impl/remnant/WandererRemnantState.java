@@ -36,6 +36,7 @@ package ladysnake.requiem.common.impl.remnant;
 
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
+import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
@@ -49,7 +50,7 @@ public class WandererRemnantState extends MutableRemnantState {
     }
 
     @Override
-    public void setup() {
+    public void setup(RemnantState oldHandler) {
         this.setVagrant(true);
     }
 

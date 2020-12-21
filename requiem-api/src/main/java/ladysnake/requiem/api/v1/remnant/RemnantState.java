@@ -26,9 +26,9 @@ import org.jetbrains.annotations.Contract;
 public interface RemnantState {
     String NULL_STATE_ID = "requiem:mortal";
 
-    void setup();
+    void setup(RemnantState oldHandler);
 
-    void teardown();
+    void teardown(RemnantState newHandler);
 
     /**
      * Return whether this player is currently incorporeal.
