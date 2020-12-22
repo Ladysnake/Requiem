@@ -287,10 +287,9 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
                 if (this instanceof Monster && this.world.getDifficulty() == Difficulty.PEACEFUL) {
                     player.sendMessage(new TranslatableText("requiem.message.peaceful_despawn"), true);
                 }
+                // Absorption only exists on the server for non-player entities
+                player.setAbsorptionAmount(this.getAbsorptionAmount());
             }
-            // Set the player's hit timer for damage animation and stuff
-            player.timeUntilRegen = this.timeUntilRegen;
-            player.setAbsorptionAmount(this.getAbsorptionAmount());
         }
     }
 
