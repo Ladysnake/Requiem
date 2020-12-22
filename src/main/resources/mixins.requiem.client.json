@@ -22,6 +22,7 @@
     "possession.MinecraftClientMixin",
     "possession.PlayerEntityRendererMixin",
     "possession.render.GuardianEntityRendererMixin",
+    "possession.render.PiglinEntityRendererMixin",
     "possession.render.ShulkerEntityModelMixin",
     "remnant.ClientPlayerEntityMixin",
     "remnant.ClientPlayerInteractionManagerMixin",
