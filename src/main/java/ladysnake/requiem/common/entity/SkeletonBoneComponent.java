@@ -42,9 +42,13 @@ import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
+import net.minecraft.entity.mob.WitherSkeletonEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -64,7 +68,7 @@ public final class SkeletonBoneComponent implements Component {
             this.owner.heal(4.0f);
             this.owner.playAmbientSound();
 
-            if (this.shouldBeReplaced()) {
+            if (this.shouldBeReplaced() && !this.owner.world.isClient) {
                 this.replaceSkeleton();
             }
 
@@ -80,6 +84,11 @@ public final class SkeletonBoneComponent implements Component {
             replacement.setHealth(this.owner.getHealth());
             if (possessor instanceof ServerPlayerEntity) {
                 RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle(((ServerPlayerEntity) possessor), this.owner, replacement, false);
+            }
+            if (this.owner instanceof WitherSkeletonEntity && replacement.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
+                if (this.owner.getRandom().nextInt(5) == 0) {
+                    replacement.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.WITHER_SKELETON_SKULL));
+                }
             }
         }
     }
