@@ -3,7 +3,7 @@
   "values": [
     "#requiem:humanoid_zombies",
     "#requiem:humanoid_skeletons",
-    "#requiem:piglins",
+    "minecraft:piglin",
     "minecraft:villager",
     "minecraft:pillager",
     {"id": "mobz:dwarf_entity", "required": false},
