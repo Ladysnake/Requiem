@@ -32,25 +32,36 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.possession.gameplay;
+package ladysnake.requiem.common.entity;
 
-import ladysnake.requiem.common.entity.ZombifiedPiglinComponent;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.ZombifiedPiglinEntity;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Mixin;
+import dev.onyxstudios.cca.api.v3.component.Component;
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import ladysnake.requiem.Requiem;
+import net.minecraft.nbt.CompoundTag;
 
-@Mixin(ZombifiedPiglinEntity.class)
-public abstract class ZombifiedPiglinEntityMixin extends MobEntityMixin {
-    protected ZombifiedPiglinEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
-        super(entityType, world);
+public class CurableEntityComponent implements Component {
+    public static final ComponentKey<CurableEntityComponent> KEY = ComponentRegistry.getOrCreate(Requiem.id("curable"), CurableEntityComponent.class);
+
+    private boolean cured;
+
+    public boolean hasBeenCured() {
+        return this.cured;
+    }
+
+    public void setCured() {
+        this.cured = true;
     }
 
     @Override
-    protected @Nullable MobEntity createCuredEntity() {
-        return ZombifiedPiglinComponent.KEY.get(this).createCuredEntity();
+    public void readFromNbt(CompoundTag tag) {
+        if (tag.contains("cured")) this.cured = tag.getBoolean("cured");
+    }
+
+    @Override
+    public void writeToNbt(CompoundTag tag) {
+        if (this.cured) {
+            tag.putBoolean("cured", true);
+        }
     }
 }

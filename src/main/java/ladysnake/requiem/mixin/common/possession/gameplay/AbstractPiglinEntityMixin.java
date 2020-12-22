@@ -34,23 +34,19 @@
  */
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import ladysnake.requiem.common.entity.ZombifiedPiglinComponent;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.ZombifiedPiglinEntity;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
+import ladysnake.requiem.common.entity.CurableEntityComponent;
+import net.minecraft.entity.mob.AbstractPiglinEntity;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ZombifiedPiglinEntity.class)
-public abstract class ZombifiedPiglinEntityMixin extends MobEntityMixin {
-    protected ZombifiedPiglinEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
-        super(entityType, world);
-    }
-
-    @Override
-    protected @Nullable MobEntity createCuredEntity() {
-        return ZombifiedPiglinComponent.KEY.get(this).createCuredEntity();
+@Mixin(AbstractPiglinEntity.class)
+public abstract class AbstractPiglinEntityMixin {
+    @Inject(method = "shouldZombify", at = @At("RETURN"), cancellable = true)
+    private void shouldZombify(CallbackInfoReturnable<Boolean> cir) {
+        if (cir.getReturnValueZ() && CurableEntityComponent.KEY.get(this).hasBeenCured()) {
+            cir.setReturnValue(false);
+        }
     }
 }

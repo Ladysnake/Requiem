@@ -48,7 +48,9 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.entity.CurableEntityComponent;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
+import ladysnake.requiem.common.entity.ZombifiedPiglinComponent;
 import ladysnake.requiem.common.entity.effect.StatusEffectReapplicatorImpl;
 import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityController;
 import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
@@ -61,7 +63,9 @@ import ladysnake.requiem.common.impl.remnant.RevivingDeathSuspender;
 import ladysnake.requiem.common.impl.remnant.SimpleAttritionFocus;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
+import net.minecraft.entity.mob.AbstractPiglinEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 
 public final class RequiemComponents implements EntityComponentInitializer, ScoreboardComponentInitializer {
 
@@ -81,6 +85,8 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerFor(MobEntity.class, SkeletonBoneComponent.KEY, SkeletonBoneComponent::new);
         registry.registerFor(MobEntity.class, AttritionFocus.KEY, p -> new SimpleAttritionFocus());
         registry.registerForPlayers(StatusEffectReapplicator.KEY, StatusEffectReapplicatorImpl::new, RespawnCopyStrategy.LOSSLESS_ONLY);
+        registry.registerFor(ZombifiedPiglinEntity.class, ZombifiedPiglinComponent.KEY, ZombifiedPiglinComponent::new);
+        registry.registerFor(AbstractPiglinEntity.class, CurableEntityComponent.KEY, piglin -> new CurableEntityComponent());
     }
 
     @Override

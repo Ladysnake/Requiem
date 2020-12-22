@@ -33,7 +33,9 @@
       "requiem:wololo",
       "requiem:origin_holder",
       "requiem:attrition_focus",
-      "requiem:effect_reapplicator"
+      "requiem:effect_reapplicator",
+      "requiem:zombified_piglin",
+      "requiem:curable"
     ]
   }
 }
