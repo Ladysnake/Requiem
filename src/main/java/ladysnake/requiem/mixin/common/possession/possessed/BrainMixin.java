@@ -56,7 +56,7 @@ public abstract class BrainMixin implements DisableableBrain {
 
     @Override
     public void requiem_setDisabled(boolean disabled) {
-        this.disabled = true;
+        this.disabled = disabled;
     }
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
