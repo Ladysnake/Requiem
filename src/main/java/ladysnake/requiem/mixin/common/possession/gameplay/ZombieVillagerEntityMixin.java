@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import ladysnake.requiem.api.v1.entity.CurableEntity;
+import ladysnake.requiem.common.entity.cure.CurableEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -67,7 +67,7 @@ public abstract class ZombieVillagerEntityMixin extends ZombieEntity implements 
     }
 
     @Override
-    public MobEntity cureAsPossessed() {
+    public MobEntity requiem_cureAsPossessed() {
         this.finishConversion(((ServerWorld) this.world));
         return CURED_VILLAGER.get();
     }

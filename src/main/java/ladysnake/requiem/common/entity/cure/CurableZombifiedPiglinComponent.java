@@ -32,11 +32,8 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.entity;
+package ladysnake.requiem.common.entity.cure;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import ladysnake.requiem.Requiem;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
@@ -46,18 +43,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
-public class ZombifiedPiglinComponent implements Component {
-    public static final ComponentKey<ZombifiedPiglinComponent> KEY =
-        ComponentRegistry.getOrCreate(Requiem.id("zombified_piglin"), ZombifiedPiglinComponent.class);
-
+public class CurableZombifiedPiglinComponent extends CurableEntityComponent {
     private @Nullable EntityType<?> originalPiglinType;
-    private final ZombifiedPiglinEntity zombie;
 
-    public ZombifiedPiglinComponent(ZombifiedPiglinEntity zombie) {
-        this.zombie = zombie;
+    public CurableZombifiedPiglinComponent(ZombifiedPiglinEntity zombie) {
+        super(zombie);
     }
 
-    public @Nullable MobEntity createCuredEntity() {
+    protected @Nullable MobEntity createCuredEntity() {
         MobEntity curedEntity = createCuredEntity0();
         CurableEntityComponent.KEY.maybeGet(curedEntity).ifPresent(CurableEntityComponent::setCured);
         return curedEntity;
@@ -65,19 +58,14 @@ public class ZombifiedPiglinComponent implements Component {
 
     private @Nullable MobEntity createCuredEntity0() {
         @SuppressWarnings("unchecked") EntityType<? extends MobEntity> originalPiglinType = (EntityType<? extends MobEntity>) this.originalPiglinType;
-        try {
-            return this.zombie.method_29243(originalPiglinType, true);
-        } catch (ClassCastException e) {
-            Requiem.LOGGER.error("[Requiem] Invalid original piglin type", e);
+        if (originalPiglinType != null) {
+            try {
+                return this.entity.method_29243(originalPiglinType, true);
+            } catch (ClassCastException e) {
+                Requiem.LOGGER.error("[Requiem] Invalid original piglin type", e);
+            }
         }
-        return this.zombie.method_29243(EntityType.PIGLIN, true);
-    }
-
-    public EntityType<?> getOriginalPiglinType() {
-        if (originalPiglinType == null) {
-            return EntityType.PIGLIN;
-        }
-        return originalPiglinType;
+        return this.entity.method_29243(EntityType.PIGLIN, true);
     }
 
     public void setOriginalPiglinType(EntityType<?> originalPiglinType) {
@@ -86,6 +74,7 @@ public class ZombifiedPiglinComponent implements Component {
 
     @Override
     public void readFromNbt(CompoundTag tag) {
+        super.readFromNbt(tag);
         if (tag.contains("original_piglin_type")) {
             this.originalPiglinType = Registry.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(tag.getString("original_piglin_type"))).orElse(null);
         }
@@ -93,6 +82,7 @@ public class ZombifiedPiglinComponent implements Component {
 
     @Override
     public void writeToNbt(CompoundTag tag) {
+        super.writeToNbt(tag);
         if (this.originalPiglinType != null) {
             tag.putString("original_piglin_type", Registry.ENTITY_TYPE.getId(this.originalPiglinType).toString());
         }

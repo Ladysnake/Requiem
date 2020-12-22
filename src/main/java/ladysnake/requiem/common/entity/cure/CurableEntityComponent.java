@@ -32,69 +32,78 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.possession.gameplay;
+package ladysnake.requiem.common.entity.cure;
 
-import ladysnake.requiem.api.v1.entity.CurableEntity;
+import dev.onyxstudios.cca.api.v3.component.Component;
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import ladysnake.requiem.Requiem;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(MobEntity.class)
-public abstract class MobEntityMixin extends LivingEntity implements CurableEntity {
-    protected MobEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
-        super(entityType, world);
+public class CurableEntityComponent implements Component {
+    public static final ComponentKey<CurableEntityComponent> KEY = ComponentRegistry.getOrCreate(Requiem.id("curable"), CurableEntityComponent.class);
+
+    protected final MobEntity entity;
+    protected boolean cured;
+
+    public CurableEntityComponent(MobEntity entity) {
+        this.entity = entity;
     }
 
-    @Shadow
-    @Nullable
-    public abstract <T extends MobEntity> T method_29243(EntityType<T> entityType, boolean bl);
+    public boolean hasBeenCured() {
+        return this.cured;
+    }
 
-    @Shadow
-    public abstract ItemStack getEquippedStack(EquipmentSlot slot);
-
-    @Shadow
-    protected abstract float getDropChance(EquipmentSlot slot);
+    public void setCured() {
+        this.cured = true;
+    }
 
     @Override
+    public void readFromNbt(CompoundTag tag) {
+        if (tag.contains("cured")) this.cured = tag.getBoolean("cured");
+    }
+
+    @Override
+    public void writeToNbt(CompoundTag tag) {
+        if (this.cured) {
+            tag.putBoolean("cured", true);
+        }
+    }
+
     public @Nullable MobEntity cureAsPossessed() {
         MobEntity cured = this.createCuredEntity();
         if (cured != null) {
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-                ItemStack itemStack = this.getEquippedStack(equipmentSlot);
+                ItemStack itemStack = this.entity.getEquippedStack(equipmentSlot);
                 if (!itemStack.isEmpty()) {
                     if (EnchantmentHelper.hasBindingCurse(itemStack)) {
                         cured.equip(equipmentSlot.getEntitySlotId() + 300, itemStack);
                     } else {
-                        if (this.getDropChance(equipmentSlot) > 1.0D) {
-                            this.dropStack(itemStack);
-                        }
+                        this.entity.dropStack(itemStack);
                     }
                 }
             }
-            cured.initialize(((ServerWorld) world), world.getLocalDifficulty(cured.getBlockPos()), SpawnReason.CONVERSION, null, null);
+            cured.initialize(((ServerWorld) this.entity.world), this.entity.world.getLocalDifficulty(cured.getBlockPos()), SpawnReason.CONVERSION, null, null);
             cured.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
 
-            if (!this.isSilent()) {
-                world.syncWorldEvent(null, 1027, this.getBlockPos(), 0);
+            if (!this.entity.isSilent()) {
+                this.entity.world.syncWorldEvent(null, 1027, this.entity.getBlockPos(), 0);
             }
         }
         return cured;
     }
 
-    @Unique
     protected @Nullable MobEntity createCuredEntity() {
-        return this.method_29243(EntityType.VILLAGER, false);
+        return this.entity.method_29243(EntityType.VILLAGER, false);
     }
 }

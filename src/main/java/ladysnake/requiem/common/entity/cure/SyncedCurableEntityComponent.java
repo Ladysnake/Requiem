@@ -32,36 +32,25 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.entity;
+package ladysnake.requiem.common.entity.cure;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
-import ladysnake.requiem.Requiem;
-import net.minecraft.nbt.CompoundTag;
+import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-public class CurableEntityComponent implements Component {
-    public static final ComponentKey<CurableEntityComponent> KEY = ComponentRegistry.getOrCreate(Requiem.id("curable"), CurableEntityComponent.class);
-
-    private boolean cured;
-
-    public boolean hasBeenCured() {
-        return this.cured;
-    }
-
-    public void setCured() {
-        this.cured = true;
+public class SyncedCurableEntityComponent extends CurableEntityComponent implements AutoSyncedComponent {
+    public SyncedCurableEntityComponent(MobEntity entity) {
+        super(entity);
     }
 
     @Override
-    public void readFromNbt(CompoundTag tag) {
-        if (tag.contains("cured")) this.cured = tag.getBoolean("cured");
+    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
+        buf.writeBoolean(this.hasBeenCured());
     }
 
     @Override
-    public void writeToNbt(CompoundTag tag) {
-        if (this.cured) {
-            tag.putBoolean("cured", true);
-        }
+    public void applySyncPacket(PacketByteBuf buf) {
+        this.cured = buf.readBoolean();
     }
 }

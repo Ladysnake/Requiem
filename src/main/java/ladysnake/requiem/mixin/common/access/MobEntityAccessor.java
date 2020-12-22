@@ -32,25 +32,15 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.possession.gameplay;
+package ladysnake.requiem.mixin.common.access;
 
-import ladysnake.requiem.common.entity.ZombifiedPiglinComponent;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.ZombifiedPiglinEntity;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(ZombifiedPiglinEntity.class)
-public abstract class ZombifiedPiglinEntityMixin extends MobEntityMixin {
-    protected ZombifiedPiglinEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
-        super(entityType, world);
-    }
-
-    @Override
-    protected @Nullable MobEntity createCuredEntity() {
-        return ZombifiedPiglinComponent.KEY.get(this).createCuredEntity();
-    }
+@Mixin(MobEntity.class)
+public interface MobEntityAccessor {
+    @Invoker
+    float invokeGetDropChance(EquipmentSlot slot);
 }

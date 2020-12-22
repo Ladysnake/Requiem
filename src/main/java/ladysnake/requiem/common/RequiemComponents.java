@@ -48,9 +48,8 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.common.entity.CurableEntityComponent;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
-import ladysnake.requiem.common.entity.ZombifiedPiglinComponent;
+import ladysnake.requiem.common.entity.cure.*;
 import ladysnake.requiem.common.entity.effect.StatusEffectReapplicatorImpl;
 import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityController;
 import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
@@ -85,8 +84,10 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerFor(MobEntity.class, SkeletonBoneComponent.KEY, SkeletonBoneComponent::new);
         registry.registerFor(MobEntity.class, AttritionFocus.KEY, p -> new SimpleAttritionFocus());
         registry.registerForPlayers(StatusEffectReapplicator.KEY, StatusEffectReapplicatorImpl::new, RespawnCopyStrategy.LOSSLESS_ONLY);
-        registry.registerFor(ZombifiedPiglinEntity.class, ZombifiedPiglinComponent.KEY, ZombifiedPiglinComponent::new);
-        registry.registerFor(AbstractPiglinEntity.class, CurableEntityComponent.KEY, piglin -> new CurableEntityComponent());
+        registry.registerFor(MobEntity.class, CurableEntityComponent.KEY, CurableEntityComponent::new);
+        registry.beginRegistration(MobEntity.class, CurableEntityComponent.KEY).filter(c -> CurableEntity.class.isAssignableFrom(c)).end(DelegatingCurableEntityComponent::new);
+        registry.registerFor(ZombifiedPiglinEntity.class, CurableEntityComponent.KEY, CurableZombifiedPiglinComponent::new);
+        registry.registerFor(AbstractPiglinEntity.class, CurableEntityComponent.KEY, SyncedCurableEntityComponent::new);
     }
 
     @Override
