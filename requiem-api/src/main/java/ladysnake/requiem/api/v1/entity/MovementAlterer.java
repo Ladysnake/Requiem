@@ -50,6 +50,8 @@ public interface MovementAlterer extends CommonTickingComponent, AutoSyncedCompo
      */
     float getSwimmingAcceleration(float baseAcceleration);
 
+    double getSwimmingUpwardsVelocity(double baseUpwardsVelocity);
+
     boolean canClimbWalls();
 
     boolean isNoClipping();

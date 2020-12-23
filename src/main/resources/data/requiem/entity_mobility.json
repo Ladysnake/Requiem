@@ -45,8 +45,17 @@
     "swimMode": "FORCED",
     "flopsOnLand": true
   },
+  "minecraft:iron_golem": {
+    "sinksInWater": true
+  },
   "minecraft:parrot": {
     "flightMode": "ENABLED"
+  },
+  "minecraft:piglin": {
+    "sinksInWater": true
+  },
+  "minecraft:piglin_brute": {
+    "sinksInWater": true
   },
   "minecraft:phantom": {
     "flightMode": "FORCED",
@@ -62,6 +71,9 @@
   },
   "minecraft:slime": {
     "inertia":0.5
+  },
+  "minecraft:snow_golem": {
+    "sinksInWater": true
   },
   "minecraft:squid": {
     "swimMode": "FORCED"

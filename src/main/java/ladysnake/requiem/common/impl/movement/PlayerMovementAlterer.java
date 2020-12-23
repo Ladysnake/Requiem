@@ -44,10 +44,13 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.mixin.common.access.EntityAccessor;
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.FlyingEntity;
@@ -76,6 +79,9 @@ public class PlayerMovementAlterer implements MovementAlterer {
     private int ticksAgainstWall = 0;
     private boolean noClipping = false;
 
+    private boolean underwaterJumpAscending;
+    private double underwaterJumpStartY;
+
     public PlayerMovementAlterer(PlayerEntity player) {
         this.player = player;
     }
@@ -95,6 +101,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
                 Pal.grantAbility(player, VanillaAbilities.ALLOW_FLYING, MOVEMENT_ALTERER_ABILITIES);
             }
             this.hugWall(false);
+            this.underwaterJumpAscending = false;
         }
     }
 
@@ -107,25 +114,47 @@ public class PlayerMovementAlterer implements MovementAlterer {
     }
 
     @Override
+    public double getSwimmingUpwardsVelocity(double baseUpwardsVelocity) {
+        if (this.config != null && !this.player.isSwimming() && shouldActuallySinkInWater(this.config, getPlayerOrPossessed(player))) {
+            double y = this.player.getY();
+            if (this.player.isOnGround()) {    // starting the jump
+                this.underwaterJumpStartY = y;
+                this.underwaterJumpAscending = true;
+            } else if (this.underwaterJumpAscending && y > underwaterJumpStartY + 1.2) {    // reaching peak
+                this.underwaterJumpAscending = false;
+            } else if (!this.underwaterJumpAscending) { // sinking again
+                return 0;
+            }
+        }
+        return baseUpwardsVelocity;
+    }
+
+    @Override
     public boolean canClimbWalls() {
         return this.config != null && this.config.canClimbWalls();
     }
 
     @Override
     public void clientTick() {
-        if (this.config != null && this.player == MinecraftClient.getInstance().player && this.config.canPhaseThroughWalls()) {
-            if (!this.noClipping && !this.player.noClip) {
-                Vec3d movement = getIntendedMovement(player);
-                Vec3d adjusted = ((EntityAccessor) this.player).invokeAdjustMovementForCollisions(movement);
-                // 10.0 is a magic constant that corresponds to mostly blocked movement
-                if (movement.length() / adjusted.length() > 10.0 && player.getRotationVector().dotProduct(movement.normalize()) > 0.5) {
-                    this.ticksAgainstWall++;
-                    RequiemNetworking.sendHugWallMessage(true);
-                } else if (this.ticksAgainstWall > 0) {
-                    RequiemNetworking.sendHugWallMessage(false);
+        ClientPlayerEntity mainPlayer = MinecraftClient.getInstance().player;
+        if (this.config != null && this.player == mainPlayer) {
+            if (this.config.canPhaseThroughWalls()) {
+                if (!this.noClipping && !this.player.noClip) {
+                    Vec3d movement = getIntendedMovement(this.player);
+                    Vec3d adjusted = ((EntityAccessor) this.player).invokeAdjustMovementForCollisions(movement);
+                    // 10.0 is a magic constant that corresponds to mostly blocked movement
+                    if (movement.length() / adjusted.length() > 10.0 && this.player.getRotationVector().dotProduct(movement.normalize()) > 0.5) {
+                        this.ticksAgainstWall++;
+                        RequiemNetworking.sendHugWallMessage(true);
+                    } else if (this.ticksAgainstWall > 0) {
+                        RequiemNetworking.sendHugWallMessage(false);
+                    }
+                } else if (this.noClipping && this.player.getRandom().nextFloat() > 0.8f) {
+                    this.playPhaseEffects();
                 }
-            } else if (this.noClipping && this.player.getRandom().nextFloat() > 0.8f) {
-                this.playPhaseEffects();
+            }
+            if (this.underwaterJumpAscending && !mainPlayer.input.jumping) {
+                this.underwaterJumpAscending = false;
             }
         }
         if (this.ticksAgainstWall < 0) {
@@ -155,13 +184,14 @@ public class PlayerMovementAlterer implements MovementAlterer {
         if (this.config == null) {
             return;
         }
-        MovementConfig.MovementMode swimMode = getActualSwimMode(config, getPlayerOrPossessed(player));
+        LivingEntity body = getPlayerOrPossessed(player);
+        MovementConfig.MovementMode swimMode = getActualSwimMode(config, body);
         if (swimMode == FORCED) {
             player.setSwimming(true);
         } else if (swimMode == DISABLED) {
             player.setSwimming(false);
         }
-        if (getActualFlightMode(config, getPlayerOrPossessed(player)) == FORCED || this.noClipping) {
+        if (getActualFlightMode(config, body) == FORCED || this.noClipping) {
             this.player.abilities.flying = true;
         }
         if (this.player.isOnGround() && config.shouldFlopOnLand() && this.player.world.getFluidState(this.player.getBlockPos()).isEmpty()) {
@@ -262,6 +292,14 @@ public class PlayerMovementAlterer implements MovementAlterer {
     private static LivingEntity getPlayerOrPossessed(PlayerEntity player) {
         LivingEntity possessed = PossessionComponent.get(player).getPossessedEntity();
         return possessed == null ? player : possessed;
+    }
+
+    private static boolean shouldActuallySinkInWater(MovementConfig config, Entity entity) {
+        if (config.shouldSinkInWater() == TriState.DEFAULT) {
+            EntityType<?> type = entity.getType();
+            return RequiemEntityTypeTags.GOLEMS.contains(type) || RequiemEntityTypeTags.PIGLINS.contains(type);
+        }
+        return config.shouldSinkInWater().get();
     }
 
     private static MovementConfig.MovementMode getActualSwimMode(MovementConfig config, Entity entity) {

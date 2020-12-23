@@ -32,63 +32,29 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.possession.possessor;
+package ladysnake.requiem.common.util;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
+import net.fabricmc.fabric.api.util.TriState;
 
-@Mixin(Entity.class)
-public abstract class PossessorEntityMixin {
-    @Shadow
-    public float fallDistance;
-    @Shadow
-    public World world;
+import java.io.IOException;
 
-    @Shadow
-    protected abstract void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition);
-
-    @Shadow
-    public abstract double getX();
-
-    @Shadow
-    public abstract double getY();
-
-    @Shadow
-    public abstract double getZ();
-
-    @Shadow
-    public float yaw;
-
-    @Shadow
-    public float pitch;
-
-    @Shadow
-    public boolean horizontalCollision;
-
-    @Shadow protected boolean onGround;
-
-    /**
-     * Delegates the air getter for possessing entities.
-     */
-    @Inject(method = "getAir", at = @At("HEAD"), cancellable = true)
-    protected void requiem$delegateBreath(CallbackInfoReturnable<Integer> cir) {
-        // overridden by PossessorPlayerEntityMixin
+public class TriStateTypeAdapter extends TypeAdapter<TriState> {
+    @Override
+    public void write(JsonWriter out, TriState value) throws IOException {
+        out.value(value.getBoxed());
     }
 
-    @Inject(method = "getMaxAir", at = @At("HEAD"), cancellable = true)
-    protected void requiem$delegateMaxBreath(CallbackInfoReturnable<Integer> cir) {
-        // overridden by PossessorPlayerEntityMixin
-    }
-
-    @Inject(method = "canAvoidTraps", at = @At("RETURN"), cancellable = true)
-    protected void requiem$soulsAvoidTraps(CallbackInfoReturnable<Boolean> cir) {
-        // overridden by PossessorPlayerEntityMixin
+    @Override
+    public TriState read(JsonReader in) throws IOException {
+        if (in.peek() == JsonToken.BOOLEAN) {
+            return TriState.of(in.nextBoolean());
+        } else {
+            in.nextNull();
+            return TriState.DEFAULT;
+        }
     }
 }

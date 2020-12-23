@@ -17,6 +17,8 @@
  */
 package ladysnake.requiem.api.v1.entity;
 
+import net.fabricmc.fabric.api.util.TriState;
+
 public interface MovementConfig {
     /**
      * @return the flight mode applied to the entity
@@ -56,6 +58,8 @@ public interface MovementConfig {
      * @see MovementMode
      */
     MovementMode getSwimMode();
+
+    TriState shouldSinkInWater();
 
     boolean shouldFlopOnLand();
 

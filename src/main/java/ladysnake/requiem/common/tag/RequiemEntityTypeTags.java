@@ -59,6 +59,8 @@ public final class RequiemEntityTypeTags {
 
     public static final Tag<EntityType<?>> SKELETONS = register("skeletons");
     public static final Tag<EntityType<?>> ZOMBIES = register("zombies");
+    public static final Tag<EntityType<?>> GOLEMS = register("golems");
+    public static final Tag<EntityType<?>> PIGLINS = register("piglins");
 
     public static void init() {
         // NO-OP
