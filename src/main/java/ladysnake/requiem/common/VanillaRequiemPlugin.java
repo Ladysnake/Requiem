@@ -236,6 +236,9 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     private static boolean canWearArmor(MobEntity possessed) {
+        if (RequiemEntityTypeTags.ARMOR_BANNED.contains(possessed.getType())) {
+            return false;
+        }
         if (RequiemEntityTypeTags.ARMOR_USERS.contains(possessed.getType())) {
             return true;
         }
