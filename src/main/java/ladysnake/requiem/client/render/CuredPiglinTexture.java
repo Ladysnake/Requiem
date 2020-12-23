@@ -56,7 +56,7 @@ public class CuredPiglinTexture extends ResourceTexture {
 
         String path = sourceLocation.getPath();
         int idx = path.lastIndexOf('/') + 1;
-        String newPath = path.substring(0, idx) + sourceLocation.getNamespace() + "_cured_" + path.substring(idx);
+        String newPath = path.substring(0, idx) + "cured_" + path.substring(idx);
         Identifier filteredLocation = Requiem.id(newPath);
         CuredPiglinTexture filteredTexture = new CuredPiglinTexture(filteredLocation, sourceLocation);
         MinecraftClient.getInstance().getTextureManager().registerTexture(filteredLocation, filteredTexture);
