@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.common.item;
 
+import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
@@ -125,7 +126,7 @@ public class WrittenOpusItem extends Item {
                     remnantComponent.become(this.remnantType);
 
                     if (possessedEntity != null) {
-                        if (remnantComponent.canRegenerateBody()) {
+                        if (remnantComponent.canRegenerateBody() && CurableEntityComponent.KEY.get(possessedEntity).canBeAssimilated()) {
                             MutableRemnantState.regenerateBody((ServerPlayerEntity) player, possessedEntity);
                         } else if (remnantComponent.isVagrant()) {
                             possessionComponent.startPossessing(possessedEntity);

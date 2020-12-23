@@ -39,6 +39,7 @@ import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.scoreboard.ScoreboardComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.scoreboard.ScoreboardComponentInitializer;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
+import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
@@ -84,7 +85,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerFor(MobEntity.class, SkeletonBoneComponent.KEY, SkeletonBoneComponent::new);
         registry.registerFor(MobEntity.class, AttritionFocus.KEY, p -> new SimpleAttritionFocus());
         registry.registerForPlayers(StatusEffectReapplicator.KEY, StatusEffectReapplicatorImpl::new, RespawnCopyStrategy.LOSSLESS_ONLY);
-        registry.registerFor(MobEntity.class, CurableEntityComponent.KEY, CurableEntityComponent::new);
+        registry.registerFor(MobEntity.class, CurableEntityComponent.KEY, SimpleCurableEntityComponent::new);
         registry.beginRegistration(MobEntity.class, CurableEntityComponent.KEY).filter(c -> CurableEntity.class.isAssignableFrom(c)).end(DelegatingCurableEntityComponent::new);
         registry.registerFor(ZombifiedPiglinEntity.class, CurableEntityComponent.KEY, CurableZombifiedPiglinComponent::new);
         registry.registerFor(AbstractPiglinEntity.class, CurableEntityComponent.KEY, SyncedCurableEntityComponent::new);

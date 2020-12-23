@@ -43,24 +43,23 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
-public class CurableZombifiedPiglinComponent extends CurableEntityComponent {
+public class CurableZombifiedPiglinComponent extends SimpleCurableEntityComponent {
     private @Nullable EntityType<?> originalPiglinType;
 
     public CurableZombifiedPiglinComponent(ZombifiedPiglinEntity zombie) {
         super(zombie);
     }
 
-    protected @Nullable MobEntity createCuredEntity() {
-        MobEntity curedEntity = createCuredEntity0();
-        CurableEntityComponent.KEY.maybeGet(curedEntity).ifPresent(CurableEntityComponent::setCured);
-        return curedEntity;
+    @Override
+    public boolean canBeAssimilated() {
+        return false;
     }
 
-    private @Nullable MobEntity createCuredEntity0() {
-        @SuppressWarnings("unchecked") EntityType<? extends MobEntity> originalPiglinType = (EntityType<? extends MobEntity>) this.originalPiglinType;
-        if (originalPiglinType != null) {
+    protected @Nullable MobEntity createCuredEntity() {
+        @SuppressWarnings("unchecked") EntityType<? extends MobEntity> originalPiglinType1 = (EntityType<? extends MobEntity>) this.originalPiglinType;
+        if (originalPiglinType1 != null) {
             try {
-                return this.entity.method_29243(originalPiglinType, true);
+                return this.entity.method_29243(originalPiglinType1, true);
             } catch (ClassCastException e) {
                 Requiem.LOGGER.error("[Requiem] Invalid original piglin type", e);
             }

@@ -39,7 +39,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class SyncedCurableEntityComponent extends CurableEntityComponent implements AutoSyncedComponent {
+public class SyncedCurableEntityComponent extends SimpleCurableEntityComponent implements AutoSyncedComponent {
     public SyncedCurableEntityComponent(MobEntity entity) {
         super(entity);
     }

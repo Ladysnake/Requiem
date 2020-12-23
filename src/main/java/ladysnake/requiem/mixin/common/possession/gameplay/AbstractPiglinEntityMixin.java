@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import ladysnake.requiem.common.entity.cure.CurableEntityComponent;
+import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.common.entity.cure.CurableZombifiedPiglinComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.AbstractPiglinEntity;

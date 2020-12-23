@@ -34,8 +34,8 @@
  */
 package ladysnake.requiem.mixin.client.possession.render;
 
+import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.client.render.CuredPiglinTexture;
-import ladysnake.requiem.common.entity.cure.CurableEntityComponent;
 import net.minecraft.client.render.entity.PiglinEntityRenderer;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.Identifier;

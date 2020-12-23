@@ -36,10 +36,10 @@ package ladysnake.requiem.common.remnant;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.common.entity.cure.CurableEntityComponent;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.mixin.common.access.EndermanEntityAccessor;
 import nerdhub.cardinal.components.api.event.TrackingStartCallback;

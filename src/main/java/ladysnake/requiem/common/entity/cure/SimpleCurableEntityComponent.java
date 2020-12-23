@@ -34,10 +34,8 @@
  */
 package ladysnake.requiem.common.entity.cure;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
-import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -50,20 +48,21 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.Nullable;
 
-public class CurableEntityComponent implements Component {
-    public static final ComponentKey<CurableEntityComponent> KEY = ComponentRegistry.getOrCreate(Requiem.id("curable"), CurableEntityComponent.class);
+public class SimpleCurableEntityComponent implements CurableEntityComponent {
 
     protected final MobEntity entity;
     protected boolean cured;
 
-    public CurableEntityComponent(MobEntity entity) {
+    public SimpleCurableEntityComponent(MobEntity entity) {
         this.entity = entity;
     }
 
+    @Override
     public boolean hasBeenCured() {
         return this.cured;
     }
 
+    @Override
     public void setCured() {
         this.cured = true;
     }
@@ -80,7 +79,13 @@ public class CurableEntityComponent implements Component {
         }
     }
 
-    public @Nullable MobEntity cureAsPossessed() {
+    @Override
+    public boolean canBeAssimilated() {
+        return this.entity.isUndead() && RequiemEntityTypeTags.ITEM_USERS.contains(this.entity.getType());
+    }
+
+    @Override
+    public MobEntity cure() {
         MobEntity cured = this.createCuredEntity();
         if (cured != null) {
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
@@ -99,6 +104,7 @@ public class CurableEntityComponent implements Component {
             if (!this.entity.isSilent()) {
                 this.entity.world.syncWorldEvent(null, 1027, this.entity.getBlockPos(), 0);
             }
+            CurableEntityComponent.KEY.get(cured).setCured();
         }
         return cured;
     }

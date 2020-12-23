@@ -35,15 +35,14 @@
 package ladysnake.requiem.common.entity.cure;
 
 import net.minecraft.entity.mob.MobEntity;
-import org.jetbrains.annotations.Nullable;
 
-public class DelegatingCurableEntityComponent extends CurableEntityComponent {
+public class DelegatingCurableEntityComponent extends SimpleCurableEntityComponent {
     public DelegatingCurableEntityComponent(MobEntity entity) {
         super(entity);
     }
 
     @Override
-    public @Nullable MobEntity cureAsPossessed() {
+    public MobEntity cure() {
         return ((CurableEntity) this.entity).requiem_cureAsPossessed();
     }
 }

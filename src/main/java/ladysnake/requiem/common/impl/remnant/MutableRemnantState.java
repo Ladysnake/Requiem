@@ -38,12 +38,12 @@ import io.github.ladysnake.pal.AbilitySource;
 import io.github.ladysnake.pal.Pal;
 import io.github.ladysnake.pal.VanillaAbilities;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
-import ladysnake.requiem.common.entity.cure.CurableEntityComponent;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
@@ -135,7 +135,7 @@ public class MutableRemnantState implements RemnantState {
     }
 
     protected void cureMob(LivingEntity body) {
-        MobEntity cured = CurableEntityComponent.KEY.get(body).cureAsPossessed();
+        MobEntity cured = CurableEntityComponent.KEY.get(body).cure();
 
         if (cured != null) {
             RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle((ServerPlayerEntity) this.player, body, cured, true);
@@ -148,7 +148,7 @@ public class MutableRemnantState implements RemnantState {
     }
 
     protected boolean canRegenerateBodyFrom(LivingEntity body) {
-        return this.canRegenerateBody() && body.isUndead() && RequiemEntityTypeTags.ITEM_USERS.contains(body.getType());
+        return this.canRegenerateBody() && CurableEntityComponent.KEY.get(body).canBeAssimilated();
     }
 
     @Override

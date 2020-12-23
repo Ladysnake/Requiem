@@ -21,6 +21,7 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.apiguardian.api.API;
 import org.jetbrains.annotations.Contract;
 
 public interface RemnantState {
@@ -74,8 +75,11 @@ public interface RemnantState {
     /**
      * @see RemnantComponent#curePossessed(LivingEntity)
      */
-    void curePossessed(LivingEntity body);
+    default void curePossessed(LivingEntity body) {
+        // NO-OP
+    }
 
+    @API(status = API.Status.EXPERIMENTAL)
     boolean canRegenerateBody();
 
     /**
