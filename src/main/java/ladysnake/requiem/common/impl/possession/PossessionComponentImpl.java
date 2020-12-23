@@ -280,9 +280,9 @@ public final class PossessionComponentImpl implements PossessionComponent {
         MovementAlterer.get(this.player).setConfig(RemnantComponent.get(this.player).isVagrant() ? SerializableMovementConfig.SOUL : null);
         this.player.calculateDimensions(); // update size
         this.player.setAir(this.player.getMaxAir());
-        RequiemNetworking.sendToAllTrackingIncluding(player, new EntityAttributesS2CPacket(player.getEntityId(), player.getAttributes().getAttributesToSend()));
         PossessionComponent.KEY.sync(this.player);
         PossessionStateChangeCallback.EVENT.invoker().onPossessionStateChange(this.player, null);
+        RequiemNetworking.sendToAllTrackingIncluding(player, new EntityAttributesS2CPacket(player.getEntityId(), player.getAttributes().getAttributesToSend()));
     }
 
     /**
