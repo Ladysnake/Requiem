@@ -1,0 +1,33 @@
+{
+  "parent": "requiem:requiem/first_possession",
+  "display": {
+    "icon": {
+      "item": "minecraft:sand"
+    },
+    "title": {
+      "translate": "requiem:advancements.requiem.i_hate_sand.title"
+    },
+    "description": {
+      "translate": "requiem:advancements.requiem.i_hate_sand.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "husk_resurrect": {
+      "trigger": "requiem:player_resurrected_as_entity",
+      "conditions": {
+        "body": {
+          "type": "minecraft:husk"
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "husk_resurrect"
+    ]
+  ]
+}

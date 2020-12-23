@@ -1,0 +1,24 @@
+{
+  "blend": {
+    "func": "add",
+    "srcrgb": "one",
+    "dstrgb": "zero"
+  },
+  "vertex": "sobel",
+  "fragment": "requiem:tetrachromatic",
+  "attributes": [ "Position" ],
+  "samplers": [
+    { "name": "DiffuseSampler" }
+  ],
+  "uniforms": [
+    { "name": "ProjMat",     "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+    { "name": "InSize",      "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] },
+    { "name": "OutSize",     "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] },
+    { "name": "Gray",        "type": "float",     "count": 3,  "values": [ 0.3, 0.59, 0.11 ] },
+    { "name": "RedMatrix",   "type": "float",     "count": 3,  "values": [ 1.0, 0.0, 0.0 ] },
+    { "name": "GreenMatrix", "type": "float",     "count": 3,  "values": [ 0.0, 1.0, 0.0 ] },
+    { "name": "BlueMatrix",  "type": "float",     "count": 3,  "values": [ 0.0, 0.0, 1.0 ] },
+    { "name": "Contrast",    "type": "float",     "count": 1,  "values": [ 1.1 ] },
+    { "name": "Saturation",  "type": "float",     "count": 1,  "values": [ 2.0 ] }
+  ]
+}

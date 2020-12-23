@@ -8,10 +8,14 @@
       "ladysnake.pandemonium.client.PandemoniumClient"
     ],
     "main": [
-      "ladysnake.pandemonium.Pandemonium"
+      "ladysnake.pandemonium.Pandemonium::INSTANCE"
+    ],
+    "cardinal-components-entity": [
+      "ladysnake.pandemonium.Pandemonium::INSTANCE",
+      "ladysnake.pandemonium.compat.PandemoniumCompatibilityManager::registerEntityComponentFactories"
     ],
     "cardinal-components-world": [
-      "ladysnake.pandemonium.Pandemonium"
+      "ladysnake.pandemonium.Pandemonium::INSTANCE"
     ]
   },
   "custom": {
@@ -37,7 +41,7 @@
   "description": "Death revamped and ethereal powers",
   "authors": [
     "Pyrofab",
-    "Doctor4t"
+    "doctor4t"
   ],
   "contributors": [
     "UpcraftLP"
@@ -47,5 +51,5 @@
     "issues": "https://github.com/Ladysnake/Requiem/issues",
     "discord": "ladysnake.glitch.me/discord"
   },
-  "licence": "ARR"
+  "license": "GPL-3.0-or-later"
 }

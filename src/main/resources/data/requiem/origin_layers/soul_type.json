@@ -1,0 +1,28 @@
+{
+  "replace": false,
+  "enabled": true,
+  "name": "origins:layer.requiem.soul_type.name",
+  "origins": [
+    {
+      "condition": {
+        "type": "requiem:start_remnant_gamerule",
+        "value": ["CHOOSE","FORCE_REMNANT"]
+      },
+      "origins": ["requiem:remnant"]
+    },
+    {
+      "condition": {
+        "type": "requiem:start_remnant_gamerule",
+        "value": ["FORCE_WANDERING"]
+      },
+      "origins": ["requiem:wandering_spirit"]
+    },
+    {
+      "condition": {
+        "type": "requiem:start_remnant_gamerule",
+        "value": ["CHOOSE","FORCE_VANILLA"]
+      },
+      "origins": ["requiem:mortal"]
+    }
+  ]
+}

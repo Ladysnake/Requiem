@@ -73,13 +73,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         }
     }
 
-    @Inject(method = "tick", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/entity/player/PlayerEntity;noClip:Z", shift = At.Shift.AFTER))
-    private void allowNoClip(CallbackInfo ci) {
-        if (!this.noClip && MovementAlterer.KEY.get(this).isNoClipping()) {
-            this.noClip = true;
-        }
-    }
-
     @Inject(method = "travel",
         slice = @Slice(
             from = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/player/PlayerAbilities;flying:Z"),

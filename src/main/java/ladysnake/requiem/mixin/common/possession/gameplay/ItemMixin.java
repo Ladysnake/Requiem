@@ -34,10 +34,12 @@
  */
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.common.entity.SkeletonBoneComponent;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
-import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -56,11 +58,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ItemMixin {
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(World world, PlayerEntity player, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        MobEntity possessedEntity = PossessionComponent.get( player).getPossessedEntity();
+        PossessionComponent possessionComponent = PossessionComponent.get(player);
+        MobEntity possessedEntity = possessionComponent.getPossessedEntity();
         if (possessedEntity != null) {
             ItemStack heldStack = player.getStackInHand(hand);
 
-            if (possessedEntity.isUndead() && RequiemItemTags.UNDEAD_CURES.contains(heldStack.getItem()) && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)) {
+            if (possessionComponent.canBeCured(heldStack)) {
                 player.setCurrentHand(hand);
                 cir.setReturnValue(new TypedActionResult<>(ActionResult.SUCCESS, heldStack));
             } else if (RequiemEntityTypeTags.ZOMBIES.contains(possessedEntity.getType())) {
@@ -71,12 +74,27 @@ public abstract class ItemMixin {
                     cir.setReturnValue(new TypedActionResult<>(ActionResult.FAIL, heldStack));
                 }
             } else if (RequiemEntityTypeTags.SKELETONS.contains(possessedEntity.getType())) {
-                if (RequiemItemTags.BONES.contains(heldStack.getItem()) && possessedEntity.getHealth() < possessedEntity.getMaxHealth()) {
-                    possessedEntity.heal(4.0f);
-                    possessedEntity.playAmbientSound();
-                    heldStack.decrement(1);
-                    player.getItemCooldownManager().set(heldStack.getItem(), 40);
+                if (RequiemItemTags.BONES.contains(heldStack.getItem())) {
+                    if (SkeletonBoneComponent.KEY.get(possessedEntity).replaceBone()) {
+                        heldStack.decrement(1);
+                        player.getItemCooldownManager().set(heldStack.getItem(), 40);
+                    }
                 }
+            }
+        }
+    }
+
+    @Inject(method = "useOnEntity", at = @At("RETURN"), cancellable = true)
+    private void useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+        if (RequiemItemTags.UNDEAD_CURES.contains((Item)(Object)this)) {
+            PlayerEntity possessor = ((Possessable) entity).getPossessor();
+            if (possessor != null && PossessionComponent.get(possessor).canBeCured(stack)) {
+                if (!user.abilities.creativeMode) {
+                    stack.decrement(1);
+                }
+
+                PossessionComponent.KEY.get(possessor).startCuring();
+                cir.setReturnValue(ActionResult.SUCCESS);
             }
         }
     }

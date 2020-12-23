@@ -44,6 +44,8 @@ import ladysnake.requiem.api.v1.entity.MovementConfig;
 import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.common.util.EntityTypeAdapter;
+import ladysnake.requiem.common.util.TriStateTypeAdapter;
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.Resource;
@@ -61,7 +63,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public final class MovementAltererManager implements SubDataManager<Map<EntityType<?>, SerializableMovementConfig>>, MovementRegistry {
-    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(new TypeToken<EntityType<?>>() {}.getType(), new EntityTypeAdapter()).create();
+    public static final Gson GSON = new GsonBuilder().setPrettyPrinting()
+        .registerTypeAdapter(EntityType.class, new EntityTypeAdapter())
+        .registerTypeAdapter(TriState.class, new TriStateTypeAdapter())
+        .create();
     public static final Identifier LOCATION = Requiem.id("entity_mobility.json");
     private static final Type TYPE = new TypeToken<Map<EntityType<?>, SerializableMovementConfig>>() {}.getType();
     public static final Identifier LISTENER_ID = Requiem.id("movement_alterer");
@@ -104,6 +109,7 @@ public final class MovementAltererManager implements SubDataManager<Map<EntityTy
                 for (Resource resource : manager.getAllResources(LOCATION)) {
                     try {
                         ret.putAll(GSON.fromJson(new InputStreamReader(resource.getInputStream()), TYPE));
+                        ret.remove(null);   // Any EntityType that does not exist gets mapped to null
                     } catch (JsonIOException | JsonSyntaxException e) {
                         Requiem.LOGGER.warn("Could not read movement config from JSON file", e);
                     }

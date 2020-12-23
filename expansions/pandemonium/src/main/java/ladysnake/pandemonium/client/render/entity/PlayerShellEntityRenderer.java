@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,40 +14,63 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.pandemonium.client.render.entity;
 
-import ladysnake.pandemonium.client.RequiemSkinManager;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
-import net.minecraft.client.render.entity.BipedEntityRenderer;
+import ladysnake.requiem.client.RequiemFx;
+import net.minecraft.client.render.Frustum;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.render.entity.feature.*;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 
-public class PlayerShellEntityRenderer extends BipedEntityRenderer<PlayerShellEntity, PlayerEntityModel<PlayerShellEntity>> {
-
+public class PlayerShellEntityRenderer extends EntityRenderer<PlayerShellEntity> {
     public PlayerShellEntityRenderer(EntityRenderDispatcher renderManagerIn) {
-        super(renderManagerIn, new PlayerEntityModel<>(0.0F, true), 0.5F);
-        this.addFeature(new ArmorFeatureRenderer<>(this, new BipedEntityModel<>(0.5F), new BipedEntityModel<>(1.0F)));
-        this.addFeature(new HeldItemFeatureRenderer<>(this));
-        this.addFeature(new StuckArrowsFeatureRenderer<>(this));
-        this.addFeature(new HeadFeatureRenderer<>(this));
-        this.addFeature(new ElytraFeatureRenderer<>(this));
-        this.addFeature(new TridentRiptideFeatureRenderer<>(this));
-        this.addFeature(new StuckStingersFeatureRenderer<>(this));
+        super(renderManagerIn);
+    }
+
+    @Override
+    public boolean shouldRender(PlayerShellEntity entity, Frustum frustum, double x, double y, double z) {
+        ShellClientPlayerEntity renderedPlayer = entity.getRenderedPlayer();
+        return this.dispatcher.getRenderer(renderedPlayer).shouldRender(renderedPlayer, frustum, x, y, z);
+    }
+
+    @Override
+    public void render(PlayerShellEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+        ShellClientPlayerEntity renderedPlayer = entity.getRenderedPlayer();
+        RequiemFx.setupRenderDelegate(entity, renderedPlayer);
+        this.dispatcher.render(renderedPlayer, 0, 0, 0, yaw, tickDelta, matrices, vertexConsumers, light);
+    }
+
+    @Override
+    public Vec3d getPositionOffset(PlayerShellEntity entity, float tickDelta) {
+        ShellClientPlayerEntity renderedPlayer = entity.getRenderedPlayer();
+        return this.dispatcher.getRenderer(renderedPlayer).getPositionOffset(renderedPlayer, tickDelta);
     }
 
     @Override
     public Identifier getTexture(PlayerShellEntity entity) {
-        return RequiemSkinManager.get(entity.getProfile());
+        ShellClientPlayerEntity renderedPlayer = entity.getRenderedPlayer();
+        return this.dispatcher.getRenderer(renderedPlayer).getTexture(renderedPlayer);
     }
-
-    @Override
-    protected void scale(PlayerShellEntity shell, MatrixStack matrices, float tickDelta) {
-        matrices.scale(0.9375F, 0.9375F, 0.9375F);
-    }
-
 }

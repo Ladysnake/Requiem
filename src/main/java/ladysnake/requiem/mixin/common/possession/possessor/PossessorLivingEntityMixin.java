@@ -35,30 +35,37 @@
 package ladysnake.requiem.mixin.common.possession.possessor;
 
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
+import ladysnake.requiem.api.v1.internal.ProtoPossessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.util.DamageHelper;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Slice;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(LivingEntity.class)
-public abstract class PossessorLivingEntityMixin extends Entity {
-    @Shadow
-    protected abstract float getEyeHeight(EntityPose pose, EntityDimensions size);
+public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
 
-    public PossessorLivingEntityMixin(EntityType<?> entityType_1, World world_1) {
-        super(entityType_1, world_1);
+    @ModifyArg(method = "swimUpward", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;add(DDD)Lnet/minecraft/util/math/Vec3d;"), index = 1)
+    private double updateSwimVelocity(double upwardsVelocity) {
+        MovementAlterer alterer = MovementAlterer.KEY.getNullable(this);
+        if (alterer != null) {
+            return alterer.getSwimmingUpwardsVelocity(upwardsVelocity);
+        }
+        return upwardsVelocity;
     }
 
     @ModifyVariable(
@@ -84,6 +91,16 @@ public abstract class PossessorLivingEntityMixin extends Entity {
         return speedAmount;
     }
 
+    @Inject(method = "isClimbing", at = @At("RETURN"), cancellable = true)
+    protected void requiem$canClimb(CallbackInfoReturnable<Boolean> cir) {
+        // overridden by PossessorPlayerEntityMixin
+    }
+
+    @Inject(method = "collides", at = @At("RETURN"), cancellable = true)
+    protected void requiem$preventSoulsCollision(CallbackInfoReturnable<Boolean> info) {
+        // overridden by PossessorPlayerEntityMixin
+    }
+
     @Inject(
         method = "fall",
         at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/LivingEntity;fallDistance:F", ordinal = 0),
@@ -92,14 +109,14 @@ public abstract class PossessorLivingEntityMixin extends Entity {
     private void onFall(double fallY, boolean onGround, BlockState floorBlock, BlockPos floorPos, CallbackInfo info) {
         if (world.isClient) return;
 
-        Entity possessed = PossessionComponent.getPossessedEntity(this);
+        Entity possessed = PossessionComponent.getPossessedEntity((Entity) (Object) this);
         if (possessed != null) {
             possessed.fallDistance = this.fallDistance;
-            possessed.copyPositionAndRotation(this);
+            possessed.copyPositionAndRotation((Entity) (Object) this);
             possessed.move(MovementType.SELF, Vec3d.ZERO);
             // We know that possessed is a LivingEntity, Mixin will translate to that type automatically
             //noinspection ConstantConditions
-            ((PossessorLivingEntityMixin) possessed).fall(fallY, onGround, floorBlock, floorPos);
+            ((PossessorLivingEntityMixin) (Object) possessed).fall(fallY, onGround, floorBlock, floorPos);
         }
     }
 
@@ -119,5 +136,22 @@ public abstract class PossessorLivingEntityMixin extends Entity {
             }
         }
         return source;
+    }
+
+    @Inject(method = "damage",
+        slice = @Slice(
+            from = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;increaseStat(Lnet/minecraft/util/Identifier;I)V"),
+            to = @At(value = "INVOKE", target = "Lnet/minecraft/advancement/criterion/PlayerHurtEntityCriterion;trigger(Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/damage/DamageSource;FFZ)V")),
+        at = @At(value = "JUMP", opcode = Opcodes.IFEQ),
+        locals = LocalCapture.CAPTURE_FAILSOFT,
+        allow = 1
+    )
+    private void triggerCriterion(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir, float dealt, boolean blocked, float attackAngle, boolean playDamageEffects, @Nullable Entity attacker, boolean didDamage) {
+        if (attacker != null) {
+            PlayerEntity possessor = ((ProtoPossessable) attacker).getPossessor();
+            if (possessor instanceof ServerPlayerEntity) {
+                RequiemCriteria.POSSESSED_HIT_ENTITY.handle(((ServerPlayerEntity) possessor), attacker, (Entity) (Object) this, source, dealt, amount, blocked);
+            }
+        }
     }
 }

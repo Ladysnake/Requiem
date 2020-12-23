@@ -1,0 +1,45 @@
+{
+  "parent": "requiem:requiem/first_possession",
+  "display": {
+    "icon": {
+      "item": "minecraft:netherite_sword"
+    },
+    "title": {
+      "translate": "requiem:advancements.requiem.piglin_seppukku.title"
+    },
+    "description": {
+      "translate": "requiem:advancements.requiem.piglin_seppukku.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "zombified_piglin_possess": {
+      "trigger": "requiem:player_possessed_entity",
+      "conditions": {
+        "entity": {
+          "type": "minecraft:zombified_piglin"
+        }
+      }
+    },
+    "zombified_piglin_seppukku": {
+      "trigger": "requiem:entity_died_after_possession",
+      "conditions": {
+        "entity": {
+          "type": "minecraft:zombified_piglin"
+        },
+        "seppukku": true
+      }
+    }
+  },
+  "requirements": [
+    [
+      "zombified_piglin_possess"
+    ],
+    [
+      "zombified_piglin_seppukku"
+    ]
+  ]
+}

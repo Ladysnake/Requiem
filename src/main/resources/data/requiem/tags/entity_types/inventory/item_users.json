@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:enderman",
+    "minecraft:panda",
+    "minecraft:dolphin",
+    "minecraft:fox",
+    "minecraft:vex",
+
+    "#requiem:humanoid_zombies",
+    "#requiem:humanoid_skeletons",
+    "#requiem:humans",
+    "#requiem:piglins",
+    {"id": "betterend:shadow_walker", "required": false},
+    {"id": "thehallow:mummy", "required": false}
+  ]
+}

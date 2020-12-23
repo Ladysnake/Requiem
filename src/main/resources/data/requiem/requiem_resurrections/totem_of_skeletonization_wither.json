@@ -1,0 +1,14 @@
+{
+  "priority": 60,
+  "player": {
+    "effects": {
+      "minecraft:wither": {}
+    }
+  },
+  "consumable": {
+    "item": "requiem:totem_of_skeletonization"
+  },
+  "entity": {
+    "type": "minecraft:wither_skeleton"
+  }
+}

@@ -36,9 +36,9 @@ package ladysnake.requiem.client;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
-import ladysnake.requiem.common.entity.HorologistEntity;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.satin.api.event.PostWorldRenderCallback;
+import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
@@ -50,30 +50,25 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 
-public class ZaWorldFx implements PostWorldRenderCallback {
+public class ZaWorldFx implements PostWorldRenderCallback, ClientTickEvents.EndTick, ShaderEffectRenderCallback {
 
     public static final Identifier ZA_WARUDO_SHADER_ID = Requiem.id("shaders/post/za_warudo.json");
-    public static final ZaWorldFx INSTANCE = new ZaWorldFx();
 
     private final MinecraftClient mc = MinecraftClient.getInstance();
-    private int ticks;
-    private float prevRadius;
-    private float radius;
-    private boolean renderingEffect;
+
     private final Matrix4f projectionMatrix = new Matrix4f();
+
     private final ManagedShaderEffect shader = ShaderEffectManager.getInstance().manage(ZA_WARUDO_SHADER_ID, shader -> {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        shader.setSamplerUniform("DepthSampler", ((ReadableDepthFramebuffer)mc.getFramebuffer()).getStillDepthMap());
-        shader.setUniformValue("ViewPort", 0, 0, mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight());
+        shader.setSamplerUniform("DepthSampler", ((ReadableDepthFramebuffer) this.mc.getFramebuffer()).getStillDepthMap());
+        shader.setUniformValue("ViewPort", 0, 0, this.mc.getWindow().getFramebufferWidth(), this.mc.getWindow().getFramebufferHeight());
     });
+
     private final Uniform1f uniformOuterSat = shader.findUniform1f("OuterSat");
     private final Uniform1f uniformSTime = shader.findUniform1f("STime");
     private final UniformMat4 uniformInverseTransformMatrix = shader.findUniformMat4("InverseTransformMatrix");
@@ -81,31 +76,19 @@ public class ZaWorldFx implements PostWorldRenderCallback {
     private final Uniform3f uniformCenter = shader.findUniform3f("Center");
     private final Uniform1f uniformRadius = shader.findUniform1f("Radius");
 
+    private int ticks;
+    private float prevRadius;
+    private float radius;
+    private boolean renderingEffect;
 
     void registerCallbacks() {
         PostWorldRenderCallback.EVENT.register(this);
-        ClientTickEvents.END_CLIENT_TICK.register(this::update);
+        ClientTickEvents.END_CLIENT_TICK.register(this);
+        ShaderEffectRenderCallback.EVENT.register(this);
     }
 
-    private void turnToFace(Entity entity) {
-        PlayerEntity player = mc.player;
-        assert player != null;
-        double dx = player.getX() - entity.getX();
-        double dz = player.getZ() - entity.getZ();
-        double angle = Math.atan2(dz, dx) * 180 / Math.PI;
-        double pitch = Math.atan2(
-            (player.getY() + player.getEyeHeight(player.getPose())) - (entity.getY() + (entity.getEyeHeight(entity.getPose()) / 2.0F)),
-            Math.sqrt(dx * dx + dz * dz)
-        ) * 180 / Math.PI;
-        double distance = player.distanceTo(entity) / 2;
-        float rYaw = MathHelper.wrapDegrees((float)angle) + 90F;
-        float rPitch = (float) pitch - (float)(10.0F / Math.sqrt(distance)) + (float)(distance * Math.PI / 90);
-        player.yaw = (player.yaw + rYaw) / 2;
-        player.pitch = (player.pitch + rPitch) / 2;
-        player.changeLookDirection(0, 0);
-    }
-
-    private void update(MinecraftClient client) {
+    @Override
+    public void onEndTick(MinecraftClient client) {
         if (client.player != null && DeathSuspender.get(client.player).isLifeTransient()) {
             if (!this.renderingEffect) {
                 this.uniformOuterSat.set(1f);
@@ -124,18 +107,6 @@ public class ZaWorldFx implements PostWorldRenderCallback {
                 this.radius += expansionRate;
             } else if (ticks < 2 * inversion) {
                 this.radius -= expansionRate;
-            }
-            HorologistEntity horologist = client.player.world.getClosestEntity(
-                HorologistEntity.class,
-                TargetPredicate.DEFAULT,
-                client.player,
-                client.player.getX(),
-                client.player.getY(),
-                client.player.getZ(),
-                client.player.getBoundingBox().expand(10)
-            );
-            if (horologist != null) {
-                this.turnToFace(horologist);
             }
         } else {
             this.renderingEffect = false;
@@ -156,6 +127,12 @@ public class ZaWorldFx implements PostWorldRenderCallback {
             Entity e = camera.getFocusedEntity();
             uniformCenter.set(lerpf(e.getX(), e.prevX, tickDelta), lerpf(e.getY(), e.prevY, tickDelta), lerpf(e.getZ(), e.prevZ, tickDelta));
             uniformRadius.set(lerpf(radius, prevRadius, tickDelta));
+        }
+    }
+
+    @Override
+    public void renderShaderEffects(float tickDelta) {
+        if (this.renderingEffect) {
             shader.render(tickDelta);
         }
     }

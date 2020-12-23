@@ -44,6 +44,7 @@ import ladysnake.requiem.common.util.EntityTypeAdapter;
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.resource.Resource;
@@ -74,10 +75,16 @@ public final class ResurrectionDataLoader implements SimpleResourceReloadListene
 
     @Nullable
     public MobEntity getNextBody(ServerPlayerEntity player, DamageSource killingBlow) {
+        return getNextBody(player, null, killingBlow);
+    }
+
+    @Nullable
+    public MobEntity getNextBody(ServerPlayerEntity player, @Nullable LivingEntity possessed, DamageSource killingBlow) {
         for (ResurrectionData resurrectionDatum : resurrectionData) {
-            if (resurrectionDatum.matches(player, killingBlow)) {
+            if (resurrectionDatum.matches(player, possessed, killingBlow)) {
                 Entity nextBody = resurrectionDatum.createEntity(player.world);
                 if (nextBody instanceof MobEntity) {
+                    nextBody.copyPositionAndRotation(player);
                     return (MobEntity) nextBody;
                 }
             }

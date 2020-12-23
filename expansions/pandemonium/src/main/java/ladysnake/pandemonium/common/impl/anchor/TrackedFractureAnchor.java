@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,20 +14,31 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.pandemonium.common.impl.anchor;
 
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
-import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 
+import java.util.Collections;
 import java.util.UUID;
-
-import static ladysnake.pandemonium.common.network.PandemoniumNetworking.createAnchorDeleteMessage;
-import static ladysnake.pandemonium.common.network.PandemoniumNetworking.createAnchorUpdateMessage;
 
 public class TrackedFractureAnchor extends InertFractureAnchor {
     public TrackedFractureAnchor(FractureAnchorManager manager, UUID uuid, int id) {
@@ -41,19 +52,15 @@ public class TrackedFractureAnchor extends InertFractureAnchor {
     @Override
     public void setPosition(double x, double y, double z) {
         super.setPosition(x, y, z);
-        syncWithWorld(createAnchorUpdateMessage(this));
+        FractureAnchorManager.KEY.sync(this.manager.getWorld(),
+            (buf, p) -> CommonAnchorManager.writeToPacket(buf, Collections.singleton(this), CommonAnchorManager.ANCHOR_SYNC));
     }
 
     @Override
     public void invalidate() {
         super.invalidate();
-        syncWithWorld(createAnchorDeleteMessage(this.getId()));
-    }
-
-    protected void syncWithWorld(CustomPayloadS2CPacket packet) {
-        for (ServerPlayerEntity player : ((ServerWorld) this.manager.getWorld()).getPlayers()) {
-            RequiemNetworking.sendTo(player, packet);
-        }
+        FractureAnchorManager.KEY.sync(this.manager.getWorld(),
+            (buf, p) -> CommonAnchorManager.writeToPacket(buf, Collections.singleton(this), CommonAnchorManager.ANCHOR_REMOVE));
     }
 
     @Override

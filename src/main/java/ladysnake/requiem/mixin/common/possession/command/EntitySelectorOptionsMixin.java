@@ -79,7 +79,14 @@ public abstract class EntitySelectorOptionsMixin {
         }, (reader) -> true, new TranslatableText("requiem:argument.entity.options.possessor.description"));
     }
 
-    @ModifyArg(method = "suggestOptions", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/suggestion/SuggestionsBuilder;suggest(Ljava/lang/String;Lcom/mojang/brigadier/Message;)Lcom/mojang/brigadier/suggestion/SuggestionsBuilder;"))
+    @ModifyArg(
+        method = "suggestOptions",
+        at = @At(
+            value = "INVOKE",
+            target = "Lcom/mojang/brigadier/suggestion/SuggestionsBuilder;suggest(Ljava/lang/String;Lcom/mojang/brigadier/Message;)Lcom/mojang/brigadier/suggestion/SuggestionsBuilder;",
+            remap = false
+        )
+    )
     private static String suggestQuotes(String text) {
         if (text.indexOf(':') > 0 && text.indexOf('"') < 0 && text.indexOf('=') == text.length() - 1) {
             return '"' + text.substring(0, text.length() -1) + "\"=";

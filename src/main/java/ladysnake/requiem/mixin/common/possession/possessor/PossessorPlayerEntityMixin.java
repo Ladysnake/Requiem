@@ -1,3 +1,37 @@
+/*
+ * Requiem
+ * Copyright (C) 2017-2020 Ladysnake
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
+ */
 package ladysnake.requiem.mixin.common.possession.possessor;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
@@ -8,8 +42,10 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
-import net.minecraft.entity.*;
-import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -21,8 +57,6 @@ import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Dynamic;
-import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,18 +68,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.EnumSet;
 
 @Mixin(PlayerEntity.class)
-public abstract class PossessorPlayerEntityMixin extends LivingEntity {
+public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMixin {
 
     @Shadow
     public abstract HungerManager getHungerManager();
 
-    protected PossessorPlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
-        super(entityType, world);
-    }
-
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
     private void travel(CallbackInfo info) {
-        Entity possessed = PossessionComponent.getPossessedEntity(this);
+        @SuppressWarnings("ConstantConditions") Entity possessed = PossessionComponent.getPossessedEntity((Entity) (Object) this);
         if (possessed != null && ((VariableMobilityEntity) possessed).requiem_isImmovable()) {
             if (!world.isClient && (this.getX() != possessed.getX() || this.getY() != possessed.getY() || this.getZ() != possessed.getZ())) {
                 ServerPlayNetworkHandler networkHandler = ((ServerPlayerEntity) (Object) this).networkHandler;
@@ -96,7 +126,8 @@ public abstract class PossessorPlayerEntityMixin extends LivingEntity {
 
     @Inject(method = "eatFood", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/HungerManager;eat(Lnet/minecraft/item/Item;Lnet/minecraft/item/ItemStack;)V"))
     private void eatZombieFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
-        MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
+        PossessionComponent possessionComponent = PossessionComponent.KEY.get(this);
+        MobEntity possessedEntity = possessionComponent.getPossessedEntity();
         if (possessedEntity instanceof ZombieEntity && stack.getItem().isFood()) {
             if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || RequiemItemTags.RAW_FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
                 FoodComponent food = stack.getItem().getFoodComponent();
@@ -104,74 +135,60 @@ public abstract class PossessorPlayerEntityMixin extends LivingEntity {
                 possessedEntity.heal(food.getHunger());
             }
         }
-        if (possessedEntity != null && possessedEntity.isUndead() && RequiemItemTags.UNDEAD_CURES.contains(stack.getItem()) && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)) {
-            PossessionComponent.KEY.get(this).startCuring();
+        if (possessedEntity != null && possessionComponent.canBeCured(stack)) {
+            possessionComponent.startCuring();
         }
     }
 
-    @Intrinsic
     @Override
-    public int getMaxAir() {
-        return super.getMaxAir();
+    protected void requiem$delegateBreath(CallbackInfoReturnable<Integer> cir) {
+        @SuppressWarnings("ConstantConditions") Entity self = (Entity) (Object) this;
+        // This method can be called in the constructor
+        if (ComponentProvider.fromEntity(self).getComponentContainer() != null) {
+            Entity possessedEntity = PossessionComponent.getPossessedEntity(self);
+            if (possessedEntity != null) {
+                cir.setReturnValue(possessedEntity.getAir());
+            }
+        }
     }
 
-    @Dynamic(mixin = PossessorPlayerEntityMixin.class, value = "Added by the intrinsic above")
-    @Inject(method = "getMaxAir", at = @At("HEAD"), cancellable = true)
-    private void delegateMaxBreath(CallbackInfoReturnable<Integer> cir) {
+    @Override
+    protected void requiem$delegateMaxBreath(CallbackInfoReturnable<Integer> cir) {
         // This method can be called in the constructor, before CCA is initialized
-        if (ComponentProvider.fromEntity(this).getComponentContainer() != null) {
-            Entity possessedEntity = PossessionComponent.getPossessedEntity(this);
+        if (((ComponentProvider) this).getComponentContainer() != null) {
+            @SuppressWarnings("ConstantConditions") Entity possessedEntity = PossessionComponent.getPossessedEntity((Entity) (Object) this);
             if (possessedEntity != null) {
                 cir.setReturnValue(possessedEntity.getMaxAir());
             }
         }
     }
 
-    @Intrinsic
     @Override
-    public boolean isClimbing() {
-        return super.isClimbing();
-    }
-
-    @Dynamic(mixin = PossessorPlayerEntityMixin.class, value = "Added by the intrinsic above")
-    @Inject(method = "isClimbing", at = @At("RETURN"), cancellable = true)
-    private void canClimb(CallbackInfoReturnable<Boolean> cir) {
+    protected void requiem$canClimb(CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValueZ() && this.horizontalCollision) {
             cir.setReturnValue(MovementAlterer.KEY.get(this).canClimbWalls());
         }
     }
 
-    @Intrinsic
     @Override
-    public boolean collides() {
-        return super.collides();
-    }
-
-    @Dynamic(mixin = PossessorPlayerEntityMixin.class, value = "Added by the intrinsic above")
-    @Inject(method = "collides", at = @At("RETURN"), cancellable = true)
-    private void preventSoulsCollision(CallbackInfoReturnable<Boolean> info) {
-        if (RemnantComponent.isSoul(this)) {
+    protected void requiem$preventSoulsCollision(CallbackInfoReturnable<Boolean> info) {
+        //noinspection ConstantConditions
+        if (RemnantComponent.isVagrant((Entity) (Object) this)) {
             info.setReturnValue(false);
         }
     }
 
-    @Intrinsic
     @Override
-    public boolean canAvoidTraps() {
-        return super.canAvoidTraps();
-    }
-
-    @Dynamic(mixin = PossessorPlayerEntityMixin.class, value = "Added by the intrinsic above")
-    @Inject(method = "canAvoidTraps", at = @At("RETURN"), cancellable = true)
-    private void soulsAvoidTraps(CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(cir.getReturnValueZ() || RemnantComponent.isIncorporeal(this));
+    protected void requiem$soulsAvoidTraps(CallbackInfoReturnable<Boolean> cir) {
+        //noinspection ConstantConditions
+        cir.setReturnValue(cir.getReturnValueZ() || RemnantComponent.isIncorporeal((Entity) (Object) this));
     }
 
     @Inject(method = "getActiveEyeHeight", at = @At("HEAD"), cancellable = true)
     private void adjustEyeHeight(EntityPose pose, EntityDimensions size, CallbackInfoReturnable<Float> cir) {
         // This method can be called in the Entity constructor, before CCA is initialized
-        if (ComponentProvider.fromEntity(this).getComponentContainer() != null) {
-            LivingEntity possessed = PossessionComponent.getPossessedEntity(this);
+        if (((ComponentProvider)this).getComponentContainer() != null) {
+            @SuppressWarnings("ConstantConditions") LivingEntity possessed = PossessionComponent.getPossessedEntity((Entity) (Object) this);
             if (possessed != null) {
                 cir.setReturnValue(((LivingEntityAccessor) possessed).invokeGetEyeHeight(pose, possessed.getDimensions(pose)));
             }

@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:iron_golem",
+    "minecraft:snow_golem",
+    "minecraft:shulker",
+    {"id": "golemsgalore:anti_creeper_golem", "required": false},
+    {"id": "golemsgalore:diamond_golem", "required": false},
+    {"id": "golemsgalore:golden_golem", "required": false},
+    {"id": "golemsgalore:hay_golem", "required": false},
+    {"id": "golemsgalore:laser_golem", "required": false},
+    {"id": "golemsgalore:netherite_golem", "required": false},
+    {"id": "golemsgalore:obsidian_golem", "required": false},
+    {"id": "golemsgalore:quartz_golem", "required": false}
+  ]
+}

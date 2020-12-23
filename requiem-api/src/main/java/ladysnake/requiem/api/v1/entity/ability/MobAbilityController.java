@@ -17,18 +17,47 @@
  */
 package ladysnake.requiem.api.v1.entity.ability;
 
+import com.demonwav.mcdev.annotations.CheckEnv;
+import com.demonwav.mcdev.annotations.Env;
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import dev.onyxstudios.cca.api.v3.component.TransientComponent;
+import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import ladysnake.requiem.api.v1.internal.DummyMobAbilityController;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 
 /**
  * A {@link MobAbilityController} is interacted with by a player to use special {@link MobAbility mob abilities}
  */
-public interface MobAbilityController {
-    MobAbilityController DUMMY = new DummyMobAbilityController();
+public interface MobAbilityController extends TransientComponent, CommonTickingComponent {
+    ComponentKey<MobAbilityController> KEY = ComponentRegistry.getOrCreate(new Identifier("requiem", "ability_controller"), MobAbilityController.class);
+
+    static MobAbilityController get(Entity entity) {
+        MobAbilityController c = KEY.getNullable(entity);
+        return c != null ? c : DummyMobAbilityController.INSTANCE;
+    }
+
+    double getRange(AbilityType type);
+
+    boolean canTarget(AbilityType type, Entity target);
 
     boolean useDirect(AbilityType type, Entity target);
 
     boolean useIndirect(AbilityType type);
 
-    void updateAbilities();
+    float getCooldownProgress(AbilityType type);
+
+    @Override
+    void tick();
+
+    void writeSyncPacket(PacketByteBuf packetByteBuf, ServerPlayerEntity serverPlayerEntity);
+
+    @CheckEnv(Env.CLIENT)
+    void applySyncPacket(PacketByteBuf buf);
+
+    @CheckEnv(Env.CLIENT)
+    Identifier getIconTexture(AbilityType type);
 }

@@ -1,0 +1,10 @@
+{
+  "powers": [
+    "requiem:mortal"
+  ],
+  "icon": "requiem:opus_daemonium_cure",
+  "name": "origins:origin.requiem.mortal.name",
+  "description": "origins:origin.requiem.mortal.description",
+  "order": 0,
+  "impact": 0
+}

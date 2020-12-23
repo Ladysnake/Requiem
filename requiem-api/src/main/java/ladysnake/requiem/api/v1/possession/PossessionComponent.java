@@ -17,15 +17,16 @@
  */
 package ladysnake.requiem.api.v1.possession;
 
-import dev.onyxstudios.cca.api.v3.component.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
-import dev.onyxstudios.cca.api.v3.component.ServerTickingComponent;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -36,14 +37,14 @@ import javax.annotation.CheckForNull;
  * A {@link PossessionComponent} handles a player's possession status.
  */
 public interface PossessionComponent extends AutoSyncedComponent, ServerTickingComponent {
-    ComponentKey<PossessionComponent> KEY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("requiem", "possessor"), PossessionComponent.class);
+    ComponentKey<PossessionComponent> KEY = ComponentRegistry.getOrCreate(new Identifier("requiem", "possessor"), PossessionComponent.class);
 
     /**
      * Return a player's {@link PossessionComponent}. The possession component is
      * live, and every modification made to it is reflected on the player.
      *
      * @return the player's possession component
-     * @since 2.0.0
+     * @since 1.2.0
      */
     @Contract(pure = true)
     static PossessionComponent get(PlayerEntity player) {
@@ -134,6 +135,10 @@ public interface PossessionComponent extends AutoSyncedComponent, ServerTickingC
 
     boolean isPossessing();
 
+    boolean canBeCured(ItemStack cure);
+
     void startCuring();
+
+    boolean isCuring();
 
 }

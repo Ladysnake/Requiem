@@ -1,0 +1,12 @@
+{
+  "priority": 70,
+  "possessed": {
+    "type": "#requiem:skeletonizable_horses"
+  },
+  "consumable": {
+    "item": "requiem:totem_of_skeletonization"
+  },
+  "entity": {
+    "type": "minecraft:skeleton_horse"
+  }
+}

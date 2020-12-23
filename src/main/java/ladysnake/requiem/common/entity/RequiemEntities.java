@@ -34,21 +34,20 @@
  */
 package ladysnake.requiem.common.entity;
 
-import ladysnake.requiem.Requiem;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.util.registry.Registry;
 
 public final class RequiemEntities {
     public static final EntityType<HorologistEntity> HOROLOGIST = FabricEntityTypeBuilder.create(SpawnGroup.MISC, HorologistEntity::new)
         .dimensions(EntityDimensions.changing(0.6F, 0.95F))
-        .trackable(64, 1, true)
+        .trackRangeChunks(10)
+        .trackedUpdateRate(1)
         .build();
 
     public static void init() {
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("horologist"), HOROLOGIST);
+
     }
 
 }

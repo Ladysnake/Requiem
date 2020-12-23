@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "origins": [
+    {
+      "condition": {
+        "type": "origins:and",
+        "conditions": [
+          {
+            "type": "origins:origin",
+            "origin": "requiem:remnant"
+          },
+          {
+            "type": "requiem:start_remnant_gamerule",
+            "value": ["CHOOSE"]
+          }
+        ]
+      },
+      "origins": ["requiem:wandering_spirit"]
+    }
+  ]
+}

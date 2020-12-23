@@ -1,0 +1,15 @@
+{
+  "priority": 60,
+  "possessed": {
+    "type": "#requiem:skeletonizable",
+    "effects": {
+      "minecraft:wither": {}
+    }
+  },
+  "consumable": {
+    "item": "requiem:totem_of_skeletonization"
+  },
+  "entity": {
+    "type": "minecraft:wither_skeleton"
+  }
+}

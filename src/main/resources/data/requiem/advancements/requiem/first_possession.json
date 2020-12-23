@@ -1,0 +1,29 @@
+{
+  "parent": "requiem:requiem/root",
+  "display": {
+    "icon": {
+      "item": "minecraft:rotten_flesh"
+    },
+    "title": {
+      "translate": "requiem:advancements.requiem.first_possession.title"
+    },
+    "description": {
+      "translate": "requiem:advancements.requiem.first_possession.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "possess": {
+      "trigger": "requiem:player_possessed_entity",
+      "conditions": {}
+    }
+  },
+  "requirements": [
+    [
+      "possess"
+    ]
+  ]
+}

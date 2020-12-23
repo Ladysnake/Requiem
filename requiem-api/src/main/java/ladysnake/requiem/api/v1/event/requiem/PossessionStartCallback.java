@@ -53,7 +53,7 @@ public interface PossessionStartCallback {
 
     IdentifyingEvent<PossessionStartCallback> EVENT = new IdentifyingEvent<>(PossessionStartCallback.class,
             (listeners) -> (target, possessor, simulate) -> {
-                Result ret = target.world.isClient ? Result.ALLOW : Result.PASS;
+                Result ret = target.world.isClient && !simulate ? Result.ALLOW : Result.PASS;
                 for (PossessionStartCallback listener : listeners) {
                     Result result = listener.onPossessionAttempted(target, possessor, simulate);
                     if (result != Result.PASS) {

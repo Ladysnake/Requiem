@@ -37,13 +37,17 @@ package ladysnake.requiem.common.network;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
-import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
+import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.item.OpusDemoniumItem;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantTypes;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -57,40 +61,51 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 
-import java.util.function.Consumer;
-
 import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
 public class ServerMessageHandling {
 
     public static void init() {
-        register(LEFT_CLICK_AIR, (player) -> {
-            Possessable possessed = (Possessable) PossessionComponent.get(player).getPossessedEntity();
-            if (possessed != null) {
-                possessed.getMobAbilityController().useIndirect(AbilityType.ATTACK);
-            }
-        });
-        register(RIGHT_CLICK_AIR, (player) -> {
-            Possessable possessed = (Possessable) PossessionComponent.get(player).getPossessedEntity();
-            if (possessed != null) {
-                possessed.getMobAbilityController().useIndirect(AbilityType.INTERACT);
-            }
-        });
-        ServerSidePacketRegistry.INSTANCE.register(POSSESSION_REQUEST, (context, buf) -> {
-            int requestedId = buf.readInt();
+        ServerSidePacketRegistry.INSTANCE.register(USE_DIRECT_ABILITY, (context, buf) -> {
+            AbilityType type = buf.readEnumConstant(AbilityType.class);
+            int entityId = buf.readVarInt();
             context.getTaskQueue().execute(() -> {
                 PlayerEntity player = context.getPlayer();
-                Entity entity = player.world.getEntityById(requestedId);
-                if (entity instanceof MobEntity && entity.distanceTo(player) < 20) {
-                    PossessionComponent.get(player).startPossessing((MobEntity) entity);
+                MobAbilityController abilityController = MobAbilityController.get(player);
+                Entity targetedEntity = player.world.getEntityById(entityId);
+
+                // allow a slightly longer reach in case of lag
+                if (targetedEntity != null && (abilityController.getRange(type) + 3) > targetedEntity.distanceTo(player)) {
+                    abilityController.useDirect(type, targetedEntity);
                 }
-                sendTo((ServerPlayerEntity) player, createEmptyMessage(POSSESSION_ACK));
+
+                // sync abilities in case the server disagrees with the client's guess
+                MobAbilityController.KEY.sync(player);
             });
         });
+        ServerSidePacketRegistry.INSTANCE.register(USE_INDIRECT_ABILITY, (context, buf) -> {
+            AbilityType type = buf.readEnumConstant(AbilityType.class);
+            context.getTaskQueue().execute(() -> MobAbilityController.get(context.getPlayer()).useIndirect(type));
+        });
+        ServerSidePacketRegistry.INSTANCE.register(ETHEREAL_FRACTURE, (context, buf) -> context.getTaskQueue().execute(() -> {
+            ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
+            RemnantComponent remnantState = RemnantComponent.get(player);
+
+            if (remnantState.getRemnantType().isDemon()) {
+                PossessionComponent possessionComponent = PossessionComponent.get(player);
+                MobEntity possessedEntity = possessionComponent.getPossessedEntity();
+                if (possessedEntity != null && RemnantComponent.get(player).canDissociateFrom(possessedEntity)) {
+                    possessionComponent.stopPossessing();
+                    RequiemNetworking.sendEtherealAnimationMessage(player);
+                } else {
+                    InitiateFractureCallback.EVENT.invoker().performFracture(player);
+                }
+            }
+        }));
         ServerSidePacketRegistry.INSTANCE.register(OPUS_UPDATE, (context, buf) -> {
             String content = buf.readString(32767);
             boolean sign = buf.readBoolean();
-            RemnantType type = sign ? RemnantTypes.get(new Identifier(buf.readString(32767))) : null;
+            RemnantType type = sign ? RemnantTypes.get(buf.readIdentifier()) : null;
             Hand hand = buf.readEnumConstant(Hand.class);
             context.getTaskQueue().execute(() -> {
                 PlayerEntity player = context.getPlayer();
@@ -126,12 +141,12 @@ public class ServerMessageHandling {
             // we do not handle those right now, as movement is entirely done clientside
             context.getTaskQueue().execute(() -> MovementAlterer.get(context.getPlayer()).hugWall(yes));
         });
-    }
-
-    private static void register(Identifier id, Consumer<PlayerEntity> handler) {
-        ServerSidePacketRegistry.INSTANCE.register(
-                id,
-                (context, packet) -> context.getTaskQueue().execute(() -> handler.accept(context.getPlayer()))
-        );
+        ServerSidePacketRegistry.INSTANCE.register(OPEN_CRAFTING_MENU, (context, buf) -> context.getTaskQueue().execute(() -> {
+            PlayerEntity player = context.getPlayer();
+            MobEntity possessed = PossessionComponent.get(player).getPossessedEntity();
+            if (possessed != null && RequiemEntityTypeTags.SUPERCRAFTERS.contains(possessed.getType())) {
+                player.openHandledScreen(Blocks.CRAFTING_TABLE.getDefaultState().createScreenHandlerFactory(player.world, player.getBlockPos()));
+            }
+        }));
     }
 }

@@ -34,14 +34,10 @@
  */
 package ladysnake.requiem.mixin.common.possession.possessed;
 
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityController;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -56,7 +52,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(MobEntity.class)
-public abstract class PossessableMobEntityMixin extends LivingEntity implements Possessable {
+public abstract class PossessableMobEntityMixin extends PossessableLivingEntityMixin implements Possessable {
 
     @Shadow
     public abstract void setAttacking(boolean boolean_1);
@@ -64,25 +60,14 @@ public abstract class PossessableMobEntityMixin extends LivingEntity implements 
     @Shadow
     public abstract boolean isAttacking();
 
-    @Unique
-    private MobAbilityController abilityController = MobAbilityController.DUMMY;
+    @Shadow
+    protected abstract void mobTick();
+
     @Unique
     private int attackingCountdown;
 
     public PossessableMobEntityMixin(EntityType<? extends MobEntity> type, World world) {
         super(type, world);
-    }
-
-    @Inject(method = "<init>", at = @At("RETURN"))
-    private void initAbilities(CallbackInfo ci) {
-        if (world != null && !world.isClient) {
-            this.abilityController = new ImmutableMobAbilityController<>(MobAbilityRegistry.instance().getConfig((MobEntity)(Object)this), (MobEntity & Possessable)(Object)this);
-        }
-    }
-
-    @Override
-    public MobAbilityController getMobAbilityController() {
-        return abilityController;
     }
 
     @Inject(method = "setAttacking", at = @At("RETURN"))
@@ -126,5 +111,12 @@ public abstract class PossessableMobEntityMixin extends LivingEntity implements 
             // The possession will start when the entity is added to the world
             ((Possessable)converted).setPossessor(possessor);
         }
+    }
+
+    @Override
+    protected void requiem_mobTick() {
+        this.world.getProfiler().push("mob tick");
+        this.mobTick();
+        this.world.getProfiler().pop();
     }
 }

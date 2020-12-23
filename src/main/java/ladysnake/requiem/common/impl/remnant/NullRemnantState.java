@@ -35,9 +35,8 @@
 package ladysnake.requiem.common.impl.remnant;
 
 import ladysnake.requiem.api.v1.remnant.RemnantState;
-import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.remnant.RemnantTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public final class NullRemnantState implements RemnantState {
@@ -45,37 +44,52 @@ public final class NullRemnantState implements RemnantState {
     public static final RemnantState NULL_STATE = new NullRemnantState();
 
     @Override
+    public void setup(RemnantState oldHandler) {
+        // NO-OP
+    }
+
+    @Override
+    public void teardown(RemnantState newHandler) {
+        // NO-OP
+    }
+
+    @Override
     public boolean isIncorporeal() {
         return false;
     }
 
     @Override
-    public boolean isSoul() {
+    public boolean isVagrant() {
         return false;
     }
 
     @Override
-    public void setSoul(boolean incorporeal) {
+    public boolean setVagrant(boolean vagrant) {
+        return false;
+    }
+
+    @Override
+    public boolean canDissociateFrom(MobEntity possessed) {
+        return false;
+    }
+
+    @Override
+    public void curePossessed(LivingEntity body) {
         // NO-OP
     }
 
     @Override
-    public RemnantType getType() {
-        return RemnantTypes.MORTAL;
+    public boolean canRegenerateBody() {
+        return true;
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        return tag;
-    }
-
-    @Override
-    public void fromTag(CompoundTag tag) {
+    public void prepareRespawn(ServerPlayerEntity original, boolean lossless) {
         // NO-OP
     }
 
     @Override
-    public void copyFrom(ServerPlayerEntity original, boolean lossless) {
+    public void serverTick() {
         // NO-OP
     }
 }

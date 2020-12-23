@@ -6,7 +6,7 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "ladysnake.requiem.client.RequiemClient"
+      "ladysnake.requiem.client.RequiemClient::INSTANCE"
     ],
     "main": [
       "ladysnake.requiem.Requiem"
@@ -14,8 +14,11 @@
     "requiem:plugin": [
       "ladysnake.requiem.common.VanillaRequiemPlugin"
     ],
-    "cardinal-components-entity": [
+    "cardinal-components": [
       "ladysnake.requiem.common.RequiemComponents"
+    ],
+    "cardinal-components-entity": [
+      "ladysnake.requiem.compat.RequiemCompatibilityManager::registerEntityComponentFactories"
     ]
   },
   "mixins": [
@@ -36,7 +39,9 @@
   "depends": {
     "minecraft": ">=1.16",
     "requiemapi": "${version}",
-    "satin": "^1.4.0-"
+    "satin": "^1.4.0-",
+    "cardinal-components-base": "^2.7.0",
+    "cardinal-components-scoreboard": "^2.7.10"
   },
 
   "name": "Requiem",

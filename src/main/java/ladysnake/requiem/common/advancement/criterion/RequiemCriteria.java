@@ -35,18 +35,24 @@
 package ladysnake.requiem.common.advancement.criterion;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.mixin.common.access.CriteriaAccessor;
-import net.minecraft.advancement.criterion.Criteria;
+import net.fabricmc.fabric.api.object.builder.v1.advancement.CriterionRegistry;
 
 public class RequiemCriteria {
     public static final OnResurrectCriterion PLAYER_RESURRECTED_AS_ENTITY = new OnResurrectCriterion(Requiem.id("player_resurrected_as_entity"));
     public static final OnRemnantChoiceCriterion MADE_REMNANT_CHOICE = new OnRemnantChoiceCriterion(Requiem.id("made_remnant_choice"));
+    public static final OnPossessionCriterion PLAYER_POSSESSED_ENTITY = new OnPossessionCriterion(Requiem.id("player_possessed_entity"));
+    public static final OnDeathAfterPossessionCriterion DEATH_AFTER_POSSESSION = new OnDeathAfterPossessionCriterion(Requiem.id("entity_died_after_possession"));
+    public static final PossessedHitEntityCriterion POSSESSED_HIT_ENTITY = new PossessedHitEntityCriterion(Requiem.id("possessed_hit_entity"));
+    public static final TransformedPossessedCriterion TRANSFORMED_POSSESSED_ENTITY = new TransformedPossessedCriterion(Requiem.id("transformed_possessed_entity"));
+    public static final UsedRequiemTotemCriterion USED_TOTEM = new UsedRequiemTotemCriterion(Requiem.id("used_totem"));
 
     public static void init() {
-        // the class may not have been loaded at this point, so we need to classload it ourselves
-        // before calling the accessor
-        Criteria.getCriteria();
-        CriteriaAccessor.invokeRegister(PLAYER_RESURRECTED_AS_ENTITY);
-        CriteriaAccessor.invokeRegister(MADE_REMNANT_CHOICE);
+        CriterionRegistry.register(PLAYER_RESURRECTED_AS_ENTITY);
+        CriterionRegistry.register(MADE_REMNANT_CHOICE);
+        CriterionRegistry.register(PLAYER_POSSESSED_ENTITY);
+        CriterionRegistry.register(DEATH_AFTER_POSSESSION);
+        CriterionRegistry.register(POSSESSED_HIT_ENTITY);
+        CriterionRegistry.register(TRANSFORMED_POSSESSED_ENTITY);
+        CriterionRegistry.register(USED_TOTEM);
     }
 }

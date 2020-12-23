@@ -35,6 +35,7 @@
 package ladysnake.requiem.mixin.common.possession;
 
 import ladysnake.requiem.api.v1.internal.ProtoPossessable;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
@@ -52,8 +53,13 @@ public abstract class ServerWorldMixin {
     @Inject(method = "loadEntityUnchecked", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerChunkManager;loadEntity(Lnet/minecraft/entity/Entity;)V", shift = AFTER))
     private void possessLoadedEntities(Entity entity, CallbackInfo ci) {
         PlayerEntity possessor = ((ProtoPossessable) entity).getPossessor();
+
         if (possessor != null && entity instanceof MobEntity) {
-            PossessionComponent.get(possessor).startPossessing((MobEntity) entity);
+            PossessionComponent possessionComponent = PossessionComponent.get(possessor);
+            if (possessionComponent.getPossessedEntity() != entity) {
+                ((Possessable) entity).setPossessor(null);  // reset the possessor in case the possession actually fails
+                possessionComponent.startPossessing((MobEntity) entity);
+            }
         }
     }
 }

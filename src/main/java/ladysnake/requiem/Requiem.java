@@ -43,6 +43,7 @@ import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.block.RequiemBlocks;
+import ladysnake.requiem.common.command.RemnantArgumentType;
 import ladysnake.requiem.common.command.RequiemCommand;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.RequiemEntities;
@@ -54,11 +55,15 @@ import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.loot.RequiemLootTables;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.network.ServerMessageHandling;
+import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import ladysnake.requiem.compat.RequiemCompatibilityManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.minecraft.command.argument.ArgumentTypes;
+import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
@@ -83,15 +88,18 @@ public final class Requiem implements ModInitializer {
         RequiemGamerules.init();
         RequiemItems.init();
         RequiemLootTables.init();
+        RequiemParticleTypes.init();
         RequiemRegistries.init();
         RequiemSoundEvents.init();
         RequiemStatusEffects.init();
         ServerMessageHandling.init();
         ApiInitializer.discoverEntryPoints();
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> RequiemCommand.register(dispatcher));
+        ArgumentTypes.register("requiem:remnant", RemnantArgumentType.class, new ConstantArgumentSerializer<>(RemnantArgumentType::remnantType));
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(ResurrectionDataLoader.INSTANCE);
         SyncServerResourcesCallback.EVENT.register(player -> RequiemNetworking.sendTo(player, RequiemNetworking.createDataSyncMessage(SubDataManagerHelper.getServerHelper())));
         ApiInitializer.setPluginCallback(this::registerPlugin);
+        RequiemCompatibilityManager.init();
     }
 
     private void registerPlugin(RequiemPlugin plugin) {

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#requiem:humanoid_zombies",
+    "#requiem:humanoid_skeletons",
+    "#requiem:humans",
+    "#requiem:piglins"
+  ]
+}

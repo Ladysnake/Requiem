@@ -35,7 +35,7 @@
 package ladysnake.requiem.common.entity.effect;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.mixin.client.texture.SpriteAtlasHolderAccessor;
+import ladysnake.requiem.mixin.client.attrition.SpriteAtlasHolderAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.attribute.EntityAttributeModifier;

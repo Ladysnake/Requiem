@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,41 +14,45 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.pandemonium.common.entity.ability;
 
-import ladysnake.pandemonium.common.util.RayHelper;
-import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
-import net.minecraft.entity.Entity;
+import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
 
-public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> extends IndirectAbilityBase<T> {
+public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> extends DirectAbilityBase<T, LivingEntity> {
+
+    public static final int ATTACK_COOLDOWN = 40;
 
     public RangedAttackAbility(T owner) {
-        super(owner);
+        super(owner, ATTACK_COOLDOWN, 20.0, LivingEntity.class);
     }
 
     @Override
-    public boolean trigger(PlayerEntity player) {
-        double range = 64.0;
-        Vec3d startPoint = this.owner.getCameraPosVec(1.0f);
-        Vec3d lookVec = this.owner.getRotationVec(1.0f);
-        Vec3d endPoint = startPoint.add(lookVec.x * range, lookVec.y * range, lookVec.z * range);
-        Vec3d rot = this.owner.getRotationVec(1.0F);
-        Box bb = this.owner.getBoundingBox().stretch(rot.x * range, rot.y * range, rot.z * range).expand(1.0D, 1.0D, 1.0D);
-        EntityHitResult trace = RayHelper.rayTrace(this.owner, startPoint, endPoint, bb, (e) -> e != player && !e.isSpectator() && e.collides(), range);
-        if (trace != null) {
-            Entity traced = trace.getEntity();
-            if (traced instanceof LivingEntity) {
-                this.owner.attack((LivingEntity) traced, 1f);
-            }
+    public boolean run(LivingEntity target) {
+        if (!this.owner.world.isClient) {
+            this.owner.attack(target, 1f);
         }
-        return false;
+
+        return true;
     }
 }

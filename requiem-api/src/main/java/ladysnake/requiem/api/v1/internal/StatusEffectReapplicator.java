@@ -17,10 +17,19 @@
  */
 package ladysnake.requiem.api.v1.internal;
 
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.util.Identifier;
 
-import java.util.Collection;
+public interface StatusEffectReapplicator extends ServerTickingComponent {
+    ComponentKey<StatusEffectReapplicator> KEY = ComponentRegistry.getOrCreate(new Identifier("requiem", "effect_reapplicator"), StatusEffectReapplicator.class);
 
-public interface StatusEffectReapplicator {
-    Collection<StatusEffectInstance> getReappliedStatusEffects();
+    void onStatusEffectRemoved(StatusEffectInstance effect);
+
+    void definitivelyClear();
+
+    void definitivelyClear(StatusEffect effect);
 }

@@ -1,22 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#minecraft:skeletons"
-  ],
-  "libcd": {
-    "entries": [
-      {
-        "when": [
-          {
-            "libcd:mod_loaded": "mobz"
-          }
-        ],
-        "values": [
-          "mobz:skeli1_entity",
-          "mobz:skeli2_entity",
-          "mobz:skeli3_entity"
-        ]
-      }
-    ]
-  }
+    "#requiem:humanoid_skeletons",
+    "minecraft:skeleton_horse"
+  ]
 }

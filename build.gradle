@@ -2,16 +2,16 @@
 
 
 import java.time.Year
+import com.modrinth.minotaur.TaskModrinthUpload
 
 plugins {
-    id "fabric-loom" version "0.4-SNAPSHOT"
-    id "com.github.fudge.forgedflowerloom" version "2.0.0"
+    id 'fabric-loom' version '0.5-SNAPSHOT'
     id 'net.minecrell.licenser' version '0.4.1'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
-    id "com.jfrog.bintray" version '1.8.4'
+    id 'com.jfrog.bintray' version '1.8.4'
     id 'org.ajoberstar.grgit' version '3.1.1'
     id 'com.github.breadmoirai.github-release' version '2.2.9'
-    id "com.wynprice.cursemaven" version "2.1.5"
+    id 'com.modrinth.minotaur' version '1.1.0'
     id 'maven-publish'
 }
 
@@ -23,6 +23,8 @@ subprojects {
     apply plugin: 'fabric-loom'
     apply plugin: 'com.matthewprenger.cursegradle'
     apply plugin: 'maven-publish'
+    apply plugin: 'net.minecrell.licenser'
+    apply plugin: 'com.jfrog.bintray'
 }
 
 allprojects {
@@ -31,9 +33,6 @@ allprojects {
     targetCompatibility = JavaVersion.VERSION_1_8
 
     version = rootProject.mod_version
-
-    // Adds a few utility methods like getProjectProperty
-    apply from: 'https://raw.githubusercontent.com/NerdHubMC/Gradle-Scripts/master/scripts/utilities.gradle'
 
     repositories {
         mavenLocal()
@@ -62,7 +61,7 @@ allprojects {
         from sourceSets.main.allSource
     }
 
-    apply from: 'https://raw.githubusercontent.com/OnyxStudios/Gradle-Scripts/master/scripts/fabric/publish/changelog.gradle'
+    apply from: rootProject.file('utilities.gradle')
 
     dependencies {
         //to change the versions see the gradle.properties file
@@ -116,6 +115,24 @@ allprojects {
             }
         }
     }
+
+    bintray {
+        user = project.findProperty('bintray_user')
+        key = project.findProperty('bintray_api_key')
+        publications = ['mavenJava']
+        publish = true //[Default: false] Whether version should be auto published after an upload
+        pkg {
+            repo = 'mods'
+            name = project.name
+            userOrg = 'ladysnake'
+            version {
+                name = project.version
+                vcsTag = project.version
+                released  = new Date()
+            }
+        }
+    }
+    bintrayUpload.dependsOn(build)
 }
 
 repositories {
@@ -130,6 +147,19 @@ repositories {
     }
     maven {
         url "https://maven.jamieswhiteshirt.com/libs-release/"
+    }
+    maven {
+        url "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven {
+        name = "AdrianTodt's Maven"
+        url = "https://dl.bintray.com/adriantodt/maven"
+        content {
+            includeGroup "net.adriantodt.fabricmc"
+        }
     }
     maven {
         name = 'JitPack'
@@ -153,6 +183,8 @@ dependencies {
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${cca_version}"
     modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}")
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
+    modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-scoreboard:${cca_version}")
+    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-scoreboard:${cca_version}"
     modImplementation ("io.github.ladysnake:PlayerAbilityLib:${pal_version}")
     include "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
 
@@ -161,12 +193,18 @@ dependencies {
     modCompileOnly("io.github.Terrails:Health-Overlay:1.16-Fabric-SNAPSHOT")
 
     modRuntime "com.jamieswhiteshirt:reach-entity-attributes:1.0.1"
-    modCompileOnly("io.github.apace100:origins-fabric:v0.3.6") {
+    modCompileOnly("io.github.apace100:origins-fabric:dev-SNAPSHOT") {
         transitive = false
     }
-    modRuntime("io.github.apace100:origins-fabric:v0.3.6") {
+    modRuntime "net.adriantodt.fabricmc:fallflyinglib:1.1.0"
+    modRuntime("io.github.apace100:origins-fabric:dev-SNAPSHOT") {
         transitive = false
     }
+    modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:8d45e7a209") {
+        transitive = false
+    }
+    modCompileOnly("curse.maven:the-bumblezone-fabric-363949:3119141")
+    modCompileOnly("curse.maven:golems-galore-387197:3048547")
 }
 
 remapJar.dependsOn(project(":requiem-api").tasks.remapJar)
@@ -189,7 +227,7 @@ task checkGitStatus() {
             throw new RuntimeException("Git repository not ready for release (${grgit.status()})")
         }
         def currentBranch = grgit.branch.current().getName()
-        if (currentBranch != 'master') {
+        if (currentBranch != 'master' && !currentBranch.matches(/\d\.\d{2}/)) {
             throw new RuntimeException("Need to be on the master branch to release (currently on ${currentBranch})")
         }
         grgit.fetch()
@@ -206,6 +244,10 @@ task checkGitStatus() {
     }
 }
 
+allprojects {
+    bintrayUpload.dependsOn(rootProject.tasks.checkGitStatus)
+}
+
 githubRelease {
     token "${getProjectProperty('github_releases_token')}"
     // default owner: last component of maven group
@@ -218,26 +260,6 @@ githubRelease {
     releaseAssets = { jar.destinationDirectory.asFile.get().listFiles filter }
 }
 tasks.githubRelease.dependsOn(checkGitStatus)
-
-bintray {
-    user = project.findProperty('bintray_user')
-    key = project.findProperty('bintray_api_key')
-    publications = ['mavenJava']
-    publish = true //[Default: false] Whether version should be auto published after an upload
-    pkg {
-        repo = 'mods'
-        name = project.name
-        userOrg = 'ladysnake'
-        version {
-            name = project.version
-            vcsTag = project.version
-            released  = new Date()
-        }
-    }
-}
-
-bintrayUpload.dependsOn(checkGitStatus)
-bintrayUpload.dependsOn(build)
 
 curseforge {
 
@@ -317,7 +339,24 @@ curseforge {
 
 tasks.curseforge.dependsOn(checkGitStatus)
 
-task release(dependsOn: [tasks.publish, tasks.githubRelease, tasks.bintrayUpload, tasks.curseforge]) {
+task modrinth (type: TaskModrinthUpload, dependsOn: checkGitStatus){
+    if (project.getProjectProperty('modrinth_key') != null) {
+        token = project.getProjectProperty('modrinth_key')
+    }
+    projectId = 'bYmqMxlQ'
+    versionNumber = project.version
+    uploadFile = remapJar
+    subprojects {
+        addFile(remapJar)
+    }
+    changelog = project.getChangelogText()
+    "${project.curseforge_versions}".split('; ').each {
+        addGameVersion it
+    }
+    addLoader('fabric')
+}
+
+task release(dependsOn: [tasks.publish, tasks.githubRelease, tasks.bintrayUpload, tasks.curseforge, tasks.modrinth]) {
     group = 'publishing'
     description = 'Releases a new version to Maven, Github and Curseforge'
 }

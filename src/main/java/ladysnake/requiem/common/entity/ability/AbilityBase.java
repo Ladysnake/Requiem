@@ -34,13 +34,89 @@
  */
 package ladysnake.requiem.common.entity.ability;
 
+import com.google.common.base.Preconditions;
 import ladysnake.requiem.api.v1.entity.ability.MobAbility;
-import net.minecraft.entity.mob.MobEntity;
+import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
+import ladysnake.requiem.api.v1.possession.Possessable;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketByteBuf;
 
-public abstract class AbilityBase<E extends MobEntity> implements MobAbility<E> {
+public abstract class AbilityBase<E extends LivingEntity> implements MobAbility<E> {
     protected final E owner;
+    private final int cooldownTime;
+    protected int cooldown;
 
-    public AbilityBase(E owner) {
+    public AbilityBase(E owner, int cooldownTime) {
         this.owner = owner;
+        this.cooldownTime = cooldownTime;
+    }
+
+    public void beginCooldown() {
+        this.setCooldown(this.getCooldownTime());
+    }
+
+    public void setCooldown(int cooldown) {
+        Preconditions.checkArgument(cooldown >= 0);
+
+        if (this.cooldown != cooldown) {
+            this.cooldown = cooldown;
+
+            this.sync();
+
+            if (cooldown == 0) {
+                this.onCooldownEnd();
+            }
+        }
+    }
+
+    protected void sync() {
+        E owner = this.owner;
+
+        if (owner instanceof PlayerEntity) {
+            MobAbilityController.KEY.sync(owner);
+        } else {
+            PlayerEntity possessor = ((Possessable) owner).getPossessor();
+            if (possessor != null) {
+                MobAbilityController.KEY.sync(possessor);
+            }
+        }
+    }
+
+    public int getCooldown() {
+        return cooldown;
+    }
+
+    public int getCooldownTime() {
+        return cooldownTime;
+    }
+
+    @Override
+    public float getCooldownProgress() {
+        if (this.getCooldownTime() == 0) return 1.0F;
+        return 1.0f - (float) this.getCooldown() / this.getCooldownTime();
+    }
+
+    @Override
+    public void update() {
+        int cooldown = this.getCooldown();
+
+        if (cooldown > 0 && !this.owner.world.isClient) {
+            this.setCooldown(cooldown - 1);
+        }
+    }
+
+    protected void onCooldownEnd() {
+        // NO-OP
+    }
+
+    @Override
+    public void writeToPacket(PacketByteBuf buf) {
+        buf.writeVarInt(this.getCooldown());
+    }
+
+    @Override
+    public void readFromPacket(PacketByteBuf buf) {
+        this.setCooldown(buf.readVarInt());
     }
 }

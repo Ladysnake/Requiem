@@ -42,87 +42,124 @@ import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
-import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.gamerule.RequiemGamerules;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
+import ladysnake.requiem.common.entity.cure.CurableEntityComponent;
+import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
+import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
-import ladysnake.requiem.common.remnant.ClosedSpaceDetector;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class MutableRemnantState implements RemnantState {
-    public static final String ETHEREAL_TAG = "ethereal";
+
     public static final AbilitySource SOUL_STATE = Pal.getAbilitySource(Requiem.id("soul_state"));
-
-    private final RemnantType type;
     protected final PlayerEntity player;
-    protected final ClosedSpaceDetector closedSpaceDetector;
-    protected boolean ethereal;
-    private boolean lastTickIncorporeal;
+    private boolean ethereal;
 
-    public MutableRemnantState(RemnantType type, PlayerEntity player) {
-        this.type = type;
+    public MutableRemnantState(PlayerEntity player) {
         this.player = player;
-        this.closedSpaceDetector = new ClosedSpaceDetector(player);
+    }
+
+    @Override
+    public void setup(RemnantState oldHandler) {
+        this.setVagrant(oldHandler.isVagrant());
+    }
+
+    @Override
+    public void teardown(RemnantState newHandler) {
+        this.updatePlayerState(false);
     }
 
     @Override
     public boolean isIncorporeal() {
-        return this.isSoul() && !PossessionComponent.get(this.player).isPossessing();
+        return this.isVagrant() && !PossessionComponent.get(this.player).isPossessing();
     }
 
     @Override
-    public boolean isSoul() {
+    public boolean isVagrant() {
         return this.ethereal;
     }
 
     @Override
-    public void setSoul(boolean incorporeal) {
-        if (this.ethereal != incorporeal) {
-            this.ethereal = incorporeal;
-            SerializableMovementConfig config;
-            boolean serverside = !this.player.world.isClient;
-            if (incorporeal) {
-                config = SerializableMovementConfig.SOUL;
-                if (serverside) {
-                    Pal.grantAbility(player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
-                }
-            } else {
-                config = null;
-                if (serverside) {
-                    Pal.revokeAbility(player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
-                }
-                PossessionComponent.get(this.player).stopPossessing(false);
-            }
-            MovementAlterer.get(this.player).setConfig(config);
-            RemnantComponent.KEY.sync(this.player);
-        }
+    public boolean setVagrant(boolean vagrant) {
+        this.ethereal = vagrant;
+        this.updatePlayerState(vagrant);
+        return true;
     }
 
-    @Override
-    public void serverTick() {
-        boolean incorporeal = this.isIncorporeal();
-        if (incorporeal) {
-            if (!this.lastTickIncorporeal) {
-                this.closedSpaceDetector.reset(false);
+    private void updatePlayerState(boolean vagrant) {
+        SerializableMovementConfig config;
+        boolean serverside = !this.player.world.isClient;
+        if (vagrant) {
+            config = SerializableMovementConfig.SOUL;
+            if (serverside) {
+                Pal.grantAbility(this.player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
             }
-            if (player.world.getGameRules().getBoolean(RequiemGamerules.SPAWN_HELP_ENDERMEN)) {
-                this.closedSpaceDetector.tick();
-            }
-        }
-        this.lastTickIncorporeal = incorporeal;
-    }
-
-    @Override
-    public void copyFrom(ServerPlayerEntity original, boolean lossless) {
-        RemnantComponent ogState = RemnantComponent.get(original);
-        if (lossless || ogState.isSoul()) {
-            // Copy state
-            this.setSoul(ogState.isSoul());
         } else {
-            this.setSoul(true);
+            config = null;
+            if (serverside) {
+                Pal.revokeAbility(this.player, VanillaAbilities.INVULNERABLE, SOUL_STATE);
+            }
+        }
+        MovementAlterer.get(player).setConfig(config);
+        RemnantComponent.KEY.sync(player);
+    }
+
+    @Override
+    public boolean canDissociateFrom(MobEntity possessed) {
+        return RequiemEntityTypeTags.FRICTIONLESS_HOSTS.contains(possessed.getType());
+    }
+
+    @Override
+    public void curePossessed(LivingEntity body) {
+        if (this.canRegenerateBodyFrom(body)) {
+            regenerateBody((ServerPlayerEntity) this.player, body);
+        } else {
+            this.cureMob(body);
+        }
+    }
+
+    public static void regenerateBody(ServerPlayerEntity player, LivingEntity body) {
+        RemnantComponent.get(player).setVagrant(false);
+        RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle(player, body, player, true);
+        body.remove();
+        player.removeStatusEffect(RequiemStatusEffects.ATTRITION);
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
+        player.world.syncWorldEvent(null, 1027, player.getBlockPos(), 0);
+    }
+
+    protected void cureMob(LivingEntity body) {
+        MobEntity cured = CurableEntityComponent.KEY.get(body).cureAsPossessed();
+
+        if (cured != null) {
+            RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle((ServerPlayerEntity) this.player, body, cured, true);
+        }
+    }
+
+    @Override
+    public boolean canRegenerateBody() {
+        return true;
+    }
+
+    protected boolean canRegenerateBodyFrom(LivingEntity body) {
+        return this.canRegenerateBody() && body.isUndead() && RequiemEntityTypeTags.ITEM_USERS.contains(body.getType());
+    }
+
+    @Override
+    public void prepareRespawn(ServerPlayerEntity original, boolean lossless) {
+        if (!lossless && !this.isVagrant()) {
+            RemnantComponent.get(this.player).setVagrant(true);
             this.copyGlobalPos(original);
+
+            if (original.isDead()) {
+                AttritionStatusEffect.apply(player);
+            }
         }
     }
 
@@ -135,18 +172,7 @@ public class MutableRemnantState implements RemnantState {
     }
 
     @Override
-    public RemnantType getType() {
-        return this.type;
-    }
-
-    @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        tag.putBoolean(ETHEREAL_TAG, this.isSoul());
-        return tag;
-    }
-
-    @Override
-    public void fromTag(CompoundTag tag) {
-        this.setSoul(tag.getBoolean(ETHEREAL_TAG));
+    public void serverTick() {
+        // NO-OP
     }
 }

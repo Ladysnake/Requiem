@@ -17,23 +17,28 @@
  */
 package ladysnake.requiem.api.v1.entity.ability;
 
+import com.demonwav.mcdev.annotations.CheckEnv;
+import com.demonwav.mcdev.annotations.Env;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.Identifier;
 
-/**
- * A {@link DirectAbility} targets a specific entity
- *
- * @param <E> The type of mobs that can wield this ability
- */
-@FunctionalInterface
-public interface DirectAbility<E extends MobEntity> extends MobAbility<E> {
+public interface DirectAbility<E extends LivingEntity, T extends Entity> extends MobAbility<E> {
+    Identifier ABILITY_ICON = new Identifier("requiem", "textures/gui/ability_icon.png");
+
     /**
-     * Triggers the ability on a known entity.
-     *
-     * @param player the player commanding the ability
-     * @param target the targeted entity
-     * @return <code>true</code> if the ability has been successfully used
+     * If the range is 0, the vanilla targeting system is used
      */
-    boolean trigger(PlayerEntity player, Entity target);
+    double getRange();
+
+    Class<T> getTargetType();
+
+    boolean canTarget(T target);
+
+    boolean trigger(T target);
+
+    @CheckEnv(Env.CLIENT)
+    default Identifier getIconTexture() {
+        return ABILITY_ICON;
+    }
 }

@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,6 +14,23 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.pandemonium.common.entity.ability;
 
@@ -22,7 +39,6 @@ import ladysnake.requiem.common.util.reflection.ReflectionHelper;
 import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.SpellcastingIllagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -34,7 +50,7 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
     private boolean started;
 
     public EvokerVexAbility(EvokerEntity owner) {
-        super(owner);
+        super(owner, 0);
         try {
             summonVexGoal = VEX_GOAL_FACTORY.newInstance(owner);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -43,29 +59,44 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
     }
 
     @Override
-    public boolean trigger(PlayerEntity player) {
-        boolean success = false;
-        owner.setTarget(owner); // The target needs to be non null to let the goal run
-        if (summonVexGoal.canStart()) {
-            summonVexGoal.start();
-            started = true;
-            success = true;
+    public boolean run() {
+        if (this.owner.world.isClient) return true;
+
+        boolean hasTarget = owner.getTarget() != null;
+        if (!hasTarget) owner.setTarget(owner); // Need to have some kind of target to cast the spell
+
+        try {
+            if (this.summonVexGoal.canStart()) {
+                this.summonVexGoal.start();
+                this.started = true;
+                this.beginCooldown();
+                return true;
+            }
+        } finally {
+            if (!hasTarget) owner.setTarget(null);
         }
-        owner.setTarget(null);
-        return success;
+
+        return false;
     }
 
     @Override
     public void update() {
+        super.update();
         if (started) {
-            owner.setTarget(owner);
-            if (summonVexGoal.shouldContinue()) {
-                summonVexGoal.tick();
-            } else {
-                owner.setSpell(SpellcastingIllagerEntity.Spell.NONE);
-                started = false;
+            boolean hasTarget = owner.getTarget() != null;
+            if (!hasTarget) owner.setTarget(owner); // Need to have some kind of target to cast the spell
+
+            try {
+                if (summonVexGoal.shouldContinue()) {
+                    summonVexGoal.tick();
+                } else {
+                    started = false;
+                    this.summonVexGoal.stop();
+                    owner.setSpell(SpellcastingIllagerEntity.Spell.NONE);
+                }
+            } finally {
+                if (!hasTarget) owner.setTarget(null);
             }
-            owner.setTarget(null);
         }
     }
 

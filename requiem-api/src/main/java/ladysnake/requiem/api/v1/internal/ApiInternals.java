@@ -26,7 +26,7 @@ import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.World;
 import org.apiguardian.api.API;
 import org.jetbrains.annotations.Nullable;
@@ -80,7 +80,7 @@ public final class ApiInternals {
     private static Function<@Nullable World, MovementRegistry> movementRegistryGetter;
 
     @SuppressWarnings("unchecked")
-    public static <T extends MobEntity> MobAbilityConfig.Builder<T> mobAbilityConfig$builderImpl() {
+    public static <T extends LivingEntity> MobAbilityConfig.Builder<T> mobAbilityConfig$builderImpl() {
         if (abilityBuilderFactory == null) throw new UninitializedApiException("MobAbilityConfig Builder is not available");
         return (MobAbilityConfig.Builder<T>) abilityBuilderFactory.get();
     }

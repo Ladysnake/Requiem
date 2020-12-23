@@ -35,10 +35,20 @@
 package ladysnake.requiem.common.entity.ability;
 
 import ladysnake.requiem.api.v1.entity.ability.IndirectAbility;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.LivingEntity;
 
-public abstract class IndirectAbilityBase<E extends MobEntity> extends AbilityBase<E> implements IndirectAbility<E> {
-    public IndirectAbilityBase(E owner) {
-        super(owner);
+public abstract class IndirectAbilityBase<E extends LivingEntity> extends AbilityBase<E> implements IndirectAbility<E> {
+    public IndirectAbilityBase(E owner, int cooldown) {
+        super(owner, cooldown);
     }
+
+    @Override
+    public boolean trigger() {
+        if (this.getCooldown() == 0) {
+            return this.run();
+        }
+        return false;
+    }
+
+    protected abstract boolean run();
 }

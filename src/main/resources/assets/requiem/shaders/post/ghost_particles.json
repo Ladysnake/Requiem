@@ -1,0 +1,24 @@
+{
+  "targets": [
+    "swap",
+    "ghost_particles"
+  ],
+  "passes": [
+    {
+      "name": "blit",
+      "intarget": "minecraft:main",
+      "outtarget": "swap"
+    },
+    {
+      "name": "requiem:combine",
+      "intarget": "swap",
+      "outtarget": "minecraft:main",
+      "auxtargets": [
+        {
+          "name": "OverlaySampler",
+          "id": "ghost_particles"
+        }
+      ]
+    }
+  ]
+}

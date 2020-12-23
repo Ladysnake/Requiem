@@ -1,25 +1,25 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses>.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; If not, see <https://www.gnu.org/licenses>.
  */
 package ladysnake.pandemonium.api.anchor;
 
+import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
-import dev.onyxstudios.cca.api.v3.component.ComponentV3;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -37,8 +37,8 @@ import java.util.UUID;
  * <p>
  * The tracker is kept synchronized between server and clients.
  */
-public interface FractureAnchorManager extends ComponentV3 {
-    ComponentKey<FractureAnchorManager> KEY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("pandemonium", "anchor_provider"), FractureAnchorManager.class);
+public interface FractureAnchorManager extends Component {
+    ComponentKey<FractureAnchorManager> KEY = ComponentRegistry.getOrCreate(new Identifier("pandemonium", "anchor_provider"), FractureAnchorManager.class);
 
     static FractureAnchorManager get(World world) {
         return KEY.get(world);

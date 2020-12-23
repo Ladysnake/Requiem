@@ -94,12 +94,12 @@ public final class RevivingDeathSuspender implements DeathSuspender {
     }
 
     @Override
-    public void writeToPacket(PacketByteBuf buf, ServerPlayerEntity player, int syncOp) {
+    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity player) {
         buf.writeBoolean(this.isLifeTransient());
     }
 
     @Override
-    public void readFromPacket(PacketByteBuf buf) {
+    public void applySyncPacket(PacketByteBuf buf) {
         this.setLifeTransient(buf.readBoolean());
     }
 

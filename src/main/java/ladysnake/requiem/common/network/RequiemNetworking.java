@@ -35,6 +35,7 @@
 package ladysnake.requiem.common.network;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
@@ -42,6 +43,7 @@ import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
@@ -58,18 +60,19 @@ import java.util.stream.Collectors;
 import static io.netty.buffer.Unpooled.buffer;
 
 public class RequiemNetworking {
-    public static final Identifier POSSESSION_ACK = Requiem.id("possession_ack");
     public static final Identifier OPUS_USE = Requiem.id("opus_use");
     public static final Identifier DATA_SYNC = Requiem.id("data_sync");
+    public static final Identifier ETHEREAL_ANIMATION = Requiem.id("ethereal_animation");
+    public static final Identifier CONSUME_RESURRECTION_ITEM = Requiem.id("consume_resurrection_item");
 
     // Client -> Server
-    public static final Identifier LEFT_CLICK_AIR = Requiem.id("attack_air");
-    public static final Identifier RIGHT_CLICK_AIR = Requiem.id("interact_air");
-    public static final Identifier POSSESSION_REQUEST = Requiem.id("possession_request");
+    public static final Identifier USE_DIRECT_ABILITY = Requiem.id("direct_ability");
+    public static final Identifier USE_INDIRECT_ABILITY = Requiem.id("indirect_ability");
     public static final Identifier ETHEREAL_FRACTURE = Requiem.id("ethereal_fracture");
     public static final Identifier OPUS_UPDATE = Requiem.id("opus_update");
     public static final Identifier DIALOGUE_ACTION = Requiem.id("dialogue_action");
     public static final Identifier HUGGING_WALL = Requiem.id("hugging_wall");
+    public static final Identifier OPEN_CRAFTING_MENU = Requiem.id("open_crafting");
 
     public static void sendToServer(Identifier identifier, PacketByteBuf data) {
         sendToServer(new CustomPayloadC2SPacket(identifier, data));
@@ -99,11 +102,18 @@ public class RequiemNetworking {
         }
     }
 
-    public static CustomPayloadS2CPacket createOpusUsePacket(boolean cure, boolean showBook) {
+    public static CustomPayloadS2CPacket createOpusUsePacket(RemnantType chosenType, boolean showBook) {
         PacketByteBuf buf = createEmptyBuffer();
-        buf.writeBoolean(cure);
+        buf.writeVarInt(RemnantTypes.getRawId(chosenType));
         buf.writeBoolean(showBook);
         return new CustomPayloadS2CPacket(OPUS_USE, buf);
+    }
+
+    public static void sendItemConsumptionPacket(Entity user, ItemStack stack) {
+        PacketByteBuf buf = createEmptyBuffer();
+        buf.writeVarInt(user.getEntityId());
+        buf.writeItemStack(stack);
+        sendToAllTrackingIncluding(user, new CustomPayloadS2CPacket(CONSUME_RESURRECTION_ITEM, buf));
     }
 
     @Contract(pure = true)
@@ -152,10 +162,30 @@ public class RequiemNetworking {
         return new CustomPayloadC2SPacket(DIALOGUE_ACTION, buf);
     }
 
+    public static void sendAbilityUseMessage(AbilityType type, Entity entity) {
+        PacketByteBuf buf = new PacketByteBuf(buffer());
+        buf.writeEnumConstant(type);
+        buf.writeVarInt(entity.getEntityId());
+        sendToServer(USE_DIRECT_ABILITY, buf);
+    }
+
+    public static void sendIndirectAbilityUseMessage(AbilityType type) {
+        PacketByteBuf buf = new PacketByteBuf(buffer());
+        buf.writeEnumConstant(type);
+        sendToServer(USE_INDIRECT_ABILITY, buf);
+    }
+
     public static void sendHugWallMessage(boolean hugging) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeBoolean(hugging);
         sendToServer(new CustomPayloadC2SPacket(HUGGING_WALL, buf));
     }
 
+    public static void sendSupercrafterMessage() {
+        sendToServer(new CustomPayloadC2SPacket(OPEN_CRAFTING_MENU, createEmptyBuffer()));
+    }
+
+    public static void sendEtherealAnimationMessage(ServerPlayerEntity player) {
+        sendTo(player, createEmptyMessage(ETHEREAL_ANIMATION));
+    }
 }

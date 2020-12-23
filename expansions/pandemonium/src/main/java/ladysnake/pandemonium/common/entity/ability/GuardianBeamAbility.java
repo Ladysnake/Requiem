@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2019 Ladysnake
+ * Copyright (C) 2017-2020 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,59 +14,48 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
  */
 package ladysnake.pandemonium.common.entity.ability;
 
-import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
+import ladysnake.requiem.common.entity.ability.TickingGoalAbility;
 import ladysnake.requiem.common.util.reflection.ReflectionHelper;
 import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.GuardianEntity;
-import net.minecraft.entity.player.PlayerEntity;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class GuardianBeamAbility extends DirectAbilityBase<GuardianEntity> {
+public class GuardianBeamAbility extends TickingGoalAbility<GuardianEntity, LivingEntity> {
+    public GuardianBeamAbility(GuardianEntity owner) {
+        super(owner, makeGoal(owner), 20*4, 15, LivingEntity.class);
+    }
+
     private static final Constructor<? extends Goal> BEAM_GOAL_FACTORY;
 
-    private final Goal fireBeamGoal;
-    private boolean started;
-
-    public GuardianBeamAbility(GuardianEntity owner) {
-        super(owner);
+    private static Goal makeGoal(GuardianEntity owner) {
         try {
-            this.fireBeamGoal = BEAM_GOAL_FACTORY.newInstance(owner);
+            return BEAM_GOAL_FACTORY.newInstance(owner);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new UncheckedReflectionException("Failed to instanciate FireBeamGoal", e);
-        }
-    }
-
-    @Override
-    public boolean trigger(PlayerEntity player, Entity entity) {
-        boolean success = false;
-        if (entity instanceof LivingEntity) {
-            LivingEntity target = (LivingEntity) entity;
-            owner.setTarget(target);
-            if (fireBeamGoal.canStart()) {
-                fireBeamGoal.start();
-                success = true;
-            }
-        }
-        return success;
-    }
-
-    @Override
-    public void update() {
-        if (started) {
-            if (fireBeamGoal.shouldContinue()) {
-                fireBeamGoal.tick();
-            } else {
-                started = false;
-                fireBeamGoal.stop();
-            }
+            throw new UncheckedReflectionException("Failed to instantiate FireBeamGoal", e);
         }
     }
 

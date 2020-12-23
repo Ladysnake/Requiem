@@ -1,0 +1,31 @@
+{
+  "parent": "requiem:requiem/first_possession",
+  "display": {
+    "icon": {
+      "item": "minecraft:player_head"
+    },
+    "title": {
+      "translate": "requiem:advancements.requiem.good_as_new.title"
+    },
+    "description": {
+      "translate": "requiem:advancements.requiem.good_as_new.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "cure": {
+      "trigger": "requiem:transformed_possessed_entity",
+      "conditions": {
+        "cure": true
+      }
+    }
+  },
+  "requirements": [
+    [
+      "cure"
+    ]
+  ]
+}

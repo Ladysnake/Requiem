@@ -207,7 +207,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
             Entity possessedEntityVehicle = possessedEntity.getRootVehicle();
             CompoundTag possessedRoot = new CompoundTag();
             CompoundTag serializedPossessed = new CompoundTag();
-            possessedEntityVehicle.saveToTag(serializedPossessed);
+            possessedEntityVehicle.saveSelfToTag(serializedPossessed);
             possessedRoot.put(POSSESSED_ENTITY_TAG, serializedPossessed);
             possessedRoot.putUuid(POSSESSED_UUID_TAG, possessedEntity.getUuid());
             tag.put(POSSESSED_ROOT_TAG, possessedRoot);

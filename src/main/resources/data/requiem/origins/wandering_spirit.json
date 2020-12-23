@@ -1,0 +1,12 @@
+{
+  "powers": [
+    "requiem:wandering_spirit",
+    "requiem:soul_mending",
+    "requiem:banished"
+  ],
+  "icon": "requiem:opus_daemonium_banishment",
+  "name": "origins:origin.requiem.wandering_spirit.name",
+  "description": "origins:origin.requiem.wandering_spirit.description",
+  "order": 1,
+  "impact": 3
+}

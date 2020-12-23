@@ -1,0 +1,34 @@
+{
+  "parent": "requiem:requiem/first_possession",
+  "display": {
+    "icon": {
+      "item": "minecraft:ender_pearl"
+    },
+    "title": {
+      "translate": "requiem:advancements.requiem.classic_look.title"
+    },
+    "description": {
+      "translate": "requiem:advancements.requiem.classic_look.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "enderman_possess": {
+      "trigger": "requiem:player_possessed_entity",
+      "conditions": {
+        "entity": {
+          "type": "minecraft:enderman",
+          "nbt": "{cardinal_components:{\"requiem:wololo\": {converted: 1b}}}"
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "enderman_possess"
+    ]
+  ]
+}

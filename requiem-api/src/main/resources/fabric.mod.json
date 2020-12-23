@@ -26,7 +26,15 @@
       "requiem:possessor",
       "requiem:movement_alterer",
       "requiem:death_suspension",
-      "requiem:dialogue_tracker"
+      "requiem:dialogue_tracker",
+      "requiem:ability_controller",
+      "requiem:inventory_limiter",
+      "requiem:skeleton_bones",
+      "requiem:wololo",
+      "requiem:origin_holder",
+      "requiem:attrition_focus",
+      "requiem:effect_reapplicator",
+      "requiem:curable"
     ]
   }
 }

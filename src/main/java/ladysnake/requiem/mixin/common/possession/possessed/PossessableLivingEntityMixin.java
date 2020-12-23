@@ -34,28 +34,33 @@
  */
 package ladysnake.requiem.mixin.common.possession.possessed;
 
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
+import com.google.common.base.Preconditions;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
+import ladysnake.requiem.common.entity.ai.DisableableBrain;
 import ladysnake.requiem.common.entity.attribute.CooldownStrengthAttribute;
 import ladysnake.requiem.common.entity.attribute.DelegatingAttribute;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
+import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
+import ladysnake.requiem.common.impl.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
-import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -78,7 +83,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
@@ -91,12 +95,15 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     @Unique
     private final boolean requiem_immovable = RequiemEntityTypeTags.IMMOVABLE.contains(this.getType());
     @Unique
-    private final boolean requiem_regularEater = RequiemEntityTypeTags.EATER.contains(this.getType());
+    private final boolean requiem_regularEater = RequiemEntityTypeTags.EATERS.contains(this.getType());
     @Unique
     private boolean requiem_wasCustomNameVisible;
     @Unique
     @Nullable
     private Text requiem_previousCustomName;
+    @Unique
+    @Nullable
+    private UUID requiem_previousPossessorUuid;
 
     @Shadow
     public abstract EntityAttributeInstance getAttributeInstance(EntityAttribute entityAttribute_1);
@@ -119,6 +126,13 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     @Shadow
     @Final
     private AttributeContainer attributes;
+
+    @Shadow
+    public abstract boolean isUsingItem();
+
+    @Shadow
+    public abstract Brain<?> getBrain();
+
     @Nullable
     private PlayerEntity possessor;
 
@@ -129,11 +143,6 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     /* * * * * * * * * * * * * * * *
         Interface implementations
     * * * * * * * * * * * * * * * */
-
-    @Override
-    public Optional<UUID> getPossessorUuid() {
-        return Optional.ofNullable(this.possessor).map(PlayerEntity::getUuid);
-    }
 
     @Override
     public boolean isBeingPossessed() {
@@ -157,11 +166,6 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     }
 
     @Override
-    public MobAbilityController getMobAbilityController() {
-        return MobAbilityController.DUMMY;
-    }
-
-    @Override
     public void setPossessor(@CheckForNull PlayerEntity possessor) {
         if (possessor == this.possessor) {
             return;
@@ -172,12 +176,23 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         if ((this.possessor != null && PossessionComponent.get(this.possessor).getPossessedEntity() == (Entity) this) && !this.world.isClient) {
             throw new IllegalStateException("Players must stop possessing an entity before it can change possessor!");
         }
+
+        if (possessor == null) {
+            assert this.possessor != null;
+            this.requiem_previousPossessorUuid = this.possessor.getUuid();
+        }
+
         this.possessor = possessor;
+
+        ((DisableableBrain) this.getBrain()).requiem_setDisabled(this.possessor != null);
+
         this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).removeModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS_UUID);
         if (possessor != null) {
             this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).addTemporaryModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS);
         }
-        updateName(possessor);
+
+        this.updateName(possessor);
+        this.onPossessorSet(possessor);
     }
 
     @Unique
@@ -187,15 +202,24 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
                 this.requiem_wasCustomNameVisible = this.isCustomNameVisible();
                 this.requiem_previousCustomName = this.getCustomName();
             }
-            if (world.getGameRules().getBoolean(RequiemGamerules.SHOW_POSSESSOR_NAMETAG)) {
-                this.setCustomNameVisible(true);
-                this.setCustomName(possessor.getName());
-            }
+            this.refreshPossessorNameTag();
         } else {
             this.setCustomNameVisible(this.requiem_wasCustomNameVisible);
             this.setCustomName(this.requiem_previousCustomName);
             this.requiem_wasCustomNameVisible = false;
             this.requiem_previousCustomName = null;
+        }
+    }
+
+    public void refreshPossessorNameTag() {
+        Preconditions.checkState(this.possessor != null);
+
+        if (world.getGameRules().getBoolean(RequiemGamerules.SHOW_POSSESSOR_NAMETAG)) {
+            this.setCustomName(this.possessor.getName());
+            this.setCustomNameVisible(true);
+        } else {
+            this.setCustomName(this.requiem_previousCustomName);
+            this.setCustomNameVisible(this.requiem_wasCustomNameVisible);
         }
     }
 
@@ -215,23 +239,27 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
     @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
     private void writeCustomDataToTag(CompoundTag tag, CallbackInfo ci) {
-        Text text = this.requiem_previousCustomName;
-        if (text != null) {
-            tag.putString("requiem_PreviousCustomName", Text.Serializer.toJson(text));
-        }
+        if (this.isBeingPossessed()) {
+            Text text = this.requiem_previousCustomName;
+            if (text != null) {
+                tag.putString("CustomName", Text.Serializer.toJson(text));
+            } else {
+                tag.remove("CustomName");
+            }
 
-        if (this.requiem_wasCustomNameVisible) {
-            tag.putBoolean("requiem_WasCustomNameVisible", true);
+            tag.putBoolean("CustomNameVisible", this.requiem_wasCustomNameVisible);
         }
     }
 
-    @Inject(method = "readCustomDataFromTag", at = @At("RETURN"))
-    private void readCustomDataFromTag(CompoundTag tag, CallbackInfo ci) {
-        if (tag.contains("requiem_PreviousCustomName", NbtType.STRING)) {
-            this.setCustomName(Text.Serializer.fromJson(tag.getString("requiem_PreviousCustomName")));
+    @Inject(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;canMoveVoluntarily()Z", ordinal = 1))
+    private void requiem_mobTick(CallbackInfo ci) {
+        if (this.isBeingPossessed() && !world.isClient) {
+            this.requiem_mobTick();
         }
+    }
 
-        this.setCustomNameVisible(tag.getBoolean("requiem_WasCustomNameVisible"));
+    protected void requiem_mobTick() {
+        // NO-OP
     }
 
     @Inject(method = "canMoveVoluntarily", at = @At("HEAD"), cancellable = true)
@@ -259,10 +287,9 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
                 if (this instanceof Monster && this.world.getDifficulty() == Difficulty.PEACEFUL) {
                     player.sendMessage(new TranslatableText("requiem.message.peaceful_despawn"), true);
                 }
+                // Absorption only exists on the server for non-player entities
+                player.setAbsorptionAmount(this.getAbsorptionAmount());
             }
-            // Set the player's hit timer for damage animation and stuff
-            player.timeUntilRegen = this.timeUntilRegen;
-            player.setAbsorptionAmount(this.getAbsorptionAmount());
         }
     }
 
@@ -288,11 +315,6 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         }
     }
 
-    @Inject(method = "baseTick", at = @At("TAIL"))
-    private void baseTick(CallbackInfo ci) {
-        this.getMobAbilityController().updateAbilities();
-    }
-
     @Inject(method = {"pushAwayFrom", "pushAway"}, at = @At("HEAD"), cancellable = true)
     private void pushAwayFrom(Entity entity, CallbackInfo ci) {
         // Prevent infinite propulsion through self collision
@@ -303,11 +325,30 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
     @Inject(method = "onDeath", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;drop(Lnet/minecraft/entity/damage/DamageSource;)V"))
     private void onDeath(DamageSource deathCause, CallbackInfo ci) {
-        PlayerEntity possessor = this.getPossessor();
+        ServerPlayerEntity possessor = (ServerPlayerEntity) this.getPossessor();
         if (possessor != null) {
-            PossessionComponent.get(possessor).stopPossessing();
+            PossessionComponent possessionComponent = PossessionComponent.get(possessor);
+            MobEntity secondLife = ResurrectionDataLoader.INSTANCE.getNextBody(possessor, (LivingEntity) (Object) this, deathCause);
             possessor.setAttacker(this.getAttacker());
             AttritionStatusEffect.apply(possessor);
+
+            if (possessor.isAlive() && secondLife != null) {    // player didn't get killed by attrition
+                possessor.world.spawnEntity(secondLife);
+                possessionComponent.stopPossessing(false);
+                if (possessionComponent.startPossessing(secondLife)) {
+                    RequiemCriteria.PLAYER_RESURRECTED_AS_ENTITY.handle(possessor, secondLife);
+                } else {
+                    PossessionComponentImpl.dropEquipment((LivingEntity) (Object) this, possessor);
+                }
+            } else {
+                possessionComponent.stopPossessing();
+            }
+        } else if (this.requiem_previousPossessorUuid != null) {
+            PlayerEntity previousPossessor = this.world.getPlayerByUuid(this.requiem_previousPossessorUuid);
+
+            if (previousPossessor != null) {
+                RequiemCriteria.DEATH_AFTER_POSSESSION.handle((ServerPlayerEntity) previousPossessor, this, deathCause);
+            }
         }
     }
 

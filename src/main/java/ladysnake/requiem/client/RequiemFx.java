@@ -46,21 +46,19 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 
 import static ladysnake.requiem.client.FxHelper.impulse;
-import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
-public final class RequiemFx implements ShaderEffectRenderCallback {
+public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEvents.EndTick {
     public static final Identifier SPECTRE_SHADER_ID = Requiem.id("shaders/post/spectre.json");
-    public static final Identifier FISH_EYE_SHADER_ID = Requiem.id("shaders/post/fish_eye.json");
     public static final Identifier ZOOM_SHADER_ID = Requiem.id("shaders/post/zoom.json");
     private static final float[] ETHEREAL_COLOR = {0.0f, 0.7f, 1.0f};
 
-    public static final RequiemFx INSTANCE = new RequiemFx();
     public static final int PULSE_ANIMATION_TIME = 20;
 
     private final MinecraftClient mc = MinecraftClient.getInstance();
@@ -87,12 +85,24 @@ public final class RequiemFx implements ShaderEffectRenderCallback {
     private final Uniform1f uniformSlider = zoomShader.findUniform1f("Slider");
     private final Uniform1f uniformSTime = spectreShader.findUniform1f("STime");
 
-    void registerCallbacks() {
-        ShaderEffectRenderCallback.EVENT.register(this);
-        ClientTickEvents.END_CLIENT_TICK.register(this::update);
+    public static void setupRenderDelegate(LivingEntity rendered, LivingEntity delegate) {
+        delegate.bodyYaw = rendered.bodyYaw;
+        delegate.prevBodyYaw = rendered.prevBodyYaw;
+        delegate.yaw = rendered.yaw;
+        delegate.prevYaw = rendered.prevYaw;
+        delegate.pitch = rendered.pitch;
+        delegate.prevPitch = rendered.prevPitch;
+        delegate.headYaw = rendered.headYaw;
+        delegate.prevHeadYaw = rendered.prevHeadYaw;
     }
 
-    public void update(@SuppressWarnings("unused") MinecraftClient client) {
+    void registerCallbacks() {
+        ShaderEffectRenderCallback.EVENT.register(this);
+        ClientTickEvents.END_CLIENT_TICK.register(this);
+    }
+
+    @Override
+    public void onEndTick(MinecraftClient client) {
         ++ticks;
         --etherealAnimation;
         if (--pulseAnimation < 0 && spectreShader.isInitialized()) {
@@ -100,11 +110,8 @@ public final class RequiemFx implements ShaderEffectRenderCallback {
             uniformOverlayColor.set(ETHEREAL_COLOR[0], ETHEREAL_COLOR[1], ETHEREAL_COLOR[2]);
         }
         Entity possessed = getAnimationEntity();
-        if (possessed != null) {
-            if (--fishEyeAnimation == 2) {
-                sendToServer(POSSESSION_REQUEST, createPossessionRequestBuffer(possessed));
-            }
-            assert client.player != null;
+        if (possessed != null && client.player != null) {
+            --this.fishEyeAnimation;
             if (!RemnantComponent.get(client.player).isIncorporeal()) {
                 this.possessionTarget.clear();
             }

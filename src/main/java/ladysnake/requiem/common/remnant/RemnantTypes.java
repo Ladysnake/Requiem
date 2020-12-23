@@ -38,6 +38,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.impl.remnant.MutableRemnantState;
 import ladysnake.requiem.common.impl.remnant.NullRemnantState;
+import ladysnake.requiem.common.impl.remnant.WandererRemnantState;
 import ladysnake.requiem.common.item.RequiemItems;
 import net.minecraft.util.Identifier;
 
@@ -45,7 +46,8 @@ public final class RemnantTypes {
     private RemnantTypes() { throw new AssertionError(); }
 
     public static final RemnantType MORTAL = new SimpleRemnantType(p -> NullRemnantState.NULL_STATE, false, "requiem:opus.mortal_sentence", () -> RequiemItems.OPUS_DEMONIUM_CURE);
-    public static final RemnantType REMNANT = new SimpleRemnantType(owner -> new MutableRemnantState(RemnantTypes.REMNANT, owner), true, "requiem:opus.remnant_sentence", () -> RequiemItems.OPUS_DEMONIUM_CURSE);
+    public static final RemnantType REMNANT = new SimpleRemnantType(MutableRemnantState::new, true, "requiem:opus.remnant_sentence", () -> RequiemItems.OPUS_DEMONIUM_CURSE);
+    public static final RemnantType WANDERING_SPIRIT = new SimpleRemnantType(WandererRemnantState::new, true, "requiem:opus.wanderer_sentence", () -> RequiemItems.OPUS_DEMONIUM_BANISHMENT);
 
     public static RemnantType get(Identifier id) {
         return RequiemRegistries.REMNANT_STATES.get(id);

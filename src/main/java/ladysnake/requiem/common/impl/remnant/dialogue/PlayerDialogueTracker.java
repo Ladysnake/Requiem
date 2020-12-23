@@ -39,7 +39,6 @@ import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -47,6 +46,7 @@ import javax.annotation.Nullable;
 
 public final class PlayerDialogueTracker implements DialogueTracker {
     public static final Identifier BECOME_REMNANT = Requiem.id("become_remnant");
+    public static final Identifier BECOME_WANDERING_SPIRIT = Requiem.id("become_wandering_spirit");
     public static final Identifier STAY_MORTAL = Requiem.id("stay_mortal");
 
     private final DialogueRegistry manager;
@@ -82,15 +82,5 @@ public final class PlayerDialogueTracker implements DialogueTracker {
     @Override
     public CutsceneDialogue getCurrentDialogue() {
         return this.currentDialogue;
-    }
-
-    @Override
-    public void readFromNbt(CompoundTag tag) {
-        // Nothing to read
-    }
-
-    @Override
-    public void writeToNbt(CompoundTag tag) {
-        // Nothing to write
     }
 }

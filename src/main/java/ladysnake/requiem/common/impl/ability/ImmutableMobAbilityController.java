@@ -35,55 +35,114 @@
 package ladysnake.requiem.common.impl.ability;
 
 import ladysnake.requiem.api.v1.entity.ability.*;
-import ladysnake.requiem.api.v1.possession.Possessable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 
-public class ImmutableMobAbilityController<T extends MobEntity & Possessable> implements MobAbilityController {
+import java.util.Arrays;
+import java.util.List;
+
+public class ImmutableMobAbilityController<T extends LivingEntity> implements MobAbilityController {
+    private final List<MobAbility<? super T>> abilities;
     private final IndirectAbility<? super T> indirectAttack;
     private final IndirectAbility<? super T> indirectInteraction;
-    private final DirectAbility<? super T> directAttack;
-    private final DirectAbility<? super T> directInteraction;
-    private final T owner;
+    private final DirectAbility<? super T, ?> directAttack;
+    private final DirectAbility<? super T, ?> directInteraction;
 
     public ImmutableMobAbilityController(MobAbilityConfig<? super T> config, T owner) {
-        this.owner = owner;
         this.directAttack = config.getDirectAbility(owner, AbilityType.ATTACK);
         this.directInteraction = config.getDirectAbility(owner, AbilityType.INTERACT);
         this.indirectAttack = config.getIndirectAbility(owner, AbilityType.ATTACK);
         this.indirectInteraction = config.getIndirectAbility(owner, AbilityType.INTERACT);
+        this.abilities = Arrays.asList(this.directAttack, this.directInteraction, this.indirectAttack, this.indirectInteraction);
+    }
+
+    @Override
+    public double getRange(AbilityType type) {
+        return this.getDirect(type).getRange();
+    }
+
+    @Override
+    public boolean canTarget(AbilityType type, Entity target) {
+        return this.canTarget(target, this.getDirect(type));
     }
 
     @Override
     public boolean useDirect(AbilityType type, Entity target) {
-        PlayerEntity p = this.owner.getPossessor();
-        if (type == AbilityType.ATTACK) {
-            return p != null && directAttack.trigger(p, target);
-        } else if (type == AbilityType.INTERACT) {
-            return p != null && directInteraction.trigger(p, target);
-        }
-        return false;
+        return this.use(this.getDirect(type), target);
     }
 
     @Override
     public boolean useIndirect(AbilityType type) {
-        PlayerEntity p = this.owner.getPossessor();
-        if (type == AbilityType.ATTACK) {
-            return p != null && indirectAttack.trigger(p);
-        } else if (type == AbilityType.INTERACT) {
-            return p != null && indirectInteraction.trigger(p);
+        return this.getIndirect(type).trigger();
+    }
+
+    @Override
+    public float getCooldownProgress(AbilityType type) {
+        return this.getDirect(type).getCooldownProgress();
+    }
+
+    @Override
+    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
+        for (MobAbility<? super T> ability : this.abilities) {
+            ability.writeToPacket(buf);
+        }
+    }
+
+    @Override
+    public void applySyncPacket(PacketByteBuf buf) {
+        for (MobAbility<? super T> ability : this.abilities) {
+            ability.readFromPacket(buf);
+        }
+    }
+
+    @Override
+    public void tick() {
+        for (MobAbility<? super T> ability : this.abilities) {
+            ability.update();
+        }
+    }
+
+    @Override
+    public Identifier getIconTexture(AbilityType type) {
+        return this.getDirect(type).getIconTexture();
+    }
+
+    private <E extends Entity> boolean canTarget(Entity target, DirectAbility<? super T, E> ability) {
+        Class<E> targetType = ability.getTargetType();
+        if (targetType.isInstance(target)) {
+            return ability.canTarget(targetType.cast(target));
         }
         return false;
     }
 
-    @Override
-    public void updateAbilities() {
-        if (!this.owner.world.isClient) {
-            this.directAttack.update();
-            this.indirectAttack.update();
-            this.directInteraction.update();
-            this.indirectInteraction.update();
+    private <E extends Entity> boolean use(DirectAbility<? super T, E> ability, Entity target) {
+        Class<E> targetType = ability.getTargetType();
+        if (targetType.isInstance(target)) {
+            return ability.trigger(targetType.cast(target));
         }
+        return false;
+    }
+
+    private DirectAbility<? super T, ?> getDirect(AbilityType type) {
+        switch (type) {
+            case ATTACK:
+                return this.directAttack;
+            case INTERACT:
+                return this.directInteraction;
+        }
+        throw new IllegalArgumentException("Unrecognized ability type " + type);
+    }
+
+    private IndirectAbility<? super T> getIndirect(AbilityType type) {
+        switch (type) {
+            case ATTACK:
+                return this.indirectAttack;
+            case INTERACT:
+                return this.indirectInteraction;
+        }
+        throw new IllegalArgumentException("Unrecognized ability type " + type);
     }
 }

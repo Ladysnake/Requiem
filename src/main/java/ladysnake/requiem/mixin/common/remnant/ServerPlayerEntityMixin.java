@@ -37,11 +37,12 @@ package ladysnake.requiem.mixin.common.remnant;
 import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
-import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
@@ -59,7 +60,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin extends PlayerEntity implements RequiemPlayer, StatusEffectReapplicator {
+public abstract class ServerPlayerEntityMixin extends PlayerEntity implements RequiemPlayer {
     public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
         super(world, pos, yaw, profile);
     }
@@ -90,6 +91,16 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
                 ci.cancel();
             } else {
                 VanillaRequiemPlugin.makeRemnantChoice((ServerPlayerEntity) (Object) this, startingRemnantType);
+            }
+        }
+    }
+
+    @Inject(method = "onDeath", at = @At(value = "FIELD", target = "Lnet/minecraft/world/GameRules;SHOW_DEATH_MESSAGES:Lnet/minecraft/world/GameRules$Key;"))
+    private void revokeLifeRights(DamageSource source, CallbackInfo ci) {
+        if (this.world.getLevelProperties().isHardcore()) {
+            RemnantComponent remnantComponent = RemnantComponent.get(this);
+            if (remnantComponent.isVagrant()) {
+                remnantComponent.become(RemnantTypes.MORTAL);
             }
         }
     }

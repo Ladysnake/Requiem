@@ -1,6 +1,113 @@
 ------------------------------------------------------
+Version 1.3.0
+------------------------------------------------------
+
+![Screenshot](https://cdn.discordapp.com/attachments/477596941757317121/785214169690800148/2020-12-06_19.39.30.png)
+
+### The Gloss and Golems Update
+
+**Additions**
+
+- Demons can now possess all golems, and all undead !  
+    - Golems are defined by the `requiem:golems` tag, and include iron golems, snow golems, and shulkers  
+    - Undeads are defined by the `requiem:undead` tag, and now additionally include phantoms, undead horses, and zoglins  
+- **Added the ability for ghosts to go through walls !** Just hug a wall, and you should start softly entering it.  
+- Added an attack indicator for ranged abilities of possessed mobs  
+- Added custom inventories for possessed mobs  
+    - Giants will no longer take the whole inventory screen  
+- Added an advancement tab  
+- Added a bunch of tags to control possessed mob behaviour  
+    - `requiem:armor_users`: allows a mob to wear armor when possessed  
+    - `requiem:dichromats`: makes a mob use the `dichromatic` shader vision  
+    - `requiem:inventory_carriers`: allows a mob to access the main inventory  
+    - `requiem:supercrafters`: gives a portable crafting table to the mob  
+    - `requiem:tetrachromats`: makes a mob use the `tetrachromatic` shader vision  
+
+**Changes**
+
+- You can now cure your friend (or even an enemy) who is possessing an undead  
+- Added localization for all gamerules in the gamerule screen  
+- Ranged abilities can now be fired from way further than 3 blocks  
+- The possession icon now only appears for mobs you can possess  
+- Replacing too many bones as a Wither Skeleton will change you into a regular skeleton  
+
+**Mod Compatibility**
+
+- Added an Origins screen to choose your soul type! This replaces the first death dialogue.  
+  - This screen respects the `requiem:startingRemnantType` gamerule  
+- Made Eldritch mobs unable to be possessed  
+- Fixed most Origins powers staying activated outside a human body  
+- Golems Galore's golems can be possessed by default  
+- Better Nether's jungle skeletons can be possessed by default  
+
+**Removals**
+
+- Removed Bart. You served well, but players don't need you anymore.  
+
+**Fixes**
+
+- Piglins no longer aggro ghosts  
+- Fixed Ghosts being able to interact with boats and minecarts  
+- Fixed crash when trying to possess an invisible mob  
+
+#### Pandemonium
+
+**Additions**
+
+- Added special interaction between evokers and endermen  
+- Villagers and piglins now have access to a portable 3x3 crafting screen *(breaks with BetterEnd and BetterNether...) * 
+- All mammals now have dichromatic vision  
+- Chickens and parrots now have "tetrachromatic" vision  
+- Bees now have a custom bee vision  
+
+**Changes**
+
+- Ticking is even more faithful to the possessed entity, eg.  
+    - Bees die after stinging  
+    - Piglins and hoglins zombify in the overworld  
+    - Elder guardians apply their curse (oops, that one is not in your control)  
+    - Zombified piglins get a speed and strength boost when they or their friends are hurt  
+    - etc.  
+- Player shells are back, and they should feel even more like a real player  
+    - You once again need a player shell to dissociate from a possessed mob  
+    - You can impersonate a player by stealing its shell ! (probably buggy still)  
+- Foxes, pandas, and dolphins can now hold items in their "hands"  
+- Blazes are more accurate with their fireballs  
+- Possessed pandas now stand up when sneaking  
+- Guardian beams are now visible in first person  
+
+**Mod Compatibility**
+- Players can now teleport to and from the Bumblezone when possessing a bee  
+
+**Fixes**
+- Fixed possessed elder guardians not getting the beam ability  
+- Vexes you summon as an evoker will now properly assist you in combat  
+- Possessed ghasts now do the shooting face when firing  
+
+------------------------------------------------------
+Version 1.2.2
+------------------------------------------------------
+Additions
+- Added the `requiem:disableCure` gamerule to disable any form of cure
+- Added the ability for other players to cure a possessed undead
+- Added descriptions for gamerules in the Edit Gamerules screen
+
+Fixes
+- Fixed server crash with Pandemonium
+- Fixed changes to the `requiem:showPossessorNameTag` not updating ongoing possessions
+- You will no longer share your mob vision with everyone around you when you start possessing a mob with a shader (about time)
+
+------------------------------------------------------
+Version 1.2.1
+------------------------------------------------------
+- Fixed pandemonium crashing at launch  
+- Added Portuguese translation (thanks to cominixo!)
+
+------------------------------------------------------
 Version 1.2.0
 ------------------------------------------------------
+Updated to 1.16.3
+
 Additions  
 - Added the Attrition status effect  
     - Upon losing a body, one level of attrition will be gained  
@@ -17,10 +124,17 @@ Additions
 
 - Added a command selector argument for possessed entities (see readme for usage information)  
 
+- Added a `spawnHelpEnderman` gamerule to toggle the helpful enderman feature
+
+- Abilities from the Origins mod now get disabled when playing as a soul or while possessing a mob  
+
+Bugfixes
+- Restored all graphical effects from the 1.14 version
+
 API
 - Made access to most Requiem registries a lot more sane  
 - Added a `MovementRegistry` and a `SoulbindingRegistry`  
-- Deprecated `TransientComponent`  
+- Moved everything that could be to components
 
 Bugfixes
 - Fixed weakness status effect not being cleared clientside after possession cure ends

@@ -1,0 +1,6 @@
+{
+  "type": "requiem:soul_type",
+  "value": "requiem:mortal",
+  "name": "origins:power.requiem.mortal.name",
+  "description": "origins:power.requiem.mortal.description"
+}

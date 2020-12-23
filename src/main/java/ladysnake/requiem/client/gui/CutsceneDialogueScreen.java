@@ -56,13 +56,15 @@ public class CutsceneDialogueScreen extends Screen {
     public static final int CHOICE_GAP = 5;
     public static final int MAX_TEXT_WIDTH = 300;
 
+    private final ZaWorldFx fxRenderer;
     private final CutsceneDialogue dialogue;
     private int selectedChoice;
     private boolean hoveringChoice;
 
-    public CutsceneDialogueScreen(Text title, CutsceneDialogue dialogue) {
+    public CutsceneDialogueScreen(Text title, CutsceneDialogue dialogue, ZaWorldFx fxRenderer) {
         super(title);
         this.dialogue = dialogue;
+        this.fxRenderer = fxRenderer;
     }
 
     @Override
@@ -162,9 +164,11 @@ public class CutsceneDialogueScreen extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
         assert client != null;
-        if (!ZaWorldFx.INSTANCE.hasFinishedAnimation()) {
+
+        if (!this.fxRenderer.hasFinishedAnimation()) {
             return;
         }
+
         this.renderBackground(matrices);
         int y = MIN_RENDER_Y;
         Text title = this.dialogue.getCurrentText();

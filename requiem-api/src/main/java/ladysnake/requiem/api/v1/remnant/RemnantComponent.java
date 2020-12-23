@@ -1,28 +1,54 @@
+/*
+ * Requiem
+ * Copyright (C) 2017-2020 Ladysnake
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; If not, see <https://www.gnu.org/licenses>.
+ */
 package ladysnake.requiem.api.v1.remnant;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
-import dev.onyxstudios.cca.api.v3.component.ServerTickingComponent;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import org.apiguardian.api.API;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * @since 2.0.0
+ * @since 1.2.0
  */
-public interface RemnantComponent extends ServerTickingComponent {
-    ComponentKey<RemnantComponent> KEY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("requiem", "remnant"), RemnantComponent.class);
+public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComponent {
+    ComponentKey<RemnantComponent> KEY = ComponentRegistry.getOrCreate(new Identifier("requiem", "remnant"), RemnantComponent.class);
 
     static boolean isIncorporeal(Entity entity) {
         RemnantComponent r = KEY.getNullable(entity);
         return r != null && r.isIncorporeal();
     }
 
-    static boolean isSoul(Entity entity) {
+    /**
+     * @since 1.4.0
+     */
+    static boolean isVagrant(Entity entity) {
         RemnantComponent r = KEY.getNullable(entity);
-        return r != null && r.isSoul();
+        return r != null && r.isVagrant();
     }
 
     /**
@@ -30,7 +56,6 @@ public interface RemnantComponent extends ServerTickingComponent {
      * every modification made to it is reflected on the player.
      *
      * @return the player's remnant state
-     * @since 2.0.0
      */
     @Contract(pure = true)
     static RemnantComponent get(PlayerEntity player) {
@@ -49,29 +74,88 @@ public interface RemnantComponent extends ServerTickingComponent {
      *
      * @param type the remnant type to become
      * @see #getRemnantType()
-     * @since 2.0.0
      */
     void become(RemnantType type);
 
+    @Contract(pure = true)
     RemnantType getRemnantType();
 
     /**
      * Return whether this player is currently incorporeal.
      * A player is considered incorporeal if its current corporeality
      * is not tangible and they have no surrogate body.
+     *
      * @return true if the player is currently incorporeal, {@code false} otherwise
      */
     boolean isIncorporeal();
 
-    boolean isSoul();
+    @Deprecated
+    default boolean isSoul() {
+        return this.isVagrant();
+    }
 
-    void setSoul(boolean incorporeal);
+    /**
+     * Return whether this player is currently dissociated from a natural player body.
+     *
+     * <p>Vagrant players are invulnerable and can only interact with the world through a proxy body.
+     * Being vagrant is a prerequisite to being {@linkplain #isIncorporeal() incorporeal} or to
+     * {@linkplain PossessionComponent#startPossessing(MobEntity) start possessing entities}.
+     *
+     * @return {@code true} if the player is currently dissociated from a congruous body, {@code false} otherwise
+     * @since 1.4.0
+     */
+    boolean isVagrant();
+
+    @Deprecated
+    default void setSoul(boolean incorporeal) {
+        this.setVagrant(incorporeal);
+    }
+
+    /**
+     * Set whether this player is currently dissociated from a congruous body.
+     *
+     * <p>This operation may fail if this state does not support the given state.
+     *
+     * @param vagrant {@code true} to mark this player as outside a congruous body, {@code false} to mark a merged state
+     * @return {@code true} if the operation succeeded, {@code false} otherwise
+     * @see #isVagrant()
+     * @see #isIncorporeal()
+     * @since 1.4.0
+     */
+    boolean setVagrant(boolean vagrant);
+
+    @API(status = API.Status.EXPERIMENTAL)
+    boolean canRegenerateBody();
+
+    /**
+     *
+     * @param body the body being used to regenerate a physical player
+     */
+    @API(status = API.Status.EXPERIMENTAL)
+    void curePossessed(LivingEntity body);
+
+    boolean canDissociateFrom(MobEntity possessed);
 
     /**
      * Called when this remnant state's player is cloned
      *
      * @param original the player's clone
      * @param lossless false if the original player is dead, true otherwise
+     * @since 1.3.0
      */
-    void copyFrom(ServerPlayerEntity original, boolean lossless);
+    void prepareRespawn(ServerPlayerEntity original, boolean lossless);
+
+    /**
+     * Set the default remnant type according to the current server settings
+     *
+     * @since 1.3.0
+     */
+    void setDefaultRemnantType(@Nullable RemnantType defaultType);
+
+    /**
+     * Return the default remnant type according to the current server settings
+     *
+     * @since 1.3.0
+     */
+    @Nullable RemnantType getDefaultRemnantType();
 }

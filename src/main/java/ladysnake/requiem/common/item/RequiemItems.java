@@ -42,6 +42,7 @@ import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
 public class RequiemItems {
@@ -54,16 +55,20 @@ public class RequiemItems {
 
     public static final DebugItem DEBUG_ITEM = new DebugItem(new Item.Settings());
     public static final Item HUMAN_FLESH = new Item(new Item.Settings().food(HUMAN_FOOD).group(ItemGroup.FOOD));
+    public static final Item TOTEM_OF_SKELETONIZATION = new Item((new Item.Settings()).maxCount(1).group(ItemGroup.COMBAT).rarity(Rarity.UNCOMMON));
     public static final OpusDemoniumItem OPUS_DEMONIUM = new OpusDemoniumItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1));
-    public static final WrittenOpusItem OPUS_DEMONIUM_CURE = new WrittenOpusItem(RemnantTypes.MORTAL, Formatting.AQUA, new Item.Settings().group(ItemGroup.MISC).maxCount(1));
-    public static final WrittenOpusItem OPUS_DEMONIUM_CURSE = new WrittenOpusItem(RemnantTypes.REMNANT, Formatting.RED, new Item.Settings().group(ItemGroup.MISC).maxCount(1));
+    public static final WrittenOpusItem OPUS_DEMONIUM_CURE = new WrittenOpusItem(RemnantTypes.MORTAL, Formatting.AQUA, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.cure");
+    public static final WrittenOpusItem OPUS_DEMONIUM_CURSE = new WrittenOpusItem(RemnantTypes.REMNANT, Formatting.RED, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.curse");
+    public static final WrittenOpusItem OPUS_DEMONIUM_BANISHMENT = new WrittenOpusItem(RemnantTypes.WANDERING_SPIRIT, Formatting.GRAY, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.banishment");
 
     public static void init() {
         registerItem(DEBUG_ITEM, "debug_item");
         registerItem(HUMAN_FLESH, "human_flesh");
+        registerItem(TOTEM_OF_SKELETONIZATION, "totem_of_skeletonization");
         registerItem(OPUS_DEMONIUM, "opus_daemonium");
         registerItem(OPUS_DEMONIUM_CURE, "opus_daemonium_cure");
         registerItem(OPUS_DEMONIUM_CURSE, "opus_daemonium_curse");
+        registerItem(OPUS_DEMONIUM_BANISHMENT, "opus_daemonium_banishment");
     }
 
     public static <T extends Item> void registerItem(T item, String name) {
