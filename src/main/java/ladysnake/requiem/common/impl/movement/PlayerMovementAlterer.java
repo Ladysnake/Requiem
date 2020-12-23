@@ -120,7 +120,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
             if (this.player.isOnGround()) {    // starting the jump
                 this.underwaterJumpStartY = y;
                 this.underwaterJumpAscending = true;
-            } else if (this.underwaterJumpAscending && y > underwaterJumpStartY + 1.2) {    // reaching peak
+            } else if (this.underwaterJumpAscending && y > underwaterJumpStartY + 0.8) {    // reaching peak
                 this.underwaterJumpAscending = false;
             } else if (!this.underwaterJumpAscending) { // sinking again
                 return 0;
