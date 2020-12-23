@@ -64,7 +64,8 @@ import java.util.concurrent.Executor;
 
 public final class MovementAltererManager implements SubDataManager<Map<EntityType<?>, SerializableMovementConfig>>, MovementRegistry {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting()
-        .registerTypeAdapter(EntityType.class, new EntityTypeAdapter())
+        // Replacing this TypeToken with a regular class will burn gson to the ground
+        .registerTypeAdapter(new TypeToken<EntityType<?>>() {}.getType(), new EntityTypeAdapter())
         .registerTypeAdapter(TriState.class, new TriStateTypeAdapter())
         .create();
     public static final Identifier LOCATION = Requiem.id("entity_mobility.json");
