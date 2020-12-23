@@ -85,7 +85,9 @@ public final class SkeletonBoneComponent implements Component {
             if (possessor instanceof ServerPlayerEntity) {
                 RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle(((ServerPlayerEntity) possessor), this.owner, replacement, false);
             }
-            if (this.owner instanceof WitherSkeletonEntity && replacement.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
+            if (this.owner instanceof WitherSkeletonEntity
+                && replacement.getEquippedStack(EquipmentSlot.HEAD).isEmpty()
+                && !RequiemEntityTypeTags.ARMOR_BANNED.contains(replacement.getType())) {
                 if (this.owner.getRandom().nextInt(5) == 0) {
                     replacement.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.WITHER_SKELETON_SKULL));
                 }
@@ -96,10 +98,14 @@ public final class SkeletonBoneComponent implements Component {
     private boolean shouldBeReplaced() {
         if (RequiemEntityTypeTags.REPLACEABLE_SKELETONS.contains(this.owner.getType())) {
             switch (this.owner.world.getDifficulty()) {
-                case PEACEFUL: return false; // what is this skeleton doing in peaceful anyway....?
-                case EASY: return this.replacedBones > 8;
-                case NORMAL: return this.replacedBones > 4;
-                default: return this.replacedBones > 2;
+                case PEACEFUL:
+                    return false; // what is this skeleton doing in peaceful anyway....?
+                case EASY:
+                    return this.replacedBones > 8;
+                case NORMAL:
+                    return this.replacedBones > 4;
+                default:
+                    return this.replacedBones > 2;
             }
         }
         return false;
