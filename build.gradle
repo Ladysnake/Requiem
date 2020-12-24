@@ -141,10 +141,10 @@ repositories {
         name = 'Ladysnake Libs'
         url = 'https://dl.bintray.com/ladysnake/libs'
     }
-    maven {
-        name = 'CottonMC'
-        url = 'http://server.bbkr.space:8081/artifactory/libs-release'
-    }
+//    maven {
+//        name = 'CottonMC'
+//        url = 'http://server.bbkr.space:8081/artifactory/libs-release'
+//    }
     maven {
         url "https://maven.jamieswhiteshirt.com/libs-release/"
     }
@@ -193,16 +193,14 @@ dependencies {
     modCompileOnly("io.github.Terrails:Health-Overlay:1.16-Fabric-SNAPSHOT")
 
     modRuntime "com.jamieswhiteshirt:reach-entity-attributes:1.0.1"
-    modCompileOnly("io.github.apace100:origins-fabric:dev-SNAPSHOT") {
-        transitive = false
-    }
+    modCompileOnly("io.github.apace100:origins-fabric:dev-SNAPSHOT") { transitive = false }
+    modRuntime("io.github.apace100:origins-fabric:dev-SNAPSHOT") { transitive = false }
     modRuntime "net.adriantodt.fabricmc:fallflyinglib:1.1.0"
-    modRuntime("io.github.apace100:origins-fabric:dev-SNAPSHOT") {
-        transitive = false
-    }
-    modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:8d45e7a209") {
-        transitive = false
-    }
+    modCompileOnly("io.github.Ladysnake:Snow-Mercy:beta-1.0") { transitive = false }
+    modRuntime("io.github.Ladysnake:Snow-Mercy:beta-1.0") { transitive = false }
+    modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:8d45e7a209") { transitive = false }
+    modCompileOnly("curse.maven:haema-391257:3094430") // v1.3.1
+    modRuntime("curse.maven:haema-391257:3094430")
     modCompileOnly("curse.maven:the-bumblezone-fabric-363949:3119141")
     modCompileOnly("curse.maven:golems-galore-387197:3048547")
 }
