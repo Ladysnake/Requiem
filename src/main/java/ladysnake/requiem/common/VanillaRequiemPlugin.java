@@ -60,6 +60,7 @@ import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
 import ladysnake.requiem.common.entity.ability.SnowmanSnowballAbility;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
+import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.impl.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.common.network.RequiemNetworking;
@@ -67,6 +68,7 @@ import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
@@ -172,6 +174,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     private void registerPossessionEventHandlers() {
+        ServerTickEvents.END_SERVER_TICK.register(minecraftServer -> PossessionComponentImpl.onServerEndTick());
         BasePossessionHandlers.register();
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (entity instanceof SpiderEntity) {

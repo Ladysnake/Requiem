@@ -127,7 +127,7 @@ public class WrittenOpusItem extends Item {
 
                     if (possessedEntity != null) {
                         if (remnantComponent.canRegenerateBody() && CurableEntityComponent.KEY.get(possessedEntity).canBeAssimilated()) {
-                            MutableRemnantState.regenerateBody((ServerPlayerEntity) player, possessedEntity);
+                            player = MutableRemnantState.regenerateBody((ServerPlayerEntity) player, possessedEntity);
                         } else if (remnantComponent.isVagrant()) {
                             possessionComponent.startPossessing(possessedEntity);
                         } else {

@@ -47,6 +47,7 @@ import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -55,6 +56,9 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 
 public class MutableRemnantState implements RemnantState {
 
@@ -119,19 +123,49 @@ public class MutableRemnantState implements RemnantState {
     @Override
     public void curePossessed(LivingEntity body) {
         if (this.canRegenerateBodyFrom(body)) {
-            regenerateBody((ServerPlayerEntity) this.player, body);
+            ServerPlayerEntity player = (ServerPlayerEntity) this.player;
+            RequiemNetworking.sendBodyCureMessage(player);
+            regenerateBody(player, body);
         } else {
             this.cureMob(body);
         }
     }
 
-    public static void regenerateBody(ServerPlayerEntity player, LivingEntity body) {
+    public static ServerPlayerEntity regenerateBody(ServerPlayerEntity player, LivingEntity body) {
         RemnantComponent.get(player).setVagrant(false);
         RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle(player, body, player, true);
         body.remove();
         player.removeStatusEffect(RequiemStatusEffects.ATTRITION);
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-        player.world.syncWorldEvent(null, 1027, player.getBlockPos(), 0);
+        ServerPlayerEntity respawned = performRespawn(player);
+        respawned.setAbsorptionAmount(body.getAbsorptionAmount());
+        respawned.setHealth(body.getHealth());
+        respawned.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
+        respawned.world.syncWorldEvent(null, 1027, player.getBlockPos(), 0);
+        return respawned;
+    }
+
+    private static ServerPlayerEntity performRespawn(ServerPlayerEntity player) {
+        RegistryKey<World> dimension = player.getSpawnPointDimension();
+        BlockPos blockPos = player.getSpawnPointPosition();
+        boolean spawnPointSet = player.isSpawnPointSet();
+        float angle = player.getSpawnAngle();
+        player.setSpawnPoint(player.world.getRegistryKey(), player.getBlockPos(), player.yaw, true, false);
+        try {
+            ServerPlayerEntity respawned = player.getServerWorld().getServer().getPlayerManager().respawnPlayer(player, true);
+            player.networkHandler.player = respawned;
+            respawned.setSpawnPoint(dimension, blockPos, angle, spawnPointSet, false);
+            respawned.networkHandler.requestTeleport(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch);
+            respawned.setVelocity(player.getVelocity());
+            respawned.velocityDirty = true;
+
+            for (StatusEffectInstance p : player.getStatusEffects()) {
+                respawned.addStatusEffect(new StatusEffectInstance(p));
+            }
+
+            return respawned;
+        } finally {
+            player.setSpawnPoint(dimension, blockPos, angle, spawnPointSet, false);
+        }
     }
 
     protected void cureMob(LivingEntity body) {

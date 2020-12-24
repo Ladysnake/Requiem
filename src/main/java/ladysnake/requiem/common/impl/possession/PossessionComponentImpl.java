@@ -75,14 +75,20 @@ import net.minecraft.util.registry.Registry;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.lang.ref.WeakReference;
+import java.util.*;
 
 public final class PossessionComponentImpl implements PossessionComponent {
     // Identity weak map. Should probably be made into its own util class.
     private static final Set<PlayerEntity> attributeUpdated = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
+    private static final Set<WeakReference<PossessionComponentImpl>> pendingCure = new HashSet<>();
+
+    public static void onServerEndTick() {
+        pendingCure.removeIf(r -> {
+            Optional.ofNullable(r.get()).ifPresent(PossessionComponentImpl::finishCuring);
+            return true;
+        });
+    }
 
     private final PlayerEntity player;
     @Nullable private MobEntity possessed;
@@ -326,12 +332,16 @@ public final class PossessionComponentImpl implements PossessionComponent {
             else this.conversionTimer--;
 
             if (this.conversionTimer == 0) {
-                MobEntity possessedEntity = this.getPossessedEntity();
-
-                if (possessedEntity != null) {
-                    RemnantComponent.get(this.player).curePossessed(possessedEntity);
-                }
+                pendingCure.add(new WeakReference<>(this));
             }
+        }
+    }
+
+    private void finishCuring() {
+        MobEntity possessedEntity = this.getPossessedEntity();
+
+        if (possessedEntity != null) {
+            RemnantComponent.get(this.player).curePossessed(possessedEntity);
         }
     }
 
