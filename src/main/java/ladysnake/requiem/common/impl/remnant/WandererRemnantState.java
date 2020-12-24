@@ -45,6 +45,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class WandererRemnantState extends MutableRemnantState {
+    public static final int ATTRITION_MEND_PROBABILITY = 4000;
+
     public WandererRemnantState(PlayerEntity player) {
         super(player);
     }
@@ -74,7 +76,7 @@ public class WandererRemnantState extends MutableRemnantState {
         MobEntity possessedEntity = PossessionComponent.get(this.player).getPossessedEntity();
         ServerPlayerEntity player = (ServerPlayerEntity) this.player;
 
-        if (possessedEntity != null && player.hasStatusEffect(RequiemStatusEffects.ATTRITION) && player.getRandom().nextInt(100) == 0) {
+        if (possessedEntity != null && player.hasStatusEffect(RequiemStatusEffects.ATTRITION) && player.getRandom().nextInt(ATTRITION_MEND_PROBABILITY) == 0) {
             AttritionFocus.KEY.get(possessedEntity).addAttrition(this.player.getUuid(), 1);
             AttritionStatusEffect.reduce(player, 1);
 
