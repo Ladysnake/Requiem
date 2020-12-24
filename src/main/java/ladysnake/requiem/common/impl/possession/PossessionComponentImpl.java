@@ -36,6 +36,7 @@ package ladysnake.requiem.common.impl.possession;
 
 import com.google.common.collect.MapMaker;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
@@ -304,7 +305,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
         MobEntity possessedEntity = this.getPossessedEntity();
         return possessedEntity != null
             && !this.player.world.getGameRules().getBoolean(RequiemGamerules.NO_CURE)
-            && possessedEntity.isUndead()
+            && CurableEntityComponent.KEY.get(possessedEntity).canBeCured()
             && RequiemItemTags.UNDEAD_CURES.contains(cure.getItem())
             && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS);
     }

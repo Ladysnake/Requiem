@@ -42,6 +42,16 @@ public class DelegatingCurableEntityComponent extends SimpleCurableEntityCompone
     }
 
     @Override
+    public boolean canBeAssimilated() {
+        return false;
+    }
+
+    @Override
+    public boolean canBeCured() {
+        return true;
+    }
+
+    @Override
     public MobEntity cure() {
         return ((CurableEntity) this.entity).requiem_cureAsPossessed();
     }

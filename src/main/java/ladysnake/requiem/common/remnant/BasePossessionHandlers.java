@@ -44,7 +44,6 @@ import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.mixin.common.access.EndermanEntityAccessor;
 import nerdhub.cardinal.components.api.event.TrackingStartCallback;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.AbstractPiglinEntity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -78,8 +77,8 @@ public class BasePossessionHandlers {
             }
             return PossessionStartCallback.Result.PASS;
         });
-        PossessionStartCallback.EVENT.register(Requiem.id("piglin"), (target, possessor, simulate) -> {
-            if (target instanceof AbstractPiglinEntity && CurableEntityComponent.KEY.get(target).hasBeenCured()) {
+        PossessionStartCallback.EVENT.register(Requiem.id("cured"), (target, possessor, simulate) -> {
+            if (CurableEntityComponent.KEY.get(target).hasBeenCured()) {
                 return PossessionStartCallback.Result.ALLOW;
             }
             return PossessionStartCallback.Result.PASS;

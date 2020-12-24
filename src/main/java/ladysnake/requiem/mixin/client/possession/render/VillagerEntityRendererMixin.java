@@ -36,18 +36,18 @@ package ladysnake.requiem.mixin.client.possession.render;
 
 import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.client.render.CuredEntityTexture;
-import net.minecraft.client.render.entity.PiglinEntityRenderer;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.client.render.entity.VillagerEntityRenderer;
+import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(PiglinEntityRenderer.class)
-public abstract class PiglinEntityRendererMixin {
+@Mixin(VillagerEntityRenderer.class)
+public abstract class VillagerEntityRendererMixin {
     @Inject(method = "getTexture", at = @At("RETURN"), cancellable = true)
-    private void getTexture(MobEntity mobEntity, CallbackInfoReturnable<Identifier> cir) {
+    private void getTexture(VillagerEntity mobEntity, CallbackInfoReturnable<Identifier> cir) {
         CurableEntityComponent c = CurableEntityComponent.KEY.getNullable(mobEntity);
         if (c != null && c.hasBeenCured()) cir.setReturnValue(CuredEntityTexture.from(cir.getReturnValue()));
     }

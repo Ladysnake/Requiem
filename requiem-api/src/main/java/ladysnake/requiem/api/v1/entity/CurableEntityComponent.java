@@ -38,6 +38,12 @@ public interface CurableEntityComponent extends Component {
      */
     boolean canBeAssimilated();
 
+    /**
+     *
+     * @return {@code true} if the entity can be either assimilated or cured into another entity
+     */
+    boolean canBeCured();
+
     @Nullable MobEntity cure();
 
 }

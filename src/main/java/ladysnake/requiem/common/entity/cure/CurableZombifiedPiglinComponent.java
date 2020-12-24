@@ -55,6 +55,11 @@ public class CurableZombifiedPiglinComponent extends SimpleCurableEntityComponen
         return false;
     }
 
+    @Override
+    public boolean canBeCured() {
+        return true;
+    }
+
     protected @Nullable MobEntity createCuredEntity() {
         @SuppressWarnings("unchecked") EntityType<? extends MobEntity> originalPiglinType1 = (EntityType<? extends MobEntity>) this.originalPiglinType;
         if (originalPiglinType1 != null) {

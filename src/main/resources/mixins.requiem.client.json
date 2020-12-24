@@ -24,6 +24,7 @@
     "possession.render.GuardianEntityRendererMixin",
     "possession.render.PiglinEntityRendererMixin",
     "possession.render.ShulkerEntityModelMixin",
+    "possession.render.VillagerEntityRendererMixin",
     "remnant.ClientPlayerEntityMixin",
     "remnant.ClientPlayerInteractionManagerMixin",
     "remnant.GameRendererMixin",
