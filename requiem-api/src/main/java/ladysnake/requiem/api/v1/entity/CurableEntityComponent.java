@@ -40,7 +40,7 @@ public interface CurableEntityComponent extends Component {
 
     /**
      *
-     * @return {@code true} if the entity can be either assimilated or cured into another entity
+     * @return {@code true} if the entity can be cured into another entity
      */
     boolean canBeCured();
 

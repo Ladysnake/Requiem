@@ -86,16 +86,14 @@ public abstract class ItemMixin {
 
     @Inject(method = "useOnEntity", at = @At("RETURN"), cancellable = true)
     private void useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-        if (RequiemItemTags.UNDEAD_CURES.contains((Item)(Object)this)) {
-            PlayerEntity possessor = ((Possessable) entity).getPossessor();
-            if (possessor != null && PossessionComponent.get(possessor).canBeCured(stack)) {
-                if (!user.abilities.creativeMode) {
-                    stack.decrement(1);
-                }
-
-                PossessionComponent.KEY.get(possessor).startCuring();
-                cir.setReturnValue(ActionResult.SUCCESS);
+        PlayerEntity possessor = ((Possessable) entity).getPossessor();
+        if (possessor != null && PossessionComponent.get(possessor).canBeCured(stack)) {
+            if (!user.abilities.creativeMode) {
+                stack.decrement(1);
             }
+
+            PossessionComponent.KEY.get(possessor).startCuring();
+            cir.setReturnValue(ActionResult.SUCCESS);
         }
     }
 }

@@ -73,11 +73,6 @@ public final class NullRemnantState implements RemnantState {
     }
 
     @Override
-    public boolean canRegenerateBody() {
-        return true;
-    }
-
-    @Override
     public void prepareRespawn(ServerPlayerEntity original, boolean lossless) {
         // NO-OP
     }

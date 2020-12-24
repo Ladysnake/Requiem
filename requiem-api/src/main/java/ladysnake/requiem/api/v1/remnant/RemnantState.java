@@ -80,7 +80,14 @@ public interface RemnantState {
     }
 
     @API(status = API.Status.EXPERIMENTAL)
-    boolean canRegenerateBody();
+    default boolean canCurePossessed(LivingEntity body) {
+        return false;
+    }
+
+    @API(status = API.Status.EXPERIMENTAL)
+    default boolean canRegenerateBody() {
+        return true;
+    }
 
     /**
      * Called when this remnant state's player is cloned

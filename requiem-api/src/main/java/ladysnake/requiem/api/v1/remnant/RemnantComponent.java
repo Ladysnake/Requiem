@@ -127,6 +127,9 @@ public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComp
     @API(status = API.Status.EXPERIMENTAL)
     boolean canRegenerateBody();
 
+    @API(status = API.Status.EXPERIMENTAL)
+    boolean canCurePossessed(LivingEntity body);
+
     /**
      *
      * @param body the body being used to regenerate a physical player

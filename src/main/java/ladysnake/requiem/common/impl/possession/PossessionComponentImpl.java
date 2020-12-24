@@ -36,7 +36,6 @@ package ladysnake.requiem.common.impl.possession;
 
 import com.google.common.collect.MapMaker;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
@@ -49,7 +48,6 @@ import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.common.entity.attribute.DelegatingAttribute;
 import ladysnake.requiem.common.entity.attribute.PossessionDelegatingAttribute;
-import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
@@ -304,10 +302,9 @@ public final class PossessionComponentImpl implements PossessionComponent {
     public boolean canBeCured(ItemStack cure) {
         MobEntity possessedEntity = this.getPossessedEntity();
         return possessedEntity != null
-            && !this.player.world.getGameRules().getBoolean(RequiemGamerules.NO_CURE)
-            && CurableEntityComponent.KEY.get(possessedEntity).canBeCured()
             && RequiemItemTags.UNDEAD_CURES.contains(cure.getItem())
-            && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS);
+            && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)
+            && RemnantComponent.get(this.player).canCurePossessed(possessedEntity);
     }
 
     @Override

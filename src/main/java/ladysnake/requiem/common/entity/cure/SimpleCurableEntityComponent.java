@@ -85,7 +85,7 @@ public class SimpleCurableEntityComponent implements CurableEntityComponent {
 
     @Override
     public boolean canBeCured() {
-        return this.canBeAssimilated();
+        return false;
     }
 
     @Override

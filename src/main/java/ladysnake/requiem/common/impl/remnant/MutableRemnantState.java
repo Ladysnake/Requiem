@@ -177,6 +177,12 @@ public class MutableRemnantState implements RemnantState {
     }
 
     @Override
+    public boolean canCurePossessed(LivingEntity body) {
+        CurableEntityComponent curableEntityComponent = CurableEntityComponent.KEY.get(body);
+        return curableEntityComponent.canBeCured() || this.canRegenerateBody() && curableEntityComponent.canBeAssimilated();
+    }
+
+    @Override
     public boolean canRegenerateBody() {
         return true;
     }
