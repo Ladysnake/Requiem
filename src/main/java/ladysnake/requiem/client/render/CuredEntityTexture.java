@@ -55,7 +55,7 @@ public class CuredEntityTexture extends ResourceTexture {
         if (cached != null) return cached;
 
         String path = sourceLocation.getPath();
-        int idx = path.lastIndexOf('/', path.lastIndexOf('/'));
+        int idx = path.indexOf('/', path.indexOf('/') + 1);
         String newPath = path.substring(0, idx) + "/cured/" + sourceLocation.getNamespace() + path.substring(idx);
         Identifier filteredLocation = Requiem.id(newPath);
         CuredEntityTexture filteredTexture = new CuredEntityTexture(filteredLocation, sourceLocation);
