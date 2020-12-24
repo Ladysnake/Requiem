@@ -45,6 +45,12 @@ public class SyncedCurableEntityComponent extends SimpleCurableEntityComponent i
     }
 
     @Override
+    public void setCured() {
+        super.setCured();
+        KEY.sync(this.entity);
+    }
+
+    @Override
     public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
         buf.writeBoolean(this.hasBeenCured());
     }

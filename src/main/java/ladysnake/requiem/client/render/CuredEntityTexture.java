@@ -45,7 +45,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CuredPiglinTexture extends ResourceTexture {
+public class CuredEntityTexture extends ResourceTexture {
     private static final Map<Identifier, Identifier> filteredTextures = new HashMap<>();
 
     private final Identifier sourceLocation;
@@ -55,16 +55,16 @@ public class CuredPiglinTexture extends ResourceTexture {
         if (cached != null) return cached;
 
         String path = sourceLocation.getPath();
-        int idx = path.lastIndexOf('/') + 1;
-        String newPath = path.substring(0, idx) + "cured_" + path.substring(idx);
+        int idx = path.lastIndexOf('/', path.lastIndexOf('/'));
+        String newPath = path.substring(0, idx) + "/cured/" + sourceLocation.getNamespace() + path.substring(idx);
         Identifier filteredLocation = Requiem.id(newPath);
-        CuredPiglinTexture filteredTexture = new CuredPiglinTexture(filteredLocation, sourceLocation);
+        CuredEntityTexture filteredTexture = new CuredEntityTexture(filteredLocation, sourceLocation);
         MinecraftClient.getInstance().getTextureManager().registerTexture(filteredLocation, filteredTexture);
         filteredTextures.put(sourceLocation, filteredLocation);
         return filteredLocation;
     }
 
-    public CuredPiglinTexture(Identifier location, Identifier sourceLocation) {
+    public CuredEntityTexture(Identifier location, Identifier sourceLocation) {
         super(location);
         this.sourceLocation = sourceLocation;
     }
