@@ -37,7 +37,6 @@ package ladysnake.requiem.common.entity.cure;
 import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -110,6 +109,6 @@ public class SimpleCurableEntityComponent implements CurableEntityComponent {
     }
 
     protected @Nullable MobEntity createCuredEntity() {
-        return this.entity.method_29243(EntityType.VILLAGER, false);
+        return null;
     }
 }
