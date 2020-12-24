@@ -43,6 +43,10 @@
     "cardinal-components-base": "^2.7.0",
     "cardinal-components-scoreboard": "^2.7.10"
   },
+  "conflicts": {
+    "betterend": "*",
+    "betternether": "*"
+  },
 
   "name": "Requiem",
   "icon": "assets/requiem/skull_logo.png",
