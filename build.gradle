@@ -141,10 +141,10 @@ repositories {
         name = 'Ladysnake Libs'
         url = 'https://dl.bintray.com/ladysnake/libs'
     }
-//    maven {
-//        name = 'CottonMC'
-//        url = 'http://server.bbkr.space:8081/artifactory/libs-release'
-//    }
+    maven {
+        name = 'CottonMC'
+        url = 'http://server.bbkr.space:8081/artifactory/libs-release'
+    }
     maven {
         url "https://maven.jamieswhiteshirt.com/libs-release/"
     }
@@ -201,6 +201,8 @@ dependencies {
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:8d45e7a209") { transitive = false }
     modCompileOnly("curse.maven:haema-391257:3094430") // v1.3.1
     modRuntime("curse.maven:haema-391257:3094430")
+    modRuntime("net.fabricmc:fabric-language-kotlin:1.4.21+build.1")
+    modRuntime("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
     modCompileOnly("curse.maven:the-bumblezone-fabric-363949:3119141")
     modCompileOnly("curse.maven:golems-galore-387197:3048547")
 }
