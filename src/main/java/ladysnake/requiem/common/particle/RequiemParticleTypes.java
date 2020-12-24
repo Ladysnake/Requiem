@@ -41,10 +41,12 @@ import net.minecraft.util.registry.Registry;
 
 public class RequiemParticleTypes {
     public static final DefaultParticleType GHOST = FabricParticleTypes.simple(true);
-    public static final DefaultParticleType ATTRITION = FabricParticleTypes.simple(true);
+    public static final DefaultParticleType ATTRITION = FabricParticleTypes.simple(false);
+    public static final DefaultParticleType CURE = FabricParticleTypes.simple(false);
 
     public static void init() {
         Registry.register(Registry.PARTICLE_TYPE, Requiem.id("ghost"), GHOST);
         Registry.register(Registry.PARTICLE_TYPE, Requiem.id("attrition"), ATTRITION);
+        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("cure"), CURE);
     }
 }

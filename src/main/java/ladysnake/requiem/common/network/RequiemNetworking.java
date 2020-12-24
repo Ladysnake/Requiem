@@ -64,6 +64,7 @@ public class RequiemNetworking {
     public static final Identifier DATA_SYNC = Requiem.id("data_sync");
     public static final Identifier ETHEREAL_ANIMATION = Requiem.id("ethereal_animation");
     public static final Identifier CONSUME_RESURRECTION_ITEM = Requiem.id("consume_resurrection_item");
+    public static final Identifier BODY_CURE = Requiem.id("body_cure");
 
     // Client -> Server
     public static final Identifier USE_DIRECT_ABILITY = Requiem.id("direct_ability");
@@ -187,5 +188,11 @@ public class RequiemNetworking {
 
     public static void sendEtherealAnimationMessage(ServerPlayerEntity player) {
         sendTo(player, createEmptyMessage(ETHEREAL_ANIMATION));
+    }
+
+    public static void sendBodyCureMessage(ServerPlayerEntity player) {
+        PacketByteBuf buf = new PacketByteBuf(buffer());
+        buf.writeVarInt(player.getEntityId());
+        sendTo(player, new CustomPayloadS2CPacket(BODY_CURE, buf));
     }
 }

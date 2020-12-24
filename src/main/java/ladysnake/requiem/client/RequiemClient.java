@@ -37,6 +37,7 @@ package ladysnake.requiem.client;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
 import ladysnake.requiem.client.network.ClientMessageHandler;
+import ladysnake.requiem.client.particle.CureParticle;
 import ladysnake.requiem.client.particle.GhostParticle;
 import ladysnake.requiem.client.render.entity.HorologistEntityRenderer;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
@@ -121,6 +122,7 @@ public final class RequiemClient implements ClientModInitializer {
     private void registerParticleFactories() {
         ParticleFactoryRegistry.getInstance().register(RequiemParticleTypes.GHOST, GhostParticle.Factory::new);
         ParticleFactoryRegistry.getInstance().register(RequiemParticleTypes.ATTRITION, PortalParticle.Factory::new);
+        ParticleFactoryRegistry.getInstance().register(RequiemParticleTypes.CURE, CureParticle.Factory::new);
     }
 
     private void registerModelPredicates() {

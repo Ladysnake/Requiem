@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.RequiemClient;
+import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
@@ -103,12 +104,30 @@ public class ClientMessageHandler {
             }
         });
         ClientSidePacketRegistry.INSTANCE.register(ETHEREAL_ANIMATION, ((context, buf) -> context.getTaskQueue().execute(() -> {
-            MinecraftClient mc = MinecraftClient.getInstance();
-            assert mc != null;
+            MinecraftClient mc = this.mc;
             assert mc.player != null;
             mc.player.world.playSound(mc.player, mc.player.getX(), mc.player.getY(), mc.player.getZ(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2, 0.6f);
-            RequiemClient.INSTANCE.getRequiemFxRenderer().beginEtherealAnimation();
+            this.rc.getRequiemFxRenderer().beginEtherealAnimation();
         })));
+        ClientSidePacketRegistry.INSTANCE.register(BODY_CURE, ((context, buf) -> {
+            int entityId = buf.readVarInt();
+            context.getTaskQueue().execute(() -> {
+                Entity entity = context.getPlayer().world.getEntityById(entityId);
+                if (entity != null) {
+                    for(int i = 0; i < 40; ++i) {
+                        double vx = entity.world.random.nextGaussian() * 0.05D;
+                        double vy = entity.world.random.nextGaussian() * 0.05D;
+                        double vz = entity.world.random.nextGaussian() * 0.05D;
+                        entity.world.addParticle(RequiemParticleTypes.CURE, entity.getParticleX(0.5D), entity.getRandomBodyY(), entity.getParticleZ(0.5D), vx, vy, vz);
+                    }
+                    if (entity == context.getPlayer()) {
+                        this.rc.getRequiemFxRenderer().playEtherealPulseAnimation(
+                            3, 0.9f, 0.4f, 1.0f
+                        );
+                    }
+                }
+            });
+        }));
         ClientSidePacketRegistry.INSTANCE.register(CONSUME_RESURRECTION_ITEM, (context, buf) -> {
             int entityId = buf.readVarInt();
             ItemStack stack = buf.readItemStack();

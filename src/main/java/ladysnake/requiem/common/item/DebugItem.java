@@ -35,14 +35,12 @@
 package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.network.RequiemNetworking;
-import ladysnake.requiem.common.remnant.RemnantTypes;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -77,8 +75,7 @@ public class DebugItem extends Item {
                     break;
                 case 1:
                     if (!world.isClient) {
-                        RemnantComponent.get(player).become(RemnantTypes.MORTAL);
-                        DeathSuspender.get(player).suspendDeath(DamageSource.CACTUS);
+                        RequiemNetworking.sendBodyCureMessage((ServerPlayerEntity) player);
                     }
                     break;
             }
