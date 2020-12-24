@@ -50,7 +50,10 @@ import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
-import ladysnake.requiem.common.entity.cure.*;
+import ladysnake.requiem.common.entity.cure.CurableZombifiedPiglinComponent;
+import ladysnake.requiem.common.entity.cure.DelegatingCurableEntityComponent;
+import ladysnake.requiem.common.entity.cure.SimpleCurableEntityComponent;
+import ladysnake.requiem.common.entity.cure.SyncedCurableEntityComponent;
 import ladysnake.requiem.common.entity.effect.StatusEffectReapplicatorImpl;
 import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityController;
 import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
@@ -65,6 +68,7 @@ import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import net.minecraft.entity.mob.AbstractPiglinEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 
 public final class RequiemComponents implements EntityComponentInitializer, ScoreboardComponentInitializer {
@@ -86,7 +90,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerFor(MobEntity.class, AttritionFocus.KEY, p -> new SimpleAttritionFocus());
         registry.registerForPlayers(StatusEffectReapplicator.KEY, StatusEffectReapplicatorImpl::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerFor(MobEntity.class, CurableEntityComponent.KEY, SimpleCurableEntityComponent::new);
-        registry.beginRegistration(MobEntity.class, CurableEntityComponent.KEY).filter(c -> CurableEntity.class.isAssignableFrom(c)).end(DelegatingCurableEntityComponent::new);
+        registry.registerFor(ZombieVillagerEntity.class, CurableEntityComponent.KEY, DelegatingCurableEntityComponent::new);
         registry.registerFor(ZombifiedPiglinEntity.class, CurableEntityComponent.KEY, CurableZombifiedPiglinComponent::new);
         registry.registerFor(AbstractPiglinEntity.class, CurableEntityComponent.KEY, SyncedCurableEntityComponent::new);
     }
