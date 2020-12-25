@@ -32,22 +32,22 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.client.possession.nightvision;
+package ladysnake.requiem.common.entity;
 
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.entity.LivingEntity;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 
-@Mixin(GameRenderer.class)
-public abstract class GameRendererMixin {
-    @Inject(method = "getNightVisionStrength", at = @At("HEAD"), cancellable = true)    // Have to cancel at head, otherwise NPE if no night vision
-    private static void getNightVisionStrength(LivingEntity livingEntity, float f, CallbackInfoReturnable<Float> cir) {
-        if (RemnantComponent.isIncorporeal(livingEntity)) {
-            cir.setReturnValue(1F);
-        }
+public class CuredVillagerEntity extends VillagerEntity {
+    public CuredVillagerEntity(EntityType<? extends CuredVillagerEntity> entityType, World world) {
+        super(entityType, world);
+    }
+
+    @Override
+    protected Text getDefaultName() {
+        return new TranslatableText(EntityType.VILLAGER.getTranslationKey() + '.' + Registry.VILLAGER_PROFESSION.getId(this.getVillagerData().getProfession()).getPath());
     }
 }
