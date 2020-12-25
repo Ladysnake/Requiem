@@ -45,8 +45,8 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.util.registry.Registry;
 
 public final class RequiemEntities {
-    public static final EntityType<VillagerEntity> CURED_VILLAGER = FabricEntityTypeBuilder.<VillagerEntity>createMob()
-        .entityFactory(VillagerEntity::new)
+    public static final EntityType<CuredVillagerEntity> CURED_VILLAGER = FabricEntityTypeBuilder.<CuredVillagerEntity>createMob()
+        .entityFactory(CuredVillagerEntity::new)
         .dimensions(EntityType.VILLAGER.getDimensions())
         .trackRangeChunks(EntityType.VILLAGER.getMaxTrackDistance())
         .trackedUpdateRate(EntityType.VILLAGER.getTrackTickInterval())
