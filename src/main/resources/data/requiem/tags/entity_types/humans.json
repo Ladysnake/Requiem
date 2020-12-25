@@ -1,9 +1,9 @@
 {
   "replace": false,
   "values": [
+    "#c:villagers",
     "minecraft:evoker",
     "minecraft:pillager",
-    "minecraft:villager",
     "minecraft:vindicator",
     "minecraft:witch",
     {"id": "mobz:archer_entity", "required": false},
