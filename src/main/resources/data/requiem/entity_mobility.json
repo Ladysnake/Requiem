@@ -32,7 +32,8 @@
     "swimMode": "FORCED"
   },
   "minecraft:drowned": {
-    "swimMode": "ENABLED"
+    "swimMode": "ENABLED",
+    "sinksInWater": false
   },
   "minecraft:elder_guardian": {
     "swimMode": "FORCED",
@@ -50,12 +51,6 @@
   },
   "minecraft:parrot": {
     "flightMode": "ENABLED"
-  },
-  "minecraft:piglin": {
-    "sinksInWater": true
-  },
-  "minecraft:piglin_brute": {
-    "sinksInWater": true
   },
   "minecraft:phantom": {
     "flightMode": "FORCED",

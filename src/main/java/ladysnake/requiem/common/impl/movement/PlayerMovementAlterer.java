@@ -297,7 +297,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
     private static boolean shouldActuallySinkInWater(MovementConfig config, Entity entity) {
         if (config.shouldSinkInWater() == TriState.DEFAULT) {
             EntityType<?> type = entity.getType();
-            return RequiemEntityTypeTags.GOLEMS.contains(type) || RequiemEntityTypeTags.PIGLINS.contains(type);
+            return RequiemEntityTypeTags.GOLEMS.contains(type) || entity instanceof LivingEntity && ((LivingEntity) entity).isUndead();
         }
         return config.shouldSinkInWater().get();
     }
