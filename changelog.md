@@ -1,4 +1,43 @@
 ------------------------------------------------------
+Version 1.4.0
+------------------------------------------------------
+### The Chilly Shades Update
+**Additions**
+- Added the Wandering Spirit remnant state
+    - Wandering spirits are a variant of remnant players that cannot regenerate a player body
+    - They can however leave a mob at any time without killing it
+
+**Changes**
+- Some mobs get cured into a new mob instead of being assimilated into a player body
+    - Zombie villagers get cured into possessable villagers
+    - Zombified piglins get cured into piglins
+        - Zombified brutes go back to being brutes after the cure
+- The `/requiem remnant set` command can now use any ID
+
+**Mod Compatibility**
+- When dissociated from a player body, your origin now gets temporarily changed to Vagrant
+
+**Fixes**
+- Fixed a random crash at launch with Bedrockify
+- Fixed doctor4t's capitalization in fabric.mod.json
+- The API jar is once more available on Bintray
+- Possibly fixed an issue where player attributes (notably speed) would get funky values when reviving
+- Fixed Opus Daemonium items not having the enchantment glint
+
+#### Pandemonium
+**Additions**
+- Wandering spirits can take over player shells
+
+**Mod Compatibility**
+- Player shells now store a player's Origin
+    - Origins' graphical effects are visible on the shell
+
+**Fixes**
+- Fixed some data being overwritten when merging with a player shell
+- Impersonation through body swapping now works more or less as intended
+- Players merging with a shell now get properly teleported to the shell's location
+
+------------------------------------------------------
 Version 1.3.0
 ------------------------------------------------------
 
