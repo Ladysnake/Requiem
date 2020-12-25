@@ -22,7 +22,6 @@
     "possession.MinecraftClientMixin",
     "possession.PlayerEntityRendererMixin",
     "possession.nightvision.BackgroundRendererMixin",
-    "possession.nightvision.GameRendererMixin",
     "possession.nightvision.LightmapTextureManagerMixin",
     "possession.render.GuardianEntityRendererMixin",
     "possession.render.ShulkerEntityModelMixin",

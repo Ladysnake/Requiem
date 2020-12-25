@@ -37,7 +37,6 @@ package ladysnake.requiem.mixin.client.possession.nightvision;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -65,7 +64,7 @@ public abstract class LightmapTextureManagerMixin {
         ClientPlayerEntity player = this.client.player;
         assert player != null;
         if (RemnantComponent.isIncorporeal(player)) {
-            return GameRenderer.getNightVisionStrength(player, tickDelta);
+            return Math.max(base, 0.5f);
         }
         return base;
     }
