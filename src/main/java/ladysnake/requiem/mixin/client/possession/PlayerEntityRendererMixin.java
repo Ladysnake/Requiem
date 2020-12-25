@@ -122,7 +122,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                 EntityRenderer<? super LivingEntity> possessedRenderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(possessed);
                 // If the mob has an arm, render it instead of the player's
                 if (possessedRenderer instanceof FeatureRendererContext) {
-                    Model possessedModel = ((LivingEntityRenderer<?, ?>) possessedRenderer).getModel();
+                    Model possessedModel = ((FeatureRendererContext<?, ?>) possessedRenderer).getModel();
                     if (possessedModel instanceof BipedEntityModel) {
                         @SuppressWarnings("unchecked") BipedEntityModel<LivingEntity> bipedModel = (BipedEntityModel<LivingEntity>) possessedModel;
                         PlayerEntityModel<AbstractClientPlayerEntity> playerModel = this.getModel();
