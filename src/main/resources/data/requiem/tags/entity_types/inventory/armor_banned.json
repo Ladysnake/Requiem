@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "minecraft:piglin_brute"
+    "minecraft:piglin_brute",
+    "requiem:cured_piglin_brute"
   ]
 }
