@@ -46,6 +46,7 @@ import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.entity.ability.RangedAttackAbility;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.CreeperEntity;

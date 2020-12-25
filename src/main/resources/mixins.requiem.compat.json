@@ -9,6 +9,7 @@
   "mixins": [
     "haema.VampireBloodInjectorItemMixin",
     "origins.PowerMixin",
+    "snowmercy.WeaponizedSnowGolemEntityMixin",
     "the_bumblezone.BeehiveBlockMixin"
   ]
 }

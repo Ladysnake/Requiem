@@ -32,27 +32,26 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity.ability;
+package ladysnake.requiem.compat.mixin.snowmercy;
 
-import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.RangedAttackMob;
-import net.minecraft.entity.mob.MobEntity;
+import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.snowmercy.common.entity.SnowGolemHeadEntity;
+import ladysnake.snowmercy.common.entity.WeaponizedSnowGolemEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> extends DirectAbilityBase<T, LivingEntity> {
-
-    public static final int ATTACK_COOLDOWN = 40;
-
-    public RangedAttackAbility(T owner) {
-        super(owner, ATTACK_COOLDOWN, 20.0, LivingEntity.class);
-    }
-
-    @Override
-    public boolean run(LivingEntity target) {
-        if (!this.owner.world.isClient) {
-            this.owner.attack(target, 1f);
+@Mixin(WeaponizedSnowGolemEntity.class)
+public abstract class WeaponizedSnowGolemEntityMixin implements Possessable {
+    @ModifyVariable(method = "damage", at = @At(value = "FIELD", target = "Lnet/minecraft/sound/SoundEvents;ENTITY_PLAYER_ATTACK_SWEEP:Lnet/minecraft/sound/SoundEvent;"))
+    private SnowGolemHeadEntity decapitate(SnowGolemHeadEntity head) {
+        ServerPlayerEntity possessor = (ServerPlayerEntity) this.getPossessor();
+        if (possessor != null) {
+            PossessionComponent.get(possessor).stopPossessing();
+            possessor.setCameraEntity(head);
         }
-
-        return true;
+        return head;
     }
 }

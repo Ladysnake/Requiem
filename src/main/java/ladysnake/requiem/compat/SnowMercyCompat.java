@@ -34,35 +34,36 @@
  */
 package ladysnake.requiem.compat;
 
-import io.github.franiscoder.golemsgalore.GolemsGalore;
-import io.github.franiscoder.golemsgalore.entity.LaserGolemEntity;
-import io.github.franiscoder.golemsgalore.entity.ai.laser.FireLaserGoal;
 import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.common.entity.ability.TickingGoalAbility;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import ladysnake.requiem.common.entity.ability.RangedAttackAbility;
+import ladysnake.snowmercy.common.SnowMercy;
+import ladysnake.snowmercy.common.entity.ChillSnugglesEntity;
+import ladysnake.snowmercy.common.entity.MortarsEntity;
+import ladysnake.snowmercy.common.entity.RocketsEntity;
+import ladysnake.snowmercy.common.entity.SnugglesEntity;
+import net.minecraft.util.Identifier;
 
-public final class GolemsGaloreCompat implements RequiemPlugin {
-
+public final class SnowMercyCompat implements RequiemPlugin {
     public static void init() {
-        RequiemCompatibilityManager.<LaserGolemEntity>findEntityType(GolemsGalore.id("laser_golem"), object -> {
-            RequiemApi.registerPlugin(new GolemsGaloreCompat(object));
-        });
+        RequiemApi.registerPlugin(new SnowMercyCompat());
     }
 
-    private final EntityType<LaserGolemEntity> laserGolemType;
-
-    private GolemsGaloreCompat(EntityType<LaserGolemEntity> laserGolemType) {
-        this.laserGolemType = laserGolemType;
+    private static Identifier id(String path) {
+        return new Identifier(SnowMercy.MODID, path);
     }
 
     @Override
     public void registerMobAbilities(MobAbilityRegistry registry) {
-        registry.register(laserGolemType, MobAbilityConfig.<LaserGolemEntity>builder()
-            .directAttack(golem -> new TickingGoalAbility<>(golem, new FireLaserGoal(golem), 20*2, 15, LivingEntity.class))
-            .build());
+        RequiemCompatibilityManager.<SnugglesEntity>findEntityType(id("mister_snuggles"), object ->
+            registry.register(object, MobAbilityConfig.<SnugglesEntity>builder().directAttack(SnugglesBoomAbility::new).build()));
+        RequiemCompatibilityManager.<ChillSnugglesEntity>findEntityType(id("chill_mister_snuggles"), object ->
+            registry.register(object, MobAbilityConfig.<ChillSnugglesEntity>builder().directAttack(SnugglesBoomAbility::new).build()));
+        RequiemCompatibilityManager.<RocketsEntity>findEntityType(id("aftermarket_snowman"), object ->
+            registry.register(object, MobAbilityConfig.<RocketsEntity>builder().directAttack(e -> new RangedAttackAbility<>(e, 120, 32)).build()));
+        RequiemCompatibilityManager.<MortarsEntity>findEntityType(id("ice_mortar"), object ->
+            registry.register(object, MobAbilityConfig.<MortarsEntity>builder().directAttack(e -> new RangedAttackAbility<>(e, 80, 40)).build()));
     }
 }

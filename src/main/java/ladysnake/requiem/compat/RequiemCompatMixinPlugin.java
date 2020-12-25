@@ -52,6 +52,7 @@ public final class RequiemCompatMixinPlugin implements IMixinConfigPlugin {
         .add("origins", "PowerMixin")
         .add("the_bumblezone", "BeehiveBlockMixin")
         .add("haema", "VampireBloodInjectorItemMixin")
+        .add("snowmercy", "WeaponizedSnowGolemEntityMixin")
         .build();
 
     @Override

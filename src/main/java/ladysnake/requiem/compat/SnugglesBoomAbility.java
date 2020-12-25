@@ -34,35 +34,38 @@
  */
 package ladysnake.requiem.compat;
 
-import io.github.franiscoder.golemsgalore.GolemsGalore;
-import io.github.franiscoder.golemsgalore.entity.LaserGolemEntity;
-import io.github.franiscoder.golemsgalore.entity.ai.laser.FireLaserGoal;
-import ladysnake.requiem.api.v1.RequiemApi;
-import ladysnake.requiem.api.v1.RequiemPlugin;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.common.entity.ability.TickingGoalAbility;
-import net.minecraft.entity.EntityType;
+import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
+import ladysnake.snowmercy.common.entity.SnugglesEntity;
 import net.minecraft.entity.LivingEntity;
 
-public final class GolemsGaloreCompat implements RequiemPlugin {
+public class SnugglesBoomAbility implements DirectAbility<SnugglesEntity, LivingEntity> {
+    private final SnugglesEntity mrSnuggles;
 
-    public static void init() {
-        RequiemCompatibilityManager.<LaserGolemEntity>findEntityType(GolemsGalore.id("laser_golem"), object -> {
-            RequiemApi.registerPlugin(new GolemsGaloreCompat(object));
-        });
-    }
-
-    private final EntityType<LaserGolemEntity> laserGolemType;
-
-    private GolemsGaloreCompat(EntityType<LaserGolemEntity> laserGolemType) {
-        this.laserGolemType = laserGolemType;
+    public SnugglesBoomAbility(SnugglesEntity mrSnuggles) {
+        this.mrSnuggles = mrSnuggles;
     }
 
     @Override
-    public void registerMobAbilities(MobAbilityRegistry registry) {
-        registry.register(laserGolemType, MobAbilityConfig.<LaserGolemEntity>builder()
-            .directAttack(golem -> new TickingGoalAbility<>(golem, new FireLaserGoal(golem), 20*2, 15, LivingEntity.class))
-            .build());
+    public double getRange() {
+        return this.mrSnuggles.getWidth() * 2.0F + 2;
+    }
+
+    @Override
+    public Class<LivingEntity> getTargetType() {
+        return LivingEntity.class;
+    }
+
+    @Override
+    public boolean canTarget(LivingEntity target) {
+        return target != this.mrSnuggles;
+    }
+
+    @Override
+    public boolean trigger(LivingEntity target) {
+        if (this.canTarget(target)) {
+            this.mrSnuggles.explode();
+            return true;
+        }
+        return false;
     }
 }

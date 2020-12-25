@@ -37,7 +37,15 @@ package ladysnake.requiem.compat;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import ladysnake.requiem.Requiem;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
+import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+
+import java.util.Optional;
+import java.util.function.Consumer;
 
 public final class RequiemCompatibilityManager {
     public static void init() {
@@ -47,6 +55,7 @@ public final class RequiemCompatibilityManager {
             load("origins", OriginsCompat::init);
             load("golemsgalore", GolemsGaloreCompat::init);
             load("haema", HaemaCompat::init);
+            load("snowmercy", SnowMercyCompat::init);
         } catch (Throwable t) {
             Requiem.LOGGER.error("[Requiem] Failed to load compatibility hooks", t);
         }
@@ -68,6 +77,20 @@ public final class RequiemCompatibilityManager {
         }
         if (FabricLoader.getInstance().isModLoaded("haema")) {
             registry.registerForPlayers(HaemaCompat.HOLDER_KEY, p -> new ComponentDataHolder<>(HaemaCompat.VAMPIRE_KEY, HaemaCompat.HOLDER_KEY), RespawnCopyStrategy.ALWAYS_COPY);
+        }
+    }
+
+    static <T extends Entity> void findEntityType(Identifier id, Consumer<EntityType<T>> action) {
+        @SuppressWarnings("unchecked") Optional<EntityType<T>> maybe = (Optional<EntityType<T>>) (Optional<?>) Registry.ENTITY_TYPE.getOrEmpty(id);
+        if (maybe.isPresent()) {
+            action.accept(maybe.get());
+        } else {
+            RegistryEntryAddedCallback.event(Registry.ENTITY_TYPE).register((rawId, id1, object) -> {
+                if (id.equals(id1)) {
+                    @SuppressWarnings("unchecked") EntityType<T> t = (EntityType<T>) object;
+                    action.accept(t);
+                }
+            });
         }
     }
 }

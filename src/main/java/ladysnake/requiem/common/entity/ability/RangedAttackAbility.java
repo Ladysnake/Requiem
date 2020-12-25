@@ -32,37 +32,30 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.compat;
+package ladysnake.requiem.common.entity.ability;
 
-import io.github.franiscoder.golemsgalore.GolemsGalore;
-import io.github.franiscoder.golemsgalore.entity.LaserGolemEntity;
-import io.github.franiscoder.golemsgalore.entity.ai.laser.FireLaserGoal;
-import ladysnake.requiem.api.v1.RequiemApi;
-import ladysnake.requiem.api.v1.RequiemPlugin;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.common.entity.ability.TickingGoalAbility;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.RangedAttackMob;
+import net.minecraft.entity.mob.MobEntity;
 
-public final class GolemsGaloreCompat implements RequiemPlugin {
+public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> extends DirectAbilityBase<T, LivingEntity> {
 
-    public static void init() {
-        RequiemCompatibilityManager.<LaserGolemEntity>findEntityType(GolemsGalore.id("laser_golem"), object -> {
-            RequiemApi.registerPlugin(new GolemsGaloreCompat(object));
-        });
+    public static final int ATTACK_COOLDOWN = 40;
+
+    public RangedAttackAbility(T owner) {
+        this(owner, ATTACK_COOLDOWN, 20.0);
     }
 
-    private final EntityType<LaserGolemEntity> laserGolemType;
-
-    private GolemsGaloreCompat(EntityType<LaserGolemEntity> laserGolemType) {
-        this.laserGolemType = laserGolemType;
+    public RangedAttackAbility(T owner, int attackCooldown, double range) {
+        super(owner, attackCooldown, range, LivingEntity.class);
     }
 
     @Override
-    public void registerMobAbilities(MobAbilityRegistry registry) {
-        registry.register(laserGolemType, MobAbilityConfig.<LaserGolemEntity>builder()
-            .directAttack(golem -> new TickingGoalAbility<>(golem, new FireLaserGoal(golem), 20*2, 15, LivingEntity.class))
-            .build());
+    public boolean run(LivingEntity target) {
+        if (!this.owner.world.isClient) {
+            this.owner.attack(target, 1f);
+        }
+
+        return true;
     }
 }
