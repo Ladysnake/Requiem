@@ -34,29 +34,36 @@
  */
 package ladysnake.requiem.common.entity.attribute;
 
-import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
 
-import java.util.Objects;
+import java.util.OptionalDouble;
 
-public class CooldownStrengthAttribute extends DelegatingAttribute {
-    private final Possessable owner;
+public class PossessionDelegatingModifier implements NonDeterministicModifier {
+    private final EntityAttribute attribute;
+    private final PossessionComponent handler;
 
-    public <T extends LivingEntity & Possessable> CooldownStrengthAttribute(T entity) {
-        super(Objects.requireNonNull(entity.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
-        this.owner = entity;
+    public PossessionDelegatingModifier(EntityAttribute attribute, PossessionComponent handler) {
+        this.attribute = attribute;
+        this.handler = handler;
     }
 
+    /**
+     * @return the attribute instance to which calls should be delegated
+     */
     @Override
-    public double getValue() {
-        final double strength = super.getValue();
-        PlayerEntity possessor = this.owner.getPossessor();
-        if (possessor != null) {
-            double attackCharge = possessor.getAttackCooldownProgress(0.5f);
-            return strength * (0.2F + attackCharge * attackCharge * 0.8F);
+    public OptionalDouble apply(double value) {
+        LivingEntity possessed = handler.getPossessedEntity();
+
+        if (possessed != null) {
+            EntityAttributeInstance ret = possessed.getAttributeInstance(this.attribute);
+            // the attribute can be null if it is not registered in the possessed entity
+            if (ret != null) {
+                return OptionalDouble.of(ret.getValue());
+            }
         }
-        return strength;
+        return OptionalDouble.empty();
     }
 }

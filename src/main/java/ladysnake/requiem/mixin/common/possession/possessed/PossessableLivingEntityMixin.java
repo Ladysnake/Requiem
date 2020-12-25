@@ -40,8 +40,8 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.entity.ai.DisableableBrain;
-import ladysnake.requiem.common.entity.attribute.CooldownStrengthAttribute;
-import ladysnake.requiem.common.entity.attribute.DelegatingAttribute;
+import ladysnake.requiem.common.entity.attribute.CooldownStrengthModifier;
+import ladysnake.requiem.common.entity.attribute.NonDeterministicAttribute;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
@@ -271,10 +271,11 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void initAttributes(CallbackInfo ci) {
+        EntityAttributeInstance attributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE);
         // Entities may or may not register ATTACK_DAMAGE
         //noinspection ConstantConditions
-        if (this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE) != null) {
-            DelegatingAttribute.replaceAttribute(attributes, new CooldownStrengthAttribute((LivingEntity & Possessable)(Object) this));
+        if (attributeInstance != null) {
+            ((NonDeterministicAttribute)attributeInstance).addFinalModifier(new CooldownStrengthModifier((LivingEntity & Possessable) (Object) this));
         }
     }
 

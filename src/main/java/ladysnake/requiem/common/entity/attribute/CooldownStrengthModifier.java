@@ -34,33 +34,26 @@
  */
 package ladysnake.requiem.common.entity.attribute;
 
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.player.PlayerEntity;
 
-public class PossessionDelegatingAttribute extends DelegatingAttribute {
-    private final PossessionComponent handler;
+import java.util.OptionalDouble;
 
-    public PossessionDelegatingAttribute(EntityAttributeInstance original, PossessionComponent handler) {
-        super(original);
-        this.handler = handler;
+public class CooldownStrengthModifier implements NonDeterministicModifier {
+    private final Possessable owner;
+
+    public <T extends LivingEntity & Possessable> CooldownStrengthModifier(T entity) {
+        this.owner = entity;
     }
 
-    /**
-     * @return the attribute instance to which calls should be delegated
-     */
     @Override
-    protected EntityAttributeInstance getDelegateAttributeInstance() {
-        if (handler.isPossessing()) {
-            LivingEntity possessed = handler.getPossessedEntity();
-            if (possessed != null) {
-                EntityAttributeInstance ret = possessed.getAttributeInstance(this.getAttribute());
-                // the attribute can be null if it is not registered in the possessed entity
-                if (ret != null) {
-                    return ret;
-                }
-            }
+    public OptionalDouble apply(double strength) {
+        PlayerEntity possessor = this.owner.getPossessor();
+        if (possessor != null) {
+            double attackCharge = possessor.getAttackCooldownProgress(0.5f);
+            return OptionalDouble.of(strength * (0.2F + attackCharge * attackCharge * 0.8F));
         }
-        return super.getDelegateAttributeInstance();
+        return OptionalDouble.empty();
     }
 }

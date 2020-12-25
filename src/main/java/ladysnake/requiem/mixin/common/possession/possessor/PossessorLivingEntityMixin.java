@@ -43,6 +43,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -51,6 +53,7 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -58,6 +61,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(LivingEntity.class)
 public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
+
+    @Shadow @javax.annotation.Nullable public abstract EntityAttributeInstance getAttributeInstance(EntityAttribute attribute);
 
     @ModifyArg(method = "swimUpward", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;add(DDD)Lnet/minecraft/util/math/Vec3d;"), index = 1)
     private double updateSwimVelocity(double upwardsVelocity) {
@@ -89,6 +94,11 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
             return alterer.getSwimmingAcceleration(speedAmount);
         }
         return speedAmount;
+    }
+
+    @Inject(method = "setSprinting", at = @At("RETURN"))
+    protected void requiem$setSprinting(boolean sprinting, CallbackInfo ci) {
+        // overridden by PossessorPlayerEntityMixin
     }
 
     @Inject(method = "isClimbing", at = @At("RETURN"), cancellable = true)

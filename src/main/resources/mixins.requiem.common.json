@@ -33,6 +33,7 @@
     "inventory.SlotMixin",
     "inventory.UpdateSelectedSlotC2SPacketAccessor",
     "opus.LecternBlockEntityMixin",
+    "possession.EntityAttributeInstanceMixin",
     "possession.ServerWorldMixin",
     "possession.WorldMixin",
     "possession.command.EntitySelectorOptionsMixin",

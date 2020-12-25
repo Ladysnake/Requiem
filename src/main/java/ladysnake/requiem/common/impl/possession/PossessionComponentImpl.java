@@ -34,7 +34,6 @@
  */
 package ladysnake.requiem.common.impl.possession;
 
-import com.google.common.collect.MapMaker;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.MovementRegistry;
@@ -46,8 +45,6 @@ import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.client.RequiemClient;
-import ladysnake.requiem.common.entity.attribute.DelegatingAttribute;
-import ladysnake.requiem.common.entity.attribute.PossessionDelegatingAttribute;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
@@ -56,9 +53,6 @@ import ladysnake.requiem.common.util.InventoryHelper;
 import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.AttributeContainer;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
@@ -70,25 +64,13 @@ import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.registry.Registry;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.Random;
+import java.util.UUID;
 
 public final class PossessionComponentImpl implements PossessionComponent {
-    // Identity weak map. Should probably be made into its own util class.
-    private static final Set<PlayerEntity> attributeUpdated = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
-    private static final Set<WeakReference<PossessionComponentImpl>> pendingCure = new HashSet<>();
-
-    public static void onServerEndTick() {
-        pendingCure.removeIf(r -> {
-            Optional.ofNullable(r.get()).ifPresent(PossessionComponentImpl::finishCuring);
-            return true;
-        });
-    }
-
     private final PlayerEntity player;
     @Nullable private MobEntity possessed;
     private int conversionTimer;
@@ -158,11 +140,6 @@ public final class PossessionComponentImpl implements PossessionComponent {
         this.player.calculateDimensions(); // update size
         MovementAlterer.get(this.player).setConfig(MovementRegistry.get(this.player.world).getEntityMovementConfig(host.getType()));
 
-        if (!attributeUpdated.contains(this.player)) {
-            this.swapAttributes(this.player);
-            attributeUpdated.add(this.player);
-        }
-
         // Ensure health matches max health (attrition)
         host.setHealth(host.getHealth());
 
@@ -171,18 +148,6 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
         // Fire event
         PossessionStateChangeCallback.EVENT.invoker().onPossessionStateChange(this.player, host);
-    }
-
-    private void swapAttributes(PlayerEntity player) {
-        AttributeContainer attributeMap = player.getAttributes();
-        // Replace every registered attribute
-        for (EntityAttribute attribute : Registry.ATTRIBUTE) {
-            // Note: this fills the attribute map for the player, whether this is an issue is to be determined
-            EntityAttributeInstance current = player.getAttributeInstance(attribute);
-            if (current != null) {
-                DelegatingAttribute.replaceAttribute(attributeMap, new PossessionDelegatingAttribute(current, this));
-            }
-        }
     }
 
     /**
@@ -330,7 +295,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
             else this.conversionTimer--;
 
             if (this.conversionTimer == 0) {
-                pendingCure.add(new WeakReference<>(this));
+                this.finishCuring();
             }
         }
     }
