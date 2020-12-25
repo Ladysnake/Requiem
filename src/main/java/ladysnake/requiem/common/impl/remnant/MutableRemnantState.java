@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.common.impl.remnant;
 
+import com.google.common.base.Preconditions;
 import io.github.ladysnake.pal.AbilitySource;
 import io.github.ladysnake.pal.Pal;
 import io.github.ladysnake.pal.VanillaAbilities;
@@ -122,21 +123,21 @@ public class MutableRemnantState implements RemnantState {
         if (this.canRegenerateBodyFrom(body)) {
             ServerPlayerEntity player = (ServerPlayerEntity) this.player;
             RequiemNetworking.sendBodyCureMessage(player);
-            regenerateBody(player, body);
+            this.regenerateBody(body);
         } else {
             this.cureMob(body);
         }
     }
 
-    public static ServerPlayerEntity regenerateBody(ServerPlayerEntity player, LivingEntity body) {
+    private void regenerateBody(LivingEntity body) {
+        Preconditions.checkState(!this.player.world.isClient);
         RemnantComponent.get(player).setVagrant(false);
-        RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle(player, body, player, true);
+        RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle((ServerPlayerEntity) player, body, player, true);
         body.remove();
         player.removeStatusEffect(RequiemStatusEffects.ATTRITION);
         player.setHealth(body.getHealth());
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
         player.world.syncWorldEvent(null, 1027, player.getBlockPos(), 0);
-        return player;
     }
 
     protected void cureMob(LivingEntity body) {
