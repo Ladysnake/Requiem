@@ -120,11 +120,6 @@ public class ClientMessageHandler {
                         double vz = entity.world.random.nextGaussian() * 0.05D;
                         entity.world.addParticle(RequiemParticleTypes.CURE, entity.getParticleX(0.5D), entity.getRandomBodyY(), entity.getParticleZ(0.5D), vx, vy, vz);
                     }
-                    if (entity == context.getPlayer()) {
-                        this.rc.getRequiemFxRenderer().playEtherealPulseAnimation(
-                            3, 0.9f, 0.4f, 1.0f
-                        );
-                    }
                 }
             });
         }));
