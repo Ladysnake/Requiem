@@ -59,7 +59,7 @@ public final class SnowMercyCompat implements RequiemPlugin {
     public void registerMobAbilities(MobAbilityRegistry registry) {
         RequiemCompatibilityManager.<SnugglesEntity>findEntityType(id("mister_snuggles"), object ->
             registry.register(object, MobAbilityConfig.<SnugglesEntity>builder().directAttack(SnugglesBoomAbility::new).build()));
-        RequiemCompatibilityManager.<ChillSnugglesEntity>findEntityType(id("chill_mister_snuggles"), object ->
+        RequiemCompatibilityManager.<ChillSnugglesEntity>findEntityType(id("mister_chill_snuggles"), object ->
             registry.register(object, MobAbilityConfig.<ChillSnugglesEntity>builder().directAttack(SnugglesBoomAbility::new).build()));
         RequiemCompatibilityManager.<RocketsEntity>findEntityType(id("aftermarket_snowman"), object ->
             registry.register(object, MobAbilityConfig.<RocketsEntity>builder().directAttack(e -> new RangedAttackAbility<>(e, 120, 32)).build()));
