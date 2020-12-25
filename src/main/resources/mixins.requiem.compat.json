@@ -7,6 +7,7 @@
     "healthoverlay.HealthRendererMixin"
   ],
   "mixins": [
+    "haema.VampireBloodInjectorItemMixin",
     "origins.PowerMixin",
     "the_bumblezone.BeehiveBlockMixin"
   ]

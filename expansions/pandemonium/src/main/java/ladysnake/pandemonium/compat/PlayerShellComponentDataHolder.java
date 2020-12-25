@@ -32,22 +32,42 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.client.possession.nightvision;
+package ladysnake.pandemonium.compat;
 
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.entity.LivingEntity;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentV3;
+import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import ladysnake.pandemonium.common.entity.PlayerShellEntity;
+import ladysnake.requiem.compat.ComponentDataHolder;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-@Mixin(GameRenderer.class)
-public abstract class GameRendererMixin {
-    @Inject(method = "getNightVisionStrength", at = @At("HEAD"), cancellable = true)    // Have to cancel at head, otherwise NPE if no night vision
-    private static void getNightVisionStrength(LivingEntity livingEntity, float f, CallbackInfoReturnable<Float> cir) {
-        if (RemnantComponent.isIncorporeal(livingEntity)) {
-            cir.setReturnValue(1F);
+public class PlayerShellComponentDataHolder<C extends ComponentV3> extends ComponentDataHolder<C> implements AutoSyncedComponent {
+    private final PlayerShellEntity shell;
+
+    public PlayerShellComponentDataHolder(PlayerShellEntity shell, ComponentKey<C> key, ComponentKey<?> selfKey) {
+        super(key, selfKey);
+        this.shell = shell;
+    }
+
+    @Override
+    public void storeData(PlayerEntity player) {
+        super.storeData(player);
+        this.selfKey.sync(this.shell);
+    }
+
+    @Override
+    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
+        buf.writeCompoundTag(this.data);
+    }
+
+    @Override
+    public void applySyncPacket(PacketByteBuf buf) {
+        CompoundTag originData = buf.readCompoundTag();
+        if (originData != null) {
+            this.dataKey.get(this.shell.getRenderedPlayer()).readFromNbt(originData);
         }
     }
 }

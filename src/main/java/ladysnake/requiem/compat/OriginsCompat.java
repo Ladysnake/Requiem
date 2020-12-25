@@ -34,8 +34,8 @@
  */
 package ladysnake.requiem.compat;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.integration.OriginDataLoadedCallback;
 import io.github.apace100.origins.origin.Origin;
@@ -62,7 +62,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public final class OriginsCompat {
-    public static final ComponentKey<? extends Component> ORIGIN_KEY = ModComponents.ORIGIN;
+    public static final ComponentKey<OriginComponent> ORIGIN_KEY = ModComponents.ORIGIN;
     public static final SerializableDataType<RemnantType> REMNANT_TYPE = SerializableDataType.registry(RemnantType.class, RequiemRegistries.REMNANT_STATES);
 
     // The factory for the origins power that lets player decide whether they want to be a remnant or not
@@ -86,6 +86,9 @@ public final class OriginsCompat {
             return ((List<?>) instance.get("value")).contains(startingRemnantType);
         }
     );
+    @SuppressWarnings("unchecked")
+    public static final ComponentKey<ComponentDataHolder<OriginComponent>> HOLDER_KEY =
+        ComponentRegistry.getOrCreate(Requiem.id("origin_holder"), ((Class<ComponentDataHolder<OriginComponent>>) (Class<?>) ComponentDataHolder.class));
 
     private static final Identifier SOUL_TYPE_LAYER_ID = Requiem.id("soul_type");
     private static Origin vagrant;
@@ -107,10 +110,10 @@ public final class OriginsCompat {
         RemnantStateChangeCallback.EVENT.register((player, state) -> {
             if (!player.world.isClient) {
                 if (state.isVagrant()) {
-                    OriginHolder.KEY.get(player).storeOrigin(player);
+                    HOLDER_KEY.get(player).storeData(player);
                     applyVagrantOrigin(player);
                 } else {
-                    OriginHolder.KEY.get(player).restoreOrigin(player);
+                    HOLDER_KEY.get(player).restoreData(player);
                 }
             }
         });

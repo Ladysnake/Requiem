@@ -172,6 +172,7 @@ public class MutableRemnantState implements RemnantState {
         MobEntity cured = CurableEntityComponent.KEY.get(body).cure();
 
         if (cured != null) {
+            PossessionComponent.get(this.player).startPossessing(cured);
             RequiemCriteria.TRANSFORMED_POSSESSED_ENTITY.handle((ServerPlayerEntity) this.player, body, cured, true);
         }
     }

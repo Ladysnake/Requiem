@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.common.entity.cure;
 
+import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import net.minecraft.entity.mob.MobEntity;
 
 public class DelegatingCurableEntityComponent extends SimpleCurableEntityComponent {
@@ -53,6 +54,8 @@ public class DelegatingCurableEntityComponent extends SimpleCurableEntityCompone
 
     @Override
     public MobEntity cure() {
-        return ((CurableEntity) this.entity).requiem_cureAsPossessed();
+        MobEntity cured = ((CurableEntity) this.entity).requiem_cureAsPossessed();
+        KEY.maybeGet(cured).ifPresent(CurableEntityComponent::setCured);
+        return cured;
     }
 }

@@ -36,58 +36,64 @@ package ladysnake.requiem.compat;
 
 import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
-import io.github.apace100.origins.component.OriginComponent;
-import io.github.apace100.origins.registry.ModComponents;
+import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import ladysnake.requiem.Requiem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
-public class OriginHolder implements Component {
-    public static final ComponentKey<OriginHolder> KEY = ComponentRegistry.getOrCreate(Requiem.id("origin_holder"), OriginHolder.class);
+public class ComponentDataHolder<C extends ComponentV3> implements Component {
 
-    protected @Nullable CompoundTag originData;
+    protected final ComponentKey<C> dataKey;
+    protected final ComponentKey<?> selfKey;
+    protected @Nullable CompoundTag data;
 
-    public void storeOrigin(PlayerEntity player) {
-        if (!player.world.isClient && this.originData == null) {
+    public ComponentDataHolder(ComponentKey<C> dataKey, ComponentKey<?> selfKey) {
+        this.dataKey = dataKey;
+        this.selfKey = selfKey;
+    }
+
+    public void storeData(PlayerEntity player) {
+        if (!player.world.isClient && this.data == null) {
             try {
                 CompoundTag originData = new CompoundTag();
-                ModComponents.ORIGIN.get(player).writeToNbt(originData);
-                this.originData = originData;
+                this.dataKey.get(player).writeToNbt(originData);
+                this.data = originData;
             } catch (RuntimeException e) {
-                Requiem.LOGGER.error("[Requiem] Failed to serialize origin data", e);
+                Requiem.LOGGER.error("[Requiem] Failed to serialize data from " + this.dataKey.getId(), e);
             }
         }
     }
 
-    public void restoreOrigin(PlayerEntity player) {
-        if (!player.world.isClient && this.originData != null) {
-            OriginComponent originComponent = ModComponents.ORIGIN.get(player);
-            CompoundTag backup = Util.make(new CompoundTag(), originComponent::writeToNbt);
+    public void restoreData(PlayerEntity player) {
+        if (!player.world.isClient && this.data != null) {
+            C component = this.dataKey.get(player);
+            CompoundTag backup = Util.make(new CompoundTag(), component::writeToNbt);
             try {
-                originComponent.readFromNbt(this.originData);
+                component.readFromNbt(this.data);
             } catch (RuntimeException e) {
-                Requiem.LOGGER.error("[Requiem] Failed to deserialize origin data", e);
-                originComponent.readFromNbt(backup);
+                Requiem.LOGGER.error("[Requiem] Failed to deserialize data from " + this.dataKey.getId(), e);
+                component.readFromNbt(backup);
             }
-            this.originData = null;
-            ModComponents.ORIGIN.sync(player);
+            this.data = null;
+            this.dataKey.sync(player);
         }
     }
 
     @Override
     public void readFromNbt(CompoundTag tag) {
         if (tag.contains("originData")) {
-            this.originData = tag.getCompound("originData");
+            this.data = tag.getCompound("originData");
+        } else if (tag.contains("componentData")) {
+            this.data = tag.getCompound("componentData");
         }
     }
 
     @Override
     public void writeToNbt(CompoundTag tag) {
-        if (this.originData != null) {
-            tag.put("originData", this.originData);
+        if (this.data != null) {
+            tag.put("componentData", this.data);
         }
     }
 }

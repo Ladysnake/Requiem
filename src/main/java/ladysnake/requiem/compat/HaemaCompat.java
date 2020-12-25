@@ -32,22 +32,32 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.client.possession.nightvision;
+package ladysnake.requiem.compat;
 
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.entity.LivingEntity;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import com.williambl.haema.component.VampireComponent;
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 
-@Mixin(GameRenderer.class)
-public abstract class GameRendererMixin {
-    @Inject(method = "getNightVisionStrength", at = @At("HEAD"), cancellable = true)    // Have to cancel at head, otherwise NPE if no night vision
-    private static void getNightVisionStrength(LivingEntity livingEntity, float f, CallbackInfoReturnable<Float> cir) {
-        if (RemnantComponent.isIncorporeal(livingEntity)) {
-            cir.setReturnValue(1F);
-        }
+public final class HaemaCompat {
+    public static final ComponentKey<VampireComponent> VAMPIRE_KEY = VampireComponent.Companion.getEntityKey();
+
+    @SuppressWarnings("unchecked")
+    public static final ComponentKey<ComponentDataHolder<VampireComponent>> HOLDER_KEY =
+        ComponentRegistry.getOrCreate(Requiem.id("haema_holder"), ((Class<ComponentDataHolder<VampireComponent>>) (Class<?>) ComponentDataHolder.class));
+
+    public static void init() {
+        RemnantStateChangeCallback.EVENT.register((player, state) -> {
+            if (!player.world.isClient) {
+                if (state.isVagrant()) {
+                    HOLDER_KEY.get(player).storeData(player);
+                    VAMPIRE_KEY.get(player).setPermanentVampire(false);
+                    VAMPIRE_KEY.get(player).setVampire(false);
+                } else {
+                    HOLDER_KEY.get(player).restoreData(player);
+                }
+            }
+        });
     }
 }

@@ -35,19 +35,19 @@
 package ladysnake.pandemonium.compat;
 
 import ladysnake.pandemonium.api.event.PlayerShellEvents;
-import ladysnake.requiem.compat.OriginHolder;
+import ladysnake.requiem.compat.OriginsCompat;
 
 public final class PandemoniumOriginsCompat {
     public static void init() {
         PlayerShellEvents.PLAYER_SPLIT.register((whole, soul, playerShell, playerData) -> {
-            OriginHolder.KEY.get(playerShell).storeOrigin(whole);
+            OriginsCompat.HOLDER_KEY.get(playerShell).storeData(whole);
         });
 
         PlayerShellEvents.PLAYER_MERGED.register((player, playerShell, shellProfile, playerData) -> {
             // First, store a backup of the player's actual origin
-            OriginHolder.KEY.get(player).storeOrigin(player);
+            OriginsCompat.HOLDER_KEY.get(player).storeData(player);
             // Then, give the player the shell's origin
-            OriginHolder.KEY.get(playerShell).restoreOrigin(player);
+            OriginsCompat.HOLDER_KEY.get(playerShell).restoreData(player);
         });
     }
 }

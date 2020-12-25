@@ -37,7 +37,8 @@ package ladysnake.pandemonium.compat;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.compat.OriginHolder;
+import ladysnake.requiem.compat.HaemaCompat;
+import ladysnake.requiem.compat.OriginsCompat;
 import ladysnake.requiem.compat.RequiemCompatibilityManager;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -52,7 +53,10 @@ public final class PandemoniumCompatibilityManager {
 
     public static void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         if (FabricLoader.getInstance().isModLoaded("origins")) {
-            registry.registerFor(PlayerShellEntity.class, OriginHolder.KEY, PlayerShellOriginHolder::new);
+            registry.registerFor(PlayerShellEntity.class, OriginsCompat.HOLDER_KEY, shell -> new PlayerShellComponentDataHolder<>(shell, OriginsCompat.ORIGIN_KEY, OriginsCompat.HOLDER_KEY));
+        }
+        if (FabricLoader.getInstance().isModLoaded("haema")) {
+            registry.registerFor(PlayerShellEntity.class, HaemaCompat.HOLDER_KEY, shell -> new PlayerShellComponentDataHolder<>(shell, HaemaCompat.VAMPIRE_KEY, HaemaCompat.HOLDER_KEY));
         }
     }
 }

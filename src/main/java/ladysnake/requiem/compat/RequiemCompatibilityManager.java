@@ -46,6 +46,7 @@ public final class RequiemCompatibilityManager {
             load("the_bumblezone", BumblezoneCompat::init);
             load("origins", OriginsCompat::init);
             load("golemsgalore", GolemsGaloreCompat::init);
+            load("haema", HaemaCompat::init);
         } catch (Throwable t) {
             Requiem.LOGGER.error("[Requiem] Failed to load compatibility hooks", t);
         }
@@ -63,7 +64,10 @@ public final class RequiemCompatibilityManager {
 
     public static void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         if (FabricLoader.getInstance().isModLoaded("origins")) {
-            registry.registerForPlayers(OriginHolder.KEY, p -> new OriginHolder(), RespawnCopyStrategy.ALWAYS_COPY);
+            registry.registerForPlayers(OriginsCompat.HOLDER_KEY, p -> new ComponentDataHolder<>(OriginsCompat.ORIGIN_KEY, OriginsCompat.HOLDER_KEY), RespawnCopyStrategy.ALWAYS_COPY);
+        }
+        if (FabricLoader.getInstance().isModLoaded("haema")) {
+            registry.registerForPlayers(HaemaCompat.HOLDER_KEY, p -> new ComponentDataHolder<>(HaemaCompat.VAMPIRE_KEY, HaemaCompat.HOLDER_KEY), RespawnCopyStrategy.ALWAYS_COPY);
         }
     }
 }
