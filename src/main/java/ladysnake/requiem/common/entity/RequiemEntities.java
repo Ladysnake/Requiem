@@ -34,20 +34,53 @@
  */
 package ladysnake.requiem.common.entity;
 
+import com.google.common.collect.ImmutableMap;
+import ladysnake.requiem.Requiem;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.PiglinBruteEntity;
+import net.minecraft.entity.mob.PiglinEntity;
+import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.util.registry.Registry;
 
 public final class RequiemEntities {
-    public static final EntityType<HorologistEntity> HOROLOGIST = FabricEntityTypeBuilder.create(SpawnGroup.MISC, HorologistEntity::new)
-        .dimensions(EntityDimensions.changing(0.6F, 0.95F))
-        .trackRangeChunks(10)
-        .trackedUpdateRate(1)
+    public static final EntityType<VillagerEntity> CURED_VILLAGER = FabricEntityTypeBuilder.<VillagerEntity>createMob()
+        .entityFactory(VillagerEntity::new)
+        .dimensions(EntityType.VILLAGER.getDimensions())
+        .trackRangeChunks(EntityType.VILLAGER.getMaxTrackDistance())
+        .trackedUpdateRate(EntityType.VILLAGER.getTrackTickInterval())
+        .defaultAttributes(VillagerEntity::createVillagerAttributes)
         .build();
+    public static final EntityType<PiglinEntity> CURED_PIGLIN = FabricEntityTypeBuilder.<PiglinEntity>createMob()
+        .entityFactory((entityType, world) -> {
+            PiglinEntity ret = new PiglinEntity(entityType, world);
+            ret.setImmuneToZombification(true);
+            return ret;
+        })
+        .dimensions(EntityType.PIGLIN.getDimensions())
+        .trackRangeChunks(EntityType.PIGLIN.getMaxTrackDistance())
+        .trackedUpdateRate(EntityType.PIGLIN.getTrackTickInterval())
+        .defaultAttributes(PiglinEntity::createPiglinAttributes)
+        .build();
+    public static final EntityType<PiglinBruteEntity> CURED_PIGLIN_BRUTE = FabricEntityTypeBuilder.<PiglinBruteEntity>createMob()
+        .entityFactory((entityType, world) -> {
+            PiglinBruteEntity ret = new PiglinBruteEntity(entityType, world);
+            ret.setImmuneToZombification(true);
+            return ret;
+        })
+        .dimensions(EntityType.PIGLIN_BRUTE.getDimensions())
+        .trackRangeChunks(EntityType.PIGLIN_BRUTE.getMaxTrackDistance())
+        .trackedUpdateRate(EntityType.PIGLIN_BRUTE.getTrackTickInterval())
+        .defaultAttributes(PiglinBruteEntity::createPiglinBruteAttributes)
+        .build();
+    public static final ImmutableMap<EntityType<? extends MobEntity>, EntityType<? extends MobEntity>> CURED_PIGLIN_VARIANTS =
+        ImmutableMap.of(EntityType.PIGLIN, CURED_PIGLIN, EntityType.PIGLIN_BRUTE, CURED_PIGLIN_BRUTE);
 
     public static void init() {
-
+        Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_villager"), CURED_VILLAGER);
+        Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_piglin"), CURED_PIGLIN);
+        Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_piglin_brute"), CURED_PIGLIN_BRUTE);
     }
 
 }

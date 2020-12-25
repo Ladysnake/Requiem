@@ -108,7 +108,6 @@ public class SimpleCurableEntityComponent implements CurableEntityComponent {
             if (!this.entity.isSilent()) {
                 this.entity.world.syncWorldEvent(null, 1027, this.entity.getBlockPos(), 0);
             }
-            CurableEntityComponent.KEY.get(cured).setCured();
         }
         return cured;
     }

@@ -36,7 +36,6 @@ package ladysnake.requiem.common.remnant;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
@@ -73,12 +72,6 @@ public class BasePossessionHandlers {
         });
         PossessionStartCallback.EVENT.register(Requiem.id("base_mobs"), (target, possessor, simulate) -> {
             if (RequiemEntityTypeTags.POSSESSABLES.contains(target.getType())) {
-                return PossessionStartCallback.Result.ALLOW;
-            }
-            return PossessionStartCallback.Result.PASS;
-        });
-        PossessionStartCallback.EVENT.register(Requiem.id("cured"), (target, possessor, simulate) -> {
-            if (CurableEntityComponent.KEY.get(target).hasBeenCured()) {
                 return PossessionStartCallback.Result.ALLOW;
             }
             return PossessionStartCallback.Result.PASS;

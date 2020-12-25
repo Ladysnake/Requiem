@@ -1,7 +1,6 @@
 {
   "replace": false,
   "values": [
-    "minecraft:piglin",
-    "minecraft:piglin_brute"
+    "#c:piglins"
   ]
 }

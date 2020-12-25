@@ -6,6 +6,7 @@
     "minecraft:piglin",
     "minecraft:villager",
     "minecraft:pillager",
+    "requiem:cured_piglin",
     {"id": "mobz:dwarf_entity", "required": false},
     {"id": "mobz:friend_entity", "required": false},
     {"id": "mobz:knight_entity", "required": false},

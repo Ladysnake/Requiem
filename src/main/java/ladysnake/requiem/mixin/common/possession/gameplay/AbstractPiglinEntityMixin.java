@@ -43,21 +43,12 @@ import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractPiglinEntity.class)
 public abstract class AbstractPiglinEntityMixin extends HostileEntity {
     protected AbstractPiglinEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
-    }
-
-    @Inject(method = "shouldZombify", at = @At("RETURN"), cancellable = true)
-    private void shouldZombify(CallbackInfoReturnable<Boolean> cir) {
-        if (cir.getReturnValueZ() && CurableEntityComponent.KEY.get(this).hasBeenCured()) {
-            cir.setReturnValue(false);
-        }
     }
 
     @ModifyVariable(method = "zombify", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/ZombifiedPiglinEntity;addStatusEffect(Lnet/minecraft/entity/effect/StatusEffectInstance;)Z"))

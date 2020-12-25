@@ -32,31 +32,24 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.entity.cure;
+package ladysnake.requiem.client.render.entity;
 
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
+import ladysnake.requiem.Requiem;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.VillagerEntityRenderer;
+import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.resource.ReloadableResourceManager;
+import net.minecraft.util.Identifier;
 
-public class SyncedCurableEntityComponent extends SimpleCurableEntityComponent implements AutoSyncedComponent {
-    public SyncedCurableEntityComponent(MobEntity entity) {
-        super(entity);
+public class CuredVillagerEntityRenderer extends VillagerEntityRenderer {
+    private static final Identifier TEXTURE = Requiem.id("textures/entity/cured_villager.png");
+
+    public CuredVillagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ReloadableResourceManager resourceManager) {
+        super(entityRenderDispatcher, resourceManager);
     }
 
     @Override
-    public void setCured() {
-        super.setCured();
-        KEY.sync(this.entity);
-    }
-
-    @Override
-    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
-        buf.writeBoolean(this.hasBeenCured());
-    }
-
-    @Override
-    public void applySyncPacket(PacketByteBuf buf) {
-        this.cured = buf.readBoolean();
+    public Identifier getTexture(VillagerEntity villager) {
+        return TEXTURE;
     }
 }

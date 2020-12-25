@@ -5,6 +5,7 @@
     "#requiem:humanoid_zombies",
     "#requiem:humanoid_skeletons",
     "minecraft:piglin",
-    "minecraft:enderman"
+    "minecraft:enderman",
+    "requiem:cured_piglin"
   ]
 }

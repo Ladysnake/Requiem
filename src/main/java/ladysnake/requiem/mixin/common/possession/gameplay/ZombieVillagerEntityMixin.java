@@ -34,6 +34,8 @@
  */
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
+import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.cure.CurableEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
@@ -46,10 +48,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(ZombieVillagerEntity.class)
-public abstract class ZombieVillagerEntityMixin extends ZombieEntity implements CurableEntity {
+public abstract class ZombieVillagerEntityMixin extends ZombieEntity implements Possessable, CurableEntity {
     @Unique
     private static final ThreadLocal<VillagerEntity> CURED_VILLAGER = new ThreadLocal<>();
 
@@ -59,6 +62,14 @@ public abstract class ZombieVillagerEntityMixin extends ZombieEntity implements 
 
     @Shadow
     protected abstract void finishConversion(ServerWorld world);
+
+    @ModifyArg(method = "finishConversion", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/ZombieVillagerEntity;method_29243(Lnet/minecraft/entity/EntityType;Z)Lnet/minecraft/entity/mob/MobEntity;"))
+    private EntityType<?> swapEntityType(EntityType<?> base) {
+        if (this.isBeingPossessed()) {
+            return RequiemEntities.CURED_VILLAGER;
+        }
+        return base;
+    }
 
     @ModifyVariable(method = "finishConversion", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/VillagerEntity;initialize(Lnet/minecraft/world/ServerWorldAccess;Lnet/minecraft/world/LocalDifficulty;Lnet/minecraft/entity/SpawnReason;Lnet/minecraft/entity/EntityData;Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/entity/EntityData;"))
     private VillagerEntity finishConversion(VillagerEntity villager) {

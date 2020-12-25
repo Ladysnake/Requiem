@@ -2,6 +2,9 @@
   "replace": false,
   "values": [
     "#requiem:golems",
-    "#requiem:undead"
+    "#requiem:undead",
+    "requiem:cured_piglin",
+    "requiem:cured_piglin_brute",
+    "requiem:cured_villager"
   ]
 }

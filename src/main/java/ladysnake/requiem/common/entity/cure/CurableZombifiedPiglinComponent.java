@@ -35,6 +35,7 @@
 package ladysnake.requiem.common.entity.cure;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.common.entity.RequiemEntities;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
@@ -61,10 +62,10 @@ public class CurableZombifiedPiglinComponent extends SimpleCurableEntityComponen
     }
 
     protected @Nullable MobEntity createCuredEntity() {
-        @SuppressWarnings("unchecked") EntityType<? extends MobEntity> originalPiglinType1 = (EntityType<? extends MobEntity>) this.originalPiglinType;
-        if (originalPiglinType1 != null) {
+        @SuppressWarnings("unchecked") EntityType<? extends MobEntity> originalPiglinType = (EntityType<? extends MobEntity>) this.originalPiglinType;
+        if (originalPiglinType != null) {
             try {
-                return this.entity.method_29243(originalPiglinType1, true);
+                return this.entity.method_29243(RequiemEntities.CURED_PIGLIN_VARIANTS.getOrDefault(originalPiglinType, originalPiglinType), true);
             } catch (ClassCastException e) {
                 Requiem.LOGGER.error("[Requiem] Invalid original piglin type", e);
             }

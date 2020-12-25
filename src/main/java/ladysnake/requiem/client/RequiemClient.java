@@ -39,7 +39,8 @@ import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
 import ladysnake.requiem.client.network.ClientMessageHandler;
 import ladysnake.requiem.client.particle.CureParticle;
 import ladysnake.requiem.client.particle.GhostParticle;
-import ladysnake.requiem.client.render.entity.HorologistEntityRenderer;
+import ladysnake.requiem.client.render.entity.CuredPiglinEntityRenderer;
+import ladysnake.requiem.client.render.entity.CuredVillagerEntityRenderer;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
@@ -152,7 +153,9 @@ public final class RequiemClient implements ClientModInitializer {
     }
 
     private void registerEntityRenderers() {
-        EntityRendererRegistry.INSTANCE.register(RequiemEntities.HOROLOGIST, (r, it) -> new HorologistEntityRenderer(r));
+        EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_VILLAGER, (r, it) -> new CuredVillagerEntityRenderer(r, it.getResourceManager()));
+        EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_PIGLIN, (r, it) -> new CuredPiglinEntityRenderer(r, false));
+        EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_PIGLIN_BRUTE, (r, it) -> new CuredPiglinEntityRenderer(r, false));
     }
 
     private void initListeners() {
