@@ -54,6 +54,7 @@ public class RangedAttackAbility<T extends MobEntity & RangedAttackMob> extends 
     public boolean run(LivingEntity target) {
         if (!this.owner.world.isClient) {
             this.owner.attack(target, 1f);
+            this.beginCooldown();
         }
 
         return true;
