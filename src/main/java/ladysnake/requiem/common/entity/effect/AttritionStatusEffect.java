@@ -37,6 +37,7 @@ package ladysnake.requiem.common.entity.effect;
 import com.google.common.base.Preconditions;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
 import ladysnake.requiem.common.remnant.RemnantTypes;
@@ -115,6 +116,8 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
 
     @Override
     public boolean shouldStick(LivingEntity entity) {
-        return RemnantComponent.isVagrant(entity);
+        if (RemnantComponent.isVagrant(entity)) return true;
+        PlayerEntity possessor = ((Possessable)entity).getPossessor();
+        return possessor != null && RemnantComponent.isVagrant(possessor);
     }
 }
