@@ -35,6 +35,7 @@
 package ladysnake.requiem.compat;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import nerdhub.cardinal.components.api.component.ComponentProvider;
 import net.hyper_pigeon.eldritch_mobs.EldritchMobsMod;
@@ -43,6 +44,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.TranslatableText;
 
 public final class EldritchMobsCompat implements PossessionStartCallback {
+    @CalledThroughReflection
     public static void init() {
         PossessionStartCallback.EVENT.register(Requiem.id("eldritch_mobs"), new EldritchMobsCompat());
     }

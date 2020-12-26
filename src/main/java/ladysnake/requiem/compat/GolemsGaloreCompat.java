@@ -39,6 +39,7 @@ import io.github.franiscoder.golemsgalore.entity.LaserGolemEntity;
 import io.github.franiscoder.golemsgalore.entity.ai.laser.FireLaserGoal;
 import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.RequiemPlugin;
+import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.common.entity.ability.TickingGoalAbility;
@@ -47,6 +48,7 @@ import net.minecraft.entity.LivingEntity;
 
 public final class GolemsGaloreCompat implements RequiemPlugin {
 
+    @CalledThroughReflection
     public static void init() {
         RequiemCompatibilityManager.<LaserGolemEntity>findEntityType(GolemsGalore.id("laser_golem"), object -> {
             RequiemApi.registerPlugin(new GolemsGaloreCompat(object));

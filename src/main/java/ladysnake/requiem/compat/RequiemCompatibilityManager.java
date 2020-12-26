@@ -50,21 +50,21 @@ import java.util.function.Consumer;
 public final class RequiemCompatibilityManager {
     public static void init() {
         try {
-            load("eldritch_mobs", EldritchMobsCompat::init);
-            load("the_bumblezone", BumblezoneCompat::init);
-            load("origins", OriginsCompat::init);
-            load("golemsgalore", GolemsGaloreCompat::init);
-            load("haema", HaemaCompat::init);
-            load("snowmercy", SnowMercyCompat::init);
+            load("eldritch_mobs", EldritchMobsCompat.class);
+            load("the_bumblezone", BumblezoneCompat.class);
+            load("origins", OriginsCompat.class);
+            load("golemsgalore", GolemsGaloreCompat.class);
+            load("haema", HaemaCompat.class);
+            load("snowmercy", SnowMercyCompat.class);
         } catch (Throwable t) {
             Requiem.LOGGER.error("[Requiem] Failed to load compatibility hooks", t);
         }
     }
 
-    public static void load(String modId, ThrowingRunnable action) {
+    public static void load(String modId, Class<?> action) {
         try {
             if (FabricLoader.getInstance().isModLoaded(modId)) {
-                action.run();
+                action.getMethod("init").invoke(null);
             }
         } catch (Throwable t) {
             Requiem.LOGGER.error("[Requiem] Failed to load compatibility hooks for {}", modId, t);

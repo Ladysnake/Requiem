@@ -38,6 +38,7 @@ import com.williambl.haema.component.VampireComponent;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 
 public final class HaemaCompat {
@@ -47,6 +48,7 @@ public final class HaemaCompat {
     public static final ComponentKey<ComponentDataHolder<VampireComponent>> HOLDER_KEY =
         ComponentRegistry.getOrCreate(Requiem.id("haema_holder"), ((Class<ComponentDataHolder<VampireComponent>>) (Class<?>) ComponentDataHolder.class));
 
+    @CalledThroughReflection
     public static void init() {
         RemnantStateChangeCallback.EVENT.register((player, state) -> {
             if (!player.world.isClient) {

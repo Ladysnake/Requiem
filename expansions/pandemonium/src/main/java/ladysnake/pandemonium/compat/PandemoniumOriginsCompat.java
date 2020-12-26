@@ -35,9 +35,11 @@
 package ladysnake.pandemonium.compat;
 
 import ladysnake.pandemonium.api.event.PlayerShellEvents;
+import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.compat.OriginsCompat;
 
 public final class PandemoniumOriginsCompat {
+    @CalledThroughReflection
     public static void init() {
         PlayerShellEvents.PLAYER_SPLIT.register((whole, soul, playerShell, playerData) -> {
             OriginsCompat.HOLDER_KEY.get(playerShell).storeData(whole);

@@ -35,6 +35,7 @@
 package ladysnake.requiem.compat;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.Blocks;
@@ -58,6 +59,7 @@ public final class BumblezoneCompat implements UseBlockCallback {
 
     private final Consumer<PlayerEntity> tpOutOfBz;
 
+    @CalledThroughReflection
     public static void init() throws NoSuchMethodException {
         Method teleportOutOfBz = PlayerTeleportation.class.getDeclaredMethod("teleportOutOfBz", PlayerEntity.class);
         teleportOutOfBz.setAccessible(true);

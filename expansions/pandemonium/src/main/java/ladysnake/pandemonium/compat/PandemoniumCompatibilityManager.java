@@ -45,7 +45,7 @@ import net.fabricmc.loader.api.FabricLoader;
 public final class PandemoniumCompatibilityManager {
     public static void init() {
         try {
-            RequiemCompatibilityManager.load("origins", PandemoniumOriginsCompat::init);
+            RequiemCompatibilityManager.load("origins", PandemoniumOriginsCompat.class);
         } catch (Throwable t) {
             Requiem.LOGGER.error("[Pandemonium] Failed to load compatibility hooks", t);
         }
