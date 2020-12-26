@@ -2,40 +2,79 @@
 Version 1.4.0
 ------------------------------------------------------
 ### The Chilly Shades Update
+
 **Additions**
 - Added the Wandering Spirit remnant state
     - Wandering spirits are a variant of remnant players that cannot regenerate a player body
-    - They can however leave a mob at any time without killing it
-
-**Changes**
-- Some mobs get cured into a new mob instead of being assimilated into a player body
+    - They can however leave a mob at any time without killing it using the Dissociation keybind
+    - They also cure attrition on their own after enough time spent possessing a body
+        - In hardcore, leaving the body will give you back the attrition
+- Added an Opus Daemonium to become a Wandering Spirit
+    - Type "Ad Vitam Vagrate" as a sentence into an empty Opus to turn it into an Opus Daemonium of Banishment
+- Some mobs now get cured into a new mob instead of being assimilated into a player body
     - Zombie villagers get cured into possessable villagers
     - Zombified piglins get cured into piglins
         - Zombified brutes go back to being brutes after the cure
-- The `/requiem remnant set` command can now use any ID
+        - Cured piglins are immune to overworld zombification
+- Incorporeal players now have free night vision
+- Added the Totem of Skeletonization (currently unobtainable)
+    - When you die while holding a Totem of Skeletonization, you revive as a skeleton
+    - This effect also applies to possessed mobs
+
+**Changes**
+- The `/requiem remnant set` command can now use remnant type identifiers
+- Using an Opus Daemonium during the curing process of a possessed mob will now expedite it on top of the usual effect
+- You can now dissociate from golems at any time using the Dissociation keybind
+- Changed the texture for locked slots while possessing a mob or playing as a free soul
+- Functional tags are now organized into folders
+- Swapping all bones of a wither skeleton may now leave you with its head
+- Golems and undead mobs (except the drowned) now sink in water
+- Snow golems can now shoot snowballs through direct attack on top of indirect use
+- Tweaked the texture for the ability target indicator
 
 **Mod Compatibility**
-- When dissociated from a player body, your origin now gets temporarily changed to Vagrant
+- Snow Mercy: All weaponized snow golems can now be possessed. May the festivities start!
+- Origins: When dissociated from a player body, your origin now gets temporarily changed to Vagrant
+  - The vagrant origin gives absolutely no power, it's just there to tell you why you can't use them
+- Origins: Added the Wandering Spirit as an origin (on the origin layer, as it effectively prevents you from using another origin's powers)
+- Haema: vampirism is now disabled when vagrant (out of a player body)
+- BetterEnd/BetterNether: now marked as conflicting because they break the Supercrafter ability
 
 **Fixes**
 - Fixed a random crash at launch with Bedrockify
 - Fixed doctor4t's capitalization in fabric.mod.json
-- The API jar is once more available on Bintray
-- Possibly fixed an issue where player attributes (notably speed) would get funky values when reviving
+- Possibly? fixed an issue where player attributes (notably speed) would get funky values when reviving
 - Fixed Opus Daemonium items not having the enchantment glint
+- Fixed Attrition not displaying immediately after respawn
+- Fixed the Dissociation (ethereal fracture) keybind localization
+- Fixed absorption hearts not displaying while possessing an entity
+- Fixed armor-less possessed mobs being able to equip armor through right-click
+- Fixed attrition flashing out of existence periodically during possession
+
+**API**
+- The API jar is once more available on Bintray
+- `isSoul`/`setSoul` methods have been renamed to `isVagrant`/`setVagrant`
+- A bunch of experimental methods have been added, no forward compatibility guarantee for those
 
 #### Pandemonium
 **Additions**
 - Wandering spirits can take over player shells
 
+**Changes**
+- Vexes no longer have an inventory and armor, only held items
+- Player shells will now increment the attrition of the corresponding player when killed
+
 **Mod Compatibility**
-- Player shells now store a player's Origin
+- Origins: Player shells now store a player's origin
     - Origins' graphical effects are visible on the shell
+- Haema: Player shells now store a player's vampirism status
 
 **Fixes**
 - Fixed some data being overwritten when merging with a player shell
 - Impersonation through body swapping now works more or less as intended
 - Players merging with a shell now get properly teleported to the shell's location
+- Fixed piglins and villagers being literally braindead after possession stops
+- Fixed ranged attacks not triggering the ability cooldown
 
 ------------------------------------------------------
 Version 1.3.0
