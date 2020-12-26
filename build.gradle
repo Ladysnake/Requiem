@@ -123,11 +123,11 @@ allprojects {
         publish = true //[Default: false] Whether version should be auto published after an upload
         pkg {
             repo = 'mods'
-            name = project.name
+            name = rootProject.name
             userOrg = 'ladysnake'
             version {
-                name = project.version
-                vcsTag = project.version
+                name = rootProject.version
+                vcsTag = rootProject.version
                 released  = new Date()
             }
         }
