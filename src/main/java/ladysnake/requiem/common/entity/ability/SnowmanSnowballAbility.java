@@ -40,7 +40,7 @@ import net.minecraft.sound.SoundEvents;
 
 public class SnowmanSnowballAbility<T extends LivingEntity> extends IndirectAbilityBase<T> {
     public SnowmanSnowballAbility(T owner) {
-        super(owner, 5);
+        super(owner, 20);
     }
 
     @Override

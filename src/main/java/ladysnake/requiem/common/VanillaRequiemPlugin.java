@@ -54,10 +54,7 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.*;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
-import ladysnake.requiem.common.entity.ability.AutoAimAbility;
-import ladysnake.requiem.common.entity.ability.ShulkerPeekAbility;
-import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
-import ladysnake.requiem.common.entity.ability.SnowmanSnowballAbility;
+import ladysnake.requiem.common.entity.ability.*;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
@@ -78,6 +75,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.SpiderEntity;
+import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -251,7 +249,9 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             .directAttack(ShulkerShootAbility::new)
             .indirectAttack(shulker -> new AutoAimAbility<>(shulker, AbilityType.ATTACK, 16.0, 4.0))
             .indirectInteract(ShulkerPeekAbility::new).build());
-        abilityRegistry.register(EntityType.SNOW_GOLEM, MobAbilityConfig.builder().indirectInteract(SnowmanSnowballAbility::new).build());
+        abilityRegistry.register(EntityType.SNOW_GOLEM, MobAbilityConfig.<SnowGolemEntity>builder()
+            .directAttack(e -> new RangedAttackAbility<>(e, 20, 10))
+            .indirectInteract(SnowmanSnowballAbility::new).build());
     }
 
     @Override
