@@ -46,16 +46,14 @@ import ladysnake.requiem.common.item.OpusDemoniumItem;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
@@ -66,11 +64,10 @@ import static ladysnake.requiem.common.network.RequiemNetworking.*;
 public class ServerMessageHandling {
 
     public static void init() {
-        ServerSidePacketRegistry.INSTANCE.register(USE_DIRECT_ABILITY, (context, buf) -> {
+        ServerPlayNetworking.registerGlobalReceiver(USE_DIRECT_ABILITY, (server, player, handler, buf, responseSender) -> {
             AbilityType type = buf.readEnumConstant(AbilityType.class);
             int entityId = buf.readVarInt();
-            context.getTaskQueue().execute(() -> {
-                PlayerEntity player = context.getPlayer();
+            server.execute(() -> {
                 MobAbilityController abilityController = MobAbilityController.get(player);
                 Entity targetedEntity = player.world.getEntityById(entityId);
 
@@ -83,12 +80,11 @@ public class ServerMessageHandling {
                 MobAbilityController.KEY.sync(player);
             });
         });
-        ServerSidePacketRegistry.INSTANCE.register(USE_INDIRECT_ABILITY, (context, buf) -> {
+        ServerPlayNetworking.registerGlobalReceiver(USE_INDIRECT_ABILITY, (server, player, handler, buf, responseSender) -> {
             AbilityType type = buf.readEnumConstant(AbilityType.class);
-            context.getTaskQueue().execute(() -> MobAbilityController.get(context.getPlayer()).useIndirect(type));
+            server.execute(() -> MobAbilityController.get(player).useIndirect(type));
         });
-        ServerSidePacketRegistry.INSTANCE.register(ETHEREAL_FRACTURE, (context, buf) -> context.getTaskQueue().execute(() -> {
-            ServerPlayerEntity player = (ServerPlayerEntity) context.getPlayer();
+        ServerPlayNetworking.registerGlobalReceiver(ETHEREAL_FRACTURE, (server, player, handler, buf, responseSender) -> server.execute(() -> {
             RemnantComponent remnantState = RemnantComponent.get(player);
 
             if (remnantState.getRemnantType().isDemon()) {
@@ -102,13 +98,12 @@ public class ServerMessageHandling {
                 }
             }
         }));
-        ServerSidePacketRegistry.INSTANCE.register(OPUS_UPDATE, (context, buf) -> {
+        ServerPlayNetworking.registerGlobalReceiver(OPUS_UPDATE, (server, player, handler, buf, responseSender) -> {
             String content = buf.readString(32767);
             boolean sign = buf.readBoolean();
             RemnantType type = sign ? RemnantTypes.get(buf.readIdentifier()) : null;
             Hand hand = buf.readEnumConstant(Hand.class);
-            context.getTaskQueue().execute(() -> {
-                PlayerEntity player = context.getPlayer();
+            server.execute(() -> {
                 ItemStack book = player.getStackInHand(hand);
                 if (book.getItem() != RequiemItems.OPUS_DEMONIUM) {
                     return;
@@ -123,7 +118,7 @@ public class ServerMessageHandling {
                         player.experienceProgress = 0.0F;
                         player.totalExperience = 0;
                     }
-                    ((ServerPlayerEntity)player).networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(player.experienceProgress, player.experienceLevel, player.experienceLevel));
+                    player.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(player.experienceProgress, player.experienceLevel, player.experienceLevel));
                 } else {
                     ListTag pages = new ListTag();
                     pages.add(StringTag.of(content));
@@ -131,18 +126,17 @@ public class ServerMessageHandling {
                 }
             });
         });
-        ServerSidePacketRegistry.INSTANCE.register(DIALOGUE_ACTION, (context, buffer) -> {
-            Identifier action = buffer.readIdentifier();
-            context.getTaskQueue().execute(() -> DialogueTracker.get(context.getPlayer()).handleAction(action));
+        ServerPlayNetworking.registerGlobalReceiver(DIALOGUE_ACTION, (server, player, handler, buf, responseSender) -> {
+            Identifier action = buf.readIdentifier();
+            server.execute(() -> DialogueTracker.get(player).handleAction(action));
         });
-        ServerSidePacketRegistry.INSTANCE.register(HUGGING_WALL, (context, buf) -> {
+        ServerPlayNetworking.registerGlobalReceiver(HUGGING_WALL, (server, player, handler, buf, responseSender) -> {
             boolean yes = buf.readBoolean();
             // Possible failure points: the player may not actually be against a block, or it may not have the right movement
             // we do not handle those right now, as movement is entirely done clientside
-            context.getTaskQueue().execute(() -> MovementAlterer.get(context.getPlayer()).hugWall(yes));
+            server.execute(() -> MovementAlterer.get(player).hugWall(yes));
         });
-        ServerSidePacketRegistry.INSTANCE.register(OPEN_CRAFTING_MENU, (context, buf) -> context.getTaskQueue().execute(() -> {
-            PlayerEntity player = context.getPlayer();
+        ServerPlayNetworking.registerGlobalReceiver(OPEN_CRAFTING_MENU, (server, player, handler, buf, responseSender) -> server.execute(() -> {
             MobEntity possessed = PossessionComponent.get(player).getPossessedEntity();
             if (possessed != null && RequiemEntityTypeTags.SUPERCRAFTERS.contains(possessed.getType())) {
                 player.openHandledScreen(Blocks.CRAFTING_TABLE.getDefaultState().createScreenHandlerFactory(player.world, player.getBlockPos()));

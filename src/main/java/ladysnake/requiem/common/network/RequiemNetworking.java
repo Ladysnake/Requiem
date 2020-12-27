@@ -40,7 +40,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.common.remnant.RemnantTypes;
-import net.fabricmc.fabric.api.server.PlayerStream;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -90,7 +90,9 @@ public class RequiemNetworking {
 
     public static void sendToAllTrackingIncluding(Entity tracked, Packet<?> message) {
         if (tracked.world instanceof ServerWorld) {
-            PlayerStream.watching(tracked).forEach(p -> sendToPlayer((ServerPlayerEntity) p, message));
+            for (ServerPlayerEntity p : PlayerLookup.tracking(tracked)) {
+                sendToPlayer(p, message);
+            }
             if (tracked instanceof ServerPlayerEntity) {
                 sendToPlayer((ServerPlayerEntity) tracked, message);
             }

@@ -42,7 +42,7 @@ import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.RemnantTypes;
-import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
@@ -72,14 +72,14 @@ public class ClientMessageHandler {
     }
 
     public void init() {
-        ClientSidePacketRegistry.INSTANCE.register(OPUS_USE, ((context, buf) -> {
+        ClientPlayNetworking.registerGlobalReceiver(OPUS_USE, ((client, handler, buf, responseSender) -> {
             int remnantId = buf.readVarInt();
             boolean showBook = buf.readBoolean();
             RemnantType remnantType = RemnantTypes.get(remnantId);
             boolean cure = !remnantType.isDemon();
 
-            context.getTaskQueue().execute(() -> {
-                PlayerEntity player = context.getPlayer();
+            client.execute(() -> {
+                PlayerEntity player = Objects.requireNonNull(client.player);
                 if (showBook) {
                     mc.particleManager.addEmitter(player, ParticleTypes.PORTAL, 120);
                     mc.gameRenderer.showFloatingItem(remnantType.getConversionBook(player));
@@ -91,28 +91,28 @@ public class ClientMessageHandler {
                 }
             });
         }));
-        ClientSidePacketRegistry.INSTANCE.register(DATA_SYNC, (context, buffer) -> {
+        ClientPlayNetworking.registerGlobalReceiver(DATA_SYNC, (client, handler, buf, responseSender) -> {
             // We intentionally do not use the context's task queue directly
             // First, we make each sub data manager process its data, then we apply it synchronously with the task queue
             Map<Identifier, SubDataManager<?>> map = SubDataManagerHelper.getClientHelper().streamDataManagers().collect(Collectors.toMap(IdentifiableResourceReloadListener::getFabricId, Function.identity()));
-            int nbManagers = buffer.readVarInt();
+            int nbManagers = buf.readVarInt();
             for (int i = 0; i < nbManagers; i++) {
-                Identifier id = buffer.readIdentifier();
+                Identifier id = buf.readIdentifier();
                 SubDataManager<?> manager = Objects.requireNonNull(map.get(id), "Unknown sub data manager " + id);
                 Requiem.LOGGER.info("[Requiem] Received data for {}", manager.getFabricId());
-                syncSubDataManager(buffer, manager, context.getTaskQueue());
+                syncSubDataManager(buf, manager, client);
             }
         });
-        ClientSidePacketRegistry.INSTANCE.register(ETHEREAL_ANIMATION, ((context, buf) -> context.getTaskQueue().execute(() -> {
+        ClientPlayNetworking.registerGlobalReceiver(ETHEREAL_ANIMATION, (client, handler, buf, responseSender) -> client.execute(() -> {
             MinecraftClient mc = this.mc;
             assert mc.player != null;
             mc.player.world.playSound(mc.player, mc.player.getX(), mc.player.getY(), mc.player.getZ(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2, 0.6f);
             this.rc.getRequiemFxRenderer().beginEtherealAnimation();
-        })));
-        ClientSidePacketRegistry.INSTANCE.register(BODY_CURE, ((context, buf) -> {
+        }));
+        ClientPlayNetworking.registerGlobalReceiver(BODY_CURE, (client, handler, buf, responseSender) -> {
             int entityId = buf.readVarInt();
-            context.getTaskQueue().execute(() -> {
-                Entity entity = context.getPlayer().world.getEntityById(entityId);
+            client.execute(() -> {
+                Entity entity = handler.getWorld().getEntityById(entityId);
                 if (entity != null) {
                     for(int i = 0; i < 40; ++i) {
                         double vx = entity.world.random.nextGaussian() * 0.05D;
@@ -122,12 +122,12 @@ public class ClientMessageHandler {
                     }
                 }
             });
-        }));
-        ClientSidePacketRegistry.INSTANCE.register(CONSUME_RESURRECTION_ITEM, (context, buf) -> {
+        });
+        ClientPlayNetworking.registerGlobalReceiver(CONSUME_RESURRECTION_ITEM, (client, handler, buf, responseSender) -> {
             int entityId = buf.readVarInt();
             ItemStack stack = buf.readItemStack();
-            context.getTaskQueue().execute(() -> {
-                World world = context.getPlayer().world;
+            client.execute(() -> {
+                World world = handler.getWorld();
                 Entity entity = world.getEntityById(entityId);
                 if (entity != null) {
                     world.playSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0F, 1.0F, false);
