@@ -131,6 +131,7 @@ public class PlayerAbilityController implements MobAbilityController, AutoSynced
 
         this.targets.clear();
         this.sortAbilities();
+        KEY.sync(this.player);
     }
 
     private void sortAbilities() {
