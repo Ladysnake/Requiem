@@ -52,9 +52,10 @@ public final class RequiemCompatibilityManager {
         try {
             load("eldritch_mobs", EldritchMobsCompat.class);
             load("the_bumblezone", BumblezoneCompat.class);
+            // Haema must be loaded before Origins, because vampire data must be stored before the origin gets cleared
+            load("haema", HaemaCompat.class);
             load("origins", OriginsCompat.class);
             load("golemsgalore", GolemsGaloreCompat.class);
-            load("haema", HaemaCompat.class);
             load("snowmercy", SnowMercyCompat.class);
         } catch (Throwable t) {
             Requiem.LOGGER.error("[Requiem] Failed to load compatibility hooks", t);

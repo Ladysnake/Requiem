@@ -35,12 +35,12 @@
 package ladysnake.pandemonium.compat;
 
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
-import ladysnake.requiem.compat.OriginsCompat;
+import ladysnake.requiem.compat.HaemaCompat;
 
-public final class PandemoniumOriginsCompat {
+public final class PandemoniumHaemaCompat {
     @CalledThroughReflection
     public static void init() {
-        PandemoniumCompatibilityManager.registerShellDataCallbacks(OriginsCompat.HOLDER_KEY);
+        PandemoniumCompatibilityManager.registerShellDataCallbacks(HaemaCompat.HOLDER_KEY);
     }
 
 }

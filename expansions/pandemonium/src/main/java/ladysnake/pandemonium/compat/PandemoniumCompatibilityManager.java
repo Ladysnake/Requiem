@@ -34,9 +34,13 @@
  */
 package ladysnake.pandemonium.compat;
 
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
+import ladysnake.pandemonium.api.event.PlayerShellEvents;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.compat.ComponentDataHolder;
 import ladysnake.requiem.compat.HaemaCompat;
 import ladysnake.requiem.compat.OriginsCompat;
 import ladysnake.requiem.compat.RequiemCompatibilityManager;
@@ -45,6 +49,8 @@ import net.fabricmc.loader.api.FabricLoader;
 public final class PandemoniumCompatibilityManager {
     public static void init() {
         try {
+            // Haema must be loaded before Origins, because vampire data must be stored before the origin gets cleared
+            RequiemCompatibilityManager.load("haema", PandemoniumHaemaCompat.class);
             RequiemCompatibilityManager.load("origins", PandemoniumOriginsCompat.class);
         } catch (Throwable t) {
             Requiem.LOGGER.error("[Pandemonium] Failed to load compatibility hooks", t);
@@ -58,5 +64,18 @@ public final class PandemoniumCompatibilityManager {
         if (FabricLoader.getInstance().isModLoaded("haema")) {
             registry.registerFor(PlayerShellEntity.class, HaemaCompat.HOLDER_KEY, shell -> new PlayerShellComponentDataHolder<>(shell, HaemaCompat.VAMPIRE_KEY, HaemaCompat.HOLDER_KEY));
         }
+    }
+
+    public static <C extends ComponentV3> void registerShellDataCallbacks(ComponentKey<ComponentDataHolder<C>> holderKey) {
+        PlayerShellEvents.PLAYER_SPLIT.register((whole, soul, playerShell, playerData) -> {
+            holderKey.get(playerShell).storeData(whole);
+        });
+
+        PlayerShellEvents.PLAYER_MERGED.register((player, playerShell, shellProfile, playerData) -> {
+            // First, store a backup of the player's actual origin
+            holderKey.get(player).storeData(player);
+            // Then, give the player the shell's origin
+            holderKey.get(playerShell).restoreData(player);
+        });
     }
 }
