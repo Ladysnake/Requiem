@@ -1,4 +1,33 @@
 ------------------------------------------------------
+Version 1.4.1
+------------------------------------------------------
+**Changes**
+- Fire immune mobs no longer show the fire overlay when possessed
+- Incorporeal players can no longer get on fire
+- Incorporeal players can no longer push away other entities
+- Incorporeal players now spawn fewer particles when falling
+
+**Mod Compatibility**
+- Haema+Origins: Fixed a bug where becoming incorporeal with Haema's Vampire origin would clear the vampire status forever
+
+**Fixes**
+- Fixed players respawning in the Overworld instead of their death dimension
+- Fixed naturally spawned zombified piglins reverting to regular piglins instead of cured piglins
+- Fixed a desync issue with ability cooldowns
+- Fixed wandering spirits not respawning correctly when they died after getting a player body somehow
+
+**API**
+- Possibly fixed some remapping issues when depending on Requiem
+
+#### Pandemonium
+**Changes**
+- Striders can now walk on lava
+- The witch attack range has been tweaked to reflect the actual range
+
+**Fixes**
+- Fixed witches' instant health never applying
+
+------------------------------------------------------
 Version 1.4.0
 ------------------------------------------------------
 ### The Chilly Shades Update
