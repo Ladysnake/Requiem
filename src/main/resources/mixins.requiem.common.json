@@ -59,6 +59,7 @@
     "possession.possessor.PossessorPlayerEntityMixin",
     "possession.possessor.PossessorServerPlayerEntityMixin",
     "possession.possessor.PotionItemMixin",
+    "possession.possessor.StatusEffectInstanceMixin",
     "remnant.AbstractBlockStateMixin",
     "remnant.DamageTrackerMixin",
     "remnant.EntityPredicatesMixin",
