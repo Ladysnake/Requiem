@@ -49,6 +49,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -82,6 +83,14 @@ public abstract class LivingEntityMixin extends Entity {
         } else if (this instanceof MobResurrectable) {
             ((MobResurrectable) this).spawnResurrectionEntity();
         }
+    }
+
+    @ModifyArg(method = "fall", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;spawnParticles(Lnet/minecraft/particle/ParticleEffect;DDDIDDDD)I"))
+    private int spawnFewerFallParticles(int amount) {
+        if (RemnantComponent.isIncorporeal(this)) {
+            return amount / 4;
+        }
+        return amount;
     }
 
     /**
