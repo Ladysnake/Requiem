@@ -54,7 +54,7 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -63,7 +63,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(LivingEntity.class)
 public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
 
-    @Shadow public abstract @Nullable EntityAttributeInstance getAttributeInstance(EntityAttribute attribute);
+    @Invoker("getAttributeInstance")
+    public abstract @Nullable EntityAttributeInstance requiem$getAttributeInstance(EntityAttribute attribute);
 
     @ModifyArg(method = "swimUpward", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;add(DDD)Lnet/minecraft/util/math/Vec3d;"), index = 1)
     private double updateSwimVelocity(double upwardsVelocity) {
@@ -118,16 +119,16 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
         cancellable = true
     )
     private void onFall(double fallY, boolean onGround, BlockState floorBlock, BlockPos floorPos, CallbackInfo info) {
-        if (world.isClient) return;
+        if (this.requiem$getWorld().isClient) return;
 
         Entity possessed = PossessionComponent.getPossessedEntity((Entity) (Object) this);
         if (possessed != null) {
-            possessed.fallDistance = this.fallDistance;
+            possessed.fallDistance = this.requiem$getFallDistance();
             possessed.copyPositionAndRotation((Entity) (Object) this);
             possessed.move(MovementType.SELF, Vec3d.ZERO);
             // We know that possessed is a LivingEntity, Mixin will translate to that type automatically
             //noinspection ConstantConditions
-            ((PossessorLivingEntityMixin) (Object) possessed).fall(fallY, onGround, floorBlock, floorPos);
+            ((PossessorLivingEntityMixin) (Object) possessed).requiem$fall(fallY, onGround, floorBlock, floorPos);
         }
     }
 

@@ -86,7 +86,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
         // Replace every registered attribute
         for (EntityAttribute attribute : Registry.ATTRIBUTE) {
             // Note: this fills the attribute map for the player, whether this is an issue is to be determined
-            EntityAttributeInstance current = this.getAttributeInstance(attribute);
+            EntityAttributeInstance current = this.requiem$getAttributeInstance(attribute);
             if (current != null) {
                 ((NonDeterministicAttribute) current).addFinalModifier(new PossessionDelegatingModifier(current.getAttribute(), PossessionComponent.KEY.get(this)));
             }
@@ -97,9 +97,9 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
     private void travel(CallbackInfo info) {
         @SuppressWarnings("ConstantConditions") Entity possessed = PossessionComponent.getPossessedEntity((Entity) (Object) this);
         if (possessed != null && ((VariableMobilityEntity) possessed).requiem_isImmovable()) {
-            if (!world.isClient && (this.getX() != possessed.getX() || this.getY() != possessed.getY() || this.getZ() != possessed.getZ())) {
+            if (!this.requiem$getWorld().isClient && (this.requiem$getX() != possessed.getX() || this.requiem$getY() != possessed.getY() || this.requiem$getZ() != possessed.getZ())) {
                 ServerPlayNetworkHandler networkHandler = ((ServerPlayerEntity) (Object) this).networkHandler;
-                networkHandler.teleportRequest(possessed.getX(), possessed.getY(), possessed.getZ(), this.yaw, this.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
+                networkHandler.teleportRequest(possessed.getX(), possessed.getY(), possessed.getZ(), this.requiem$getYaw(), this.requiem$getPitch(), EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
                 networkHandler.syncWithPlayerPosition();
             }
             info.cancel();
@@ -138,7 +138,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
     private void addExhaustion(float exhaustion, CallbackInfo ci) {
         Possessable possessed = (Possessable) PossessionComponent.KEY.get(this).getPossessedEntity();
         if (possessed != null && possessed.isRegularEater()) {
-            if (!this.world.isClient) {
+            if (!this.requiem$getWorld().isClient) {
                 this.getHungerManager().addExhaustion(exhaustion);
             }
         }
@@ -193,7 +193,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
 
     @Override
     protected void requiem$canClimb(CallbackInfoReturnable<Boolean> cir) {
-        if (!cir.getReturnValueZ() && this.horizontalCollision) {
+        if (!cir.getReturnValueZ() && this.requiem$isCollidingHorizontally()) {
             cir.setReturnValue(MovementAlterer.KEY.get(this).canClimbWalls());
         }
     }

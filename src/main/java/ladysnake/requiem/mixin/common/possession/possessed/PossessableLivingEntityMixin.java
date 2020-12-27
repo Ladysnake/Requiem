@@ -54,7 +54,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -70,7 +69,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -122,10 +120,6 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     @Shadow
     @Nullable
     public abstract LivingEntity getAttacker();
-
-    @Shadow
-    @Final
-    private AttributeContainer attributes;
 
     @Shadow
     public abstract boolean isUsingItem();

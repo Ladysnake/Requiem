@@ -39,40 +39,41 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
 public abstract class PossessorEntityMixin {
-    @Shadow
-    public float fallDistance;
-    @Shadow
-    public World world;
 
-    @Shadow
-    protected abstract void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition);
+    @Invoker("getX")
+    protected abstract double requiem$getX();
 
-    @Shadow
-    public abstract double getX();
+    @Invoker("getY")
+    protected abstract double requiem$getY();
 
-    @Shadow
-    public abstract double getY();
+    @Invoker("getZ")
+    protected abstract double requiem$getZ();
 
-    @Shadow
-    public abstract double getZ();
+    @Accessor("yaw")
+    protected abstract float requiem$getYaw();
 
-    @Shadow
-    public float yaw;
+    @Accessor("pitch")
+    public abstract float requiem$getPitch();
 
-    @Shadow
-    public float pitch;
+    @Accessor("horizontalCollision")
+    protected abstract boolean requiem$isCollidingHorizontally();
 
-    @Shadow
-    public boolean horizontalCollision;
+    @Accessor("fallDistance")
+    protected abstract float requiem$getFallDistance();
 
-    @Shadow protected boolean onGround;
+    @Accessor("world")
+    protected abstract World requiem$getWorld();
+
+    @Invoker("fall")
+    protected abstract void requiem$fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition);
 
     /**
      * Delegates the air getter for possessing entities.
