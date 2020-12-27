@@ -67,11 +67,6 @@ public class WandererRemnantState extends MutableRemnantState {
     }
 
     @Override
-    public void prepareRespawn(ServerPlayerEntity original, boolean lossless) {
-        // NO-OP
-    }
-
-    @Override
     public void serverTick() {
         MobEntity possessedEntity = PossessionComponent.get(this.player).getPossessedEntity();
         ServerPlayerEntity player = (ServerPlayerEntity) this.player;
