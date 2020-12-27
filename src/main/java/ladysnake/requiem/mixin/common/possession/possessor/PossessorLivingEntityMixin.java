@@ -47,6 +47,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -62,7 +63,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(LivingEntity.class)
 public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
 
-    @Shadow @javax.annotation.Nullable public abstract EntityAttributeInstance getAttributeInstance(EntityAttribute attribute);
+    @Shadow public abstract @Nullable EntityAttributeInstance getAttributeInstance(EntityAttribute attribute);
 
     @ModifyArg(method = "swimUpward", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;add(DDD)Lnet/minecraft/util/math/Vec3d;"), index = 1)
     private double updateSwimVelocity(double upwardsVelocity) {
@@ -108,6 +109,11 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
 
     @Inject(method = "collides", at = @At("RETURN"), cancellable = true)
     protected void requiem$preventSoulsCollision(CallbackInfoReturnable<Boolean> info) {
+        // overridden by PossessorPlayerEntityMixin
+    }
+
+    @Inject(method = "canWalkOnFluid", at = @At("HEAD"), cancellable = true)
+    protected void requiem$canWalkOnFluid(Fluid fluid, CallbackInfoReturnable<Boolean> cir) {
         // overridden by PossessorPlayerEntityMixin
     }
 

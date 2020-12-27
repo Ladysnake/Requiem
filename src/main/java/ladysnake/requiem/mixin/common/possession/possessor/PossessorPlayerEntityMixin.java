@@ -56,6 +56,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
@@ -207,8 +208,17 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
 
     @Override
     protected void requiem$soulsAvoidTraps(CallbackInfoReturnable<Boolean> cir) {
-        //noinspection ConstantConditions
-        cir.setReturnValue(cir.getReturnValueZ() || RemnantComponent.isIncorporeal((Entity) (Object) this));
+        if (!cir.getReturnValueZ() && RemnantComponent.KEY.get(this).isIncorporeal()) {
+            cir.setReturnValue(true);
+        }
+    }
+
+    @Override
+    protected void requiem$canWalkOnFluid(Fluid fluid, CallbackInfoReturnable<Boolean> cir) {
+        MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
+        if (possessedEntity != null) {
+            cir.setReturnValue(possessedEntity.canWalkOnFluid(fluid));
+        }
     }
 
     @Inject(method = "getActiveEyeHeight", at = @At("HEAD"), cancellable = true)
