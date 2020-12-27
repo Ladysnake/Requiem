@@ -218,6 +218,9 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
         MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
         if (possessedEntity != null) {
             cir.setReturnValue(possessedEntity.isOnFire());
+        } else if (cir.getReturnValueZ() && RemnantComponent.KEY.get(this).isIncorporeal()) {
+            // Also prevent incorporeal players from burning
+            cir.setReturnValue(false);
         }
     }
 
