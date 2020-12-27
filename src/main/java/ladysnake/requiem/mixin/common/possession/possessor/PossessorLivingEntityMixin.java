@@ -107,11 +107,6 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
         // overridden by PossessorPlayerEntityMixin
     }
 
-    @Inject(method = "collides", at = @At("RETURN"), cancellable = true)
-    protected void requiem$preventSoulsCollision(CallbackInfoReturnable<Boolean> info) {
-        // overridden by PossessorPlayerEntityMixin
-    }
-
     @Inject(method = "canWalkOnFluid", at = @At("HEAD"), cancellable = true)
     protected void requiem$canWalkOnFluid(Fluid fluid, CallbackInfoReturnable<Boolean> cir) {
         // overridden by PossessorPlayerEntityMixin

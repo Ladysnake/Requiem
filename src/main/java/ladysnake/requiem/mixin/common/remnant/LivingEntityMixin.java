@@ -50,6 +50,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -92,6 +93,20 @@ public abstract class LivingEntityMixin extends Entity {
         if (RemnantComponent.isIncorporeal(this) && !world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
             this.dropStack(this.getStackInHand(this.getActiveHand()));
             this.setStackInHand(this.getActiveHand(), ItemStack.EMPTY);
+        }
+    }
+
+    @Inject(method = "collides", at = @At("RETURN"), cancellable = true)
+    private void requiem$preventTargetingSouls(CallbackInfoReturnable<Boolean> info) {
+        if (RemnantComponent.isVagrant(this)) {
+            info.setReturnValue(false);
+        }
+    }
+
+    @Inject(method = "pushAway", at = @At("HEAD"), cancellable = true)
+    private void stopPushingAway(Entity entity, CallbackInfo ci) {
+        if (RemnantComponent.isVagrant(this)) {
+            ci.cancel();
         }
     }
 }

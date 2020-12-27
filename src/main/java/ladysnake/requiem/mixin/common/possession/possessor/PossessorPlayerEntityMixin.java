@@ -199,17 +199,17 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
     }
 
     @Override
-    protected void requiem$preventSoulsCollision(CallbackInfoReturnable<Boolean> info) {
-        //noinspection ConstantConditions
-        if (RemnantComponent.isVagrant((Entity) (Object) this)) {
-            info.setReturnValue(false);
-        }
-    }
-
-    @Override
     protected void requiem$soulsAvoidTraps(CallbackInfoReturnable<Boolean> cir) {
-        if (!cir.getReturnValueZ() && RemnantComponent.KEY.get(this).isIncorporeal()) {
-            cir.setReturnValue(true);
+        if (!cir.getReturnValueZ()) {
+            if (RemnantComponent.KEY.get(this).isIncorporeal()) {
+                cir.setReturnValue(true);
+            } else {
+                MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
+
+                if (possessedEntity != null && possessedEntity.canAvoidTraps()) {
+                    cir.setReturnValue(true);
+                }
+            }
         }
     }
 
