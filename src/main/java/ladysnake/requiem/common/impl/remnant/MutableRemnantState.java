@@ -178,7 +178,7 @@ public class MutableRemnantState implements RemnantState {
 
     protected void copyGlobalPos(ServerPlayerEntity original) {
         ServerPlayerEntity clone = (ServerPlayerEntity) this.player;
-        ServerWorld previousWorld = clone.getServerWorld();
+        ServerWorld previousWorld = original.getServerWorld();
         clone.setWorld(previousWorld);
         clone.interactionManager.setWorld(previousWorld);
         clone.copyPositionAndRotation(original);
