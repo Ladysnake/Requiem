@@ -53,12 +53,17 @@ public final class HaemaCompat {
         RemnantStateChangeCallback.EVENT.register((player, state) -> {
             if (!player.world.isClient) {
                 if (state.isVagrant()) {
-                    HOLDER_KEY.get(player).storeData(player);
-                    VAMPIRE_KEY.get(player).setPermanentVampire(false);
-                    VAMPIRE_KEY.get(player).setVampire(false);
+                    VampireComponent vampireComponent = VAMPIRE_KEY.get(player);
+                    if (vampireComponent.isVampire()) {
+                        HOLDER_KEY.get(player).storeData(player);
+                        vampireComponent.setPermanentVampire(false);
+                        vampireComponent.setVampire(false);
+                    }
                 } else {
                     HOLDER_KEY.get(player).restoreData(player);
                 }
+
+                VAMPIRE_KEY.sync(player);
             }
         });
     }
