@@ -65,12 +65,17 @@ public class CurableZombifiedPiglinComponent extends SimpleCurableEntityComponen
         @SuppressWarnings("unchecked") EntityType<? extends MobEntity> originalPiglinType = (EntityType<? extends MobEntity>) this.originalPiglinType;
         if (originalPiglinType != null) {
             try {
-                return this.entity.method_29243(RequiemEntities.CURED_PIGLIN_VARIANTS.getOrDefault(originalPiglinType, originalPiglinType), true);
+                return this.entity.method_29243(getCuredVariant(originalPiglinType), true);
             } catch (ClassCastException e) {
                 Requiem.LOGGER.error("[Requiem] Invalid original piglin type", e);
             }
         }
-        return this.entity.method_29243(EntityType.PIGLIN, true);
+        return this.entity.method_29243(getCuredVariant(EntityType.PIGLIN), true);
+    }
+
+    private EntityType<? extends MobEntity> getCuredVariant(EntityType<? extends MobEntity> originalPiglinType) {
+        // TODO if the current dimension is piglin friendly, revert to originalPiglinType
+        return RequiemEntities.CURED_PIGLIN_VARIANTS.getOrDefault(originalPiglinType, originalPiglinType);
     }
 
     public void setOriginalPiglinType(EntityType<?> originalPiglinType) {
