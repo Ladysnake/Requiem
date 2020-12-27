@@ -128,10 +128,6 @@ public final class RequiemClientListener implements
                     timeBeforeDialogueGui = 20;
                 }
             }
-            MobEntity possessedEntity = PossessionComponent.get(client.player).getPossessedEntity();
-            if (possessedEntity != null && possessedEntity.isOnFire()) {
-                client.player.setOnFireFor(1);
-            }
         }
     }
 

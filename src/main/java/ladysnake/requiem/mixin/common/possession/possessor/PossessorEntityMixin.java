@@ -91,4 +91,9 @@ public abstract class PossessorEntityMixin {
     protected void requiem$soulsAvoidTraps(CallbackInfoReturnable<Boolean> cir) {
         // overridden by PossessorPlayerEntityMixin
     }
+
+    @Inject(method = "isOnFire", at = @At("HEAD"), cancellable = true)
+    protected void requiem$isOnFire(CallbackInfoReturnable<Boolean> cir) {
+        // overridden by PossessorPlayerEntityMixin
+    }
 }
