@@ -140,7 +140,7 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
                     player.incrementStat(Stats.USED.getOrCreateStat(totem.getItem()));
                     RequiemCriteria.USED_TOTEM.trigger(player, totem);
                     // can't pass the actual user to the packet since it's dying
-                    RequiemNetworking.sendItemConsumptionPacket(player, stack);
+                    RequiemNetworking.sendItemConsumptionPacket(player, totem);
                     this.found = true;
                     return true;
                 }
