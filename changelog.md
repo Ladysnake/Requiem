@@ -1,4 +1,13 @@
 ------------------------------------------------------
+Version 1.4.2
+------------------------------------------------------
+**Changes**
+- The (still unobtainable) skeletal totem now does the totem display effect on use
+
+**Fixes**
+- Fixed resurrection flat out not working since 1.4.0
+
+------------------------------------------------------
 Version 1.4.1
 ------------------------------------------------------
 **Changes**
