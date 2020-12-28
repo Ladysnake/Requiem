@@ -125,7 +125,7 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
     }
 
     private boolean tryUseConsumable(ServerPlayerEntity player, LivingEntity user) {
-        if (this.consumable == null) return false;
+        if (this.consumable == null) return true;
 
         Predicate<ItemStack> action = new Predicate<ItemStack>() {
             private boolean found;
