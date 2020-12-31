@@ -162,7 +162,7 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
     public Entity createEntity(World world) {
         Entity e = this.entityType.create(world);
         if (e != null && this.entityNbt != null) {
-            e.fromTag(this.entityNbt);
+            e.fromTag(this.entityNbt.copy());   // some entities may keep direct references to the passed NBT
         }
         return e;
     }
@@ -170,8 +170,8 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
     public static ResurrectionData deserialize(JsonObject json) {
         int priority = JsonHelper.getInt(json, "priority", 100);
         @Nullable ExtendedDamageSourcePredicate damagePredicate = ExtendedDamageSourcePredicate.deserialize(json.get("killing_blow"));
-        @Nullable EntityPredicate playerPredicate = EntityPredicate.fromJson(json.get("player"));
-        @Nullable EntityPredicate possessedPredicate = EntityPredicate.fromJson(json.get("possessed"));
+        @Nullable EntityPredicate playerPredicate = json.has("player") ? EntityPredicate.fromJson(json.get("player")) : null;
+        @Nullable EntityPredicate possessedPredicate = json.has("possessed") ? EntityPredicate.fromJson(json.get("possessed")) : null;
         @Nullable ItemPredicate consumable = json.has("consumable") ? ItemPredicate.fromJson(json.get("consumable")) : null;
 
         if (damagePredicate == null && playerPredicate == null && possessedPredicate == null && consumable == null) {
