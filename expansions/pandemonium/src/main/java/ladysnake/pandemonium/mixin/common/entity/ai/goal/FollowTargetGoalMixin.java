@@ -70,7 +70,7 @@ public abstract class FollowTargetGoalMixin extends TrackTargetGoal {
                     value = "FIELD",
                     opcode = Opcodes.PUTFIELD,
                     target = "Lnet/minecraft/entity/ai/goal/FollowTargetGoal;targetEntity:Lnet/minecraft/entity/LivingEntity;",
-                    ordinal = 1,
+                    ordinal = 0,    // Fun fact: despite the decompiled source indicating that the player branch is the second, it's actually the first
                     shift = AFTER
             )
     )
