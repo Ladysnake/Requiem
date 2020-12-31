@@ -17,6 +17,7 @@
     "attrition.LivingEntityMixin",
     "attrition.ServerPlayerEntityMixin",
     "attrition.StatusEffectInstanceMixin",
+    "data.LocationPredicateMixin",
     "event.ItemEntityMixin",
     "event.PlayerManagerMixin",
     "humanity.EnchantmentHelperMixin",

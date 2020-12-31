@@ -1,0 +1,19 @@
+{
+  "priority": 100,
+  "killing_blow": {
+    "name": "drown"
+  },
+  "player": {
+    "location": {
+      "requiem$biome_category": "ocean",
+      "light": {
+        "light": {
+          "max": 10
+        }
+      }
+    }
+  },
+  "entity": {
+    "type": "minecraft:drowned"
+  }
+}
