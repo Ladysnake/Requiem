@@ -1,11 +1,20 @@
 {
-    "priority": 80,
-    "killing_blow": {
-        "direct_entity": {
-            "type": "#requiem:zombies"
-        }
-    },
-    "entity": {
-        "type": "minecraft:zombie"
+  "priority": 80,
+  "killing_blow": {
+    "direct_entity": {
+      "type": "#requiem:zombies"
     }
+  },
+  "player": {
+    "location": {
+      "light": {
+        "light": {
+          "max": 8
+        }
+      }
+    }
+  },
+  "entity": {
+    "type": "minecraft:zombie"
+  }
 }
