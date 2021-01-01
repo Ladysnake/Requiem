@@ -4,6 +4,8 @@
   "plugin": "ladysnake.requiem.compat.RequiemCompatMixinPlugin",
   "required": false,
   "client": [
+    "firstperson.FeatureRendererMixin",
+    "firstperson.LivingEntityRendererMixin",
     "healthoverlay.HealthRendererMixin"
   ],
   "mixins": [

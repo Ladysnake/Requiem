@@ -32,33 +32,35 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.compat;
+package ladysnake.requiem.compat.mixin.firstperson;
 
-import net.fabricmc.loader.api.FabricLoader;
+import ladysnake.requiem.compat.FirstPersonCompat;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.feature.FeatureRenderer;
+import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.Identifier;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-public final class MixinCompatBuilder {
-    private static final String ROOT = "ladysnake.requiem.compat.mixin.";
-    private final Set<String> mixins = new LinkedHashSet<>();
-    private final FabricLoader loader = FabricLoader.getInstance();
-
-    public MixinCompatBuilder add(String modId, String path) {
-        if (loader.isModLoaded(modId)) {
-            this.mixins.add(ROOT + modId + "." + path);
+@Mixin(FeatureRenderer.class)
+public abstract class FeatureRendererMixin {
+    @Inject(method = "renderModel", at = @At("HEAD"), cancellable = true)
+    private static <T extends LivingEntity> void removeHead(EntityModel<T> model, Identifier texture, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float red, float green, float blue, CallbackInfo ci) {
+        if (FirstPersonCompat.isFpmRenderingPlayer(entity, matrices)) {
+            if (!FirstPersonCompat.setHeadVisibility(model, false)) {
+                ci.cancel();
+            }
         }
-        return this;
     }
 
-    public MixinCompatBuilder addClient(String modId, String path) {
-        if (RequiemCompatMixinPlugin.CLIENT) {
-            this.add(modId, path);
+    @Inject(method = "renderModel", at = @At("RETURN"))
+    private static <T extends LivingEntity> void reAddHead(EntityModel<T> model, Identifier texture, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float red, float green, float blue, CallbackInfo ci) {
+        if (FirstPersonCompat.isFpmRenderingPlayer(entity, matrices)) {
+            FirstPersonCompat.setHeadVisibility(model, true);
         }
-        return this;
-    }
-
-    public Set<String> build() {
-        return this.mixins;
     }
 }

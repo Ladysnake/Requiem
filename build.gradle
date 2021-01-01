@@ -177,9 +177,8 @@ dependencies {
 
     modApi("io.github.ladysnake:Satin:${rootProject.satin_version}")
     include "io.github.ladysnake:Satin:${satin_version}"
-    modRuntime ("io.github.prospector:modmenu:${modmenu_version}") {
-        transitive = false
-    }
+    modImplementation ("io.github.prospector:modmenu:${modmenu_version}") { transitive = false }
+    modRuntime ("io.github.prospector:modmenu:${modmenu_version}") { transitive = false }
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${cca_version}"
     modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}")
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
@@ -187,6 +186,8 @@ dependencies {
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-scoreboard:${cca_version}"
     modImplementation ("io.github.ladysnake:PlayerAbilityLib:${pal_version}")
     include "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
+    modImplementation ("me.shedaniel.cloth:config-2:${cloth_version}")
+    include ("me.shedaniel.cloth:config-2:${cloth_version}")
 
 //    modRuntime curse.resolve('immersive-portals-mod', 2845123)
 //    modRuntime "curse.maven:mobz:2965825"
@@ -199,6 +200,8 @@ dependencies {
     modCompileOnly("io.github.Ladysnake:Snow-Mercy:${snowmercy_version}") { transitive = false }
     modRuntime("io.github.Ladysnake:Snow-Mercy:${snowmercy_version}") { transitive = false }
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:${eldritch_mobs_version}") { transitive = false }
+    modCompileOnly("curse.maven:FirstPersonModel-333287:${fpm_version}")
+    modRuntime("curse.maven:FirstPersonModel-333287:${fpm_version}")
     modCompileOnly("curse.maven:haema-391257:${haema_version}")
     modRuntime("curse.maven:haema-391257:${haema_version}")
     modRuntime("net.fabricmc:fabric-language-kotlin:${flk_version}")

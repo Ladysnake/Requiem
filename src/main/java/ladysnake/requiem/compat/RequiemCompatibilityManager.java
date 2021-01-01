@@ -48,15 +48,19 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public final class RequiemCompatibilityManager {
+
+    private static final FabricLoader loader = FabricLoader.getInstance();
+
     public static void init() {
         try {
             load("eldritch_mobs", EldritchMobsCompat.class);
-            load("the_bumblezone", BumblezoneCompat.class);
+            load("firstperson", FirstPersonCompat.class);
+            load("golemsgalore", GolemsGaloreCompat.class);
             // Haema must be loaded before Origins, because vampire data must be stored before the origin gets cleared
             load("haema", HaemaCompat.class);
             load("origins", OriginsCompat.class);
-            load("golemsgalore", GolemsGaloreCompat.class);
             load("snowmercy", SnowMercyCompat.class);
+            load("the_bumblezone", BumblezoneCompat.class);
         } catch (Throwable t) {
             Requiem.LOGGER.error("[Requiem] Failed to load compatibility hooks", t);
         }
@@ -64,7 +68,7 @@ public final class RequiemCompatibilityManager {
 
     public static void load(String modId, Class<?> action) {
         try {
-            if (FabricLoader.getInstance().isModLoaded(modId)) {
+            if (loader.isModLoaded(modId)) {
                 action.getMethod("init").invoke(null);
             }
         } catch (Throwable t) {
@@ -73,10 +77,10 @@ public final class RequiemCompatibilityManager {
     }
 
     public static void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-        if (FabricLoader.getInstance().isModLoaded("origins")) {
+        if (loader.isModLoaded("origins")) {
             registry.registerForPlayers(OriginsCompat.HOLDER_KEY, p -> new ComponentDataHolder<>(OriginsCompat.ORIGIN_KEY, OriginsCompat.HOLDER_KEY), RespawnCopyStrategy.ALWAYS_COPY);
         }
-        if (FabricLoader.getInstance().isModLoaded("haema")) {
+        if (loader.isModLoaded("haema")) {
             registry.registerForPlayers(HaemaCompat.HOLDER_KEY, p -> new ComponentDataHolder<>(HaemaCompat.VAMPIRE_KEY, HaemaCompat.HOLDER_KEY), RespawnCopyStrategy.ALWAYS_COPY);
         }
     }

@@ -34,7 +34,6 @@
  */
 package ladysnake.requiem.compat;
 
-import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -43,17 +42,13 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class RequiemCompatMixinPlugin implements IMixinConfigPlugin {
-    public static final boolean CLIENT = FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
+    private static final Pattern MIXIN_PATTERN = Pattern.compile("ladysnake\\.requiem\\.compat\\.mixin\\.(?<modid>[a-z_]+?)\\..*");
 
-    private final Set<String> targets = (new MixinCompatBuilder())
-        .addClient("healthoverlay", "HealthRendererMixin")
-        .add("origins", "PowerMixin")
-        .add("the_bumblezone", "BeehiveBlockMixin")
-        .add("haema", "VampireBloodInjectorItemMixin")
-        .add("snowmercy", "WeaponizedSnowGolemEntityMixin")
-        .build();
+    private final FabricLoader loader = FabricLoader.getInstance();
 
     @Override
     public void onLoad(String mixinPackage) {
@@ -68,7 +63,10 @@ public final class RequiemCompatMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        return this.targets.contains(mixinClassName);
+        Matcher matcher = MIXIN_PATTERN.matcher(mixinClassName);
+        if (!matcher.matches()) throw new IllegalStateException("Bad mixin name " + mixinClassName);
+        String modId = matcher.group("modid");
+        return loader.isModLoaded(modId);
     }
 
     @Override
