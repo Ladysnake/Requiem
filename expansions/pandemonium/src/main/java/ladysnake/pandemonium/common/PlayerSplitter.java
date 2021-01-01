@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2017-2020 Ladysnake
+ * Copyright (C) 2017-2021 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,7 +121,7 @@ public final class PlayerSplitter {
         //Player keeps everything that goes through death
         CompoundTag templateNbt = template.toTag(new CompoundTag());
         deduplicateVanillaData(templateNbt);
-        deduplicateComponents(templateNbt, ComponentProvider.fromEntity(template).getComponentContainer().keys());
+        deduplicateComponents(templateNbt, Objects.requireNonNull(ComponentProvider.fromEntity(template).getComponentContainer()).keys());
         return templateNbt;
     }
 
