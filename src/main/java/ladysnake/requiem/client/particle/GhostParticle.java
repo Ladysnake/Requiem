@@ -34,7 +34,6 @@
  */
 package ladysnake.requiem.client.particle;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.client.render.RequiemRenderPhases;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -55,19 +54,11 @@ public class GhostParticle extends AbstractSlowingParticle {
 
     public static void draw(float tickDelta) {
         if (renderedGhostParticle) {
-//            RenderLayer.getText(new Identifier("textures/map/map_icons.png")).endDrawing();
-            RenderSystem.enableTexture();
-            RenderSystem.disableBlend();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.shadeModel(7424);
-            RenderSystem.disableAlphaTest();
-            RenderSystem.defaultAlphaFunc();
-            RenderSystem.disableDepthTest();
-            RenderSystem.depthFunc(515);
-            RenderSystem.disableFog();
+            // Somehow, the GL state can be really broken after another shader render
+            RequiemRenderPhases.ZERO_ALPHA.startDrawing();
             RequiemRenderPhases.GHOST_PARTICLE_SHADER.render(tickDelta);
             RequiemRenderPhases.GHOST_PARTICLE_FRAMEBUFFER.clear();
-            // Somehow, the GL state is really broken after the shader render
+            // Somehow, the GL state can also be really broken after the shader render
             MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().enable();
             renderedGhostParticle = false;
         }

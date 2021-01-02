@@ -47,6 +47,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import org.lwjgl.opengl.GL11;
 
 public final class RequiemRenderPhases extends RenderLayer {
+    public static final RenderPhase.Alpha ZERO_ALPHA = RenderPhase.ZERO_ALPHA;
     public static final ManagedShaderEffect GHOST_PARTICLE_SHADER = ShaderEffectManager.getInstance().manage(Requiem.id("shaders/post/ghost_particles.json"));
     public static final ManagedFramebuffer GHOST_PARTICLE_FRAMEBUFFER = GHOST_PARTICLE_SHADER.getTarget("ghost_particles");
     public static final RenderLayer GHOST_PARTICLE_LAYER = RenderLayer.of(
