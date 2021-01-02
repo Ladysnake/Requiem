@@ -1,4 +1,31 @@
 ------------------------------------------------------
+Version 1.4.3
+------------------------------------------------------
+**Additions**
+- Added the Drowned resurrection for players dead by drowning in an ocean
+- Added a config file, and the screen that goes with it
+- Added a config option to use an alternative rendering mode for incorporeal players in third person
+
+**Changes**
+- The zombie resurrection now requires a light level of 8 or lower
+- Phasing particles are now only shown to remnant players
+
+**Mod Compatibility**
+- Fist Person Model can now be used with requiem without the player going blind during possession
+    - Biped bodies will show in first person, other mobs will render as if FPM wasn't installed
+
+**Fixes**
+- Fixed possessed mobs resurrecting as zombies when killed by zombies
+- Fixed a random black screen issue when rendering phasing particles
+- Fixed souls catching fire despite them not being supposed to
+
+#### Pandemonium
+**Fixes**
+- Fixed player shells being targeted by every mob that can be aggressive towards another entity
+    - Tangentially fixes a crash when llama would try to target a player shell
+- Fixed villager clothes disappearing during the zoom animation effect
+
+------------------------------------------------------
 Version 1.4.2
 ------------------------------------------------------
 **Changes**
