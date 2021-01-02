@@ -23,7 +23,10 @@ If you wish to develop compatibility features for Requiem, binaries are availabl
 
 ```gradle
 repositories {
-    jcenter()
+    maven {
+        name = 'Ladysnake Mods'
+        url = 'https://dl.bintray.com/ladysnake/mods'
+    }
 }
 
 dependencies {
