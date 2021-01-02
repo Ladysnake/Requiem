@@ -54,7 +54,6 @@ public final class RequiemCompatibilityManager {
     public static void init() {
         try {
             load("eldritch_mobs", EldritchMobsCompat.class);
-            load("firstperson", FirstPersonCompat.class);
             load("golemsgalore", GolemsGaloreCompat.class);
             // Haema must be loaded before Origins, because vampire data must be stored before the origin gets cleared
             load("haema", HaemaCompat.class);

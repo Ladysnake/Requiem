@@ -10,10 +10,6 @@ Version 1.4.3
 - The zombie resurrection now requires a light level of 8 or lower
 - Phasing particles are now only shown to remnant players
 
-**Mod Compatibility**
-- Fist Person Model can now be used with requiem without the player going blind during possession
-    - Biped bodies will show in first person, other mobs will render as if FPM wasn't installed
-
 **Fixes**
 - Fixed possessed mobs resurrecting as zombies when killed by zombies
 - Fixed a random black screen issue when rendering phasing particles

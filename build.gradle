@@ -204,8 +204,6 @@ dependencies {
     modCompileOnly("io.github.Ladysnake:Snow-Mercy:${snowmercy_version}") { transitive = false }
     modRuntime("io.github.Ladysnake:Snow-Mercy:${snowmercy_version}") { transitive = false }
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:${eldritch_mobs_version}") { transitive = false }
-    modCompileOnly("curse.maven:FirstPersonModel-333287:${fpm_version}")
-    modRuntime("curse.maven:FirstPersonModel-333287:${fpm_version}")
     modCompileOnly("curse.maven:haema-391257:${haema_version}")
     modRuntime("curse.maven:haema-391257:${haema_version}")
     modRuntime("net.fabricmc:fabric-language-kotlin:${flk_version}")
