@@ -41,6 +41,7 @@ import ladysnake.requiem.api.v1.entity.InventoryShape;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.client.InventoryScreenAccessor;
 import ladysnake.requiem.client.RequiemClient;
+import ladysnake.requiem.common.impl.inventory.PossessionInventoryScreen;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
@@ -55,7 +56,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -83,8 +83,17 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     }
 
     @Override
-    public @NotNull AbstractButtonWidget requiem_getRecipeBookButton() {
+    public AbstractButtonWidget requiem_getRecipeBookButton() {
         return this.craftingBookButton;
+    }
+
+    @Inject(method = {"init", "tick"}, at = @At("HEAD"), cancellable = true)
+    private void trySwapInventoryInit(CallbackInfo ci) {
+        if (this.limiter.getInventoryShape() == InventoryShape.ALT_LARGE) {
+            assert this.client != null && this.client.player != null;
+            this.client.openScreen(new PossessionInventoryScreen(this.client.player));
+            ci.cancel();
+        }
     }
 
     @ModifyArg(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/InventoryScreen;addButton(Lnet/minecraft/client/gui/widget/AbstractButtonWidget;)Lnet/minecraft/client/gui/widget/AbstractButtonWidget;"), allow = 1)
