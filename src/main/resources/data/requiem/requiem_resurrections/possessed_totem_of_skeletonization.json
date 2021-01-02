@@ -1,7 +1,7 @@
 {
   "priority": 50,
   "possessed": {
-    "type": "#requiem:skeletonizable"
+    "type": "#requiem:transformation/skeletonizable"
   },
   "consumable": {
     "item": "requiem:totem_of_skeletonization"

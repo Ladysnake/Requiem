@@ -1,7 +1,7 @@
 {
   "priority": 60,
   "possessed": {
-    "type": "#requiem:skeletonizable",
+    "type": "#requiem:transformation/skeletonizable",
     "effects": {
       "minecraft:wither": {}
     }
