@@ -32,6 +32,7 @@
     "remnant.ClientPlayerInteractionManagerMixin",
     "remnant.GameRendererMixin",
     "remnant.InGameHudMixin",
+    "remnant.LivingEntityRendererMixin",
     "remnant.MinecraftClientMixin",
     "remnant.PlayerRendererLayerMixin"
   ]
