@@ -41,6 +41,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.MovementConfig;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
@@ -235,7 +236,13 @@ public class PlayerMovementAlterer implements MovementAlterer {
     }
 
     private boolean shouldSyncWith(ServerPlayerEntity player, int syncOp) {
-        return ((player == this.player) && (syncOp == SYNC_NO_CLIP)) || ((syncOp == SYNC_PHASING_PARTICLES) && (player.squaredDistanceTo(this.player) < (16 * 16)));
+        return (
+            syncOp == SYNC_NO_CLIP && player == this.player
+        ) || (
+            syncOp == SYNC_PHASING_PARTICLES
+                && RemnantComponent.get(player).getRemnantType().isDemon()
+                && player.squaredDistanceTo(this.player) < 16 * 16
+        );
     }
 
     @Override
