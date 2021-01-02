@@ -2,6 +2,7 @@
   "parent": "mixins.requiem.common.json",
   "package": "ladysnake.requiem.mixin.client",
   "mixins": [
+    "access.ScreenAccessor",
     "attrition.AbstractInventoryScreenMixin",
     "attrition.InGameHudMixin",
     "attrition.SpriteAtlasHolderAccessor",

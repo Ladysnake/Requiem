@@ -37,6 +37,7 @@ package ladysnake.requiem.mixin.client.remnant;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.client.RequiemClient;
+import ladysnake.requiem.common.RequiemConfig;
 import ladysnake.requiem.mixin.client.possession.LivingEntityRendererMixin;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -65,7 +66,11 @@ public abstract class PlayerRendererLayerMixin extends LivingEntityRendererMixin
             PlayerEntity player = (PlayerEntity) entity;
 
             if (RemnantComponent.get(player).isIncorporeal() || DeathSuspender.get(player).isLifeTransient()) {
-                return RequiemClient.INSTANCE.getShadowPlayerFxRenderer().getRenderLayer(base);
+                if (RequiemConfig.fancyDemonRender.getValue()) {
+                    return RequiemClient.INSTANCE.getShadowPlayerFxRenderer().getRenderLayer(base);
+                } else {
+                    return RenderLayer.getEndPortal(0);
+                }
             }
         }
 

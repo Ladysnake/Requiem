@@ -19,6 +19,9 @@
     ],
     "cardinal-components-entity": [
       "ladysnake.requiem.compat.RequiemCompatibilityManager::registerEntityComponentFactories"
+    ],
+    "modmenu": [
+      "ladysnake.requiem.compat.ModMenuCompat"
     ]
   },
   "mixins": [

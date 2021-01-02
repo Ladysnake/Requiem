@@ -75,6 +75,15 @@
   "requiem:tooltip.skeletal_efficiency": "Skeletal Efficiency",
   "requiem:tooltip.zombie_food": "Zombie Snack",
 
+  "config.requiem.title": "Requiem Config Menu",
+  "config.requiem.graphics": "Graphics",
+  "config.requiem.fancy_demon_render": "Fancy demon render",
+  "config.requiem.more": "More...",
+  "config.requiem.more_info": "Requiem can be configured through %1$s and %2$s. For more information on the various options available, consider visiting %3$s.",
+  "config.requiem.more_info.datapacks": "Data Packs",
+  "config.requiem.more_info.gamerules": "Game Rules",
+  "config.requiem.more_info.official_doc": "the official documentation on the Ladysnake website",
+
   "death.attack.requiem.attrition.hardcore": "%1$s was put to rest, forever.",
   "death.attack.requiem.attrition.hardcore.player": "%2$s put %1$s to rest, forever.",
 

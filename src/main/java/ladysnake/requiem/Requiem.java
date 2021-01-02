@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.event.minecraft.SyncServerResourcesCallback;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
+import ladysnake.requiem.common.RequiemConfig;
 import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.block.RequiemBlocks;
@@ -79,6 +80,7 @@ public final class Requiem implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        RequiemConfig.load();
         ApiInitializer.init();
         RequiemCriteria.init();
         RequiemBlocks.init();
