@@ -58,7 +58,9 @@ public final class ModMenuCompat implements ModMenuApi {
     }
 
     private AbstractConfigScreen appendInfo(AbstractConfigScreen screen) {
-        screen.getCategorizedEntries().put(new TranslatableText("config.requiem.more"), Collections.singletonList(this.createInfoEntry()));
+        AbstractConfigEntry<?> entry = this.createInfoEntry();
+        entry.setScreen(screen);
+        screen.getCategorizedEntries().put(new TranslatableText("config.requiem.more"), Collections.singletonList(entry));
         return screen;
     }
 
