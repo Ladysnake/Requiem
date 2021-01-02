@@ -46,24 +46,20 @@ import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public final class ModMenuCompat implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return parent -> Fiber2Cloth.create(parent, Requiem.MOD_ID, RequiemConfig.load(), "config.requiem.title")
-            .setAfterInitConsumer(screen -> this.appendInfo(((AbstractConfigScreen) screen)))
+        return parent -> appendInfo((AbstractConfigScreen) Fiber2Cloth.create(parent, Requiem.MOD_ID, RequiemConfig.configTree(), "config.requiem.title")
+            .setSaveRunnable(RequiemConfig::save)
             .build()
-            .getScreen();
+            .getScreen());
     }
 
-    private void appendInfo(AbstractConfigScreen screen) {
-        Map<Text, List<AbstractConfigEntry<?>>> categorizedEntries = screen.getCategorizedEntries();
-        AbstractConfigEntry<?> infoEntry = this.createInfoEntry();
-        infoEntry.setScreen(screen);
-        categorizedEntries.put(new TranslatableText("config.requiem.more"), Collections.singletonList(infoEntry));
+    private AbstractConfigScreen appendInfo(AbstractConfigScreen screen) {
+        screen.getCategorizedEntries().put(new TranslatableText("config.requiem.more"), Collections.singletonList(this.createInfoEntry()));
+        return screen;
     }
 
     private AbstractConfigEntry<?> createInfoEntry() {

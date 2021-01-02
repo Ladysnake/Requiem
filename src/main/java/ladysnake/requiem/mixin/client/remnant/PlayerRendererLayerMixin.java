@@ -66,7 +66,7 @@ public abstract class PlayerRendererLayerMixin extends LivingEntityRendererMixin
             PlayerEntity player = (PlayerEntity) entity;
 
             if (RemnantComponent.get(player).isIncorporeal() || DeathSuspender.get(player).isLifeTransient()) {
-                if (RequiemConfig.fancyDemonRender.getValue()) {
+                if (RequiemConfig.graphics.fancyDemonRender) {
                     return RequiemClient.INSTANCE.getShadowPlayerFxRenderer().getRenderLayer(base);
                 } else {
                     return RenderLayer.getEndPortal(0);

@@ -34,14 +34,16 @@
  */
 package ladysnake.requiem.common;
 
+import blue.endless.jankson.Comment;
+import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.AnnotatedSettings;
+import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.SettingNamingConvention;
 import io.github.fablabsmc.fablabs.api.fiber.v1.exception.ValueDeserializationException;
-import io.github.fablabsmc.fablabs.api.fiber.v1.schema.type.derived.ConfigTypes;
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.FiberSerialization;
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerializer;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigBranch;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigTree;
-import io.github.fablabsmc.fablabs.api.fiber.v1.tree.PropertyMirror;
 import ladysnake.requiem.Requiem;
+import me.shedaniel.fiber2cloth.impl.annotation.Fiber2ClothAnnotations;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
@@ -51,31 +53,38 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public final class RequiemConfig {
-    public static final PropertyMirror<Boolean> fancyDemonRender = PropertyMirror.create(ConfigTypes.BOOLEAN);
+    public static final Graphics graphics = new Graphics();
 
+    public static class Graphics {
+        @Comment("Toggles the fancy shader render for incorporeal players. May impact performance.")
+        public boolean fancyDemonRender = true;
+    }
+
+    private static final AnnotatedSettings settings = AnnotatedSettings.builder()
+        .apply(Fiber2ClothAnnotations::configure)
+        .useNamingConvention(SettingNamingConvention.SNAKE_CASE)
+        .build();
     private static final ConfigBranch configTree = ConfigTree.builder()
-        .fork("graphics")
-        .beginValue("fancy_demon_render", ConfigTypes.BOOLEAN, true)
-        .withComment("Toggles the fancy shader render for incorporeal players. May impact performance.")
-        .finishValue(fancyDemonRender::mirror)
-        .finishBranch()
+        .fork("graphics").applyFromPojo(graphics, settings).finishBranch()
         .fork("more").withSeparateSerialization().finishBranch()
         .build();
 
     private static final Path configPath = FabricLoader.getInstance().getConfigDir().resolve("requiem.json5");
     private static final JanksonValueSerializer serializer = new JanksonValueSerializer(false);
 
-    public static ConfigBranch load() {
+    public static ConfigBranch configTree() {
+        return configTree;
+    }
+
+    public static void load() {
         if (Files.exists(configPath)) {
             try (InputStream in = Files.newInputStream(configPath)) {
                 FiberSerialization.deserialize(configTree, in, serializer);
             } catch (IOException | ValueDeserializationException e) {
                 Requiem.LOGGER.error("[Requiem] Failed to load config", e);
             }
-        } else {
-            save();
         }
-        return configTree;
+        RequiemConfig.save();
     }
 
     public static void save() {
