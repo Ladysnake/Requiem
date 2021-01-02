@@ -100,7 +100,7 @@ public final class ResurrectionDataLoader implements SimpleResourceReloadListene
                 try (Resource res = manager.getResource(location); Reader in = new InputStreamReader(res.getInputStream())) {
                     resurrectionData.add(ResurrectionData.deserialize(GSON.fromJson(in, JsonObject.class)));
                 } catch (IOException | JsonParseException e) {
-                    Requiem.LOGGER.error("Could not read resurrection data from {}", location, e);
+                    Requiem.LOGGER.error("[Requiem] Could not read resurrection data from {}", location, e);
                 }
             }
             Collections.sort(resurrectionData);

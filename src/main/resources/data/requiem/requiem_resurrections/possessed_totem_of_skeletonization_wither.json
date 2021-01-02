@@ -1,4 +1,5 @@
 {
+  "schema_version": 0,
   "priority": 60,
   "possessed": {
     "type": "#requiem:transformation/skeletonizable",

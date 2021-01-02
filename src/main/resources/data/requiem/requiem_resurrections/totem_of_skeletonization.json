@@ -1,4 +1,5 @@
 {
+  "schema_version": 0,
   "priority": 50,
   "consumable": {
     "item": "requiem:totem_of_skeletonization"

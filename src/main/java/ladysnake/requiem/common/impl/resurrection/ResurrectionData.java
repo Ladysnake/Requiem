@@ -100,6 +100,7 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
         this.entityNbt = entityNbt;
     }
 
+
     public boolean matches(ServerPlayerEntity player, @Nullable LivingEntity possessed, DamageSource killingBlow) {
         if (killingBlow.isOutOfWorld()) return false;
 
@@ -168,6 +169,17 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
     }
 
     public static ResurrectionData deserialize(JsonObject json) {
+        int schemaVersion = JsonHelper.getInt(json, "schema_version", 0);
+        if (schemaVersion != 0) {
+            throw new JsonParseException(String.format("Invalid/Unsupported schema version \"%s\" was found", schemaVersion));
+        }
+
+        // TODO make a V1 format with `player` and `possessed` merged into `entity` and `entity` renamed to `result`
+        return deserializeV0(json);
+    }
+
+    @NotNull
+    private static ResurrectionData deserializeV0(JsonObject json) {
         int priority = JsonHelper.getInt(json, "priority", 100);
         @Nullable ExtendedDamageSourcePredicate damagePredicate = ExtendedDamageSourcePredicate.deserialize(json.get("killing_blow"));
         @Nullable EntityPredicate playerPredicate = json.has("player") ? EntityPredicate.fromJson(json.get("player")) : null;

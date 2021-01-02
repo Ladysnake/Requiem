@@ -1,4 +1,5 @@
 {
+  "schema_version": 0,
   "priority": 100,
   "killing_blow": {
     "name": "drown"

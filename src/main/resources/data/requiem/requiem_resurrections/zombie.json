@@ -1,4 +1,5 @@
 {
+  "schema_version": 0,
   "priority": 80,
   "killing_blow": {
     "direct_entity": {

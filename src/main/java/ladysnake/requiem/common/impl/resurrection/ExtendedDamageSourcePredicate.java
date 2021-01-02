@@ -38,7 +38,9 @@ import com.google.gson.JsonElement;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -55,6 +57,10 @@ public final class ExtendedDamageSourcePredicate {
 
     public boolean test(ServerPlayerEntity player, DamageSource damage) {
         return (damageName == null || damageName.equals(damage.name)) && base.test(player, damage);
+    }
+
+    public boolean test(ServerWorld world, Vec3d pos, DamageSource damage) {
+        return (damageName == null || damageName.equals(damage.name)) && base.test(world, pos, damage);
     }
 
     public static ExtendedDamageSourcePredicate deserialize(@Nullable JsonElement element) {
