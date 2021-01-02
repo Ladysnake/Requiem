@@ -71,7 +71,7 @@ public final class ModMenuCompat implements ModMenuApi {
                 "config.requiem.more_info",
                 makeUrlText(new TranslatableText("config.requiem.more_info.datapacks"), getLocalizedDataPackUrl()),
                 makeUrlText(new TranslatableText("config.requiem.more_info.gamerules"), getLocalizedGameRuleUrl()),
-                makeUrlText(new TranslatableText("config.requiem.more_info.official_doc"), "https://ladysnake.github.io/wiki/requiem")
+                makeUrlText(new TranslatableText("config.requiem.more_info.official_doc"), "https://ladysnake.github.io/wiki/requiem/configuration")
             ),
             0xFFFFFFFF,
             Optional::empty
