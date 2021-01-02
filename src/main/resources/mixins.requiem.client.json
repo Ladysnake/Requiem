@@ -19,6 +19,7 @@
     "opus.WrittenBookScreenContentsMixin",
     "possession.ClientEntityMixin",
     "possession.EntityRenderDispatcherMixin",
+    "possession.FeatureRendererMixin",
     "possession.LivingEntityRendererMixin",
     "possession.MinecraftClientMixin",
     "possession.PlayerEntityRendererMixin",
