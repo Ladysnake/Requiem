@@ -17,6 +17,7 @@
     "opus.EditBookScreenAccessor",
     "opus.LecternScreenMixin",
     "opus.WrittenBookScreenContentsMixin",
+    "possession.ArmorFeatureRendererMixin",
     "possession.ClientEntityMixin",
     "possession.EntityRenderDispatcherMixin",
     "possession.FeatureRendererMixin",
