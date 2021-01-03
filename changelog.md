@@ -9,17 +9,21 @@ Version 1.4.3
 **Changes**
 - The zombie resurrection now requires a light level of 8 or lower
 - Phasing particles are now only shown to remnant players
+- Armor and capes no longer render on incorporeal players
+
+**Mod Compatibility**
+- Fixed trinkets and curios buttons appearing on inventory-less mobs
 
 **Fixes**
 - Fixed possessed mobs resurrecting as zombies when killed by zombies
 - Fixed a random black screen issue when rendering phasing particles
 - Fixed souls catching fire despite them not being supposed to
+- Fixed mob armor and additional layers (e.g. clothes) disappearing during the zoom animation effect
 
 #### Pandemonium
 **Fixes**
 - Fixed player shells being targeted by every mob that can be aggressive towards another entity
     - Tangentially fixes a crash when llama would try to target a player shell
-- Fixed villager clothes disappearing during the zoom animation effect
 
 ------------------------------------------------------
 Version 1.4.2
