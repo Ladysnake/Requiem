@@ -48,7 +48,8 @@
   },
   "conflicts": {
     "betterend": "*",
-    "betternether": "*"
+    "betternether": "*",
+    "firstperson": "<2.0.0-"
   },
 
   "name": "Requiem",
