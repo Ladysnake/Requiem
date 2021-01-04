@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -68,22 +69,22 @@ public class WandererRemnantState extends MutableRemnantState {
 
     @Override
     public void serverTick() {
-        MobEntity possessedEntity = PossessionComponent.get(this.player).getPossessedEntity();
         ServerPlayerEntity player = (ServerPlayerEntity) this.player;
+        LivingEntity body = this.isVagrant() ? PossessionComponent.get(player).getPossessedEntity() : player;
 
-        if (possessedEntity != null && player.hasStatusEffect(RequiemStatusEffects.ATTRITION) && player.getRandom().nextInt(ATTRITION_MEND_PROBABILITY) == 0) {
-            AttritionFocus.KEY.get(possessedEntity).addAttrition(this.player.getUuid(), 1);
+        if (body != null && player.hasStatusEffect(RequiemStatusEffects.ATTRITION) && player.getRandom().nextInt(ATTRITION_MEND_PROBABILITY) == 0) {
+            AttritionFocus.KEY.get(body).addAttrition(this.player.getUuid(), 1);
             AttritionStatusEffect.reduce(player, 1);
 
             player.getServerWorld().spawnParticles(
                 RequiemParticleTypes.ATTRITION,
-                possessedEntity.getX(),
-                possessedEntity.getBodyY(0.5),
-                possessedEntity.getZ(),
+                body.getX(),
+                body.getBodyY(0.5),
+                body.getZ(),
                 60,
-                possessedEntity.getWidth() * 0.8,
-                possessedEntity.getHeight() * 0.6,
-                possessedEntity.getWidth() *0.8,
+                body.getWidth() * 0.8,
+                body.getHeight() * 0.6,
+                body.getWidth() *0.8,
                 1.0
             );
         }
