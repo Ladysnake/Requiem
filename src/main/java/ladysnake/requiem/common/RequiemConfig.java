@@ -43,7 +43,6 @@ import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerial
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigBranch;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigTree;
 import ladysnake.requiem.Requiem;
-import me.shedaniel.fiber2cloth.impl.annotation.Fiber2ClothAnnotations;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
@@ -61,7 +60,6 @@ public final class RequiemConfig {
     }
 
     private static final AnnotatedSettings settings = AnnotatedSettings.builder()
-        .apply(Fiber2ClothAnnotations::configure)
         .useNamingConvention(SettingNamingConvention.SNAKE_CASE)
         .build();
     private static final ConfigBranch configTree = ConfigTree.builder()
