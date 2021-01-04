@@ -100,7 +100,7 @@
 
   "enchantment.requiem.humanity": "Humanity",
 
-  "requiem:ethereal_fracture": "[Requiem] Dissociation",
+  "key.requiem.dissociation": "[Requiem] Dissociation",
   "requiem:shulker.onboard": "Press %s or %s to dissociate",
   "requiem:dissociate_hint": "Press %s to dissociate",
   "requiem:possess.incompatible_body": "This body is incompatible with your soul",
