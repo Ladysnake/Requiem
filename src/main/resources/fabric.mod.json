@@ -47,7 +47,7 @@
     "cardinal-components-scoreboard": "^2.7.10"
   },
   "conflicts": {
-    "betterend": "*",
+    "betterend": "<=0.8.5-beta",
     "betternether": "*",
     "firstperson": "<2.0.0-"
   },
