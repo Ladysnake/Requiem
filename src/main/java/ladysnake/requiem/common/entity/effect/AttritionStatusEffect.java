@@ -113,6 +113,14 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
     public AttritionStatusEffect(StatusEffectType type, int color) {
         super(type, color);
     }
+    
+    public static boolean shouldNotFade(LivingEntity entity) {
+        if (this.shouldStick(entity)) return true;
+        PlayerEntity possessor = ((Possessable)entity).getPossessor();
+        if (possessor == null) return false;
+        RemnantComponent remnantComponent = RemnantComponent.get(possessor);
+        return remnantComponent.isVagrant() || remnantComponent.getRemnantType() == RemnantTypes.WANDERING_SPIRIT;
+    }
 
     @Override
     public double adjustModifierAmount(int amplifier, EntityAttributeModifier entityAttributeModifier) {
@@ -120,15 +128,8 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
     }
 
     @Override
-    public boolean shouldStick(LivingEntity entity) {
+    public static boolean shouldStick(LivingEntity entity) {
         if (RemnantComponent.isVagrant(entity)) return true;
         return false;
-    }
-    public boolean shouldNotFade(LivingEntity entity) {
-        if (this.shouldStick(entity)) return true;
-        PlayerEntity possessor = ((Possessable)entity).getPossessor();
-        if (possessor == null) return false;
-        RemnantComponent remnantComponent = RemnantComponent.get(possessor);
-        return remnantComponent.isVagrant() || remnantComponent.getRemnantType() == RemnantTypes.WANDERING_SPIRIT;
     }
 }
