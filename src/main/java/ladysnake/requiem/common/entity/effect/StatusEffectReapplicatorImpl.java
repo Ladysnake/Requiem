@@ -72,8 +72,14 @@ public class StatusEffectReapplicatorImpl implements StatusEffectReapplicator {
                         ));
                     }
                 } else {
-                    this.holder.removeStatusEffect(RequiemStatusEffects.ATTRITION);
-                    AttritionStatusEffect.addAttrition(this.holder,effect.getAmplifier() + 1);
+                    reappliedEffects.add(new StatusEffectInstance(
+                            RequiemStatusEffects.ATTRITION,
+                            effect.getDuration(),
+                            effect.getAmplifier() + 1,
+                            false,
+                            false,
+                            true
+                        ));
                 }
             } else if (StickyStatusEffect.shouldStick(effect.getEffectType(), this.holder)) {
                 reappliedEffects.add(new StatusEffectInstance(effect));
