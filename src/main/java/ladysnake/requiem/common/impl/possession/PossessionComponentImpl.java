@@ -80,7 +80,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
     }
 
     private boolean isReadyForPossession() {
-        StatusEffectInstance attrition = player.getStatusEffect(RequiemStatusEffects.ATTRITION)
+        StatusEffectInstance attrition = player.getStatusEffect(RequiemStatusEffects.ATTRITION);
         return player.world.isClient || (!player.isSpectator() && RemnantComponent.get(this.player).isIncorporeal()) && !(attrition != null && attrition.getAmplifier() < 4);
     }
 
