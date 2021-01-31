@@ -198,8 +198,6 @@ dependencies {
     modCompileOnly("io.github.Terrails:Health-Overlay:1.16-Fabric-SNAPSHOT")
 
     modRuntime "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
-    modCompileOnly("io.github.apace100:origins-fabric:${origins_version}") { transitive = false }
-    modRuntime("io.github.apace100:origins-fabric:${origins_version}") { transitive = false }
     modRuntime "net.adriantodt.fabricmc:fallflyinglib:${fallflyinglib_version}"
     modCompileOnly("io.github.Ladysnake:Snow-Mercy:${snowmercy_version}") { transitive = false }
     modRuntime("io.github.Ladysnake:Snow-Mercy:${snowmercy_version}") { transitive = false }
