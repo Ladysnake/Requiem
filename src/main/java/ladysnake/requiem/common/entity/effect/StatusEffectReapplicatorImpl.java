@@ -77,7 +77,7 @@ public class StatusEffectReapplicatorImpl implements StatusEffectReapplicator {
                     reappliedEffects.add(new StatusEffectInstance(
                             RequiemStatusEffects.ATTRITION,
                             effect.getDuration(),
-                            Math.max(0, Math.min(4, effect.getAmplifier() + 1)),
+                            Math.max(0, Math.min(3, effect.getAmplifier() + 1)),
                             false,
                             false,
                             true
