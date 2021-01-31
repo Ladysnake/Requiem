@@ -35,6 +35,7 @@
 package ladysnake.requiem.mixin.common.attrition;
 
 import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.effect.StatusEffect;
