@@ -172,7 +172,7 @@ public class MutableRemnantState implements RemnantState {
 
             if (original.isDead()) {
                 StatusEffectInstance attrition = original.getStatusEffect(RequiemStatusEffects.ATTRITION);
-                if attrition {
+                if (attrition != null) {
                     AttritionStatusEffect.addAttrition(player, attrition.getAmplifier());
                 }
                 AttritionStatusEffect.apply(player);
