@@ -62,11 +62,11 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
 
     public static void apply(PlayerEntity target) {
         StatusEffectInstance attrition = target.getStatusEffect(RequiemStatusEffects.ATTRITION);
-        if (attrition ~= null) {
-            reduce(target, -1);
+        if (attrition == null) {
+            apply(target, 1); 
         } 
         else {
-            apply(target, 1);  
+            reduce(target, -1);
         }
     }
 
