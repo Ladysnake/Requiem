@@ -58,7 +58,7 @@ public class StatusEffectReapplicatorImpl implements StatusEffectReapplicator {
         if (!this.holder.world.isClient) {
             if (StickyStatusEffect.shouldStick(effect.getEffectType(), this.holder)) {
                 reappliedEffects.add(new StatusEffectInstance(effect));
-            } else if (effect.getEffectType() == RequiemStatusEffects.ATTRITION) {
+            } else if (effect.getEffectType() == RequiemStatusEffects.ATTRITION && effect.getAmplifier() > 1) {
                 reappliedEffects.add(new StatusEffectInstance(
                     RequiemStatusEffects.ATTRITION,
                     24000,
