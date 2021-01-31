@@ -40,7 +40,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.CompoundTag;
-import ladysnake.requiem.common.entity.effect.AttritionStatusEffect
+import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 
 import java.util.ArrayList;
 import java.util.Collection;
