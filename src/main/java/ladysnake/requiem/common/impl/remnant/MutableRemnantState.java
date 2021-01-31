@@ -171,6 +171,10 @@ public class MutableRemnantState implements RemnantState {
             this.copyGlobalPos(original);
 
             if (original.isDead()) {
+                StatusEffectInstance attrition = original.getStatusEffect(RequiemStatusEffects.ATTRITION);
+                if attrition {
+                    AttritionStatusEffect.addAttrition(player, attrition.getAmplifier());
+                }
                 AttritionStatusEffect.apply(player);
             }
         }
