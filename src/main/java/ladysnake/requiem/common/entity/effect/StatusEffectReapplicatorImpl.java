@@ -57,10 +57,12 @@ public class StatusEffectReapplicatorImpl implements StatusEffectReapplicator {
     @Override
     public void onStatusEffectRemoved(StatusEffectInstance effect) {
         if (!this.holder.world.isClient) {
-            if (effect.getEffectType() == RequiemStatusEffects.ATTRITION && effect.getAmplifier() > 0) {
+            if (effect.getEffectType() == RequiemStatusEffects.ATTRITION) {
                 if (!AttritionStatusEffect.shouldNotFade(this.holder)) {
                     if (effect.getDuration() == 0) {
-                        AttritionStatusEffect.addAttrition(this.holder,effect.getAmplifier() - 1);
+                        if (effect.getAmplifier() > 0) {
+                            AttritionStatusEffect.addAttrition(this.holder,effect.getAmplifier() - 1);
+                        }
                     } else {
                         reappliedEffects.add(new StatusEffectInstance(
                             RequiemStatusEffects.ATTRITION,
@@ -75,7 +77,7 @@ public class StatusEffectReapplicatorImpl implements StatusEffectReapplicator {
                     reappliedEffects.add(new StatusEffectInstance(
                             RequiemStatusEffects.ATTRITION,
                             effect.getDuration(),
-                            effect.getAmplifier() + 1,
+                            Math.max(0, Math.min(4, effect.getAmplifier() + 1)),
                             false,
                             false,
                             true
