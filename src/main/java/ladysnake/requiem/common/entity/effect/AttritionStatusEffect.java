@@ -97,8 +97,7 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
     }
 
     public static void reduce(LivingEntity target, int amount) {
-        Preconditions.checkArgument(amount > 0);
-
+        
         StatusEffectInstance attrition = target.getStatusEffect(RequiemStatusEffects.ATTRITION);
         if (attrition == null) return;
 
