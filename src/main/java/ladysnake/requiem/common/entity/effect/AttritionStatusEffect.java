@@ -64,7 +64,8 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
         StatusEffectInstance attrition = target.getStatusEffect(RequiemStatusEffects.ATTRITION);
         if (attrition ~= null) {
             reduce(target, -1);
-        } else if {
+        } 
+        else {
             apply(target, 1);  
         }
     }
