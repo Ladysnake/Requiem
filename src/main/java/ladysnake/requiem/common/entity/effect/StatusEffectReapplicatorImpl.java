@@ -40,6 +40,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.CompoundTag;
+import ladysnake.requiem.common.entity.effect.AttritionStatusEffect
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,19 +57,25 @@ public class StatusEffectReapplicatorImpl implements StatusEffectReapplicator {
     @Override
     public void onStatusEffectRemoved(StatusEffectInstance effect) {
         if (!this.holder.world.isClient) {
-            if (StickyStatusEffect.shouldStick(effect.getEffectType(), this.holder)) {
-                reappliedEffects.add(new StatusEffectInstance(effect));
-            } else if (effect.getEffectType() == RequiemStatusEffects.ATTRITION && effect.getAmplifier() > 0) {
+            if (effect.getEffectType() == RequiemStatusEffects.ATTRITION && effect.getAmplifier() > 0) {
                 if (effect.getDuration() == 0) {
+                    if (StickyStatusEffect.shouldStick(effect.getEffectType(), this.holder)) {
+                        AttritionStatusEffect.addAttrition(this.holder,effect.getAmplifier() + 1);
+                    } else {
+                        AttritionStatusEffect.addAttrition(this.holder,effect.getAmplifier() - 1);
+                    }
+                } else {
                     reappliedEffects.add(new StatusEffectInstance(
                         RequiemStatusEffects.ATTRITION,
-                        24000,
-                        effect.getAmplifier() - 1,
+                        effect.getDuration(),
+                        effect.getAmplifier(),
                         false,
                         false,
                         true
                     ));
                 }
+            } else if (StickyStatusEffect.shouldStick(effect.getEffectType(), this.holder)) {
+                reappliedEffects.add(new StatusEffectInstance(effect));
             }
         }
     }
