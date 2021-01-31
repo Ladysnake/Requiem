@@ -58,15 +58,17 @@ public class StatusEffectReapplicatorImpl implements StatusEffectReapplicator {
         if (!this.holder.world.isClient) {
             if (StickyStatusEffect.shouldStick(effect.getEffectType(), this.holder)) {
                 reappliedEffects.add(new StatusEffectInstance(effect));
-            } else if (effect.getEffectType() == RequiemStatusEffects.ATTRITION && effect.getAmplifier() > 1) {
-                reappliedEffects.add(new StatusEffectInstance(
-                    RequiemStatusEffects.ATTRITION,
-                    24000,
-                    effect.getAmplifier() - 1,
-                    false,
-                    false,
-                    true
-                ));
+            } else if (effect.getEffectType() == RequiemStatusEffects.ATTRITION && effect.getAmplifier() > 0) {
+                if (effect.getDuration() == 0) {
+                    reappliedEffects.add(new StatusEffectInstance(
+                        RequiemStatusEffects.ATTRITION,
+                        24000,
+                        effect.getAmplifier() - 1,
+                        false,
+                        false,
+                        true
+                    ));
+                }
             }
         }
     }
