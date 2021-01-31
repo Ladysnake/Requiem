@@ -56,7 +56,7 @@ public abstract class StatusEffectInstanceMixin {
     @Inject(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/effect/StatusEffectInstance;updateDuration()I"))
     private void preventSoulboundCountdown(LivingEntity livingEntity, Runnable r, CallbackInfoReturnable<Boolean> cir) {
         PlayerEntity possessor = ((Possessable)entity).getPossessor();
-        if (!possessor && StickyStatusEffect.shouldStick(this.getEffectType(), livingEntity)) {
+        if (possessor == null && StickyStatusEffect.shouldStick(this.getEffectType(), livingEntity)) {
             this.duration++; // revert the duration decrement
         }
     }
