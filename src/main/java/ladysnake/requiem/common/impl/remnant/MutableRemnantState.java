@@ -166,6 +166,12 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public void prepareRespawn(ServerPlayerEntity original, boolean lossless) {
+        if (this.isVagrant()) {
+           StatusEffectInstance attrition = original.getStatusEffect(RequiemStatusEffects.ATTRITION);
+            if (attrition != null) {
+                AttritionStatusEffect.addAttrition(player, attrition.getAmplifier());
+            }
+        }
         if (!lossless && !this.isVagrant()) {
             RemnantComponent.get(this.player).setVagrant(true);
             this.copyGlobalPos(original);
