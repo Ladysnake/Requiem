@@ -59,7 +59,7 @@ public class StatusEffectReapplicatorImpl implements StatusEffectReapplicator {
         if (!this.holder.world.isClient) {
             if (effect.getEffectType() == RequiemStatusEffects.ATTRITION && effect.getAmplifier() > 0) {
                 if (effect.getDuration() == 0) {
-                    if (StickyStatusEffect.shouldNotFade(effect.getEffectType(), this.holder)) {
+                    if (AttritionStatusEffect.shouldNotFade(this.holder)) {
                         AttritionStatusEffect.addAttrition(this.holder,effect.getAmplifier() + 1);
                     } else {
                         AttritionStatusEffect.addAttrition(this.holder,effect.getAmplifier() - 1);
