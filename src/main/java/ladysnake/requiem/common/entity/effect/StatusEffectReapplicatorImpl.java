@@ -58,21 +58,21 @@ public class StatusEffectReapplicatorImpl implements StatusEffectReapplicator {
     public void onStatusEffectRemoved(StatusEffectInstance effect) {
         if (!this.holder.world.isClient) {
             if (effect.getEffectType() == RequiemStatusEffects.ATTRITION && effect.getAmplifier() > 0) {
-                if (effect.getDuration() == 0) {
-                    if (AttritionStatusEffect.shouldNotFade(this.holder)) {
-                        AttritionStatusEffect.addAttrition(this.holder,effect.getAmplifier() + 1);
-                    } else {
+                if (AttritionStatusEffect.shouldNotFade(this.holder)) {
+                    if (effect.getDuration() == 0) {
                         AttritionStatusEffect.addAttrition(this.holder,effect.getAmplifier() - 1);
+                    } else {
+                        reappliedEffects.add(new StatusEffectInstance(
+                            RequiemStatusEffects.ATTRITION,
+                            effect.getDuration(),
+                            effect.getAmplifier(),
+                            false,
+                            false,
+                            true
+                        ));
                     }
                 } else {
-                    reappliedEffects.add(new StatusEffectInstance(
-                        RequiemStatusEffects.ATTRITION,
-                        effect.getDuration(),
-                        effect.getAmplifier(),
-                        false,
-                        false,
-                        true
-                    ));
+                    AttritionStatusEffect.addAttrition(this.holder,effect.getAmplifier() + 1);
                 }
             } else if (StickyStatusEffect.shouldStick(effect.getEffectType(), this.holder)) {
                 reappliedEffects.add(new StatusEffectInstance(effect));
