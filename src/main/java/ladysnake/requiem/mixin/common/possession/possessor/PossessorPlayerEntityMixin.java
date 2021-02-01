@@ -154,7 +154,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
             if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || RequiemItemTags.RAW_FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
                 FoodComponent food = stack.getItem().getFoodComponent();
                 assert food != null;
-                player.addStatusEffect(new StatusEffectInstance(
+                possessedEntity.addStatusEffect(new StatusEffectInstance(
                     StatusEffects.HUNGER,
                     600,
                     0,
