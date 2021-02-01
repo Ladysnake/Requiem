@@ -218,4 +218,18 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
             tag.put(POSSESSED_ROOT_TAG, possessedRoot);
         }
     }
+    @Inject(
+        at = @At(
+            value = "INVOKE_ASSIGN",
+            target = "Lnet/minecraft/entity/player/PlayerEntity;getEquippedStack(Lnet/minecraft/entity/EquipmentSlot;)Lnet/minecraft/item/ItemStack;"
+        ),
+        method = "checkFallFlying",
+        cancellable = true
+    )
+    public void patchCheckFallFlying(CallbackInfoReturnable<Boolean> info) {
+        MobEntity possessed = PossessionComponent.get(this).getPossessedEntity();
+        if (possessed != null) {
+            info.setReturnValue(false);
+        }
+    }
 }
