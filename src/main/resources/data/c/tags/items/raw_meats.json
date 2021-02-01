@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "minecraft:rotten_flesh"
+    "minecraft:rotten_flesh",
+    "requiem:item/human_flesh"
   ]
 }
