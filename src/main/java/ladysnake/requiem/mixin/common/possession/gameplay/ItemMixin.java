@@ -71,14 +71,6 @@ public abstract class ItemMixin {
             } else if (RequiemEntityTypeTags.ZOMBIES.contains(possessedEntity.getType()) && hungry == null) {
                 if (RequiemItemTags.RAW_MEATS.contains(heldStack.getItem()) || RequiemItemTags.RAW_FISHES.contains(heldStack.getItem()) && possessedEntity instanceof DrownedEntity) {
                     player.setCurrentHand(hand);
-                    player.addStatusEffect(new StatusEffectInstance(
-                        StatusEffects.HUNGER,
-                        600,
-                        0,
-                        false,
-                        false,
-                        true
-                    ));
                     cir.setReturnValue(new TypedActionResult<>(ActionResult.SUCCESS, heldStack));
                 } else {
                     cir.setReturnValue(new TypedActionResult<>(ActionResult.FAIL, heldStack));
