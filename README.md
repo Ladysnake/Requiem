@@ -8,16 +8,16 @@ Memento Mori is a fork of Requiem that adjusts the balancing for a semi-hardcore
 
 **Changes:**
 
-Attrition caries through all types of death and the effect decreases by one level every 20 minutes in a human body. No more avoiding the mod by stockpiling on reasources.
+* Attrition caries through all types of death and the effect decreases by one level every 20 minutes in a human body. No more avoiding the mod by stockpiling on reasources.
 
-Host-specific healing items give Hunger I for 30 seconds, during this period you cannot consume said items.
+* Host-specific healing items give Hunger I for 30 seconds, during this period you cannot consume said items.
 
-Souls with Attrition V and above can no longer possess a body. Basically a hardcore death.
+* Souls with Attrition V and above can no longer possess a body. Basically a hardcore death.
 
-**Fixes:**\n
-Souls no longer lose attrition when dying from void damage.\n
-Milk buckets no longer cure attrition levels when human.\n
-Hosts no longer get deleted when teleporting large distances.\n
+**Fixes:**
+* Souls no longer lose attrition when dying from void damage.
+* Milk buckets no longer cure attrition levels when human.
+* Hosts no longer get deleted when teleporting large distances.
 
 
 More information on Requiem is available on the Ladysnake Website: https://ladysnake.github.io/wiki/requiem.
