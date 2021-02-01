@@ -15,6 +15,7 @@ Memento Mori is a fork of Requiem that adjusts the balancing for a semi-hardcore
 * Souls with Attrition V and above can no longer possess a body. Basically a hardcore death.
 
 **Fixes:**
+* Fixed enderman possession crash by removing enderman possession in the end. (You can just die by void damage to get out.)
 * Souls no longer lose attrition when dying from void damage.
 * Milk buckets no longer cure attrition levels when human.
 * Hosts no longer get deleted when teleporting large distances.
