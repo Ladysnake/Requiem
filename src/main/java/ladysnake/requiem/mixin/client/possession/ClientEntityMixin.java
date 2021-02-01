@@ -52,17 +52,4 @@ public abstract class ClientEntityMixin {
             cir.setReturnValue(false);
         }
     }
-    @Inject(
-        at = @At(
-            value = "INVOKE_ASSIGN",
-            target = "Lnet/minecraft/client/network/ClientPlayerEntity;getEquippedStack(Lnet/minecraft/entity/EquipmentSlot;)Lnet/minecraft/item/ItemStack;"
-        ),
-        method = "tickMovement"
-    )
-    public void patchClientControls(CallbackInfo info) {
-        ClientPlayerEntity thisObj = (ClientPlayerEntity) (Object) this;
-        if  (RemnantComponent.isIncorporeal((Entity) (Object) this)) {
-            this.networkHandler.sendPacket(new ClientCommandC2SPacket(thisObj, ClientCommandC2SPacket.Mode.STOP_FALL_FLYING));
-        }
-    }
 }
