@@ -151,7 +151,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
         // Fire event
         CompoundTag tag = new CompoundTag();
-        tag = host.saveSelfToTag(tag);
+        host.saveSelfToTag(tag);
         tag.putInt("PersistenceRequired",1);
         host.fromTag(tag);
         PossessionStateChangeCallback.EVENT.invoker().onPossessionStateChange(this.player, host);
