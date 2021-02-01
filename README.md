@@ -8,7 +8,7 @@ Memento Mori is a fork of Requiem that adjusts the balancing for a semi-hardcore
 
 **Changes:**
 
-* Attrition caries through all types of death and the effect decreases by one level every 20 minutes in a human body. No more avoiding the mod by stockpiling on reasources.
+* Attrition caries through all types of death and the effect decreases by one level every 20 minutes in a human body. No more avoiding the mod by stockpiling on resources.
 
 * Host-specific healing items give Hunger I for 30 seconds, during this period you cannot consume said items.
 
