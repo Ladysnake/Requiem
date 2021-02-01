@@ -150,7 +150,8 @@ public final class PossessionComponentImpl implements PossessionComponent {
         host.playAmbientSound();
 
         // Fire event
-        CompoundTag tag = host.saveSelfToTag(new CompoundTag());
+        CompoundTag tag = new CompoundTag();
+        tag = host.saveSelfToTag(CompoundTag);
         tag.putInt("PersistenceRequired",1);
         host.fromTag(tag);
         PossessionStateChangeCallback.EVENT.invoker().onPossessionStateChange(this.player, host);
