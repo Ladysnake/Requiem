@@ -15,6 +15,7 @@ Host-specific healing items give Hunger I for 30 seconds, during this period you
 Souls with Attrition V and above can no longer possess a body. Basically a hardcore death.
 
 **Fixes:**
+
 Souls no longer lose attrition when dying from void damage.
 Milk buckets no longer cure attrition levels when human.
 Hosts no longer get deleted when teleporting large distances.
