@@ -1,13 +1,26 @@
-# Requiem
+# Momento Mori
 
 ![](https://raw.githubusercontent.com/Ladysnake/Requiem/master/requiem-logo-200x125.png)
 
 [![Download](https://curse.nikky.moe/api/img/265729?logo)](https://curse.nikky.moe/api/url/265729) ![](https://jitpack.io/v/ladysnake/dissolution.svg) ![](https://img.shields.io/github/issues/ladysnake/requiem.svg)
 
-Requiem is a Minecraft (Java Edition) mod aiming at removing the continuity break resulting from death,
-as well as adding new mechanics centered around soul dissociation and body possession.
+Momento Mori is a fork of Requiem that adjusts balancing for a soft hardcore experince. Also does some bug fixes
 
-More information is available on the Ladysnake Website: https://ladysnake.github.io/wiki/requiem.
+Changes:
+
+Attrition caries through all types of death and the effect decreases by one level every 20 minutes in a human body. No more avoiding the mod by stockpiling on reasources.
+
+Host-specific healing items give Hunger I for 30 seconds, during this period you cannot consume said items.
+
+Souls with Attrition V and above can no longer possess a body. Basically a hardcore death.
+
+Fixes:
+Souls no longer lose attrition when dying from void damage.
+Milk buckets no longer cure attrition levels when human.
+Hosts no longer get deleted when teleporting large distances.
+
+
+More information on Requiem is available on the Ladysnake Website: https://ladysnake.github.io/wiki/requiem.
 
 ## Installation
 
