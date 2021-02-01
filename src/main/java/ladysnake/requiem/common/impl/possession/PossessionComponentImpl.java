@@ -65,6 +65,7 @@ import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.nbt.CompoundTag;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -149,6 +150,9 @@ public final class PossessionComponentImpl implements PossessionComponent {
         host.playAmbientSound();
 
         // Fire event
+        CompoundTag tag = host.toTag();
+        tag.putInt("PersistenceRequired",1);
+        host.fromTag(tag);
         PossessionStateChangeCallback.EVENT.invoker().onPossessionStateChange(this.player, host);
     }
 
