@@ -4,7 +4,7 @@
 
 [![Download](https://curse.nikky.moe/api/img/265729?logo)](https://curse.nikky.moe/api/url/265729) ![](https://jitpack.io/v/ladysnake/dissolution.svg) ![](https://img.shields.io/github/issues/ladysnake/requiem.svg)
 
-Momento Mori is a fork of Requiem that adjusts balancing for a soft hardcore experince. Also does some bug fixes
+Momento Mori is a fork of Requiem that adjusts the balancing for a semi-hardcore experince. It also does some bug fixes.
 
 **Changes:**
 
