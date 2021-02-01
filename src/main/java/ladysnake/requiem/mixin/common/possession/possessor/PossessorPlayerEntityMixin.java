@@ -196,7 +196,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
     @Override
     protected void requiem$canFly(CallbackInfoReturnable<Boolean> cir) {
         MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
-        if (possessed != null) {
+        if (possessedEntity != null) {
             cir.setReturnValue(false);
         }
     }
