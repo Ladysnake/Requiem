@@ -136,14 +136,6 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
         }
     }
     
-    @Inject(method = "isFallFlying", at = @At("RETURN"), cancellable = true)
-    private void canFly(CallbackInfoReturnable<Boolean> cir) {
-        LivingEntity possessed = PossessionComponent.KEY.get(this).getPossessedEntity();
-        if (possessed != null) {
-            cir.setReturnValue(false);
-        }
-    }
-    
     @Inject(method = "addExhaustion", slice = @Slice(to = @At("INVOKE:FIRST")), at = @At(value = "RETURN"))
     private void addExhaustion(float exhaustion, CallbackInfo ci) {
         Possessable possessed = (Possessable) PossessionComponent.KEY.get(this).getPossessedEntity();
