@@ -36,10 +36,13 @@ package ladysnake.requiem.mixin.client.possession;
 
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.ClientPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 
 @Mixin(Entity.class)
 public abstract class ClientEntityMixin {
@@ -47,6 +50,19 @@ public abstract class ClientEntityMixin {
     private void isCrawling(CallbackInfoReturnable<Boolean> cir) {
         if (RemnantComponent.isIncorporeal((Entity) (Object) this)) {
             cir.setReturnValue(false);
+        }
+    }
+    @Inject(
+        at = @At(
+            value = "INVOKE_ASSIGN",
+            target = "Lnet/minecraft/client/network/ClientPlayerEntity;getEquippedStack(Lnet/minecraft/entity/EquipmentSlot;)Lnet/minecraft/item/ItemStack;"
+        ),
+        method = "tickMovement"
+    )
+    public void patchClientControls(CallbackInfo info) {
+        ClientPlayerEntity thisObj = (ClientPlayerEntity) (Object) this;
+        if  (RemnantComponent.isIncorporeal((Entity) (Object) this)) {
+            this.networkHandler.sendPacket(new ClientCommandC2SPacket(thisObj, ClientCommandC2SPacket.Mode.STOP_FALL_FLYING));
         }
     }
 }
