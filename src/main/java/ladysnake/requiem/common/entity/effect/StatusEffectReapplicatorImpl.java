@@ -57,34 +57,23 @@ public class StatusEffectReapplicatorImpl implements StatusEffectReapplicator {
     @Override
     public void onStatusEffectRemoved(StatusEffectInstance effect) {
         if (!this.holder.world.isClient) {
-            if (effect.getEffectType() == RequiemStatusEffects.ATTRITION) {
-                if (!AttritionStatusEffect.shouldNotFade(this.holder)) {
-                    if (effect.getDuration() == 0) {
-                        if (effect.getAmplifier() > 0) {
-                            AttritionStatusEffect.addAttrition(this.holder,effect.getAmplifier() - 1);
-                        }
-                    } else {
-                        reappliedEffects.add(new StatusEffectInstance(
-                            RequiemStatusEffects.ATTRITION,
-                            effect.getDuration(),
-                            effect.getAmplifier(),
-                            false,
-                            false,
-                            true
-                        ));
+            if (StickyStatusEffect.shouldStick(effect.getEffectType(), this.holder)) {
+                reappliedEffects.add(new StatusEffectInstance(effect));
+            } else if (effect.getEffectType() == RequiemStatusEffects.ATTRITION) {
+                if (effect.getDuration() == 0) {
+                    if (effect.getAmplifier() > 0) {
+                        AttritionStatusEffect.addAttrition(this.holder,effect.getAmplifier() - 1);
                     }
                 } else {
-                    reappliedEffects.add(new StatusEffectInstance(
-                            RequiemStatusEffects.ATTRITION,
-                            effect.getDuration(),
-                            Math.max(0, Math.min(3, effect.getAmplifier() + 1)),
-                            false,
-                            false,
-                            true
-                        ));
+                    target.addStatusEffect(new StatusEffectInstance(
+                        RequiemStatusEffects.ATTRITION,
+                        effect.getDuration(),
+                        effect.getAmplifier(),
+                        false,
+                        false,
+                        true
+                    ));
                 }
-            } else if (StickyStatusEffect.shouldStick(effect.getEffectType(), this.holder)) {
-                reappliedEffects.add(new StatusEffectInstance(effect));
             }
         }
     }
