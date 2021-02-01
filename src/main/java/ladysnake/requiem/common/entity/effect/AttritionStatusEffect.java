@@ -115,7 +115,6 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
     }
     
     public static boolean shouldNotFade(LivingEntity entity) {
-        if (RemnantComponent.isVagrant(entity)) return true;
         PlayerEntity possessor = ((Possessable)entity).getPossessor();
         if (possessor == null) return false;
         RemnantComponent remnantComponent = RemnantComponent.get(possessor);
