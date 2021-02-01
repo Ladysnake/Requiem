@@ -37,7 +37,6 @@ package ladysnake.requiem.mixin.common.attrition;
 import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import ladysnake.requiem.api.v1.possession.Possessable;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import org.spongepowered.asm.mixin.Mixin;
@@ -56,11 +55,8 @@ public abstract class StatusEffectInstanceMixin {
 
     @Inject(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/effect/StatusEffectInstance;updateDuration()I"))
     private void preventSoulboundCountdown(LivingEntity livingEntity, Runnable r, CallbackInfoReturnable<Boolean> cir) {
-        PlayerEntity possessor = ((Possessable)livingEntity).getPossessor();
         if (StickyStatusEffect.shouldStick(this.getEffectType(), livingEntity)) {
-            if (possessor == null) {
-                this.duration++; // revert the duration decrement
-            }
+            this.duration++; // revert the duration decrement
         }
     }
 }
