@@ -98,13 +98,8 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
         return speedAmount;
     }
     @Inject(method = "isFallFlying", at = @At("RETURN"), cancellable = true)
-    private void canFly(CallbackInfoReturnable<Boolean> cir) {
-        if (this.requiem$getWorld().isClient) return;
-
-        Entity possessed = PossessionComponent.getPossessedEntity((Entity) (Object) this);
-        if (possessed != null) {
-            cir.setReturnValue(false);
-        }
+    protected void requiem$canFly(CallbackInfoReturnable<Boolean> cir) {
+        //Overidden
     }
 
     @Inject(method = "setSprinting", at = @At("RETURN"))
