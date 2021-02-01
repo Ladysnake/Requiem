@@ -62,7 +62,14 @@ public class StatusEffectReapplicatorImpl implements StatusEffectReapplicator {
             } else if (effect.getEffectType() == RequiemStatusEffects.ATTRITION) {
                 if (effect.getDuration() == 0) {
                     if (effect.getAmplifier() > 0) {
-                        AttritionStatusEffect.addAttrition(this.holder,effect.getAmplifier() - 1);
+                        reappliedEffects.add(new StatusEffectInstance(
+                            RequiemStatusEffects.ATTRITION,
+                            24000,
+                            effect.getAmplifier() - 1,
+                            false,
+                            false,
+                            true
+                        ));
                     }
                 } else {
                     reappliedEffects.add(new StatusEffectInstance(
