@@ -1,10 +1,10 @@
-# Momento Mori
+# Memento Mori
 
 ![](https://raw.githubusercontent.com/Ladysnake/Requiem/master/requiem-logo-200x125.png)
 
 [![Download](https://curse.nikky.moe/api/img/265729?logo)](https://curse.nikky.moe/api/url/265729) ![](https://jitpack.io/v/ladysnake/dissolution.svg) ![](https://img.shields.io/github/issues/ladysnake/requiem.svg)
 
-Momento Mori is a fork of Requiem that adjusts the balancing for a semi-hardcore experince. It also does some bug fixes.
+Memento Mori is a fork of Requiem that adjusts the balancing for a semi-hardcore experince. It also does some bug fixes.
 
 **Changes:**
 
