@@ -154,6 +154,10 @@ public final class PossessionComponentImpl implements PossessionComponent {
         host.saveSelfToTag(tag);
         tag.putInt("PersistenceRequired",1);
         host.fromTag(tag);
+        CompoundTag tag2 = new CompoundTag();
+        player.saveSelfToTag(tag2);
+        tag2.putInt("FallFlying",0);
+        player.fromTag(tag2);
         PossessionStateChangeCallback.EVENT.invoker().onPossessionStateChange(this.player, host);
     }
 
@@ -171,6 +175,10 @@ public final class PossessionComponentImpl implements PossessionComponent {
     @Override
     public void stopPossessing(boolean transfer) {
         LivingEntity possessed = this.getPossessedEntity();
+        CompoundTag tag2 = new CompoundTag();
+        player.saveSelfToTag(tag2);
+        tag2.putInt("FallFlying",1);
+        player.fromTag(tag2);
         if (possessed != null) {
             this.resetState();
             ((Possessable)possessed).setPossessor(null);
