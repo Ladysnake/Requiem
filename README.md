@@ -18,6 +18,7 @@ Memento Mori is a fork of Requiem that adjusts the balancing for a semi-hardcore
 * Souls no longer lose attrition when dying from void damage.
 * Milk buckets no longer cure attrition levels when human.
 * Hosts no longer get deleted when teleporting large distances.
+* You can no longer use elytra as a mob. (It was buggy, looked weird, and generally it just doesn't make sense for a fish to fly.)
 
 
 More information on Requiem is available on the Ladysnake Website: https://ladysnake.github.io/wiki/requiem.
