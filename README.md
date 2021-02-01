@@ -6,7 +6,7 @@
 
 Momento Mori is a fork of Requiem that adjusts balancing for a soft hardcore experince. Also does some bug fixes
 
-Changes:
+**Changes:**
 
 Attrition caries through all types of death and the effect decreases by one level every 20 minutes in a human body. No more avoiding the mod by stockpiling on reasources.
 
@@ -14,7 +14,7 @@ Host-specific healing items give Hunger I for 30 seconds, during this period you
 
 Souls with Attrition V and above can no longer possess a body. Basically a hardcore death.
 
-Fixes:
+**Fixes:**
 Souls no longer lose attrition when dying from void damage.
 Milk buckets no longer cure attrition levels when human.
 Hosts no longer get deleted when teleporting large distances.
