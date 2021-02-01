@@ -74,7 +74,7 @@ public abstract class ItemMixin {
                     player.addStatusEffect(new StatusEffectInstance(
                         StatusEffects.HUNGER,
                         600,
-                        2,
+                        0,
                         false,
                         false,
                         true
@@ -90,7 +90,7 @@ public abstract class ItemMixin {
                         player.addStatusEffect(new StatusEffectInstance(
                             StatusEffects.HUNGER,
                             600,
-                            2,
+                            0,
                             false,
                             false,
                             true
