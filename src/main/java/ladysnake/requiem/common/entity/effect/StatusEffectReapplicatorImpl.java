@@ -65,7 +65,7 @@ public class StatusEffectReapplicatorImpl implements StatusEffectReapplicator {
                         AttritionStatusEffect.addAttrition(this.holder,effect.getAmplifier() - 1);
                     }
                 } else {
-                    target.addStatusEffect(new StatusEffectInstance(
+                    this.holder.addStatusEffect(new StatusEffectInstance(
                         RequiemStatusEffects.ATTRITION,
                         effect.getDuration(),
                         effect.getAmplifier(),
