@@ -99,7 +99,9 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
     }
     @Inject(method = "isFallFlying", at = @At("RETURN"), cancellable = true)
     private void canFly(CallbackInfoReturnable<Boolean> cir) {
-        LivingEntity possessed = PossessionComponent.KEY.get(this).getPossessedEntity();
+        if (this.requiem$getWorld().isClient) return;
+
+        Entity possessed = PossessionComponent.getPossessedEntity((Entity) (Object) this);
         if (possessed != null) {
             cir.setReturnValue(false);
         }
