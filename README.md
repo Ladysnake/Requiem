@@ -12,7 +12,11 @@ Memento Mori is a fork of Requiem that adjusts the balancing for a semi-hardcore
 
 * Host-specific healing items give Hunger I for 30 seconds, during this period you cannot consume said items. Additionally the only default zombie snacks are now rotten flesh and human flesh.
 
-* Souls can no longer phase through obsidian.
+* Souls can no longer phase through obsidian, iron bars, iron doors, or iron trapdoors.
+
+* All undead cure into players.
+
+* Enchanted golden apples can now be crafted. These can be used to cure an undead without a weakness potion.
 
 * Souls with Attrition V and above can no longer possess a body. Basically a hardcore death.
 
