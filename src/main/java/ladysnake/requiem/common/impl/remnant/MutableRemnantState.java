@@ -120,13 +120,9 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public void curePossessed(LivingEntity body) {
-        if (this.canRegenerateBodyFrom(body)) {
-            ServerPlayerEntity player = (ServerPlayerEntity) this.player;
-            RequiemNetworking.sendBodyCureMessage(player);
-            this.regenerateBody(body);
-        } else {
-            this.cureMob(body);
-        }
+        ServerPlayerEntity player = (ServerPlayerEntity) this.player;
+        RequiemNetworking.sendBodyCureMessage(player);
+        this.regenerateBody(body);
     }
 
     private void regenerateBody(LivingEntity body) {
