@@ -274,7 +274,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
         MobEntity possessedEntity = this.getPossessedEntity();
         return possessedEntity != null
             && RequiemItemTags.UNDEAD_CURES.contains(cure.getItem())
-            && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)
+            && (possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS) || RequiemItemTags.UNDEAD_CUREALL.contains(cure.getItem()))
             && RemnantComponent.get(this.player).canCurePossessed(possessedEntity);
     }
 
