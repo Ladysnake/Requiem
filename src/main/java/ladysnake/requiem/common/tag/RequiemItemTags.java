@@ -42,6 +42,7 @@ import net.minecraft.tag.Tag;
 public final class RequiemItemTags {
     public static final Tag<Item> BONES = TagRegistry.item(Requiem.id("bones"));
     public static final Tag<Item> UNDEAD_CURES = TagRegistry.item(Requiem.id("undead_cures"));
+    public static final Tag<Item> UNDEAD_CUREALLS = TagRegistry.item(Requiem.id("undead_curealls"));
     public static final Tag<Item> RAW_MEATS = TagRegistry.item(Requiem.id("raw_meats"));
     public static final Tag<Item> RAW_FISHES = TagRegistry.item(Requiem.id("raw_fishes"));
 }
