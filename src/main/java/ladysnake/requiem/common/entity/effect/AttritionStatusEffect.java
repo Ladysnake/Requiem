@@ -61,13 +61,7 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
     }};
 
     public static void apply(PlayerEntity target) {
-        StatusEffectInstance attrition = target.getStatusEffect(RequiemStatusEffects.ATTRITION);
-        if (attrition == null) {
-            apply(target, 1); 
-        } 
-        else {
-            reduce(target, -1);
-        }
+        apply(target, 1);
     }
 
     public static void apply(LivingEntity target, @Nonnegative int amount) {
@@ -85,10 +79,10 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
         }
     }
 
-    public static void addAttrition(LivingEntity target, int amplifier) {
+    private static void addAttrition(LivingEntity target, int amplifier) {
         target.addStatusEffect(new StatusEffectInstance(
             RequiemStatusEffects.ATTRITION,
-            24000,
+            300,
             amplifier,
             false,
             false,
@@ -96,8 +90,9 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
         ));
     }
 
-    public static void reduce(LivingEntity target, int amount) {
-        
+    public static void reduce(LivingEntity target, @Nonnegative int amount) {
+        Preconditions.checkArgument(amount > 0);
+
         StatusEffectInstance attrition = target.getStatusEffect(RequiemStatusEffects.ATTRITION);
         if (attrition == null) return;
 
