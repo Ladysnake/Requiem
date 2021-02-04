@@ -62,7 +62,7 @@ public abstract class ItemMixin {
         MobEntity possessedEntity = possessionComponent.getPossessedEntity();
         if (possessedEntity != null) {
             ItemStack heldStack = player.getStackInHand(hand);
-            
+
             if (possessionComponent.canBeCured(heldStack)) {
                 player.setCurrentHand(hand);
                 cir.setReturnValue(new TypedActionResult<>(ActionResult.SUCCESS, heldStack));
