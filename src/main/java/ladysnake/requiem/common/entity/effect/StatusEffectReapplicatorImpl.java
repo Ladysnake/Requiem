@@ -40,7 +40,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.CompoundTag;
-import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,32 +55,8 @@ public class StatusEffectReapplicatorImpl implements StatusEffectReapplicator {
 
     @Override
     public void onStatusEffectRemoved(StatusEffectInstance effect) {
-        if (!this.holder.world.isClient) {
-            if (StickyStatusEffect.shouldStick(effect.getEffectType(), this.holder)) {
-                reappliedEffects.add(new StatusEffectInstance(effect));
-            } else if (effect.getEffectType() == RequiemStatusEffects.ATTRITION) {
-                if (effect.getDuration() == 0) {
-                    if (effect.getAmplifier() > 0) {
-                        reappliedEffects.add(new StatusEffectInstance(
-                            RequiemStatusEffects.ATTRITION,
-                            24000,
-                            effect.getAmplifier() - 1,
-                            false,
-                            false,
-                            true
-                        ));
-                    }
-                } else {
-                    reappliedEffects.add(new StatusEffectInstance(
-                        RequiemStatusEffects.ATTRITION,
-                        effect.getDuration(),
-                        effect.getAmplifier(),
-                        false,
-                        false,
-                        true
-                    ));
-                }
-            }
+        if (!this.holder.world.isClient && StickyStatusEffect.shouldStick(effect.getEffectType(), this.holder)) {
+            reappliedEffects.add(new StatusEffectInstance(effect));
         }
     }
 
