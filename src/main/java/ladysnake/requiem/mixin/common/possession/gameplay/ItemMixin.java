@@ -53,8 +53,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 
 @Mixin(Item.class)
 public abstract class ItemMixin {
@@ -64,29 +62,20 @@ public abstract class ItemMixin {
         MobEntity possessedEntity = possessionComponent.getPossessedEntity();
         if (possessedEntity != null) {
             ItemStack heldStack = player.getStackInHand(hand);
-            StatusEffectInstance hungry = player.getStatusEffect(StatusEffects.HUNGER);
             if (possessionComponent.canBeCured(heldStack)) {
                 player.setCurrentHand(hand);
                 cir.setReturnValue(new TypedActionResult<>(ActionResult.SUCCESS, heldStack));
-            } else if (RequiemEntityTypeTags.ZOMBIES.contains(possessedEntity.getType()) && hungry == null) {
+            } else if (RequiemEntityTypeTags.ZOMBIES.contains(possessedEntity.getType())) {
                 if (RequiemItemTags.RAW_MEATS.contains(heldStack.getItem()) || RequiemItemTags.RAW_FISHES.contains(heldStack.getItem()) && possessedEntity instanceof DrownedEntity) {
                     player.setCurrentHand(hand);
                     cir.setReturnValue(new TypedActionResult<>(ActionResult.SUCCESS, heldStack));
                 } else {
                     cir.setReturnValue(new TypedActionResult<>(ActionResult.FAIL, heldStack));
                 }
-            } else if (RequiemEntityTypeTags.SKELETONS.contains(possessedEntity.getType()) && hungry == null) {
+            } else if (RequiemEntityTypeTags.SKELETONS.contains(possessedEntity.getType())) {
                 if (RequiemItemTags.BONES.contains(heldStack.getItem())) {
                     if (SkeletonBoneComponent.KEY.get(possessedEntity).replaceBone()) {
                         heldStack.decrement(1);
-                        player.addStatusEffect(new StatusEffectInstance(
-                            StatusEffects.HUNGER,
-                            600,
-                            0,
-                            false,
-                            false,
-                            true
-                        ));
                         player.getItemCooldownManager().set(heldStack.getItem(), 40);
                     }
                 }
