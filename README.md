@@ -1,34 +1,13 @@
-# Memento Mori
+# Requiem
 
 ![](https://raw.githubusercontent.com/Ladysnake/Requiem/master/requiem-logo-200x125.png)
 
 [![Download](https://curse.nikky.moe/api/img/265729?logo)](https://curse.nikky.moe/api/url/265729) ![](https://jitpack.io/v/ladysnake/dissolution.svg) ![](https://img.shields.io/github/issues/ladysnake/requiem.svg)
 
-Memento Mori is a fork of Requiem that adjusts the balancing for a semi-hardcore experince. It also does some bug fixes.
+Requiem is a Minecraft (Java Edition) mod aiming at removing the continuity break resulting from death,
+as well as adding new mechanics centered around soul dissociation and body possession.
 
-**Changes:**
-
-* Attrition caries through all types of death and the effect decreases by one level every 20 minutes in a human body. No more avoiding the mod by stockpiling on resources.
-
-* Host-specific healing items give Hunger I for 30 seconds, during this period you cannot consume said items. Additionally the only default zombie snacks are now rotten flesh and human flesh.
-
-* Souls can no longer phase through obsidian, iron bars, iron doors, or iron trapdoors.
-
-* All undead cure into players.
-
-* Enchanted golden apples can now be crafted. These can be used to cure an undead without a weakness potion.
-
-* Souls with Attrition V and above can no longer possess a body. Basically a hardcore death.
-
-**Fixes:**
-* Fixed enderman possession crash by removing enderman possession in the end. (You can just die by void damage to get out.)
-* Souls no longer lose attrition when dying from void damage.
-* Milk buckets no longer cure attrition levels when human.
-* Hosts no longer get deleted when teleporting large distances.
-* You can no longer use an elytra as a mob. (It was buggy, looked weird, and generally it just doesn't make sense for a fish to fly.)
-
-
-More information on Requiem is available on the Ladysnake Website: https://ladysnake.github.io/wiki/requiem.
+More information is available on the Ladysnake Website: https://ladysnake.github.io/wiki/requiem.
 
 ## Installation
 
