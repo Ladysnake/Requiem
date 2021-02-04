@@ -56,8 +56,6 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
@@ -135,7 +133,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
             cir.setReturnValue(((Possessable) possessed).isRegularEater() && possessed.getHealth() > 0 && possessed.getHealth() < possessed.getMaxHealth());
         }
     }
-    
+
     @Inject(method = "addExhaustion", slice = @Slice(to = @At("INVOKE:FIRST")), at = @At(value = "RETURN"))
     private void addExhaustion(float exhaustion, CallbackInfo ci) {
         Possessable possessed = (Possessable) PossessionComponent.KEY.get(this).getPossessedEntity();
@@ -154,14 +152,6 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
             if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || RequiemItemTags.RAW_FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
                 FoodComponent food = stack.getItem().getFoodComponent();
                 assert food != null;
-                possessedEntity.addStatusEffect(new StatusEffectInstance(
-                    StatusEffects.HUNGER,
-                    600,
-                    0,
-                    false,
-                    false,
-                    true
-                ));
                 possessedEntity.heal(food.getHunger());
             }
         }
