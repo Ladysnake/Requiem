@@ -76,5 +76,38 @@ public class BasePossessionHandlers {
             }
             return PossessionStartCallback.Result.PASS;
         });
+        PossessionStartCallback.EVENT.register(Requiem.id("enderman"), BasePossessionHandlers::handleEndermanPossession);
+    }
+
+    private static PossessionStartCallback.Result handleEndermanPossession(MobEntity target, PlayerEntity possessor, boolean simulate) {
+        if (!target.world.isClient && target instanceof EndermanEntity) {
+            if (!simulate) {
+                Entity tpDest;
+                // Maybe consider making the dimensional teleportation work in any dimension other than the overworld ?
+                if (possessor.world.getRegistryKey() != World.END/* == DimensionType.OVERWORLD*/) {
+                    // Retry a few times
+                    for (int i = 0; i < 20; i++) {
+                        if (((EndermanEntityAccessor) target).invokeTeleportRandomly()) {
+                            possessor.world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
+                            break;
+                        }
+                    }
+                    tpDest = target;
+                } else {
+                    possessor.world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
+                    // Set the variable in advance to avoid game credits
+                    ((ServerPlayerEntity) possessor).notInAnyWorld = true;
+                    ServerWorld destination = ((ServerPlayerEntity) possessor).server.getWorld(World.OVERWORLD);
+                    possessor.moveToWorld(destination);
+                    ((ServerPlayerEntity) possessor).networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_WON, 0.0F));
+                    tpDest = target.moveToWorld(destination);
+                }
+                if (tpDest != null) {
+                    possessor.teleport(tpDest.getX(), tpDest.getY(), tpDest.getZ(), true);
+                }
+            }
+            return PossessionStartCallback.Result.HANDLED;
+        }
+        return PossessionStartCallback.Result.PASS;
     }
 }
