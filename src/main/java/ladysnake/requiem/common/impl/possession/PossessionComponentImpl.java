@@ -50,7 +50,6 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import ladysnake.requiem.common.util.InventoryHelper;
-import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -65,7 +64,6 @@ import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.nbt.CompoundTag;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -82,8 +80,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
     }
 
     private boolean isReadyForPossession() {
-        StatusEffectInstance attrition = player.getStatusEffect(RequiemStatusEffects.ATTRITION);
-        return player.world.isClient || (!player.isSpectator() && RemnantComponent.get(this.player).isIncorporeal()) && !(attrition != null && attrition.getAmplifier() > 3);
+        return player.world.isClient || (!player.isSpectator() && RemnantComponent.get(this.player).isIncorporeal());
     }
 
     /**
@@ -274,7 +271,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
         MobEntity possessedEntity = this.getPossessedEntity();
         return possessedEntity != null
             && RequiemItemTags.UNDEAD_CURES.contains(cure.getItem())
-            && (possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS) || RequiemItemTags.UNDEAD_CUREALLS.contains(cure.getItem()))
+            && (possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)
             && RemnantComponent.get(this.player).canCurePossessed(possessedEntity);
     }
 
