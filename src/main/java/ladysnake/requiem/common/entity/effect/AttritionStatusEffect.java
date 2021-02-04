@@ -79,7 +79,7 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
         }
     }
 
-    private static void addAttrition(LivingEntity target, int amplifier) {
+    public static void addAttrition(LivingEntity target, int amplifier) {
         target.addStatusEffect(new StatusEffectInstance(
             RequiemStatusEffects.ATTRITION,
             300,
