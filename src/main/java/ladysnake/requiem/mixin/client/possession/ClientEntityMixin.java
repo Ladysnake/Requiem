@@ -36,13 +36,10 @@ package ladysnake.requiem.mixin.client.possession;
 
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.entity.Entity;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.ClientPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 
 @Mixin(Entity.class)
 public abstract class ClientEntityMixin {
