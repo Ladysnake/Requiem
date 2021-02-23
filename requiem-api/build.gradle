@@ -3,8 +3,11 @@ group = rootProject.group
 
 repositories {
     maven {
-        name = 'Ladysnake Libs'
-        url = 'https://dl.bintray.com/ladysnake/libs'
+        name = "Ladysnake Libs"
+        url = 'https://ladysnake.jfrog.io/artifactory/mods'
+        content {
+            includeGroupByRegex "io\\.github\\.onyxstudios.*"
+        }
     }
 }
 
