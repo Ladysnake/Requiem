@@ -97,6 +97,10 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
         }
         return speedAmount;
     }
+    @Inject(method = "isFallFlying", at = @At("RETURN"), cancellable = true)
+    protected void requiem$canFly(CallbackInfoReturnable<Boolean> cir) {
+        //Overidden
+    }
 
     @Inject(method = "setSprinting", at = @At("RETURN"))
     protected void requiem$setSprinting(boolean sprinting, CallbackInfo ci) {

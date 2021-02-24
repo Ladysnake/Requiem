@@ -145,7 +145,10 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
         // Make the mob react a bit
         host.playAmbientSound();
-
+        
+        //Set persistent
+        host.setPersistent();
+        
         // Fire event
         PossessionStateChangeCallback.EVENT.invoker().onPossessionStateChange(this.player, host);
     }
