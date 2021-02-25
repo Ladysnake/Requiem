@@ -34,12 +34,16 @@
  */
 package ladysnake.requiem.common.impl.movement;
 
+import com.demonwav.mcdev.annotations.CheckEnv;
+import com.demonwav.mcdev.annotations.Env;
 import io.github.ladysnake.pal.AbilitySource;
 import io.github.ladysnake.pal.Pal;
 import io.github.ladysnake.pal.VanillaAbilities;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.MovementConfig;
+import ladysnake.requiem.api.v1.entity.movement.SwimMode;
+import ladysnake.requiem.api.v1.entity.movement.WalkMode;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.network.RequiemNetworking;
@@ -55,11 +59,13 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.FlyingEntity;
+import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 
@@ -106,9 +112,26 @@ public class PlayerMovementAlterer implements MovementAlterer {
         }
     }
 
+    @CheckEnv(Env.CLIENT)
+    @Override
+    public void alterControls() {
+        if (this.config != null
+            && getActualSwimMode(this.config, getPlayerOrPossessed(this.player)) == SwimMode.FLOATING
+            && isInFluid(this.player)
+            && this.player.getRandom().nextFloat() < 0.8F
+        ) {
+            this.player.setJumping(true);
+        }
+    }
+
+    // Based on SwimGoal#canStart
+    private static boolean isInFluid(LivingEntity entity) {
+        return entity.isTouchingWater() && entity.getFluidHeight(FluidTags.WATER) > entity.method_29241() || entity.isInLava();
+    }
+
     @Override
     public float getSwimmingAcceleration(float baseAcceleration) {
-        if (this.config != null && getActualSwimMode(this.config, getPlayerOrPossessed(player)) == FORCED) {
+        if (this.config != null && getActualSwimMode(this.config, getPlayerOrPossessed(player)) == SwimMode.FORCED) {
             return 0.96F;
         }
         return baseAcceleration;
@@ -116,12 +139,12 @@ public class PlayerMovementAlterer implements MovementAlterer {
 
     @Override
     public double getSwimmingUpwardsVelocity(double baseUpwardsVelocity) {
-        if (this.config != null && !this.player.isSwimming() && shouldActuallySinkInWater(this.config, getPlayerOrPossessed(player))) {
+        if (this.config != null && getActualSwimMode(this.config, getPlayerOrPossessed(player)) == SwimMode.SINKING) {
             double y = this.player.getY();
             if (this.player.isOnGround()) {    // starting the jump
                 this.underwaterJumpStartY = y;
                 this.underwaterJumpAscending = true;
-            } else if (this.underwaterJumpAscending && y > underwaterJumpStartY + 0.8) {    // reaching peak
+            } else if (this.underwaterJumpAscending && y > underwaterJumpStartY + (this.player.isTouchingWater() ? 0.8 : 1.0)) {    // reaching peak
                 this.underwaterJumpAscending = false;
             } else if (!this.underwaterJumpAscending) { // sinking again
                 return 0;
@@ -153,6 +176,9 @@ public class PlayerMovementAlterer implements MovementAlterer {
                 } else if (this.noClipping && this.player.getRandom().nextFloat() > 0.8f) {
                     this.playPhaseEffects();
                 }
+            }
+            if (this.config.getWalkMode() == WalkMode.JUMPY && this.player.isOnGround() && !getIntendedMovement(player).equals(Vec3d.ZERO)) {
+                this.player.jump();
             }
             if (this.underwaterJumpAscending && !mainPlayer.input.jumping) {
                 this.underwaterJumpAscending = false;
@@ -186,10 +212,10 @@ public class PlayerMovementAlterer implements MovementAlterer {
             return;
         }
         LivingEntity body = getPlayerOrPossessed(player);
-        MovementConfig.MovementMode swimMode = getActualSwimMode(config, body);
-        if (swimMode == FORCED) {
+        SwimMode swimMode = getActualSwimMode(config, body);
+        if (swimMode == SwimMode.FORCED) {
             player.setSwimming(true);
-        } else if (swimMode == DISABLED) {
+        } else if (swimMode == SwimMode.DISABLED) {
             player.setSwimming(false);
         }
         if (getActualFlightMode(config, body) == FORCED || this.noClipping) {
@@ -301,6 +327,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
         return possessed == null ? player : possessed;
     }
 
+    @SuppressWarnings("deprecation")    // backwards compatibility
     private static boolean shouldActuallySinkInWater(MovementConfig config, Entity entity) {
         if (config.shouldSinkInWater() == TriState.DEFAULT) {
             EntityType<?> type = entity.getType();
@@ -309,9 +336,16 @@ public class PlayerMovementAlterer implements MovementAlterer {
         return config.shouldSinkInWater().get();
     }
 
-    private static MovementConfig.MovementMode getActualSwimMode(MovementConfig config, Entity entity) {
-        if (config.getSwimMode() == UNSPECIFIED) {
-            return entity instanceof WaterCreatureEntity ? FORCED : DISABLED;
+    private static SwimMode getActualSwimMode(MovementConfig config, Entity entity) {
+        if (config.getSwimMode() == SwimMode.UNSPECIFIED) {
+            if (shouldActuallySinkInWater(config, entity)) {
+                return SwimMode.SINKING;
+            } else if (entity instanceof WaterCreatureEntity) {
+                return SwimMode.FORCED;
+            } else if (entity instanceof SlimeEntity) {
+                return SwimMode.FLOATING;
+            }
+            return SwimMode.DISABLED;
         }
         return config.getSwimMode();
     }

@@ -17,6 +17,8 @@
  */
 package ladysnake.requiem.api.v1.entity;
 
+import ladysnake.requiem.api.v1.entity.movement.SwimMode;
+import ladysnake.requiem.api.v1.entity.movement.WalkMode;
 import net.fabricmc.fabric.api.util.TriState;
 
 public interface MovementConfig {
@@ -55,10 +57,20 @@ public interface MovementConfig {
 
     /**
      * @return the swimming mode applied to the entity
-     * @see MovementMode
+     * @see SwimMode
      */
-    MovementMode getSwimMode();
+    SwimMode getSwimMode();
 
+    /**
+     * @return the walking mode applied to the entity
+     * @see WalkMode
+     */
+    WalkMode getWalkMode();
+
+    /**
+     * @deprecated check {@code getSwimMode() == SINKING}
+     */
+    @Deprecated
     TriState shouldSinkInWater();
 
     boolean shouldFlopOnLand();

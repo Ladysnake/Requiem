@@ -37,6 +37,8 @@ package ladysnake.requiem.common.impl.movement;
 import com.google.gson.Gson;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.entity.MovementConfig;
+import ladysnake.requiem.api.v1.entity.movement.SwimMode;
+import ladysnake.requiem.api.v1.entity.movement.WalkMode;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.network.PacketByteBuf;
 import org.apiguardian.api.API;
@@ -45,10 +47,11 @@ import org.apiguardian.api.API;
  * A {@link MovementConfig} that can be easily manipulated by {@link Gson} and equivalent.
  */
 public class SerializableMovementConfig implements MovementConfig {
-    public static final SerializableMovementConfig SOUL = new SerializableMovementConfig(MovementMode.ENABLED, MovementMode.ENABLED, TriState.FALSE, false, true, 0, 1f, 0.1F);
+    public static final SerializableMovementConfig SOUL = new SerializableMovementConfig(MovementMode.ENABLED, SwimMode.ENABLED, WalkMode.NORMAL, TriState.FALSE, false, true, 0, 1f, 0.1F);
 
     private MovementMode flightMode;
-    private MovementMode swimMode;
+    private SwimMode swimMode;
+    private WalkMode walkMode;
     private TriState sinksInWater;
     private boolean flopsOnLand;
     private boolean climbsWalls;
@@ -60,13 +63,14 @@ public class SerializableMovementConfig implements MovementConfig {
     @CalledThroughReflection
     @API(status = API.Status.INTERNAL)
     public SerializableMovementConfig() {
-        this(MovementMode.UNSPECIFIED, MovementMode.UNSPECIFIED, TriState.DEFAULT, false, false, 0, 1f, 0);
+        this(MovementMode.UNSPECIFIED, SwimMode.UNSPECIFIED, WalkMode.NORMAL, TriState.DEFAULT, false, false, 0, 1f, 0);
     }
 
     @API(status = API.Status.INTERNAL)
-    public SerializableMovementConfig(MovementMode flightMode, MovementMode swimMode, TriState sinksInWater, boolean flopsOnLand, boolean phasesThroughWalls, float gravity, float fallSpeedModifier, float inertia) {
+    public SerializableMovementConfig(MovementMode flightMode, SwimMode swimMode, WalkMode walkMode, TriState sinksInWater, boolean flopsOnLand, boolean phasesThroughWalls, float gravity, float fallSpeedModifier, float inertia) {
         this.flightMode = flightMode;
         this.swimMode = swimMode;
+        this.walkMode = walkMode;
         this.sinksInWater = sinksInWater;
         this.flopsOnLand = flopsOnLand;
         this.phasesThroughWalls = phasesThroughWalls;
@@ -78,6 +82,7 @@ public class SerializableMovementConfig implements MovementConfig {
     public void toPacket(PacketByteBuf buf) {
         buf.writeEnumConstant(this.flightMode);
         buf.writeEnumConstant(this.swimMode);
+        buf.writeEnumConstant(this.walkMode);
         buf.writeEnumConstant(this.sinksInWater);
         buf.writeBoolean(this.flopsOnLand);
         buf.writeBoolean(this.climbsWalls);
@@ -89,7 +94,8 @@ public class SerializableMovementConfig implements MovementConfig {
 
     public void fromPacket(PacketByteBuf buf) {
         this.flightMode = buf.readEnumConstant(MovementMode.class);
-        this.swimMode = buf.readEnumConstant(MovementMode.class);
+        this.swimMode = buf.readEnumConstant(SwimMode.class);
+        this.walkMode = buf.readEnumConstant(WalkMode.class);
         this.sinksInWater = buf.readEnumConstant(TriState.class);
         this.flopsOnLand = buf.readBoolean();
         this.climbsWalls = buf.readBoolean();
@@ -120,8 +126,13 @@ public class SerializableMovementConfig implements MovementConfig {
     }
 
     @Override
-    public MovementMode getSwimMode() {
+    public SwimMode getSwimMode() {
         return swimMode;
+    }
+
+    @Override
+    public WalkMode getWalkMode() {
+        return walkMode;
     }
 
     @Override

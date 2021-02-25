@@ -32,8 +32,7 @@
     "swimMode": "FORCED"
   },
   "minecraft:drowned": {
-    "swimMode": "ENABLED",
-    "sinksInWater": false
+    "swimMode": "ENABLED"
   },
   "minecraft:elder_guardian": {
     "swimMode": "FORCED",
@@ -47,7 +46,11 @@
     "flopsOnLand": true
   },
   "minecraft:iron_golem": {
-    "sinksInWater": true
+    "swimMode": "SINKING"
+  },
+  "minecraft:magma_cube": {
+    "swimMode": "FLOATING",
+    "walkMode": "JUMPY"
   },
   "minecraft:parrot": {
     "flightMode": "ENABLED"
@@ -65,10 +68,11 @@
     "flopsOnLand": true
   },
   "minecraft:slime": {
-    "inertia":0.5
+    "swimMode": "FLOATING",
+    "walkMode": "JUMPY"
   },
   "minecraft:snow_golem": {
-    "sinksInWater": true
+    "swimMode": "SINKING"
   },
   "minecraft:squid": {
     "swimMode": "FORCED"

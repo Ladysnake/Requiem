@@ -17,10 +17,13 @@
  */
 package ladysnake.requiem.api.v1.entity;
 
+import com.demonwav.mcdev.annotations.CheckEnv;
+import com.demonwav.mcdev.annotations.Env;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
@@ -41,6 +44,12 @@ public interface MovementAlterer extends CommonTickingComponent, AutoSyncedCompo
     void setConfig(@CheckForNull MovementConfig config);
 
     void applyConfig();
+
+    /**
+     * Called at the end of {@code ClientPlayerEntity#tickNewAi()}
+     */
+    @CheckEnv(Env.CLIENT)
+    void alterControls();
 
     /**
      * Gets the acceleration that this entity has underwater.

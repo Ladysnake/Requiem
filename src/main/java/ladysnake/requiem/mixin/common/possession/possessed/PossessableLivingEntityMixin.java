@@ -285,6 +285,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
                 // Absorption only exists on the server for non-player entities
                 player.setAbsorptionAmount(this.getAbsorptionAmount());
             }
+            this.onGround = player.isOnGround();
         }
     }
 
