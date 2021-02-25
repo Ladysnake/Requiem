@@ -51,6 +51,8 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.annotation.Nullable;
+
 @Mixin(PlayerInventory.class)
 public abstract class PlayerInventoryMixin {
     @Shadow
@@ -65,11 +67,12 @@ public abstract class PlayerInventoryMixin {
     public DefaultedList<ItemStack> main;
 
     @Unique
+    @Nullable
     private InventoryLimiter requiemLimiter;
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void constructor(PlayerEntity player, CallbackInfo ci) {
-        this.requiemLimiter = InventoryLimiter.KEY.get(player);
+        this.requiemLimiter = InventoryLimiter.KEY.maybeGet(player).orElse(null);
     }
 
     @Environment(EnvType.CLIENT)
@@ -77,7 +80,7 @@ public abstract class PlayerInventoryMixin {
         at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/entity/player/PlayerInventory;selectedSlot:I", shift = At.Shift.AFTER)
     )
     private void preventClientHotbarSelection(CallbackInfo ci) {
-        if (this.requiemLimiter.isSlotLocked(this.selectedSlot)) {
+        if (this.requiemLimiter != null && this.requiemLimiter.isSlotLocked(this.selectedSlot)) {
             this.selectedSlot = PlayerInventoryLimiter.MAINHAND_SLOT;
         }
     }
@@ -86,7 +89,7 @@ public abstract class PlayerInventoryMixin {
         at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/entity/player/PlayerInventory;selectedSlot:I", shift = At.Shift.AFTER)
     )
     private void preventHotbarSelection(CallbackInfo ci) {
-        if (this.requiemLimiter.isSlotLocked(this.selectedSlot)) {
+        if (this.requiemLimiter != null && this.requiemLimiter.isSlotLocked(this.selectedSlot)) {
             this.selectedSlot = PlayerInventoryLimiter.MAINHAND_SLOT;
         }
     }
@@ -94,15 +97,17 @@ public abstract class PlayerInventoryMixin {
     @ModifyVariable(method = "getEmptySlot", at = @At(value = "LOAD", ordinal = 0))
     private int skipLockedSlots(int slot) {
         InventoryLimiter limiter = this.requiemLimiter;
-        while (limiter.isSlotLocked(slot) && slot < this.main.size()) {
-            slot++;
+        if (limiter != null) {
+            while (limiter.isSlotLocked(slot) && slot < this.main.size()) {
+                slot++;
+            }
         }
         return slot;
     }
 
     @Inject(method = "addStack(ILnet/minecraft/item/ItemStack;)I", at = @At("HEAD"), cancellable = true)
     private void preventAddStack(int slot, ItemStack stack, CallbackInfoReturnable<Integer> cir) {
-        if (this.requiemLimiter.isSlotLocked(slot)) {
+        if (this.requiemLimiter != null && this.requiemLimiter.isSlotLocked(slot)) {
             cir.setReturnValue(stack.getCount());
         }
     }
@@ -117,7 +122,7 @@ public abstract class PlayerInventoryMixin {
         index = 0
     )
     private ItemStack preventMainHandStackAttempt(ItemStack stack) {
-        if (this.requiemLimiter.isSlotLocked(PlayerInventoryLimiter.MAINHAND_SLOT)) {
+        if (this.requiemLimiter != null && this.requiemLimiter.isSlotLocked(PlayerInventoryLimiter.MAINHAND_SLOT)) {
             return ItemStack.EMPTY;
         }
         return stack;
@@ -133,7 +138,7 @@ public abstract class PlayerInventoryMixin {
         index = 0
     )
     private ItemStack preventOffHandStackAttempt(ItemStack stack) {
-        if (this.requiemLimiter.isSlotLocked(PlayerInventoryLimiter.OFFHAND_SLOT)) {
+        if (this.requiemLimiter != null && this.requiemLimiter.isSlotLocked(PlayerInventoryLimiter.OFFHAND_SLOT)) {
             return ItemStack.EMPTY;
         }
         return stack;
@@ -156,8 +161,10 @@ public abstract class PlayerInventoryMixin {
     )
     private int preventStackAttempt(int slot) {
         InventoryLimiter limiter = this.requiemLimiter;
-        while (limiter.isSlotLocked(slot) && slot < this.main.size()) {
-            slot++;
+        if (limiter != null) {
+            while (limiter.isSlotLocked(slot) && slot < this.main.size()) {
+                slot++;
+            }
         }
         return slot;
     }

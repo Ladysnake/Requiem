@@ -48,7 +48,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class CraftingResultSlotMixin extends SlotMixin {
     @Inject(method = "<init>", at = @At("RETURN"))
     private void constructor(PlayerEntity player, CraftingInventory input, Inventory inventory, int index, int x, int y, CallbackInfo ci) {
-        this.limiter = InventoryLimiter.KEY.get(player);
+        if (player != null) {
+            this.limiter = InventoryLimiter.KEY.get(player);
+        }
         this.craftingSlot = true;
     }
 }
