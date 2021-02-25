@@ -50,8 +50,10 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import ladysnake.requiem.common.util.InventoryHelper;
+import ladysnake.requiem.mixin.common.access.EntityAccessor;
 import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -64,6 +66,7 @@ import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -145,10 +148,10 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
         // Make the mob react a bit
         host.playAmbientSound();
-        
+
         //Set persistent
         host.setPersistent();
-        
+
         // Fire event
         PossessionStateChangeCallback.EVENT.invoker().onPossessionStateChange(this.player, host);
     }
@@ -319,5 +322,14 @@ public final class PossessionComponentImpl implements PossessionComponent {
     @Override
     public void readFromNbt(CompoundTag compound) {
         this.conversionTimer = compound.getInt("conversionTimer");
+    }
+
+    public static double reachSq(BlockPos pos, MobEntity host) {
+        double width = host.getWidth();
+        double dx = (host.getX() + width / 2) - (pos.getX() + 0.5D);
+        EntityPose pose = host.getPose();
+        double dy = (host.getY() + ((EntityAccessor) host).invokeGetEyeHeight(pose, host.getDimensions(pose))) - (pos.getY() + 0.5D);
+        double dz = (host.getZ() + width / 2) - (pos.getZ() + 0.5D);
+        return dx * dx + dy * dy + dz * dz;
     }
 }
