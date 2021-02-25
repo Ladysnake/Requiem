@@ -145,26 +145,29 @@ repositories {
         }
     }
     maven {
-        name = "Ladysnake Mods 2"
+        name = 'Ladysnake Mods 2'
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
         content {
-            includeGroupByRegex "io\\.github\\.onyxstudios.*"
+            includeGroupByRegex 'io\\.github\\.onyxstudios.*'
         }
     }
     maven {
         name = 'CottonMC'
         url = 'http://server.bbkr.space:8081/artifactory/libs-release'
-    }
-    maven {
-        url "https://maven.jamieswhiteshirt.com/libs-release/"
         content {
-            includeGroup "com.jamieswhiteshirt"
+            includeGroup 'io.github.cottonmc'
         }
     }
     maven {
-        url "https://www.cursemaven.com"
+        url = 'https://maven.jamieswhiteshirt.com/libs-release/'
         content {
-            includeGroup "curse.maven"
+            includeGroup 'com.jamieswhiteshirt'
+        }
+    }
+    maven {
+        url = 'https://www.cursemaven.com'
+        content {
+            includeGroup 'curse.maven'
         }
     }
     maven {
@@ -173,6 +176,16 @@ repositories {
         content {
             includeGroup "net.adriantodt.fabricmc"
         }
+    }
+    maven {
+        name = 'Earthcomputer Mods'
+        url = 'https://dl.bintray.com/earthcomputer/mods'
+        content {
+            includeGroup 'net.earthcomputer'
+        }
+    }
+    maven {
+        url = "https://maven.shedaniel.me/"
     }
     maven {
         name = 'JitPack'
@@ -217,6 +230,10 @@ dependencies {
     modCompileOnly("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
     modRuntime("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:${eldritch_mobs_version}") { transitive = false }
+    modRuntime("me.sargunvohra.mcmods:autoconfig1u:${autoconfig_version}")
+    modImplementation("curse.maven:allure-336361:${allure_version}")
+    modRuntime "io.github.cottonmc:LibGui:${libgui_version}"
+    modRuntime "net.earthcomputer:libstructure:1.5"
     modCompileOnly("curse.maven:haema-391257:${haema_version}")
     modRuntime("curse.maven:haema-391257:${haema_version}")
     modRuntime("net.fabricmc:fabric-language-kotlin:${flk_version}")
