@@ -25,7 +25,7 @@ dependencies {
     modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${rootProject.cca_version}")
     modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
     include ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
-    modImplementation "io.github.ladysnake:Impersonate:${impersonate_version}"
+    modImplementation ("io.github.ladysnake:Impersonate:${impersonate_version}") { transitive = false }
     include "io.github.ladysnake:Impersonate:${impersonate_version}"
     modCompileOnly("com.github.apace100:origins-fabric:${rootProject.origins_version}") { transitive = false }
     modCompileOnly("curse.maven:haema-391257:${rootProject.haema_version}")
