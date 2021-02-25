@@ -174,7 +174,7 @@ public final class RequiemClientListener implements
             } else if (possessed.isUndead() && item.getItem() == Items.POTION && isWeaknessPotion(item)) {
                 key = "requiem:tooltip.cure_catalyst";
             } else if (possessed instanceof WitchEntity && ItemUtil.isWaterBottle(item)) {
-                key = "pandemonium:tooltip.witch_brew_base";
+                key = "requiem:tooltip.witch_brew_base";
             } else {
                 return;
             }
