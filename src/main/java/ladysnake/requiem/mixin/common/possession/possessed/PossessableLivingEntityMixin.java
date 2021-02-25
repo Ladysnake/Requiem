@@ -174,6 +174,9 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         if (possessor == null) {
             assert this.possessor != null;
             this.requiem_previousPossessorUuid = this.possessor.getUuid();
+            // Possessed entities get their fall distance reset each tick to avoid double damage
+            // We need to revert it when the possession stops to avoid taking no damage
+            this.fallDistance = this.possessor.fallDistance;
         }
 
         this.possessor = possessor;
