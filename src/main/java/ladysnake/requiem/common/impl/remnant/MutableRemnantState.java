@@ -44,6 +44,8 @@ import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
+import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
@@ -51,6 +53,7 @@ import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
@@ -166,16 +169,17 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public void prepareRespawn(ServerPlayerEntity original, boolean lossless) {
-        StatusEffectInstance attrition = original.getStatusEffect(RequiemStatusEffects.ATTRITION);
-        if (attrition != null) {
-            AttritionStatusEffect.addAttrition(player, attrition.getAmplifier());
-        }
         if (!lossless && !this.isVagrant()) {
             RemnantComponent.get(this.player).setVagrant(true);
             this.copyGlobalPos(original);
 
             if (original.isDead()) {
                 AttritionStatusEffect.apply(player);
+            }
+        }
+        for (StatusEffectInstance effect : original.getStatusEffects()) {
+            if (StickyStatusEffect.shouldStick(effect.getEffectType(), this.player)) {
+                this.player.addStatusEffect(new StatusEffectInstance(effect));
             }
         }
     }
