@@ -71,7 +71,7 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
         int amplifier = Math.min(3, attrition == null ? amount - 1 : attrition.getAmplifier() + amount);
         addAttrition(target, amplifier);
 
-        if (amplifier > 3 && !(target instanceof PlayerEntity) || target.world.getLevelProperties().isHardcore()) {
+        if (amplifier > 3 && !(target instanceof PlayerEntity) || amplifier > 0 && target.world.getLevelProperties().isHardcore()) {
             if (target instanceof PlayerEntity) {
                 RemnantComponent.get((PlayerEntity) target).become(RemnantTypes.MORTAL);
             }
