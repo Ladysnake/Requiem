@@ -104,6 +104,7 @@ public class SimpleCurableEntityComponent implements CurableEntityComponent {
             }
             cured.initialize(((ServerWorld) this.entity.world), this.entity.world.getLocalDifficulty(cured.getBlockPos()), SpawnReason.CONVERSION, null, null);
             cured.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
+            cured.setBaby(this.entity.isBaby());
 
             if (!this.entity.isSilent()) {
                 this.entity.world.syncWorldEvent(null, 1027, this.entity.getBlockPos(), 0);
