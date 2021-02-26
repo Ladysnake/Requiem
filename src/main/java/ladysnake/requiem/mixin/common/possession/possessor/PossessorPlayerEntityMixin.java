@@ -55,6 +55,7 @@ import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.HungerManager;
+import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.FoodComponent;
@@ -65,6 +66,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -80,6 +82,9 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
 
     @Shadow
     public abstract HungerManager getHungerManager();
+
+    @Shadow
+    public abstract ItemCooldownManager getItemCooldownManager();
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void initAttributes(World world, BlockPos pos, float yaw, GameProfile profile, CallbackInfo ci) {
@@ -153,6 +158,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
                 FoodComponent food = stack.getItem().getFoodComponent();
                 assert food != null;
                 possessedEntity.heal(food.getHunger());
+                this.getItemCooldownManager().set(stack.getItem(), 150);
             }
         }
         if (possessedEntity != null && possessionComponent.canBeCured(stack)) {
@@ -182,7 +188,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
             }
         }
     }
-    
+
     @Override
     protected void requiem$canFly(CallbackInfoReturnable<Boolean> cir) {
         MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
@@ -190,7 +196,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
             cir.setReturnValue(false);
         }
     }
-    
+
     @Override
     protected void requiem$setSprinting(boolean sprinting, CallbackInfo ci) {
         MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();

@@ -77,7 +77,7 @@ public abstract class ItemMixin {
                 if (RequiemItemTags.BONES.contains(heldStack.getItem())) {
                     if (SkeletonBoneComponent.KEY.get(possessedEntity).replaceBone()) {
                         heldStack.decrement(1);
-                        player.getItemCooldownManager().set(heldStack.getItem(), 40);
+                        player.getItemCooldownManager().set(heldStack.getItem(), 60);
                     }
                 }
             }
