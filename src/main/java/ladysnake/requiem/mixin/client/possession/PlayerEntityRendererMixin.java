@@ -80,14 +80,16 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     private void cancelRender(AbstractClientPlayerEntity renderedPlayer, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int lightmap, CallbackInfo ci) {
         LivingEntity possessedEntity = PossessionComponent.get(renderedPlayer).getPossessedEntity();
         if (possessedEntity != null) {
-            if (((VariableMobilityEntity)possessedEntity).requiem_isImmovable()) {
-                double relativeX = possessedEntity.getX() - renderedPlayer.getX();
-                double relativeY = possessedEntity.getY() - renderedPlayer.getY();
-                double relativeZ = possessedEntity.getZ() - renderedPlayer.getZ();
-                this.dispatcher.render(possessedEntity, relativeX, relativeY, relativeZ, yaw, tickDelta, matrices, vertexConsumers, lightmap);
-            } else {
-                RequiemFx.setupRenderDelegate(renderedPlayer, possessedEntity);
-                this.dispatcher.render(possessedEntity, 0, 0, 0, yaw, tickDelta, matrices, vertexConsumers, lightmap);
+            if (renderedPlayer == MinecraftClient.getInstance().player) {
+                if (((VariableMobilityEntity)possessedEntity).requiem_isImmovable()) {
+                    double relativeX = possessedEntity.getX() - renderedPlayer.getX();
+                    double relativeY = possessedEntity.getY() - renderedPlayer.getY();
+                    double relativeZ = possessedEntity.getZ() - renderedPlayer.getZ();
+                    this.dispatcher.render(possessedEntity, relativeX, relativeY, relativeZ, yaw, tickDelta, matrices, vertexConsumers, lightmap);
+                } else {
+                    RequiemFx.setupRenderDelegate(renderedPlayer, possessedEntity);
+                    this.dispatcher.render(possessedEntity, 0, 0, 0, yaw, tickDelta, matrices, vertexConsumers, lightmap);
+                }
             }
             ci.cancel();
         }
