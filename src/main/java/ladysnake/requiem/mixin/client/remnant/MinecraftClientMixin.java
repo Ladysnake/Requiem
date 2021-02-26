@@ -34,17 +34,22 @@
  */
 package ladysnake.requiem.mixin.client.remnant;
 
+import ladysnake.requiem.api.v1.entity.MovementAlterer;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.MobEntity;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin {
@@ -62,6 +67,13 @@ public abstract class MinecraftClientMixin {
                 this.player.requestRespawn();
                 ci.cancel();
             }
+        }
+    }
+
+    @Inject(method = "hasOutline", at = @At("RETURN"), cancellable = true)
+    private void addOutline(Entity entity, CallbackInfoReturnable<Boolean> cir) {
+        if (!cir.getReturnValueZ() && entity instanceof MobEntity && MovementAlterer.get(this.player).isNoClipping() && this.player != null && PossessionComponent.get(this.player).startPossessing((MobEntity) entity, true) && this.player.squaredDistanceTo(entity) < 48*48) {
+            cir.setReturnValue(true);
         }
     }
 }
