@@ -1,4 +1,45 @@
 ------------------------------------------------------
+Version 1.5.0
+------------------------------------------------------
+Kudos to SciRave for learning github and java to make a Requiem PR fixing some bugs!
+
+**Additions**
+- Added the `"FLOATING"` swim mode for possessed entities, forcing them to stay at the surface of the water
+- Added the `"JUMPY"` walk mode for possessed entities, forcing them to jump when moving on land
+- While phasing, souls can now see viable hosts around them glowing
+
+**Changes**
+- Wandering spirits no longer heal attrition in hardcore
+- Hosts can no longer fly with an elytra. (It was buggy, looked weird, and didn't support the wings mod models.)
+- The `shouldSinkInWater` movement config field has been superceded by the `"SINKING"` value for `swimMode`
+- Being cured in any way (including as a piglin or a villager) now removes attrition
+- Undead food now has more delay, to prevent healing too fast
+- Removed the desaturation effect near other demons
+
+**Mod Compatibility**
+- Automated Crafting: Fixed a crash when using the mod
+
+**Fixes**
+- Fixed the dissociation keybind resetting each launch
+- Hosts no longer despawn when teleporting long distances
+- Dying as a spirit no longer removes attrition
+- The team command should no longer be broken
+- Entities will correctly go splat when you stop possessing them while falling
+- Fixed giant hosts being unable to break blocks
+- Fixed possessed mobs forgetting whether they were a baby or not when cured
+- Fixed hardcore mode killing you immediately instead of giving you one more chance
+- **Fixed other player's possessed entities being rendered twice** (that one's been around for longer than it should)
+
+#### Pandemonium
+**Changes**
+- Slimes use the new movement settings, resulting in more faithful possession
+
+**Fixes**
+- Fixed an invalid translation key for water bottles when possessing a witch
+- Fixed ravagers only breaking leaves clientside, leading to desync
+
+
+------------------------------------------------------
 Version 1.4.4
 ------------------------------------------------------
 **Fixes**
