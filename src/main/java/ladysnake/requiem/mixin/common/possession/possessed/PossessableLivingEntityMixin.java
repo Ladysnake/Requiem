@@ -310,6 +310,8 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
                 // update limb movement
                 this.limbAngle = player.limbAngle;
                 this.limbDistance = player.limbDistance;
+                this.horizontalCollision = player.horizontalCollision;
+                this.verticalCollision = player.verticalCollision;
             }
         }
     }
