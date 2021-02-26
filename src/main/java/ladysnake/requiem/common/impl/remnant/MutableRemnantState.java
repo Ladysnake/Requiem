@@ -130,6 +130,7 @@ public class MutableRemnantState implements RemnantState {
         } else {
             this.cureMob(body);
         }
+        AttritionStatusEffect.reduce(this.player, Integer.MAX_VALUE);
     }
 
     private void regenerateBody(LivingEntity body) {
