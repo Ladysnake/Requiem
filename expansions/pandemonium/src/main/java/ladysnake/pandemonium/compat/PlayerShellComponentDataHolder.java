@@ -44,30 +44,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class PlayerShellComponentDataHolder<C extends ComponentV3> extends ComponentDataHolder<C> implements AutoSyncedComponent {
-    private final PlayerShellEntity shell;
+public class PlayerShellComponentDataHolder<C extends ComponentV3> extends ComponentDataHolder<C> {
 
     public PlayerShellComponentDataHolder(PlayerShellEntity shell, ComponentKey<C> key, ComponentKey<?> selfKey) {
         super(key, selfKey);
-        this.shell = shell;
     }
 
     @Override
     public void storeData(PlayerEntity player) {
         super.storeData(player);
-        this.selfKey.sync(this.shell);
-    }
-
-    @Override
-    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
-        buf.writeCompoundTag(this.data);
-    }
-
-    @Override
-    public void applySyncPacket(PacketByteBuf buf) {
-        CompoundTag originData = buf.readCompoundTag();
-        if (originData != null) {
-            this.dataKey.get(this.shell.getRenderedPlayer()).readFromNbt(originData);
-        }
     }
 }

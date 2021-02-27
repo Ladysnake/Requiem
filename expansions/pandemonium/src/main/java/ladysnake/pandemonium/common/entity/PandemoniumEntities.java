@@ -39,12 +39,13 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
 
 public class PandemoniumEntities {
-    public static final EntityType<PlayerShellEntity> PLAYER_SHELL = FabricEntityTypeBuilder.createMob()
+    public static final EntityType<PlayerShellEntity> PLAYER_SHELL = FabricEntityTypeBuilder.<PlayerShellEntity>createLiving()
         .spawnGroup(SpawnGroup.MISC)
-        .entityFactory(PlayerShellEntity::new)
+        .entityFactory((type, world) -> new PlayerShellEntity(type, (ServerWorld) world))
         .defaultAttributes(PlayerShellEntity::createPlayerShellAttributes)
         .dimensions(EntityDimensions.changing(EntityType.PLAYER.getWidth(), EntityType.PLAYER.getHeight()))
         .trackRangeBlocks(64)

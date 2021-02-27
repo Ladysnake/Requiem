@@ -38,6 +38,7 @@ import com.mojang.authlib.GameProfile;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import io.github.ladysnake.impersonate.Impersonate;
+import io.github.ladysnake.impersonate.Impersonator;
 import ladysnake.pandemonium.Pandemonium;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
@@ -52,33 +53,41 @@ import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import nerdhub.cardinal.components.api.util.container.AbstractComponentContainer;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 public final class PlayerSplitter {
     public static void split(ServerPlayerEntity whole) {
         FractureAnchorManager anchorManager = FractureAnchorManager.get(whole.world);
-        PlayerShellEntity shell = new PlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, whole.world);
+        PlayerShellEntity shell = new PlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, whole.getServerWorld());
         shell.storePlayerData(whole, computeCopyNbt(whole));
+        shell.setGameMode(whole.interactionManager.isSurvivalLike() ? whole.interactionManager.getGameMode() : GameMode.SURVIVAL);
         ServerPlayerEntity soul = performRespawn(whole);
         soul.world.spawnEntity(shell);
         FractureAnchor anchor = anchorManager.addAnchor(AnchorFactories.fromEntityUuid(shell.getUuid()));
         anchor.setPosition(shell.getX(), shell.getY(), shell.getZ());
         PlayerBodyTracker.get(soul).setAnchor(anchor);
-        PlayerShellEvents.PLAYER_SPLIT.invoker().onPlayerSplit(whole, soul, shell, shell.getPlayerNbt());
+        PlayerShellEvents.PLAYER_SPLIT.invoker().onPlayerSplit(whole, soul, shell);
     }
 
     public static boolean merge(PlayerShellEntity shell, ServerPlayerEntity soul) {
         if (RemnantComponent.get(soul).setVagrant(false)) {
             soul.inventory.dropAll();
-            shell.restorePlayerData(soul);
+            // Note: the teleport request must be before deserialization, as it only encodes the required relative movement
+            soul.networkHandler.teleportRequest(shell.getX(), shell.getY(), shell.getZ(), shell.yaw, shell.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
+            // override common data that may have been altered during this shell's existence
+            performNbtCopy(computeCopyNbt(shell), soul);
             shell.remove();
 
             if (!Objects.equals(shell.getPlayerUuid(), soul.getUuid())) {
@@ -86,7 +95,7 @@ public final class PlayerSplitter {
                 Impersonate.IMPERSONATION.get(soul).impersonate(Pandemonium.BODY_IMPERSONATION, gameProfile == null ? new GameProfile(shell.getPlayerUuid(), null) : gameProfile);
             }
 
-            PlayerShellEvents.PLAYER_MERGED.invoker().onPlayerMerge(soul, shell, shell.getGameProfile(), shell.getPlayerNbt());
+            PlayerShellEvents.PLAYER_MERGED.invoker().onPlayerMerge(soul, shell, shell.getGameProfile());
             return true;
         }
         return false;
@@ -150,5 +159,15 @@ public final class PlayerSplitter {
         leftoverData.remove("playerGameType");
         leftoverData.remove("previousPlayerGameType");
         leftoverData.remove("seenCredits");
+    }
+
+    public static void performNbtCopy(CompoundTag from, Entity to) {
+        // Save the complete representation of the player
+        CompoundTag serialized = new CompoundTag();
+        // We write every attribute of the destination entity to the tag, then we override.
+        // That way, attributes that do not exist in the base entity are kept intact during the copy.
+        to.toTag(serialized);
+        serialized.copyFrom(from);
+        to.fromTag(serialized);
     }
 }

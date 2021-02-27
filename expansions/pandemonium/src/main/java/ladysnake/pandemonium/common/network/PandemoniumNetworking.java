@@ -34,6 +34,7 @@
  */
 package ladysnake.pandemonium.common.network;
 
+import ladysnake.pandemonium.common.entity.fakeplayer.FakePlayerEntity;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.network.PacketByteBuf;
@@ -44,7 +45,21 @@ import net.minecraft.util.Identifier;
 import static ladysnake.requiem.common.network.RequiemNetworking.createEmptyBuffer;
 
 public final class PandemoniumNetworking {
+    public static final Identifier PLAYER_SHELL_SPAWN = Requiem.id("player_shell_spawn");
     public static final Identifier ANCHOR_DAMAGE = Requiem.id("anchor_damage");
+
+    public static CustomPayloadS2CPacket createPlayerShellSpawnPacket(FakePlayerEntity player) {
+        PacketByteBuf buf = createEmptyBuffer();
+        buf.writeVarInt(player.getEntityId());
+        buf.writeUuid(player.getGameProfile().getId());
+        buf.writeString(player.getGameProfile().getName());
+        buf.writeDouble(player.getX());
+        buf.writeDouble(player.getY());
+        buf.writeDouble(player.getZ());
+        buf.writeByte((byte)((int)(player.yaw * 256.0F / 360.0F)));
+        buf.writeByte((byte)((int)(player.pitch * 256.0F / 360.0F)));
+        return new CustomPayloadS2CPacket(PLAYER_SHELL_SPAWN, buf);
+    }
 
     public static void sendAnchorDamageMessage(ServerPlayerEntity player, boolean dead) {
         PacketByteBuf buf = createEmptyBuffer();

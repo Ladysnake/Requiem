@@ -35,8 +35,10 @@
 package ladysnake.pandemonium;
 
 import ladysnake.pandemonium.common.PlayerSplitter;
+import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.entity.ability.*;
+import ladysnake.pandemonium.common.entity.fakeplayer.RequiemFakePlayer;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
@@ -47,6 +49,7 @@ import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.ability.RangedAttackAbility;
+import ladysnake.requiem.common.entity.ability.SoulPossessAbility;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.CreeperEntity;
@@ -62,18 +65,12 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
 
     @Override
     public void onRequiemInitialize() {
-        PossessionStartCallback.EVENT.register(Pandemonium.id("shell_interaction"), (target, possessor, simulate) -> {
-            if (target instanceof PlayerShellEntity) {
-                if (!simulate && !possessor.world.isClient) {
-                    if (!PlayerSplitter.merge(((PlayerShellEntity) target), (ServerPlayerEntity) possessor)) {
-                        possessor.sendMessage(new TranslatableText("requiem:possess.incompatible_body"), true);
-                        return PossessionStartCallback.Result.DENY;
-                    }
-                }
-                return PossessionStartCallback.Result.HANDLED;
+        SoulPossessAbility.extraTest = (target) -> target.getType() == PandemoniumEntities.PLAYER_SHELL;
+        SoulPossessAbility.extraAction = (target, possessor) -> {
+            if (target instanceof PlayerShellEntity && !possessor.world.isClient && !PlayerSplitter.merge(((PlayerShellEntity) target), (ServerPlayerEntity) possessor)) {
+                possessor.sendMessage(new TranslatableText("requiem:possess.incompatible_body"), true);
             }
-            return PossessionStartCallback.Result.PASS;
-        });
+        };
 
         // Enderman specific behaviour is unneeded now that players can possess them
         PossessionStartCallback.EVENT.unregister(new Identifier(Requiem.MOD_ID, "enderman"));

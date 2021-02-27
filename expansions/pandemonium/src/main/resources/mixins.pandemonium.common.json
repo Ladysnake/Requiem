@@ -3,6 +3,7 @@
   "package": "ladysnake.pandemonium.mixin.common",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "entity.EntityAccessor",
     "entity.ai.goal.FollowTargetGoalMixin",
     "entity.mob.BlazeEntityAccessor",
     "entity.mob.EndermanEntityMixin",
@@ -12,7 +13,8 @@
     "entity.mob.PandaEntityMixin",
     "entity.mob.WitchEntityMixin",
     "entity.mob.WololoGoalMixin",
-    "entity.player.PlayerEntityAccessor"
+    "entity.player.PlayerEntityMixin",
+    "server.world.ThreadedAnvilChunkStorageMixin"
   ],
   "injectors": {
     "defaultRequire": 1

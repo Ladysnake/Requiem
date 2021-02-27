@@ -34,15 +34,44 @@
  */
 package ladysnake.pandemonium.client;
 
+import com.mojang.authlib.GameProfile;
+import ladysnake.pandemonium.common.entity.PandemoniumEntities;
+import ladysnake.pandemonium.common.entity.fakeplayer.FakeClientPlayerEntity;
 import ladysnake.requiem.client.RequiemClient;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.OtherClientPlayerEntity;
+import net.minecraft.client.world.ClientWorld;
+
+import java.util.UUID;
 
 import static ladysnake.pandemonium.common.network.PandemoniumNetworking.ANCHOR_DAMAGE;
+import static ladysnake.pandemonium.common.network.PandemoniumNetworking.PLAYER_SHELL_SPAWN;
 
 public class ClientMessageHandling {
     private static final float[] ETHEREAL_DAMAGE_COLOR = {0.5f, 0.0f, 0.0f};
 
     public static void init() {
+        ClientPlayNetworking.registerGlobalReceiver(PLAYER_SHELL_SPAWN, (client, handler, buf, responseSender) -> {
+            int id = buf.readVarInt();
+            UUID uuid = buf.readUuid();
+            String name = buf.readString();
+            double x = buf.readDouble();
+            double y = buf.readDouble();
+            double z = buf.readDouble();
+            float yaw = (float)(buf.readByte() * 360) / 256.0F;
+            float pitch = (float)(buf.readByte() * 360) / 256.0F;
+            client.execute(() -> {
+                ClientWorld world = MinecraftClient.getInstance().world;
+                assert world != null;
+                FakeClientPlayerEntity other = new FakeClientPlayerEntity(PandemoniumEntities.PLAYER_SHELL, world, new GameProfile(uuid, name));
+                other.setEntityId(id);
+                other.resetPosition(x, y, z);
+                other.updateTrackedPosition(x, y, z);
+                other.updatePositionAndAngles(x, y, z, yaw, pitch);
+                world.addPlayer(id, other);
+            });
+        });
         ClientPlayNetworking.registerGlobalReceiver(ANCHOR_DAMAGE, (client, handler, buf, responseSender) -> {
             boolean dead = buf.readBoolean();
             client.execute(() -> RequiemClient.INSTANCE.getRequiemFxRenderer().playEtherealPulseAnimation(
@@ -50,5 +79,4 @@ public class ClientMessageHandling {
             ));
         });
     }
-
 }
