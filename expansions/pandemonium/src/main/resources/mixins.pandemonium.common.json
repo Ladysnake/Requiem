@@ -15,6 +15,7 @@
     "entity.mob.WololoGoalMixin",
     "entity.player.PlayerAdvancementTrackerMixin",
     "entity.player.PlayerEntityMixin",
+    "entity.player.ServerWorldMixin",
     "server.world.ThreadedAnvilChunkStorageMixin"
   ],
   "injectors": {
