@@ -70,6 +70,11 @@ public final class RemnantComponentImpl implements RemnantComponent {
             return;
         }
 
+        // Fake players cannot be remnants
+        if (this.player instanceof ServerPlayerEntity && this.player.getClass() != ServerPlayerEntity.class) {
+            return;
+        }
+
         boolean wasSoul = this.isVagrant();
         RemnantState oldHandler = this.state;
         RemnantState handler = type.create(this.player);

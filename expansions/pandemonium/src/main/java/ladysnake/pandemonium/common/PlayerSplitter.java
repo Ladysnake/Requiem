@@ -48,6 +48,8 @@ import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.impl.anchor.AnchorFactories;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.VanillaRequiemPlugin;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import nerdhub.cardinal.components.api.util.EntityComponents;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import nerdhub.cardinal.components.api.util.container.AbstractComponentContainer;
@@ -72,6 +74,7 @@ public final class PlayerSplitter {
         PlayerShellEntity shell = new PlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, whole.getServerWorld());
         shell.storePlayerData(whole, computeCopyNbt(whole));
         shell.setGameMode(whole.interactionManager.isSurvivalLike() ? whole.interactionManager.getGameMode() : GameMode.SURVIVAL);
+        VanillaRequiemPlugin.makeRemnantChoice(shell, RemnantTypes.MORTAL);
         ServerPlayerEntity soul = performRespawn(whole);
         soul.world.spawnEntity(shell);
         FractureAnchor anchor = anchorManager.addAnchor(AnchorFactories.fromEntityUuid(shell.getUuid()));
