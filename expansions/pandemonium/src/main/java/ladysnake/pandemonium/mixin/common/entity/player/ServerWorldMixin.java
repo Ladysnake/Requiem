@@ -36,21 +36,54 @@ package ladysnake.pandemonium.mixin.common.entity.player;
 
 import ladysnake.pandemonium.common.entity.fakeplayer.FakePlayerEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
 
 @Mixin(ServerWorld.class)
 public abstract class ServerWorldMixin {
+
     @Shadow
     public abstract ServerChunkManager getChunkManager();
     @Shadow
     public abstract void checkEntityChunkPos(Entity entity);
+
+    @Shadow
+    @Final
+    private List<ServerPlayerEntity> players;
+
+    private boolean requiem$fakePlayerSleeping = false;
+
+    @ModifyVariable(method = "updateSleepingPlayers", at = @At(value = "STORE"))
+    private ServerPlayerEntity captureSleepingPlayer(ServerPlayerEntity player) {
+        requiem$fakePlayerSleeping = player instanceof FakePlayerEntity;
+        return player;
+    }
+
+    @ModifyVariable(method = "updateSleepingPlayers", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;isSleeping()Z"), ordinal = 0)
+    private int discountFakePlayers(int spectatorPlayers) {
+        if (requiem$fakePlayerSleeping) {
+            requiem$fakePlayerSleeping = false;
+            return spectatorPlayers + 1;
+        }
+        return spectatorPlayers;
+    }
+
+    @Inject(method = "loadEntityUnchecked", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerChunkManager;loadEntity(Lnet/minecraft/entity/Entity;)V"))
+    private void addFakePlayer(Entity entity, CallbackInfo ci) {
+        if (entity instanceof FakePlayerEntity) {
+            this.players.add((ServerPlayerEntity) entity);
+        }
+    }
 
     /**
      * When an entity ticks, it keeps its chunk loaded with an UNKNOWN ticket.

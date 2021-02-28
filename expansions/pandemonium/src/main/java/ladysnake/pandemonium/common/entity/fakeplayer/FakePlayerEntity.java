@@ -78,6 +78,11 @@ public class FakePlayerEntity extends ServerPlayerEntity implements RequiemFakeP
         this.handleFall(heightDifference, onGround);
     }
 
+    @Override
+    public boolean isSleepingLongEnough() {
+        return true;    // Fake players do not delay the sleep of other players
+    }
+
     @Nullable
     public GameProfile getOwnerProfile() {
         return this.ownerProfile;
