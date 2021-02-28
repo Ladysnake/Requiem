@@ -35,6 +35,7 @@
 package ladysnake.pandemonium.common.entity.fakeplayer;
 
 import com.mojang.authlib.GameProfile;
+import ladysnake.pandemonium.common.network.PandemoniumNetworking;
 import ladysnake.pandemonium.mixin.common.entity.EntityAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
@@ -44,10 +45,16 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.CheckForNull;
+import java.util.Objects;
 import java.util.UUID;
 
 public class FakePlayerEntity extends ServerPlayerEntity implements RequiemFakePlayer {
+    @Nullable
+    protected GameProfile ownerProfile;
+
     public FakePlayerEntity(EntityType<?> type, ServerWorld world) {
         this(type, world, new GameProfile(UUID.randomUUID(), "FakePlayer"));
     }
@@ -69,5 +76,17 @@ public class FakePlayerEntity extends ServerPlayerEntity implements RequiemFakeP
     @Override
     protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
         this.handleFall(heightDifference, onGround);
+    }
+
+    @Nullable
+    public GameProfile getOwnerProfile() {
+        return this.ownerProfile;
+    }
+
+    public void setOwnerProfile(@CheckForNull GameProfile profile) {
+        if (!Objects.equals(profile, this.ownerProfile)) {
+            this.ownerProfile = profile;
+            PandemoniumNetworking.sendPlayerShellSkinPacket(this);
+        }
     }
 }

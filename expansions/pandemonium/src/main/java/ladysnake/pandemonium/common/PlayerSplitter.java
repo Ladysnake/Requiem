@@ -64,7 +64,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 public final class PlayerSplitter {
@@ -90,9 +89,9 @@ public final class PlayerSplitter {
             performNbtCopy(computeCopyNbt(shell), soul);
             shell.remove();
 
-            if (!Objects.equals(shell.getPlayerUuid(), soul.getUuid())) {
-                GameProfile gameProfile = shell.getGameProfile();
-                Impersonate.IMPERSONATION.get(soul).impersonate(Pandemonium.BODY_IMPERSONATION, gameProfile == null ? new GameProfile(shell.getPlayerUuid(), null) : gameProfile);
+            if (!Objects.equals(shell.getOwnerUuid(), soul.getUuid())) {
+                GameProfile gameProfile = shell.getOwnerProfile();
+                Impersonator.get(soul).impersonate(Pandemonium.BODY_IMPERSONATION, gameProfile == null ? new GameProfile(shell.getOwnerUuid(), null) : gameProfile);
             }
 
             PlayerShellEvents.PLAYER_MERGED.invoker().onPlayerMerge(soul, shell, shell.getGameProfile());

@@ -34,5 +34,19 @@
  */
 package ladysnake.pandemonium.common.entity.fakeplayer;
 
+import com.mojang.authlib.GameProfile;
+import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.CheckForNull;
+import java.util.UUID;
+
 public interface RequiemFakePlayer {
+    @Nullable GameProfile getOwnerProfile();
+
+    void setOwnerProfile(@CheckForNull GameProfile profile);
+
+    @Nullable
+    default UUID getOwnerUuid() {
+        return this.getOwnerProfile() != null ? this.getOwnerProfile().getId() : null;
+    }
 }

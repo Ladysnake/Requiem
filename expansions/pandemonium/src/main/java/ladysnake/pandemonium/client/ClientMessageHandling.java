@@ -37,16 +37,18 @@ package ladysnake.pandemonium.client;
 import com.mojang.authlib.GameProfile;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.fakeplayer.FakeClientPlayerEntity;
+import ladysnake.pandemonium.common.entity.fakeplayer.RequiemFakePlayer;
 import ladysnake.requiem.client.RequiemClient;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.UUID;
 
-import static ladysnake.pandemonium.common.network.PandemoniumNetworking.ANCHOR_DAMAGE;
-import static ladysnake.pandemonium.common.network.PandemoniumNetworking.PLAYER_SHELL_SPAWN;
+import static ladysnake.pandemonium.common.network.PandemoniumNetworking.*;
 
 public class ClientMessageHandling {
     private static final float[] ETHEREAL_DAMAGE_COLOR = {0.5f, 0.0f, 0.0f};
@@ -61,6 +63,7 @@ public class ClientMessageHandling {
             double z = buf.readDouble();
             float yaw = (float)(buf.readByte() * 360) / 256.0F;
             float pitch = (float)(buf.readByte() * 360) / 256.0F;
+            GameProfile profile = readShellProfile(buf);
             client.execute(() -> {
                 ClientWorld world = MinecraftClient.getInstance().world;
                 assert world != null;
@@ -69,8 +72,20 @@ public class ClientMessageHandling {
                 other.resetPosition(x, y, z);
                 other.updateTrackedPosition(x, y, z);
                 other.updatePositionAndAngles(x, y, z, yaw, pitch);
-                world.addPlayer(id, other);
+                other.setOwnerProfile(profile);
+                world.addEntity(id, other);
             });
+        });
+        ClientPlayNetworking.registerGlobalReceiver(PLAYER_PROFILE_SET, (client, handler, buf, responseSender) -> {
+            int entityId = buf.readVarInt();
+            GameProfile profile = readShellProfile(buf);
+            client.execute(() -> {
+                    Entity entity = Objects.requireNonNull(client.world).getEntityById(entityId);
+                    if (entity instanceof RequiemFakePlayer) {
+                        ((RequiemFakePlayer) entity).setOwnerProfile(profile);
+                    }
+                }
+            );
         });
         ClientPlayNetworking.registerGlobalReceiver(ANCHOR_DAMAGE, (client, handler, buf, responseSender) -> {
             boolean dead = buf.readBoolean();
@@ -78,5 +93,12 @@ public class ClientMessageHandling {
                 dead ? 4 : 1, ETHEREAL_DAMAGE_COLOR[0], ETHEREAL_DAMAGE_COLOR[1], ETHEREAL_DAMAGE_COLOR[2]
             ));
         });
+    }
+
+    @Nullable
+    private static GameProfile readShellProfile(net.minecraft.network.PacketByteBuf buf) {
+        boolean hasProfile = buf.readBoolean();
+        GameProfile profile = hasProfile ? new GameProfile(buf.readUuid(), buf.readString()) : null;
+        return profile;
     }
 }

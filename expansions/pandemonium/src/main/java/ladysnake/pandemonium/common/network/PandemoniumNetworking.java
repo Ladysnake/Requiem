@@ -34,9 +34,12 @@
  */
 package ladysnake.pandemonium.common.network;
 
+import com.mojang.authlib.GameProfile;
+import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.entity.fakeplayer.FakePlayerEntity;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -46,9 +49,10 @@ import static ladysnake.requiem.common.network.RequiemNetworking.createEmptyBuff
 
 public final class PandemoniumNetworking {
     public static final Identifier PLAYER_SHELL_SPAWN = Requiem.id("player_shell_spawn");
+    public static final Identifier PLAYER_PROFILE_SET = Requiem.id("player_shell_skin");
     public static final Identifier ANCHOR_DAMAGE = Requiem.id("anchor_damage");
 
-    public static CustomPayloadS2CPacket createPlayerShellSpawnPacket(FakePlayerEntity player) {
+    public static CustomPayloadS2CPacket createPlayerShellSpawnPacket(PlayerShellEntity player) {
         PacketByteBuf buf = createEmptyBuffer();
         buf.writeVarInt(player.getEntityId());
         buf.writeUuid(player.getGameProfile().getId());
@@ -58,7 +62,30 @@ public final class PandemoniumNetworking {
         buf.writeDouble(player.getZ());
         buf.writeByte((byte)((int)(player.yaw * 256.0F / 360.0F)));
         buf.writeByte((byte)((int)(player.pitch * 256.0F / 360.0F)));
+        writePlayerProfile(player, buf);
         return new CustomPayloadS2CPacket(PLAYER_SHELL_SPAWN, buf);
+    }
+
+    public static void sendPlayerShellSkinPacket(FakePlayerEntity player) {
+        PacketByteBuf buf = createEmptyBuffer();
+        buf.writeVarInt(player.getEntityId());
+        writePlayerProfile(player, buf);
+
+        CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(PLAYER_PROFILE_SET, buf);
+
+        for (ServerPlayerEntity e : PlayerLookup.tracking(player)) {
+            e.networkHandler.sendPacket(packet);
+        }
+    }
+
+    private static void writePlayerProfile(FakePlayerEntity shell, PacketByteBuf buf) {
+        GameProfile ownerProfile = shell.getOwnerProfile();
+        buf.writeBoolean(ownerProfile != null);
+
+        if (ownerProfile != null) {
+            buf.writeUuid(ownerProfile.getId());
+            buf.writeString(ownerProfile.getName());
+        }
     }
 
     public static void sendAnchorDamageMessage(ServerPlayerEntity player, boolean dead) {

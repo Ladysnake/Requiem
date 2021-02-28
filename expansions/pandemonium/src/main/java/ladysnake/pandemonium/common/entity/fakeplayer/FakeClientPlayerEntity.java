@@ -36,25 +36,57 @@ package ladysnake.pandemonium.common.entity.fakeplayer;
 
 import com.mojang.authlib.GameProfile;
 import io.github.ladysnake.impersonate.Impersonator;
+import ladysnake.pandemonium.common.network.PandemoniumNetworking;
 import ladysnake.pandemonium.mixin.common.entity.EntityAccessor;
 import net.minecraft.client.network.OtherClientPlayerEntity;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.CheckForNull;
+import java.util.Objects;
 
 public class FakeClientPlayerEntity extends OtherClientPlayerEntity implements RequiemFakePlayer {
+    protected PlayerListEntry listEntry;
+
     public FakeClientPlayerEntity(EntityType<?> type, ClientWorld clientWorld, GameProfile gameProfile) {
         super(clientWorld, gameProfile);
         ((EntityAccessor)this).setType(type);
     }
 
+    @Nullable
+    @Override
+    protected PlayerListEntry getPlayerListEntry() {
+        return this.listEntry;
+    }
+
+    public void setPlayerListEntry(@Nullable GameProfile profile) {
+        this.listEntry = profile == null
+            ? null
+            : new PlayerListEntry(new PlayerListS2CPacket(). new Entry(profile, 0, null, null));
+    }
+
     @Override
     public Text getName() {
-        GameProfile impersonatedProfile = Impersonator.get(this).getImpersonatedProfile();
-        if (impersonatedProfile != null) {
-            return new LiteralText(impersonatedProfile.getName());
+        GameProfile ownerProfile = this.getOwnerProfile();
+        if (ownerProfile != null) {
+            return new LiteralText(ownerProfile.getName());
         }
         return super.getName();
+    }
+
+    @Override
+    @Nullable
+    public GameProfile getOwnerProfile() {
+        return this.getPlayerListEntry() != null ? this.getPlayerListEntry().getProfile() : null;
+    }
+
+    @Override
+    public void setOwnerProfile(@CheckForNull GameProfile profile) {
+        this.setPlayerListEntry(profile);
     }
 }

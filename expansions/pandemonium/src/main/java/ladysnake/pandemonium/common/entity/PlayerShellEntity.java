@@ -38,7 +38,6 @@ import com.demonwav.mcdev.annotations.CheckEnv;
 import com.demonwav.mcdev.annotations.Env;
 import com.mojang.authlib.GameProfile;
 import io.github.ladysnake.impersonate.Impersonator;
-import ladysnake.pandemonium.Pandemonium;
 import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.common.entity.fakeplayer.FakePlayerEntity;
 import ladysnake.pandemonium.common.network.PandemoniumNetworking;
@@ -52,8 +51,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
@@ -64,7 +63,8 @@ import net.minecraft.util.math.Vec3d;
 import org.apiguardian.api.API;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
+import javax.annotation.CheckForNull;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -72,8 +72,6 @@ import static org.apiguardian.api.API.Status.MAINTAINED;
 
 // TODO add inventory access
 public class PlayerShellEntity extends FakePlayerEntity {
-
-    private @Nullable UUID playerUuid;
 
     @CheckEnv(Env.SERVER)
     @API(status = MAINTAINED)
@@ -85,27 +83,19 @@ public class PlayerShellEntity extends FakePlayerEntity {
         return createPlayerAttributes();
     }
 
-    /* * * * * * * * * * * * common stuff * * * * * * * * * * * * * * */
-
-    public @Nullable UUID getPlayerUuid() {
-        return playerUuid;
-    }
-
     public void storePlayerData(ServerPlayerEntity player, CompoundTag respawnNbt) {
         // Save the complete representation of the player
         PlayerSplitter.performNbtCopy(respawnNbt, this);
 
         this.getDataTracker().set(PLAYER_MODEL_PARTS, player.getDataTracker().get(PLAYER_MODEL_PARTS));
 
-        GameProfile profile = Optional.ofNullable(Impersonator.get(player).getImpersonatedProfile()).orElse(player.getGameProfile());
-        Impersonator.get(this).impersonate(Pandemonium.BODY_IMPERSONATION, profile);
+        this.setOwnerProfile(Optional.ofNullable(Impersonator.get(player).getImpersonatedProfile()).orElse(player.getGameProfile()));
         this.setCustomName(new LiteralText(player.getEntityName()));
-        this.playerUuid = profile.getId();
     }
 
     @Override
     public Text getName() {
-        GameProfile impersonatedProfile = Impersonator.get(this).getImpersonatedProfile();
+        GameProfile impersonatedProfile = this.getOwnerProfile();
         if (impersonatedProfile != null) {
             return new LiteralText(impersonatedProfile.getName());
         }
@@ -200,7 +190,7 @@ public class PlayerShellEntity extends FakePlayerEntity {
     @Override
     public void onDeath(DamageSource source) {
         super.onDeath(source);
-        UUID playerUuid = this.getPlayerUuid();
+        UUID playerUuid = this.getOwnerUuid();
 
         if (playerUuid != null) {
             AttritionFocus.KEY.get(this.world.getScoreboard()).addAttrition(playerUuid, 1);
@@ -216,8 +206,8 @@ public class PlayerShellEntity extends FakePlayerEntity {
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
 
-        if (tag.contains("Player")) {
-            this.playerUuid = tag.getUuid("Player");
+        if (tag.contains("PlayerProfile")) {
+            this.setOwnerProfile(NbtHelper.toGameProfile(tag.getCompound("PlayerProfile")));
         }
 
         this.getDataTracker().set(PLAYER_MODEL_PARTS, tag.getByte("PlayerModelParts"));
@@ -226,8 +216,9 @@ public class PlayerShellEntity extends FakePlayerEntity {
     @Override
     public void writeCustomDataToTag(CompoundTag compound) {
         super.writeCustomDataToTag(compound);
-        if (this.playerUuid != null) {
-            compound.putUuid("Player", this.playerUuid);
+        GameProfile gameProfile = this.getOwnerProfile();
+        if (gameProfile != null) {
+            compound.put("PlayerProfile", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
         }
         compound.putByte("PlayerModelParts", this.getDataTracker().get(PLAYER_MODEL_PARTS));
     }
