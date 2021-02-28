@@ -32,26 +32,25 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.compat;
+package ladysnake.pandemonium.mixin.common.entity.player;
 
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentV3;
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import ladysnake.pandemonium.common.entity.PlayerShellEntity;
-import ladysnake.requiem.compat.ComponentDataHolder;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.PacketByteBuf;
+import ladysnake.pandemonium.common.entity.fakeplayer.RequiemFakePlayer;
+import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-public class PlayerShellComponentDataHolder<C extends ComponentV3> extends ComponentDataHolder<C> {
+@Mixin(PlayerAdvancementTracker.class)
+public abstract class PlayerAdvancementTrackerMixin {
+    @Shadow
+    private ServerPlayerEntity owner;
 
-    public PlayerShellComponentDataHolder(PlayerShellEntity shell, ComponentKey<C> key, ComponentKey<?> selfKey) {
-        super(key, selfKey);
-    }
-
-    @Override
-    public void storeData(PlayerEntity player) {
-        super.storeData(player);
+    @Inject(method = "grantCriterion", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"), cancellable = true)
+    private void cancelAdvancementProgress(Advancement advancement, String criterionName, CallbackInfoReturnable<Boolean> cir) {
+        if (this.owner instanceof RequiemFakePlayer) cir.setReturnValue(true);
     }
 }

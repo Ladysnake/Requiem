@@ -13,6 +13,7 @@
     "entity.mob.PandaEntityMixin",
     "entity.mob.WitchEntityMixin",
     "entity.mob.WololoGoalMixin",
+    "entity.player.PlayerAdvancementTrackerMixin",
     "entity.player.PlayerEntityMixin",
     "server.world.ThreadedAnvilChunkStorageMixin"
   ],
