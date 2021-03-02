@@ -32,19 +32,22 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.tag;
+package ladysnake.pandemonium.mixin.common.entity.player;
 
-import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.tag.TagRegistry;
-import net.minecraft.item.Item;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
+import ladysnake.pandemonium.common.entity.fakeplayer.FakePlayerGuide;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.TargetPredicate;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-public final class RequiemItemTags {
-    public static final Tag<Item> BONES = TagRegistry.item(Requiem.id("bones"));
-    public static final Tag<Item> UNDEAD_CURES = TagRegistry.item(Requiem.id("undead_cures"));
-    public static final Tag<Item> RAW_MEATS = TagRegistry.item(Requiem.id("raw_meats"));
-    public static final Tag<Item> RAW_FISHES = TagRegistry.item(Requiem.id("raw_fishes"));
-    public static final Tag<Item> WATER_BUCKETS = TagRegistry.item(new Identifier("c", "water_buckets"));
-    public static final Tag<Item> SHIELDS = TagRegistry.item(new Identifier("c", "shields"));
+@Mixin(TargetPredicate.class)
+public abstract class TargetPredicateMixin {
+    @Inject(method = "test", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/ai/TargetPredicate;ignoreEntityTargetRules:Z"), cancellable = true)
+    private void testFakePlayers(LivingEntity baseEntity, LivingEntity targetEntity, CallbackInfoReturnable<Boolean> cir) {
+        if (baseEntity instanceof FakePlayerGuide && ((FakePlayerGuide) baseEntity).getOwner() == targetEntity) {
+            cir.setReturnValue(false);
+        }
+    }
 }

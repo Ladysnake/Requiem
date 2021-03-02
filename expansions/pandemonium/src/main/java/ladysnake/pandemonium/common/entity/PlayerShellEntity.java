@@ -39,14 +39,19 @@ import com.demonwav.mcdev.annotations.Env;
 import com.mojang.authlib.GameProfile;
 import io.github.ladysnake.impersonate.Impersonator;
 import ladysnake.pandemonium.common.PlayerSplitter;
-import ladysnake.pandemonium.common.entity.fakeplayer.FakePlayerEntity;
+import ladysnake.pandemonium.common.entity.ai.ShellCreeperBlockGoal;
+import ladysnake.pandemonium.common.entity.ai.ShellRevengeGoal;
+import ladysnake.pandemonium.common.entity.fakeplayer.FakeServerPlayerEntity;
 import ladysnake.pandemonium.common.network.PandemoniumNetworking;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -61,17 +66,14 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import org.apiguardian.api.API;
-import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.CheckForNull;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.apiguardian.api.API.Status.MAINTAINED;
 
 // TODO add inventory access
-public class PlayerShellEntity extends FakePlayerEntity {
+public class PlayerShellEntity extends FakeServerPlayerEntity {
 
     @CheckEnv(Env.SERVER)
     @API(status = MAINTAINED)
@@ -91,6 +93,26 @@ public class PlayerShellEntity extends FakePlayerEntity {
 
         this.setOwnerProfile(Optional.ofNullable(Impersonator.get(player).getImpersonatedProfile()).orElse(player.getGameProfile()));
         this.setCustomName(new LiteralText(player.getEntityName()));
+    }
+
+    @Override
+    public void initGoals() {
+        this.guide.addGoal(2, new ShellCreeperBlockGoal(this));
+        this.guide.addGoal(3, new MeleeAttackGoal(this.getGuide(), 1.0D, false));
+        this.guide.addGoal(4, new EscapeSunlightGoal(this.guide, 1.0D));
+        this.guide.addGoal(4, new FleeEntityGoal<>(this.guide, WolfEntity.class, 6.0F, 1.0D, 1.2D));
+        this.guide.addGoal(6, new WanderAroundGoal(this.guide, 1.0D));
+        this.guide.addGoal(6, new LookAtEntityGoal(this.guide, PlayerEntity.class, 8.0F));
+        this.guide.addGoal(6, new LookAroundGoal(this.guide));
+        this.guide.addTargetGoal(1, new ShellRevengeGoal(this));
+    }
+
+    @Override
+    public boolean canTarget(LivingEntity target) {
+        if (target instanceof PlayerEntity && target.getUuid().equals(this.getOwnerUuid())) {
+            return false;
+        }
+        return super.canTarget(target);
     }
 
     @Override
@@ -175,16 +197,6 @@ public class PlayerShellEntity extends FakePlayerEntity {
             this.equipStack(targetedSlot, playerItemStack);
             player.setStackInHand(hand, equippedStack);
         }
-    }
-
-    @Override
-    public void tickMovement() {
-        super.tickMovement();
-    }
-
-    @Override
-    public boolean damage(DamageSource source, float amount) {
-        return super.damage(source, amount);
     }
 
     @Override

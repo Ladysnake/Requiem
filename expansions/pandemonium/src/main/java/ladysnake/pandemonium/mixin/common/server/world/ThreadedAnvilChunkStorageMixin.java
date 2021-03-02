@@ -34,7 +34,7 @@
  */
 package ladysnake.pandemonium.mixin.common.server.world;
 
-import ladysnake.pandemonium.common.entity.fakeplayer.FakePlayerEntity;
+import ladysnake.pandemonium.common.entity.fakeplayer.FakeServerPlayerEntity;
 import ladysnake.pandemonium.common.entity.fakeplayer.RequiemFakePlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -89,21 +89,21 @@ public abstract class ThreadedAnvilChunkStorageMixin {
 
     @Inject(method = "handlePlayerAddedOrRemoved", at = @At("HEAD"), cancellable = true)
     private void handleFakePlayerAddedOrRemoved(ServerPlayerEntity player, boolean added, CallbackInfo ci) {
-        if (added && player instanceof FakePlayerEntity) {
+        if (added && player instanceof FakeServerPlayerEntity) {
             ci.cancel();
         }
     }
 
     @Inject(method = "updateCameraPosition", at = @At("HEAD"), cancellable = true)
     private void updateFakeCameraPosition(ServerPlayerEntity player, CallbackInfo ci) {
-        if (player instanceof FakePlayerEntity) {
+        if (player instanceof FakeServerPlayerEntity) {
             ci.cancel();
         }
     }
 
     @Inject(method = "doesNotGenerateChunks", at = @At("RETURN"), cancellable = true)
     private void doesNotGenerateChunks(ServerPlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
-        if (!cir.getReturnValueZ() && player instanceof FakePlayerEntity) {
+        if (!cir.getReturnValueZ() && player instanceof FakeServerPlayerEntity) {
             cir.setReturnValue(true);
         }
     }

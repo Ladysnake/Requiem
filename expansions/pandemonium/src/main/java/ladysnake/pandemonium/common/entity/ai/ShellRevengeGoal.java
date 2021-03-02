@@ -32,19 +32,51 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.tag;
+package ladysnake.pandemonium.common.entity.ai;
 
-import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.tag.TagRegistry;
-import net.minecraft.item.Item;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
+import ladysnake.pandemonium.common.entity.PlayerShellEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.RevengeGoal;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.util.math.Box;
 
-public final class RequiemItemTags {
-    public static final Tag<Item> BONES = TagRegistry.item(Requiem.id("bones"));
-    public static final Tag<Item> UNDEAD_CURES = TagRegistry.item(Requiem.id("undead_cures"));
-    public static final Tag<Item> RAW_MEATS = TagRegistry.item(Requiem.id("raw_meats"));
-    public static final Tag<Item> RAW_FISHES = TagRegistry.item(Requiem.id("raw_fishes"));
-    public static final Tag<Item> WATER_BUCKETS = TagRegistry.item(new Identifier("c", "water_buckets"));
-    public static final Tag<Item> SHIELDS = TagRegistry.item(new Identifier("c", "shields"));
+import java.util.Objects;
+import java.util.UUID;
+
+public class ShellRevengeGoal extends RevengeGoal {
+    private final PlayerShellEntity shell;
+
+    public ShellRevengeGoal(PlayerShellEntity shell, Class<?>... noRevengeTypes) {
+        super(shell.getGuide(), noRevengeTypes);
+        this.shell = shell;
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        this.callForHelp();
+    }
+
+    protected void callForHelp() {
+        double d = this.getFollowRange();
+        Box box = Box.method_29968(this.mob.getPos()).expand(d, 10.0D, d);
+        UUID ownerUuid = this.shell.getOwnerUuid();
+
+        for (LivingEntity e : this.mob.world.getEntitiesIncludingUngeneratedChunks(LivingEntity.class, box)) {
+            if (isFriendlyShell(ownerUuid, e)) {
+                this.setMobEntityTarget(((PlayerShellEntity) e).getGuide(), target);
+            } else if (isPet(ownerUuid, e)) {
+                this.setMobEntityTarget((MobEntity) e, target);
+            }
+        }
+    }
+
+    private boolean isPet(UUID ownerUuid, LivingEntity e) {
+        return e instanceof TameableEntity && Objects.equals(((TameableEntity) e).getOwnerUuid(), ownerUuid);
+    }
+
+    private boolean isFriendlyShell(UUID ownerUuid, LivingEntity e) {
+        return e instanceof PlayerShellEntity && Objects.equals(((PlayerShellEntity) e).getOwnerUuid(), ownerUuid);
+    }
 }

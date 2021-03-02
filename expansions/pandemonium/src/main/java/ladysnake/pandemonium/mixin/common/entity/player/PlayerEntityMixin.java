@@ -34,7 +34,6 @@
  */
 package ladysnake.pandemonium.mixin.common.entity.player;
 
-import ladysnake.pandemonium.common.entity.fakeplayer.FakePlayerEntity;
 import ladysnake.pandemonium.common.entity.fakeplayer.RequiemFakePlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

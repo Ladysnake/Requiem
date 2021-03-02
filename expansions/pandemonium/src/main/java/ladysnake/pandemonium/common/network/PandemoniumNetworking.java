@@ -36,7 +36,7 @@ package ladysnake.pandemonium.common.network;
 
 import com.mojang.authlib.GameProfile;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
-import ladysnake.pandemonium.common.entity.fakeplayer.FakePlayerEntity;
+import ladysnake.pandemonium.common.entity.fakeplayer.FakeServerPlayerEntity;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -66,7 +66,7 @@ public final class PandemoniumNetworking {
         return new CustomPayloadS2CPacket(PLAYER_SHELL_SPAWN, buf);
     }
 
-    public static void sendPlayerShellSkinPacket(FakePlayerEntity player) {
+    public static void sendPlayerShellSkinPacket(FakeServerPlayerEntity player) {
         PacketByteBuf buf = createEmptyBuffer();
         buf.writeVarInt(player.getEntityId());
         writePlayerProfile(player, buf);
@@ -78,7 +78,7 @@ public final class PandemoniumNetworking {
         }
     }
 
-    private static void writePlayerProfile(FakePlayerEntity shell, PacketByteBuf buf) {
+    private static void writePlayerProfile(FakeServerPlayerEntity shell, PacketByteBuf buf) {
         GameProfile ownerProfile = shell.getOwnerProfile();
         buf.writeBoolean(ownerProfile != null);
 

@@ -34,36 +34,95 @@
  */
 package ladysnake.pandemonium.common.entity.fakeplayer;
 
+import com.google.common.base.Preconditions;
 import com.mojang.authlib.GameProfile;
 import ladysnake.pandemonium.common.network.PandemoniumNetworking;
 import ladysnake.pandemonium.mixin.common.entity.EntityAccessor;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckForNull;
 import java.util.Objects;
 import java.util.UUID;
 
-public class FakePlayerEntity extends ServerPlayerEntity implements RequiemFakePlayer {
+public class FakeServerPlayerEntity extends ServerPlayerEntity implements RequiemFakePlayer {
+    protected final FakePlayerGuide guide;
     @Nullable
     protected GameProfile ownerProfile;
 
-    public FakePlayerEntity(EntityType<?> type, ServerWorld world) {
+    public FakeServerPlayerEntity(EntityType<?> type, ServerWorld world) {
         this(type, world, new GameProfile(UUID.randomUUID(), "FakePlayer"));
     }
 
-    public FakePlayerEntity(EntityType<?> type, ServerWorld world, GameProfile profile) {
+    public FakeServerPlayerEntity(EntityType<?> type, ServerWorld world, GameProfile profile) {
         super(world.getServer(), world, profile, new ServerPlayerInteractionManager(world));
         ((EntityAccessor)this).setType(type);
         // Side effects go brr
         new ServerPlayNetworkHandler(world.getServer(), new FakeClientConnection(NetworkSide.CLIENTBOUND), this);
+        this.guide = new FakePlayerGuide(this);
+        this.initGoals();
+    }
+
+    public FakePlayerGuide getGuide() {
+        return guide;
+    }
+
+    protected void initGoals() {
+        // NO-OP
+    }
+
+    public void selectHotbarSlot(int hotbarSlot) {
+        Preconditions.checkArgument(PlayerInventory.isValidHotbarIndex(hotbarSlot));
+        if (this.inventory.selectedSlot != hotbarSlot && this.getActiveHand() == Hand.MAIN_HAND) {
+            this.clearActiveItem();
+        }
+
+        this.inventory.selectedSlot = hotbarSlot;
+        this.updateLastActionTime();
+    }
+
+    public void swapHands() {
+        ItemStack offhandStack = this.getStackInHand(Hand.OFF_HAND);
+        this.setStackInHand(Hand.OFF_HAND, this.getStackInHand(Hand.MAIN_HAND));
+        this.setStackInHand(Hand.MAIN_HAND, offhandStack);
+        this.clearActiveItem();
+    }
+
+    public void useItem(Hand hand) {
+        if (this.isUsingItem()) return;
+
+        ItemStack stack = this.getStackInHand(hand);
+
+        if (!stack.isEmpty()) {
+            ActionResult actionResult = this.interactionManager.interactItem(
+                this,
+                this.getServerWorld(),
+                stack,
+                hand
+            );
+
+            if (actionResult.shouldSwingHand()) {
+                this.swingHand(hand, true);
+            }
+        }
+    }
+
+    @Override
+    protected float turnHead(float bodyRotation, float headRotation) {
+        return this.guide.turnHead(bodyRotation, headRotation);
     }
 
     @Override
@@ -71,6 +130,18 @@ public class FakePlayerEntity extends ServerPlayerEntity implements RequiemFakeP
         this.closeHandledScreen();
         super.tick();
         this.playerTick();
+    }
+
+    @Override
+    protected void tickNewAi() {
+        super.tickNewAi();
+        this.guide.tickAi();
+    }
+
+    @Override
+    public boolean tryAttack(Entity target) {
+        this.attack(target);
+        return false;
     }
 
     @Override

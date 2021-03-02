@@ -38,16 +38,34 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.registry.Registry;
 
 import java.util.OptionalDouble;
+import java.util.function.Supplier;
 
 public class PossessionDelegatingModifier implements NonDeterministicModifier {
     private final EntityAttribute attribute;
-    private final PossessionComponent handler;
+    private final Supplier<LivingEntity> handler;
 
-    public PossessionDelegatingModifier(EntityAttribute attribute, PossessionComponent handler) {
+    public PossessionDelegatingModifier(EntityAttribute attribute, Supplier<LivingEntity> handler) {
         this.attribute = attribute;
         this.handler = handler;
+    }
+
+    public static void replaceAttributes(PlayerEntity e) {
+        replaceAttributes(e, PossessionComponent.KEY.get(e)::getPossessedEntity);
+    }
+
+    public static void replaceAttributes(LivingEntity e, Supplier<LivingEntity> entitySupplier) {
+        // Replace every registered attribute
+        for (EntityAttribute attribute : Registry.ATTRIBUTE) {
+            // Note: this fills the attribute map for the player, whether this is an issue is to be determined
+            EntityAttributeInstance current = e.getAttributeInstance(attribute);
+            if (current != null) {
+                ((NonDeterministicAttribute) current).addFinalModifier(new PossessionDelegatingModifier(current.getAttribute(), entitySupplier));
+            }
+        }
     }
 
     /**
@@ -55,7 +73,7 @@ public class PossessionDelegatingModifier implements NonDeterministicModifier {
      */
     @Override
     public OptionalDouble apply(double value) {
-        LivingEntity possessed = handler.getPossessedEntity();
+        LivingEntity possessed = handler.get();
 
         if (possessed != null) {
             EntityAttributeInstance ret = possessed.getAttributeInstance(this.attribute);

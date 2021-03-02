@@ -5,6 +5,7 @@
   "mixins": [
     "entity.EntityAccessor",
     "entity.mob.BlazeEntityAccessor",
+    "entity.mob.CreeperEntityAccessor",
     "entity.mob.EndermanEntityMixin",
     "entity.mob.EvokerEntityAccessor",
     "entity.mob.FoxEntityMixin",
@@ -14,7 +15,10 @@
     "entity.mob.WololoGoalMixin",
     "entity.player.PlayerAdvancementTrackerMixin",
     "entity.player.PlayerEntityMixin",
+    "entity.player.ServerPlayerEntityMixin",
     "entity.player.ServerWorldMixin",
+    "entity.player.TargetPredicateMixin",
+    "item.ItemAccessor",
     "server.world.ThreadedAnvilChunkStorageMixin"
   ],
   "injectors": {

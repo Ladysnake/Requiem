@@ -34,7 +34,7 @@
  */
 package ladysnake.pandemonium.mixin.common.entity.player;
 
-import ladysnake.pandemonium.common.entity.fakeplayer.FakePlayerEntity;
+import ladysnake.pandemonium.common.entity.fakeplayer.FakeServerPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerChunkManager;
@@ -65,7 +65,7 @@ public abstract class ServerWorldMixin {
 
     @ModifyVariable(method = "updateSleepingPlayers", at = @At(value = "STORE"))
     private ServerPlayerEntity captureSleepingPlayer(ServerPlayerEntity player) {
-        requiem$fakePlayerSleeping = player instanceof FakePlayerEntity;
+        requiem$fakePlayerSleeping = player instanceof FakeServerPlayerEntity;
         return player;
     }
 
@@ -80,7 +80,7 @@ public abstract class ServerWorldMixin {
 
     @Inject(method = "loadEntityUnchecked", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerChunkManager;loadEntity(Lnet/minecraft/entity/Entity;)V"))
     private void addFakePlayer(Entity entity, CallbackInfo ci) {
-        if (entity instanceof FakePlayerEntity) {
+        if (entity instanceof FakeServerPlayerEntity) {
             this.players.add((ServerPlayerEntity) entity);
         }
     }
@@ -92,7 +92,7 @@ public abstract class ServerWorldMixin {
      */
     @Inject(method = "tickEntity", at = @At("HEAD"), cancellable = true)
     private void freeChunk(Entity entity, CallbackInfo ci) {
-        if (entity instanceof FakePlayerEntity && !this.getChunkManager().shouldTickEntity(entity)) {
+        if (entity instanceof FakeServerPlayerEntity && !this.getChunkManager().shouldTickEntity(entity)) {
             this.checkEntityChunkPos(entity);
             ci.cancel();
         }

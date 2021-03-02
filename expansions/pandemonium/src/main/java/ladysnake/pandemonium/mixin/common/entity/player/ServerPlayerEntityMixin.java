@@ -32,15 +32,31 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity.fakeplayer;
+package ladysnake.pandemonium.mixin.common.entity.player;
 
-import net.minecraft.network.ClientConnection;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
+import com.mojang.authlib.GameProfile;
+import ladysnake.pandemonium.common.entity.fakeplayer.RequiemFakePlayer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-public class FakeServerPlayerNetworkHandler extends ServerPlayNetworkHandler {
-    public FakeServerPlayerNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player) {
-        super(server, connection, player);
+@Mixin(ServerPlayerEntity.class)
+public abstract class ServerPlayerEntityMixin extends PlayerEntity {
+    public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
+        super(world, pos, yaw, profile);
+    }
+
+    @Inject(method = "moveToWorld", at = @At("HEAD"), cancellable = true)
+    private void callSuperMoveToWorld(ServerWorld destination, CallbackInfoReturnable<Entity> cir) {
+        if (this instanceof RequiemFakePlayer) {
+            cir.setReturnValue(super.moveToWorld(destination));
+        }
     }
 }
