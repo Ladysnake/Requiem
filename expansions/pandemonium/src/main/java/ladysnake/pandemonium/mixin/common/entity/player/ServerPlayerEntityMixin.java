@@ -45,12 +45,24 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
         super(world, pos, yaw, profile);
+    }
+
+    /**
+     * This method is called in the constructor, but requires loaded chunks.
+     * So when a fake player is being loaded, it may result in a deadlock.
+     */
+    @Inject(method = "moveToSpawn", at = @At("HEAD"), cancellable = true)
+    private void cancelMoveToSpawn(ServerWorld world, CallbackInfo ci) {
+        if (this instanceof RequiemFakePlayer) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "moveToWorld", at = @At("HEAD"), cancellable = true)
