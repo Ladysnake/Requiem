@@ -62,6 +62,7 @@ public class FakeServerPlayerEntity extends ServerPlayerEntity implements Requie
     protected final FakePlayerGuide guide;
     @Nullable
     protected GameProfile ownerProfile;
+    private boolean release;
 
     public FakeServerPlayerEntity(EntityType<?> type, ServerWorld world) {
         this(type, world, new GameProfile(UUID.randomUUID(), "FakePlayer"));
@@ -101,7 +102,18 @@ public class FakeServerPlayerEntity extends ServerPlayerEntity implements Requie
         this.clearActiveItem();
     }
 
+    /**
+     * Calls {@link #clearActiveItem()} at the end of the tick if nothing re-activated it
+     */
+    public void releaseActiveItem() {
+        this.release = true;
+    }
+
     public void useItem(Hand hand) {
+        if (this.release && hand != this.getActiveHand()) {
+            this.clearActiveItem();
+        }
+
         if (this.isUsingItem()) return;
 
         ItemStack stack = this.getStackInHand(hand);
@@ -136,6 +148,10 @@ public class FakeServerPlayerEntity extends ServerPlayerEntity implements Requie
     protected void tickNewAi() {
         super.tickNewAi();
         this.guide.tickAi();
+        if (this.release) {
+            this.clearActiveItem();
+            this.release = false;
+        }
     }
 
     @Override

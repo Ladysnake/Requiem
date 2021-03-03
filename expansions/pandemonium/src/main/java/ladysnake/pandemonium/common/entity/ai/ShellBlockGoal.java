@@ -35,11 +35,15 @@
 package ladysnake.pandemonium.common.entity.ai;
 
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
+import ladysnake.pandemonium.mixin.common.entity.PersistentProjectileEntityAccessor;
 import ladysnake.pandemonium.mixin.common.entity.mob.CreeperEntityAccessor;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.CreeperEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
@@ -66,7 +70,7 @@ public class ShellBlockGoal<E extends Entity> extends Goal {
         this.targetClass = targetClass;
         this.comparator = comparator;
         this.candidatePredicate = candidatePredicate;
-        this.setControls(EnumSet.of(Control.MOVE, Control.JUMP, Control.LOOK));
+        this.setControls(EnumSet.of(Control.LOOK));
         this.searchRadius = searchRadius;
     }
 
@@ -137,7 +141,7 @@ public class ShellBlockGoal<E extends Entity> extends Goal {
 
     @Override
     public void stop() {
-        this.shell.clearActiveItem();
+        this.shell.releaseActiveItem();
         this.target = null;
     }
 
@@ -149,14 +153,38 @@ public class ShellBlockGoal<E extends Entity> extends Goal {
             ProjectileEntity.class,
             Comparator.comparing(shell::squaredDistanceTo),
             candidate -> {
+                // If the projectile is in the ground, it is not a threat
+                if (candidate instanceof PersistentProjectileEntityAccessor
+                    && ((PersistentProjectileEntityAccessor) candidate).isInGround()) return false;
+
+                // If the attacker is close, tank it
+                // (the projectile is likely to hit before the shield is up anyway)
+                Entity attacker = candidate.getOwner();
+                if (attacker != null && attacker.squaredDistanceTo(shell) < 9) return false;
+
+                // raycast does not take into account the case where the projectile is already inside
+                // the box, so we do it here
                 Box dangerZone = shell.getBoundingBox().expand(1.5);
                 if (dangerZone.intersects(candidate.getBoundingBox())) return true;
 
+                // raycast to check if the projectile is going to hit us
                 Vec3d start = candidate.getPos();
-                // Fun fact, projectile rotation is completely broken so we cannot use that
+                // Fun fact, projectile rotation is completely broken so we need to use the velocity
                 Vec3d end = start.add(candidate.getVelocity().normalize().multiply(searchRadius));
                 return dangerZone.raycast(start, end).isPresent();
             },
+            searchRadius
+        );
+    }
+
+    public static ShellBlockGoal<MobEntity> blockRangedAttackers(PlayerShellEntity shell) {
+        final int searchRadius = 20;
+
+        return new ShellBlockGoal<>(
+            shell,
+            MobEntity.class,
+            Comparator.<MobEntity, Boolean>comparing(e -> shell.getAttacker() == e).thenComparing(shell::squaredDistanceTo),
+            e -> e instanceof RangedAttackMob && e.getTarget() == shell && shell.squaredDistanceTo(e) > 16,
             searchRadius
         );
     }

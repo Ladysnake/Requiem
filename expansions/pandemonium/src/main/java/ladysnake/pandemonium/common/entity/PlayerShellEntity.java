@@ -99,6 +99,7 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     @Override
     public void initGoals() {
         this.guide.addGoal(2, ShellBlockGoal.blockCreepers(this));
+        this.guide.addGoal(2, ShellBlockGoal.blockRangedAttackers(this));
         this.guide.addGoal(2, ShellBlockGoal.blockProjectiles(this));
         this.guide.addGoal(3, new FleeEntityGoal<>(this.guide, CreeperEntity.class, 8, 1.6, 1.4, c -> ((CreeperEntity) c).getFuseSpeed() > 0));
         this.guide.addGoal(4, new MeleeAttackGoal(this.getGuide(), 1.0D, false));
