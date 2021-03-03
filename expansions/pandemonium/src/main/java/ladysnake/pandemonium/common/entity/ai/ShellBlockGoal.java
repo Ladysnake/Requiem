@@ -41,6 +41,8 @@ import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -70,7 +72,7 @@ public class ShellBlockGoal<E extends Entity> extends Goal {
         this.targetClass = targetClass;
         this.comparator = comparator;
         this.candidatePredicate = candidatePredicate;
-        this.setControls(EnumSet.of(Control.LOOK));
+        this.setControls(EnumSet.of(Control.LOOK, Control.MOVE));
         this.searchRadius = searchRadius;
     }
 
@@ -184,7 +186,19 @@ public class ShellBlockGoal<E extends Entity> extends Goal {
             shell,
             MobEntity.class,
             Comparator.<MobEntity, Boolean>comparing(e -> shell.getAttacker() == e).thenComparing(shell::squaredDistanceTo),
-            e -> e instanceof RangedAttackMob && e.getTarget() == shell && shell.squaredDistanceTo(e) > 16,
+            e -> {
+                // Look at mobs that want us dead
+                if (e instanceof RangedAttackMob && e.getTarget() == shell) {
+                    EntityNavigation nav = shell.getGuide().getNavigation();
+                    // If no valid path found, keep the shield up
+                    if (!nav.startMovingTo(e, 0.5) && !nav.isIdle()) {
+                        return true;
+                    }
+                    // If close enough, tank and strike, otherwise keep the shield up
+                    return shell.squaredDistanceTo(e) > 16;
+                }
+                return false;
+            },
             searchRadius
         );
     }
