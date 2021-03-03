@@ -76,7 +76,6 @@ public class FakePlayerGuide extends PathAwareEntity {
         this.despawnCounter = 0;
         this.setBoundingBox(this.owner.getBoundingBox());
         this.tickNewAi();
-        this.owner.setSprinting(this.getTarget() != null);
         copyState(this, this.owner);
     }
 

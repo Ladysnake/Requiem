@@ -152,6 +152,7 @@ public class FakeServerPlayerEntity extends ServerPlayerEntity implements Requie
             this.clearActiveItem();
             this.release = false;
         }
+        this.setSprinting(this.guide.getTarget() != null && !this.isUsingItem());
     }
 
     @Override
