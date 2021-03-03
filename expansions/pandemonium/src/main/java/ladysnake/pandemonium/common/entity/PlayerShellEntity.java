@@ -39,7 +39,7 @@ import com.demonwav.mcdev.annotations.Env;
 import com.mojang.authlib.GameProfile;
 import io.github.ladysnake.impersonate.Impersonator;
 import ladysnake.pandemonium.common.PlayerSplitter;
-import ladysnake.pandemonium.common.entity.ai.ShellCreeperBlockGoal;
+import ladysnake.pandemonium.common.entity.ai.ShellBlockGoal;
 import ladysnake.pandemonium.common.entity.ai.ShellRevengeGoal;
 import ladysnake.pandemonium.common.entity.fakeplayer.FakeServerPlayerEntity;
 import ladysnake.pandemonium.common.network.PandemoniumNetworking;
@@ -50,6 +50,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -97,13 +98,14 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
 
     @Override
     public void initGoals() {
-        this.guide.addGoal(2, new ShellCreeperBlockGoal(this));
-        this.guide.addGoal(3, new MeleeAttackGoal(this.getGuide(), 1.0D, false));
-        this.guide.addGoal(4, new EscapeSunlightGoal(this.guide, 1.0D));
-        this.guide.addGoal(4, new FleeEntityGoal<>(this.guide, WolfEntity.class, 6.0F, 1.0D, 1.2D));
-        this.guide.addGoal(6, new WanderAroundGoal(this.guide, 1.0D));
-        this.guide.addGoal(6, new LookAtEntityGoal(this.guide, PlayerEntity.class, 8.0F));
-        this.guide.addGoal(6, new LookAroundGoal(this.guide));
+        this.guide.addGoal(2, ShellBlockGoal.blockCreepers(this));
+        this.guide.addGoal(2, ShellBlockGoal.blockProjectiles(this));
+        this.guide.addGoal(3, new FleeEntityGoal<>(this.guide, CreeperEntity.class, 8, 1.6, 1.4, c -> ((CreeperEntity) c).getFuseSpeed() > 0));
+        this.guide.addGoal(4, new MeleeAttackGoal(this.getGuide(), 1.0D, false));
+        this.guide.addGoal(5, new FleeEntityGoal<>(this.guide, WolfEntity.class, 6.0F, 1.0D, 1.2D));
+        this.guide.addGoal(7, new WanderAroundGoal(this.guide, 1.0D));
+        this.guide.addGoal(7, new LookAtEntityGoal(this.guide, PlayerEntity.class, 8.0F));
+        this.guide.addGoal(7, new LookAroundGoal(this.guide));
         this.guide.addTargetGoal(1, new ShellRevengeGoal(this));
     }
 

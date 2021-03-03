@@ -18,7 +18,6 @@
     "entity.player.ServerPlayerEntityMixin",
     "entity.player.ServerWorldMixin",
     "entity.player.TargetPredicateMixin",
-    "item.ItemAccessor",
     "server.world.ThreadedAnvilChunkStorageMixin"
   ],
   "injectors": {
