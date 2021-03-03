@@ -69,7 +69,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         at = @At(value = "LOAD")
     )
     private Vec3d cancelKnockbackCancellation(Vec3d previousVelocity, Entity target) {
-        if (target instanceof FakeServerPlayerEntity && target.velocityModified) {
+        if (target instanceof FakeServerPlayerEntity) {
             return target.getVelocity();
         }
         return previousVelocity;

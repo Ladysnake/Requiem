@@ -41,6 +41,7 @@ import ladysnake.pandemonium.mixin.common.entity.EntityAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetworkSide;
@@ -48,6 +49,8 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -159,6 +162,13 @@ public class FakeServerPlayerEntity extends ServerPlayerEntity implements Requie
     public boolean tryAttack(Entity target) {
         this.attack(target);
         return false;
+    }
+
+    @Override
+    public void takeKnockback(float f, double d, double e) {
+        if (this.velocityModified) {
+            super.takeKnockback(f, d, e);
+        }
     }
 
     @Override
