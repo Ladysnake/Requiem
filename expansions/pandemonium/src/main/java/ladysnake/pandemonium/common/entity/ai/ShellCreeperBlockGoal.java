@@ -36,25 +36,11 @@ package ladysnake.pandemonium.common.entity.ai;
 
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.mixin.common.entity.mob.CreeperEntityAccessor;
-import ladysnake.pandemonium.mixin.common.item.ItemAccessor;
 import ladysnake.requiem.common.tag.RequiemItemTags;
-import net.minecraft.block.FluidDrainable;
-import net.minecraft.block.SideShapeType;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.CreeperEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.RaycastContext;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -64,9 +50,7 @@ import java.util.List;
 
 public class ShellCreeperBlockGoal extends Goal {
     private final PlayerShellEntity shell;
-    private int shieldSlot = Integer.MIN_VALUE;
-    private int waterSlot = Integer.MIN_VALUE;
-    private @Nullable BlockPos placedWater;
+    private int shieldSlot;
     private @Nullable CreeperEntity primedCreeper;
 
     public ShellCreeperBlockGoal(PlayerShellEntity shell) {
@@ -76,31 +60,23 @@ public class ShellCreeperBlockGoal extends Goal {
 
     @Override
     public boolean canStart() {
-        Box box = Box.method_29968(this.shell.getPos()).expand(4);
-        Item item = this.shell.getOffHandStack().getItem();
-        this.shieldSlot = Integer.MIN_VALUE;
-        this.waterSlot = Integer.MIN_VALUE;
+        Box box = Box.method_29968(this.shell.getPos()).expand(5);
+        this.shieldSlot = -1;
 
-        if (RequiemItemTags.SHIELDS.contains(item)) {
-            shieldSlot = -1;
-        } else if (RequiemItemTags.WATER_BUCKETS.contains(item)) {
-            waterSlot = -1;
-        }
-
-        for (int slot = 0; slot < 9; slot++) {
-            item = this.shell.inventory.getStack(slot).getItem();
-            if (RequiemItemTags.SHIELDS.contains(item)) {
-                shieldSlot = slot;
-            } else if (RequiemItemTags.WATER_BUCKETS.contains(item)) {
-                waterSlot = slot;
+        shieldSearch:
+        if (!RequiemItemTags.SHIELDS.contains(this.shell.getOffHandStack().getItem())) {
+            for (int slot = 0; slot < 9; slot++) {
+                if (RequiemItemTags.SHIELDS.contains(this.shell.inventory.getStack(slot).getItem())) {
+                    shieldSlot = slot;
+                    break shieldSearch;
+                }
             }
         }
-
-        if (this.shieldSlot == Integer.MIN_VALUE) return false;
 
         // Catch all creepers that are about to explode
         List<CreeperEntity> creepers = this.shell.world.getEntitiesIncludingUngeneratedChunks(CreeperEntity.class, box, c -> c.getFuseSpeed() > 0 && ((CreeperEntityAccessor) c).getCurrentFuseTime() > 15);
         if (creepers.isEmpty()) return false;
+        // Target the most imminent explosion
         this.primedCreeper = Collections.min(creepers, Comparator.comparing(c -> ((CreeperEntityAccessor)c).getCurrentFuseTime()));
         return this.primedCreeper != null;
     }
@@ -113,13 +89,6 @@ public class ShellCreeperBlockGoal extends Goal {
             this.shell.selectHotbarSlot(this.shieldSlot);
             this.shell.swapHands();
         }
-
-        // If the water bucket was in the offhand, it is now in the main hand -> no need to change
-        if (this.waterSlot >= 0) {
-            this.shell.selectHotbarSlot(this.waterSlot);
-        }
-
-        this.placedWater = null;
     }
 
     @Override
@@ -131,35 +100,13 @@ public class ShellCreeperBlockGoal extends Goal {
     public void tick() {
         if (this.primedCreeper == null) return;
 
-        CreeperEntity creeper = this.primedCreeper;
-        this.shell.getGuide().getLookControl().lookAt(creeper.getX()+0.5, creeper.getY()-0.5, creeper.getZ()+0.5, 180, 180);
-        int fuseTime = ((CreeperEntityAccessor) creeper).getCurrentFuseTime();
-        World world = this.shell.world;
-        BlockHitResult rayResult = ItemAccessor.invokeRaycast(world, this.shell, RaycastContext.FluidHandling.NONE);
-        BlockPos creeperPos = creeper.getBlockPos();
-        BlockPos pos = creeperPos.down();
-
-        if (fuseTime > 6 && rayResult.getType() == HitResult.Type.BLOCK && rayResult.getBlockPos().equals(pos) && rayResult.getSide() == Direction.UP && RequiemItemTags.WATER_BUCKETS.contains(this.shell.getMainHandStack().getItem()) && world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
-            this.shell.useItem(Hand.MAIN_HAND);
-        } else {
-            this.shell.useItem(Hand.OFF_HAND);
-        }
+        this.shell.getGuide().getLookControl().lookAt(this.primedCreeper, 90, 90);
+        this.shell.useItem(Hand.OFF_HAND);
     }
 
     @Override
     public void stop() {
         this.primedCreeper = null;
         this.shell.clearActiveItem();
-
-        // Clean up the mess
-        if (this.placedWater != null) {
-            this.shell.getGuide().getLookControl().lookAt(placedWater.getX()+0.5, placedWater.getY()+0.5, placedWater.getZ()+0.5, 180, 180);
-            BlockHitResult rayResult = ItemAccessor.invokeRaycast(this.shell.world, this.shell, RaycastContext.FluidHandling.SOURCE_ONLY);
-
-            if (rayResult.getType() == HitResult.Type.BLOCK && this.shell.world.getBlockState(rayResult.getBlockPos()).getBlock() instanceof FluidDrainable) {
-                this.shell.useItem(Hand.MAIN_HAND);
-            }
-            this.placedWater = null;
-        }
     }
 }
