@@ -34,6 +34,7 @@
  */
 package ladysnake.pandemonium.mixin.common.entity.player;
 
+import ladysnake.pandemonium.common.entity.fakeplayer.FakeServerPlayerEntity;
 import ladysnake.pandemonium.common.entity.fakeplayer.RequiemFakePlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -68,7 +69,10 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         at = @At(value = "LOAD")
     )
     private Vec3d cancelKnockbackCancellation(Vec3d previousVelocity, Entity target) {
-        return target.getVelocity();
+        if (target instanceof FakeServerPlayerEntity && target.velocityModified) {
+            return target.getVelocity();
+        }
+        return previousVelocity;
     }
 
     @ModifyArg(method = {"<init>", "readCustomDataFromTag"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;setUuid(Ljava/util/UUID;)V"))
