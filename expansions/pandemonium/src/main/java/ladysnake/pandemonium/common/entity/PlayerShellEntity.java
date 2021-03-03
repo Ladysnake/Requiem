@@ -65,8 +65,10 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.apiguardian.api.API;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -75,6 +77,7 @@ import static org.apiguardian.api.API.Status.MAINTAINED;
 
 // TODO add inventory access
 public class PlayerShellEntity extends FakeServerPlayerEntity {
+    private @Nullable BlockPos home;
 
     @CheckEnv(Env.SERVER)
     @API(status = MAINTAINED)
@@ -86,6 +89,14 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
         return createPlayerAttributes();
     }
 
+    public @Nullable BlockPos getHome() {
+        return home;
+    }
+
+    public void setHome(@Nullable BlockPos home) {
+        this.home = home;
+    }
+
     public void storePlayerData(ServerPlayerEntity player, CompoundTag respawnNbt) {
         // Save the complete representation of the player
         PlayerSplitter.performNbtCopy(respawnNbt, this);
@@ -94,6 +105,7 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
 
         this.setOwnerProfile(Optional.ofNullable(Impersonator.get(player).getImpersonatedProfile()).orElse(player.getGameProfile()));
         this.setCustomName(new LiteralText(player.getEntityName()));
+        this.setHome(player.getBlockPos());
     }
 
     @Override
@@ -104,10 +116,19 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
         this.guide.addGoal(3, new FleeEntityGoal<>(this.guide, CreeperEntity.class, 8, 1.6, 1.4, c -> ((CreeperEntity) c).getFuseSpeed() > 0));
         this.guide.addGoal(4, new MeleeAttackGoal(this.getGuide(), 1.0D, false));
         this.guide.addGoal(5, new FleeEntityGoal<>(this.guide, WolfEntity.class, 6.0F, 1.0D, 1.2D));
-        this.guide.addGoal(7, new WanderAroundGoal(this.guide, 1.0D));
-        this.guide.addGoal(7, new LookAtEntityGoal(this.guide, PlayerEntity.class, 8.0F));
+        this.guide.addGoal(7, new GoToWalkTargetGoal(this.guide, 1.0D));
+        this.guide.addGoal(7, new LookAtEntityGoal(this.guide, PlayerEntity.class, 12.0F));
         this.guide.addGoal(7, new LookAroundGoal(this.guide));
+        this.guide.addGoal(7, new LookAtEntityGoal(this.guide, LivingEntity.class, 8.0F));
         this.guide.addTargetGoal(1, new ShellRevengeGoal(this));
+    }
+
+    @Override
+    public void baseTick() {
+        super.baseTick();
+        if (this.home != null) {
+            this.guide.setPositionTarget(this.home, 5);
+        }
     }
 
     @Override
@@ -225,17 +246,28 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
             this.setOwnerProfile(NbtHelper.toGameProfile(tag.getCompound("PlayerProfile")));
         }
 
+        CompoundTag homeTag = tag.getCompound("Home");
+        if (homeTag.contains("X", 99) && homeTag.contains("Y", 99) && homeTag.contains("Z", 99)) {
+            this.setHome(NbtHelper.toBlockPos(homeTag));
+        }
+
         this.getDataTracker().set(PLAYER_MODEL_PARTS, tag.getByte("PlayerModelParts"));
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compound) {
-        super.writeCustomDataToTag(compound);
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
         GameProfile gameProfile = this.getOwnerProfile();
         if (gameProfile != null) {
-            compound.put("PlayerProfile", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
+            tag.put("PlayerProfile", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
         }
-        compound.putByte("PlayerModelParts", this.getDataTracker().get(PLAYER_MODEL_PARTS));
+
+        BlockPos home = this.getHome();
+        if (home != null) {
+            tag.put("Home", NbtHelper.fromBlockPos(home));
+        }
+
+        tag.putByte("PlayerModelParts", this.getDataTracker().get(PLAYER_MODEL_PARTS));
     }
 
     /* Static Methods */
