@@ -43,6 +43,8 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
@@ -88,5 +90,17 @@ public class FakeClientPlayerEntity extends OtherClientPlayerEntity implements R
     @Override
     public void setOwnerProfile(@CheckForNull GameProfile profile) {
         this.setPlayerListEntry(profile);
+    }
+
+    @Override
+    public void playSound(SoundEvent sound, float volume, float pitch) {
+        if (!this.isSilent()) {
+            this.world.playSound(this.getX(), this.getY(), this.getZ(), sound, this.getSoundCategory(), volume, pitch, false);
+        }
+    }
+
+    @Override
+    public void playSound(SoundEvent event, SoundCategory category, float volume, float pitch) {
+        this.world.playSound(this.getX(), this.getY(), this.getZ(), event, category, volume, pitch, false);
     }
 }
