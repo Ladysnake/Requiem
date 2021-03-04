@@ -49,6 +49,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.CreeperEntity;
@@ -83,6 +84,8 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     @API(status = MAINTAINED)
     public PlayerShellEntity(EntityType<? extends PlayerShellEntity> type, ServerWorld world) {
         super(type, world);
+        ((MobNavigation)this.guide.getNavigation()).setCanPathThroughDoors(true);
+        this.guide.getNavigation().setCanSwim(true);
     }
 
     public static DefaultAttributeContainer.Builder createPlayerShellAttributes() {
