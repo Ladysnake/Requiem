@@ -40,12 +40,9 @@ import ladysnake.pandemonium.mixin.common.entity.mob.CreeperEntityAccessor;
 import ladysnake.requiem.common.tag.RequiemItemTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.RangedAttackMob;
-import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
-import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
@@ -58,17 +55,15 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class ShellBlockGoal<E extends Entity> extends Goal {
-    protected final PlayerShellEntity shell;
+public class ShellBlockGoal<E extends Entity> extends PlayerShellGoal {
     private final int searchRadius;
     private final Class<? extends E> targetClass;
     private final Comparator<E> comparator;
     private final Predicate<E> candidatePredicate;
-    private int shieldSlot;
     protected @Nullable E target;
 
     public ShellBlockGoal(PlayerShellEntity shell, Class<E> targetClass, Comparator<E> comparator, Predicate<E> candidatePredicate, int searchRadius) {
-        this.shell = shell;
+        super(shell);
         this.targetClass = targetClass;
         this.comparator = comparator;
         this.candidatePredicate = candidatePredicate;
@@ -78,7 +73,7 @@ public class ShellBlockGoal<E extends Entity> extends Goal {
 
     @Override
     public boolean canStart() {
-        if (!this.findShield()) {
+        if (!this.findInHotbar(i -> RequiemItemTags.SHIELDS.contains(i.getItem()))) {
             return false;
         }
 
@@ -98,27 +93,10 @@ public class ShellBlockGoal<E extends Entity> extends Goal {
         return true;    // min cannot return null
     }
 
-    private boolean findShield() {
-        this.shieldSlot = -1;
-
-        if (RequiemItemTags.SHIELDS.contains(this.shell.getOffHandStack().getItem())) {
-            return true;
-        }
-
-        for (int slot = 0; slot < 9; slot++) {
-            if (RequiemItemTags.SHIELDS.contains(this.shell.inventory.getStack(slot).getItem())) {
-                shieldSlot = slot;
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     @Override
     public void start() {
-        if (this.shieldSlot >= 0) {
-            this.shell.selectHotbarSlot(this.shieldSlot);
+        if (this.hotbarSlot >= 0) {
+            this.shell.selectHotbarSlot(this.hotbarSlot);
             this.shell.swapHands();
         }
     }
