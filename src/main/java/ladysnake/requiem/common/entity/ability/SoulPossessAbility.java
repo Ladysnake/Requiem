@@ -47,7 +47,6 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class SoulPossessAbility extends DirectAbilityBase<PlayerEntity, LivingEntity> {
@@ -96,10 +95,12 @@ public class SoulPossessAbility extends DirectAbilityBase<PlayerEntity, LivingEn
     protected void onCooldownEnd() {
         if (this.owner.world.isClient && this.owner == MinecraftClient.getInstance().player) {
             RequiemClient.INSTANCE.getRequiemFxRenderer().onPossessionAck();
-        } else if (this.target instanceof MobEntity) {
-            this.getPossessor().startPossessing((MobEntity) this.target);
-        } else if (this.target != null) {
-            extraAction.accept(target, this.owner);
+        } else if (this.target != null && !this.target.removed && this.target.isAlive()) {
+            if (this.target instanceof MobEntity) {
+                this.getPossessor().startPossessing((MobEntity) this.target);
+            } else if (this.target != null) {
+                extraAction.accept(target, this.owner);
+            }
         }
         this.target = null;
     }
