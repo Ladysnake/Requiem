@@ -35,7 +35,6 @@
 package ladysnake.pandemonium.mixin.common.entity.player;
 
 import ladysnake.pandemonium.common.entity.fakeplayer.FakeServerPlayerEntity;
-import ladysnake.pandemonium.common.entity.fakeplayer.RequiemFakePlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -44,11 +43,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Slice;
-
-import java.util.UUID;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity {
@@ -73,13 +69,5 @@ public abstract class PlayerEntityMixin extends LivingEntity {
             return target.getVelocity();
         }
         return previousVelocity;
-    }
-
-    @ModifyArg(method = {"<init>", "readCustomDataFromTag"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;setUuid(Ljava/util/UUID;)V"))
-    private UUID cancelUuidSetter(UUID uuid) {
-        if (this instanceof RequiemFakePlayer) {
-            return this.getUuid();
-        }
-        return uuid;
     }
 }
