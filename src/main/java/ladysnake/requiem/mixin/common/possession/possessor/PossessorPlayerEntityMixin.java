@@ -207,8 +207,8 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
 
     @Override
     protected void requiem$canClimb(CallbackInfoReturnable<Boolean> cir) {
-        if (!cir.getReturnValueZ() && this.requiem$isCollidingHorizontally()) {
-            cir.setReturnValue(MovementAlterer.KEY.get(this).canClimbWalls());
+        if (!cir.getReturnValueZ() && this.requiem$isCollidingHorizontally() && MovementAlterer.KEY.get(this).canClimbWalls()) {
+            cir.setReturnValue(true);
         }
     }
 
