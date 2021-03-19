@@ -5,6 +5,9 @@ repositories {
     maven {
         name = 'Ladysnake Libs'
         url = 'https://dl.bintray.com/ladysnake/libs'
+        content {
+            includeGroup "io.github.ladysnake"
+        }
     }
     maven {
         url "https://www.cursemaven.com"
