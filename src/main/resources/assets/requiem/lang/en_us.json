@@ -119,6 +119,8 @@
   "requiem:opus_daemonium.wanderer": "Wanderer",
 
   "origins:layer.requiem.soul_type.name": "Soul Type",
+  "origins:layer.requiem.soul_type.missing_origin.name": "Missing",
+  "origins:layer.requiem.soul_type.missing_origin.description": "You do not have a Soul Type.",
   "origins:origin.requiem.mortal.name": "Mortal",
   "origins:origin.requiem.mortal.description": "A mere mortal. Your ordinary Minecraft experience awaits.",
   "origins:origin.requiem.remnant.name": "Demon",

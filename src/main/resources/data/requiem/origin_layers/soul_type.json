@@ -3,6 +3,8 @@
   "enabled": true,
   "order": -1,
   "name": "origins:layer.requiem.soul_type.name",
+  "missing_name": "origins:layer.requiem.soul_type.missing_origin.name",
+  "missing_description": "origins:layer.requiem.soul_type.missing_origin.description",
   "origins": [
     {
       "condition": {

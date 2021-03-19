@@ -54,6 +54,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.gamerule.StartingRemnantType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -79,11 +80,11 @@ public final class OriginsCompat {
 
     // The factory for the origins player condition that locks access based on the requiem:startingRemnantType gamerule
     public static final Identifier GAMERULE_CONDITION_ID = Requiem.id("start_remnant_gamerule");
-    public static final ConditionFactory<PlayerEntity> GAMERULE_CONDITION_FACTORY = new ConditionFactory<>(
+    public static final ConditionFactory<LivingEntity> GAMERULE_CONDITION_FACTORY = new ConditionFactory<>(
         GAMERULE_CONDITION_ID,
         new SerializableData().add("value", SerializableDataType.list(SerializableDataType.enumValue(StartingRemnantType.class)), Collections.singletonList(StartingRemnantType.CHOOSE)),
-        (instance, player) -> {
-            StartingRemnantType startingRemnantType = StartingRemnantType.of(RemnantComponent.get(player).getDefaultRemnantType());
+        (instance, entity) -> {
+            StartingRemnantType startingRemnantType = StartingRemnantType.of(RemnantComponent.KEY.maybeGet(entity).map(RemnantComponent::getDefaultRemnantType).orElse(null));
             return ((List<?>) instance.get("value")).contains(startingRemnantType);
         }
     );
@@ -108,7 +109,7 @@ public final class OriginsCompat {
     @CalledThroughReflection
     public static void init() {
         Registry.register(ModRegistries.POWER_FACTORY, FACTORY_ID, REMNANT_POWER_FACTORY);
-        Registry.register(ModRegistries.PLAYER_CONDITION, GAMERULE_CONDITION_ID, GAMERULE_CONDITION_FACTORY);
+        Registry.register(ModRegistries.ENTITY_CONDITION, GAMERULE_CONDITION_ID, GAMERULE_CONDITION_FACTORY);
         RemnantStateChangeCallback.EVENT.register((player, state) -> {
             if (!player.world.isClient) {
                 if (state.isVagrant()) {
