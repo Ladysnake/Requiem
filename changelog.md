@@ -1,4 +1,20 @@
 ------------------------------------------------------
+Version 1.5.1
+------------------------------------------------------
+**Additions**
+- Added Romanian translation (thanks AwsAlex !)
+
+**Mod Compatibility**
+- Updated Origins compatibility; the Soul Types should be back in the selection screen
+- Automated Crafting: Fixed the same crash as last time, but for real
+- Fixed requiem breaking Bewitchment's and Origins' climbing hooks
+- Fixed some mixin incompatibilities with other mods
+
+**Fixes**
+- The /team command should no longer be broken, but for real this time
+- Fixed the localization for the banishment opus' tooltip
+
+------------------------------------------------------
 Version 1.5.0
 ------------------------------------------------------
 Kudos to SciRave for learning github and java to make a Requiem PR fixing some bugs!
