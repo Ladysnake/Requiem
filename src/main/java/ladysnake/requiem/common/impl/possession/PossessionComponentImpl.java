@@ -194,7 +194,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
         if (RequiemEntityTypeTags.ITEM_USERS.contains(possessed.getType())) {
             InventoryHelper.transferEquipment(player, possessed);
         }
-        ((LivingEntityAccessor) player).invokeDropInventory();
+        ((LivingEntityAccessor) player).requiem$invokeDropInventory();
         player.clearStatusEffects();
         Entity ridden = player.getVehicle();
         if (ridden != null) {
@@ -328,7 +328,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
         double width = host.getWidth();
         double dx = (host.getX() + width / 2) - (pos.getX() + 0.5D);
         EntityPose pose = host.getPose();
-        double dy = (host.getY() + ((EntityAccessor) host).invokeGetEyeHeight(pose, host.getDimensions(pose))) - (pos.getY() + 0.5D);
+        double dy = (host.getY() + ((EntityAccessor) host).requiem$invokeGetEyeHeight(pose, host.getDimensions(pose))) - (pos.getY() + 0.5D);
         double dz = (host.getZ() + width / 2) - (pos.getZ() + 0.5D);
         return dx * dx + dy * dy + dz * dz;
     }

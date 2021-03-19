@@ -66,7 +66,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -252,7 +251,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
         if (((ComponentProvider)this).getComponentContainer() != null) {
             @SuppressWarnings("ConstantConditions") LivingEntity possessed = PossessionComponent.getPossessedEntity((Entity) (Object) this);
             if (possessed != null) {
-                cir.setReturnValue(((LivingEntityAccessor) possessed).invokeGetEyeHeight(pose, possessed.getDimensions(pose)));
+                cir.setReturnValue(((LivingEntityAccessor) possessed).requiem$invokeGetEyeHeight(pose, possessed.getDimensions(pose)));
             }
         }
     }

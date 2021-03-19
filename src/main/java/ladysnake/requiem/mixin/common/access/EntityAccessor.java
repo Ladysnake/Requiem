@@ -46,14 +46,14 @@ public interface EntityAccessor {
     /**
      * {@link Entity#getEyeHeight(EntityPose)} is client-only
      */
-    @Invoker
-    float invokeGetEyeHeight(EntityPose pose, EntityDimensions dimensions);
+    @Invoker("getEyeHeight")
+    float requiem$invokeGetEyeHeight(EntityPose pose, EntityDimensions dimensions);
 
-    @Invoker
-    Vec3d invokeAdjustMovementForCollisions(Vec3d movement);
+    @Invoker("adjustMovementForCollisions")
+    Vec3d requiem$invokeAdjustMovementForCollisions(Vec3d movement);
 
-    @Invoker
-    static Vec3d invokeMovementInputToVelocity(Vec3d movementInput, float speed, float yaw) {
+    @Invoker("movementInputToVelocity")
+    static Vec3d requiem$invokeMovementInputToVelocity(Vec3d movementInput, float speed, float yaw) {
         throw new IllegalStateException(movementInput + "" + speed + "" + yaw);
     }
 }

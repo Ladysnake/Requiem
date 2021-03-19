@@ -108,7 +108,7 @@ public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity, Entity>
         protected void castSpell() {
             assert this.target != null;
             if (this.target instanceof SheepEntity) {
-                ((EvokerEntityAccessor) EvokerWololoAbility.this.owner).invokeSetWololoTarget((SheepEntity) this.target);
+                ((EvokerEntityAccessor) EvokerWololoAbility.this.owner).requiem$invokeSetWololoTarget((SheepEntity) this.target);
                 super.castSpell();
             } else {
                 WololoComponent.KEY.maybeGet(this.target).ifPresent(WololoComponent::wololo);

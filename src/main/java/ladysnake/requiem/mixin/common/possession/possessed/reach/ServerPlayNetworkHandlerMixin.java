@@ -38,17 +38,13 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.mixin.common.access.EntityAccessor;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerPlayNetworkHandlerMixin {
@@ -63,7 +59,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
     private double onPlayerInteractBlockModifyDistance(double posY) {
         MobEntity host = PossessionComponent.getPossessedEntity(player);
         if (host != null) {
-            return posY - ((EntityAccessor) host).invokeGetEyeHeight(host.getPose(), host.getDimensions(host.getPose()));
+            return posY - ((EntityAccessor) host).requiem$invokeGetEyeHeight(host.getPose(), host.getDimensions(host.getPose()));
         }
         return posY;
     }

@@ -83,7 +83,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     }
 
     @Override
-    public AbstractButtonWidget requiem_getRecipeBookButton() {
+    public AbstractButtonWidget requiem$getRecipeBookButton() {
         return this.craftingBookButton;
     }
 

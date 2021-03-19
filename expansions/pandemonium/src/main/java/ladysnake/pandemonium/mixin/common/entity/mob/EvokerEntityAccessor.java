@@ -41,6 +41,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(EvokerEntity.class)
 public interface EvokerEntityAccessor {
-    @Invoker
-    void invokeSetWololoTarget(SheepEntity sheep);
+    @Invoker("setWololoTarget")
+    void requiem$invokeSetWololoTarget(SheepEntity sheep);
 }

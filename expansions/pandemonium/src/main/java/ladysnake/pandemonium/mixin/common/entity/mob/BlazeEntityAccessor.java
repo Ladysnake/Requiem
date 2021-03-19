@@ -40,9 +40,9 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(BlazeEntity.class)
 public interface BlazeEntityAccessor {
-    @Invoker
-    boolean invokeIsFireActive();
+    @Invoker("isFireActive")
+    boolean requiem$invokeIsFireActive();
 
-    @Invoker
-    void invokeSetFireActive(boolean active);
+    @Invoker("setFireActive")
+    void requiem$invokeSetFireActive(boolean active);
 }

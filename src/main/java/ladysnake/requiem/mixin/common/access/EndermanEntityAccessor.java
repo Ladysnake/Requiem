@@ -40,6 +40,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(EndermanEntity.class)
 public interface EndermanEntityAccessor {
-    @Invoker
-    boolean invokeTeleportRandomly();
+    @Invoker("teleportRandomly")
+    boolean requiem$invokeTeleportRandomly();
 }

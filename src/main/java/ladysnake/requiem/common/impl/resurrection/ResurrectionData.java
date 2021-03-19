@@ -74,7 +74,7 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
     private static final Map<String, BiPredicate<ServerPlayerEntity, DamageSource>> SPECIAL_PREDICATES = Util.make(new HashMap<>(), m -> {
         m.put("head_in_sand", (lazarus, killingBlow) -> {
             EntityPose pose = lazarus.getPose();
-            float eyeHeight = ((EntityAccessor) lazarus).invokeGetEyeHeight(pose, lazarus.getDimensions(pose));
+            float eyeHeight = ((EntityAccessor) lazarus).requiem$invokeGetEyeHeight(pose, lazarus.getDimensions(pose));
             return BlockTags.SAND.contains(lazarus.world.getBlockState(lazarus.getBlockPos().add(0, eyeHeight, 0)).getBlock());
         });
     });

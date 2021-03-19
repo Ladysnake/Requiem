@@ -41,6 +41,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(SpriteAtlasHolder.class)
 public interface SpriteAtlasHolderAccessor {
-    @Accessor
-    SpriteAtlasTexture getAtlas();
+    @Accessor("atlas")
+    SpriteAtlasTexture requiem$getAtlas();
 }

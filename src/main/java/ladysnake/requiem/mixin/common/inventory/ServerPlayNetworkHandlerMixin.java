@@ -53,7 +53,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
     @Inject(method = "onUpdateSelectedSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/packet/c2s/play/UpdateSelectedSlotC2SPacket;getSelectedSlot()I", ordinal = 0))
     private void fixSelectedSlot(UpdateSelectedSlotC2SPacket packet, CallbackInfo ci) {
         if (InventoryLimiter.KEY.get(this.player).isSlotLocked(packet.getSelectedSlot())) {
-            ((UpdateSelectedSlotC2SPacketAccessor) packet).setSelectedSlot(PlayerInventoryLimiter.MAINHAND_SLOT);
+            ((UpdateSelectedSlotC2SPacketAccessor) packet).requiem$setSelectedSlot(PlayerInventoryLimiter.MAINHAND_SLOT);
         }
     }
 }

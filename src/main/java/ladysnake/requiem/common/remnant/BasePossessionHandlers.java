@@ -87,7 +87,7 @@ public class BasePossessionHandlers {
                 if (possessor.world.getRegistryKey() != World.END/* == DimensionType.OVERWORLD*/) {
                     // Retry a few times
                     for (int i = 0; i < 20; i++) {
-                        if (((EndermanEntityAccessor) target).invokeTeleportRandomly()) {
+                        if (((EndermanEntityAccessor) target).requiem$invokeTeleportRandomly()) {
                             possessor.world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, target.getSoundCategory(), 1.0F, 1.0F);
                             break;
                         }

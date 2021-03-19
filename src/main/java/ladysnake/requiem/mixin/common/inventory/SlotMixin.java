@@ -80,7 +80,7 @@ public abstract class SlotMixin {
         if (inventory instanceof PlayerInventory) {
             this.limiter = InventoryLimiter.KEY.get(((PlayerInventory) inventory).player);
         } else if (inventory instanceof CraftingInventory) {
-            ScreenHandler handler = ((CraftingInventoryAccessor) inventory).getHandler();
+            ScreenHandler handler = ((CraftingInventoryAccessor) inventory).requiem$getHandler();
             if (handler instanceof PlayerScreenHandlerAccessor) {
                 this.limiter = InventoryLimiter.KEY.get(((PlayerScreenHandlerAccessor) handler).getOwner());
                 this.craftingSlot = true;

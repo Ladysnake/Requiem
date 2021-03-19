@@ -43,5 +43,5 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(AbstractSkeletonEntity.class)
 public interface ArrowShooter {
     @Invoker("createArrowProjectile")
-    PersistentProjectileEntity invokeGetArrow(ItemStack arrowStack, float charge);
+    PersistentProjectileEntity requiem$invokeCreateArrow(ItemStack arrowStack, float charge);
 }

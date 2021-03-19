@@ -41,6 +41,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(PersistentProjectileEntity.class)
 public interface ProjectileEntityAccessor {
-    @Invoker
-    ItemStack invokeAsItemStack();
+    @Invoker("asItemStack")
+    ItemStack requiem$invokeAsItemStack();
 }

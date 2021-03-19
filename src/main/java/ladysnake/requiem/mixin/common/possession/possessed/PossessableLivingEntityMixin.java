@@ -461,7 +461,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     private void damageShield(float damage, CallbackInfo ci) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null && !this.world.isClient) {
-            ((LivingEntityAccessor)possessor).invokeDamageShield(damage);
+            ((LivingEntityAccessor)possessor).requiem$invokeDamageShield(damage);
             this.world.sendEntityStatus(possessor, (byte)29);
             ci.cancel();
         }

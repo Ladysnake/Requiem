@@ -41,6 +41,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(CraftingInventory.class)
 public interface CraftingInventoryAccessor {
-    @Accessor
-    ScreenHandler getHandler();
+    @Accessor("handler")
+    ScreenHandler requiem$getHandler();
 }

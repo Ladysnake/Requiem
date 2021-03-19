@@ -90,7 +90,7 @@ public final class RequiemTargetHandler implements UpdateTargetedEntityCallback,
                 startPoint,
                 endPoint,
                 box,
-                ((GameRendererAccessor) client.gameRenderer)::requiem_isEligibleForTargeting,
+                ((GameRendererAccessor) client.gameRenderer)::requiem$isEligibleForTargeting,
                 effectiveRangeSq
             );
 

@@ -72,7 +72,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     }
 
     @Override
-    public boolean requiem_isEligibleForTargeting(Entity tested) {
+    public boolean requiem$isEligibleForTargeting(Entity tested) {
         return method_18144(tested);
     }
 

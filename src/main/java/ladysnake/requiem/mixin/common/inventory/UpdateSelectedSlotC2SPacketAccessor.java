@@ -40,6 +40,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(UpdateSelectedSlotC2SPacket.class)
 public interface UpdateSelectedSlotC2SPacketAccessor {
-    @Accessor
-    void setSelectedSlot(int selectedSlot);
+    @Accessor("selectedSlot")
+    void requiem$setSelectedSlot(int selectedSlot);
 }

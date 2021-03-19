@@ -42,12 +42,12 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(LivingEntity.class)
 public interface LivingEntityAccessor {
-    @Invoker
-    void invokeDamageShield(float damage);
+    @Invoker("damageShield")
+    void requiem$invokeDamageShield(float damage);
 
-    @Invoker
-    void invokeDropInventory();
+    @Invoker("dropInventory")
+    void requiem$invokeDropInventory();
 
-    @Invoker
-    float invokeGetEyeHeight(EntityPose pose, EntityDimensions size);
+    @Invoker("getEyeHeight")
+    float requiem$invokeGetEyeHeight(EntityPose pose, EntityDimensions size);
 }

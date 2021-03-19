@@ -63,7 +63,7 @@ public final class RequiemStatusEffects {
         if (renderedEffect.getEffectType() == ATTRITION && amplifier < 4) {
             Identifier baseId = baseSprite.getId();
             return ((SpriteAtlasHolderAccessor) MinecraftClient.getInstance().getStatusEffectSpriteManager())
-                .getAtlas().getSprite(new Identifier(baseId.getNamespace(), baseId.getPath() + '_' + (amplifier + 1)));
+                .requiem$getAtlas().getSprite(new Identifier(baseId.getNamespace(), baseId.getPath() + '_' + (amplifier + 1)));
         }
         return baseSprite;
     }

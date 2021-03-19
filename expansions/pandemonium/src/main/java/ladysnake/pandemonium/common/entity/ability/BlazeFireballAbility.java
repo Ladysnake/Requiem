@@ -57,8 +57,8 @@ public class BlazeFireballAbility extends IndirectAbilityBase<LivingEntity> {
     @Override
     public void onCooldownEnd() {
         if (!this.owner.world.isClient) {
-            if (this.owner instanceof BlazeEntity && ((BlazeEntityAccessor) this.owner).invokeIsFireActive()) {
-                ((BlazeEntityAccessor) this.owner).invokeSetFireActive(false);
+            if (this.owner instanceof BlazeEntity && ((BlazeEntityAccessor) this.owner).requiem$invokeIsFireActive()) {
+                ((BlazeEntityAccessor) this.owner).requiem$invokeSetFireActive(false);
             }
             this.fireballs = CONSECUTIVE_FIREBALLS;
         }
@@ -90,7 +90,7 @@ public class BlazeFireballAbility extends IndirectAbilityBase<LivingEntity> {
     private void playFireballEffects() {
         this.owner.world.syncWorldEvent(BLAZE_SHOOT_EVENT, this.owner.getBlockPos(), 0);
         if (this.owner instanceof BlazeEntity) {
-            ((BlazeEntityAccessor) this.owner).invokeSetFireActive(true);
+            ((BlazeEntityAccessor) this.owner).requiem$invokeSetFireActive(true);
         }
     }
 

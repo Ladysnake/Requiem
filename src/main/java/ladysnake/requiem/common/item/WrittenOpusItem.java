@@ -132,7 +132,7 @@ public class WrittenOpusItem extends Item {
                             PossessionComponentImpl.dropEquipment(possessedEntity, player);
                         }
                     } else if (remnantComponent.isIncorporeal() && ((ServerPlayerEntity) player).interactionManager.isSurvivalLike()) {
-                        ((LivingEntityAccessor)player).invokeDropInventory();
+                        ((LivingEntityAccessor)player).requiem$invokeDropInventory();
                     }
 
                     player.incrementStat(Stats.USED.getOrCreateStat(this));

@@ -165,7 +165,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
             if (this.config.canPhaseThroughWalls()) {
                 if (!this.noClipping && !this.player.noClip) {
                     Vec3d movement = getIntendedMovement(this.player);
-                    Vec3d adjusted = ((EntityAccessor) this.player).invokeAdjustMovementForCollisions(movement);
+                    Vec3d adjusted = ((EntityAccessor) this.player).requiem$invokeAdjustMovementForCollisions(movement);
                     // 10.0 is a magic constant that corresponds to mostly blocked movement
                     if (movement.length() / adjusted.length() > 10.0 && this.player.getRotationVector().dotProduct(movement.normalize()) > 0.5) {
                         this.ticksAgainstWall++;
@@ -200,7 +200,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
     private static Vec3d getIntendedMovement(PlayerEntity player) {
         if (player instanceof ClientPlayerEntity) {
             float verticalMovement = (((ClientPlayerEntity) player).input.jumping ? 1 : 0) - (((ClientPlayerEntity) player).input.sneaking ? 1 : 0);
-            return EntityAccessor.invokeMovementInputToVelocity(new Vec3d(player.sidewaysSpeed, verticalMovement, player.forwardSpeed), 1, player.yaw);
+            return EntityAccessor.requiem$invokeMovementInputToVelocity(new Vec3d(player.sidewaysSpeed, verticalMovement, player.forwardSpeed), 1, player.yaw);
         } else {
             return Vec3d.ZERO;
         }

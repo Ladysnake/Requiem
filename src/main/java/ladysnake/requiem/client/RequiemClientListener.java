@@ -144,7 +144,7 @@ public final class RequiemClientListener implements
     public void onInventoryLockingChange(PlayerEntity player, InventoryPart part, boolean locked) {
         if (part == InventoryPart.CRAFTING && player == this.mc.player) {
             if (this.mc.currentScreen instanceof InventoryScreenAccessor) {
-                ((InventoryScreenAccessor) this.mc.currentScreen).requiem_getRecipeBookButton().visible = !locked;
+                ((InventoryScreenAccessor) this.mc.currentScreen).requiem$getRecipeBookButton().visible = !locked;
             }
         }
     }
