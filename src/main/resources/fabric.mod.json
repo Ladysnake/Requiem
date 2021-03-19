@@ -46,6 +46,9 @@
     "cardinal-components-base": "^2.7.0",
     "cardinal-components-scoreboard": "^2.7.10"
   },
+  "recommends": {
+    "cloth-config2": ">=4.11"
+  },
   "conflicts": {
     "betterend": "<=0.8.5-beta",
     "betternether": "<=5.0.4",

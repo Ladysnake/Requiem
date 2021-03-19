@@ -39,71 +39,80 @@ import io.github.prospector.modmenu.api.ModMenuApi;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.RequiemConfig;
 import me.shedaniel.clothconfig2.api.AbstractConfigEntry;
+import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.gui.AbstractConfigScreen;
 import me.shedaniel.fiber2cloth.api.Fiber2Cloth;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 
 import java.util.Collections;
-import java.util.Optional;
 
 public final class ModMenuCompat implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return parent -> appendInfo((AbstractConfigScreen) Fiber2Cloth.create(parent, Requiem.MOD_ID, RequiemConfig.configTree(), "config.requiem.title")
-            .setSaveRunnable(RequiemConfig::save)
-            .build()
-            .getScreen());
-    }
-
-    private AbstractConfigScreen appendInfo(AbstractConfigScreen screen) {
-        AbstractConfigEntry<?> entry = this.createInfoEntry();
-        entry.setScreen(screen);
-        screen.getCategorizedEntries().put(new TranslatableText("config.requiem.more"), Collections.singletonList(entry));
-        return screen;
-    }
-
-    private AbstractConfigEntry<?> createInfoEntry() {
-        return new StylableTextListEntry(
-            new TranslatableText("config.requiem.more"),
-            new TranslatableText(
-                "config.requiem.more_info",
-                makeUrlText(new TranslatableText("config.requiem.more_info.datapacks"), getLocalizedDataPackUrl()),
-                makeUrlText(new TranslatableText("config.requiem.more_info.gamerules"), getLocalizedGameRuleUrl()),
-                makeUrlText(new TranslatableText("config.requiem.more_info.official_doc"), "https://ladysnake.github.io/wiki/requiem/configuration")
-            ),
-            0xFFFFFFFF,
-            Optional::empty
-        );
-    }
-
-    private String getLocalizedGameRuleUrl() {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode().substring(0, 2)) {
-            case "pt": return "https://minecraft-pt.gamepedia.com/Regra_de_jogo";
-            default: return "https://minecraft.gamepedia.com/Game_rule";
+        try {
+            return new ClothConfigScreenFactory();
+        } catch (Throwable t) {
+            return parent -> null;
         }
     }
 
-    private String getLocalizedDataPackUrl() {
-        switch (MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode().substring(0, 2)) {
-            case "fr": return "https://minecraft-fr.gamepedia.com/Pack_de_donn%C3%A9es";
-            case "de": return "https://minecraft-de.gamepedia.com/Datenpaket";
-            case "ja": return "https://minecraft-ja.gamepedia.com/%E3%83%87%E3%83%BC%E3%82%BF%E3%83%91%E3%83%83%E3%82%AF";
-            case "pl": return "https://minecraft-pl.gamepedia.com/Paczki_danych";
-            case "pt": return "https://minecraft-pt.gamepedia.com/Pacote_de_dados";
-            case "ru": return "https://minecraft-ru.gamepedia.com/%D0%9D%D0%B0%D0%B1%D0%BE%D1%80_%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85";
-            case "zh": return "https://minecraft-zh.gamepedia.com/%E6%95%B0%E6%8D%AE%E5%8C%85";
-            default: return "https://minecraft.gamepedia.com/Data_Pack";
-        }
-    }
+    private static class ClothConfigScreenFactory implements ConfigScreenFactory<Screen> {
 
-    private MutableText makeUrlText(MutableText text, String url) {
-        return text.styled(style -> style
-            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(url)))
-            .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
-            .withColor(Formatting.BLUE)
-        );
+        @Override
+        public Screen create(Screen parent) {
+            return appendInfo((AbstractConfigScreen) Fiber2Cloth.create(parent, Requiem.MOD_ID, RequiemConfig.configTree(), "config.requiem.title")
+                .setSaveRunnable(RequiemConfig::save)
+                .build()
+                .getScreen());
+        }
+
+        private AbstractConfigScreen appendInfo(AbstractConfigScreen screen) {
+            AbstractConfigEntry<?> entry = this.createInfoEntry();
+            entry.setScreen(screen);
+            screen.getCategorizedEntries().put(new TranslatableText("config.requiem.more"), Collections.singletonList(entry));
+            return screen;
+        }
+
+        private AbstractConfigEntry<?> createInfoEntry() {
+            return ConfigEntryBuilder.create()
+                .startTextDescription(new TranslatableText(
+                    "config.requiem.more_info",
+                    makeUrlText(new TranslatableText("config.requiem.more_info.datapacks"), getLocalizedDataPackUrl()),
+                    makeUrlText(new TranslatableText("config.requiem.more_info.gamerules"), getLocalizedGameRuleUrl()),
+                    makeUrlText(new TranslatableText("config.requiem.more_info.official_doc"), "https://ladysnake.github.io/wiki/requiem/configuration")
+                )).setColor(0xFFFFFFFF).build();
+        }
+
+        private String getLocalizedGameRuleUrl() {
+            //noinspection SwitchStatementWithTooFewBranches
+            switch (MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode().substring(0, 2)) {
+                case "pt": return "https://minecraft-pt.gamepedia.com/Regra_de_jogo";
+                default: return "https://minecraft.gamepedia.com/Game_rule";
+            }
+        }
+
+        private String getLocalizedDataPackUrl() {
+            switch (MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode().substring(0, 2)) {
+                case "fr": return "https://minecraft-fr.gamepedia.com/Pack_de_donn%C3%A9es";
+                case "de": return "https://minecraft-de.gamepedia.com/Datenpaket";
+                case "ja": return "https://minecraft-ja.gamepedia.com/%E3%83%87%E3%83%BC%E3%82%BF%E3%83%91%E3%83%83%E3%82%AF";
+                case "pl": return "https://minecraft-pl.gamepedia.com/Paczki_danych";
+                case "pt": return "https://minecraft-pt.gamepedia.com/Pacote_de_dados";
+                case "ru": return "https://minecraft-ru.gamepedia.com/%D0%9D%D0%B0%D0%B1%D0%BE%D1%80_%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85";
+                case "zh": return "https://minecraft-zh.gamepedia.com/%E6%95%B0%E6%8D%AE%E5%8C%85";
+                default: return "https://minecraft.gamepedia.com/Data_Pack";
+            }
+        }
+
+        private MutableText makeUrlText(MutableText text, String url) {
+            return text.styled(style -> style
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(url)))
+                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
+                .withColor(Formatting.BLUE)
+            );
+        }
     }
 }
