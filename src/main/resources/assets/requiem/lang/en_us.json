@@ -116,7 +116,7 @@
   "item.requiem.opus_daemonium_banishment": "Opus Daemonium",
   "requiem:opus_daemonium.curse": "Curse",
   "requiem:opus_daemonium.cure": "Cure",
-  "requiem:opus_daemonium.wanderer": "Wanderer",
+  "requiem:opus_daemonium.banishment": "Banishment",
 
   "origins:layer.requiem.soul_type.name": "Soul Type",
   "origins:layer.requiem.soul_type.missing_origin.name": "Missing",
