@@ -52,7 +52,8 @@
   "conflicts": {
     "betterend": "<=0.8.5-beta",
     "betternether": "<=5.0.4",
-    "firstperson": "<2.0.0-"
+    "firstperson": "<2.0.0-",
+    "origins": "<0.6.0"
   },
 
   "name": "Requiem",
