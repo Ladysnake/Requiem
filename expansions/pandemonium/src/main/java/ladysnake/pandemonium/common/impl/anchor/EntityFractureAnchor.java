@@ -39,8 +39,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.chunk.WorldChunk;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.UUID;
 
 public class EntityFractureAnchor extends TrackedFractureAnchor {
@@ -73,9 +77,13 @@ public class EntityFractureAnchor extends TrackedFractureAnchor {
             } else if (entity.getX() != this.x || entity.getY() != this.y || entity.getZ() != this.z) {
                 this.setPosition(entity.getX(), entity.getY(), entity.getZ());
             }
-        } else if (this.manager.getWorld().isChunkLoaded(((int)this.x) >> 4, ((int)this.z) >> 4)) {
-            // chunk is loaded but entity not found -- assume dead
-            this.invalidate();
+        } else {
+            WorldChunk chunk = (WorldChunk) this.manager.getWorld().getChunk(((int) this.x) >> 4, ((int) this.z) >> 4, ChunkStatus.FULL, false);
+            // In some circumstances, it seems that a chunk can be loaded without the entity being found in the world
+            if (chunk != null && Arrays.stream(chunk.getEntitySectionArray()).flatMap(Collection::stream).map(Entity::getUuid).noneMatch(this.entityUuid::equals)) {
+                // chunk is loaded but entity not in it -- assume dead
+                this.invalidate();
+            }
         }
     }
 
