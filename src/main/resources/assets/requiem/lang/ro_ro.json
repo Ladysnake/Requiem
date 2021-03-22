@@ -116,7 +116,7 @@
   "item.requiem.opus_daemonium_banishment": "Opus Daemonium",
   "requiem:opus_daemonium.curse": "Blestem",
   "requiem:opus_daemonium.cure": "Vindeca",
-  "requiem:opus_daemonium.wanderer": "Ratcitor",
+  "requiem:opus_daemonium.banishment": "Ratcitor",
 
   "origins:layer.requiem.soul_type.name": "Tip de suflet",
   "origins:origin.requiem.mortal.name": "Mortal",
