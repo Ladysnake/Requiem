@@ -87,6 +87,22 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
         }
     }
 
+    @Inject(method = "getArmorItems", at = @At("HEAD"), cancellable = true)
+    private void getArmorItems(CallbackInfoReturnable<Iterable<ItemStack>> cir) {
+        PlayerEntity possessor = this.getPossessor();
+        if (possessor != null) {
+            cir.setReturnValue(possessor.getArmorItems());
+        }
+    }
+
+    @Inject(method = "getItemsHand", at = @At("HEAD"), cancellable = true)
+    private void getItemsHand(CallbackInfoReturnable<Iterable<ItemStack>> cir) {
+        PlayerEntity possessor = this.getPossessor();
+        if (possessor != null) {
+            cir.setReturnValue(possessor.getItemsHand());
+        }
+    }
+
     @Inject(method = "getEquippedStack", at = @At("HEAD"), cancellable = true)
     private void getEquippedStack(EquipmentSlot slot, CallbackInfoReturnable<ItemStack> cir) {
         PlayerEntity possessor = this.getPossessor();
