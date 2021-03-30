@@ -61,7 +61,7 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
     }};
 
     public static void apply(PlayerEntity target) {
-        apply(target, 1);
+        apply(target, target.world.getLevelProperties().isHardcore() ? 2 : 1);
     }
 
     public static void apply(LivingEntity target, @Nonnegative int amount) {
