@@ -141,13 +141,14 @@ repositories {
         name = 'Ladysnake Mods 1'
         url = 'https://dl.bintray.com/ladysnake/libs'
         content {
-            includeGroup "io.github.ladysnake"
+            includeGroup 'io.github.ladysnake'
         }
     }
     maven {
         name = 'Ladysnake Mods 2'
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
         content {
+            includeGroup 'io.github.ladysnake'
             includeGroupByRegex 'io\\.github\\.onyxstudios.*'
         }
     }
