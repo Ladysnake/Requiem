@@ -36,14 +36,12 @@ package ladysnake.pandemonium.common.entity;
 
 import com.demonwav.mcdev.annotations.CheckEnv;
 import com.demonwav.mcdev.annotations.Env;
-import com.mojang.authlib.GameProfile;
 import io.github.ladysnake.impersonate.Impersonator;
 import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.common.entity.ai.ShellBlockGoal;
 import ladysnake.pandemonium.common.entity.ai.ShellEatGoal;
 import ladysnake.pandemonium.common.entity.ai.ShellRevengeGoal;
-import ladysnake.pandemonium.common.entity.fakeplayer.FakeServerPlayerEntity;
-import ladysnake.pandemonium.common.network.PandemoniumNetworking;
+import ladysnake.pandemonium.common.entity.fakeplayer.GuidedFakePlayerEntity;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -59,11 +57,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.network.Packet;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -77,12 +73,12 @@ import java.util.UUID;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 
 // TODO add inventory access
-public class PlayerShellEntity extends FakeServerPlayerEntity {
+public class PlayerShellEntity extends GuidedFakePlayerEntity {
     private @Nullable BlockPos home;
 
     @CheckEnv(Env.SERVER)
     @API(status = MAINTAINED)
-    public PlayerShellEntity(EntityType<? extends PlayerShellEntity> type, ServerWorld world) {
+    public PlayerShellEntity(EntityType<? extends PlayerEntity> type, ServerWorld world) {
         super(type, world);
         ((MobNavigation)this.guide.getNavigation()).setCanPathThroughDoors(true);
         this.guide.getNavigation().setCanSwim(true);
@@ -106,7 +102,7 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
 
         this.getDataTracker().set(PLAYER_MODEL_PARTS, player.getDataTracker().get(PLAYER_MODEL_PARTS));
 
-        this.setOwnerProfile(Optional.ofNullable(Impersonator.get(player).getImpersonatedProfile()).orElse(player.getGameProfile()));
+        this.setDisplayProfile(Optional.ofNullable(Impersonator.get(player).getImpersonatedProfile()).orElse(player.getGameProfile()));
         this.setCustomName(new LiteralText(player.getEntityName()));
         this.setHome(player.getBlockPos());
     }
@@ -127,6 +123,11 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     }
 
     @Override
+    protected boolean useGuide() {
+        return false;
+    }
+
+    @Override
     public void baseTick() {
         super.baseTick();
         if (this.home != null) {
@@ -140,15 +141,6 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
             return false;
         }
         return super.canTarget(target);
-    }
-
-    @Override
-    public Text getName() {
-        GameProfile impersonatedProfile = this.getOwnerProfile();
-        if (impersonatedProfile != null) {
-            return new LiteralText(impersonatedProfile.getName());
-        }
-        return super.getName();
     }
 
     /**
@@ -237,16 +229,11 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     }
 
     @Override
-    public Packet<?> createSpawnPacket() {
-        return PandemoniumNetworking.createPlayerShellSpawnPacket(this);
-    }
-
-    @Override
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
 
-        if (tag.contains("PlayerProfile")) {
-            this.setOwnerProfile(NbtHelper.toGameProfile(tag.getCompound("PlayerProfile")));
+        if (tag.contains("PlayerProfile")) {    // port from previous versions
+            this.setDisplayProfile(NbtHelper.toGameProfile(tag.getCompound("PlayerProfile")));
         }
 
         CompoundTag homeTag = tag.getCompound("Home");
@@ -260,10 +247,6 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     @Override
     public void writeCustomDataToTag(CompoundTag tag) {
         super.writeCustomDataToTag(tag);
-        GameProfile gameProfile = this.getOwnerProfile();
-        if (gameProfile != null) {
-            tag.put("PlayerProfile", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
-        }
 
         BlockPos home = this.getHome();
         if (home != null) {
@@ -272,7 +255,4 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
 
         tag.putByte("PlayerModelParts", this.getDataTracker().get(PLAYER_MODEL_PARTS));
     }
-
-    /* Static Methods */
-
 }

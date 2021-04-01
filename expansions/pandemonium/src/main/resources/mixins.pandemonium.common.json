@@ -14,12 +14,7 @@
     "entity.mob.PandaEntityMixin",
     "entity.mob.WitchEntityMixin",
     "entity.mob.WololoGoalMixin",
-    "entity.player.PlayerAdvancementTrackerMixin",
-    "entity.player.PlayerEntityMixin",
-    "entity.player.ServerPlayerEntityMixin",
-    "entity.player.ServerWorldMixin",
-    "entity.player.TargetPredicateMixin",
-    "server.world.ThreadedAnvilChunkStorageMixin"
+    "entity.player.TargetPredicateMixin"
   ],
   "injectors": {
     "defaultRequire": 1

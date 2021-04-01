@@ -32,42 +32,52 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.mixin.common.entity.player;
+package ladysnake.pandemonium.common.entity.fakeplayer;
 
-import ladysnake.pandemonium.common.entity.fakeplayer.FakeServerPlayerEntity;
-import net.minecraft.entity.Entity;
+import baritone.api.fakeplayer.FakeServerPlayerEntity;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Slice;
+import net.minecraft.server.world.ServerWorld;
 
-@Mixin(PlayerEntity.class)
-public abstract class PlayerEntityMixin extends LivingEntity {
-    protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
-        super(entityType, world);
+import java.util.UUID;
+
+public abstract class GuidedFakePlayerEntity extends FakeServerPlayerEntity {
+    protected final FakePlayerGuide guide;
+
+    public GuidedFakePlayerEntity(EntityType<?> type, ServerWorld world) {
+        this(type, world, new GameProfile(UUID.randomUUID(), "FakePlayer"));
     }
 
-    /**
-     * Minecraft cancels knockback for players and instead relies entirely on the client for handling the velocity change.
-     * This injection cancels the cancellation for fake players, as they do not have an associated client.
-     */
-    @ModifyVariable(
-        method = "attack",
-        slice = @Slice(
-            from = @At(value = "INVOKE", target = "Lnet/minecraft/network/packet/s2c/play/EntityVelocityUpdateS2CPacket;<init>(Lnet/minecraft/entity/Entity;)V"),
-            to = @At(value = "FIELD", target = "Lnet/minecraft/sound/SoundEvents;ENTITY_PLAYER_ATTACK_CRIT:Lnet/minecraft/sound/SoundEvent;")
-        ),
-        at = @At(value = "LOAD")
-    )
-    private Vec3d cancelKnockbackCancellation(Vec3d previousVelocity, Entity target) {
-        if (target instanceof FakeServerPlayerEntity) {
-            return target.getVelocity();
+    public GuidedFakePlayerEntity(EntityType<?> type, ServerWorld world, GameProfile profile) {
+        super(type, world, profile);
+        this.guide = new FakePlayerGuide(this);
+        this.initGoals();
+    }
+
+    public FakePlayerGuide getGuide() {
+        return guide;
+    }
+
+    protected abstract void initGoals();
+
+    protected boolean useGuide() {
+        return true;
+    }
+
+    @Override
+    protected float turnHead(float bodyRotation, float headRotation) {
+        if (this.useGuide()) {
+            return this.guide.turnHead(bodyRotation, headRotation);
         }
-        return previousVelocity;
+        return super.turnHead(bodyRotation, headRotation);
+    }
+
+    @Override
+    protected void tickNewAi() {
+        super.tickNewAi();
+        if (this.useGuide()) {
+            this.guide.tickAi();
+            this.setSprinting(this.guide.getTarget() != null && !this.isUsingItem());
+        }
     }
 }

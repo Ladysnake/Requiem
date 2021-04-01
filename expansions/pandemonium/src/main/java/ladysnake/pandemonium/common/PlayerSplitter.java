@@ -37,7 +37,6 @@ package ladysnake.pandemonium.common;
 import com.mojang.authlib.GameProfile;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
-import io.github.ladysnake.impersonate.Impersonate;
 import io.github.ladysnake.impersonate.Impersonator;
 import ladysnake.pandemonium.Pandemonium;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
@@ -93,7 +92,7 @@ public final class PlayerSplitter {
             shell.remove();
 
             if (!Objects.equals(shell.getOwnerUuid(), soul.getUuid())) {
-                GameProfile gameProfile = shell.getOwnerProfile();
+                GameProfile gameProfile = shell.getDisplayProfile();
                 Impersonator.get(soul).impersonate(Pandemonium.BODY_IMPERSONATION, gameProfile == null ? new GameProfile(shell.getOwnerUuid(), null) : gameProfile);
             }
 

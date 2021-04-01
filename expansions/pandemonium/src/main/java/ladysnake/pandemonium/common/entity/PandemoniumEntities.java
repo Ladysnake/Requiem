@@ -41,11 +41,12 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
 
 public class PandemoniumEntities {
-    public static final EntityType<PlayerShellEntity> PLAYER_SHELL = FabricEntityTypeBuilder.<PlayerShellEntity>createLiving()
+    public static final EntityType<PlayerEntity> PLAYER_SHELL = FabricEntityTypeBuilder.<PlayerEntity>createLiving()
         .spawnGroup(SpawnGroup.MISC)
         .entityFactory((type, world) -> new PlayerShellEntity(type, (ServerWorld) world))
         .defaultAttributes(PlayerShellEntity::createPlayerShellAttributes)

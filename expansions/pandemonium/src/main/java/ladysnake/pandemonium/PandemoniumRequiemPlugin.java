@@ -38,7 +38,6 @@ import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.entity.ability.*;
-import ladysnake.pandemonium.common.entity.fakeplayer.RequiemFakePlayer;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;

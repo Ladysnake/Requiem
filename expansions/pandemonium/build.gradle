@@ -43,7 +43,7 @@ dependencies {
     modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
     include ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
     modImplementation ("io.github.ladysnake:Impersonate:${impersonate_version}") { transitive = false }
-    include "io.github.ladysnake:Impersonate:${impersonate_version}"
+    include "io.github.ladysnake:Impersonate:${impersonate_version}:optimized"
     modImplementation "io.github.ladysnake:automatone:${automatone_version}"
     include "io.github.ladysnake:automatone:${automatone_version}"
     include "com.jamieswhiteshirt:reach-entity-attributes:${rootProject.reach_version}"
