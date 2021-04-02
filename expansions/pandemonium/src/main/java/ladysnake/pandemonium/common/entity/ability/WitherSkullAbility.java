@@ -16,13 +16,13 @@ import net.minecraft.util.math.Vec3d;
 import java.util.Random;
 
 public class WitherSkullAbility extends AbilityBase<WitherEntity> {
-    private static final Random RANDOM = new Random();
+    protected static final Random RANDOM = new Random();
 
     public WitherSkullAbility(WitherEntity owner, int cooldownTime) {
         super(owner, cooldownTime);
     }
 
-    private static double getHeadX(WitherEntity owner, int headIndex) {
+    protected double getHeadX(int headIndex) {
         if (headIndex <= 0) {
             return owner.getX();
         } else {
@@ -32,11 +32,11 @@ public class WitherSkullAbility extends AbilityBase<WitherEntity> {
         }
     }
 
-    private static double getHeadY(WitherEntity owner, int headIndex) {
+    protected double getHeadY(int headIndex) {
         return headIndex <= 0 ? owner.getY() + 3.0D : owner.getY() + 2.2D;
     }
 
-    private static double getHeadZ(WitherEntity owner, int headIndex) {
+    protected double getHeadZ(int headIndex) {
         if (headIndex <= 0) {
             return owner.getZ();
         } else {
@@ -46,22 +46,22 @@ public class WitherSkullAbility extends AbilityBase<WitherEntity> {
         }
     }
 
-    private static WitherSkullEntity summonSkullWithTarget(WitherEntity owner, double j, double k, double l) {
+    protected WitherSkullEntity summonSkullWithTarget(double dirX, double dirY, double dirZ) {
         int headIndex = RANDOM.nextInt(3);
-        double x = getHeadX(owner, headIndex);
-        double y = getHeadY(owner, headIndex);
-        double z = getHeadZ(owner, headIndex);
-        return summonSkullWithTarget(owner, x, y, z, j, k, l);
+        double x = getHeadX(headIndex);
+        double y = getHeadY(headIndex);
+        double z = getHeadZ(headIndex);
+        return summonSkullWithTarget(x, y, z, dirX, dirY, dirZ);
     }
 
-    private static WitherSkullEntity summonSkullWithTarget(WitherEntity owner, double x, double y, double z, double j, double k, double l) {
+    protected WitherSkullEntity summonSkullWithTarget(double x, double y, double z, double dirX, double dirY, double dirZ) {
         if (!owner.isSilent()) {
             owner.world.syncWorldEvent(null, 1024, owner.getBlockPos(), 0);
         }
         WitherSkullEntity witherSkullEntity = new WitherSkullEntity(
-            owner.world,
-            owner,
-            j, k, l
+            this.owner.world,
+            this.owner,
+            dirX, dirY, dirZ
         );
         witherSkullEntity.setOwner(owner);
 
@@ -88,7 +88,7 @@ public class WitherSkullAbility extends AbilityBase<WitherEntity> {
         @Override
         public boolean trigger() {
             Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
-            summonSkullWithTarget(owner, rot.x + this.owner.getRandom().nextGaussian(), rot.y, rot.z + this.owner.getRandom().nextGaussian())
+            this.summonSkullWithTarget(rot.x + this.owner.getRandom().nextGaussian(), rot.y, rot.z + this.owner.getRandom().nextGaussian())
                 .setCharged(true);
             return true;
         }
@@ -124,13 +124,13 @@ public class WitherSkullAbility extends AbilityBase<WitherEntity> {
         @Override
         public boolean trigger(LivingEntity target) {
             int headIndex = RANDOM.nextInt(3);
-            double g = getHeadX(owner, headIndex);
-            double h = getHeadY(owner, headIndex);
-            double i = getHeadZ(owner, headIndex);
-            double j = target.getX() - g;
-            double k = target.getY() + (double)target.getStandingEyeHeight() * 0.5D - h;
-            double l = target.getZ() - i;
-            summonSkullWithTarget(owner, g, h, i, j, k, l);
+            double g = getHeadX(headIndex);
+            double h = getHeadY(headIndex);
+            double i = getHeadZ(headIndex);
+            double dirX = target.getX() - g;
+            double dirY = target.getY() + (double)target.getStandingEyeHeight() * 0.5D - h;
+            double dirZ = target.getZ() - i;
+            this.summonSkullWithTarget(g, h, i, dirX, dirY, dirZ);
             return true;
         }
     }
