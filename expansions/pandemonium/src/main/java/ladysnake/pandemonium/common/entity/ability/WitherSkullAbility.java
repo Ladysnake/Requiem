@@ -1,5 +1,8 @@
 package ladysnake.pandemonium.common.entity.ability;
 
+import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
+import ladysnake.requiem.api.v1.entity.ability.IndirectAbility;
+import ladysnake.requiem.common.entity.ability.AbilityBase;
 import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
 import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
 import net.minecraft.entity.Entity;
@@ -12,9 +15,62 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.Random;
 
-public class WitherSkullAbility {
-    public static class BlueWitherSkullAbility extends IndirectAbilityBase<WitherEntity> {
-        private static final Random RANDOM = new Random();
+public class WitherSkullAbility extends AbilityBase<WitherEntity> {
+    private static final Random RANDOM = new Random();
+
+    public WitherSkullAbility(WitherEntity owner, int cooldownTime) {
+        super(owner, cooldownTime);
+    }
+
+    private static double getHeadX(WitherEntity owner, int headIndex) {
+        if (headIndex <= 0) {
+            return owner.getX();
+        } else {
+            float f = (owner.bodyYaw + (float)(180 * (headIndex - 1))) * 0.017453292F;
+            float g = MathHelper.cos(f);
+            return owner.getX() + (double)g * 1.3D;
+        }
+    }
+
+    private static double getHeadY(WitherEntity owner, int headIndex) {
+        return headIndex <= 0 ? owner.getY() + 3.0D : owner.getY() + 2.2D;
+    }
+
+    private static double getHeadZ(WitherEntity owner, int headIndex) {
+        if (headIndex <= 0) {
+            return owner.getZ();
+        } else {
+            float f = (owner.bodyYaw + (float)(180 * (headIndex - 1))) * 0.017453292F;
+            float g = MathHelper.sin(f);
+            return owner.getZ() + (double)g * 1.3D;
+        }
+    }
+
+    private static WitherSkullEntity summonSkullWithTarget(WitherEntity owner, double j, double k, double l) {
+        int headIndex = RANDOM.nextInt(3);
+        double x = getHeadX(owner, headIndex);
+        double y = getHeadY(owner, headIndex);
+        double z = getHeadZ(owner, headIndex);
+        return summonSkullWithTarget(owner, x, y, z, j, k, l);
+    }
+
+    private static WitherSkullEntity summonSkullWithTarget(WitherEntity owner, double x, double y, double z, double j, double k, double l) {
+        if (!owner.isSilent()) {
+            owner.world.syncWorldEvent(null, 1024, owner.getBlockPos(), 0);
+        }
+        WitherSkullEntity witherSkullEntity = new WitherSkullEntity(
+            owner.world,
+            owner,
+            j, k, l
+        );
+        witherSkullEntity.setOwner(owner);
+
+        witherSkullEntity.setPos(x, y, z);
+        owner.world.spawnEntity(witherSkullEntity);
+        return witherSkullEntity;
+    }
+
+    public static class BlueWitherSkullAbility extends WitherSkullAbility implements IndirectAbility<WitherEntity> {
 
         public BlueWitherSkullAbility(WitherEntity owner, int cooldown) {
             super(owner, cooldown);
@@ -24,110 +80,58 @@ public class WitherSkullAbility {
             this(owner,40);
         }
 
+        /**
+         * Triggers an indirect ability.
+         *
+         * @return <code>true</code> if the ability has been successfully used
+         */
         @Override
-        protected boolean run() {
-            if (!owner.isSilent()) {
-                owner.world.syncWorldEvent(null, 1024, owner.getBlockPos(), 0);
-            }
+        public boolean trigger() {
             Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
-            WitherSkullEntity witherSkullEntity = new WitherSkullEntity(
-                this.owner.world,
-                this.owner,
-                rot.x + this.owner.getRandom().nextGaussian(),
-                rot.y,
-                rot.z + this.owner.getRandom().nextGaussian()
-            );
-            witherSkullEntity.setOwner(owner);
-            witherSkullEntity.setCharged(true);
-
-            int headIndex = RANDOM.nextInt(3);
-            double g = getHeadX(headIndex);
-            double h = getHeadY(headIndex);
-            double i = getHeadZ(headIndex);
-            witherSkullEntity.setPos(g, h, i);
-            owner.world.spawnEntity(witherSkullEntity);
+            summonSkullWithTarget(owner, rot.x + this.owner.getRandom().nextGaussian(), rot.y, rot.z + this.owner.getRandom().nextGaussian())
+                .setCharged(true);
             return true;
-        }
-
-        private double getHeadX(int headIndex) {
-            if (headIndex <= 0) {
-                return owner.getX();
-            } else {
-                float f = (owner.bodyYaw + (float)(180 * (headIndex - 1))) * 0.017453292F;
-                float g = MathHelper.cos(f);
-                return owner.getX() + (double)g * 1.3D;
-            }
-        }
-
-        private double getHeadY(int headIndex) {
-            return headIndex <= 0 ? owner.getY() + 3.0D : owner.getY() + 2.2D;
-        }
-
-        private double getHeadZ(int headIndex) {
-            if (headIndex <= 0) {
-                return owner.getZ();
-            } else {
-                float f = (owner.bodyYaw + (float)(180 * (headIndex - 1))) * 0.017453292F;
-                float g = MathHelper.sin(f);
-                return owner.getZ() + (double)g * 1.3D;
-            }
         }
     }
 
-    public static class BlackWitherSkullAbility extends DirectAbilityBase<WitherEntity, LivingEntity> {
-        private static final Random RANDOM = new Random();
-
+    public static class BlackWitherSkullAbility extends WitherSkullAbility implements DirectAbility<WitherEntity, LivingEntity> {
         public BlackWitherSkullAbility(WitherEntity owner, int cooldown) {
-            super(owner, cooldown, 20, LivingEntity.class);
+            super(owner, cooldown);
         }
 
         public BlackWitherSkullAbility(WitherEntity owner) {
             this(owner,40);
         }
 
+        /**
+         * If the range is 0, the vanilla targeting system is used
+         */
         @Override
-        protected boolean run(LivingEntity target) {
-            if (!owner.isSilent()) {
-                owner.world.syncWorldEvent(null, 1024, owner.getBlockPos(), 0);
-            }
+        public double getRange() {
+            return 20;
+        }
 
-            int headIndex = RANDOM.nextInt(3);
-            double g = getHeadX(headIndex);
-            double h = getHeadY(headIndex);
-            double i = getHeadZ(headIndex);
-            double j = target.getX() - g;
-            double k = target.getY() + (double)target.getStandingEyeHeight() * 0.5D - h;
-            double l = target.getZ() - i;
-            WitherSkullEntity witherSkullEntity = new WitherSkullEntity(owner.world, owner, j, k, l);
-            witherSkullEntity.setOwner(owner);
+        @Override
+        public Class<LivingEntity> getTargetType() {
+            return LivingEntity.class;
+        }
 
-            witherSkullEntity.setPos(g, h, i);
-            owner.world.spawnEntity(witherSkullEntity);
+        @Override
+        public boolean canTarget(LivingEntity target) {
             return true;
         }
 
-        private double getHeadX(int headIndex) {
-            if (headIndex <= 0) {
-                return owner.getX();
-            } else {
-                float f = (owner.bodyYaw + (float)(180 * (headIndex - 1))) * 0.017453292F;
-                float g = MathHelper.cos(f);
-                return owner.getX() + (double)g * 1.3D;
-            }
-        }
-
-        private double getHeadY(int headIndex) {
-            return headIndex <= 0 ? owner.getY() + 3.0D : owner.getY() + 2.2D;
-        }
-
-        private double getHeadZ(int headIndex) {
-            if (headIndex <= 0) {
-                return owner.getZ();
-            } else {
-                float f = (owner.bodyYaw + (float)(180 * (headIndex - 1))) * 0.017453292F;
-                float g = MathHelper.sin(f);
-                return owner.getZ() + (double)g * 1.3D;
-            }
+        @Override
+        public boolean trigger(LivingEntity target) {
+            int headIndex = RANDOM.nextInt(3);
+            double g = getHeadX(owner, headIndex);
+            double h = getHeadY(owner, headIndex);
+            double i = getHeadZ(owner, headIndex);
+            double j = target.getX() - g;
+            double k = target.getY() + (double)target.getStandingEyeHeight() * 0.5D - h;
+            double l = target.getZ() - i;
+            summonSkullWithTarget(owner, g, h, i, j, k, l);
+            return true;
         }
     }
 }
