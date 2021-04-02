@@ -49,6 +49,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.ability.RangedAttackAbility;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.GuardianEntity;
@@ -118,5 +119,6 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
         abilityRegistry.register(EntityType.LLAMA, MobAbilityConfig.<LlamaEntity>builder().directAttack(RangedAttackAbility::new).build());
         abilityRegistry.register(EntityType.TRADER_LLAMA, MobAbilityConfig.<LlamaEntity>builder().directAttack(RangedAttackAbility::new).build());
         abilityRegistry.register(EntityType.WITCH, MobAbilityConfig.<WitchEntity>builder().directAttack(owner -> new RangedAttackAbility<>(owner, 50, 10.)).build());
+        abilityRegistry.register(EntityType.WITHER, MobAbilityConfig.<WitherEntity>builder().indirectAttack(WitherSkullAbility.BlueWitherSkullAbility::new).directAttack(WitherSkullAbility.BlackWitherSkullAbility::new).build());
     }
 }

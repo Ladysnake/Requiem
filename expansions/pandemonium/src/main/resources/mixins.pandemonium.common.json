@@ -11,6 +11,7 @@
     "entity.mob.LivingEntityAccessor",
     "entity.mob.PandaEntityMixin",
     "entity.mob.WitchEntityMixin",
+    "entity.mob.WitherEntityMixin",
     "entity.mob.WololoGoalMixin",
     "entity.player.PlayerEntityAccessor"
   ],
