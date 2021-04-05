@@ -71,7 +71,6 @@ public class PlayerMeleeTask extends Task<FakeServerPlayerEntity> {
         return !this.isHoldingRangedWeapon(executor)
             && LookTargetUtil.isVisibleInMemory(executor, target)
             && this.isLookingAt(executor, target)
-            && PlayerMeleeTask.isInRange(executor, target)
             && this.isAttackReady(executor, target);
     }
 
@@ -85,10 +84,6 @@ public class PlayerMeleeTask extends Task<FakeServerPlayerEntity> {
 
     private boolean isAttackReady(PlayerEntity executor, LivingEntity target) {
         return target.timeUntilRegen <= 10 && (executor.getAttackCooldownProgress(0.5F) >= 1 || estimateDamage(executor, target) > target.getHealth());
-    }
-
-    public static boolean isInRange(PlayerEntity executor, LivingEntity target) {
-        return executor.squaredDistanceTo(target) < ReachEntityAttributes.getSquaredAttackRange(executor, 9);
     }
 
     @Override
