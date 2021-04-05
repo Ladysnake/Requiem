@@ -5,6 +5,8 @@
   "mixins": [
     "entity.EntityAccessor",
     "entity.PersistentProjectileEntityAccessor",
+    "entity.ai.MemoryModuleTypeAccessor",
+    "entity.ai.SensorTypeAccessor",
     "entity.mob.BlazeEntityAccessor",
     "entity.mob.CreeperEntityAccessor",
     "entity.mob.EndermanEntityMixin",

@@ -34,18 +34,31 @@
  */
 package ladysnake.pandemonium.common.entity;
 
+import baritone.api.IBaritone;
+import baritone.api.event.events.BlockInteractEvent;
+import baritone.api.event.events.PathEvent;
+import baritone.api.event.listener.IGameEventListener;
 import com.demonwav.mcdev.annotations.CheckEnv;
 import com.demonwav.mcdev.annotations.Env;
+import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Dynamic;
 import io.github.ladysnake.impersonate.Impersonator;
 import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.common.entity.ai.ShellBlockGoal;
 import ladysnake.pandemonium.common.entity.ai.ShellEatGoal;
+import ladysnake.pandemonium.common.entity.ai.ShellPathfindingProcess;
 import ladysnake.pandemonium.common.entity.ai.ShellRevengeGoal;
+import ladysnake.pandemonium.common.entity.ai.brain.PandemoniumSensorTypes;
+import ladysnake.pandemonium.common.entity.ai.brain.PlayerShellBrain;
 import ladysnake.pandemonium.common.entity.fakeplayer.GuidedFakePlayerEntity;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.sensor.Sensor;
+import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -57,16 +70,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.Vec3d;
 import org.apiguardian.api.API;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -74,26 +90,66 @@ import static org.apiguardian.api.API.Status.MAINTAINED;
 
 // TODO add inventory access
 public class PlayerShellEntity extends GuidedFakePlayerEntity {
-    private @Nullable BlockPos home;
+    public static final List<SensorType<? extends Sensor<? super PlayerShellEntity>>> SENSOR_TYPES = ImmutableList.of(
+        SensorType.NEAREST_LIVING_ENTITIES,
+        SensorType.NEAREST_PLAYERS,
+        PandemoniumSensorTypes.CLOSEST_PLAYER_HOSTILE
+    );
+    public static final List<MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(
+        MemoryModuleType.MOBS,
+        MemoryModuleType.VISIBLE_MOBS,
+        MemoryModuleType.NEAREST_VISIBLE_PLAYER,
+        MemoryModuleType.LOOK_TARGET,
+        MemoryModuleType.WALK_TARGET,
+        MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
+        MemoryModuleType.ATTACK_TARGET
+    );
+
+    private final ShellPathfindingProcess pathfindingProcess;
 
     @CheckEnv(Env.SERVER)
     @API(status = MAINTAINED)
     public PlayerShellEntity(EntityType<? extends PlayerEntity> type, ServerWorld world) {
         super(type, world);
-        ((MobNavigation)this.guide.getNavigation()).setCanPathThroughDoors(true);
+        ((MobNavigation) this.guide.getNavigation()).setCanPathThroughDoors(true);
         this.guide.getNavigation().setCanSwim(true);
+        IBaritone baritone = this.getBaritone();
+        baritone.getPathingControlManager().registerProcess(this.pathfindingProcess = new ShellPathfindingProcess(baritone));
+        baritone.getGameEventHandler().registerEventListener(new IGameEventListener() {
+            @Override
+            public void onTickServer() {
+                // NO-OP
+            }
+
+            @Override
+            public void onBlockInteract(BlockInteractEvent event) {
+                // NO-OP
+            }
+
+            @Override
+            public void onPathEvent(PathEvent event) {
+                Brain<?> brain = PlayerShellEntity.this.getBrain();
+                if (event == PathEvent.AT_GOAL) {
+                    brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+                }
+            }
+        });
     }
 
     public static DefaultAttributeContainer.Builder createPlayerShellAttributes() {
         return createPlayerAttributes();
     }
 
-    public @Nullable BlockPos getHome() {
-        return home;
+    public ShellPathfindingProcess getPathfindingProcess() {
+        return pathfindingProcess;
     }
 
-    public void setHome(@Nullable BlockPos home) {
-        this.home = home;
+    public @Nullable GlobalPos getHome() {
+        return this.getBrain().getOptionalMemory(MemoryModuleType.HOME).orElse(null);
+    }
+
+    public void setHome(@Nullable GlobalPos home) {
+        this.getBrain().remember(MemoryModuleType.HOME, home);
     }
 
     public void storePlayerData(ServerPlayerEntity player, CompoundTag respawnNbt) {
@@ -104,7 +160,33 @@ public class PlayerShellEntity extends GuidedFakePlayerEntity {
 
         this.setDisplayProfile(Optional.ofNullable(Impersonator.get(player).getImpersonatedProfile()).orElse(player.getGameProfile()));
         this.setCustomName(new LiteralText(player.getEntityName()));
-        this.setHome(player.getBlockPos());
+        this.setHome(GlobalPos.create(player.getServerWorld().getRegistryKey(), player.getBlockPos()));
+    }
+
+    @Override
+    protected Brain.Profile<PlayerShellEntity> createBrainProfile() {
+        return Brain.createProfile(MEMORY_MODULE_TYPES, SENSOR_TYPES);
+    }
+
+    @Override
+    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+        return PlayerShellBrain.create(this.createBrainProfile().deserialize(dynamic));
+    }
+
+    @Override
+    public Brain<PlayerShellEntity> getBrain() {
+        @SuppressWarnings("unchecked") Brain<PlayerShellEntity> b = (Brain<PlayerShellEntity>) super.getBrain();
+        return b;
+    }
+
+    @Override
+    protected void tickNewAi() {
+        super.tickNewAi();
+        this.world.getProfiler().push("requiem:playerShellBrain");
+        this.getBrain().tick(this.getServerWorld(), this);
+        this.world.getProfiler().pop();
+        PlayerShellBrain.refreshActivities(this);
+        DebugInfoSender.sendBrainDebugData(this);   // TODO 1.17 check if we can debug this mess
     }
 
     @Override
@@ -130,8 +212,8 @@ public class PlayerShellEntity extends GuidedFakePlayerEntity {
     @Override
     public void baseTick() {
         super.baseTick();
-        if (this.home != null) {
-            this.guide.setPositionTarget(this.home, 5);
+        if (this.useGuide() && this.getHome() != null && this.getHome().getDimension() == this.world.getRegistryKey()) {
+            this.guide.setPositionTarget(this.getHome().getPos(), 5);
         }
     }
 
@@ -236,23 +318,16 @@ public class PlayerShellEntity extends GuidedFakePlayerEntity {
             this.setDisplayProfile(NbtHelper.toGameProfile(tag.getCompound("PlayerProfile")));
         }
 
-        CompoundTag homeTag = tag.getCompound("Home");
-        if (homeTag.contains("X", 99) && homeTag.contains("Y", 99) && homeTag.contains("Z", 99)) {
-            this.setHome(NbtHelper.toBlockPos(homeTag));
-        }
-
         this.getDataTracker().set(PLAYER_MODEL_PARTS, tag.getByte("PlayerModelParts"));
     }
 
     @Override
     public void writeCustomDataToTag(CompoundTag tag) {
         super.writeCustomDataToTag(tag);
-
-        BlockPos home = this.getHome();
-        if (home != null) {
-            tag.put("Home", NbtHelper.fromBlockPos(home));
-        }
-
         tag.putByte("PlayerModelParts", this.getDataTracker().get(PLAYER_MODEL_PARTS));
+    }
+
+    public void playSound(SoundEvent soundEvent) {
+        this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
     }
 }

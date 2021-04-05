@@ -35,6 +35,7 @@
 package ladysnake.pandemonium.common.util;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -43,6 +44,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
@@ -159,9 +161,20 @@ public class RayHelper {
         return pos;
     }
 
+    @Nullable
+    public static EntityHitResult raycast(LivingEntity watcher, double distance) {
+        Vec3d eyes = watcher.getCameraPosVec(1F);
+        Vec3d vec3d2 = watcher.getRotationVec(1.0F);
+        Vec3d vec3d3 = eyes.add(vec3d2.x * distance, vec3d2.y * distance, vec3d2.z * distance);
+        Box box = watcher.getBoundingBox().stretch(vec3d2.multiply(distance)).expand(1.0D, 1.0D, 1.0D);
+        return raycast(watcher, eyes, vec3d3, box, e -> !e.isSpectator() && e.collides(), distance * distance);
+    }
+
     /**
      * @see net.minecraft.entity.projectile.ProjectileUtil#raycast(Entity, Vec3d, Vec3d, Box, Predicate, double)
      */
+    // TODO 1.17 the above method is not client only anymore, so replace this method with that
+    @Nullable
     public static EntityHitResult raycast(Entity watcher, Vec3d startPoint, Vec3d endPoint, Box box, Predicate<Entity> predicate, double range) {
         World world = watcher.world;
         double r = range;

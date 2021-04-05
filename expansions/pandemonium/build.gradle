@@ -2,6 +2,7 @@ archivesBaseName = "${rootProject.archivesBaseName}-${project.name.toLowerCase(L
 group = "${rootProject.group}.${rootProject.archivesBaseName}"
 
 repositories {
+    mavenLocal()
     maven {
         name = 'Ladysnake Libs'
         url = 'https://dl.bintray.com/ladysnake/libs'
@@ -46,6 +47,7 @@ dependencies {
     include "io.github.ladysnake:Impersonate:${impersonate_version}:optimized"
     modImplementation "io.github.ladysnake:automatone:${automatone_version}"
     include "io.github.ladysnake:automatone:${automatone_version}"
+    modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${rootProject.reach_version}"
     include "com.jamieswhiteshirt:reach-entity-attributes:${rootProject.reach_version}"
     modCompileOnly("com.github.apace100:origins-fabric:${rootProject.origins_version}") { transitive = false }
     modCompileOnly("curse.maven:haema-391257:${rootProject.haema_version}")
