@@ -43,13 +43,17 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.MathHelper;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 public class PlayerHostileSensor extends Sensor<PlayerEntity> {
+    public PlayerHostileSensor() {
+        super(10);
+    }
+
     @Override
     public Set<MemoryModuleType<?>> getOutputMemoryModules() {
         return ImmutableSet.of(MemoryModuleType.NEAREST_HOSTILE);
@@ -65,7 +69,7 @@ public class PlayerHostileSensor extends Sensor<PlayerEntity> {
             .filter(entity -> {
                 if (!this.isHostile(subject, entity)) return false;
                 return this.isCloseEnoughForDanger(subject, entity);
-            }).min((livingEntity2, livingEntity3) -> this.compareDistances(subject, livingEntity2, livingEntity3)));
+            }).min(Comparator.comparing(subject::squaredDistanceTo)));
     }
 
     private boolean isCloseEnoughForDanger(PlayerEntity subject, LivingEntity entity) {
@@ -87,9 +91,5 @@ public class PlayerHostileSensor extends Sensor<PlayerEntity> {
 
     private Optional<List<LivingEntity>> getVisibleMobs(LivingEntity entity) {
         return entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
-    }
-
-    private int compareDistances(LivingEntity entity, LivingEntity hostile1, LivingEntity hostile2) {
-        return MathHelper.floor(hostile1.squaredDistanceTo(entity) - hostile2.squaredDistanceTo(entity));
     }
 }

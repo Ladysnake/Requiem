@@ -69,7 +69,7 @@ public final class PlayerShellBrain {
 
     private static void addIdleTasks(Brain<PlayerShellEntity> brain) {
         brain.setTaskList(Activity.IDLE, 10, ImmutableList.of(
-            new PlayerGoHomeTask(MemoryModuleType.HOME, 1f, 10, 5),
+            new PlayerGoHomeTask(MemoryModuleType.HOME, 1f, 10, 5000),  // TODO fix the attempt thing
             new LivingUpdateAttackTargetTask<>(PlayerShellBrain::canFight, PlayerShellBrain::getPriorityAttackTarget),
             new TimeLimitedTask<>(new FollowMobTask(8.0F), IntRange.between(30, 60))
         ));

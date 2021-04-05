@@ -48,6 +48,7 @@ import ladysnake.pandemonium.common.entity.ai.ShellBlockGoal;
 import ladysnake.pandemonium.common.entity.ai.ShellEatGoal;
 import ladysnake.pandemonium.common.entity.ai.ShellPathfindingProcess;
 import ladysnake.pandemonium.common.entity.ai.ShellRevengeGoal;
+import ladysnake.pandemonium.common.entity.ai.brain.PandemoniumMemoryModules;
 import ladysnake.pandemonium.common.entity.ai.brain.PandemoniumSensorTypes;
 import ladysnake.pandemonium.common.entity.ai.brain.PlayerShellBrain;
 import ladysnake.pandemonium.common.entity.fakeplayer.GuidedFakePlayerEntity;
@@ -102,7 +103,9 @@ public class PlayerShellEntity extends GuidedFakePlayerEntity {
         MemoryModuleType.LOOK_TARGET,
         MemoryModuleType.WALK_TARGET,
         MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
-        MemoryModuleType.ATTACK_TARGET
+        MemoryModuleType.ATTACK_TARGET,
+        MemoryModuleType.HOME,
+        PandemoniumMemoryModules.GO_HOME_ATTEMPTS
     );
 
     private final ShellPathfindingProcess pathfindingProcess;
