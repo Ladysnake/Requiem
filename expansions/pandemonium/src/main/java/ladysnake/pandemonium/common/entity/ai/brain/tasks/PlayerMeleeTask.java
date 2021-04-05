@@ -61,6 +61,10 @@ public class PlayerMeleeTask extends Task<FakeServerPlayerEntity> {
         ));
     }
 
+    public static double getAttackRange(LivingEntity attacker) {
+        return ReachEntityAttributes.getAttackRange(attacker, 3.);
+    }
+
     @Override
     protected boolean shouldRun(ServerWorld world, FakeServerPlayerEntity executor) {
         LivingEntity target = this.getAttackTarget(executor);

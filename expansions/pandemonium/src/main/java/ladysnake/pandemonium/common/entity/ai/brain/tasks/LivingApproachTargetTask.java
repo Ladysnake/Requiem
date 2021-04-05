@@ -34,30 +34,87 @@
  */
 package ladysnake.pandemonium.common.entity.ai.brain.tasks;
 
+import baritone.api.fakeplayer.FakeServerPlayerEntity;
+import baritone.api.pathing.goals.GoalNear;
+import baritone.api.pathing.goals.GoalRunAway;
 import com.google.common.collect.ImmutableMap;
+import ladysnake.pandemonium.common.entity.ai.brain.AutomatoneWalkTarget;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.*;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 
-public class LivingRangedApproachTask extends Task<LivingEntity> {
+public class LivingApproachTargetTask extends Task<FakeServerPlayerEntity> {
     private final float speed;
 
-    public LivingRangedApproachTask(float speed) {
+    public LivingApproachTargetTask(float speed) {
         super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.REGISTERED));
         this.speed = speed;
     }
 
     @Override
-    protected void run(ServerWorld serverWorld, LivingEntity executor, long l) {
+    protected void run(ServerWorld serverWorld, FakeServerPlayerEntity executor, long l) {
         LivingEntity livingEntity = executor.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).orElseThrow(IllegalStateException::new);
         this.rememberWalkTarget(executor, livingEntity);
     }
 
-    private void rememberWalkTarget(LivingEntity entity, LivingEntity target) {
-        Brain<?> brain = entity.getBrain();
+    private void rememberWalkTarget(FakeServerPlayerEntity executor, LivingEntity target) {
+        Brain<?> brain = executor.getBrain();
         brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
-        WalkTarget walkTarget = new WalkTarget(new EntityLookTarget(target, false), this.speed, 2);
+        WalkTarget walkTarget = new AutomatoneWalkTarget(
+            new EntityLookTarget(target, false),
+            this.speed,
+            new GoalKeepDistanceWithTarget(
+                target.getBlockPos(),
+                (int) PlayerMeleeTask.getAttackRange(executor),
+                2.5,  // keep enough distance with target to not get hit
+                executor.getBlockPos(),
+                executor.age - executor.getLastAttackTime() == 1 && executor.getRandom().nextBoolean() ? 1 : 0   // change position after we attack
+            )
+        );
         brain.remember(MemoryModuleType.WALK_TARGET, walkTarget);
+    }
+
+    public static class GoalKeepDistanceWithTarget extends GoalNear {
+        private final GoalRunAway avoidTarget;
+        private final GoalRunAway avoidSrc;
+
+        public GoalKeepDistanceWithTarget(BlockPos pos, int range, double avoidRange, BlockPos src, double avoidSrcRange) {
+            super(pos, range);
+            this.avoidTarget = new GoalRunAway(avoidRange, pos);
+            this.avoidSrc = new GoalRunAway(avoidSrcRange, src);
+        }
+
+        @Override
+        public boolean isInGoal(int x, int y, int z) {
+            return super.isInGoal(x, y, z) && this.avoidTarget.isInGoal(x, y, z) && this.avoidSrc.isInGoal(x, y, z);
+        }
+
+        @Override
+        public double heuristic(int x, int y, int z) {
+            return Math.max(
+                Math.max(super.heuristic(x, y, z), this.avoidTarget.heuristic(x, y, z)),
+                this.avoidSrc.heuristic(x, y, z)
+            );
+        }
+
+        @Override
+        public double heuristic() {
+            return super.heuristic();
+        }
+
+        @Override
+        public String toString() {
+            return String.format(
+                "GoalKeepDistanceWithTarget{x=%s, y=%s, z=%s, rangeSq=%d, secondaries=[%s, %s]}",
+                x,
+                y,
+                z,
+                rangeSq,
+                avoidTarget,
+                avoidSrc
+            );
+        }
     }
 }

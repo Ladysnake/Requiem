@@ -35,9 +35,11 @@
 package ladysnake.pandemonium.common.entity.ai.brain.tasks;
 
 import baritone.api.Settings;
+import baritone.api.pathing.goals.Goal;
 import baritone.api.pathing.goals.GoalNear;
 import com.google.common.collect.ImmutableMap;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
+import ladysnake.pandemonium.common.entity.ai.brain.AutomatoneWalkTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -57,14 +59,22 @@ public class PlayerWanderAroundTask extends Task<PlayerShellEntity> {
         WalkTarget target = executor.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).orElseThrow(IllegalStateException::new);
         float speed = target.getSpeed();
         Settings settings = executor.getBaritone().settings();
-        if (speed <= 0)
+        if (speed <= 0) {
             throw new IllegalStateException("Some task asked to walk towards something with a negative speed ?!");
+        }
         settings.allowSprint.set(speed > 0.5);
         settings.allowParkour.set(speed >= 1.);
         double terrainModificationFactor = 1. / MathHelper.clamp(speed * speed, 0.1, 1.);
         settings.blockBreakAdditionalPenalty.set(settings.blockBreakAdditionalPenalty.defaultValue() * terrainModificationFactor);
         settings.blockPlacementPenalty.set(settings.blockPlacementPenalty.defaultValue() * terrainModificationFactor);
-        executor.getPathfindingProcess().setGoal(new GoalNear(target.getLookTarget().getBlockPos(), target.getCompletionRange()));
+        executor.getPathfindingProcess().setGoal(this.getGoal(target));
+    }
+
+    private Goal getGoal(WalkTarget target) {
+        if (target instanceof AutomatoneWalkTarget) {
+            return ((AutomatoneWalkTarget) target).getGoal();
+        }
+        return new GoalNear(target.getLookTarget().getBlockPos(), target.getCompletionRange());
     }
 
     @Override

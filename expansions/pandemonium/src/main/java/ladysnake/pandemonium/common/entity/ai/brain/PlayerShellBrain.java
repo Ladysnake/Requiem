@@ -86,7 +86,7 @@ public final class PlayerShellBrain {
     private static void addFightTasks(Brain<PlayerShellEntity> brain) {
         brain.setTaskList(Activity.FIGHT, 10,
             ImmutableList.of(
-                new LivingRangedApproachTask(1.0F),
+                new LivingApproachTargetTask(1.0F),
                 new PlayerMeleeTask(),
                 // if an entity is no longer interested in our death, we can leave it be
                 new LivingForgetAttackTargetTask<>(e -> e instanceof HostileEntity && ((HostileEntity) e).getTarget() == null)
