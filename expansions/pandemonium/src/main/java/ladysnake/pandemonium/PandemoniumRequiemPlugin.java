@@ -37,6 +37,7 @@ package ladysnake.pandemonium;
 import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.entity.ability.*;
+import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
@@ -46,6 +47,7 @@ import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.entity.ability.RangedAttackAbility;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.EntityType;
@@ -120,5 +122,10 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
         abilityRegistry.register(EntityType.TRADER_LLAMA, MobAbilityConfig.<LlamaEntity>builder().directAttack(RangedAttackAbility::new).build());
         abilityRegistry.register(EntityType.WITCH, MobAbilityConfig.<WitchEntity>builder().directAttack(owner -> new RangedAttackAbility<>(owner, 50, 10.)).build());
         abilityRegistry.register(EntityType.WITHER, MobAbilityConfig.<WitherEntity>builder().indirectAttack(WitherSkullAbility.BlueWitherSkullAbility::new).directAttack(WitherSkullAbility.BlackWitherSkullAbility::new).build());
+    }
+
+    @Override
+    public void registerSoulBindings(SoulbindingRegistry registry) {
+        registry.registerSoulbound(PandemoniumStatusEffects.PENANCE);
     }
 }
