@@ -38,6 +38,7 @@ import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.entity.ability.*;
 import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
+import ladysnake.pandemonium.common.entity.effect.PenanceStatusEffect;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
@@ -91,6 +92,10 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
         // Enderman specific behaviour is unneeded now that players can possess them
         PossessionStartCallback.EVENT.unregister(new Identifier(Requiem.MOD_ID, "enderman"));
         PossessionStartCallback.EVENT.register(Pandemonium.id("allow_everything"), (target, possessor, simulate) -> PossessionStartCallback.Result.ALLOW);
+        PossessionStartCallback.EVENT.register(Pandemonium.id("deny_penance_two"), PenanceStatusEffect::canPossess);
+        //noinspection ConstantConditions
+        PossessionStartCallback.EVENT.register(Pandemonium.id("deny_penance_three"), ((target, possessor, simulate) ->
+            possessor.hasStatusEffect(PandemoniumStatusEffects.PENANCE) && possessor.getStatusEffect(PandemoniumStatusEffects.PENANCE).getAmplifier() >= 2 ? PossessionStartCallback.Result.DENY : PossessionStartCallback.Result.PASS));
         InitiateFractureCallback.EVENT.register(player -> {
             RemnantComponent remnantState = RemnantComponent.get(player);
             PossessionComponent possessionComponent = PossessionComponent.get(player);
