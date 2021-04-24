@@ -20,6 +20,6 @@ public class PenanceStatusEffect extends StatusEffect implements StickyStatusEff
      */
     @Override
     public boolean shouldStick(@NotNull LivingEntity entity) {
-        return RemnantComponent.isVagrant(entity);
+        return !RemnantComponent.isVagrant(entity);
     }
 }

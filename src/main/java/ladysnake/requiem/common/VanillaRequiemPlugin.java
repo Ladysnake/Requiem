@@ -37,6 +37,7 @@ package ladysnake.requiem.common;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
+import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.InventoryPart;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
@@ -47,6 +48,7 @@ import ladysnake.requiem.api.v1.event.minecraft.AllowUseEntityCallback;
 import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PrepareRespawnCallback;
+import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
@@ -65,6 +67,7 @@ import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.fabricmc.fabric.api.event.player.*;
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -107,6 +110,10 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     public void onRequiemInitialize() {
         registerEtherealEventHandlers();
         registerPossessionEventHandlers();
+        CanCurePossessedCallback.EVENT.register((body) -> {
+            CurableEntityComponent curableEntityComponent = CurableEntityComponent.KEY.get(body);
+            return (curableEntityComponent.canBeCured() || curableEntityComponent.canBeAssimilated()) ? TriState.TRUE : TriState.DEFAULT;
+        });
         LivingEntityDropCallback.EVENT.register((dead, deathCause) -> {
             if (!(dead instanceof ServerPlayerEntity)) {
                 return false;
