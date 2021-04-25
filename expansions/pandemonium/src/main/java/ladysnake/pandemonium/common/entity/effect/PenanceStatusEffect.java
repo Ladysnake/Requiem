@@ -76,9 +76,9 @@ public class PenanceStatusEffect extends StatusEffect {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static PossessionStartCallback.@NotNull Result canPossess(MobEntity target, PlayerEntity possessor, boolean simulate) {
-        if (possessor.hasStatusEffect(PandemoniumStatusEffects.PENANCE) && possessor.getStatusEffect(PandemoniumStatusEffects.PENANCE).getAmplifier() >= 1 && target instanceof PlayerShellEntity) {
+        StatusEffectInstance penance = possessor.getStatusEffect(PandemoniumStatusEffects.PENANCE);
+        if (penance != null && penance.getAmplifier() >= 3 && target instanceof PlayerShellEntity) {
             return PossessionStartCallback.Result.DENY;
         }
         return PossessionStartCallback.Result.PASS;
