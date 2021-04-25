@@ -61,16 +61,17 @@ public class PenanceStatusEffect extends StatusEffect {
     @Override
     public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
         super.onApplied(entity, attributes, amplifier);
-        if (amplifier >= 1) {
-            PossessionComponent c = PossessionComponent.KEY.getNullable(entity);
-            if (c != null) { // It's 1 because amplifiers are 0 based for some fucking reason
-                c.stopPossessing();
-            }
-            if (entity instanceof ServerPlayerEntity && !(RemnantComponent.get((PlayerEntity) entity)).isVagrant()) {
-                if (RemnantComponent.get((PlayerEntity) entity).getRemnantType().isDemon()) {
-                    PlayerSplitter.split((ServerPlayerEntity) entity);
+        if (amplifier >= 1 && entity instanceof ServerPlayerEntity) { // level 2+
+            ServerPlayerEntity player = (ServerPlayerEntity) entity;
+            if (amplifier >= 2) { // level 3+
+	            PossessionComponent.get(player).stopPossessing();
+	        }
+            RemnantComponent remnant = RemnantComponent.get(player);
+            if (!remnant.isVagrant()) {
+                if (remnant.getRemnantType().isDemon()) {
+                    PlayerSplitter.split(player);
                 } else {
-                    entity.damage(DamageSource.MAGIC, amplifier*4);
+                    player.damage(DamageSource.MAGIC, amplifier*4);
                 }
             }
         }
