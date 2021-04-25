@@ -94,6 +94,7 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
         PossessionStartCallback.EVENT.register(Pandemonium.id("allow_everything"), (target, possessor, simulate) -> PossessionStartCallback.Result.ALLOW);
         PossessionStartCallback.EVENT.register(Pandemonium.id("deny_penance_two"), PenanceStatusEffect::canPossess);
         //noinspection ConstantConditions
+        // .getAmplifier() can provoke an NPE, but we check for that before.
         PossessionStartCallback.EVENT.register(Pandemonium.id("deny_penance_three"), ((target, possessor, simulate) ->
             possessor.hasStatusEffect(PandemoniumStatusEffects.PENANCE) && possessor.getStatusEffect(PandemoniumStatusEffects.PENANCE).getAmplifier() >= 2 ? PossessionStartCallback.Result.DENY : PossessionStartCallback.Result.PASS));
         InitiateFractureCallback.EVENT.register(player -> {
