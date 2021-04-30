@@ -335,7 +335,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
             if (possessor.isAlive() && secondLife != null) {    // player didn't get killed by attrition
                 possessor.world.spawnEntity(secondLife);
-                possessionComponent.stopPossessing(world.getGameRules().getBoolean(RequiemGamerules.KEEP_ITEMS)
+                possessionComponent.stopPossessing(world.getGameRules().getBoolean(RequiemGamerules.KEEP_ITEMS));
                 if (possessionComponent.startPossessing(secondLife)) {
                     RequiemCriteria.PLAYER_RESURRECTED_AS_ENTITY.handle(possessor, secondLife);
                 } else {
