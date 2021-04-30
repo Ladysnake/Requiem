@@ -57,7 +57,8 @@ public class RequiemGamerules {
         register("disableCure", GameRuleFactory.createBooleanRule(false), GameRules.Category.PLAYER);
     public static final GameRules.Key<EnumRule<StartingRemnantType>> STARTING_SOUL_MODE =
         register("startingRemnantType", GameRuleFactory.createEnumRule(StartingRemnantType.CHOOSE), GameRules.Category.PLAYER);
-
+    public static final GameRules.Key<GameRules.BooleanRule> KEEP_ITEMS =
+        register("keepItemsOnDissociate", GameRuleFactory.createBooleanRule(false), GameRules.Category.PLAYER);
     public static void init() {
         // static init
     }
