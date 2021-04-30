@@ -89,6 +89,7 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
                 success = true;
             } else if (possessionComponent.getPossessedEntity() != null && PlayerBodyTracker.get(player).getAnchor() != null) {
                 // TODO make a gamerule to keep the inventory when leaving a mob
+                //Implemented that in the main mod, still working on balancing, defaults to off - HexBliss
                 possessionComponent.stopPossessing();
                 success = true;
             } else {
