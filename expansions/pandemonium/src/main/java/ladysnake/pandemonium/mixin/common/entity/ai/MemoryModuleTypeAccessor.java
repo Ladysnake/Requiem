@@ -32,19 +32,16 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.tag;
+package ladysnake.pandemonium.mixin.common.entity.ai;
 
-import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.tag.TagRegistry;
-import net.minecraft.item.Item;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-public final class RequiemItemTags {
-    public static final Tag<Item> BONES = TagRegistry.item(Requiem.id("bones"));
-    public static final Tag<Item> UNDEAD_CURES = TagRegistry.item(Requiem.id("undead_cures"));
-    public static final Tag<Item> RAW_MEATS = TagRegistry.item(Requiem.id("raw_meats"));
-    public static final Tag<Item> RAW_FISHES = TagRegistry.item(Requiem.id("raw_fishes"));
-    public static final Tag<Item> WATER_BUCKETS = TagRegistry.item(new Identifier("c", "water_buckets"));
-    public static final Tag<Item> SHIELDS = TagRegistry.item(new Identifier("c", "shields"));
+@Mixin(MemoryModuleType.class)
+public interface MemoryModuleTypeAccessor {
+    @Invoker("register")
+    static <U> MemoryModuleType<U> pandemonium$register(String id) {
+        throw new IllegalStateException("Untransformed mixin");
+    }
 }

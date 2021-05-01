@@ -32,52 +32,51 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.mixin.common.entity.ai.goal;
+package ladysnake.pandemonium.common.entity.ai;
 
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
-import net.minecraft.entity.ai.goal.TrackTargetGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.util.math.Box;
-import org.objectweb.asm.Opcodes;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import javax.annotation.Nullable;
+import java.util.Objects;
+import java.util.UUID;
 
-import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
+public class ShellRevengeGoal extends RevengeGoal {
+    private final PlayerShellEntity shell;
 
-@Mixin(FollowTargetGoal.class)
-public abstract class FollowTargetGoalMixin extends TrackTargetGoal {
-    @Shadow @Nullable protected LivingEntity targetEntity;
-
-    @Shadow protected TargetPredicate targetPredicate;
-
-    @Shadow protected abstract Box getSearchBox(double double_1);
-
-    public FollowTargetGoalMixin(MobEntity mobEntity_1, boolean boolean_1) {
-        super(mobEntity_1, boolean_1);
+    public ShellRevengeGoal(PlayerShellEntity shell, Class<?>... noRevengeTypes) {
+        super(shell.getGuide(), noRevengeTypes);
+        this.shell = shell;
     }
 
-    @Inject(
-            method = "findClosestTarget",
-            at = @At(
-                    value = "FIELD",
-                    opcode = Opcodes.PUTFIELD,
-                    target = "Lnet/minecraft/entity/ai/goal/FollowTargetGoal;targetEntity:Lnet/minecraft/entity/LivingEntity;",
-                    ordinal = 0,    // Fun fact: despite the decompiled source indicating that the player branch is the second, it's actually the first
-                    shift = AFTER
-            )
-    )
-    private void addShellsAsTargets(CallbackInfo ci) {
-        if (this.targetEntity == null) {
-            // method_21727 = getClosestEntity
-            this.targetEntity = this.mob.world.getClosestEntity(PlayerShellEntity.class, this.targetPredicate, this.mob, this.mob.getX(), this.mob.getY() + (double)this.mob.getStandingEyeHeight(), this.mob.getZ(), this.getSearchBox(this.getFollowRange()));
+    @Override
+    public void start() {
+        super.start();
+        this.callForHelp();
+    }
+
+    protected void callForHelp() {
+        double d = this.getFollowRange();
+        Box box = Box.method_29968(this.mob.getPos()).expand(d, 10.0D, d);
+        UUID ownerUuid = this.shell.getOwnerUuid();
+
+        for (LivingEntity e : this.mob.world.getEntitiesIncludingUngeneratedChunks(LivingEntity.class, box)) {
+            if (isFriendlyShell(ownerUuid, e)) {
+                this.setMobEntityTarget(((PlayerShellEntity) e).getGuide(), target);
+            } else if (isPet(ownerUuid, e)) {
+                this.setMobEntityTarget((MobEntity) e, target);
+            }
         }
+    }
+
+    private boolean isPet(UUID ownerUuid, LivingEntity e) {
+        return e instanceof TameableEntity && Objects.equals(((TameableEntity) e).getOwnerUuid(), ownerUuid);
+    }
+
+    private boolean isFriendlyShell(UUID ownerUuid, LivingEntity e) {
+        return e instanceof PlayerShellEntity && Objects.equals(((PlayerShellEntity) e).getOwnerUuid(), ownerUuid);
     }
 }

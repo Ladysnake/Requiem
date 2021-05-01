@@ -141,13 +141,14 @@ repositories {
         name = 'Ladysnake Mods 1'
         url = 'https://dl.bintray.com/ladysnake/libs'
         content {
-            includeGroup "io.github.ladysnake"
+            includeGroup 'io.github.ladysnake'
         }
     }
     maven {
         name = 'Ladysnake Mods 2'
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
         content {
+            includeGroup 'io.github.ladysnake'
             includeGroupByRegex 'io\\.github\\.onyxstudios.*'
         }
     }
@@ -230,6 +231,8 @@ dependencies {
 
     modRuntime "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
     modRuntime "net.adriantodt.fabricmc:fallflyinglib:${fallflyinglib_version}"
+    modCompileOnly("com.github.Virtuoel:Pehkui:${pehkui_version}") { transitive = false }
+    modRuntime("com.github.Virtuoel:Pehkui:${pehkui_version}") { transitive = false }
     modCompileOnly("io.github.Ladysnake:Snow-Mercy:${snowmercy_version}") { transitive = false }
     modRuntime("io.github.Ladysnake:Snow-Mercy:${snowmercy_version}") { transitive = false }
     modCompileOnly("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }

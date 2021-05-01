@@ -32,19 +32,36 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.tag;
+package ladysnake.pandemonium.common.entity.ai;
 
-import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.tag.TagRegistry;
-import net.minecraft.item.Item;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
+import ladysnake.pandemonium.common.entity.PlayerShellEntity;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.ItemStack;
 
-public final class RequiemItemTags {
-    public static final Tag<Item> BONES = TagRegistry.item(Requiem.id("bones"));
-    public static final Tag<Item> UNDEAD_CURES = TagRegistry.item(Requiem.id("undead_cures"));
-    public static final Tag<Item> RAW_MEATS = TagRegistry.item(Requiem.id("raw_meats"));
-    public static final Tag<Item> RAW_FISHES = TagRegistry.item(Requiem.id("raw_fishes"));
-    public static final Tag<Item> WATER_BUCKETS = TagRegistry.item(new Identifier("c", "water_buckets"));
-    public static final Tag<Item> SHIELDS = TagRegistry.item(new Identifier("c", "shields"));
+import java.util.function.Predicate;
+
+public abstract class PlayerShellGoal extends Goal {
+    protected final PlayerShellEntity shell;
+    protected int hotbarSlot;
+
+    public PlayerShellGoal(PlayerShellEntity shell) {
+        this.shell = shell;
+    }
+
+    protected boolean findInHotbar(Predicate<ItemStack> stackPredicate) {
+        this.hotbarSlot = -1;
+
+        if (stackPredicate.test(this.shell.getOffHandStack())) {
+            return true;
+        }
+
+        for (int slot = 0; slot < 9; slot++) {
+            if (stackPredicate.test(this.shell.inventory.getStack(slot))) {
+                hotbarSlot = slot;
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

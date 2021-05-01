@@ -34,22 +34,32 @@
  */
 package ladysnake.pandemonium.common.entity;
 
+import ladysnake.pandemonium.common.entity.fakeplayer.FakePlayerGuide;
 import ladysnake.requiem.Requiem;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
 
 public class PandemoniumEntities {
-    public static final EntityType<PlayerShellEntity> PLAYER_SHELL = FabricEntityTypeBuilder.createMob()
+    public static final EntityType<PlayerEntity> PLAYER_SHELL = FabricEntityTypeBuilder.<PlayerEntity>createLiving()
         .spawnGroup(SpawnGroup.MISC)
-        .entityFactory(PlayerShellEntity::new)
+        .entityFactory((type, world) -> new PlayerShellEntity(type, (ServerWorld) world))
         .defaultAttributes(PlayerShellEntity::createPlayerShellAttributes)
         .dimensions(EntityDimensions.changing(EntityType.PLAYER.getWidth(), EntityType.PLAYER.getHeight()))
         .trackRangeBlocks(64)
         .trackedUpdateRate(1)
         .forceTrackedVelocityUpdates(true)
+        .build();
+    public static final EntityType<FakePlayerGuide> FAKE_PLAYER_AI = FabricEntityTypeBuilder.<FakePlayerGuide>createLiving()
+        .disableSaving()
+        .disableSummon()
+        .dimensions(EntityDimensions.changing(PLAYER_SHELL.getWidth(), PLAYER_SHELL.getHeight()))
+        .defaultAttributes(MobEntity::createMobAttributes)
         .build();
 
     public static void init() {
