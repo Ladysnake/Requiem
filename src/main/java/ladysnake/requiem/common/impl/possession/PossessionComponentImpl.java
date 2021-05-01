@@ -45,6 +45,7 @@ import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.client.RequiemClient;
+import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
@@ -75,7 +76,8 @@ import java.util.UUID;
 
 public final class PossessionComponentImpl implements PossessionComponent {
     private final PlayerEntity player;
-    @Nullable private MobEntity possessed;
+    @Nullable
+    private MobEntity possessed;
     private int conversionTimer;
 
     public PossessionComponentImpl(PlayerEntity player) {
@@ -172,7 +174,8 @@ public final class PossessionComponentImpl implements PossessionComponent {
         LivingEntity possessed = this.getPossessedEntity();
         if (possessed != null) {
             this.resetState();
-            ((Possessable)possessed).setPossessor(null);
+            ((Possessable) possessed).setPossessor(null);
+
             if (player instanceof ServerPlayerEntity) {
                 if (transfer) {
                     dropEquipment(possessed, player);
@@ -191,10 +194,12 @@ public final class PossessionComponentImpl implements PossessionComponent {
     }
 
     public static void dropEquipment(LivingEntity possessed, PlayerEntity player) {
-        if (RequiemEntityTypeTags.ITEM_USERS.contains(possessed.getType())) {
-            InventoryHelper.transferEquipment(player, possessed);
+        if (player.world.getGameRules().get(RequiemGamerules.POSSESSION_KEEP_INVENTORY).get().shouldTransfer(possessed.isAlive())) {
+            if (RequiemEntityTypeTags.ITEM_USERS.contains(possessed.getType())) {
+                InventoryHelper.transferEquipment(player, possessed);
+            }
+            ((LivingEntityAccessor) player).requiem$invokeDropInventory();
         }
-        ((LivingEntityAccessor) player).requiem$invokeDropInventory();
         player.clearStatusEffects();
         Entity ridden = player.getVehicle();
         if (ridden != null) {
@@ -241,7 +246,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
             this.resetState();
             // Attempt to find an equivalent entity using the UUID
             if (this.player.world instanceof ServerWorld) {
-                Entity host = ((ServerWorld)this.player.world).getEntity(possessedUuid);
+                Entity host = ((ServerWorld) this.player.world).getEntity(possessedUuid);
                 if (host instanceof MobEntity && host instanceof Possessable) {
                     this.startPossessing((MobEntity) host);
                 }

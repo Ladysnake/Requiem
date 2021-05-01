@@ -57,6 +57,8 @@ public class RequiemGamerules {
         register("disableCure", GameRuleFactory.createBooleanRule(false), GameRules.Category.PLAYER);
     public static final GameRules.Key<EnumRule<StartingRemnantType>> STARTING_SOUL_MODE =
         register("startingRemnantType", GameRuleFactory.createEnumRule(StartingRemnantType.CHOOSE), GameRules.Category.PLAYER);
+    public static final GameRules.Key<EnumRule<PossessionKeepInventory>> POSSESSION_KEEP_INVENTORY =
+        register("possessionKeepInventory", GameRuleFactory.createEnumRule(PossessionKeepInventory.NEVER), GameRules.Category.PLAYER);
 
     public static void init() {
         // static init

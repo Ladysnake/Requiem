@@ -84,7 +84,6 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
                 PlayerSplitter.split(player);
                 success = true;
             } else if (possessionComponent.getPossessedEntity() != null && PlayerBodyTracker.get(player).getAnchor() != null) {
-                // TODO make a gamerule to keep the inventory when leaving a mob
                 possessionComponent.stopPossessing();
                 success = true;
             } else {
