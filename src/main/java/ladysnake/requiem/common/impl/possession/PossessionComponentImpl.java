@@ -189,6 +189,8 @@ public final class PossessionComponentImpl implements PossessionComponent {
                         player.addStatusEffect(new StatusEffectInstance(effect));
                     }
                 }
+
+                possessed.setSprinting(false);
             }
         }
     }
