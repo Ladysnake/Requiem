@@ -75,7 +75,6 @@ import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.dynamic.GlobalPos;
@@ -114,6 +113,8 @@ public class PlayerShellEntity extends GuidedFakePlayerEntity {
     @API(status = MAINTAINED)
     public PlayerShellEntity(EntityType<? extends PlayerEntity> type, ServerWorld world) {
         super(type, world);
+        // default to showing whole skin
+        this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte) 0xFF);
         ((MobNavigation) this.guide.getNavigation()).setCanPathThroughDoors(true);
         this.guide.getNavigation().setCanSwim(true);
         IBaritone baritone = this.getBaritone();
@@ -162,7 +163,6 @@ public class PlayerShellEntity extends GuidedFakePlayerEntity {
         this.getDataTracker().set(PLAYER_MODEL_PARTS, player.getDataTracker().get(PLAYER_MODEL_PARTS));
 
         this.setDisplayProfile(Optional.ofNullable(Impersonator.get(player).getImpersonatedProfile()).orElse(player.getGameProfile()));
-        this.setCustomName(new LiteralText(player.getEntityName()));
         this.setHome(GlobalPos.create(player.getServerWorld().getRegistryKey(), player.getBlockPos()));
     }
 

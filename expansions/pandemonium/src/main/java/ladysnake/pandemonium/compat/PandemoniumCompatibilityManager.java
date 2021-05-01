@@ -68,9 +68,13 @@ public final class PandemoniumCompatibilityManager {
 
     public static <C extends ComponentV3> void registerShellDataCallbacks(ComponentKey<ComponentDataHolder<C>> holderKey) {
         PlayerShellEvents.PLAYER_SPLIT.register((whole, soul, playerShell) -> {
-            ComponentDataHolder<C> holder = holderKey.get(playerShell);
-            holder.storeData(whole);
-            holder.restoreData(playerShell);
+            if (whole != soul) {
+                ComponentDataHolder<C> holder = holderKey.get(playerShell);
+                holder.storeData(whole);
+                holder.restoreData(playerShell);
+            } else {
+                holderKey.get(whole).restoreData(playerShell);
+            }
         });
 
         PlayerShellEvents.PLAYER_MERGED.register((player, playerShell, shellProfile) -> {

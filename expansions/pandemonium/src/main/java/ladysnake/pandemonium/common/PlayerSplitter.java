@@ -70,16 +70,22 @@ import java.util.Set;
 public final class PlayerSplitter {
     public static void split(ServerPlayerEntity whole) {
         FractureAnchorManager anchorManager = FractureAnchorManager.get(whole.world);
-        PlayerShellEntity shell = new PlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, whole.getServerWorld());
-        shell.storePlayerData(whole, computeCopyNbt(whole));
-        shell.setGameMode(whole.interactionManager.isSurvivalLike() ? whole.interactionManager.getGameMode() : GameMode.SURVIVAL);
-        VanillaRequiemPlugin.makeRemnantChoice(shell, RemnantTypes.MORTAL);
+        PlayerShellEntity shell = createShell(whole);
         ServerPlayerEntity soul = performRespawn(whole);
         soul.world.spawnEntity(shell);
         FractureAnchor anchor = anchorManager.addAnchor(AnchorFactories.fromEntityUuid(shell.getUuid()));
         anchor.setPosition(shell.getX(), shell.getY(), shell.getZ());
         PlayerBodyTracker.get(soul).setAnchor(anchor);
         PlayerShellEvents.PLAYER_SPLIT.invoker().onPlayerSplit(whole, soul, shell);
+    }
+
+    public static PlayerShellEntity createShell(ServerPlayerEntity whole) {
+        PlayerShellEntity shell = new PlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, whole.getServerWorld());
+        shell.setGameMode(whole.interactionManager.getGameMode());  // use same gamemode for deserialization
+        shell.storePlayerData(whole, computeCopyNbt(whole));
+        shell.setGameMode(whole.interactionManager.isSurvivalLike() ? whole.interactionManager.getGameMode() : GameMode.SURVIVAL);
+        VanillaRequiemPlugin.makeRemnantChoice(shell, RemnantTypes.MORTAL);
+        return shell;
     }
 
     public static boolean merge(PlayerShellEntity shell, ServerPlayerEntity soul) {
