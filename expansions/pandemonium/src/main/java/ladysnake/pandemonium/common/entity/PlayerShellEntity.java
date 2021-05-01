@@ -185,11 +185,17 @@ public class PlayerShellEntity extends GuidedFakePlayerEntity {
     @Override
     protected void tickNewAi() {
         super.tickNewAi();
-        this.world.getProfiler().push("requiem:playerShellBrain");
-        this.getBrain().tick(this.getServerWorld(), this);
-        this.world.getProfiler().pop();
-        PlayerShellBrain.refreshActivities(this);
-        DebugInfoSender.sendBrainDebugData(this);   // TODO 1.17 check if we can debug this mess
+        if (this.shouldTickBrain()) {
+            this.world.getProfiler().push("requiem:playerShellBrain");
+            this.getBrain().tick(this.getServerWorld(), this);
+            this.world.getProfiler().pop();
+            PlayerShellBrain.refreshActivities(this);
+            DebugInfoSender.sendBrainDebugData(this);   // TODO 1.17 check if we can debug this mess
+        }
+    }
+
+    private boolean shouldTickBrain() {
+        return false;
     }
 
     @Override
