@@ -43,6 +43,7 @@ import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.pandemonium.client.ClientAnchorManager;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.WololoComponent;
+import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
 import ladysnake.pandemonium.common.impl.anchor.CommonAnchorManager;
 import ladysnake.pandemonium.common.network.ServerMessageHandling;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
@@ -80,6 +81,7 @@ public class Pandemonium implements ModInitializer, EntityComponentInitializer, 
     @Override
     public void onInitialize() {
         PandemoniumEntities.init();
+        PandemoniumStatusEffects.init();
         ServerMessageHandling.init();
         RequiemApi.registerPlugin(new PandemoniumRequiemPlugin());
         ServerTickEvents.END_WORLD_TICK.register(Pandemonium::tickAnchors);

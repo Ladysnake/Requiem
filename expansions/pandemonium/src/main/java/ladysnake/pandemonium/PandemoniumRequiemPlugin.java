@@ -37,17 +37,24 @@ package ladysnake.pandemonium;
 import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.entity.ability.*;
+import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
+import ladysnake.pandemonium.common.entity.effect.PenanceStatusEffect;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
+import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
 import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
+import ladysnake.requiem.common.RequiemComponents;
 import ladysnake.requiem.common.entity.ability.RangedAttackAbility;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.mob.CreeperEntity;
@@ -75,10 +82,21 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
             }
             return PossessionStartCallback.Result.PASS;
         });
+        CanCurePossessedCallback.EVENT.register((body) -> {
+            if (body.hasStatusEffect(PandemoniumStatusEffects.PENANCE)) {
+                return TriState.FALSE;
+            }
+            return TriState.DEFAULT;
+        });
 
         // Enderman specific behaviour is unneeded now that players can possess them
         PossessionStartCallback.EVENT.unregister(new Identifier(Requiem.MOD_ID, "enderman"));
         PossessionStartCallback.EVENT.register(Pandemonium.id("allow_everything"), (target, possessor, simulate) -> PossessionStartCallback.Result.ALLOW);
+        PossessionStartCallback.EVENT.register(Pandemonium.id("deny_penance_two"), PenanceStatusEffect::canPossess);
+        //noinspection ConstantConditions
+        // .getAmplifier() can provoke an NPE, but we check for that before.
+        PossessionStartCallback.EVENT.register(Pandemonium.id("deny_penance_three"), ((target, possessor, simulate) ->
+            possessor.hasStatusEffect(PandemoniumStatusEffects.PENANCE) && possessor.getStatusEffect(PandemoniumStatusEffects.PENANCE).getAmplifier() >= 2 ? PossessionStartCallback.Result.DENY : PossessionStartCallback.Result.PASS));
         InitiateFractureCallback.EVENT.register(player -> {
             RemnantComponent remnantState = RemnantComponent.get(player);
             PossessionComponent possessionComponent = PossessionComponent.get(player);
@@ -120,5 +138,10 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
         abilityRegistry.register(EntityType.TRADER_LLAMA, MobAbilityConfig.<LlamaEntity>builder().directAttack(RangedAttackAbility::new).build());
         abilityRegistry.register(EntityType.WITCH, MobAbilityConfig.<WitchEntity>builder().directAttack(owner -> new RangedAttackAbility<>(owner, 50, 10.)).build());
         abilityRegistry.register(EntityType.WITHER, MobAbilityConfig.<WitherEntity>builder().indirectAttack(WitherSkullAbility.BlueWitherSkullAbility::new).directAttack(WitherSkullAbility.BlackWitherSkullAbility::new).build());
+    }
+
+    @Override
+    public void registerSoulBindings(SoulbindingRegistry registry) {
+        registry.registerSoulbound(PandemoniumStatusEffects.PENANCE);
     }
 }

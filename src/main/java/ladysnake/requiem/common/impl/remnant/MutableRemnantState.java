@@ -41,6 +41,7 @@ import io.github.ladysnake.pal.VanillaAbilities;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
+import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
@@ -52,6 +53,7 @@ import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.impl.movement.SerializableMovementConfig;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -123,6 +125,9 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public void curePossessed(LivingEntity body) {
+        if (!this.canCurePossessed(body)) {
+            return;
+        }
         if (this.canRegenerateBodyFrom(body)) {
             ServerPlayerEntity player = (ServerPlayerEntity) this.player;
             RequiemNetworking.sendBodyCureMessage(player);
@@ -155,8 +160,7 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public boolean canCurePossessed(LivingEntity body) {
-        CurableEntityComponent curableEntityComponent = CurableEntityComponent.KEY.get(body);
-        return curableEntityComponent.canBeCured() || this.canRegenerateBody() && curableEntityComponent.canBeAssimilated();
+        return CanCurePossessedCallback.EVENT.invoker().canCurePossessed(body).get();
     }
 
     @Override
