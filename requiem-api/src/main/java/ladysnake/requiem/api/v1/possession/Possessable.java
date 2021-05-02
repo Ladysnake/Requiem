@@ -79,8 +79,10 @@ public interface Possessable extends ProtoPossessable {
     /**
      * Refreshes this entity's nametag according to the value of the "requiem:showPossessorNameTag" gamerule
      *
-     * @throws IllegalStateException if this entity is not being possessed
+     * @deprecated NO-OP; sync is now done through other means
      */
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     default void refreshPossessorNameTag() {}
 
     /**
