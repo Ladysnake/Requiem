@@ -46,6 +46,7 @@ import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.impl.anchor.AnchorFactories;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
+import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.remnant.RemnantTypes;
@@ -85,6 +86,7 @@ public final class PlayerSplitter {
         shell.storePlayerData(whole, computeCopyNbt(whole));
         shell.setGameMode(whole.interactionManager.isSurvivalLike() ? whole.interactionManager.getGameMode() : GameMode.SURVIVAL);
         VanillaRequiemPlugin.makeRemnantChoice(shell, RemnantTypes.MORTAL);
+        InventoryLimiter.KEY.get(shell).setEnabled(false);
         return shell;
     }
 

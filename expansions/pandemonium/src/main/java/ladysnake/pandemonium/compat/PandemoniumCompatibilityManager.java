@@ -40,6 +40,7 @@ import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import ladysnake.pandemonium.api.event.PlayerShellEvents;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.compat.ComponentDataHolder;
 import ladysnake.requiem.compat.HaemaCompat;
 import ladysnake.requiem.compat.OriginsCompat;
@@ -68,12 +69,12 @@ public final class PandemoniumCompatibilityManager {
 
     public static <C extends ComponentV3> void registerShellDataCallbacks(ComponentKey<ComponentDataHolder<C>> holderKey) {
         PlayerShellEvents.PLAYER_SPLIT.register((whole, soul, playerShell) -> {
-            if (whole != soul) {
+            if (RemnantComponent.isVagrant(whole)) {    // can happen with /pandemonium shell create
+                holderKey.get(whole).restoreData(playerShell);
+            } else {
                 ComponentDataHolder<C> holder = holderKey.get(playerShell);
                 holder.storeData(whole);
                 holder.restoreData(playerShell);
-            } else {
-                holderKey.get(whole).restoreData(playerShell);
             }
         });
 
