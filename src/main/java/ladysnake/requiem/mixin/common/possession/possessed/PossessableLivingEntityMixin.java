@@ -156,7 +156,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
     @Override
     public boolean canBePossessedBy(PlayerEntity player) {
-        return !this.removed && this.getHealth() > 0 && (!this.isBeingPossessed() || this.possessor == player);
+        return !this.removed && this.getHealth() > 0 && (this.possessor == null || this.possessor.getUuid().equals(player.getUuid()));
     }
 
     @Override
