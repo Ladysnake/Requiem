@@ -63,6 +63,9 @@
     "swimMode": "FORCED",
     "flopsOnLand": true
   },
+  "minecraft:rabbit": {
+    "walkMode": "JUMPY"
+  },
   "minecraft:salmon": {
     "swimMode": "FORCED",
     "flopsOnLand": true
