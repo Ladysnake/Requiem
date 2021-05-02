@@ -32,26 +32,26 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.compat.mixin.bettergraves;
+package ladysnake.requiem.mixin.client.possession.nametag;
 
-import bettergraves.BetterGraves;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import ladysnake.requiem.api.v1.internal.ProtoPossessable;
+import ladysnake.requiem.common.gamerule.RequiemSyncedGamerules;
+import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-@Mixin(BetterGraves.class)
-public abstract class BetterGravesMixin {
-    @Inject(method = "placeGrave", at = @At("HEAD"), cancellable = true, remap = false)
-    private static void preventGravePlacement(BlockPos deathLocation, ServerPlayerEntity player, ServerWorld world, DamageSource deathBlow, CallbackInfo ci) {
-        if (player.isAlive() && RemnantComponent.isVagrant(player)) {
-            player.inventory.dropAll();
-            ci.cancel();
+@Mixin(EntityRenderer.class)
+public abstract class EntityRendererMixin {
+    @ModifyVariable(method = "renderLabelIfPresent", at = @At("HEAD"), argsOnly = true)
+    private Text swapName(Text original, Entity entity) {
+        PlayerEntity possessor = ((ProtoPossessable) entity).getPossessor();
+        if (possessor != null && RequiemSyncedGamerules.get(entity.world).shouldShowPossessorNametag()) {
+            return possessor.getDisplayName();
         }
+        return original;
     }
 }
