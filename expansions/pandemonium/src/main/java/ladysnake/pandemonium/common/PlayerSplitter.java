@@ -72,8 +72,10 @@ public final class PlayerSplitter {
     public static void split(ServerPlayerEntity whole) {
         FractureAnchorManager anchorManager = FractureAnchorManager.get(whole.world);
         PlayerShellEntity shell = createShell(whole);
+        Entity mount = whole.getVehicle();
         ServerPlayerEntity soul = performRespawn(whole);
         soul.world.spawnEntity(shell);
+        if (mount != null) shell.startRiding(mount);
         FractureAnchor anchor = anchorManager.addAnchor(AnchorFactories.fromEntityUuid(shell.getUuid()));
         anchor.setPosition(shell.getX(), shell.getY(), shell.getZ());
         PlayerBodyTracker.get(soul).setAnchor(anchor);
@@ -92,12 +94,15 @@ public final class PlayerSplitter {
 
     public static boolean merge(PlayerShellEntity shell, ServerPlayerEntity soul) {
         if (RemnantComponent.get(soul).setVagrant(false)) {
+            Entity mount = shell.getVehicle();
+            shell.stopRiding();
             soul.inventory.dropAll();
             // Note: the teleport request must be before deserialization, as it only encodes the required relative movement
             soul.networkHandler.teleportRequest(shell.getX(), shell.getY(), shell.getZ(), shell.yaw, shell.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
             // override common data that may have been altered during this shell's existence
             performNbtCopy(computeCopyNbt(shell), soul);
             shell.remove();
+            soul.startRiding(mount);
 
             if (!Objects.equals(shell.getOwnerUuid(), soul.getUuid())) {
                 GameProfile gameProfile = shell.getDisplayProfile();
