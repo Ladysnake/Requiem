@@ -8,5 +8,6 @@
   "requiem:advancements.requiem.kung_fu_panda.description": "As a panda, hit something with a wooden sword",
   "pandemonium:commands.shell.split.fail.mortal": "Failed to split %s as they are Mortal",
   "pandemonium:commands.shell.split.fail.vagrant": "Failed to split %s as they are already Vagrant",
-  "pandemonium:commands.shell.fail.not_shell": "%s is not a player shell"
+  "pandemonium:commands.shell.fail.not_shell": "%s is not a player shell",
+  "entity.pandemonium.player_shell": "Player Shell"
 }
