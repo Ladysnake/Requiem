@@ -102,7 +102,7 @@ public final class PlayerSplitter {
             // override common data that may have been altered during this shell's existence
             performNbtCopy(computeCopyNbt(shell), soul);
             shell.remove();
-            soul.startRiding(mount);
+            if (mount != null) soul.startRiding(mount);
 
             if (!Objects.equals(shell.getOwnerUuid(), soul.getUuid())) {
                 GameProfile gameProfile = shell.getDisplayProfile();
