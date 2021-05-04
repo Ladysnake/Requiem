@@ -36,23 +36,27 @@ package ladysnake.requiem.common.block;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.item.RequiemItems;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.Material;
+import net.minecraft.block.MaterialColor;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.registry.Registry;
 
 public class RequiemBlocks {
+    public static final Block RUNIC_OBSIDIAN = new RunicObsidianBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.BLACK).requiresTool().strength(50.0F, 1200.0F));
 
     public static void init() {
-
+        register(RUNIC_OBSIDIAN, "runic_obsidian");
     }
 
-    private static Block registerBlock(Block block, String name) {
-        return registerBlock(block, name, true);
+    private static Block register(Block block, String name) {
+        return register(block, name, true);
     }
 
-    private static Block registerBlock(Block block, String name, boolean doItem) {
+    private static Block register(Block block, String name, boolean doItem) {
         Registry.register(Registry.BLOCK, Requiem.id(name), block);
 
         if (doItem) {
