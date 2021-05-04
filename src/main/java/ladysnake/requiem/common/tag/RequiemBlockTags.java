@@ -41,4 +41,5 @@ import net.minecraft.tag.Tag;
 
 public final class RequiemBlockTags {
     public static final Tag<Block> SOUL_IMPERMEABLE = TagRegistry.block(Requiem.id("soul_impermeable"));
+    public static final Tag<Block> OBELISK_FRAME = TagRegistry.block(Requiem.id("obelisk_frame"));
 }
