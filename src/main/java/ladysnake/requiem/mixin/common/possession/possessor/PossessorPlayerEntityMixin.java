@@ -43,7 +43,9 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.attribute.PossessionDelegatingModifier;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.tag.RequiemItemTags;
+import ladysnake.requiem.mixin.common.access.EntityAccessor;
 import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -61,6 +63,7 @@ import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -242,6 +245,18 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
             if (possessed != null) {
                 cir.setReturnValue(((LivingEntityAccessor) possessed).requiem$invokeGetEyeHeight(pose, possessed.getDimensions(pose)));
             }
+        }
+    }
+
+    @Inject(method = "slowMovement", at = @At("HEAD"), cancellable = true)
+    private void slowMovement(BlockState state, Vec3d multiplier, CallbackInfo ci) {
+        MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
+        if (possessedEntity != null) {
+            possessedEntity.fallDistance = this.requiem$getFallDistance();
+            possessedEntity.slowMovement(state, multiplier);
+            this.requiem$setFallDistance(possessedEntity.fallDistance);
+            this.requiem$setMovementMultiplier(((EntityAccessor) possessedEntity).requiem$getMovementMultiplier());
+            ci.cancel();
         }
     }
 }
