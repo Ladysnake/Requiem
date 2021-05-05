@@ -37,6 +37,7 @@ package ladysnake.pandemonium.common.entity.fakeplayer;
 import baritone.api.fakeplayer.FakeServerPlayerEntity;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 import java.util.UUID;
@@ -44,11 +45,11 @@ import java.util.UUID;
 public abstract class GuidedFakePlayerEntity extends FakeServerPlayerEntity {
     protected final FakePlayerGuide guide;
 
-    public GuidedFakePlayerEntity(EntityType<?> type, ServerWorld world) {
+    public GuidedFakePlayerEntity(EntityType<? extends PlayerEntity> type, ServerWorld world) {
         this(type, world, new GameProfile(UUID.randomUUID(), "FakePlayer"));
     }
 
-    public GuidedFakePlayerEntity(EntityType<?> type, ServerWorld world, GameProfile profile) {
+    public GuidedFakePlayerEntity(EntityType<? extends PlayerEntity> type, ServerWorld world, GameProfile profile) {
         super(type, world, profile);
         this.guide = new FakePlayerGuide(this);
         this.initGoals();

@@ -34,25 +34,21 @@
  */
 package ladysnake.pandemonium.common.entity;
 
-import baritone.api.fakeplayer.FakeClientPlayerEntity;
+import baritone.api.fakeplayer.FakePlayers;
 import ladysnake.pandemonium.common.entity.fakeplayer.FakePlayerGuide;
 import ladysnake.requiem.Requiem;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
 
 public class PandemoniumEntities {
     public static final EntityType<PlayerEntity> PLAYER_SHELL = FabricEntityTypeBuilder.<PlayerEntity>createLiving()
         .spawnGroup(SpawnGroup.MISC)
-        .entityFactory((type, world) -> world.isClient
-            ? new FakeClientPlayerEntity(type, (ClientWorld) world)
-            : new PlayerShellEntity(type, (ServerWorld) world))
+        .entityFactory(FakePlayers.entityFactory(PlayerShellEntity::new))
         .defaultAttributes(PlayerShellEntity::createPlayerShellAttributes)
         .dimensions(EntityDimensions.changing(EntityType.PLAYER.getWidth(), EntityType.PLAYER.getHeight()))
         .trackRangeBlocks(64)
