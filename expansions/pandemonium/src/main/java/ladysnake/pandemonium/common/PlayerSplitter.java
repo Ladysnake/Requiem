@@ -104,9 +104,9 @@ public final class PlayerSplitter {
             shell.remove();
             if (mount != null) soul.startRiding(mount);
 
-            if (!Objects.equals(shell.getOwnerUuid(), soul.getUuid())) {
-                GameProfile gameProfile = shell.getDisplayProfile();
-                Impersonator.get(soul).impersonate(Pandemonium.BODY_IMPERSONATION, gameProfile == null ? new GameProfile(shell.getOwnerUuid(), null) : gameProfile);
+            GameProfile shellProfile = shell.getDisplayProfile();
+            if (shellProfile != null && !Objects.equals(shellProfile.getId(), soul.getUuid())) {
+                Impersonator.get(soul).impersonate(Pandemonium.BODY_IMPERSONATION, shellProfile);
             }
 
             PlayerShellEvents.PLAYER_MERGED.invoker().onPlayerMerge(soul, shell, shell.getGameProfile());
