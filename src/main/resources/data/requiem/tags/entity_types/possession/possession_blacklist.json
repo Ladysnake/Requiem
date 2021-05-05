@@ -5,6 +5,8 @@
     "minecraft:ender_dragon",
     {"id": "mobz:boss_entity", "required": false},
     {"id": "mobz:bigboss_entity", "required": false},
-    {"id": "mobz:test_entity", "required": false}
+    {"id": "mobz:test_entity", "required": false},
+    {"id": "mobz:pillagerboss_entity", "required": false},
+    {"id": "adventurez:the_eye", "required": false}
   ]
 }

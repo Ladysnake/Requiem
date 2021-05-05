@@ -99,5 +99,25 @@
   "minecraft:ender_dragon": {
     "flightMode": "FORCED",
     "inertia": 0.9
-  }
+ },
+ "mobz:frost_entity":  {
+  "flightMode": "FORCED",
+  "inertia": 0.95,
+  "gravity": 0.005,
+  "required": false
+ },
+ "mobz:gchicken_entity": {
+  "fallSpeedModifier": 0.6,
+  "required":false
+ },
+"mobz:islandvex_entity": {
+  "flightMode": "FORCED",
+  "phasesThroughWalls": true
+ },
+ "adventurez:blaze_guardian":  {
+  "flightMode": "FORCED",
+  "inertia": 0.95,
+  "gravity": 0.005,
+  "required": false
+ }
 }
