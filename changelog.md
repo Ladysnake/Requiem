@@ -1,4 +1,21 @@
 ------------------------------------------------------
+Version 1.6.3
+------------------------------------------------------
+**Changes**
+- Possessed mobs now properly handle block slowdown; eg. spiders are unaffected by cobwebs and withers are unaffected entirely
+  (This change isn't noticeable without a datapack or Pandemonium)
+
+**Mod Compatibility**
+- AdventureZ/MobZ/Happiness is a Warm Gun: added compatibility for mob possession (*thanks to bartratar!*)
+- Haema: blood injector use should once again be forbidden while possessing stuff
+
+#### Pandemonium
+**Fixes**
+- Fixed crash at launch on dedicated servers
+- Fixed sneak interactions flat out never working
+- Fixed crash when merging with blank shell (created with /summon)
+
+------------------------------------------------------
 Version 1.6.2
 ------------------------------------------------------
 #### Pandemonium
