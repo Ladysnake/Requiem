@@ -41,6 +41,7 @@
 
   "depends": {
     "minecraft": ">=1.16",
+    "fabric-api-base": "*",
     "requiemapi": "${version}",
     "satin": "^1.4.0-",
     "cardinal-components-base": "^2.7.0",
