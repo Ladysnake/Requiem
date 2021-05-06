@@ -35,49 +35,37 @@
 package ladysnake.requiem.common.entity.ability;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.client.RequiemClient;
+import ladysnake.requiem.common.impl.remnant.VagrantInteractionRegistryImpl;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiConsumer;
-import java.util.function.Predicate;
 
-public class SoulPossessAbility extends DirectAbilityBase<PlayerEntity, LivingEntity> {
+public class VagrantPossessAbility extends DirectAbilityBase<PlayerEntity, LivingEntity> {
     public static final Identifier POSSESSION_ICON = Requiem.id("textures/gui/possession_icon.png");
-    // TODO put this in a real API
-    public static Predicate<LivingEntity> extraTest = e -> false;
-    public static BiConsumer<LivingEntity, PlayerEntity> extraAction = (e, p) -> { };
 
     public static final int POSSESSION_RANGE = 5;
     public static final int POSSESSION_COOLDOWN = 8;
 
     private @Nullable LivingEntity target;
+    private @Nullable BiConsumer<LivingEntity, PlayerEntity> action;
 
-    public SoulPossessAbility(PlayerEntity owner) {
+    public VagrantPossessAbility(PlayerEntity owner) {
         super(owner, POSSESSION_COOLDOWN, POSSESSION_RANGE, LivingEntity.class);
-    }
-
-    private PossessionComponent getPossessor() {
-        return PossessionComponent.get(this.owner);
     }
 
     @Override
     public boolean canTarget(LivingEntity target) {
         if (super.canTarget(target)) {
-            if (target instanceof MobEntity) {
-                return this.getPossessor().startPossessing((MobEntity) target, true);
-            } else {
-                return extraTest.test(target);
-            }
-        }
-        return false;
+            this.action = VagrantInteractionRegistryImpl.INSTANCE.getAction(target, this.owner);
+        } else this.action = null;
+        return this.action != null;
     }
 
     @Override
@@ -95,13 +83,10 @@ public class SoulPossessAbility extends DirectAbilityBase<PlayerEntity, LivingEn
     protected void onCooldownEnd() {
         if (this.owner.world.isClient && this.owner == MinecraftClient.getInstance().player) {
             RequiemClient.INSTANCE.getRequiemFxRenderer().onPossessionAck();
-        } else if (this.target != null && !this.target.removed && this.target.isAlive()) {
-            if (this.target instanceof MobEntity) {
-                this.getPossessor().startPossessing((MobEntity) this.target);
-            } else if (this.target != null) {
-                extraAction.accept(target, this.owner);
-            }
+        } else if (this.action != null && this.target != null && !this.target.removed && this.target.isAlive()) {
+            this.action.accept(this.target, this.owner);
         }
+        this.action = null;
         this.target = null;
     }
 

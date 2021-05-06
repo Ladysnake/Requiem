@@ -69,7 +69,16 @@ import java.util.Objects;
 import java.util.Set;
 
 public final class PlayerSplitter {
-    public static void split(ServerPlayerEntity whole) {
+    public static boolean split(ServerPlayerEntity whole) {
+        if (!RemnantComponent.isVagrant(whole) && PlayerShellEvents.PRE_SPLIT.invoker().canSplit(whole)) {
+            doSplit(whole);
+            return true;
+        }
+
+        return false;
+    }
+
+    private static void doSplit(ServerPlayerEntity whole) {
         FractureAnchorManager anchorManager = FractureAnchorManager.get(whole.world);
         PlayerShellEntity shell = createShell(whole);
         Entity mount = whole.getVehicle();
@@ -89,30 +98,37 @@ public final class PlayerSplitter {
         shell.setGameMode(whole.interactionManager.isSurvivalLike() ? whole.interactionManager.getGameMode() : GameMode.SURVIVAL);
         VanillaRequiemPlugin.makeRemnantChoice(shell, RemnantTypes.MORTAL);
         InventoryLimiter.KEY.get(shell).setEnabled(false);
+        PlayerShellEvents.DATA_TRANSFER.invoker().transferData(whole, shell, false);
         return shell;
     }
 
     public static boolean merge(PlayerShellEntity shell, ServerPlayerEntity soul) {
-        if (RemnantComponent.get(soul).setVagrant(false)) {
-            Entity mount = shell.getVehicle();
-            shell.stopRiding();
-            soul.inventory.dropAll();
-            // Note: the teleport request must be before deserialization, as it only encodes the required relative movement
-            soul.networkHandler.teleportRequest(shell.getX(), shell.getY(), shell.getZ(), shell.yaw, shell.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
-            // override common data that may have been altered during this shell's existence
-            performNbtCopy(computeCopyNbt(shell), soul);
-            shell.remove();
-            if (mount != null) soul.startRiding(mount);
-
-            GameProfile shellProfile = shell.getDisplayProfile();
-            if (shellProfile != null && !Objects.equals(shellProfile.getId(), soul.getUuid())) {
-                Impersonator.get(soul).impersonate(Pandemonium.BODY_IMPERSONATION, shellProfile);
-            }
-
-            PlayerShellEvents.PLAYER_MERGED.invoker().onPlayerMerge(soul, shell, shell.getGameProfile());
+        if (PlayerShellEvents.PRE_MERGE.invoker().canMerge(soul, shell, shell.getDisplayProfile()) && RemnantComponent.get(soul).setVagrant(false)) {
+            doMerge(shell, soul);
             return true;
         }
         return false;
+    }
+
+    private static void doMerge(PlayerShellEntity shell, ServerPlayerEntity soul) {
+        Entity mount = shell.getVehicle();
+        shell.stopRiding();
+        soul.inventory.dropAll();
+        // Note: the teleport request must be before deserialization, as it only encodes the required relative movement
+        soul.networkHandler.teleportRequest(shell.getX(), shell.getY(), shell.getZ(), shell.yaw, shell.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
+        // override common data that may have been altered during this shell's existence
+        performNbtCopy(computeCopyNbt(shell), soul);
+        PlayerShellEvents.DATA_TRANSFER.invoker().transferData(shell, soul, true);
+
+        shell.remove();
+        if (mount != null) soul.startRiding(mount);
+
+        GameProfile shellProfile = shell.getDisplayProfile();
+        if (shellProfile != null && !Objects.equals(shellProfile.getId(), soul.getUuid())) {
+            Impersonator.get(soul).impersonate(Pandemonium.BODY_IMPERSONATION, shellProfile);
+        }
+
+        PlayerShellEvents.PLAYER_MERGED.invoker().onPlayerMerge(soul, shell, shell.getGameProfile());
     }
 
     public static ServerPlayerEntity performRespawn(ServerPlayerEntity player) {

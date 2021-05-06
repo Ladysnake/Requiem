@@ -68,23 +68,17 @@ public final class PandemoniumCompatibilityManager {
     }
 
     public static <C extends ComponentV3> void registerShellDataCallbacks(ComponentKey<ComponentDataHolder<C>> holderKey) {
-        PlayerShellEvents.PLAYER_SPLIT.register((whole, soul, playerShell) -> {
-            if (RemnantComponent.isVagrant(whole)) {    // can happen with /pandemonium shell create
-                holderKey.get(whole).restoreData(playerShell);
-            } else {
-                ComponentDataHolder<C> holder = holderKey.get(playerShell);
-                holder.storeData(whole);
-                holder.restoreData(playerShell);
-            }
-        });
-
-        PlayerShellEvents.PLAYER_MERGED.register((player, playerShell, shellProfile) -> {
+        PlayerShellEvents.DATA_TRANSFER.register((from, to, merge) -> {
             // First, store a backup of the player's actual origin
-            holderKey.get(player).storeData(player);
-            // Then, give the player the shell's origin
-            ComponentDataHolder<C> holder = holderKey.get(playerShell);
-            holder.storeData(playerShell);
-            holder.restoreData(player);
+            if (merge) holderKey.get(to).storeData(to);
+
+            if (RemnantComponent.isVagrant(from)) {    // can happen with /pandemonium shell create
+                holderKey.get(from).restoreData(to);
+            } else {
+                ComponentDataHolder<C> holder = holderKey.get(merge ? from : to);
+                holder.storeData(from);
+                holder.restoreData(to);
+            }
         });
     }
 }

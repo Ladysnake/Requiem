@@ -273,6 +273,15 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     @Override
+    public void registerVagrantInteractions(VagrantInteractionRegistry registry) {
+        registry.registerPossessionInteraction(
+            MobEntity.class,
+            (mob, player) -> PossessionComponent.get(player).startPossessing(mob, true),
+            (mob, player) -> PossessionComponent.get(player).startPossessing(mob)
+        );
+    }
+
+    @Override
     public void registerDialogueActions(DialogueRegistry registry) {
         registry.registerAction(PlayerDialogueTracker.BECOME_REMNANT, p -> handleRemnantChoiceAction(p, RemnantTypes.REMNANT));
         registry.registerAction(PlayerDialogueTracker.BECOME_WANDERING_SPIRIT, p -> handleRemnantChoiceAction(p, RemnantTypes.WANDERING_SPIRIT));

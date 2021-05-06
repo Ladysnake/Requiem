@@ -36,7 +36,6 @@ package ladysnake.pandemonium.common;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
-import ladysnake.pandemonium.api.event.PlayerShellEvents;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.command.CommandException;
@@ -103,7 +102,6 @@ public final class PandemoniumCommand {
 
     private static void createShell(Vec3d position, ServerPlayerEntity player) {
         PlayerShellEntity shell = PlayerSplitter.createShell(player);
-        PlayerShellEvents.PLAYER_SPLIT.invoker().onPlayerSplit(player, player, shell);
         shell.updatePosition(position.x, position.y, position.z);
         player.world.spawnEntity(shell);
     }
