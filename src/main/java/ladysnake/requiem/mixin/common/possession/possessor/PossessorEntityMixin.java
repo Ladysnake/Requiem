@@ -37,6 +37,7 @@ package ladysnake.requiem.mixin.common.possession.possessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -69,8 +70,14 @@ public abstract class PossessorEntityMixin {
     @Accessor("fallDistance")
     protected abstract float requiem$getFallDistance();
 
+    @Accessor("fallDistance")
+    public abstract void requiem$setFallDistance(float distance);
+
     @Accessor("world")
     protected abstract World requiem$getWorld();
+
+    @Accessor("movementMultiplier")
+    public abstract void requiem$setMovementMultiplier(Vec3d multiplier);
 
     @Invoker("fall")
     protected abstract void requiem$fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition);

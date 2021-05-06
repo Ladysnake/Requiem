@@ -37,7 +37,7 @@ package ladysnake.pandemonium.common;
 import com.mojang.authlib.GameProfile;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
-import io.github.ladysnake.impersonate.Impersonate;
+import io.github.ladysnake.impersonate.Impersonator;
 import ladysnake.pandemonium.Pandemonium;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
@@ -46,50 +46,89 @@ import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.impl.anchor.AnchorFactories;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
+import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.VanillaRequiemPlugin;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import nerdhub.cardinal.components.api.util.EntityComponents;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import nerdhub.cardinal.components.api.util.container.AbstractComponentContainer;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
 public final class PlayerSplitter {
-    public static void split(ServerPlayerEntity whole) {
+    public static boolean split(ServerPlayerEntity whole) {
+        if (!RemnantComponent.isVagrant(whole) && PlayerShellEvents.PRE_SPLIT.invoker().canSplit(whole)) {
+            doSplit(whole);
+            return true;
+        }
+
+        return false;
+    }
+
+    private static void doSplit(ServerPlayerEntity whole) {
         FractureAnchorManager anchorManager = FractureAnchorManager.get(whole.world);
-        PlayerShellEntity shell = new PlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, whole.world);
-        shell.storePlayerData(whole, computeCopyNbt(whole));
+        PlayerShellEntity shell = createShell(whole);
+        Entity mount = whole.getVehicle();
         ServerPlayerEntity soul = performRespawn(whole);
         soul.world.spawnEntity(shell);
+        if (mount != null) shell.startRiding(mount);
         FractureAnchor anchor = anchorManager.addAnchor(AnchorFactories.fromEntityUuid(shell.getUuid()));
         anchor.setPosition(shell.getX(), shell.getY(), shell.getZ());
         PlayerBodyTracker.get(soul).setAnchor(anchor);
-        PlayerShellEvents.PLAYER_SPLIT.invoker().onPlayerSplit(whole, soul, shell, shell.getPlayerNbt());
+        PlayerShellEvents.PLAYER_SPLIT.invoker().onPlayerSplit(whole, soul, shell);
+    }
+
+    public static PlayerShellEntity createShell(ServerPlayerEntity whole) {
+        PlayerShellEntity shell = new PlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, whole.getServerWorld());
+        shell.setGameMode(whole.interactionManager.getGameMode());  // use same gamemode for deserialization
+        shell.storePlayerData(whole, computeCopyNbt(whole));
+        shell.setGameMode(whole.interactionManager.isSurvivalLike() ? whole.interactionManager.getGameMode() : GameMode.SURVIVAL);
+        VanillaRequiemPlugin.makeRemnantChoice(shell, RemnantTypes.MORTAL);
+        InventoryLimiter.KEY.get(shell).setEnabled(false);
+        PlayerShellEvents.DATA_TRANSFER.invoker().transferData(whole, shell, false);
+        return shell;
     }
 
     public static boolean merge(PlayerShellEntity shell, ServerPlayerEntity soul) {
-        if (RemnantComponent.get(soul).setVagrant(false)) {
-            soul.inventory.dropAll();
-            shell.restorePlayerData(soul);
-            shell.remove();
-
-            if (!Objects.equals(shell.getPlayerUuid(), soul.getUuid())) {
-                GameProfile gameProfile = shell.getGameProfile();
-                Impersonate.IMPERSONATION.get(soul).impersonate(Pandemonium.BODY_IMPERSONATION, gameProfile == null ? new GameProfile(shell.getPlayerUuid(), null) : gameProfile);
-            }
-
-            PlayerShellEvents.PLAYER_MERGED.invoker().onPlayerMerge(soul, shell, shell.getGameProfile(), shell.getPlayerNbt());
+        if (PlayerShellEvents.PRE_MERGE.invoker().canMerge(soul, shell, shell.getDisplayProfile()) && RemnantComponent.get(soul).setVagrant(false)) {
+            doMerge(shell, soul);
             return true;
         }
         return false;
+    }
+
+    private static void doMerge(PlayerShellEntity shell, ServerPlayerEntity soul) {
+        Entity mount = shell.getVehicle();
+        shell.stopRiding();
+        soul.inventory.dropAll();
+        // Note: the teleport request must be before deserialization, as it only encodes the required relative movement
+        soul.networkHandler.teleportRequest(shell.getX(), shell.getY(), shell.getZ(), shell.yaw, shell.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
+        // override common data that may have been altered during this shell's existence
+        performNbtCopy(computeCopyNbt(shell), soul);
+        PlayerShellEvents.DATA_TRANSFER.invoker().transferData(shell, soul, true);
+
+        shell.remove();
+        if (mount != null) soul.startRiding(mount);
+
+        GameProfile shellProfile = shell.getDisplayProfile();
+        if (shellProfile != null && !Objects.equals(shellProfile.getId(), soul.getUuid())) {
+            Impersonator.get(soul).impersonate(Pandemonium.BODY_IMPERSONATION, shellProfile);
+        }
+
+        PlayerShellEvents.PLAYER_MERGED.invoker().onPlayerMerge(soul, shell, shell.getGameProfile());
     }
 
     public static ServerPlayerEntity performRespawn(ServerPlayerEntity player) {
@@ -150,5 +189,15 @@ public final class PlayerSplitter {
         leftoverData.remove("playerGameType");
         leftoverData.remove("previousPlayerGameType");
         leftoverData.remove("seenCredits");
+    }
+
+    public static void performNbtCopy(CompoundTag from, Entity to) {
+        // Save the complete representation of the player
+        CompoundTag serialized = new CompoundTag();
+        // We write every attribute of the destination entity to the tag, then we override.
+        // That way, attributes that do not exist in the base entity are kept intact during the copy.
+        to.toTag(serialized);
+        serialized.copyFrom(from);
+        to.fromTag(serialized);
     }
 }

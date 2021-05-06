@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
+import ladysnake.requiem.common.gamerule.RequiemSyncedGamerules;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -57,8 +58,6 @@ public final class RemnantComponentImpl implements RemnantComponent {
 
     private RemnantState state = NullRemnantState.NULL_STATE;
     private RemnantType remnantType = RemnantTypes.MORTAL;
-    private boolean uninitializedDefaultRemnantType = true;
-    private @Nullable RemnantType defaultRemnantType;
 
     public RemnantComponentImpl(PlayerEntity player) {
         this.player = player;
@@ -67,6 +66,11 @@ public final class RemnantComponentImpl implements RemnantComponent {
     @Override
     public void become(RemnantType type) {
         if (type == this.remnantType) {
+            return;
+        }
+
+        // Fake players cannot be remnants
+        if (this.player instanceof ServerPlayerEntity && this.player.getClass() != ServerPlayerEntity.class) {
             return;
         }
 
@@ -147,18 +151,8 @@ public final class RemnantComponentImpl implements RemnantComponent {
     }
 
     @Override
-    public void setDefaultRemnantType(@Nullable RemnantType defaultRemnantType) {
-        this.uninitializedDefaultRemnantType = false;
-        this.defaultRemnantType = defaultRemnantType;
-    }
-
-    @Override
     public @Nullable RemnantType getDefaultRemnantType() {
-        if (this.uninitializedDefaultRemnantType) {
-            this.defaultRemnantType = this.player.world.getGameRules().get(RequiemGamerules.STARTING_SOUL_MODE).get().getRemnantType();
-            this.uninitializedDefaultRemnantType = false;
-        }
-        return this.defaultRemnantType;
+        return RequiemSyncedGamerules.get(this.player.world).getStartingRemnantType().getRemnantType();
     }
 
     @Override
@@ -170,19 +164,15 @@ public final class RemnantComponentImpl implements RemnantComponent {
     public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
         buf.writeVarInt(RemnantTypes.getRawId(this.remnantType));
         buf.writeBoolean(this.isVagrant());
-        RemnantType defaultRemnantType = this.getDefaultRemnantType();
-        buf.writeVarInt(defaultRemnantType == null ? 0 : RemnantTypes.getRawId(defaultRemnantType) + 1);
     }
 
     @Override
     public void applySyncPacket(PacketByteBuf buf) {
         int remnantId = buf.readVarInt();
         boolean soul = buf.readBoolean();
-        int defaultRemnantId = buf.readVarInt();
 
         this.become(RemnantTypes.get(remnantId));
         this.setVagrant(soul);
-        this.setDefaultRemnantType(defaultRemnantId == 0 ? null : RemnantTypes.get(defaultRemnantId - 1));
     }
 
     @Override

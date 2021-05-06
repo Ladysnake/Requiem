@@ -32,42 +32,20 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.compat;
+package ladysnake.pandemonium.common.entity.ai.brain;
 
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentV3;
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import ladysnake.pandemonium.common.entity.PlayerShellEntity;
-import ladysnake.requiem.compat.ComponentDataHolder;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
+import ladysnake.pandemonium.Pandemonium;
+import ladysnake.pandemonium.mixin.common.entity.ai.MemoryModuleTypeAccessor;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 
-public class PlayerShellComponentDataHolder<C extends ComponentV3> extends ComponentDataHolder<C> implements AutoSyncedComponent {
-    private final PlayerShellEntity shell;
+import java.util.List;
 
-    public PlayerShellComponentDataHolder(PlayerShellEntity shell, ComponentKey<C> key, ComponentKey<?> selfKey) {
-        super(key, selfKey);
-        this.shell = shell;
-    }
+public class PandemoniumMemoryModules {
+    public static final MemoryModuleType<Integer> GO_HOME_ATTEMPTS = register("pathfinding_failures");
+    public static final MemoryModuleType<List<LivingEntity>> VISIBLE_HOSTILES = register("visible_hostiles");
 
-    @Override
-    public void storeData(PlayerEntity player) {
-        super.storeData(player);
-        this.selfKey.sync(this.shell);
-    }
-
-    @Override
-    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
-        buf.writeCompoundTag(this.data);
-    }
-
-    @Override
-    public void applySyncPacket(PacketByteBuf buf) {
-        CompoundTag originData = buf.readCompoundTag();
-        if (originData != null) {
-            this.dataKey.get(this.shell.getRenderedPlayer()).readFromNbt(originData);
-        }
+    private static <U> MemoryModuleType<U> register(String id) {
+        return MemoryModuleTypeAccessor.pandemonium$register(Pandemonium.MOD_ID + ":" + id);
     }
 }

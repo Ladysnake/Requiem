@@ -51,6 +51,7 @@ import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.impl.ApiInitializer;
+import ladysnake.requiem.common.impl.remnant.VagrantInteractionRegistryImpl;
 import ladysnake.requiem.common.impl.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.loot.RequiemLootTables;
@@ -109,6 +110,7 @@ public final class Requiem implements ModInitializer {
         plugin.registerRemnantStates(RequiemRegistries.REMNANT_STATES);
         plugin.registerMobAbilities(MobAbilityRegistry.instance());
         plugin.registerSoulBindings(SoulbindingRegistry.instance());
+        plugin.registerVagrantInteractions(VagrantInteractionRegistryImpl.INSTANCE);
         plugin.registerDialogueActions(DialogueRegistry.get(null));
     }
 }

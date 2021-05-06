@@ -43,6 +43,7 @@ import ladysnake.requiem.client.render.entity.CuredPiglinEntityRenderer;
 import ladysnake.requiem.client.render.entity.CuredVillagerEntityRenderer;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.RequiemEntities;
+import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
@@ -143,8 +144,10 @@ public final class RequiemClient implements ClientModInitializer {
     private void registerSprites() {
         // Register special icons for different levels of attrition
         ClientSpriteRegistryCallback.event(new Identifier("textures/atlas/mob_effects.png")).register((atlasTexture, registry) -> {
-            for (int i = 1; i <= 4; i++) {
-                registry.register(Requiem.id("mob_effect/attrition_" + i));
+            for (Identifier[] altSprites : RequiemStatusEffects.spriteMappings.values()) {
+                for (Identifier altSprite : altSprites) {
+                    registry.register(altSprite);
+                }
             }
         });
         ClientSpriteRegistryCallback.event(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).register((spriteAtlasTexture, registry) ->

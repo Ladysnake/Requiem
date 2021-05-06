@@ -40,6 +40,7 @@ import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import ladysnake.pandemonium.api.event.PlayerShellEvents;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.compat.ComponentDataHolder;
 import ladysnake.requiem.compat.HaemaCompat;
 import ladysnake.requiem.compat.OriginsCompat;
@@ -59,23 +60,25 @@ public final class PandemoniumCompatibilityManager {
 
     public static void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         if (FabricLoader.getInstance().isModLoaded("origins")) {
-            registry.registerFor(PlayerShellEntity.class, OriginsCompat.HOLDER_KEY, shell -> new PlayerShellComponentDataHolder<>(shell, OriginsCompat.ORIGIN_KEY, OriginsCompat.HOLDER_KEY));
+            registry.registerFor(PlayerShellEntity.class, OriginsCompat.HOLDER_KEY, shell -> new ComponentDataHolder<>(OriginsCompat.ORIGIN_KEY, OriginsCompat.HOLDER_KEY));
         }
         if (FabricLoader.getInstance().isModLoaded("haema")) {
-            registry.registerFor(PlayerShellEntity.class, HaemaCompat.HOLDER_KEY, shell -> new PlayerShellComponentDataHolder<>(shell, HaemaCompat.VAMPIRE_KEY, HaemaCompat.HOLDER_KEY));
+            registry.registerFor(PlayerShellEntity.class, HaemaCompat.HOLDER_KEY, shell -> new ComponentDataHolder<>(HaemaCompat.VAMPIRE_KEY, HaemaCompat.HOLDER_KEY));
         }
     }
 
     public static <C extends ComponentV3> void registerShellDataCallbacks(ComponentKey<ComponentDataHolder<C>> holderKey) {
-        PlayerShellEvents.PLAYER_SPLIT.register((whole, soul, playerShell, playerData) -> {
-            holderKey.get(playerShell).storeData(whole);
-        });
-
-        PlayerShellEvents.PLAYER_MERGED.register((player, playerShell, shellProfile, playerData) -> {
+        PlayerShellEvents.DATA_TRANSFER.register((from, to, merge) -> {
             // First, store a backup of the player's actual origin
-            holderKey.get(player).storeData(player);
-            // Then, give the player the shell's origin
-            holderKey.get(playerShell).restoreData(player);
+            if (merge) holderKey.get(to).storeData(to);
+
+            if (RemnantComponent.isVagrant(from)) {    // can happen with /pandemonium shell create
+                holderKey.get(from).restoreData(to);
+            } else {
+                ComponentDataHolder<C> holder = holderKey.get(merge ? from : to);
+                holder.storeData(from);
+                holder.restoreData(to);
+            }
         });
     }
 }

@@ -12,6 +12,10 @@
     "#requiem:humans",
     "#requiem:piglins",
     {"id": "betterend:shadow_walker", "required": false},
-    {"id": "thehallow:mummy", "required": false}
+    {"id": "thehallow:mummy", "required": false},
+    {"id": "hwg:technodemon_greater_1","required": false},
+    {"id": "hwg:technodemon_lesser_1","required": false},
+    {"id": "artifacts:mimic", "required": false},
+    {"id": "adventurez:orc", "required": false}
   ]
 }

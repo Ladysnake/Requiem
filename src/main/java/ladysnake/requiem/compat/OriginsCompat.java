@@ -50,9 +50,9 @@ import io.github.apace100.origins.util.SerializableDataType;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.RequiemRegistries;
+import ladysnake.requiem.common.gamerule.RequiemSyncedGamerules;
 import ladysnake.requiem.common.gamerule.StartingRemnantType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -84,7 +84,7 @@ public final class OriginsCompat {
         GAMERULE_CONDITION_ID,
         new SerializableData().add("value", SerializableDataType.list(SerializableDataType.enumValue(StartingRemnantType.class)), Collections.singletonList(StartingRemnantType.CHOOSE)),
         (instance, entity) -> {
-            StartingRemnantType startingRemnantType = StartingRemnantType.of(RemnantComponent.KEY.maybeGet(entity).map(RemnantComponent::getDefaultRemnantType).orElse(null));
+            StartingRemnantType startingRemnantType = RequiemSyncedGamerules.get(entity.world).getStartingRemnantType();
             return ((List<?>) instance.get("value")).contains(startingRemnantType);
         }
     );

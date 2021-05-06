@@ -23,6 +23,8 @@
     "possession.LivingEntityRendererMixin",
     "possession.MinecraftClientMixin",
     "possession.PlayerEntityRendererMixin",
+    "possession.nametag.EntityRendererMixin",
+    "possession.nametag.MobEntityRendererMixin",
     "possession.nightvision.BackgroundRendererMixin",
     "possession.nightvision.LightmapTextureManagerMixin",
     "possession.render.GuardianEntityRendererMixin",

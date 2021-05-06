@@ -36,6 +36,8 @@ package ladysnake.requiem.common.entity.effect;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.mixin.client.attrition.SpriteAtlasHolderAccessor;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -46,24 +48,38 @@ import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public final class RequiemStatusEffects {
     public static final StatusEffect ATTRITION = new AttritionStatusEffect(StatusEffectType.HARMFUL, 0xAA3322)
         .addAttributeModifier(EntityAttributes.GENERIC_MAX_HEALTH, "069ae0b1-4014-41dd-932f-a5da4417d711", -0.2, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
 
+    public static final Map<Identifier, Identifier[]> spriteMappings = new HashMap<>();
+
     public static void init() {
-        registerEffect(ATTRITION, "attrition");
+        registerEffect(ATTRITION, "attrition", 4);
     }
 
-    public static void registerEffect(StatusEffect effect, String name) {
-        Registry.register(Registry.STATUS_EFFECT, Requiem.id(name), effect);
+    public static void registerEffect(StatusEffect effect, String name, int altSpriteCount) {
+        Identifier baseId = Requiem.id(name);
+        Registry.register(Registry.STATUS_EFFECT, baseId, effect);
+        if (altSpriteCount > 0) {
+            Identifier[] altSprites = new Identifier[altSpriteCount];
+            for (int amplifier = 0; amplifier < altSpriteCount; amplifier++) {
+                altSprites[amplifier] = new Identifier(baseId.getNamespace(), "mob_effect/" + baseId.getPath() + '_' + (amplifier + 1));
+            }
+            spriteMappings.put(new Identifier(baseId.getNamespace(), "mob_effect/" + baseId.getPath()), altSprites);
+        }
     }
 
+    @Environment(EnvType.CLIENT)
     public static Sprite substituteSprite(Sprite baseSprite, StatusEffectInstance renderedEffect) {
-        int amplifier = renderedEffect.getAmplifier();
-        if (renderedEffect.getEffectType() == ATTRITION && amplifier < 4) {
-            Identifier baseId = baseSprite.getId();
+        Identifier[] altSprites = spriteMappings.get(baseSprite.getId());
+        if (altSprites != null) {
+            int amplifier = renderedEffect.getAmplifier();
             return ((SpriteAtlasHolderAccessor) MinecraftClient.getInstance().getStatusEffectSpriteManager())
-                .requiem$getAtlas().getSprite(new Identifier(baseId.getNamespace(), baseId.getPath() + '_' + (amplifier + 1)));
+                .requiem$getAtlas().getSprite(altSprites[Math.min(altSprites.length - 1, amplifier)]);
         }
         return baseSprite;
     }

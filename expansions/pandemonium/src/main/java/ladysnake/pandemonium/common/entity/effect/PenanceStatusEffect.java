@@ -34,25 +34,18 @@
  */
 package ladysnake.pandemonium.common.entity.effect;
 
-import ladysnake.pandemonium.Pandemonium;
+import com.mojang.authlib.GameProfile;
 import ladysnake.pandemonium.common.PlayerSplitter;
-import ladysnake.pandemonium.common.entity.PlayerShellEntity;
-import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
-import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectType;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.jetbrains.annotations.NotNull;
 
 public class PenanceStatusEffect extends StatusEffect {
     protected PenanceStatusEffect(StatusEffectType type, int color) {
@@ -78,11 +71,13 @@ public class PenanceStatusEffect extends StatusEffect {
         }
     }
 
-    public static PossessionStartCallback.@NotNull Result canPossess(MobEntity target, PlayerEntity possessor, boolean simulate) {
+    public static int getLevel(PlayerEntity player) {
+        StatusEffectInstance penance = player.getStatusEffect(PandemoniumStatusEffects.PENANCE);
+        return penance == null ? -1 : penance.getAmplifier();
+    }
+
+    public static boolean canMerge(PlayerEntity possessor, PlayerEntity target, GameProfile shellProfile) {
         StatusEffectInstance penance = possessor.getStatusEffect(PandemoniumStatusEffects.PENANCE);
-        if (penance != null && penance.getAmplifier() >= 1 && target instanceof PlayerShellEntity) {
-            return PossessionStartCallback.Result.DENY;
-        }
-        return PossessionStartCallback.Result.PASS;
+        return penance == null || penance.getAmplifier() < 1;
     }
 }

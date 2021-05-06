@@ -1,4 +1,73 @@
 ------------------------------------------------------
+Version 1.6.3
+------------------------------------------------------
+**Changes**
+- Possessed mobs now properly handle block slowdown; eg. spiders are unaffected by cobwebs and withers are unaffected entirely
+  (This change isn't noticeable without a datapack or Pandemonium)
+
+**Mod Compatibility**
+- AdventureZ/MobZ/Happiness is a Warm Gun: added compatibility for mob possession (*thanks to bartratar!*)
+- Haema: blood injector use should once again be forbidden while possessing stuff
+
+#### Pandemonium
+**Fixes**
+- Fixed crash at launch on dedicated servers
+- Fixed sneak interactions flat out never working
+- Fixed crash when merging with blank shell (created with /summon)
+
+------------------------------------------------------
+Version 1.6.2
+------------------------------------------------------
+#### Pandemonium
+**Mod Compatibility**
+- Identity: Fixed a crash when opening the Identity menu
+
+------------------------------------------------------
+Version 1.6.1
+------------------------------------------------------
+#### Pandemonium
+- Fixed a crash when merging with a shell that was not riding anything
+
+------------------------------------------------------
+Version 1.6.0
+------------------------------------------------------
+**Additions**
+- Added the `requiem:possessionKeepInventory` gamerule to specifically keep your inventory on your soul when possession ends
+
+**Changes**
+- Attrition now goes up twice as quickly in hardcore (fewer allowed deaths)
+- The `requiem:showPossessorNameTag` no longer changes the nametag serverside
+    - This allows you to keep easter egg effects when possessing named mobs with the gamerule
+
+**Mod Compatibility**
+- Origins: the `soul_type` layer now has `auto_choose` enabled by default
+- Better Graves: graves no longer spawns when possession stops for any reason
+
+**Fixes**
+- Fixed armor enchantments on possessed entities
+- Fixed mobs still sprinting a player stops possessing them
+- Updated Cardinal Components API dependency to fix a crash at launch with latest Fabric API
+
+#### Pandemonium
+**Additions**
+- Added `/pandemonium shell (create/split/identity)`
+    - `create` allows you to make a shell copying a player's data
+    - `split` allows you to artificially split a player as if they dissociated themselves
+    - `identity set` allows you to change a shell's name and skin
+- Added Wither abilities (Wither possession is still denied by default) [Thanks SekoiaTree!]
+
+**Changes**
+- Player shells are now actual (fake) players
+    - This should fix a bunch of old bugs, you're welcome!
+    - This may create new bugs, please report them!
+- Rabbits now always jump when walking
+- Mounts will be properly transferred when splitting/merging with player shells
+
+**Fixes**
+- Endermen's blink ability now plays its sound correctly
+- Fixed player shells being incorrectly flagged as dead when loading chunks
+
+------------------------------------------------------
 Version 1.5.1
 ------------------------------------------------------
 **Additions**

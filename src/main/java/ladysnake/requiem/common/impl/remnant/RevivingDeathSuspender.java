@@ -62,7 +62,7 @@ public final class RevivingDeathSuspender implements DeathSuspender {
 
     @Override
     public void suspendDeath(DamageSource deathCause) {
-        if (this.isLifeTransient()) {
+        if (this.isLifeTransient() || this.player.getClass() != ServerPlayerEntity.class) {
             return;
         }
         this.player.setHealth(1f);

@@ -25,8 +25,10 @@ import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
+import ladysnake.requiem.api.v1.remnant.VagrantInteractionRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import org.apiguardian.api.API;
 
 /**
  * An entry point for API consumers.
@@ -81,5 +83,12 @@ public interface RequiemPlugin {
      * @see SoulbindingRegistry#instance()
      */
     default void registerSoulBindings(SoulbindingRegistry registry) {}
+
+    /**
+     * Register interactions that get triggered when a remnant player uses their
+     * incorporeal ability.
+     */
+    @API(status = API.Status.EXPERIMENTAL)
+    default void registerVagrantInteractions(VagrantInteractionRegistry registry) {}
 
 }

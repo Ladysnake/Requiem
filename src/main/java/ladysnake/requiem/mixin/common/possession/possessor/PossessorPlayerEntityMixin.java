@@ -40,17 +40,16 @@ import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.common.entity.attribute.NonDeterministicAttribute;
 import ladysnake.requiem.common.entity.attribute.PossessionDelegatingModifier;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
 import ladysnake.requiem.common.tag.RequiemItemTags;
+import ladysnake.requiem.mixin.common.access.EntityAccessor;
 import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -64,7 +63,7 @@ import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -87,14 +86,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void initAttributes(World world, BlockPos pos, float yaw, GameProfile profile, CallbackInfo ci) {
-        // Replace every registered attribute
-        for (EntityAttribute attribute : Registry.ATTRIBUTE) {
-            // Note: this fills the attribute map for the player, whether this is an issue is to be determined
-            EntityAttributeInstance current = this.requiem$getAttributeInstance(attribute);
-            if (current != null) {
-                ((NonDeterministicAttribute) current).addFinalModifier(new PossessionDelegatingModifier(current.getAttribute(), PossessionComponent.KEY.get(this)));
-            }
-        }
+        PossessionDelegatingModifier.replaceAttributes((PlayerEntity) (Object) this);
     }
 
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
@@ -253,6 +245,18 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
             if (possessed != null) {
                 cir.setReturnValue(((LivingEntityAccessor) possessed).requiem$invokeGetEyeHeight(pose, possessed.getDimensions(pose)));
             }
+        }
+    }
+
+    @Inject(method = "slowMovement", at = @At("HEAD"), cancellable = true)
+    private void slowMovement(BlockState state, Vec3d multiplier, CallbackInfo ci) {
+        MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
+        if (possessedEntity != null) {
+            possessedEntity.fallDistance = this.requiem$getFallDistance();
+            possessedEntity.slowMovement(state, multiplier);
+            this.requiem$setFallDistance(possessedEntity.fallDistance);
+            this.requiem$setMovementMultiplier(((EntityAccessor) possessedEntity).requiem$getMovementMultiplier());
+            ci.cancel();
         }
     }
 }

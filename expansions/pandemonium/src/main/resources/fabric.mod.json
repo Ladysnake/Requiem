@@ -16,6 +16,9 @@
     ],
     "cardinal-components-world": [
       "ladysnake.pandemonium.Pandemonium::INSTANCE"
+    ],
+    "modmenu": [
+      "ladysnake.pandemonium.compat.PandemoniumModMenuCompat"
     ]
   },
   "custom": {

@@ -39,6 +39,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Entity.class)
@@ -51,6 +52,9 @@ public interface EntityAccessor {
 
     @Invoker("adjustMovementForCollisions")
     Vec3d requiem$invokeAdjustMovementForCollisions(Vec3d movement);
+
+    @Accessor("movementMultiplier")
+    Vec3d requiem$getMovementMultiplier();
 
     @Invoker("movementInputToVelocity")
     static Vec3d requiem$invokeMovementInputToVelocity(Vec3d movementInput, float speed, float yaw) {

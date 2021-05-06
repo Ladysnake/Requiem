@@ -75,7 +75,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     @Inject(method = "travel",
         slice = @Slice(
-            from = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/player/PlayerAbilities;flying:Z"),
+            from = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/PlayerEntity;flyingSpeed:F", ordinal = 0),
             to = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;setFlag(IZ)V")
         ),
         at = @At(

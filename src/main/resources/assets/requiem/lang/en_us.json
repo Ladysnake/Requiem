@@ -91,10 +91,9 @@
   "gamerule.requiem:showPossessorNameTag.description": "Show the nameplates of players possessing entities",
   "gamerule.requiem:disableCure": "(Requiem) Disable Cure",
   "gamerule.requiem:disableCure.description": "Remove the ability to cure players possessing undeads",
-  "gamerule.requiem:spawnHelpEndermen": "(Requiem) Spawn Help Enderman",
-  "gamerule.requiem:spawnHelpEndermen.description": "Spawn a helpful enderman when ghost players are stuck in a small space",
   "gamerule.requiem:startingRemnantType": "(Requiem) Remnant Type",
   "gamerule.requiem:startingRemnantType.description": "Replaces the choice at first death between demon and mortal",
+  "gamerule.requiem:possessionKeepInventory": "(Requiem) Keep inventory         after possession ends",
 
   "effect.requiem.attrition": "Attrition",
 
