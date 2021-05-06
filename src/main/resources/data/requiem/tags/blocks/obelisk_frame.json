@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "minecraft:obsidian"
+    "minecraft:obsidian",
+    "requiem:polished_obsidian"
   ]
 }
