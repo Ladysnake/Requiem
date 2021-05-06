@@ -75,6 +75,12 @@
   "requiem:tooltip.skeletal_efficiency": "Skeletal Efficiency",
   "requiem:tooltip.zombie_food": "Zombie Snack",
 
+  "block.requiem.runic_obsidian_attrition": "Runic Obsidian of Attrition",
+  "block.requiem.runic_obsidian_penance": "Runic Obsidian of Penance",
+  "block.requiem.polished_obsidian": "Polished Obsidian",
+  "block.requiem.polished_obsidian_slab": "Polished Obsidian Slab",
+  "block.requiem.polished_obsidian_stairs": "Polished Obsidian Stairs",
+
   "config.requiem.title": "Requiem Config Menu",
   "config.requiem.graphics": "Graphics",
   "config.requiem.fancy_demon_render": "Fancy demon render",
