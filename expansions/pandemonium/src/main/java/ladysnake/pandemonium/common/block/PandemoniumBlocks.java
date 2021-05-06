@@ -32,44 +32,19 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.block;
+package ladysnake.pandemonium.common.block;
 
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
-import ladysnake.requiem.common.item.RequiemItems;
-import net.minecraft.block.*;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.util.registry.Registry;
+import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
+import ladysnake.requiem.common.block.RequiemBlocks;
+import ladysnake.requiem.common.block.RunicObsidianBlock;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 
-public class RequiemBlocks {
-    public static final Block POLISHED_OBSIDIAN = new Block(AbstractBlock.Settings.copy(Blocks.OBSIDIAN));
-    public static final Block POLISHED_OBSIDIAN_SLAB = new SlabBlock(AbstractBlock.Settings.copy(POLISHED_OBSIDIAN));
-    public static final Block POLISHED_OBSIDIAN_STAIRS = new StairsBlock(POLISHED_OBSIDIAN.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_OBSIDIAN)) {};   // anon class for protected constructor
-    public static final Block RUNIC_OBSIDIAN_ATTRITION = new RunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), RequiemStatusEffects.ATTRITION);
+public class PandemoniumBlocks {
+    public static final Block RUNIC_OBSIDIAN_PENANCE = new RunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), PandemoniumStatusEffects.PENANCE);
 
     public static void init() {
-        register(POLISHED_OBSIDIAN, "polished_obsidian");
-        register(POLISHED_OBSIDIAN_SLAB, "polished_obsidian_slab");
-        register(POLISHED_OBSIDIAN_STAIRS, "polished_obsidian_stairs");
-        register(RUNIC_OBSIDIAN_ATTRITION, "runic_obsidian_attrition");
+        RequiemBlocks.register(RUNIC_OBSIDIAN_PENANCE, "runic_obsidian_penance");
     }
-
-    public static Block register(Block block, String name) {
-        return register(block, name, true);
-    }
-
-    private static Block register(Block block, String name, boolean doItem) {
-        Registry.register(Registry.BLOCK, Requiem.id(name), block);
-
-        if (doItem) {
-            BlockItem item = new BlockItem(block, new Item.Settings().group(ItemGroup.DECORATIONS));
-            item.appendBlocks(Item.BLOCK_ITEMS, item);
-            RequiemItems.registerItem(item, name);
-        }
-
-        return block;
-    }
-
 }

@@ -43,6 +43,7 @@ import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.pandemonium.client.ClientAnchorManager;
 import ladysnake.pandemonium.common.PandemoniumCommand;
 import ladysnake.pandemonium.common.PandemoniumConfig;
+import ladysnake.pandemonium.common.block.PandemoniumBlocks;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.WololoComponent;
 import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
@@ -84,6 +85,7 @@ public class Pandemonium implements ModInitializer, EntityComponentInitializer, 
     @Override
     public void onInitialize() {
         PandemoniumConfig.load();
+        PandemoniumBlocks.init();
         PandemoniumEntities.init();
         PandemoniumStatusEffects.init();
         ServerMessageHandling.init();
