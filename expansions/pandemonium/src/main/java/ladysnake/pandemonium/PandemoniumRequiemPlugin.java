@@ -34,6 +34,7 @@
  */
 package ladysnake.pandemonium;
 
+import ladysnake.pandemonium.common.PandemoniumConfig;
 import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
@@ -72,9 +73,11 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
             }
         };
 
-        // Enderman specific behaviour is unneeded now that players can possess them
-        PossessionStartCallback.EVENT.unregister(new Identifier(Requiem.MOD_ID, "enderman"));
-        PossessionStartCallback.EVENT.register(Pandemonium.id("allow_everything"), (target, possessor, simulate) -> PossessionStartCallback.Result.ALLOW);
+        if (PandemoniumConfig.possession.allowPossessingAllMobs) {
+            // Enderman specific behaviour is unneeded now that players can possess them
+            PossessionStartCallback.EVENT.unregister(new Identifier(Requiem.MOD_ID, "enderman"));
+            PossessionStartCallback.EVENT.register(Pandemonium.id("allow_everything"), (target, possessor, simulate) -> PossessionStartCallback.Result.ALLOW);
+        }
         InitiateFractureCallback.EVENT.register(player -> {
             RemnantComponent remnantState = RemnantComponent.get(player);
             PossessionComponent possessionComponent = PossessionComponent.get(player);

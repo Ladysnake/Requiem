@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.compat;
 
+import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigBranch;
 import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;
 import ladysnake.requiem.Requiem;
@@ -53,18 +54,28 @@ public final class ModMenuCompat implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
         try {
-            return new ClothConfigScreenFactory();
+            return new ClothConfigScreenFactory(Requiem.MOD_ID, RequiemConfig.configTree(), RequiemConfig::save);
         } catch (Throwable t) {
             return parent -> null;
         }
     }
 
-    private static class ClothConfigScreenFactory implements ConfigScreenFactory<Screen> {
+    public static class ClothConfigScreenFactory implements ConfigScreenFactory<Screen> {
+
+        private final String modId;
+        private final ConfigBranch node;
+        private final Runnable save;
+
+        public ClothConfigScreenFactory(String modId, ConfigBranch node, Runnable save) {
+            this.modId = modId;
+            this.node = node;
+            this.save = save;
+        }
 
         @Override
         public Screen create(Screen parent) {
-            return appendInfo((AbstractConfigScreen) Fiber2Cloth.create(parent, Requiem.MOD_ID, RequiemConfig.configTree(), "config.requiem.title")
-                .setSaveRunnable(RequiemConfig::save)
+            return appendInfo((AbstractConfigScreen) Fiber2Cloth.create(parent, modId, node, "config.requiem.title")
+                .setSaveRunnable(save)
                 .build()
                 .getScreen());
         }

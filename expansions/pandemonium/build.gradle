@@ -31,6 +31,13 @@ repositories {
         }
     }
     maven {
+        url = "https://maven.shedaniel.me/"
+        content {
+            includeGroupByRegex 'me\\.shedaniel\\..*'
+            includeGroup 'me.sargunvohra.mcmods'
+        }
+    }
+    maven {
         name = 'JitPack'
         url = 'https://jitpack.io'
     }
@@ -47,6 +54,12 @@ dependencies {
     include "io.github.ladysnake:Impersonate:${impersonate_version}"
     modImplementation "io.github.ladysnake:automatone:${automatone_version}"
     include "io.github.ladysnake:automatone:${automatone_version}:optimized"
+    implementation "me.zeroeightsix:fiber:${rootProject.fiber_version}"
+//    modCompileOnly ("io.github.shedaniel:FiberToCloth:0907730") { transitive = false }
+    modCompileOnly ("io.github.prospector:modmenu:${rootProject.modmenu_version}") { transitive = false }
+    modCompileOnly ("me.shedaniel.cloth:cloth-config-fabric:${rootProject.cloth_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
     modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${rootProject.reach_version}"
     include "com.jamieswhiteshirt:reach-entity-attributes:${rootProject.reach_version}"
     modCompileOnly("com.github.apace100:origins-fabric:${rootProject.origins_version}") { transitive = false }
