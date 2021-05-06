@@ -36,19 +36,22 @@ package ladysnake.requiem.common.block;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.item.RequiemItems;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.Material;
-import net.minecraft.block.MaterialColor;
+import net.minecraft.block.*;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.registry.Registry;
 
 public class RequiemBlocks {
-    public static final Block RUNIC_OBSIDIAN = new RunicObsidianBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.BLACK).requiresTool().strength(50.0F, 1200.0F));
+    public static final Block POLISHED_OBSIDIAN = new Block(AbstractBlock.Settings.copy(Blocks.OBSIDIAN));
+    public static final Block POLISHED_OBSIDIAN_SLAB = new SlabBlock(AbstractBlock.Settings.copy(POLISHED_OBSIDIAN));
+    public static final Block POLISHED_OBSIDIAN_STAIRS = new StairsBlock(POLISHED_OBSIDIAN.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_OBSIDIAN)) {};   // anon class for protected constructor
+    public static final Block RUNIC_OBSIDIAN = new RunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN));
 
     public static void init() {
+        register(POLISHED_OBSIDIAN, "polished_obsidian");
+        register(POLISHED_OBSIDIAN_SLAB, "polished_obsidian_slab");
+        register(POLISHED_OBSIDIAN_STAIRS, "polished_obsidian_stairs");
         register(RUNIC_OBSIDIAN, "runic_obsidian");
     }
 

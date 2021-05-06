@@ -23,7 +23,8 @@ public class RunicObsidianBlock extends Block implements BlockEntityProvider {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof RunicObsidianBlockEntity) {
-            player.sendMessage(new LiteralText("Width: " + ((RunicObsidianBlockEntity) blockEntity).getRangeLevel()), true);
+            RunicObsidianBlockEntity core = (RunicObsidianBlockEntity) blockEntity;
+            player.sendMessage(new LiteralText("Width: " + core.getRangeLevel() + ", Height: " + core.getPowerLevel()), true);
         }
         return ActionResult.SUCCESS;
     }

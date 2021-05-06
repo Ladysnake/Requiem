@@ -126,7 +126,7 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
         if (this.requiem$getWorld().isClient) return;
 
         Entity possessed = PossessionComponent.getPossessedEntity((Entity) (Object) this);
-        if (possessed != null) {
+        if (possessed != null && fallY > 0) {
             possessed.fallDistance = this.requiem$getFallDistance();
             possessed.copyPositionAndRotation((Entity) (Object) this);
             possessed.move(MovementType.SELF, Vec3d.ZERO);

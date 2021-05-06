@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "requiem:block/polished_obsidian_slab"
+    },
+    "type=double": {
+      "model": "requiem:block/polished_obsidian"
+    },
+    "type=top": {
+      "model": "requiem:block/polished_obsidian_slab_top"
+    }
+  }
+}

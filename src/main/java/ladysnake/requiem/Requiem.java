@@ -43,6 +43,7 @@ import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.common.RequiemConfig;
 import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
+import ladysnake.requiem.common.block.RequiemBlockEntities;
 import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.command.RemnantArgumentType;
 import ladysnake.requiem.common.command.RequiemCommand;
@@ -85,6 +86,7 @@ public final class Requiem implements ModInitializer {
         ApiInitializer.init();
         RequiemCriteria.init();
         RequiemBlocks.init();
+        RequiemBlockEntities.init();
         RequiemEnchantments.init();
         RequiemEntities.init();
         RequiemEntityTypeTags.init();
