@@ -29,6 +29,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.apiguardian.api.API;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -152,13 +153,19 @@ public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComp
      * Set the default remnant type according to the current server settings
      *
      * @since 1.3.0
+     * @deprecated this is controlled through the startingRemnantType gamerule
      */
-    void setDefaultRemnantType(@Nullable RemnantType defaultType);
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
+    default void setDefaultRemnantType(@Nullable RemnantType defaultType) {
+        // NO-OP
+    }
 
     /**
      * Return the default remnant type according to the current server settings
      *
      * @since 1.3.0
      */
+    @ApiStatus.Experimental
     @Nullable RemnantType getDefaultRemnantType();
 }

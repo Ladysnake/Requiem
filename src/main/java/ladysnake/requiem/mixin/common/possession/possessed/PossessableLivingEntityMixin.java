@@ -34,7 +34,6 @@
  */
 package ladysnake.requiem.mixin.common.possession.possessed;
 
-import com.google.common.base.Preconditions;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
@@ -44,7 +43,6 @@ import ladysnake.requiem.common.entity.attribute.CooldownStrengthModifier;
 import ladysnake.requiem.common.entity.attribute.NonDeterministicAttribute;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
-import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
@@ -63,9 +61,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
@@ -94,11 +90,6 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     private final boolean requiem_immovable = RequiemEntityTypeTags.IMMOVABLE.contains(this.getType());
     @Unique
     private final boolean requiem_regularEater = RequiemEntityTypeTags.EATERS.contains(this.getType());
-    @Unique
-    private boolean requiem_wasCustomNameVisible;
-    @Unique
-    @Nullable
-    private Text requiem_previousCustomName;
     @Unique
     @Nullable
     private UUID requiem_previousPossessorUuid;
@@ -156,7 +147,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
     @Override
     public boolean canBePossessedBy(PlayerEntity player) {
-        return !this.removed && this.getHealth() > 0 && (!this.isBeingPossessed() || this.possessor == player);
+        return !this.removed && this.getHealth() > 0 && (this.possessor == null || this.possessor.getUuid().equals(player.getUuid()));
     }
 
     @Override
@@ -188,36 +179,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
             this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).addTemporaryModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS);
         }
 
-        this.updateName(possessor);
         this.onPossessorSet(possessor);
-    }
-
-    @Unique
-    private void updateName(@CheckForNull PlayerEntity possessor) {
-        if (possessor != null) {
-            if (this.requiem_previousCustomName == null) {
-                this.requiem_wasCustomNameVisible = this.isCustomNameVisible();
-                this.requiem_previousCustomName = this.getCustomName();
-            }
-            this.refreshPossessorNameTag();
-        } else {
-            this.setCustomNameVisible(this.requiem_wasCustomNameVisible);
-            this.setCustomName(this.requiem_previousCustomName);
-            this.requiem_wasCustomNameVisible = false;
-            this.requiem_previousCustomName = null;
-        }
-    }
-
-    public void refreshPossessorNameTag() {
-        Preconditions.checkState(this.possessor != null);
-
-        if (world.getGameRules().getBoolean(RequiemGamerules.SHOW_POSSESSOR_NAMETAG)) {
-            this.setCustomName(this.possessor.getName());
-            this.setCustomNameVisible(true);
-        } else {
-            this.setCustomName(this.requiem_previousCustomName);
-            this.setCustomNameVisible(this.requiem_wasCustomNameVisible);
-        }
     }
 
     @Override
@@ -233,20 +195,6 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     /* * * * * * * * * * *
         Entity overrides
     * * * * * * * * * * */
-
-    @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
-    private void writeCustomDataToTag(CompoundTag tag, CallbackInfo ci) {
-        if (this.isBeingPossessed()) {
-            Text text = this.requiem_previousCustomName;
-            if (text != null) {
-                tag.putString("CustomName", Text.Serializer.toJson(text));
-            } else {
-                tag.remove("CustomName");
-            }
-
-            tag.putBoolean("CustomNameVisible", this.requiem_wasCustomNameVisible);
-        }
-    }
 
     @Inject(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;canMoveVoluntarily()Z", ordinal = 1))
     private void requiem_mobTick(CallbackInfo ci) {

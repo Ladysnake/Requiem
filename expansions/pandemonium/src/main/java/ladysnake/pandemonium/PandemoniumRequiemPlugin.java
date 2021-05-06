@@ -34,9 +34,13 @@
  */
 package ladysnake.pandemonium;
 
+import ladysnake.pandemonium.common.PandemoniumConfig;
 import ladysnake.pandemonium.common.PlayerSplitter;
+import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.entity.ability.*;
+import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
+import ladysnake.pandemonium.common.entity.effect.PenanceStatusEffect;
 import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
 import ladysnake.pandemonium.common.entity.effect.PenanceStatusEffect;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
@@ -44,6 +48,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
+import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
 import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
 import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
@@ -53,7 +58,9 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.RequiemComponents;
 import ladysnake.requiem.common.entity.ability.RangedAttackAbility;
+import ladysnake.requiem.common.entity.ability.SoulPossessAbility;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import net.fabricmc.fabric.api.util.TriState;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.WitherEntity;
@@ -70,18 +77,12 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
 
     @Override
     public void onRequiemInitialize() {
-        PossessionStartCallback.EVENT.register(Pandemonium.id("shell_interaction"), (target, possessor, simulate) -> {
-            if (target instanceof PlayerShellEntity) {
-                if (!simulate && !possessor.world.isClient) {
-                    if (!PlayerSplitter.merge(((PlayerShellEntity) target), (ServerPlayerEntity) possessor)) {
-                        possessor.sendMessage(new TranslatableText("requiem:possess.incompatible_body"), true);
-                        return PossessionStartCallback.Result.DENY;
-                    }
-                }
-                return PossessionStartCallback.Result.HANDLED;
+        SoulPossessAbility.extraTest = (target) -> target.getType() == PandemoniumEntities.PLAYER_SHELL;
+        SoulPossessAbility.extraAction = (target, possessor) -> {
+            if (target instanceof PlayerShellEntity && !possessor.world.isClient && !PlayerSplitter.merge(((PlayerShellEntity) target), (ServerPlayerEntity) possessor)) {
+                possessor.sendMessage(new TranslatableText("requiem:possess.incompatible_body"), true);
             }
-            return PossessionStartCallback.Result.PASS;
-        });
+        };
         CanCurePossessedCallback.EVENT.register((body) -> {
             if (body.hasStatusEffect(PandemoniumStatusEffects.PENANCE)) {
                 return TriState.FALSE;
@@ -89,9 +90,11 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
             return TriState.DEFAULT;
         });
 
-        // Enderman specific behaviour is unneeded now that players can possess them
-        PossessionStartCallback.EVENT.unregister(new Identifier(Requiem.MOD_ID, "enderman"));
-        PossessionStartCallback.EVENT.register(Pandemonium.id("allow_everything"), (target, possessor, simulate) -> PossessionStartCallback.Result.ALLOW);
+        if (PandemoniumConfig.possession.allowPossessingAllMobs) {
+            // Enderman specific behaviour is unneeded now that players can possess them
+            PossessionStartCallback.EVENT.unregister(new Identifier(Requiem.MOD_ID, "enderman"));
+            PossessionStartCallback.EVENT.register(Pandemonium.id("allow_everything"), (target, possessor, simulate) -> PossessionStartCallback.Result.ALLOW);
+        }
         PossessionStartCallback.EVENT.register(Pandemonium.id("deny_penance_two"), PenanceStatusEffect::canPossess);
         //noinspection ConstantConditions
         // .getAmplifier() can provoke an NPE, but we check for that before.
@@ -106,7 +109,6 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
                 PlayerSplitter.split(player);
                 success = true;
             } else if (possessionComponent.getPossessedEntity() != null && PlayerBodyTracker.get(player).getAnchor() != null) {
-                // TODO make a gamerule to keep the inventory when leaving a mob
                 possessionComponent.stopPossessing();
                 success = true;
             } else {

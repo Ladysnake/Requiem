@@ -7,6 +7,7 @@
     "healthoverlay.HealthRendererMixin"
   ],
   "mixins": [
+    "bettergraves.BetterGravesMixin",
     "haema.VampireBloodInjectorItemMixin",
     "origins.PowerMixin",
     "snowmercy.WeaponizedSnowGolemEntityMixin",

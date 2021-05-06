@@ -54,6 +54,7 @@ import ladysnake.requiem.common.entity.cure.CurableZombifiedPiglinComponent;
 import ladysnake.requiem.common.entity.cure.DelegatingCurableEntityComponent;
 import ladysnake.requiem.common.entity.cure.SimpleCurableEntityComponent;
 import ladysnake.requiem.common.entity.effect.StatusEffectReapplicatorImpl;
+import ladysnake.requiem.common.gamerule.RequiemSyncedGamerules;
 import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityController;
 import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
 import ladysnake.requiem.common.impl.inventory.PlayerInventoryLimiter;
@@ -95,5 +96,6 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
     @Override
     public void registerScoreboardComponentFactories(ScoreboardComponentFactoryRegistry registry) {
         registry.registerForScoreboards(AttritionFocus.KEY, GlobalAttritionFocus.class, (sc, server) -> new GlobalAttritionFocus(server));
+        registry.registerForScoreboards(RequiemSyncedGamerules.KEY, (scoreboard, server) -> new RequiemSyncedGamerules(server));
     }
 }

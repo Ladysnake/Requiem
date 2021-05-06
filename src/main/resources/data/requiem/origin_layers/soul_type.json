@@ -2,6 +2,7 @@
   "replace": false,
   "enabled": true,
   "order": -1,
+  "auto_choose": true,
   "name": "origins:layer.requiem.soul_type.name",
   "missing_name": "origins:layer.requiem.soul_type.missing_origin.name",
   "missing_description": "origins:layer.requiem.soul_type.missing_origin.description",

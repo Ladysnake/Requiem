@@ -32,45 +32,51 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.client.render.entity;
+package ladysnake.pandemonium.common.entity.ai;
 
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
-import ladysnake.requiem.client.RequiemFx;
-import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.item.FoodComponent;
+import net.minecraft.util.Hand;
 
-public class PlayerShellEntityRenderer extends EntityRenderer<PlayerShellEntity> {
-    public PlayerShellEntityRenderer(EntityRenderDispatcher renderManagerIn) {
-        super(renderManagerIn);
+public class ShellEatGoal extends PlayerShellGoal {
+    private int previousSlot;
+
+    public ShellEatGoal(PlayerShellEntity shell) {
+        super(shell);
     }
 
     @Override
-    public boolean shouldRender(PlayerShellEntity entity, Frustum frustum, double x, double y, double z) {
-        ShellClientPlayerEntity renderedPlayer = entity.getRenderedPlayer();
-        return this.dispatcher.getRenderer(renderedPlayer).shouldRender(renderedPlayer, frustum, x, y, z);
+    public boolean canStart() {
+        return this.shell.getHungerManager().isNotFull() && this.findInHotbar(itemStack -> {
+            FoodComponent foodComponent = itemStack.getItem().getFoodComponent();
+            // We do not want to eat special food
+            return foodComponent != null && !foodComponent.isAlwaysEdible() && foodComponent.getStatusEffects().isEmpty();
+        });
     }
 
     @Override
-    public void render(PlayerShellEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-        ShellClientPlayerEntity renderedPlayer = entity.getRenderedPlayer();
-        RequiemFx.setupRenderDelegate(entity, renderedPlayer);
-        this.dispatcher.render(renderedPlayer, 0, 0, 0, yaw, tickDelta, matrices, vertexConsumers, light);
+    public boolean shouldContinue() {
+        return this.canStart();
     }
 
     @Override
-    public Vec3d getPositionOffset(PlayerShellEntity entity, float tickDelta) {
-        ShellClientPlayerEntity renderedPlayer = entity.getRenderedPlayer();
-        return this.dispatcher.getRenderer(renderedPlayer).getPositionOffset(renderedPlayer, tickDelta);
+    public void start() {
+        if (this.hotbarSlot >= 0) {
+            this.previousSlot = this.shell.inventory.selectedSlot;
+            this.shell.selectHotbarSlot(this.hotbarSlot);
+            this.shell.useItem(Hand.MAIN_HAND);
+        } else {
+            this.previousSlot = -1;
+            this.shell.useItem(Hand.OFF_HAND);
+        }
     }
 
     @Override
-    public Identifier getTexture(PlayerShellEntity entity) {
-        ShellClientPlayerEntity renderedPlayer = entity.getRenderedPlayer();
-        return this.dispatcher.getRenderer(renderedPlayer).getTexture(renderedPlayer);
+    public void stop() {
+        this.shell.releaseActiveItem();
+
+        if (this.previousSlot >= 0) {
+            this.shell.selectHotbarSlot(this.previousSlot);
+        }
     }
 }

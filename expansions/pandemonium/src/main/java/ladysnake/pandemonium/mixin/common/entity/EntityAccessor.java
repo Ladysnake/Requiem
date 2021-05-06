@@ -32,17 +32,16 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.mixin.common.entity.player;
+package ladysnake.pandemonium.mixin.common.entity;
 
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.injection.Inject;
 
-@Mixin(PlayerEntity.class)
-public interface PlayerEntityAccessor {
-    @Accessor("PLAYER_MODEL_PARTS")
-    static TrackedData<Byte> getPlayerModelPartsTrackedData() {
-        throw new IllegalStateException();
-    }
+@Mixin(Entity.class)
+public interface EntityAccessor {
+    @Accessor
+    void setType(EntityType<?> type);
 }

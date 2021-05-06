@@ -46,6 +46,7 @@ import ladysnake.requiem.common.entity.ability.DelegatingDirectAbility;
 import ladysnake.requiem.common.entity.ability.SoulPossessAbility;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
@@ -60,7 +61,7 @@ import java.util.EnumMap;
 
 public class PlayerAbilityController implements MobAbilityController, AutoSyncedComponent {
     private static final MobAbilityConfig<PlayerEntity> SOUL_CONFIG = MobAbilityConfig.<PlayerEntity>builder()
-        .directAttack(player -> new DelegatingDirectAbility<>(player, MobEntity.class, AbilityType.INTERACT))
+        .directAttack(player -> new DelegatingDirectAbility<>(player, LivingEntity.class, AbilityType.INTERACT))
         .directInteract(SoulPossessAbility::new)
         .build();
 

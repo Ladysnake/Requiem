@@ -41,6 +41,8 @@ import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer;
 import io.github.ladysnake.impersonate.Impersonate;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.pandemonium.client.ClientAnchorManager;
+import ladysnake.pandemonium.common.PandemoniumCommand;
+import ladysnake.pandemonium.common.PandemoniumConfig;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.WololoComponent;
 import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
@@ -55,6 +57,7 @@ import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.util.Identifier;
@@ -80,6 +83,7 @@ public class Pandemonium implements ModInitializer, EntityComponentInitializer, 
 
     @Override
     public void onInitialize() {
+        PandemoniumConfig.load();
         PandemoniumEntities.init();
         PandemoniumStatusEffects.init();
         ServerMessageHandling.init();
@@ -91,6 +95,7 @@ public class Pandemonium implements ModInitializer, EntityComponentInitializer, 
         RemnantStateChangeCallback.EVENT.register((player, state) -> {
             if (state.isVagrant()) Impersonate.IMPERSONATION.get(player).stopImpersonation(BODY_IMPERSONATION);
         });
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> PandemoniumCommand.register(dispatcher));
         PandemoniumCompatibilityManager.init();
     }
 

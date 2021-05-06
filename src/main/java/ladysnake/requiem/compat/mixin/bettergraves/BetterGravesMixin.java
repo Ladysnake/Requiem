@@ -32,52 +32,26 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.mixin.common.entity.ai.goal;
+package ladysnake.requiem.compat.mixin.bettergraves;
 
-import ladysnake.pandemonium.common.entity.PlayerShellEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
-import net.minecraft.entity.ai.goal.TrackTargetGoal;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.math.Box;
-import org.objectweb.asm.Opcodes;
+import bettergraves.BetterGraves;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import javax.annotation.Nullable;
-
-import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
-
-@Mixin(FollowTargetGoal.class)
-public abstract class FollowTargetGoalMixin extends TrackTargetGoal {
-    @Shadow @Nullable protected LivingEntity targetEntity;
-
-    @Shadow protected TargetPredicate targetPredicate;
-
-    @Shadow protected abstract Box getSearchBox(double double_1);
-
-    public FollowTargetGoalMixin(MobEntity mobEntity_1, boolean boolean_1) {
-        super(mobEntity_1, boolean_1);
-    }
-
-    @Inject(
-            method = "findClosestTarget",
-            at = @At(
-                    value = "FIELD",
-                    opcode = Opcodes.PUTFIELD,
-                    target = "Lnet/minecraft/entity/ai/goal/FollowTargetGoal;targetEntity:Lnet/minecraft/entity/LivingEntity;",
-                    ordinal = 0,    // Fun fact: despite the decompiled source indicating that the player branch is the second, it's actually the first
-                    shift = AFTER
-            )
-    )
-    private void addShellsAsTargets(CallbackInfo ci) {
-        if (this.targetEntity == null) {
-            // method_21727 = getClosestEntity
-            this.targetEntity = this.mob.world.getClosestEntity(PlayerShellEntity.class, this.targetPredicate, this.mob, this.mob.getX(), this.mob.getY() + (double)this.mob.getStandingEyeHeight(), this.mob.getZ(), this.getSearchBox(this.getFollowRange()));
+@Mixin(BetterGraves.class)
+public abstract class BetterGravesMixin {
+    @Inject(method = "placeGrave", at = @At("HEAD"), cancellable = true, remap = false)
+    private static void preventGravePlacement(BlockPos deathLocation, ServerPlayerEntity player, ServerWorld world, DamageSource deathBlow, CallbackInfo ci) {
+        if (player.isAlive() && RemnantComponent.isVagrant(player)) {
+            player.inventory.dropAll();
+            ci.cancel();
         }
     }
 }
