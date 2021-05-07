@@ -34,8 +34,10 @@
  */
 package ladysnake.requiem.common.block;
 
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.tag.RequiemBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -82,14 +84,20 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
     }
 
     private void applyPlayerEffects() {
-        assert this.world != null;
+        Preconditions.checkState(this.world != null);
+        Preconditions.checkState(this.obeliskWidth > 0);
+        Preconditions.checkState(this.obeliskHeight > 0);
+
         double range = this.obeliskWidth * 10 + 10;
         int effectDuration = (9 + this.obeliskWidth * 2) * 20;
-        Box box = (new Box(this.pos)).expand(range).stretch(0.0D, this.world.getHeight(), 0.0D);
+        Box box = (new Box(this.pos, this.pos.add(obeliskWidth-1, obeliskHeight-1, obeliskWidth-1))).expand(range);
         List<PlayerEntity> players = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
-        for (PlayerEntity playerEntity : players) {
-            for (Object2IntMap.Entry<StatusEffect> effect : this.levels.object2IntEntrySet()) {
-                playerEntity.addStatusEffect(new StatusEffectInstance(effect.getKey(), effectDuration, effect.getIntValue() - 1, true, true));
+
+        for (PlayerEntity player : players) {
+            if (RemnantComponent.get(player).getRemnantType().isDemon()) {
+                for (Object2IntMap.Entry<StatusEffect> effect : this.levels.object2IntEntrySet()) {
+                    player.addStatusEffect(new StatusEffectInstance(effect.getKey(), effectDuration, effect.getIntValue() - 1, true, true));
+                }
             }
         }
     }
@@ -164,7 +172,7 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
             ) {
                 return height;
             }
-            StatusEffect eff = getCoreStatusEffect(world, origin, width, height);
+            StatusEffect eff = findRuneEffect(world, origin, width, height);
             if (eff != null) {
                 levels.mergeInt(eff, 1, Integer::sum);
             }
@@ -172,7 +180,7 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         }
     }
 
-    private static @Nullable StatusEffect getCoreStatusEffect(BlockView world, BlockPos origin, int width, int height) {
+    private static @Nullable StatusEffect findRuneEffect(BlockView world, BlockPos origin, int width, int height) {
         StatusEffect eff = null;
         for (BlockPos corePos : iterateCoreBlocks(origin, width, height)) {
             Block block = world.getBlockState(corePos).getBlock();
