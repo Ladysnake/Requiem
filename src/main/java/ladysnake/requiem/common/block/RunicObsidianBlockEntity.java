@@ -207,29 +207,29 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
             ) {
                 return height;
             }
-            StatusEffect eff = findRuneEffect(world, origin, width, height);
-            if (eff != null) {
-                levels.mergeInt(eff, 1, Integer::sum);
+            @Nullable RunicObsidianBlock rune = findEffectRune(world, origin, width, height);
+            if (rune != null && levels.getInt(rune.getEffect()) <= rune.getMaxLevel()) {
+                levels.mergeInt(rune.getEffect(), 1, Integer::sum);
             }
             height++;
         }
     }
 
-    private static @Nullable StatusEffect findRuneEffect(BlockView world, BlockPos origin, int width, int height) {
-        StatusEffect eff = null;
+    private static @Nullable RunicObsidianBlock findEffectRune(BlockView world, BlockPos origin, int width, int height) {
+        RunicObsidianBlock rune = null;
         for (BlockPos corePos : iterateCoreBlocks(origin, width, height)) {
             Block block = world.getBlockState(corePos).getBlock();
             if (block instanceof RunicObsidianBlock) {
-                if (eff == null) {
-                    eff = ((RunicObsidianBlock) block).getEffect();
-                } else if (((RunicObsidianBlock) block).getEffect() != eff) {
+                if (rune == null) {
+                    rune = ((RunicObsidianBlock) block);
+                } else if (block != rune) {
                     return null;
                 }
             } else {
                 return null;
             }
         }
-        return eff;
+        return rune;
     }
 
     private static int matchObeliskBase(BlockView world, BlockPos origin) {

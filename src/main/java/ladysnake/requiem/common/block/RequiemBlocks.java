@@ -47,7 +47,7 @@ public class RequiemBlocks {
     public static final Block POLISHED_OBSIDIAN = new Block(AbstractBlock.Settings.copy(Blocks.OBSIDIAN));
     public static final Block POLISHED_OBSIDIAN_SLAB = new SlabBlock(AbstractBlock.Settings.copy(POLISHED_OBSIDIAN));
     public static final Block POLISHED_OBSIDIAN_STAIRS = new StairsBlock(POLISHED_OBSIDIAN.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_OBSIDIAN)) {};   // anon class for protected constructor
-    public static final Block RUNIC_OBSIDIAN_ATTRITION = new RunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), RequiemStatusEffects.ATTRITION);
+    public static final Block RUNIC_OBSIDIAN_ATTRITION = new RunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), RequiemStatusEffects.ATTRITION, 3);
 
     public static void init() {
         register(POLISHED_OBSIDIAN, "polished_obsidian");

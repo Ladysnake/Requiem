@@ -51,10 +51,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class RunicObsidianBlock extends Block implements BlockEntityProvider {
     private final StatusEffect effect;
+    private final int maxLevel;
 
-    public RunicObsidianBlock(Settings settings, StatusEffect effect) {
+    public RunicObsidianBlock(Settings settings, StatusEffect effect, int maxLevel) {
         super(settings);
         this.effect = effect;
+        this.maxLevel = maxLevel;
     }
 
     @Override
@@ -77,5 +79,9 @@ public class RunicObsidianBlock extends Block implements BlockEntityProvider {
 
     public StatusEffect getEffect() {
         return effect;
+    }
+
+    public int getMaxLevel() {
+        return this.maxLevel;
     }
 }
