@@ -61,6 +61,7 @@ import java.util.function.Predicate;
 
 public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
     public static final Direction[] OBELISK_SIDES = {Direction.SOUTH, Direction.EAST, Direction.NORTH, Direction.WEST};
+    public static final int POWER_ATTEMPTS = 1;
     private @Nullable BlockPos delegating = null;
     private final Object2IntMap<StatusEffect> levels = new Object2IntOpenHashMap<>();
     private int obeliskWidth = 0;
@@ -84,7 +85,7 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
                 MathHelper.lerp(0.5, this.pos.getZ(), this.pos.getZ() + obeliskWidth - 1)
             );
 
-            if (!this.levels.isEmpty() && this.findPowerSource((ServerWorld) this.world, obeliskCenter, this.obeliskWidth * 5, 2)) {
+            if (!this.levels.isEmpty() && this.findPowerSource((ServerWorld) this.world, obeliskCenter, this.obeliskWidth * 5)) {
                 this.applyPlayerEffects();
             }
         }
@@ -110,10 +111,10 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         }
     }
 
-    private boolean findPowerSource(ServerWorld world, Vec3d center, double range, int attempts) {
+    private boolean findPowerSource(ServerWorld world, Vec3d center, double range) {
         BlockPos.Mutable checked = new BlockPos.Mutable();
 
-        for (int attempt = 0; attempt < attempts; attempt++) {
+        for (int attempt = 0; attempt < RunicObsidianBlockEntity.POWER_ATTEMPTS; attempt++) {
             // https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly/50746409#50746409
             double r = range * Math.sqrt(world.random.nextDouble());
             double theta = world.random.nextDouble() * 2 * Math.PI;
@@ -134,6 +135,7 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
                 return true;
             }
         }
+
         return false;
     }
 
