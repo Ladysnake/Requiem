@@ -49,6 +49,7 @@ import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,7 +57,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
-    private static final Direction[] possibleDelegations = new Direction[]{Direction.DOWN, Direction.EAST, Direction.NORTH};
+    public static final Direction[] OBELISK_SIDES = {Direction.SOUTH, Direction.EAST, Direction.NORTH, Direction.WEST};
     private @Nullable BlockPos delegating = null;
     private final Object2IntMap<StatusEffect> levels = new Object2IntOpenHashMap<>();
     private int obeliskWidth = 0;
@@ -73,19 +74,22 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
 
         if (this.world.getTime() % 80L == 0L) {
             this.refresh();
-            this.applyPlayerEffects();
+
+            if (!this.levels.isEmpty()) {
+                this.applyPlayerEffects();
+            }
         }
     }
 
     private void applyPlayerEffects() {
         assert this.world != null;
-        double d = this.obeliskWidth * 10 + 10;
-        int j = (9 + this.obeliskWidth * 2) * 20;
-        Box box = (new Box(this.pos)).expand(d).stretch(0.0D, this.world.getHeight(), 0.0D);
+        double range = this.obeliskWidth * 10 + 10;
+        int effectDuration = (9 + this.obeliskWidth * 2) * 20;
+        Box box = (new Box(this.pos)).expand(range).stretch(0.0D, this.world.getHeight(), 0.0D);
         List<PlayerEntity> players = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
         for (PlayerEntity playerEntity : players) {
             for (Object2IntMap.Entry<StatusEffect> effect : this.levels.object2IntEntrySet()) {
-                playerEntity.addStatusEffect(new StatusEffectInstance(effect.getKey(), j, effect.getIntValue() - 1, true, true));
+                playerEntity.addStatusEffect(new StatusEffectInstance(effect.getKey(), effectDuration, effect.getIntValue() - 1, true, true));
             }
         }
     }
@@ -127,38 +131,40 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
                 if (be instanceof RunicObsidianBlockEntity) {
                     this.delegating = ((RunicObsidianBlockEntity) be).delegating != null ? ((RunicObsidianBlockEntity) be).delegating : this.pos.north();
                 } else {
-                    // base of the obelisk
-                    int width = this.checkBase();
-                    if (width > 0) {
-                        Object2IntMap<StatusEffect> levels = new Object2IntOpenHashMap<>();
-                        int height = this.checkCore(width, levels);
-                        if (height > 0 && this.checkCap(width, height)) {
-                            this.obeliskWidth = width;
-                            this.obeliskHeight = height;
-                            this.levels.putAll(levels);
-                        }
-                    }
+                    this.matchObelisk(this.world, this.pos);
                 }
             }
         }
     }
 
-    private int checkCore(int width, Object2IntMap<StatusEffect> levels) {
-        assert this.world != null;
+    private void matchObelisk(BlockView world, BlockPos origin) {
+        int tentativeWidth = matchObeliskBase(world, origin);
+        if (tentativeWidth > 0) {
+            Object2IntMap<StatusEffect> levels = new Object2IntOpenHashMap<>();
+            int tentativeHeight = matchObeliskCore(world, origin, tentativeWidth, levels);
+            if (tentativeHeight > 0 && matchObeliskCap(world, origin, tentativeWidth, tentativeHeight)) {
+                this.obeliskWidth = tentativeWidth;
+                this.obeliskHeight = tentativeHeight;
+                this.levels.putAll(levels);
+            }
+        }
+    }
+
+    private static int matchObeliskCore(BlockView world, BlockPos origin, int width, Object2IntMap<StatusEffect> levels) {
         // start at north-west corner
-        BlockPos origin = this.pos.add(-1, 0, -1);
-        BlockPos.Mutable pos = origin.mutableCopy();
+        BlockPos start = origin.add(-1, 0, -1);
+        BlockPos.Mutable pos = start.mutableCopy();
         int height = 0;
 
         while (true) {
-            if (!world.getBlockState(pos.set(origin.getX(), origin.getY() + height, origin.getZ())).isIn(RequiemBlockTags.OBELISK_FRAME)
-                || !world.getBlockState(pos.set(origin.getX() + width + 1, origin.getY() + height, origin.getZ())).isIn(RequiemBlockTags.OBELISK_FRAME)
-                || !world.getBlockState(pos.set(origin.getX() + width + 1, origin.getY() + height, origin.getZ() + width + 1)).isIn(RequiemBlockTags.OBELISK_FRAME)
-                || !world.getBlockState(pos.set(origin.getX(), origin.getY() + height, origin.getZ() + width + 1)).isIn(RequiemBlockTags.OBELISK_FRAME)
+            if (!world.getBlockState(pos.set(start.getX(), start.getY() + height, start.getZ())).isIn(RequiemBlockTags.OBELISK_FRAME)
+                || !world.getBlockState(pos.set(start.getX() + width + 1, start.getY() + height, start.getZ())).isIn(RequiemBlockTags.OBELISK_FRAME)
+                || !world.getBlockState(pos.set(start.getX() + width + 1, start.getY() + height, start.getZ() + width + 1)).isIn(RequiemBlockTags.OBELISK_FRAME)
+                || !world.getBlockState(pos.set(start.getX(), start.getY() + height, start.getZ() + width + 1)).isIn(RequiemBlockTags.OBELISK_FRAME)
             ) {
                 return height;
             }
-            StatusEffect eff = getCoreStatusEffect(width, height);
+            StatusEffect eff = getCoreStatusEffect(world, origin, width, height);
             if (eff != null) {
                 levels.mergeInt(eff, 1, Integer::sum);
             }
@@ -166,12 +172,9 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         }
     }
 
-    @Nullable
-    private StatusEffect getCoreStatusEffect(int width, int height) {
-        assert this.world != null;
-
+    private static @Nullable StatusEffect getCoreStatusEffect(BlockView world, BlockPos origin, int width, int height) {
         StatusEffect eff = null;
-        for (BlockPos corePos : iterateCoreBlocks(width, height)) {
+        for (BlockPos corePos : iterateCoreBlocks(origin, width, height)) {
             Block block = world.getBlockState(corePos).getBlock();
             if (block instanceof RunicObsidianBlock) {
                 if (eff == null) {
@@ -186,13 +189,12 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         return eff;
     }
 
-    private int checkBase() {
-        return checkObeliskExtremity(this.pos.add(-1, -1, -1), state -> state.isIn(RequiemBlockTags.OBELISK_FRAME));
+    private static int matchObeliskBase(BlockView world, BlockPos origin) {
+        return checkObeliskExtremity(world, origin.add(-1, -1, -1), state -> state.isIn(RequiemBlockTags.OBELISK_FRAME));
     }
 
-    private boolean checkCap(int width, int height) {
-        assert this.world != null;
-        if (this.checkObeliskExtremity(this.pos.add(-1, height, -1), state -> {
+    private static boolean matchObeliskCap(BlockView world, BlockPos origin, int width, int height) {
+        if (checkObeliskExtremity(world, origin.add(-1, height, -1), state -> {
             if (state.isOf(RequiemBlocks.POLISHED_OBSIDIAN_STAIRS)) {
                 StairShape stairShape = state.get(StairsBlock.SHAPE);
                 return stairShape == StairShape.OUTER_LEFT || stairShape == StairShape.OUTER_RIGHT;
@@ -201,7 +203,7 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         }) != width) {
             return false;
         }
-        for (BlockPos blockPos : iterateCoreBlocks(width, height + 1)) {
+        for (BlockPos blockPos : iterateCoreBlocks(origin, width, height + 1)) {
             if (!world.getBlockState(blockPos).isOf(RequiemBlocks.POLISHED_OBSIDIAN_SLAB)) {
                 return false;
             }
@@ -210,17 +212,16 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
     }
 
     @NotNull
-    private Iterable<BlockPos> iterateCoreBlocks(int width, int height) {
-        return BlockPos.iterate(this.pos.up(height), this.pos.add(width - 1, height, width - 1));
+    private static Iterable<BlockPos> iterateCoreBlocks(BlockPos origin, int width, int height) {
+        return BlockPos.iterate(origin.up(height), origin.add(width - 1, height, width - 1));
     }
 
-    private int checkObeliskExtremity(BlockPos origin, Predicate<BlockState> corner) {
-        assert this.world != null;
+    private static int checkObeliskExtremity(BlockView world, BlockPos origin, Predicate<BlockState> corner) {
         // start at bottom north-west corner
         BlockPos.Mutable pos = origin.mutableCopy();
         int lastSideLength = -1;
 
-        for (Direction direction : new Direction[]{Direction.SOUTH, Direction.EAST, Direction.NORTH, Direction.WEST}) {
+        for (Direction direction : OBELISK_SIDES) {
             int sideLength = 0;
             while (true) {
                 BlockState state = world.getBlockState(pos);
