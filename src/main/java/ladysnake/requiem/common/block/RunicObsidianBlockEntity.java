@@ -47,10 +47,11 @@ import net.minecraft.block.enums.StairShape;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Tickable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.*;
 import net.minecraft.world.BlockView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -77,7 +78,13 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         if (this.world.getTime() % 80L == 0L) {
             this.refresh();
 
-            if (!this.levels.isEmpty()) {
+            Vec3d obeliskCenter = new Vec3d(
+                MathHelper.lerp(0.5, this.pos.getX(), this.pos.getX() + obeliskWidth - 1),
+                this.pos.getY() - 2,
+                MathHelper.lerp(0.5, this.pos.getZ(), this.pos.getZ() + obeliskWidth - 1)
+            );
+
+            if (!this.levels.isEmpty() && this.findPowerSource((ServerWorld) this.world, obeliskCenter, this.obeliskWidth * 5, 2)) {
                 this.applyPlayerEffects();
             }
         }
@@ -89,8 +96,9 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         Preconditions.checkState(this.obeliskHeight > 0);
 
         double range = this.obeliskWidth * 10 + 10;
-        int effectDuration = (9 + this.obeliskWidth * 2) * 20;
         Box box = (new Box(this.pos, this.pos.add(obeliskWidth-1, obeliskHeight-1, obeliskWidth-1))).expand(range);
+
+        int effectDuration = (9 + this.obeliskWidth * 2) * 20;
         List<PlayerEntity> players = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
 
         for (PlayerEntity player : players) {
@@ -100,6 +108,33 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
                 }
             }
         }
+    }
+
+    private boolean findPowerSource(ServerWorld world, Vec3d center, double range, int attempts) {
+        BlockPos.Mutable checked = new BlockPos.Mutable();
+
+        for (int attempt = 0; attempt < attempts; attempt++) {
+            // https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly/50746409#50746409
+            double r = range * Math.sqrt(world.random.nextDouble());
+            double theta = world.random.nextDouble() * 2 * Math.PI;
+            double x = center.x + r * Math.cos(theta);
+            double z = center.z + r * Math.sin(theta);
+            checked.set(Math.round(x), center.y, Math.round(z));
+            BlockState state = world.getBlockState(checked);
+
+            while (!state.isSolidBlock(world, checked)) {
+                checked.move(Direction.DOWN);
+                state = world.getBlockState(checked);
+            }
+
+            if (state.isIn(BlockTags.SOUL_SPEED_BLOCKS)) {
+                Vec3d particleSrc = new Vec3d(checked.getX() + 0.5, checked.getY() + 0.9, checked.getZ() + 0.5);
+                Vec3d toObelisk = center.subtract(particleSrc).normalize();
+                world.spawnParticles(ParticleTypes.SOUL, particleSrc.x, particleSrc.y, particleSrc.z, 0, toObelisk.x, 1, toObelisk.z, 0.1);
+                return true;
+            }
+        }
+        return false;
     }
 
     private RunicObsidianBlockEntity getObeliskCore() {
