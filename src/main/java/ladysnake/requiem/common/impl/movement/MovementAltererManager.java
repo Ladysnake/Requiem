@@ -34,10 +34,7 @@
  */
 package ladysnake.requiem.common.impl.movement;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.MovementConfig;
@@ -51,14 +48,15 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -69,7 +67,6 @@ public final class MovementAltererManager implements SubDataManager<Map<EntityTy
         .registerTypeAdapter(TriState.class, new TriStateTypeAdapter())
         .create();
     public static final Identifier LOCATION = Requiem.id("entity_mobility.json");
-    private static final Type TYPE = new TypeToken<Map<EntityType<?>, SerializableMovementConfig>>() {}.getType();
     public static final Identifier LISTENER_ID = Requiem.id("movement_alterer");
 
     private final Map<EntityType<?>, SerializableMovementConfig> entityMovementConfigs = new HashMap<>();
@@ -108,9 +105,16 @@ public final class MovementAltererManager implements SubDataManager<Map<EntityTy
             Map<EntityType<?>, SerializableMovementConfig> ret = new HashMap<>();
             try {
                 for (Resource resource : manager.getAllResources(LOCATION)) {
-                    try {
-                        ret.putAll(GSON.fromJson(new InputStreamReader(resource.getInputStream()), TYPE));
-                        ret.remove(null);   // Any EntityType that does not exist gets mapped to null
+                    try (InputStreamReader in = new InputStreamReader(resource.getInputStream())) {
+                        JsonObject map = JsonHelper.deserialize(in);
+                        for (Map.Entry<String, JsonElement> entry : map.entrySet()) {
+                            Optional<EntityType<?>> type = EntityType.get(entry.getKey());
+                            if (type.isPresent()) {
+                                ret.put(type.get(), GSON.fromJson(entry.getValue(), SerializableMovementConfig.class));
+                            } else if (JsonHelper.getBoolean(entry.getValue().getAsJsonObject(), "required", true)) {
+                                throw new JsonSyntaxException("Not a valid entity type: " + entry.getKey());
+                            } // else continue;
+                        }
                     } catch (JsonIOException | JsonSyntaxException e) {
                         Requiem.LOGGER.warn("Could not read movement config from JSON file", e);
                     }
