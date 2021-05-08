@@ -1,0 +1,20 @@
+{
+  "schema_version": 0,
+  "priority": 100,
+  "enabled": true,
+  "possessed": {
+    "type": "#requiem:zombies",
+    "requiem:health_percentage": {
+      "min": 0,
+      "max": 0.9999
+    }
+  },
+  "used_item": {
+    "tag": "requiem:raw_meats"
+  },
+  "use_time": 32,
+  "result": {
+    "action": "requiem:eat_to_heal",
+    "cooldown": 150
+  }
+}

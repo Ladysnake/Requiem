@@ -33,5 +33,5 @@ public interface PossessionItemAction {
      * <li>PASS falls back to further processing.
      * <li>FAIL cancels further processing and does not send a packet to the server.</ul>
      */
-    TypedActionResult<ItemStack> interact(PlayerEntity player, MobEntity possessed, World world, Hand hand);
+    TypedActionResult<ItemStack> interact(PlayerEntity player, MobEntity possessed, ItemStack stack, World world, Hand hand);
 }

@@ -42,7 +42,6 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.attribute.PossessionDelegatingModifier;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
-import ladysnake.requiem.common.tag.RequiemItemTags;
 import ladysnake.requiem.mixin.common.access.EntityAccessor;
 import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
 import net.minecraft.block.BlockState;
@@ -50,15 +49,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.item.FoodComponent;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -137,23 +132,6 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
             if (!this.requiem$getWorld().isClient) {
                 this.getHungerManager().addExhaustion(exhaustion);
             }
-        }
-    }
-
-    @Inject(method = "eatFood", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/HungerManager;eat(Lnet/minecraft/item/Item;Lnet/minecraft/item/ItemStack;)V"))
-    private void eatZombieFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
-        PossessionComponent possessionComponent = PossessionComponent.KEY.get(this);
-        MobEntity possessedEntity = possessionComponent.getPossessedEntity();
-        if (possessedEntity instanceof ZombieEntity && stack.getItem().isFood()) {
-            if (RequiemItemTags.RAW_MEATS.contains(stack.getItem()) || RequiemItemTags.RAW_FISHES.contains(stack.getItem()) && possessedEntity instanceof DrownedEntity) {
-                FoodComponent food = stack.getItem().getFoodComponent();
-                assert food != null;
-                possessedEntity.heal(food.getHunger());
-                this.getItemCooldownManager().set(stack.getItem(), 150);
-            }
-        }
-        if (possessedEntity != null && possessionComponent.canBeCured(stack)) {
-            possessionComponent.startCuring();
         }
     }
 

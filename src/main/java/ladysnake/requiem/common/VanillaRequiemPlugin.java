@@ -51,9 +51,11 @@ import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.possession.item.PossessionItemAction;
 import ladysnake.requiem.api.v1.remnant.*;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
+import ladysnake.requiem.common.entity.SkeletonBoneComponent;
 import ladysnake.requiem.common.entity.ability.*;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
@@ -77,6 +79,7 @@ import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
@@ -289,4 +292,36 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         RequiemCriteria.MADE_REMNANT_CHOICE.handle(player, chosenType);
     }
 
+    @Override
+    public void registerPossessionItemActions(Registry<PossessionItemAction> registry) {
+        Registry.register(registry, Requiem.id("fail"), (player, possessed, stack, world, hand) -> TypedActionResult.fail(stack));
+        Registry.register(registry, Requiem.id("cure"), (player, possessed, stack, world, hand) -> {
+            if (RemnantComponent.get(player).canCurePossessed(possessed)) {
+                PossessionComponent.get(player).startCuring();
+                stack.decrement(1);
+                return TypedActionResult.success(stack);
+            }
+
+            return TypedActionResult.fail(stack);
+        });
+        Registry.register(registry, Requiem.id("eat_to_heal"), (player, possessed, stack, world, hand) -> {
+            FoodComponent food = stack.getItem().getFoodComponent();
+
+            if (food != null) {
+                possessed.heal(food.getHunger());
+                player.eatFood(world, stack);
+                return TypedActionResult.success(stack);
+            }
+
+            return TypedActionResult.fail(stack);
+        });
+        Registry.register(registry, Requiem.id("replace_bone"), (player, possessed, stack, world, hand) -> {
+            if (SkeletonBoneComponent.KEY.get(possessed).replaceBone()) {
+                stack.decrement(1);
+                return TypedActionResult.success(stack);
+            }
+
+            return TypedActionResult.fail(stack);
+        });
+    }
 }

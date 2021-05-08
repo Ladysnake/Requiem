@@ -1,0 +1,20 @@
+{
+  "schema_version": 0,
+  "possessed": {
+    "requiem:can_be_cured": true,
+    "effects": {
+      "minecraft:weakness": {
+        "duration": {
+          "min": 1
+        }
+      }
+    }
+  },
+  "used_item": {
+    "tag": "requiem:undead_cures"
+  },
+  "use_time": 48,
+  "result": {
+    "action": "requiem:cure"
+  }
+}

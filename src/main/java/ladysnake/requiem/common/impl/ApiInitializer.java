@@ -48,7 +48,6 @@ import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityConfig;
 import ladysnake.requiem.common.impl.data.CommonSubDataManagerHelper;
 import ladysnake.requiem.common.impl.data.ServerSubDataManagerHelper;
 import ladysnake.requiem.common.impl.movement.MovementAltererManager;
-import ladysnake.requiem.common.impl.possession.item.PossessionItemUseManager;
 import ladysnake.requiem.common.impl.remnant.SoulbindingRegistryImpl;
 import ladysnake.requiem.common.impl.remnant.dialogue.DialogueManager;
 import ladysnake.requiem.common.util.reflection.ReflectionHelper;
@@ -89,7 +88,6 @@ public final class ApiInitializer {
     private static void initSubDataManagers() throws IllegalAccessException, NoSuchFieldException {
         initSubDataManager(DialogueManager::new, ApiInternals.class.getDeclaredField("dialogueRegistryGetter"));
         initSubDataManager(MovementAltererManager::new, ApiInternals.class.getDeclaredField("movementRegistryGetter"));
-        initSubDataManager(PossessionItemUseManager::new, ApiInternals.class.getDeclaredField("mobItemRegistryGetter"));
     }
 
     private static <T extends SubDataManager<?>> void initSubDataManager(Supplier<T> factory, Field target) throws IllegalAccessException {

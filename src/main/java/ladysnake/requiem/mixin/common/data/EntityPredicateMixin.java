@@ -36,12 +36,16 @@ package ladysnake.requiem.mixin.common.data;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
-import ladysnake.requiem.Requiem;
-import net.minecraft.predicate.entity.LocationPredicate;
+import ladysnake.requiem.api.v1.internal.ProtoPossessable;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -49,25 +53,22 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-@Mixin(LocationPredicate.class)
-public abstract class LocationPredicateMixin {
-    private @Nullable Biome.Category requiem$biomeCategory;
+@Mixin(EntityPredicate.class)
+public abstract class EntityPredicateMixin {
+    private @Nullable Boolean requiem$canBeCured;
+    private NumberRange.FloatRange requiem$healthPercentage = NumberRange.FloatRange.ANY;
 
-    /**
-     * For... reasons, we run tests on clients with a null server world. This does not work well with {@code LocationPredicate}s, so we skip all the world checks.
-     */
-    @Inject(method = "test(Lnet/minecraft/server/world/ServerWorld;FFF)Z", at = @At(value = "FIELD", target = "Lnet/minecraft/predicate/entity/LocationPredicate;dimension:Lnet/minecraft/util/registry/RegistryKey;", ordinal = 0), cancellable = true)
-    private void cancelTestOnClients(@Nullable ServerWorld world, float x, float y, float z, CallbackInfoReturnable<Boolean> cir) {
-        if (world == null) cir.setReturnValue(true);
-    }
-
-    @Inject(method = "test(Lnet/minecraft/server/world/ServerWorld;FFF)Z", at = @At("RETURN"), cancellable = true)
-    private void test(ServerWorld world, float x, float y, float z, CallbackInfoReturnable<Boolean> cir) {
-        if (cir.getReturnValueZ() && this.requiem$biomeCategory != null) {
-            BlockPos blockPos = new BlockPos(x, y, z);
-            Biome biome = world.getBiome(blockPos);
-
-            if (this.requiem$biomeCategory != biome.getCategory()) {
+    @Inject(method = "test(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/entity/Entity;)Z", at = @At("RETURN"), cancellable = true)
+    private void test(ServerWorld world, Vec3d pos, Entity entity, CallbackInfoReturnable<Boolean> cir) {
+        if (cir.getReturnValueZ() && entity instanceof LivingEntity) {
+            if (requiem$canBeCured != null) {
+                PlayerEntity possessor = ((ProtoPossessable) entity).getPossessor();
+                if (possessor != null && RemnantComponent.KEY.get(possessor).canCurePossessed((LivingEntity) entity) != requiem$canBeCured) {
+                    cir.setReturnValue(false);
+                    return;
+                }
+            }
+            if (!requiem$healthPercentage.test(((LivingEntity) entity).getHealth() / ((LivingEntity) entity).getMaxHealth())) {
                 cir.setReturnValue(false);
             }
         }
@@ -75,12 +76,14 @@ public abstract class LocationPredicateMixin {
 
     // ANY return is actually an early return in the bytecode
     @Inject(method = "fromJson", at = @At(value = "RETURN", ordinal = 1), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private static void fromJson(JsonElement json, CallbackInfoReturnable<LocationPredicate> cir, JsonObject locationData) {
-        if (locationData.has("requiem$biome_category")) {
-            //noinspection ConstantConditions
-            ((LocationPredicateMixin) (Object) cir.getReturnValue()).requiem$biomeCategory
-                = Biome.Category.CODEC.parse(JsonOps.INSTANCE, locationData.get("requiem$biome_category"))
-                .getOrThrow(false, msg -> Requiem.LOGGER.error("[Requiem] Failed to parse biome_category extension to LocationPredicate: {}", msg));
+    private static void fromJson(JsonElement json, CallbackInfoReturnable<EntityPredicate> cir, JsonObject entityData) {
+        //noinspection ConstantConditions
+        EntityPredicateMixin ret = (EntityPredicateMixin) (Object) cir.getReturnValue();
+
+        if (entityData.has("requiem:can_be_cured")) {
+            ret.requiem$canBeCured
+                = JsonHelper.getBoolean(entityData, "requiem:can_be_cured");
         }
+        ret.requiem$healthPercentage = NumberRange.FloatRange.fromJson(entityData.get("requiem:health_percentage"));
     }
 }

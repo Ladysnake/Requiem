@@ -1,0 +1,14 @@
+{
+  "schema_version": 0,
+  "priority": 80,
+  "possessed": {
+    "requiem:can_be_cured": true
+  },
+  "used_item": {
+    "tag": "requiem:undead_cures"
+  },
+  "use_time": 0,
+  "result": {
+    "action": "requiem:fail"
+  }
+}
