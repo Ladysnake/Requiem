@@ -71,7 +71,8 @@ public abstract class ItemStackMixin {
             PossessionItemOverride.findOverride(world, possessedEntity, heldStack)
                 .ifPresent(override -> {
                     if (override.getUseTime() <= 0) {
-                        cir.setReturnValue(override.runAction(player, possessedEntity, heldStack, world, hand));
+                        TypedActionResult<ItemStack> res = override.runAction(player, possessedEntity, heldStack, world, hand);
+                        if (res.getResult() != ActionResult.PASS) cir.setReturnValue(res);
                     } else {
                         this.requiem$currentOverride = override;
                         player.setCurrentHand(hand);
@@ -96,7 +97,10 @@ public abstract class ItemStackMixin {
             ItemStack heldStack = (ItemStack) (Object) this;
 
             PossessionItemOverride.findOverride(world, possessedEntity, heldStack)
-                .ifPresent(override -> cir.setReturnValue(override.runAction((PlayerEntity) user, possessedEntity, heldStack, world, user.getActiveHand()).getValue()));
+                .ifPresent(override -> {
+                    TypedActionResult<ItemStack> res = override.runAction((PlayerEntity) user, possessedEntity, heldStack, world, user.getActiveHand());
+                    if (res.getResult() != ActionResult.PASS) cir.setReturnValue(res.getValue());
+                });
         }
     }
 

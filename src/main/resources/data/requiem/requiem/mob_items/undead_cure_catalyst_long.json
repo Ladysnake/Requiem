@@ -1,17 +1,16 @@
 {
   "schema_version": 0,
-  "priority": 80,
   "tooltip": {
-    "translate": "requiem:tooltip.cure_reagent",
+    "translate": "requiem:tooltip.cure_catalyst",
     "color": "dark_gray"
   },
   "possessed": {
     "requiem:can_be_cured": true
   },
   "used_item": {
-    "tag": "requiem:undead_cures"
+    "potion": "minecraft:long_weakness"
   },
   "result": {
-    "action": "requiem:fail"
+    "action": "requiem:pass"
   }
 }

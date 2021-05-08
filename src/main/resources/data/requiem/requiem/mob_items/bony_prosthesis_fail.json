@@ -5,18 +5,12 @@
     "color": "dark_gray"
   },
   "possessed": {
-    "type": "#requiem:humanoid_skeletons",
-    "requiem:health_fraction": {
-      "min": 0,
-      "max": 0.9999
-    }
+    "type": "#requiem:humanoid_skeletons"
   },
   "used_item": {
     "tag": "requiem:bones"
   },
-  "use_time": 0,
   "result": {
-    "action": "requiem:replace_bone",
-    "cooldown": 60
+    "action": "requiem:fail"
   }
 }

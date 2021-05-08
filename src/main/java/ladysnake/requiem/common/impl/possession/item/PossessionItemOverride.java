@@ -48,6 +48,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -60,6 +62,7 @@ public final class PossessionItemOverride implements Comparable<PossessionItemOv
     private static final Codec<PossessionItemOverride> CODEC_V0 = RecordCodecBuilder.create((instance) -> instance.group(
         Codec.INT.optionalFieldOf("priority", 100).forGetter(PossessionItemOverride::getPriority),
         Codec.BOOL.optionalFieldOf("enabled", true).forGetter(PossessionItemOverride::isEnabled),
+        JSON_CODEC.optionalFieldOf("tooltip").xmap(o -> o.map(Text.Serializer::fromJson), txt -> txt.map(Text.Serializer::toJsonTree)).forGetter(PossessionItemOverride::getTooltip),
         JSON_CODEC.optionalFieldOf("possessed", null).xmap(EntityPredicate::fromJson, EntityPredicate::toJson).forGetter(PossessionItemOverride::getPossessed),
         JSON_CODEC.optionalFieldOf("used_item", null).xmap(ItemPredicate::fromJson, ItemPredicate::toJson).forGetter(PossessionItemOverride::getUsedItem),
         Codec.INT.optionalFieldOf("use_time", 0).forGetter(PossessionItemOverride::getUseTime),
@@ -87,18 +90,20 @@ public final class PossessionItemOverride implements Comparable<PossessionItemOv
 
     private final int priority;
     private final boolean enabled;
+    private final Optional<MutableText> tooltip;
     private final EntityPredicate possessed;
     private final ItemPredicate usedItem;
     private final int useTime;
     private final Result result;
 
-    private PossessionItemOverride(int priority, boolean enabled, EntityPredicate possessed, ItemPredicate usedItem, int useTime, Result result) {
+    private PossessionItemOverride(int priority, boolean enabled, Optional<MutableText> tooltip, EntityPredicate possessed, ItemPredicate usedItem, int useTime, Result result) {
         this.priority = priority;
         this.enabled = enabled;
         this.possessed = possessed;
         this.usedItem = usedItem;
         this.useTime = useTime;
         this.result = result;
+        this.tooltip = tooltip;
     }
 
     public static Optional<PossessionItemOverride> findOverride(World world, MobEntity possessedEntity, ItemStack heldStack) {
@@ -114,6 +119,10 @@ public final class PossessionItemOverride implements Comparable<PossessionItemOv
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public Optional<MutableText> getTooltip() {
+        return tooltip;
     }
 
     public EntityPredicate getPossessed() {

@@ -2,14 +2,14 @@
   "schema_version": 0,
   "priority": 80,
   "tooltip": {
-    "translate": "requiem:tooltip.cure_reagent",
+    "translate": "requiem:tooltip.drowned_food",
     "color": "dark_gray"
   },
   "possessed": {
-    "requiem:can_be_cured": true
+    "type": "minecraft:drowned"
   },
   "used_item": {
-    "tag": "requiem:undead_cures"
+    "tag": "requiem:raw_fishes"
   },
   "result": {
     "action": "requiem:fail"

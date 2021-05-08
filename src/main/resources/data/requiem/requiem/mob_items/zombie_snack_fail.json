@@ -2,15 +2,16 @@
   "schema_version": 0,
   "priority": 80,
   "tooltip": {
-    "translate": "requiem:tooltip.cure_reagent",
+    "translate": "requiem:tooltip.zombie_food",
     "color": "dark_gray"
   },
   "possessed": {
-    "requiem:can_be_cured": true
+    "type": "#requiem:zombies"
   },
   "used_item": {
-    "tag": "requiem:undead_cures"
+    "tag": "requiem:raw_meats"
   },
+  "use_time": 0,
   "result": {
     "action": "requiem:fail"
   }

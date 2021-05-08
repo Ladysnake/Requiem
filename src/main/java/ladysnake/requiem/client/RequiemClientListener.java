@@ -48,22 +48,23 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.particle.GhostParticle;
+import ladysnake.requiem.common.impl.possession.item.PossessionItemOverride;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import ladysnake.requiem.common.tag.RequiemItemTags;
 import ladysnake.requiem.common.util.ItemUtil;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.MilkBucketItem;
+import net.minecraft.item.TridentItem;
 import net.minecraft.potion.PotionUtil;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -152,27 +153,20 @@ public final class RequiemClientListener implements
     @Override
     public void onTooltipBuilt(ItemStack item, @Nullable PlayerEntity player, @SuppressWarnings("unused") TooltipContext context, List<Text> lines) {
         if (player != null) {
-            LivingEntity possessed = PossessionComponent.get(player).getPossessedEntity();
+            MobEntity possessed = PossessionComponent.get(player).getPossessedEntity();
             if (possessed == null) {
                 return;
             }
+
+            PossessionItemOverride.findOverride(player.world, possessed, item).flatMap(PossessionItemOverride::getTooltip).ifPresent(lines::add);
+
             String key;
             if (possessed instanceof AbstractSkeletonEntity && item.getItem() instanceof BowItem) {
                 key = "requiem:tooltip.skeletal_efficiency";
-            } else if (possessed instanceof AbstractSkeletonEntity && RequiemItemTags.BONES.contains(item.getItem())) {
-                key = "requiem:tooltip.bony_prosthesis";
             } else if (possessed instanceof AbstractSkeletonEntity && item.getItem() instanceof MilkBucketItem) {
                 key = "requiem:tooltip.calcium_bucket";
             } else if (possessed instanceof DrownedEntity && item.getItem() instanceof TridentItem) {
                 key = "requiem:tooltip.drowned_grip";
-            } else if (possessed instanceof ZombieEntity && RequiemItemTags.RAW_MEATS.contains(item.getItem())) {
-                key = "requiem:tooltip.zombie_food";
-            } else if (possessed instanceof DrownedEntity && ItemTags.FISHES.contains(item.getItem())) {
-                key = "requiem:tooltip.drowned_food";
-            } else if (possessed.isUndead() && item.getItem() == Items.GOLDEN_APPLE) {
-                key = "requiem:tooltip.cure_reagent";
-            } else if (possessed.isUndead() && item.getItem() == Items.POTION && isWeaknessPotion(item)) {
-                key = "requiem:tooltip.cure_catalyst";
             } else if (possessed instanceof WitchEntity && ItemUtil.isWaterBottle(item)) {
                 key = "requiem:tooltip.witch_brew_base";
             } else {

@@ -1,5 +1,9 @@
 {
   "schema_version": 0,
+  "tooltip": {
+    "translate": "requiem:tooltip.cure_reagent",
+    "color": "dark_gray"
+  },
   "possessed": {
     "requiem:can_be_cured": true,
     "effects": {

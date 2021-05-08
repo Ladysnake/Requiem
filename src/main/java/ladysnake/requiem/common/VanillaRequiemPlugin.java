@@ -294,6 +294,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
     @Override
     public void registerPossessionItemActions(Registry<PossessionItemAction> registry) {
+        Registry.register(registry, Requiem.id("pass"), (player, possessed, stack, world, hand) -> TypedActionResult.pass(stack));
         Registry.register(registry, Requiem.id("fail"), (player, possessed, stack, world, hand) -> TypedActionResult.fail(stack));
         Registry.register(registry, Requiem.id("cure"), (player, possessed, stack, world, hand) -> {
             if (RemnantComponent.get(player).canCurePossessed(possessed)) {
