@@ -4,7 +4,7 @@
   "enabled": true,
   "possessed": {
     "type": "#requiem:zombies",
-    "requiem:health_percentage": {
+    "requiem:health_fraction": {
       "min": 0,
       "max": 0.9999
     }

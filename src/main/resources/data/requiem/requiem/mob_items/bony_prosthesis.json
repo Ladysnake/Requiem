@@ -2,7 +2,7 @@
   "schema_version": 0,
   "possessed": {
     "type": "#requiem:humanoid_skeletons",
-    "requiem:health_percentage": {
+    "requiem:health_fraction": {
       "min": 0,
       "max": 0.9999
     }

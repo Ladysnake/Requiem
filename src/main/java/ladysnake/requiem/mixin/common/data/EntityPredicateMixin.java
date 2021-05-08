@@ -56,7 +56,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(EntityPredicate.class)
 public abstract class EntityPredicateMixin {
     private @Nullable Boolean requiem$canBeCured;
-    private NumberRange.FloatRange requiem$healthPercentage = NumberRange.FloatRange.ANY;
+    private NumberRange.FloatRange requiem$healthFraction = NumberRange.FloatRange.ANY;
 
     @Inject(method = "test(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/entity/Entity;)Z", at = @At("RETURN"), cancellable = true)
     private void test(ServerWorld world, Vec3d pos, Entity entity, CallbackInfoReturnable<Boolean> cir) {
@@ -68,7 +68,7 @@ public abstract class EntityPredicateMixin {
                     return;
                 }
             }
-            if (!requiem$healthPercentage.test(((LivingEntity) entity).getHealth() / ((LivingEntity) entity).getMaxHealth())) {
+            if (!requiem$healthFraction.test(((LivingEntity) entity).getHealth() / ((LivingEntity) entity).getMaxHealth())) {
                 cir.setReturnValue(false);
             }
         }
@@ -84,6 +84,6 @@ public abstract class EntityPredicateMixin {
             ret.requiem$canBeCured
                 = JsonHelper.getBoolean(entityData, "requiem:can_be_cured");
         }
-        ret.requiem$healthPercentage = NumberRange.FloatRange.fromJson(entityData.get("requiem:health_percentage"));
+        ret.requiem$healthFraction = NumberRange.FloatRange.fromJson(entityData.get("requiem:health_fraction"));
     }
 }
