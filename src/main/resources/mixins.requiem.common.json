@@ -16,8 +16,6 @@
     "data.LocationPredicateMixin",
     "event.ItemEntityMixin",
     "event.PlayerManagerMixin",
-    "humanity.EnchantmentHelperMixin",
-    "humanity.EnchantRandomlyLootFunctionMixin",
     "humanity.LivingEntityMixin",
     "inventory.ArmorItemMixin",
     "inventory.CraftingInventoryAccessor",
