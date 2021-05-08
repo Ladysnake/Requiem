@@ -15,6 +15,7 @@
     "attrition.StatusEffectInstanceMixin",
     "data.DynamicRegistryManagerMixin",
     "data.EntityPredicateMixin",
+    "data.ItemPredicateMixin",
     "data.LocationPredicateMixin",
     "event.ItemEntityMixin",
     "event.PlayerManagerMixin",
