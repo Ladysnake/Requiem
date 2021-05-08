@@ -76,11 +76,15 @@ public abstract class LocationPredicateMixin {
     // ANY return is actually an early return in the bytecode
     @Inject(method = "fromJson", at = @At(value = "RETURN", ordinal = 1), locals = LocalCapture.CAPTURE_FAILSOFT)
     private static void fromJson(JsonElement json, CallbackInfoReturnable<LocationPredicate> cir, JsonObject locationData) {
-        if (locationData.has("requiem$biome_category")) {
-            //noinspection ConstantConditions
-            ((LocationPredicateMixin) (Object) cir.getReturnValue()).requiem$biomeCategory
-                = Biome.Category.CODEC.parse(JsonOps.INSTANCE, locationData.get("requiem$biome_category"))
-                .getOrThrow(false, msg -> Requiem.LOGGER.error("[Requiem] Failed to parse biome_category extension to LocationPredicate: {}", msg));
-        }
+        JsonElement biomeCategory;
+        if (locationData.has("requiem:biome_category")) {
+            biomeCategory = locationData.get("requiem:biome_category");
+        } else if (locationData.has("requiem$biome_category")) {
+            biomeCategory = locationData.get("requiem$biome_category");
+        } else return;
+        //noinspection ConstantConditions
+        ((LocationPredicateMixin) (Object) cir.getReturnValue()).requiem$biomeCategory
+            = Biome.Category.CODEC.parse(JsonOps.INSTANCE, biomeCategory)
+            .getOrThrow(false, msg -> Requiem.LOGGER.error("[Requiem] Failed to parse biome_category extension to LocationPredicate: {}", msg));
     }
 }
