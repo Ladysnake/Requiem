@@ -78,6 +78,8 @@ public final class ApiInternals {
     private static Function<@Nullable World, DialogueRegistry> dialogueRegistryGetter;
     @AccessedThroughReflection
     private static Function<@Nullable World, MovementRegistry> movementRegistryGetter;
+    @AccessedThroughReflection
+    private static Function<@Nullable World, ?> mobItemRegistryGetter;
 
     @SuppressWarnings("unchecked")
     public static <T extends LivingEntity> MobAbilityConfig.Builder<T> mobAbilityConfig$builderImpl() {
