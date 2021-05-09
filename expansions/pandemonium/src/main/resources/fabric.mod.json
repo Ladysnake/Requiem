@@ -52,7 +52,8 @@
   "contact": {
     "sources": "https://github.com/Ladysnake/Requiem",
     "issues": "https://github.com/Ladysnake/Requiem/issues",
-    "discord": "ladysnake.glitch.me/discord"
+    "discord": "ladysnake.glitch.me/discord",
+    "homepage": "https://ladysnake.github.io/wiki/requiem/pandemonium"
   },
   "license": "GPL-3.0-or-later"
 }
