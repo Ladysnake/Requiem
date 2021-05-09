@@ -45,7 +45,8 @@
     "requiemapi": "${version}",
     "satin": ">=1.5.0- <1.6.0-",
     "cardinal-components-base": "^2.7.0",
-    "cardinal-components-scoreboard": "^2.7.10"
+    "cardinal-components-scoreboard": "^2.7.10",
+    "fabric-permissions-api-v0": "*"
   },
   "recommends": {
     "cloth-config2": ">=4.11"

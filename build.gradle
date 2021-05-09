@@ -209,6 +209,7 @@ dependencies {
         include project(":requiem-api")
     }
 
+    // Required dependencies
     modApi("io.github.ladysnake:Satin:${rootProject.satin_version}")
     include "io.github.ladysnake:Satin:${satin_version}"
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${cca_version}"
@@ -220,6 +221,10 @@ dependencies {
     include "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
     implementation "me.zeroeightsix:fiber:${project.fiber_version}"
     include "me.zeroeightsix:fiber:${project.fiber_version}"
+    modImplementation "me.lucko:fabric-permissions-api:${fpa_version}"
+    include "me.lucko:fabric-permissions-api:${fpa_version}"
+
+    // Optional dependencies
     modCompileOnly ("io.github.prospector:modmenu:${modmenu_version}") { transitive = false }
     modRuntime ("io.github.prospector:modmenu:${modmenu_version}") { transitive = false }
     modCompileOnly ("me.shedaniel.cloth:cloth-config-fabric:${cloth_version}") {
@@ -232,6 +237,7 @@ dependencies {
     modRuntime ("me.shedaniel.cloth:fiber2cloth:${f2c_version}") { transitive = false }
     include ("me.shedaniel.cloth:fiber2cloth:${f2c_version}") { transitive = false }
 
+    // Extra compatibility dependencies
 //    modRuntime curse.resolve('immersive-portals-mod', 2845123)
 //    modRuntime "curse.maven:mobz:2965825"
     modCompileOnly("io.github.Terrails:Health-Overlay:1.16-Fabric-SNAPSHOT")
@@ -252,7 +258,6 @@ dependencies {
     modCompileOnly("curse.maven:haema-391257:${haema_version}")
     modRuntime("curse.maven:haema-391257:${haema_version}")
     modRuntime("vazkii.patchouli:Patchouli:${project.patchouli_version}")
-    modRuntime("me.lucko:fabric-permissions-api:${fpa_version}")    // required by haema
     modRuntime("top.theillusivec4.somnus:somnus-fabric:${somnus_version}")  // required by haema
     modRuntime("me.sargunvohra.mcmods:autoconfig1u:${project.acu_version}")
     modRuntime("net.fabricmc:fabric-language-kotlin:${flk_version}")

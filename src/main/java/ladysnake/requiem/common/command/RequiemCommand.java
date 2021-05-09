@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.remnant.RemnantTypes;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
@@ -51,9 +52,8 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.world.GameRules;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Predicate;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -65,60 +65,97 @@ public class RequiemCommand {
     public static final String REMNANT_SUBCOMMAND = "remnant";
     public static final String ETHEREAL_SUBCOMMAND = "soul";
 
+    private static final Set<String> permissions = new HashSet<>();
+
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal(REQUIEM_ROOT_COMMAND)
-            .requires(s -> s.hasPermissionLevel(2))
+            .requires(RequiemCommand::checkPermissions)
             .then(literal(POSSESSION_SUBCOMMAND)
+                .requires(permission("possession.start.self").or(permission("possession.stop.self")))
                 // requiem possession stop [player]
                 .then(literal("stop")
+                    .requires(permission("possession.stop.self"))
                     .executes(context -> stopPossession(context.getSource(), Collections.singleton(context.getSource().getPlayer())))
                     .then(argument("target", EntityArgumentType.players())
+                        .requires(permission("possession.stop"))
                         .executes(context -> stopPossession(context.getSource(), EntityArgumentType.getPlayers(context, "target")))
                     )
                 )
                 // requiem possession start <possessed> [player]
                 .then(literal("start")
+                    .requires(permission("possession.start.self"))
                     .then(argument("possessed", EntityArgumentType.entity())
                         .executes(context -> startPossession(context.getSource(), EntityArgumentType.getEntity(context, "possessed"), context.getSource().getPlayer()))
                         .then(argument("possessor", EntityArgumentType.player())
+                            .requires(permission("possession.start"))
                             .executes(context -> startPossession(context.getSource(), EntityArgumentType.getEntity(context, "possessed"), EntityArgumentType.getPlayer(context, "possessor"))))
                     )
                 )
             )
             .then(literal(REMNANT_SUBCOMMAND)
+                .requires(permission("remnant.query.self").or(permission("remnant.set.self")))
                 // requiem remnant query [player]
                 .then(literal("query")
+                    .requires(permission("remnant.query.self"))
                     .executes(context -> queryRemnant(context.getSource(), context.getSource().getPlayer()))
                     .then(argument("target", EntityArgumentType.player())
+                        .requires(permission("remnant.query"))
                         .executes(context -> queryRemnant(context.getSource(), EntityArgumentType.getPlayer(context, "target")))
                     )
                 )
                 // requiem remnant set <true|false|identifier> [player]
                 .then(literal("set")
+                    .requires(permission("remnant.set.self"))
                     .then(argument("remnant_type", RemnantArgumentType.remnantType())
                         .executes(context -> setRemnant(context.getSource(), Collections.singleton(context.getSource().getPlayer()), RemnantArgumentType.getRemnantType(context, "remnant_type")))
                         .then(argument("target", EntityArgumentType.players())
+                            .requires(permission("remnant.set"))
                             .executes(context -> setRemnant(context.getSource(), EntityArgumentType.getPlayers(context, "target"), RemnantArgumentType.getRemnantType(context, "remnant_type")))
                         )
                     )
                 )
             )
             .then(literal(ETHEREAL_SUBCOMMAND)
+                .requires(permission("soul.query.self").or(permission("soul.set.self")))
                 // requiem soul query [player]
                 .then(literal("query")
+                    .requires(permission("soul.query.self"))
                     .executes(context -> queryEthereal(context.getSource(), context.getSource().getPlayer()))
+                    .then(argument("target", EntityArgumentType.player())
+                        .requires(permission("soul.query"))
+                        .executes(context -> queryEthereal(context.getSource(), EntityArgumentType.getPlayer(context, "target")))
+                    )
                 )
                 // requiem soul set <true|false> [player]
                 .then(literal("set")
+                    .requires(permission("soul.set.self"))
                     .then(argument("ethereal", BoolArgumentType.bool())
                         .executes(context -> setEthereal(context.getSource(), Collections.singleton(context.getSource().getPlayer()), BoolArgumentType.getBool(context, "ethereal")))
                         .then(argument("target", EntityArgumentType.players())
+                            .requires(permission("soul.set"))
                             .executes(context -> setEthereal(context.getSource(), EntityArgumentType.getPlayers(context, "target"), BoolArgumentType.getBool(context, "ethereal")))
                         )
                     )
                 )
             )
         );
+    }
+
+    private static Predicate<ServerCommandSource> permission(String name) {
+        String perm = "requiem.command" + name;
+        permissions.add(perm);
+        return Permissions.require(perm, 2);
+    }
+
+    private static boolean checkPermissions(ServerCommandSource source) {
+        if (source.hasPermissionLevel(2)) return true;
+
+        for (String perm : permissions) {
+            if (Permissions.check(source, perm)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static int queryEthereal(ServerCommandSource source, ServerPlayerEntity player) {
