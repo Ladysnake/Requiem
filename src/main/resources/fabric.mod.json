@@ -57,6 +57,9 @@
     "firstperson": "<2.0.0-",
     "origins": "<0.6.0"
   },
+  "breaks": {
+    "optifabric": "*"
+  },
 
   "name": "Requiem",
   "icon": "assets/requiem/skull_logo.png",
