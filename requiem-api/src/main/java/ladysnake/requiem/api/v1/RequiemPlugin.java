@@ -22,6 +22,7 @@ import ladysnake.requiem.api.v1.dialogue.DialogueAction;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.entity.ability.MobAbility;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
+import ladysnake.requiem.api.v1.possession.item.PossessionItemAction;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
@@ -90,5 +91,17 @@ public interface RequiemPlugin {
      */
     @API(status = API.Status.EXPERIMENTAL)
     default void registerVagrantInteractions(VagrantInteractionRegistry registry) {}
+
+    /**
+     * Register custom {@link PossessionItemAction} that can be referenced by data packs to customize
+     * item behaviour when used by a possessed mob.
+     *
+     * <p> The passed in {@link Registry} can be safely reused outside of this method.
+     * Stored instances should be refreshed each time this method is called.
+     *
+     * @param registry Requiem's possession item action registry
+     */
+    @API(status = API.Status.EXPERIMENTAL)
+    default void registerPossessionItemActions(Registry<PossessionItemAction> registry) {}
 
 }

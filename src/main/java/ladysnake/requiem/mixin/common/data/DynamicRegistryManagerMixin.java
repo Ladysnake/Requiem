@@ -32,26 +32,39 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.humanity;
+package ladysnake.requiem.mixin.common.data;
 
-import ladysnake.requiem.common.enchantment.RequiemEnchantments;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.EnchantmentLevelEntry;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.Codec;
+import ladysnake.requiem.api.v1.event.minecraft.DynamicRegistryRegistrationCallback;
+import ladysnake.requiem.common.impl.data.DynamicRegistryRegistrationHelperImpl;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.List;
+@Mixin(DynamicRegistryManager.class)
+public abstract class DynamicRegistryManagerMixin {
+    @Shadow
+    private static void register(ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, ?> infosBuilder, RegistryKey<? extends Registry<?>> registryRef, Codec<?> entryCodec) {
+        throw new IllegalStateException("Mixin not transformed");
+    }
 
-@Mixin(EnchantmentHelper.class)
-public abstract class EnchantmentHelperMixin {
-    @Inject(method = "getPossibleEntries", at = @At(value = "RETURN"))
-    private static void skipRandomHumanityBookEnchant(int power, ItemStack stack, boolean bl, CallbackInfoReturnable<List<EnchantmentLevelEntry>> cir) {
-        if (stack.getItem() == Items.BOOK) {
-            cir.getReturnValue().removeIf(enchantment -> enchantment.enchantment == RequiemEnchantments.HUMANITY);
-        }
+    @Shadow
+    private static void register(ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, ?> infosBuilder, RegistryKey<? extends Registry<?>> registryRef, Codec<?> entryCodec, Codec<?> networkEntryCodec) {}
+
+    @Dynamic("Lambda for INFOS initialization through Util#make")
+    @Inject(method = "method_30531", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/ImmutableMap$Builder;build()Lcom/google/common/collect/ImmutableMap;"), locals = LocalCapture.CAPTURE_FAILHARD)
+    private static void buildDynamicRegistries(CallbackInfoReturnable<ImmutableMap<RegistryKey<? extends Registry<?>>, ?>> cir, ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, ?> builder) {
+        DynamicRegistryRegistrationCallback.EVENT.invoker().registerDynamicRegistries(new DynamicRegistryRegistrationHelperImpl(
+            (registryKey, codec) -> register(builder, registryKey, codec),
+            (registryKey, codec, codec2) -> register(builder, registryKey, codec, codec2))
+        );
     }
 }

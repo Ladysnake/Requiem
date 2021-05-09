@@ -1,0 +1,15 @@
+{
+  "schema_version": 0,
+  "priority": 80,
+  "possessed": {
+    "type": "#requiem:piglins"
+  },
+  "used_item": {
+    "requiem:food": {
+      "always_edible": false
+    }
+  },
+  "result": {
+    "action": "requiem:fail"
+  }
+}

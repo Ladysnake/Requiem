@@ -112,7 +112,8 @@
  },
 "mobz:islandvex_entity": {
   "flightMode": "FORCED",
-  "phasesThroughWalls": true
+  "phasesThroughWalls": true,
+  "required": false
  },
  "adventurez:blaze_guardian":  {
   "flightMode": "FORCED",

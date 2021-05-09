@@ -32,22 +32,19 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.humanity;
+package ladysnake.requiem.common;
 
-import ladysnake.requiem.common.enchantment.RequiemEnchantments;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.loot.function.EnchantRandomlyLootFunction;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import com.mojang.serialization.Lifecycle;
+import ladysnake.requiem.common.impl.possession.item.PossessionItemOverride;
+import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.MutableRegistry;
+import net.minecraft.util.registry.SimpleRegistry;
 
-import java.util.List;
+public final class RequiemBuiltinRegistries {
+    public static final SimpleRegistry<PossessionItemOverride> MOB_ACTIONS = new SimpleRegistry<>(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY, Lifecycle.stable());
 
-@Mixin(EnchantRandomlyLootFunction.class)
-public abstract class EnchantRandomlyLootFunctionMixin {
-    @ModifyVariable(method = "process", at = @At(value = "INVOKE", target = "Ljava/util/List;isEmpty()Z", ordinal = 1))
-    private List<Enchantment> skipRandomHumanityEnchant(List<Enchantment> enchantPool) {
-        enchantPool.removeIf(RequiemEnchantments.HUMANITY::equals);
-        return enchantPool;
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static void init() {
+        ((MutableRegistry) BuiltinRegistries.REGISTRIES).add(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY, MOB_ACTIONS, Lifecycle.stable());
     }
 }

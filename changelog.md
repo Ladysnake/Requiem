@@ -1,4 +1,27 @@
 ------------------------------------------------------
+Version 1.7.0
+------------------------------------------------------
+**Additions**
+- Added custom mob item overrides, [configurable through datapacks](https://ladysnake.github.io/wiki/requiem/configuration)
+    - Moved some hardcoded item behaviour to this new system
+- Piglins can now eat pork, and only pork.
+    - They also have a food bar now
+    
+**Mod Compatibility**
+- LuckPerms: The `/requiem` command now has some configured permission nodes
+- Optifine: The game will now refuse to launch instead of crashing with Optifabric installed
+
+**Fixes**
+- Fixed possession indicator appearing on blacklisted mobs like the wither boss
+- Fixed Humanity being capped to level 1
+- Fixed invalid `entity_mobility` data file causing possessed mobs to not have adequate movement options
+
+#### Pandemonium
+**Additions**
+- Added a config option to disable pandemonium's ability to possess every mob
+- Foxes can now eat berries to regain some health
+
+------------------------------------------------------
 Version 1.6.3
 ------------------------------------------------------
 **Changes**

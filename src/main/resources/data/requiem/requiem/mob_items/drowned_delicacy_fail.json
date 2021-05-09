@@ -1,0 +1,17 @@
+{
+  "schema_version": 0,
+  "priority": 80,
+  "tooltip": {
+    "translate": "requiem:tooltip.drowned_food",
+    "color": "dark_gray"
+  },
+  "possessed": {
+    "type": "minecraft:drowned"
+  },
+  "used_item": {
+    "tag": "requiem:raw_fishes"
+  },
+  "result": {
+    "action": "requiem:fail"
+  }
+}

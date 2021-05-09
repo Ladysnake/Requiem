@@ -45,7 +45,8 @@
     "requiemapi": "${version}",
     "satin": ">=1.5.0- <1.6.0-",
     "cardinal-components-base": "^2.7.0",
-    "cardinal-components-scoreboard": "^2.7.10"
+    "cardinal-components-scoreboard": "^2.7.10",
+    "fabric-permissions-api-v0": "*"
   },
   "recommends": {
     "cloth-config2": ">=4.11"
@@ -55,6 +56,9 @@
     "betternether": "<=5.0.4",
     "firstperson": "<2.0.0-",
     "origins": "<0.6.0"
+  },
+  "breaks": {
+    "optifabric": "*"
   },
 
   "name": "Requiem",
@@ -70,7 +74,8 @@
   "contact": {
     "sources": "https://github.com/Ladysnake/Requiem",
     "issues": "https://github.com/Ladysnake/Requiem/issues",
-    "discord": "ladysnake.glitch.me/discord"
+    "discord": "ladysnake.glitch.me/discord",
+    "homepage": "https://ladysnake.github.io/wiki/requiem"
   },
   "license": "ARR"
 }

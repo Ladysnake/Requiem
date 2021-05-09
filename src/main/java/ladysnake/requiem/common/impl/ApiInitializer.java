@@ -37,12 +37,11 @@ package ladysnake.requiem.common.impl;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.RequiemPlugin;
-import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
-import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.internal.ApiInternals;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
+import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.common.impl.ability.DefaultedMobAbilityRegistry;
 import ladysnake.requiem.common.impl.ability.ImmutableMobAbilityConfig;
@@ -87,23 +86,18 @@ public final class ApiInitializer {
     }
 
     private static void initSubDataManagers() throws IllegalAccessException, NoSuchFieldException {
-        // Dialogues
-        DialogueManager serverDialogueManager = new DialogueManager();
-        DialogueManager clientDialogueManager = new DialogueManager();
-        SubDataManagerHelper.getServerHelper().registerSubDataManager(serverDialogueManager);
-        SubDataManagerHelper.getClientHelper().registerSubDataManager(clientDialogueManager);
-        ReflectionHelper.<Function<World, DialogueRegistry>>setField(
-            ApiInternals.class.getDeclaredField("dialogueRegistryGetter"),
-            w -> w == null || !w.isClient ? serverDialogueManager : clientDialogueManager
-        );
-        // Movement alterers
-        MovementAltererManager serverMovementAltererManager = new MovementAltererManager();
-        MovementAltererManager clientMovementAltererManager = new MovementAltererManager();
-        SubDataManagerHelper.getServerHelper().registerSubDataManager(serverMovementAltererManager);
-        SubDataManagerHelper.getClientHelper().registerSubDataManager(clientMovementAltererManager);
-        ReflectionHelper.<Function<World, MovementRegistry>>setField(
-            ApiInternals.class.getDeclaredField("movementRegistryGetter"),
-            w -> w == null || !w.isClient ? serverMovementAltererManager : clientMovementAltererManager
+        initSubDataManager(DialogueManager::new, ApiInternals.class.getDeclaredField("dialogueRegistryGetter"));
+        initSubDataManager(MovementAltererManager::new, ApiInternals.class.getDeclaredField("movementRegistryGetter"));
+    }
+
+    private static <T extends SubDataManager<?>> void initSubDataManager(Supplier<T> factory, Field target) throws IllegalAccessException {
+        T serverManager = factory.get();
+        T clientManager = factory.get();
+        SubDataManagerHelper.getServerHelper().registerSubDataManager(serverManager);
+        SubDataManagerHelper.getClientHelper().registerSubDataManager(clientManager);
+        ReflectionHelper.<Function<World, T>>setField(
+            target,
+            w -> w == null || !w.isClient ? serverManager : clientManager
         );
     }
 

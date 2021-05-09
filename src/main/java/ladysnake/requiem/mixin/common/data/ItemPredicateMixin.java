@@ -32,45 +32,34 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.enchantment;
+package ladysnake.requiem.mixin.common.data;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentTarget;
-import net.minecraft.entity.EquipmentSlot;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import ladysnake.requiem.common.impl.data.FoodComponentPredicate;
+import net.minecraft.item.ItemStack;
+import net.minecraft.predicate.item.ItemPredicate;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-public class HumanityEnchantment extends Enchantment {
-    protected HumanityEnchantment(Rarity weight, EnchantmentTarget type, EquipmentSlot[] slotTypes) {
-        super(weight, type, slotTypes);
+@Mixin(ItemPredicate.class)
+public abstract class ItemPredicateMixin {
+    private FoodComponentPredicate requiem$foodComponent= FoodComponentPredicate.ANY;
+
+    @Inject(method = "test", at = @At("RETURN"), cancellable = true)
+    private void test(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+        if (!this.requiem$foodComponent.test(stack)) {
+            cir.setReturnValue(false);
+        }
     }
 
-    @Override
-    public boolean isAvailableForEnchantedBookOffer() {
-        return false;
+    // ANY return is actually an early return in the bytecode
+    @Inject(method = "fromJson", at = @At(value = "RETURN", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD)
+    private static void fromJson(JsonElement el, CallbackInfoReturnable<ItemPredicate> cir, JsonObject itemData) {
+        //noinspection ConstantConditions
+        ((ItemPredicateMixin) (Object) cir.getReturnValue()).requiem$foodComponent = FoodComponentPredicate.fromJson(itemData.get("requiem:food"));
     }
-
-    @Override
-    public boolean isAvailableForRandomSelection() {
-        return false;
-    }
-
-    @Override
-    public int getMinPower(int level) {
-        return level * 10;
-    }
-
-    @Override
-    public int getMaxPower(int level) {
-        return this.getMinPower(level) + 15;
-    }
-
-    @Override
-    public boolean isTreasure() {
-        return true;
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return 2;
-    }
-
 }
