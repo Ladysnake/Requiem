@@ -79,7 +79,8 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         assert this.world != null;
         if (this.world.isClient) return;
 
-        if (this.world.getTime() % 80L == 0L) {
+        // Salt the time to avoid checking every potential obelisk on the same tick
+        if ((this.world.getTime() + this.pos.hashCode()) % 80L == 0L) {
             this.refresh();
 
             Vec3d obeliskCenter = new Vec3d(
