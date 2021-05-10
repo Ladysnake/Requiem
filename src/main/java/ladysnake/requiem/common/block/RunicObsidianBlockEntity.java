@@ -142,15 +142,15 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         if (this.world != null) {
             BlockPos.Mutable pos = this.pos.mutableCopy();
 
-            while (world.getBlockState(pos.down()).isIn(RequiemBlockTags.OBELISK_FRAME)) {
+            while (world.getBlockState(pos.down()).isIn(RequiemBlockTags.OBELISK_CORE)) {
                 pos.move(Direction.DOWN);
             }
 
-            while (world.getBlockState(pos.west()).isIn(RequiemBlockTags.OBELISK_FRAME)) {
+            while (world.getBlockState(pos.west()).isIn(RequiemBlockTags.OBELISK_CORE)) {
                 pos.move(Direction.WEST);
             }
 
-            while (world.getBlockState(pos.north()).isIn(RequiemBlockTags.OBELISK_FRAME)) {
+            while (world.getBlockState(pos.north()).isIn(RequiemBlockTags.OBELISK_CORE)) {
                 pos.move(Direction.NORTH);
             }
 
