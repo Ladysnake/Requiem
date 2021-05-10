@@ -39,6 +39,7 @@ import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.gamerule.RequiemSyncedGamerules;
 import ladysnake.requiem.common.remnant.RemnantTypes;
@@ -64,7 +65,11 @@ public final class RemnantComponentImpl implements RemnantComponent {
     }
 
     @Override
-    public void become(RemnantType type) {
+    public void become(RemnantType type, boolean makeChoice) {
+        if (makeChoice && this.player instanceof ServerPlayerEntity) {
+            RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, type);
+        }
+
         if (type == this.remnantType) {
             return;
         }
@@ -186,5 +191,10 @@ public final class RemnantComponentImpl implements RemnantComponent {
     public void writeToNbt(CompoundTag compoundTag) {
         compoundTag.putString("id", RemnantTypes.getId(this.remnantType).toString());
         compoundTag.putBoolean(ETHEREAL_TAG, this.isVagrant());
+    }
+
+    @Override
+    public void become(RemnantType type) {
+        become(type, false);
     }
 }

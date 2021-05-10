@@ -40,7 +40,6 @@ import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.advancement.Advancement;
@@ -90,7 +89,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
                 DeathSuspender.get(this).suspendDeath(killingBlow);
                 ci.cancel();
             } else {
-                VanillaRequiemPlugin.makeRemnantChoice((ServerPlayerEntity) (Object) this, startingRemnantType);
+                RemnantComponent.get(this).become(startingRemnantType, true);
             }
         }
     }
