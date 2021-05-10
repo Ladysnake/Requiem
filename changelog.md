@@ -1,4 +1,11 @@
 ------------------------------------------------------
+Version 1.7.2
+------------------------------------------------------
+#### Pandemonium
+**Bugfixes**
+- Fixed chunk save failures and the resulting shell duplication from unloading chunks with player shells in them
+
+------------------------------------------------------
 Version 1.7.1
 ------------------------------------------------------
 **Bugfixes**
