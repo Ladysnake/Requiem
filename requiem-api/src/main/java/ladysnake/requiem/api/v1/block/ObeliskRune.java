@@ -18,7 +18,7 @@
 package ladysnake.requiem.api.v1.block;
 
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
-import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.apiguardian.api.API;
 
@@ -26,12 +26,21 @@ import org.apiguardian.api.API;
  * Interface to be provided by blocks to apply effects when used in an obelisk.
  *
  * <p>Blocks that provide this interface still need to be added to the {@code requiem:obelisk/core} block tag.
+ *
+ * <p>Example registration code:
+ * <pre>{@code
+ *      ObeliskRune myRune = new MyObeliskRuneImpl();
+ *      ObeliskRune.LOOKUP.registerForBlocks((world, pos, state, blockEntity, context) -> myRune, myBlock);
+ * }</pre>
  */
 @API(status = API.Status.EXPERIMENTAL)
 public interface ObeliskRune {
     BlockApiLookup<ObeliskRune, Void> LOOKUP = BlockApiLookup.get(new Identifier("requiem", "obelisk_rune"), ObeliskRune.class, Void.class);
 
-    StatusEffect getEffect();
-
+    /**
+     * @return the maximum amount of levels of runes of this type that can be active on a single obelisk
+     */
     int getMaxLevel();
+
+    void applyEffect(ServerPlayerEntity target, int runeLevel, int obeliskWidth);
 }
