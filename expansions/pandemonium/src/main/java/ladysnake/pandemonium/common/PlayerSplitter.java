@@ -48,7 +48,6 @@ import ladysnake.pandemonium.common.impl.anchor.AnchorFactories;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import nerdhub.cardinal.components.api.util.EntityComponents;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
@@ -96,7 +95,7 @@ public final class PlayerSplitter {
         shell.setGameMode(whole.interactionManager.getGameMode());  // use same gamemode for deserialization
         shell.storePlayerData(whole, computeCopyNbt(whole));
         shell.setGameMode(whole.interactionManager.isSurvivalLike() ? whole.interactionManager.getGameMode() : GameMode.SURVIVAL);
-        VanillaRequiemPlugin.makeRemnantChoice(shell, RemnantTypes.MORTAL);
+        RemnantComponent.get(shell).become(RemnantTypes.MORTAL, true);
         InventoryLimiter.KEY.get(shell).setEnabled(false);
         PlayerShellEvents.DATA_TRANSFER.invoker().transferData(whole, shell, false);
         return shell;

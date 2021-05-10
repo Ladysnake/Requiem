@@ -161,7 +161,12 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         RemnantStateChangeCallback.EVENT.register((player, remnant) -> {
             if (!remnant.isVagrant()) PossessionComponent.get(player).stopPossessing(false);
             InventoryLimiter.KEY.get(player).setEnabled(remnant.isVagrant());
-            PlayerAbilityController.get(player).resetAbilities(remnant.isIncorporeal());
+            MobEntity possessed = PossessionComponent.getPossessedEntity(player);
+            if (possessed != null) {
+                PlayerAbilityController.get(player).usePossessedAbilities(possessed);
+            } else {
+                PlayerAbilityController.get(player).resetAbilities(remnant.isIncorporeal());
+            }
         });
     }
 
@@ -300,12 +305,11 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     public static void makeRemnantChoice(ServerPlayerEntity player, RemnantType chosenType) {
-        RemnantComponent.get(player).become(chosenType);
+        RemnantComponent.get(player).become(chosenType, true);
         if (chosenType != MORTAL) {
             player.world.playSound(null, player.getX(), player.getY(), player.getZ(), RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
             RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(chosenType, false));
         }
-        RequiemCriteria.MADE_REMNANT_CHOICE.handle(player, chosenType);
     }
 
     @Override

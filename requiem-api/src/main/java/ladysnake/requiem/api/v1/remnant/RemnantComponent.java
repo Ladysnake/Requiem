@@ -78,6 +78,24 @@ public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComp
      */
     void become(RemnantType type);
 
+    /**
+     * Make this player become the given {@link RemnantType type of remnant}.
+     * <p>If the given remnant type is the same as the current one, this method
+     * does not have any visible effect. Otherwise, it will reset the current state,
+     * replace it with a new one of the given type, and notify players of the change.
+     *
+     * <p>After this method has been called, the {@code RemnantType} returned by {@link #getRemnantType()}
+     * will be {@code type}.
+     *
+     * <p>If {@code makeChoice} is {@code true}, the player will not be shown
+     * the choice dialogue on future deaths.
+     *
+     * @param type the remnant type to become
+     * @param makeChoice whether
+     * @see #getRemnantType()
+     */
+    void become(RemnantType type, boolean makeChoice);
+
     @Contract(pure = true)
     RemnantType getRemnantType();
 

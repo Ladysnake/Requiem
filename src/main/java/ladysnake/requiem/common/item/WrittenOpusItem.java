@@ -37,7 +37,6 @@ package ladysnake.requiem.common.item;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
@@ -121,7 +120,7 @@ public class WrittenOpusItem extends Item {
                     );
                     RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(this.remnantType, true));
 
-                    remnantComponent.become(this.remnantType);
+                    remnantComponent.become(this.remnantType, true);
 
                     if (possessedEntity != null) {
                         if (remnantComponent.canCurePossessed(possessedEntity)) {
@@ -137,7 +136,6 @@ public class WrittenOpusItem extends Item {
 
                     player.incrementStat(Stats.USED.getOrCreateStat(this));
                     stack.decrement(1);
-                    RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, this.remnantType);
                 }
             }
 
