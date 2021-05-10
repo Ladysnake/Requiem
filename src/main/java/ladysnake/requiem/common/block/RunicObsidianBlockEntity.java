@@ -44,10 +44,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.StairShape;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Tickable;
@@ -64,7 +63,8 @@ import java.util.function.Predicate;
 public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
     public static final Direction[] OBELISK_SIDES = {Direction.SOUTH, Direction.EAST, Direction.NORTH, Direction.WEST};
     public static final int POWER_ATTEMPTS = 1;
-    private final Object2IntMap<StatusEffect> levels = new Object2IntOpenHashMap<>();
+
+    private final Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
     private @Nullable BlockPos delegate;
     private int obeliskWidth = 0;
     private int obeliskHeight = 0;
@@ -100,15 +100,14 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         Preconditions.checkState(this.obeliskHeight > 0);
 
         double range = this.obeliskWidth * 10 + 10;
-        Box box = (new Box(this.pos, this.pos.add(obeliskWidth - 1, obeliskHeight - 1, obeliskWidth - 1))).expand(range);
+        Box box = (new Box(this.pos, this.pos.add(this.obeliskWidth - 1, obeliskHeight - 1, this.obeliskWidth - 1))).expand(range);
 
-        int effectDuration = (9 + this.obeliskWidth * 2) * 20;
         List<PlayerEntity> players = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
 
         for (PlayerEntity player : players) {
             if (RemnantComponent.get(player).getRemnantType().isDemon()) {
-                for (Object2IntMap.Entry<StatusEffect> effect : this.levels.object2IntEntrySet()) {
-                    player.addStatusEffect(new StatusEffectInstance(effect.getKey(), effectDuration, effect.getIntValue() - 1, true, true));
+                for (Object2IntMap.Entry<ObeliskRune> effect : this.levels.object2IntEntrySet()) {
+                    effect.getKey().applyEffect((ServerPlayerEntity) player, effect.getIntValue(), this.obeliskWidth);
                 }
             }
         }
@@ -162,6 +161,7 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
 
     private void refresh() {
         assert this.world != null;
+        this.delegate = null;
         this.levels.clear();
         this.obeliskWidth = 0;
         this.obeliskHeight = 0;
@@ -174,13 +174,12 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
      * Finds the bottommost northwest corner of an obelisk.
      *
      * <p>If a {@link RunicObsidianBlockEntity} is found along the way, the search will be aborted
-     * as obelisks checks should be delegated to that block entity.
+     * and {@link #delegate} will be set.
      * This method does not check that there is a valid obelisk, however it will abort and return
-     * {@code Either.right(Optional.empty)} if the core below this block entity does not conform
+     * {@code null} if the core below this block entity does not conform
      * to expectations.
      *
-     * @return either the obelisk origin as a {@link BlockPos},
-     * or an {@code Optional} describing a better candidate for obelisk checks.
+     * @return a {@link BlockPos} describing a potential origin for an obelisk
      */
     @Contract(mutates = "this")
     private @Nullable BlockPos findObeliskOrigin() {
@@ -229,7 +228,7 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
     private void matchObelisk(World world, BlockPos origin) {
         int tentativeWidth = matchObeliskBase(world, origin);
         if (tentativeWidth > 0) {
-            Object2IntMap<StatusEffect> levels = new Object2IntOpenHashMap<>();
+            Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
             int tentativeHeight = matchObeliskCore(world, origin, tentativeWidth, levels);
             if (tentativeHeight > 0 && matchObeliskCap(world, origin, tentativeWidth, tentativeHeight)) {
                 this.obeliskWidth = tentativeWidth;
@@ -239,7 +238,7 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         }
     }
 
-    private static int matchObeliskCore(World world, BlockPos origin, int width, Object2IntMap<StatusEffect> levels) {
+    private static int matchObeliskCore(World world, BlockPos origin, int width, Object2IntMap<ObeliskRune> levels) {
         // start at north-west corner
         BlockPos start = origin.add(-1, 0, -1);
         BlockPos.Mutable pos = start.mutableCopy();
@@ -256,8 +255,8 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
 
             @Nullable RuneSearchResult result = findRune(world, origin, width, height);
             if (!result.valid) return height;
-            if (result.rune != null && levels.getInt(result.rune.getEffect()) <= result.rune.getMaxLevel()) {
-                levels.mergeInt(result.rune.getEffect(), 1, Integer::sum);
+            if (result.rune != null && levels.getInt(result.rune) <= result.rune.getMaxLevel()) {
+                levels.mergeInt(result.rune, 1, Integer::sum);
             }
             height++;
         }
