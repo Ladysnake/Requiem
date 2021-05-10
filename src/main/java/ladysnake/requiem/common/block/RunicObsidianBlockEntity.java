@@ -37,9 +37,9 @@ package ladysnake.requiem.common.block;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import ladysnake.requiem.api.v1.block.ObeliskRune;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.tag.RequiemBlockTags;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -53,6 +53,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.*;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -188,7 +189,7 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         }
     }
 
-    private void matchObelisk(BlockView world, BlockPos origin) {
+    private void matchObelisk(World world, BlockPos origin) {
         int tentativeWidth = matchObeliskBase(world, origin);
         if (tentativeWidth > 0) {
             Object2IntMap<StatusEffect> levels = new Object2IntOpenHashMap<>();
@@ -201,7 +202,7 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         }
     }
 
-    private static int matchObeliskCore(BlockView world, BlockPos origin, int width, Object2IntMap<StatusEffect> levels) {
+    private static int matchObeliskCore(World world, BlockPos origin, int width, Object2IntMap<StatusEffect> levels) {
         // start at north-west corner
         BlockPos start = origin.add(-1, 0, -1);
         BlockPos.Mutable pos = start.mutableCopy();
@@ -215,30 +216,34 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
             ) {
                 return height;
             }
-            @Nullable Block rune = findRune(world, origin, width, height);
-            if (rune == null) return height;
-            if (rune instanceof RunicObsidianBlock && levels.getInt(((RunicObsidianBlock) rune).getEffect()) <= ((RunicObsidianBlock) rune).getMaxLevel()) {
-                levels.mergeInt(((RunicObsidianBlock) rune).getEffect(), 1, Integer::sum);
+
+            @Nullable RuneSearchResult result = findRune(world, origin, width, height);
+            if (!result.valid) return height;
+            if (result.rune != null && levels.getInt(result.rune.getEffect()) <= result.rune.getMaxLevel()) {
+                levels.mergeInt(result.rune.getEffect(), 1, Integer::sum);
             }
             height++;
         }
     }
 
-    private static @Nullable Block findRune(BlockView world, BlockPos origin, int width, int height) {
-        Block rune = null;
+    private static RuneSearchResult findRune(World world, BlockPos origin, int width, int height) {
+        ObeliskRune rune = null;
+        boolean first = true;
         for (BlockPos corePos : iterateCoreBlocks(origin, width, height)) {
-            Block block = world.getBlockState(corePos).getBlock();
-            if (block.isIn(RequiemBlockTags.OBELISK_CORE)) {
-                if (rune == null) {
-                    rune = block;
-                } else if (block != rune) {
-                    return null;
+            BlockState state = world.getBlockState(corePos);
+            if (state.isIn(RequiemBlockTags.OBELISK_CORE)) {
+                @Nullable ObeliskRune foundRune = ObeliskRune.LOOKUP.find(world, corePos, state, null, null);
+                if (first) {
+                    rune = foundRune;
+                    first = false;
+                } else if (foundRune != rune) {
+                    return RuneSearchResult.FAILED;
                 }
             } else {
-                return null;
+                return RuneSearchResult.FAILED;
             }
         }
-        return rune;
+        return RuneSearchResult.of(rune);
     }
 
     private static int matchObeliskBase(BlockView world, BlockPos origin) {
@@ -303,5 +308,22 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         }
 
         return lastSideLength;
+    }
+
+    private static class RuneSearchResult {
+        static final RuneSearchResult FAILED = new RuneSearchResult(false, null);
+        static final RuneSearchResult INERT = new RuneSearchResult(true, null);
+
+        static RuneSearchResult of(@Nullable ObeliskRune rune) {
+            return rune == null ? INERT : new RuneSearchResult(true, rune);
+        }
+
+        final boolean valid;
+        final @Nullable ObeliskRune rune;
+
+        RuneSearchResult(boolean valid, @Nullable ObeliskRune rune) {
+            this.valid = valid;
+            this.rune = rune;
+        }
     }
 }

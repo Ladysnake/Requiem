@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.common.block;
 
+import ladysnake.requiem.api.v1.block.ObeliskRune;
 import ladysnake.requiem.common.item.RequiemItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -50,7 +51,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class RunicObsidianBlock extends Block implements BlockEntityProvider {
+public class RunicObsidianBlock extends Block implements BlockEntityProvider, ObeliskRune {
     private final StatusEffect effect;
     private final int maxLevel;
 
@@ -81,10 +82,12 @@ public class RunicObsidianBlock extends Block implements BlockEntityProvider {
         return new RunicObsidianBlockEntity();
     }
 
+    @Override
     public StatusEffect getEffect() {
         return effect;
     }
 
+    @Override
     public int getMaxLevel() {
         return this.maxLevel;
     }

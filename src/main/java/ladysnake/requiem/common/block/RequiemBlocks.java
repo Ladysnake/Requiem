@@ -35,6 +35,7 @@
 package ladysnake.requiem.common.block;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.block.ObeliskRune;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.item.RequiemItems;
 import net.minecraft.block.*;
@@ -47,13 +48,18 @@ public class RequiemBlocks {
     public static final Block POLISHED_OBSIDIAN = new Block(AbstractBlock.Settings.copy(Blocks.OBSIDIAN));
     public static final Block POLISHED_OBSIDIAN_SLAB = new SlabBlock(AbstractBlock.Settings.copy(POLISHED_OBSIDIAN));
     public static final Block POLISHED_OBSIDIAN_STAIRS = new StairsBlock(POLISHED_OBSIDIAN.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_OBSIDIAN)) {};   // anon class for protected constructor
-    public static final Block RUNIC_OBSIDIAN_ATTRITION = new RunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), RequiemStatusEffects.ATTRITION, 3);
+    public static final RunicObsidianBlock RUNIC_OBSIDIAN_ATTRITION = new RunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), RequiemStatusEffects.ATTRITION, 3);
 
     public static void init() {
         register(POLISHED_OBSIDIAN, "polished_obsidian");
         register(POLISHED_OBSIDIAN_SLAB, "polished_obsidian_slab");
         register(POLISHED_OBSIDIAN_STAIRS, "polished_obsidian_stairs");
-        register(RUNIC_OBSIDIAN_ATTRITION, "runic_obsidian_attrition");
+        registerRunic(RUNIC_OBSIDIAN_ATTRITION, "runic_obsidian_attrition");
+    }
+
+    public static <T extends Block & ObeliskRune> void registerRunic(T block, String name) {
+        register(block, name);
+        ObeliskRune.LOOKUP.registerForBlocks((world, pos, state, blockEntity, context) -> block, block);
     }
 
     public static Block register(Block block, String name) {
