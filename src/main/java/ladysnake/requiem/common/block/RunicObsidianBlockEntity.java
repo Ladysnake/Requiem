@@ -139,7 +139,7 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         return false;
     }
 
-    private RunicObsidianBlockEntity getObeliskCore() {
+    private RunicObsidianBlockEntity getObeliskOrigin() {
         if (this.world != null && this.delegating != null) {
             BlockEntity blockEntity = this.world.getBlockEntity(this.delegating);
             if (blockEntity instanceof RunicObsidianBlockEntity) {
@@ -150,11 +150,11 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
     }
 
     public int getRangeLevel() {
-        return this.getObeliskCore().obeliskWidth;
+        return this.getObeliskOrigin().obeliskWidth;
     }
 
     public int getPowerLevel() {
-        return this.getObeliskCore().obeliskHeight;
+        return this.getObeliskOrigin().obeliskHeight;
     }
 
     private void refresh() {
@@ -209,21 +209,22 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
             ) {
                 return height;
             }
-            @Nullable RunicObsidianBlock rune = findEffectRune(world, origin, width, height);
-            if (rune != null && levels.getInt(rune.getEffect()) <= rune.getMaxLevel()) {
-                levels.mergeInt(rune.getEffect(), 1, Integer::sum);
+            @Nullable Block rune = findRune(world, origin, width, height);
+            if (rune == null) return height;
+            if (rune instanceof RunicObsidianBlock && levels.getInt(((RunicObsidianBlock) rune).getEffect()) <= ((RunicObsidianBlock) rune).getMaxLevel()) {
+                levels.mergeInt(((RunicObsidianBlock) rune).getEffect(), 1, Integer::sum);
             }
             height++;
         }
     }
 
-    private static @Nullable RunicObsidianBlock findEffectRune(BlockView world, BlockPos origin, int width, int height) {
-        RunicObsidianBlock rune = null;
+    private static @Nullable Block findRune(BlockView world, BlockPos origin, int width, int height) {
+        Block rune = null;
         for (BlockPos corePos : iterateCoreBlocks(origin, width, height)) {
             Block block = world.getBlockState(corePos).getBlock();
-            if (block instanceof RunicObsidianBlock) {
+            if (block.isIn(RequiemBlockTags.OBELISK_CORE)) {
                 if (rune == null) {
-                    rune = ((RunicObsidianBlock) block);
+                    rune = block;
                 } else if (block != rune) {
                     return null;
                 }
