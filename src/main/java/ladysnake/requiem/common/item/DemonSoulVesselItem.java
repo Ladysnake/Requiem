@@ -64,12 +64,12 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class WrittenOpusItem extends Item {
+public class DemonSoulVesselItem extends Item {
     private final RemnantType remnantType;
     private final Formatting color;
     private final String tooltip;
 
-    public WrittenOpusItem(RemnantType remnantType, Formatting color, Settings settings, String tooltip) {
+    public DemonSoulVesselItem(RemnantType remnantType, Formatting color, Settings settings, String tooltip) {
         super(settings);
         this.remnantType = remnantType;
         this.color = color;

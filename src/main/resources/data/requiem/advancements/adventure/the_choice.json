@@ -2,7 +2,7 @@
   "parent": "minecraft:adventure/root",
   "display": {
     "icon": {
-      "item": "requiem:opus_daemonium"
+      "item": "requiem:soul_vessel"
     },
     "title": {
       "translate": "requiem:advancements.adventure.the_choice.title"

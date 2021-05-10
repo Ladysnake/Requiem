@@ -35,8 +35,8 @@
 package ladysnake.requiem.mixin.client.opus;
 
 import ladysnake.requiem.client.gui.WrittenOpusContents;
+import ladysnake.requiem.common.item.DemonSoulVesselItem;
 import ladysnake.requiem.common.item.OpusDemoniumItem;
-import ladysnake.requiem.common.item.WrittenOpusItem;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.gui.screen.ingame.LecternScreen;
 import net.minecraft.item.Item;
@@ -61,8 +61,8 @@ public abstract class LecternScreenMixin extends BookScreen {
         if (bookItem instanceof OpusDemoniumItem) {
             this.setPageProvider(new BookScreen.WritableBookContents(book));
             ci.cancel();
-        } else if (bookItem instanceof WrittenOpusItem) {
-            this.setPageProvider(new WrittenOpusContents((WrittenOpusItem) bookItem));
+        } else if (bookItem instanceof DemonSoulVesselItem) {
+            this.setPageProvider(new WrittenOpusContents((DemonSoulVesselItem) bookItem));
             ci.cancel();
         }
     }

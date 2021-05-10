@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.client.gui;
 
-import ladysnake.requiem.common.item.WrittenOpusItem;
+import ladysnake.requiem.common.item.DemonSoulVesselItem;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -42,7 +42,7 @@ import net.minecraft.text.TranslatableText;
 public class WrittenOpusContents implements BookScreen.Contents {
     private final Text magicSentence;
 
-    public WrittenOpusContents(WrittenOpusItem book) {
+    public WrittenOpusContents(DemonSoulVesselItem book) {
         this.magicSentence = new TranslatableText(book.getRemnantType().getConversionBookSentence())
                 .formatted(book.getTooltipColor());
     }

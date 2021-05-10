@@ -4,7 +4,7 @@
     "requiem:soul_mending",
     "requiem:banished"
   ],
-  "icon": "requiem:opus_daemonium_banishment",
+  "icon": "requiem:baleful_soul_vessel",
   "name": "origins:origin.requiem.wandering_spirit.name",
   "description": "origins:origin.requiem.wandering_spirit.description",
   "order": 1,

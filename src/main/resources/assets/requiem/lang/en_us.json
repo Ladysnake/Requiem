@@ -64,7 +64,7 @@
   "requiem:subtitles.effect.phasing": "Player phasing",
   "requiem:subtitles.effect.possession.attempt": "Possession Attempt",
   "requiem:subtitles.effect.time.stop": "ZA WARUDO! TOKI WO TOMARE",
-  "requiem:subtitles.item.opus.use": "Opus Daemonium Activates",
+  "requiem:subtitles.item.soul_vessel.use": "Soul Vessel Activates",
 
   "requiem:tooltip.bony_prosthesis": "Bony Prosthesis",
   "requiem:tooltip.calcium_bucket": "Calcium Goodness",
@@ -117,9 +117,9 @@
 
   "item.requiem.totem_of_skeletonization": "Totem of Skeletonization",
   "item.requiem.opus_daemonium": "Opus Daemonium",
-  "item.requiem.opus_daemonium_cure": "Opus Daemonium",
-  "item.requiem.opus_daemonium_curse": "Opus Daemonium",
-  "item.requiem.opus_daemonium_banishment": "Opus Daemonium",
+  "item.requiem.soul_vessel": "Soul Vessel",
+  "item.requiem.ominous_soul_vessel": "Ominous Soul Vessel",
+  "item.requiem.baleful_soul_vessel": "Baleful Soul Vessel",
   "requiem:opus_daemonium.curse": "Curse",
   "requiem:opus_daemonium.cure": "Cure",
   "requiem:opus_daemonium.banishment": "Banishment",

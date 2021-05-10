@@ -78,11 +78,11 @@ public class OpusDemoniumItem extends WritableBookItem {
     @Environment(EnvType.CLIENT)
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> lines, TooltipContext ctx) {
-        addTooltipLine(lines, RequiemItems.OPUS_DEMONIUM_CURSE);
-        addTooltipLine(lines, RequiemItems.OPUS_DEMONIUM_CURE);
+        addTooltipLine(lines, RequiemItems.OMINOUS_SOUL_VESSEL);
+        addTooltipLine(lines, RequiemItems.SOUL_VESSEL);
     }
 
-    private void addTooltipLine(List<Text> lines, WrittenOpusItem version) {
+    private void addTooltipLine(List<Text> lines, DemonSoulVesselItem version) {
         lines.add(new TranslatableText(version.getRemnantType().getConversionBookSentence()).formatted(version.getTooltipColor()));
     }
 }

@@ -34,8 +34,8 @@
  */
 package ladysnake.requiem.mixin.common.opus;
 
+import ladysnake.requiem.common.item.DemonSoulVesselItem;
 import ladysnake.requiem.common.item.OpusDemoniumItem;
-import ladysnake.requiem.common.item.WrittenOpusItem;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.LecternBlockEntity;
@@ -58,7 +58,7 @@ public class LecternBlockEntityMixin extends BlockEntity {
     @Inject(method = "hasBook", at = @At("RETURN"), cancellable = true)
     private void hasBook(CallbackInfoReturnable<Boolean> cir) {
         Item bookItem = this.book.getItem();
-        if (bookItem instanceof OpusDemoniumItem || bookItem instanceof WrittenOpusItem) {
+        if (bookItem instanceof OpusDemoniumItem || bookItem instanceof DemonSoulVesselItem) {
             cir.setReturnValue(true);
         }
     }

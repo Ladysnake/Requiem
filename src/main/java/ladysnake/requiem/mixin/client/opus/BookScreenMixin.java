@@ -35,8 +35,8 @@
 package ladysnake.requiem.mixin.client.opus;
 
 import ladysnake.requiem.client.gui.EditOpusScreen;
+import ladysnake.requiem.common.item.DemonSoulVesselItem;
 import ladysnake.requiem.common.item.OpusDemoniumItem;
-import ladysnake.requiem.common.item.WrittenOpusItem;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.gui.screen.ingame.LecternScreen;
 import net.minecraft.item.Item;
@@ -54,7 +54,7 @@ public class BookScreenMixin {
         //noinspection ConstantConditions
         if (self instanceof LecternScreen) {
             Item book = ((LecternScreen)self).getScreenHandler().getBookItem().getItem();
-            if (book instanceof WrittenOpusItem || book instanceof OpusDemoniumItem) {
+            if (book instanceof DemonSoulVesselItem || book instanceof OpusDemoniumItem) {
                 return EditOpusScreen.BOOK_TEXTURE;
             }
         }
