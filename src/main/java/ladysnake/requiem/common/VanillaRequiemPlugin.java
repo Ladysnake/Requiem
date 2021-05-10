@@ -154,7 +154,12 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         RemnantStateChangeCallback.EVENT.register((player, remnant) -> {
             if (!remnant.isVagrant()) PossessionComponent.get(player).stopPossessing(false);
             InventoryLimiter.KEY.get(player).setEnabled(remnant.isVagrant());
-            PlayerAbilityController.get(player).resetAbilities(remnant.isIncorporeal());
+            MobEntity possessed = PossessionComponent.getPossessedEntity(player);
+            if (possessed != null) {
+                PlayerAbilityController.get(player).usePossessedAbilities(possessed);
+            } else {
+                PlayerAbilityController.get(player).resetAbilities(remnant.isIncorporeal());
+            }
         });
     }
 
