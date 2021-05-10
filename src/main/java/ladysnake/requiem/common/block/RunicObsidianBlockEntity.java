@@ -62,7 +62,6 @@ import java.util.function.Predicate;
 public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
     public static final Direction[] OBELISK_SIDES = {Direction.SOUTH, Direction.EAST, Direction.NORTH, Direction.WEST};
     public static final int POWER_ATTEMPTS = 1;
-    private @Nullable BlockPos delegating = null;
     private final Object2IntMap<StatusEffect> levels = new Object2IntOpenHashMap<>();
     private int obeliskWidth = 0;
     private int obeliskHeight = 0;
@@ -140,8 +139,22 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
     }
 
     private RunicObsidianBlockEntity getObeliskOrigin() {
-        if (this.world != null && this.delegating != null) {
-            BlockEntity blockEntity = this.world.getBlockEntity(this.delegating);
+        if (this.world != null) {
+            BlockPos.Mutable pos = this.pos.mutableCopy();
+
+            while (world.getBlockState(pos.down()).isIn(RequiemBlockTags.OBELISK_FRAME)) {
+                pos.move(Direction.DOWN);
+            }
+
+            while (world.getBlockState(pos.west()).isIn(RequiemBlockTags.OBELISK_FRAME)) {
+                pos.move(Direction.WEST);
+            }
+
+            while (world.getBlockState(pos.north()).isIn(RequiemBlockTags.OBELISK_FRAME)) {
+                pos.move(Direction.NORTH);
+            }
+
+            BlockEntity blockEntity = this.world.getBlockEntity(pos);
             if (blockEntity instanceof RunicObsidianBlockEntity) {
                 return (RunicObsidianBlockEntity) blockEntity;
             }
@@ -159,24 +172,17 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
 
     private void refresh() {
         assert this.world != null;
-        this.delegating = null;
         this.levels.clear();
         this.obeliskWidth = 0;
         this.obeliskHeight = 0;
-        BlockEntity be = this.world.getBlockEntity(this.pos.down());
 
-        if (be instanceof RunicObsidianBlockEntity) {
-            this.delegating = ((RunicObsidianBlockEntity) be).delegating != null ? ((RunicObsidianBlockEntity) be).delegating : this.pos.down();
-        } else if (this.world.getBlockState(this.pos.down()).isIn(RequiemBlockTags.OBELISK_FRAME)) {
-            be = this.world.getBlockEntity(this.pos.west());
-            if (be instanceof RunicObsidianBlockEntity) {
-                this.delegating = ((RunicObsidianBlockEntity) be).delegating != null ? ((RunicObsidianBlockEntity) be).delegating : this.pos.west();
-            } else {
-                be = this.world.getBlockEntity(this.pos.north());
-                if (be instanceof RunicObsidianBlockEntity) {
-                    this.delegating = ((RunicObsidianBlockEntity) be).delegating != null ? ((RunicObsidianBlockEntity) be).delegating : this.pos.north();
-                } else {
-                    this.matchObelisk(this.world, this.pos);
+        // Only the bottommost northwest corner of an obelisk should check the structure
+        if (!(this.world.getBlockEntity(this.pos.down()) instanceof RunicObsidianBlockEntity)) {
+            if (this.world.getBlockState(this.pos.down()).isIn(RequiemBlockTags.OBELISK_FRAME)) {
+                if (!(this.world.getBlockEntity(this.pos.west()) instanceof RunicObsidianBlockEntity)) {
+                    if (!(this.world.getBlockEntity(this.pos.north()) instanceof RunicObsidianBlockEntity)) {
+                        this.matchObelisk(this.world, this.pos);
+                    }
                 }
             }
         }
