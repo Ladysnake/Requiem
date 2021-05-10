@@ -46,13 +46,6 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
 public class RequiemItems {
-    public static final FoodComponent HUMAN_FOOD = new FoodComponent.Builder()
-            .hunger(6)
-            .saturationModifier(0.3F)
-            .statusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 600, 0), 0.5F)
-            .meat()
-            .build();
-
     public static final DebugItem DEBUG_ITEM = new DebugItem(new Item.Settings());
     public static final Item TOTEM_OF_SKELETONIZATION = new Item((new Item.Settings()).maxCount(1).group(ItemGroup.COMBAT).rarity(Rarity.UNCOMMON));
     public static final OpusDemoniumItem OPUS_DEMONIUM = new OpusDemoniumItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1));
