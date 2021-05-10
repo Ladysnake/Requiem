@@ -43,10 +43,7 @@ import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.api.v1.event.minecraft.AllowUseEntityCallback;
-import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
-import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
-import ladysnake.requiem.api.v1.event.minecraft.PrepareRespawnCallback;
+import ladysnake.requiem.api.v1.event.minecraft.*;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
@@ -73,10 +70,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.entity.mob.SkeletonEntity;
-import net.minecraft.entity.mob.SpiderEntity;
+import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
@@ -84,6 +78,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
@@ -188,8 +183,23 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                     }
                     return ActionResult.SUCCESS;
                 }
+            } else if (entity instanceof RavagerEntity) {
+                LivingEntity possessed = PossessionComponent.get(player).getPossessedEntity();
+                if (possessed != null && possessed.getType().isIn(EntityTypeTags.RAIDERS)) {
+                    if (!world.isClient) {
+                        possessed.startRiding(entity);
+                    }
+                    return ActionResult.SUCCESS;
+                }
             }
             return ActionResult.PASS;
+        });
+        MobTravelRidingCallback.EVENT.register((mount, rider) -> {
+            if (mount.getType() == EntityType.RAVAGER) {
+                MobEntity possessedEntity = PossessionComponent.getPossessedEntity(rider);
+                return possessedEntity != null && possessedEntity.getType().isIn(EntityTypeTags.RAIDERS);
+            }
+            return false;
         });
         UseItemCallback.EVENT.register((player, world, hand) -> {
             LivingEntity possessed = PossessionComponent.getPossessedEntity(player);
