@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:crying_obsidian",
+    "requiem:runic_obsidian_attrition",
+    "requiem:runic_obsidian_penance"
+  ]
+}
