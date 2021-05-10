@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.common.block;
 
+import ladysnake.requiem.common.item.RequiemItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -61,14 +62,17 @@ public class RunicObsidianBlock extends Block implements BlockEntityProvider {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!world.isClient) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof RunicObsidianBlockEntity) {
-                RunicObsidianBlockEntity core = (RunicObsidianBlockEntity) blockEntity;
-                player.sendMessage(new LiteralText("Width: " + core.getRangeLevel() + ", Height: " + core.getPowerLevel()), true);
+        if (player.getStackInHand(hand).getItem() == RequiemItems.DEBUG_ITEM) {
+            if (!world.isClient) {
+                BlockEntity blockEntity = world.getBlockEntity(pos);
+                if (blockEntity instanceof RunicObsidianBlockEntity) {
+                    RunicObsidianBlockEntity core = (RunicObsidianBlockEntity) blockEntity;
+                    player.sendMessage(new LiteralText("Width: " + core.getRangeLevel() + ", Height: " + core.getPowerLevel()), true);
+                }
             }
+            return ActionResult.SUCCESS;
         }
-        return ActionResult.SUCCESS;
+        return ActionResult.PASS;
     }
 
     @Nullable
