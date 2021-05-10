@@ -35,7 +35,6 @@
 package ladysnake.requiem.common.block;
 
 import com.google.common.base.Preconditions;
-import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import ladysnake.requiem.api.v1.block.ObeliskRune;
@@ -55,18 +54,18 @@ import net.minecraft.util.Tickable;
 import net.minecraft.util.math.*;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
     public static final Direction[] OBELISK_SIDES = {Direction.SOUTH, Direction.EAST, Direction.NORTH, Direction.WEST};
     public static final int POWER_ATTEMPTS = 1;
     private final Object2IntMap<StatusEffect> levels = new Object2IntOpenHashMap<>();
+    private @Nullable BlockPos delegate;
     private int obeliskWidth = 0;
     private int obeliskHeight = 0;
 
@@ -143,12 +142,22 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         return false;
     }
 
+    private RunicObsidianBlockEntity getDelegate() {
+        if (this.world != null && this.delegate != null) {
+            BlockEntity blockEntity = this.world.getBlockEntity(this.delegate);
+            if (blockEntity instanceof RunicObsidianBlockEntity) {
+                return ((RunicObsidianBlockEntity) blockEntity).getDelegate();
+            }
+        }
+        return this;
+    }
+
     public int getRangeLevel() {
-        return this.findObeliskOrigin().right().flatMap(Function.identity()).orElse(this).obeliskWidth;
+        return this.getDelegate().obeliskWidth;
     }
 
     public int getPowerLevel() {
-        return this.findObeliskOrigin().right().flatMap(Function.identity()).orElse(this).obeliskHeight;
+        return this.getDelegate().obeliskHeight;
     }
 
     private void refresh() {
@@ -157,7 +166,8 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         this.obeliskWidth = 0;
         this.obeliskHeight = 0;
 
-        this.findObeliskOrigin().ifLeft(pos -> this.matchObelisk(this.world, pos));
+        BlockPos obeliskOrigin = this.findObeliskOrigin();
+        if (obeliskOrigin != null) this.matchObelisk(this.world, obeliskOrigin);
     }
 
     /**
@@ -172,14 +182,13 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
      * @return either the obelisk origin as a {@link BlockPos},
      * or an {@code Optional} describing a better candidate for obelisk checks.
      */
-    private Either<BlockPos, Optional<RunicObsidianBlockEntity>> findObeliskOrigin() {
+    @Contract(mutates = "this")
+    private @Nullable BlockPos findObeliskOrigin() {
         Preconditions.checkState(this.world != null);
 
         // getBlockEntity is faster than getBlockState, and we know that adjacent blocks must be of the same type for the structure to be valid
-        BlockEntity be = world.getBlockEntity(this.pos.west());
-        if (!(be instanceof RunicObsidianBlockEntity)) {
-            be = world.getBlockEntity(this.pos.north());
-            if (!(be instanceof RunicObsidianBlockEntity)) {
+        if (!(world.getBlockEntity(this.pos.west()) instanceof RunicObsidianBlockEntity)) {
+            if (!(world.getBlockEntity(this.pos.north()) instanceof RunicObsidianBlockEntity)) {
                 // we are at the northwest corner, now we go down until we find either the floor or a better candidate
                 // this should not go on for too many blocks, so mutable blockpos should not be necessary
                 BlockPos obeliskOrigin = this.pos;
@@ -189,27 +198,34 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
                 while (!downState.isIn(RequiemBlockTags.OBELISK_FRAME)) {
                     if (!downState.isIn(RequiemBlockTags.OBELISK_CORE)) {
                         // This is not a valid obelisk
-                        return Either.right(Optional.empty());
+                        return null;
                     }
                     obeliskOrigin = down;
                     down = obeliskOrigin.down();
-                    be = world.getBlockEntity(down);
 
-                    if (be instanceof RunicObsidianBlockEntity) {
+                    if (world.getBlockEntity(down) instanceof RunicObsidianBlockEntity) {
                         // Found a better candidate in a lower core layer
-                        return Either.right(Optional.of((RunicObsidianBlockEntity) be));
+                        this.delegate = down;
+                        return null;
                     }
 
                     downState = world.getBlockState(down);
                 }
 
-                return Either.left(obeliskOrigin);
+                return obeliskOrigin;
+            } else {
+                // Found a better candidate
+                this.delegate = this.pos.north();
+                return null;
             }
+        } else {
+            // Found a better candidate
+            this.delegate = this.pos.west();
+            return null;
         }
-        // Found a better candidate
-        return Either.right(Optional.of((RunicObsidianBlockEntity) be));
     }
 
+    @Contract(mutates = "this")
     private void matchObelisk(World world, BlockPos origin) {
         int tentativeWidth = matchObeliskBase(world, origin);
         if (tentativeWidth > 0) {
