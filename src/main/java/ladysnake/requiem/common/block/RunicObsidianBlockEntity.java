@@ -40,6 +40,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import ladysnake.requiem.api.v1.block.ObeliskRune;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.tag.RequiemBlockTags;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -49,6 +50,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.*;
 import net.minecraft.world.BlockView;
@@ -283,12 +285,26 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
     }
 
     private static int matchObeliskBase(BlockView world, BlockPos origin) {
-        return checkObeliskExtremity(world, origin.add(-1, -1, -1), state -> state.isIn(RequiemBlockTags.OBELISK_FRAME));
+        int width = checkObeliskExtremity(world, origin.add(-1, -1, -1), RequiemBlockTags.OBELISK_BASE_EDGES, state -> state.isIn(RequiemBlockTags.OBELISK_BASE_CORNERS));
+
+        if (width > 0) {
+            for (BlockPos corePos : iterateCoreBlocks(origin, width, -1)) {
+                if (!world.getBlockState(corePos).isIn(RequiemBlockTags.OBELISK_BASE)) {
+                    // Not a valid base
+                    return 0;
+                }
+            }
+        }
+
+        return width;
     }
 
     private static boolean matchObeliskCap(BlockView world, BlockPos origin, int width, int height) {
-        if (checkObeliskExtremity(world, origin.add(-1, height, -1), state -> {
-            if (state.isOf(RequiemBlocks.POLISHED_OBSIDIAN_STAIRS)) {
+        if (checkObeliskExtremity(world, origin.add(-1, height, -1), RequiemBlockTags.OBELISK_CAP_EDGES, state -> {
+            if (state.isIn(RequiemBlockTags.OBELISK_CAP_CORNERS)) {
+                // Someone added full blocks to this list
+                if (!(state.getBlock() instanceof StairsBlock)) return true;
+
                 StairShape stairShape = state.get(StairsBlock.SHAPE);
                 return stairShape == StairShape.OUTER_LEFT || stairShape == StairShape.OUTER_RIGHT;
             }
@@ -297,7 +313,7 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
             return false;
         }
         for (BlockPos blockPos : iterateCoreBlocks(origin, width, height + 1)) {
-            if (!world.getBlockState(blockPos).isOf(RequiemBlocks.POLISHED_OBSIDIAN_SLAB)) {
+            if (!world.getBlockState(blockPos).isIn(RequiemBlockTags.OBELISK_CAP_TOP)) {
                 return false;
             }
         }
@@ -309,7 +325,7 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
         return BlockPos.iterate(origin.up(height), origin.add(width - 1, height, width - 1));
     }
 
-    private static int checkObeliskExtremity(BlockView world, BlockPos origin, Predicate<BlockState> corner) {
+    private static int checkObeliskExtremity(BlockView world, BlockPos origin, Tag<Block> edgeTag, Predicate<BlockState> corner) {
         // start at bottom north-west corner
         BlockPos.Mutable pos = origin.mutableCopy();
         int lastSideLength = -1;
@@ -323,7 +339,7 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
                     if (sideLength > 0) {
                         break;
                     }
-                } else if (state.isOf(RequiemBlocks.POLISHED_OBSIDIAN_STAIRS)) {
+                } else if (state.isIn(edgeTag)) {
                     sideLength++;
                     if (sideLength > 5) {
                         // Too large: not a valid base
