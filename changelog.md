@@ -1,4 +1,14 @@
 ------------------------------------------------------
+Version 1.7.3
+------------------------------------------------------
+**Bugfixes**
+- Fixed players being unable to connect to multiplayer servers with requiem
+
+#### Pandemonium
+**Additions**
+- Raider mobs can now ride ravagers ✪ ω ✪
+
+------------------------------------------------------
 Version 1.7.2
 ------------------------------------------------------
 #### Pandemonium
