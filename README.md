@@ -19,13 +19,22 @@ More information is available on the Ladysnake Website: https://ladysnake.github
 
 ## For developers
 
-If you wish to develop compatibility features for Requiem, binaries are available both on the [Ladysnake bintray](https://bintray.com/ladysnake/mods/requiem/) and Jcenter. You can get it in your workspace with just a few lines in your Gradle buildscript (`build.gradle` file) :
+If you wish to develop compatibility features for Requiem, binaries are available both on the [Ladysnake artifactory](https://ladysnake.jfrog.io/artifactory/mods/io/github/ladysnake/requiem/).
+You can get it in your workspace with just a few lines in your Gradle buildscript (`build.gradle` file) :
 
 ```gradle
 repositories {
     maven {
         name = 'Ladysnake Mods'
-        url = 'https://dl.bintray.com/ladysnake/mods'
+        url = 'https://ladysnake.jfrog.io/artifactory/mods'
+        content {
+            includeGroup 'io.github.ladysnake'
+            includeGroupByRegex 'io\\.github\\.onyxstudios.*'
+        }
+    }
+    maven {
+        name = 'Nexus Mod Repository'
+        url = 'https://oss.sonatype.org/content/repositories/snapshots'
     }
 }
 
