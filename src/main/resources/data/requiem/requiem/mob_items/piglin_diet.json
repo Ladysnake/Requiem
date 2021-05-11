@@ -4,11 +4,13 @@
     "translate": "requiem:tooltip.piglin_diet",
     "color": "dark_gray"
   },
-  "possessed": {
-    "type": "#requiem:piglins"
-  },
-  "used_item": {
-    "tag": "requiem:pork"
+  "requirements": {
+    "possessed": {
+      "type": "#requiem:piglins"
+    },
+    "used_item": {
+      "tag": "requiem:pork"
+    }
   },
   "result": {
     "action": "requiem:pass"

@@ -63,13 +63,16 @@ import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import ladysnake.requiem.mixin.common.access.StatusEffectAccessor;
 import net.fabricmc.fabric.api.event.player.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -84,6 +87,9 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
 
 import javax.annotation.Nonnull;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import static ladysnake.requiem.common.remnant.RemnantTypes.MORTAL;
@@ -338,5 +344,36 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
             return TypedActionResult.fail(stack);
         });
+        Registry.register(registry, Requiem.id("witch_eat"), (player, possessed, stack, world, hand) -> {
+            Map<StatusEffect, StatusEffectInstance> before = new HashMap<>(possessed.getActiveStatusEffects());
+            ItemStack ret = stack.getItem().finishUsing(stack, world, player);
+            Map<StatusEffect, StatusEffectInstance> after = new HashMap<>(possessed.getActiveStatusEffects());
+            // Remove all negative status effects from the food
+            revertHarmfulEffects(player, before, after);
+            return TypedActionResult.success(ret);
+        });
+    }
+
+    private void revertHarmfulEffects(PlayerEntity player, Map<StatusEffect, StatusEffectInstance> before, Map<StatusEffect, StatusEffectInstance> after) {
+        for (StatusEffect statusEffect : after.keySet()) {
+            if (((StatusEffectAccessor) statusEffect).requiem$getType() == StatusEffectType.HARMFUL) {
+                StatusEffectInstance previous = before.get(statusEffect);
+                StatusEffectInstance current = after.get(statusEffect);
+                if (!Objects.equals(previous, current)) {
+                    player.removeStatusEffect(statusEffect);
+                    if (previous != null) {
+                        player.addStatusEffect(new StatusEffectInstance(
+                            statusEffect,
+                            Math.min(previous.getDuration(), current.getDuration()),
+                            Math.min(previous.getAmplifier(), current.getAmplifier()),
+                            previous.isAmbient(),
+                            previous.shouldShowParticles(),
+                            previous.shouldShowIcon(),
+                            previous
+                        ));
+                    }
+                }
+            }
+        }
     }
 }

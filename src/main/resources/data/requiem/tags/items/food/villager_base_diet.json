@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "#requiem:food/baked_goods",
+    {
+      "id": "#origins:ignore_diet",
+      "required": false
+    }
+  ]
+}

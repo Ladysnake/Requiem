@@ -45,6 +45,7 @@ import ladysnake.requiem.api.v1.possession.item.PossessionItemAction;
 import ladysnake.requiem.common.RequiemRegistries;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
@@ -97,8 +98,7 @@ public final class PossessionItemOverride implements Comparable<PossessionItemOv
             Codec.INT.optionalFieldOf("priority", 100).forGetter(PossessionItemOverride::getPriority),
             Codec.BOOL.optionalFieldOf("enabled", true).forGetter(PossessionItemOverride::isEnabled),
             jsonCodec.optionalFieldOf("tooltip").<Optional<Text>>xmap(o -> o.map(Text.Serializer::fromJson), txt -> txt.map(Text.Serializer::toJsonTree)).forGetter(PossessionItemOverride::getTooltip),
-            jsonCodec.optionalFieldOf("possessed", null).forGetter(o -> o.possessedJson),
-            jsonCodec.optionalFieldOf("used_item", null).forGetter(o -> o.usedItemJson),
+            Requirements.codec(jsonCodec).fieldOf("requirements").forGetter(o -> o.requirements),
             Codec.INT.optionalFieldOf("use_time", 0).forGetter(PossessionItemOverride::getUseTime),
             Result.CODEC.fieldOf("result").forGetter(PossessionItemOverride::getResult)
         ).apply(instance, PossessionItemOverride::new));
@@ -107,27 +107,23 @@ public final class PossessionItemOverride implements Comparable<PossessionItemOv
     private final int priority;
     private final boolean enabled;
     private final Optional<Text> tooltip;
-    private final JsonElement possessedJson;
-    private final JsonElement usedItemJson;
-    private @Nullable EntityPredicate possessed;
-    private @Nullable ItemPredicate usedItem;
+    private final Requirements requirements;
     private final int useTime;
     private final Result result;
 
-    private PossessionItemOverride(int priority, boolean enabled, Optional<Text> tooltip, JsonElement possessed, JsonElement usedItem, int useTime, Result result) {
+    private PossessionItemOverride(int priority, boolean enabled, Optional<Text> tooltip, Requirements requirements, int useTime, Result result) {
         this.priority = priority;
         this.enabled = enabled;
-        this.possessedJson = possessed;
-        this.usedItemJson = usedItem;
+        this.requirements = requirements;
         this.useTime = useTime;
         this.result = result;
         this.tooltip = tooltip;
     }
 
-    public static Optional<PossessionItemOverride> findOverride(World world, MobEntity possessedEntity, ItemStack heldStack) {
+    public static Optional<PossessionItemOverride> findOverride(World world, PlayerEntity player, MobEntity possessedEntity, ItemStack heldStack) {
         return world.getRegistryManager().get(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY).stream()
             .sorted()
-            .filter(override -> override.test(possessedEntity, heldStack))
+            .filter(override -> override.test(player, possessedEntity, heldStack))
             .findFirst();
     }
 
@@ -143,24 +139,6 @@ public final class PossessionItemOverride implements Comparable<PossessionItemOv
         return tooltip;
     }
 
-    public EntityPredicate getPossessed(World world) {
-        if (this.possessed == null) {
-            // fromJson references the server tag manager singleton, which is not set on the client
-            if (world.isClient) ServerTagManagerHolder.setTagManager(world.getTagManager());
-            this.possessed = EntityPredicate.fromJson(this.possessedJson);
-        }
-        return this.possessed;
-    }
-
-    public ItemPredicate getUsedItem(World world) {
-        if (this.usedItem == null) {
-            // fromJson references the server tag manager singleton, which is not set on the client
-            if (world.isClient) ServerTagManagerHolder.setTagManager(world.getTagManager());
-            this.usedItem = ItemPredicate.fromJson(this.usedItemJson);
-        }
-        return this.usedItem;
-    }
-
     public int getUseTime() {
         return useTime;
     }
@@ -169,23 +147,8 @@ public final class PossessionItemOverride implements Comparable<PossessionItemOv
         return result;
     }
 
-    public boolean test(MobEntity possessed, ItemStack stack) {
-        return this.isEnabled() && this.getUsedItem(possessed.world).test(stack) && this.testPossessed(possessed);
-    }
-
-    private boolean testPossessed(MobEntity possessed) {
-        if (!possessed.world.isClient) {
-            return this.getPossessed(possessed.world).test((ServerWorld) possessed.world, null, possessed);
-        } else {
-            // We still need to have some idea of whether we can use an item clientside
-            // Thankfully, most tests will never use the server world, so we can just pass null and pray
-            try {
-                return this.getPossessed(possessed.world).test(null/*Possible NPE*/, null, possessed);
-            } catch (NullPointerException npe) {
-                // We will have to check this serverside
-                return true;
-            }
-        }
+    public boolean test(PlayerEntity player, MobEntity possessed, ItemStack stack) {
+        return this.isEnabled() && this.requirements.test(player, possessed, stack);
     }
 
     @Override
@@ -197,10 +160,81 @@ public final class PossessionItemOverride implements Comparable<PossessionItemOv
         return this.result.run(player, possessedEntity, heldStack, world, hand);
     }
 
+    public static class Requirements {
+        public static Codec<Requirements> codec(Codec<JsonElement> jsonCodec) {
+            return RecordCodecBuilder.create(instance -> instance.group(
+                jsonCodec.optionalFieldOf("possessed", null).forGetter(o -> o.possessedJson),
+                jsonCodec.optionalFieldOf("used_item", null).forGetter(o -> o.usedItemJson),
+                Codec.BOOL.optionalFieldOf("can_eat").forGetter(o -> o.canEat)
+            ).apply(instance, Requirements::new));
+        }
+
+        private final JsonElement possessedJson;
+        private final JsonElement usedItemJson;
+        private @Nullable EntityPredicate possessed;
+        private @Nullable ItemPredicate usedItem;
+        private final Optional<Boolean> canEat;
+
+        public Requirements(JsonElement possessedJson, JsonElement usedItemJson, Optional<Boolean> canEat) {
+            this.possessedJson = possessedJson;
+            this.usedItemJson = usedItemJson;
+            this.canEat = canEat;
+        }
+
+        public boolean test(PlayerEntity player, MobEntity possessed, ItemStack stack) {
+            if (!this.getUsedItem(possessed.world).test(stack)) {
+                return false;
+            }
+            if (!this.testPossessed(possessed)) {
+                return false;
+            }
+            if (this.canEat.isPresent()) {
+                FoodComponent foodComponent = stack.getItem().getFoodComponent();
+                if (this.canEat.get() != (foodComponent != null && player.canConsume(foodComponent.isAlwaysEdible()))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private EntityPredicate getPossessed(World world) {
+            if (this.possessed == null) {
+                // fromJson references the server tag manager singleton, which is not set on the client
+                if (world.isClient) ServerTagManagerHolder.setTagManager(world.getTagManager());
+                this.possessed = EntityPredicate.fromJson(this.possessedJson);
+            }
+            return this.possessed;
+        }
+
+        private ItemPredicate getUsedItem(World world) {
+            if (this.usedItem == null) {
+                // fromJson references the server tag manager singleton, which is not set on the client
+                if (world.isClient) ServerTagManagerHolder.setTagManager(world.getTagManager());
+                this.usedItem = ItemPredicate.fromJson(this.usedItemJson);
+            }
+            return this.usedItem;
+        }
+
+        private boolean testPossessed(MobEntity possessed) {
+            if (!possessed.world.isClient) {
+                return this.getPossessed(possessed.world).test((ServerWorld) possessed.world, null, possessed);
+            } else {
+                // We still need to have some idea of whether we can use an item clientside
+                // Thankfully, most tests will never use the server world, so we can just pass null and pray
+                try {
+                    return this.getPossessed(possessed.world).test(null/*Possible NPE*/, null, possessed);
+                } catch (NullPointerException npe) {
+                    // We will have to check this serverside
+                    return true;
+                }
+            }
+        }
+    }
+
     public static class Result {
         public static final Codec<Result> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                RequiemRegistries.MOB_ACTIONS.fieldOf("action").forGetter(Result::getAction),
-                Codec.INT.optionalFieldOf("cooldown", 0).forGetter(Result::getCooldown)
+            RequiemRegistries.MOB_ACTIONS.fieldOf("action").forGetter(Result::getAction),
+            Codec.INT.optionalFieldOf("cooldown", 0).forGetter(Result::getCooldown)
             ).apply(instance, Result::new)
         );
 

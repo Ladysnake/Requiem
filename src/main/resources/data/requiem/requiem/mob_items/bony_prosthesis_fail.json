@@ -4,11 +4,13 @@
     "translate": "requiem:tooltip.bony_prosthesis",
     "color": "dark_gray"
   },
-  "possessed": {
-    "type": "#requiem:humanoid_skeletons"
-  },
-  "used_item": {
-    "tag": "requiem:bones"
+  "requirements": {
+    "possessed": {
+      "type": "#requiem:humanoid_skeletons"
+    },
+    "used_item": {
+      "tag": "requiem:bones"
+    }
   },
   "result": {
     "action": "requiem:fail"

@@ -5,11 +5,13 @@
     "translate": "requiem:tooltip.zombie_food",
     "color": "dark_gray"
   },
-  "possessed": {
-    "type": "#requiem:zombies"
-  },
-  "used_item": {
-    "tag": "requiem:raw_meats"
+  "requirements": {
+    "possessed": {
+      "type": "#requiem:zombies"
+    },
+    "used_item": {
+      "tag": "requiem:raw_meats"
+    }
   },
   "use_time": 0,
   "result": {

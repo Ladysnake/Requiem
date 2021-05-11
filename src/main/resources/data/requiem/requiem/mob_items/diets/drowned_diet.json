@@ -6,15 +6,17 @@
     "translate": "requiem:tooltip.drowned_food",
     "color": "dark_gray"
   },
-  "possessed": {
-    "type": "minecraft:drowned",
-    "requiem:health_fraction": {
-      "min": 0,
-      "max": 0.9999
+  "requirements": {
+    "possessed": {
+      "type": "minecraft:drowned",
+      "requiem:health_fraction": {
+        "min": 0,
+        "max": 0.9999
+      }
+    },
+    "used_item": {
+      "tag": "requiem:raw_fishes"
     }
-  },
-  "used_item": {
-    "tag": "requiem:raw_fishes"
   },
   "use_time": 32,
   "result": {

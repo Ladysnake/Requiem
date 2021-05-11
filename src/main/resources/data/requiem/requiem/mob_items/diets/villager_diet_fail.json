@@ -1,14 +1,12 @@
 {
   "schema_version": 0,
-  "priority": 80,
+  "priority": 100,
   "requirements": {
     "possessed": {
-      "type": "#requiem:piglins"
+      "type": "#requiem:villagers"
     },
     "used_item": {
-      "requiem:food": {
-        "always_edible": false
-      }
+      "tag": "requiem:food/illager_diet"
     }
   },
   "result": {

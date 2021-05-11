@@ -9,6 +9,7 @@
     "access.EntityAccessor",
     "access.LivingEntityAccessor",
     "access.ProjectileEntityAccessor",
+    "access.StatusEffectAccessor",
     "attrition.EffectCommandMixin",
     "attrition.LivingEntityMixin",
     "attrition.ServerPlayerEntityMixin",

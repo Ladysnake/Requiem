@@ -158,7 +158,7 @@ public final class RequiemClientListener implements
                 return;
             }
 
-            PossessionItemOverride.findOverride(player.world, possessed, item).flatMap(PossessionItemOverride::getTooltip).ifPresent(lines::add);
+            PossessionItemOverride.findOverride(player.world, player, possessed, item).flatMap(PossessionItemOverride::getTooltip).ifPresent(lines::add);
 
             String key;
             if (possessed instanceof AbstractSkeletonEntity && item.getItem() instanceof BowItem) {
