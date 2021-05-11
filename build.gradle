@@ -154,23 +154,9 @@ repositories {
         }
     }
     maven {
-        name = "AdrianTodt's Maven"
-        url = "https://dl.bintray.com/adriantodt/maven"
-        content {
-            includeGroup "net.adriantodt.fabricmc"
-        }
-    }
-    maven {
         url 'https://maven.blamejared.com'
         content {
             includeGroupByRegex 'vazkii\\..*'
-        }
-    }
-    maven {
-        name = 'Earthcomputer Mods'
-        url = 'https://dl.bintray.com/earthcomputer/mods'
-        content {
-            includeGroup 'net.earthcomputer'
         }
     }
     maven {
@@ -245,7 +231,7 @@ dependencies {
     modRuntime("io.github.CerulanLumina:better-graves:${better_graves_version}")
 
     modRuntime "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
-    modRuntime "net.adriantodt.fabricmc:fallflyinglib:${fallflyinglib_version}"
+    modRuntime "io.github.adriantodt:FallFlyingLib:${fallflyinglib_version}"
     modCompileOnly("com.github.Virtuoel:Pehkui:${pehkui_version}") { transitive = false }
     modRuntime("com.github.Virtuoel:Pehkui:${pehkui_version}") { transitive = false }
     modCompileOnly("curse.maven:Snow-Mercy-429949:${snowmercy_version}") { transitive = false }
@@ -254,7 +240,6 @@ dependencies {
     modRuntime("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:${eldritch_mobs_version}") { transitive = false }
     modRuntime "io.github.cottonmc:LibGui:${libgui_version}"
-    modRuntime "net.earthcomputer:libstructure:1.5"
     modCompileOnly("curse.maven:haema-391257:${haema_version}")
     modRuntime("curse.maven:haema-391257:${haema_version}")
     modRuntime("vazkii.patchouli:Patchouli:${project.patchouli_version}")
