@@ -1,4 +1,22 @@
 ------------------------------------------------------
+Version 1.7.4
+------------------------------------------------------
+**Changes**
+- Weapons enchanted with Humanity can now hurt the Enderdragon
+- Added custom diets for villager folks
+    - Illagers are carnist
+    - Villagers are vegetarian
+    - Witches eat stuff no one reasonable would
+    - Everyone eats bread (bread is good)
+- Made a breaking change in the item override data format, hope no one did a datapack yet
+
+**Mod Compatibility**
+- Bumblezone: Fixed the "compatibility improvements" actually crashing the game
+
+**Fixes**
+- Fixed Requiem flat out not doing anything in Hardcore
+
+------------------------------------------------------
 Version 1.7.3
 ------------------------------------------------------
 **Bugfixes**
