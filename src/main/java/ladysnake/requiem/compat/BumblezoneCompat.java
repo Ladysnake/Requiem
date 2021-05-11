@@ -47,8 +47,8 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import net.telepathicgrunt.bumblezone.Bumblezone;
-import net.telepathicgrunt.bumblezone.entities.PlayerTeleportation;
+import com.telepathicgrunt.bumblezone.Bumblezone;
+import com.telepathicgrunt.bumblezone.entities.PlayerTeleportation;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
