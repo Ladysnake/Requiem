@@ -73,6 +73,6 @@ public final class RequiemRegistries {
 
         RequiemBuiltinRegistries.init();
 
-        DynamicRegistryRegistrationCallback.EVENT.register(helper -> helper.registerSynced(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY, PossessionItemOverride.CODEC, PossessionItemOverride.CODEC));
+        DynamicRegistryRegistrationCallback.EVENT.register(helper -> helper.registerSynced(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY, PossessionItemOverride.CODEC, PossessionItemOverride.NETWORK_CODEC));
     }
 }

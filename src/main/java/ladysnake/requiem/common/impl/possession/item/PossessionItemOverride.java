@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.common.impl.possession.item;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -48,26 +49,29 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.MutableText;
+import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
 public final class PossessionItemOverride implements Comparable<PossessionItemOverride> {
-    private static final Codec<JsonElement> JSON_CODEC = Codec.PASSTHROUGH.xmap(d -> d.convert(JsonOps.INSTANCE).getValue(), json -> new Dynamic<>(JsonOps.INSTANCE));
-    private static final Codec<PossessionItemOverride> CODEC_V0 = RecordCodecBuilder.create((instance) -> instance.group(
-        Codec.INT.optionalFieldOf("priority", 100).forGetter(PossessionItemOverride::getPriority),
-        Codec.BOOL.optionalFieldOf("enabled", true).forGetter(PossessionItemOverride::isEnabled),
-        JSON_CODEC.optionalFieldOf("tooltip").xmap(o -> o.map(Text.Serializer::fromJson), txt -> txt.map(Text.Serializer::toJsonTree)).forGetter(PossessionItemOverride::getTooltip),
-        JSON_CODEC.optionalFieldOf("possessed", null).xmap(EntityPredicate::fromJson, EntityPredicate::toJson).forGetter(PossessionItemOverride::getPossessed),
-        JSON_CODEC.optionalFieldOf("used_item", null).xmap(ItemPredicate::fromJson, ItemPredicate::toJson).forGetter(PossessionItemOverride::getUsedItem),
-        Codec.INT.optionalFieldOf("use_time", 0).forGetter(PossessionItemOverride::getUseTime),
-        Result.CODEC.fieldOf("result").forGetter(PossessionItemOverride::getResult)
-    ).apply(instance, PossessionItemOverride::new));
+    private static final Gson GSON = new Gson();
+    private static final Codec<JsonElement> DYNAMIC_JSON_CODEC = Codec.PASSTHROUGH.comapFlatMap(
+        dynamic -> DataResult.success(dynamic.convert(JsonOps.INSTANCE).getValue()),
+        json -> new Dynamic<>(JsonOps.INSTANCE, json)
+    );
+    private static final Codec<JsonElement> STRING_JSON_CODEC = Codec.STRING.xmap(
+        str -> GSON.fromJson(str, JsonElement.class),
+        GSON::toJson
+    );
+    // The compressed NBT codec used by PacketByteBuf#encode fails on nulls, so we cannot use regular JSON objects
+    public static final Codec<PossessionItemOverride> NETWORK_CODEC = codecV0(STRING_JSON_CODEC);
+    private static final Codec<PossessionItemOverride> CODEC_V0 = codecV0(DYNAMIC_JSON_CODEC);
 
     private static final int CURRENT_SCHEMA_VERSION = 0;
 
@@ -88,19 +92,33 @@ public final class PossessionItemOverride implements Comparable<PossessionItemOv
         })
     );
 
+    private static Codec<PossessionItemOverride> codecV0(Codec<JsonElement> jsonCodec) {
+        return RecordCodecBuilder.create((instance) -> instance.group(
+            Codec.INT.optionalFieldOf("priority", 100).forGetter(PossessionItemOverride::getPriority),
+            Codec.BOOL.optionalFieldOf("enabled", true).forGetter(PossessionItemOverride::isEnabled),
+            jsonCodec.optionalFieldOf("tooltip").<Optional<Text>>xmap(o -> o.map(Text.Serializer::fromJson), txt -> txt.map(Text.Serializer::toJsonTree)).forGetter(PossessionItemOverride::getTooltip),
+            jsonCodec.optionalFieldOf("possessed", null).forGetter(o -> o.possessedJson),
+            jsonCodec.optionalFieldOf("used_item", null).forGetter(o -> o.usedItemJson),
+            Codec.INT.optionalFieldOf("use_time", 0).forGetter(PossessionItemOverride::getUseTime),
+            Result.CODEC.fieldOf("result").forGetter(PossessionItemOverride::getResult)
+        ).apply(instance, PossessionItemOverride::new));
+    }
+
     private final int priority;
     private final boolean enabled;
-    private final Optional<MutableText> tooltip;
-    private final EntityPredicate possessed;
-    private final ItemPredicate usedItem;
+    private final Optional<Text> tooltip;
+    private final JsonElement possessedJson;
+    private final JsonElement usedItemJson;
+    private @Nullable EntityPredicate possessed;
+    private @Nullable ItemPredicate usedItem;
     private final int useTime;
     private final Result result;
 
-    private PossessionItemOverride(int priority, boolean enabled, Optional<MutableText> tooltip, EntityPredicate possessed, ItemPredicate usedItem, int useTime, Result result) {
+    private PossessionItemOverride(int priority, boolean enabled, Optional<Text> tooltip, JsonElement possessed, JsonElement usedItem, int useTime, Result result) {
         this.priority = priority;
         this.enabled = enabled;
-        this.possessed = possessed;
-        this.usedItem = usedItem;
+        this.possessedJson = possessed;
+        this.usedItemJson = usedItem;
         this.useTime = useTime;
         this.result = result;
         this.tooltip = tooltip;
@@ -121,16 +139,26 @@ public final class PossessionItemOverride implements Comparable<PossessionItemOv
         return enabled;
     }
 
-    public Optional<MutableText> getTooltip() {
+    public Optional<Text> getTooltip() {
         return tooltip;
     }
 
-    public EntityPredicate getPossessed() {
-        return possessed;
+    public EntityPredicate getPossessed(World world) {
+        if (this.possessed == null) {
+            // fromJson references the server tag manager singleton, which is not set on the client
+            if (world.isClient) ServerTagManagerHolder.setTagManager(world.getTagManager());
+            this.possessed = EntityPredicate.fromJson(this.possessedJson);
+        }
+        return this.possessed;
     }
 
-    public ItemPredicate getUsedItem() {
-        return usedItem;
+    public ItemPredicate getUsedItem(World world) {
+        if (this.usedItem == null) {
+            // fromJson references the server tag manager singleton, which is not set on the client
+            if (world.isClient) ServerTagManagerHolder.setTagManager(world.getTagManager());
+            this.usedItem = ItemPredicate.fromJson(this.usedItemJson);
+        }
+        return this.usedItem;
     }
 
     public int getUseTime() {
@@ -142,17 +170,17 @@ public final class PossessionItemOverride implements Comparable<PossessionItemOv
     }
 
     public boolean test(MobEntity possessed, ItemStack stack) {
-        return this.isEnabled() && this.getUsedItem().test(stack) && this.testPossessed(possessed);
+        return this.isEnabled() && this.getUsedItem(possessed.world).test(stack) && this.testPossessed(possessed);
     }
 
     private boolean testPossessed(MobEntity possessed) {
         if (!possessed.world.isClient) {
-            return this.getPossessed().test((ServerWorld) possessed.world, null, possessed);
+            return this.getPossessed(possessed.world).test((ServerWorld) possessed.world, null, possessed);
         } else {
             // We still need to have some idea of whether we can use an item clientside
             // Thankfully, most tests will never use the server world, so we can just pass null and pray
             try {
-                return this.getPossessed().test(null/*Possible NPE*/, null, possessed);
+                return this.getPossessed(possessed.world).test(null/*Possible NPE*/, null, possessed);
             } catch (NullPointerException npe) {
                 // We will have to check this serverside
                 return true;
