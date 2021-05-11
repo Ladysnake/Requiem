@@ -19,6 +19,7 @@
     "data.LocationPredicateMixin",
     "event.ItemEntityMixin",
     "event.PlayerManagerMixin",
+    "humanity.EnderDragonEntityMixin",
     "humanity.LivingEntityMixin",
     "inventory.ArmorItemMixin",
     "inventory.CraftingInventoryAccessor",

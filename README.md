@@ -33,7 +33,7 @@ repositories {
         }
     }
     maven {
-        name = 'Nexus Mod Repository'
+        name = 'Nexus OSS Repository'
         url = 'https://oss.sonatype.org/content/repositories/snapshots'
     }
 }
