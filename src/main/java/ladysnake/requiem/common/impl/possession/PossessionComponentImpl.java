@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
@@ -134,6 +135,10 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 ((MobEntity) possessable).stopRiding();
                 player.startRiding(ridden);
             }
+            if (RequiemEntityTypeTags.EATERS.contains(host.getType())) {
+                player.getHungerManager().fromTag(PossessedData.KEY.get(host).getHungerData());
+            }
+
             host.setTarget(null);
         }
         // Actually set the possessed entity
@@ -171,26 +176,30 @@ public final class PossessionComponentImpl implements PossessionComponent {
      */
     @Override
     public void stopPossessing(boolean transfer) {
-        LivingEntity possessed = this.getPossessedEntity();
-        if (possessed != null) {
+        LivingEntity host = this.getPossessedEntity();
+        if (host != null) {
             this.resetState();
-            ((Possessable) possessed).setPossessor(null);
+            ((Possessable) host).setPossessor(null);
 
             if (player instanceof ServerPlayerEntity) {
                 if (transfer) {
-                    dropEquipment(possessed, player);
+                    dropEquipment(host, player);
+                }
+
+                if (RequiemEntityTypeTags.EATERS.contains(host.getType())) {
+                    player.getHungerManager().toTag(PossessedData.KEY.get(host).getHungerData());
                 }
 
                 // move soulbound effects from the host to the soul
                 // careful with ConcurrentModificationException
-                for (StatusEffectInstance effect : possessed.getStatusEffects().toArray(new StatusEffectInstance[0])) {
+                for (StatusEffectInstance effect : host.getStatusEffects().toArray(new StatusEffectInstance[0])) {
                     if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
-                        possessed.removeStatusEffect(effect.getEffectType());
+                        host.removeStatusEffect(effect.getEffectType());
                         player.addStatusEffect(new StatusEffectInstance(effect));
                     }
                 }
 
-                possessed.setSprinting(false);
+                host.setSprinting(false);
             }
         }
     }
