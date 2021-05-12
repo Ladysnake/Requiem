@@ -59,6 +59,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 public final class PossessionItemOverride implements Comparable<PossessionItemOverride> {
     private static final Gson GSON = new Gson();
@@ -91,7 +92,7 @@ public final class PossessionItemOverride implements Comparable<PossessionItemOv
             j.getAsJsonObject().addProperty("schema_version", CURRENT_SCHEMA_VERSION);
             return new Dynamic<>(JsonOps.INSTANCE, j);
         })
-    );
+    ).xmap(PossessionItemOverride::initNow, Function.identity());
 
     private static Codec<PossessionItemOverride> codecV0(Codec<JsonElement> jsonCodec) {
         return RecordCodecBuilder.create((instance) -> instance.group(
@@ -125,6 +126,14 @@ public final class PossessionItemOverride implements Comparable<PossessionItemOv
             .sorted()
             .filter(override -> override.test(player, possessedEntity, heldStack))
             .findFirst();
+    }
+
+    /**
+     * Initializes this object's lazy fields
+     */
+    private PossessionItemOverride initNow() {
+        this.requirements.initNow();
+        return this;
     }
 
     public int getPriority() {
@@ -195,6 +204,11 @@ public final class PossessionItemOverride implements Comparable<PossessionItemOv
                 }
             }
             return true;
+        }
+
+        private void initNow() {
+            this.possessed = EntityPredicate.fromJson(this.possessedJson);
+            this.usedItem = ItemPredicate.fromJson(this.usedItemJson);
         }
 
         private EntityPredicate getPossessed(World world) {
