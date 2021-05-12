@@ -119,12 +119,6 @@ curseforge {
             changelogType = 'markdown'
             changelog = project.getChangelogText()
 
-            subprojects {
-                addArtifact(remapJar) {
-                    displayName = "${project.name}-${project.version}.jar"
-                }
-            }
-
             afterEvaluate {
                 uploadTask.dependsOn remapSourcesJar
             }

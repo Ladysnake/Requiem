@@ -57,7 +57,7 @@ String getChangelogText() {
         }
         done = true // once we go past the first version block, parse no more
     }
-    str += "\n\n see full changelog [here](" + findProperty("changelog_url") + " \"Changelog\")"
+    str += "\n\n see full changelog [here](${findProperty("changelog_url")}/${project.mod_version}/changelog.md \"Changelog\")"
     return str
 }
 
