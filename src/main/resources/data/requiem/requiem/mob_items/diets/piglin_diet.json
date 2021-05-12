@@ -1,16 +1,15 @@
 {
   "schema_version": 0,
-  "priority": 100,
   "tooltip": {
-    "translate": "requiem:tooltip.illager_food",
+    "translate": "requiem:tooltip.piglin_food",
     "color": "dark_gray"
   },
   "requirements": {
     "possessed": {
-      "type": "#requiem:illagers"
+      "type": "#requiem:piglins"
     },
     "used_item": {
-      "tag": "requiem:food/illager_diet"
+      "tag": "requiem:pork"
     }
   },
   "result": {

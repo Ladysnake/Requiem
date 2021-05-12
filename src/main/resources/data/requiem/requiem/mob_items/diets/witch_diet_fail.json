@@ -1,6 +1,11 @@
 {
   "schema_version": 0,
   "priority": 80,
+  "tooltip": {
+    "translate": "requiem:tooltip.witch_food",
+    "color": "dark_gray",
+    "strikethrough": true
+  },
   "requirements": {
     "possessed": {
       "type": "#requiem:witches"

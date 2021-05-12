@@ -1,16 +1,17 @@
 {
   "schema_version": 0,
-  "priority": 100,
+  "priority": 90,
+  "enabled": true,
   "tooltip": {
-    "translate": "requiem:tooltip.illager_food",
+    "translate": "requiem:tooltip.witch_food",
     "color": "dark_gray"
   },
   "requirements": {
     "possessed": {
-      "type": "#requiem:illagers"
+      "type": "#requiem:witches"
     },
     "used_item": {
-      "tag": "requiem:food/illager_diet"
+      "tag": "requiem:food/witch_diet"
     }
   },
   "result": {
