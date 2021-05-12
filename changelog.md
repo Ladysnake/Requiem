@@ -1,4 +1,22 @@
 ------------------------------------------------------
+Version 1.7.5
+------------------------------------------------------
+**Changes**
+- Mobs will now keep items in their main inventory after possession ends instead of dropping everything
+- Added tooltips for the new mob diets
+
+**Fixes**
+- Fixed hunger bar resetting when you re-possess a mob
+- Mobs will no longer stare at incorporeal players
+- Fixed incorporeal players being able to push mobs around
+
+#### Pandemonium
+**Pandemonium is now released separately as part of [its own Curseforge project](https://curseforge.com/minecraft/mc-mods/requiem-pandemonium-expansion)**
+
+**Changes**
+- Players can now quickly merge with their body when looking at it while possessing a mob
+
+------------------------------------------------------
 Version 1.7.4
 ------------------------------------------------------
 **Changes**
