@@ -34,12 +34,50 @@
  */
 package ladysnake.requiem.common.impl.possession;
 
+import ladysnake.requiem.api.v1.event.requiem.SoulboundStackCheckCallback;
 import ladysnake.requiem.api.v1.possession.PossessedData;
+import ladysnake.requiem.common.util.OrderedInventory;
+import net.fabricmc.fabric.api.util.NbtType;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import org.jetbrains.annotations.Nullable;
 
 public class PossessedDataImpl implements PossessedData {
+    private final Entity holder;
     private @Nullable CompoundTag hungerData;
+    private @Nullable OrderedInventory inventory;
+
+    public PossessedDataImpl(Entity holder) {
+        this.holder = holder;
+    }
+
+    @Override
+    public void moveItems(PlayerInventory inventory, boolean fromPlayerToThis) {
+        if (fromPlayerToThis) {
+            this.dropItems();
+            this.inventory = new OrderedInventory(inventory.size());
+            for (int i = 0; i < inventory.size(); i++) {
+                if (!SoulboundStackCheckCallback.EVENT.invoker().isSoulbound(inventory, inventory.getStack(i), i)) {
+                    this.inventory.setStack(i, inventory.removeStack(i));
+                }
+            }
+        } else if (this.inventory != null) {
+            for (int i = 0; i < this.inventory.size(); i++) {
+                this.holder.dropStack(inventory.removeStack(i));
+                inventory.setStack(i, this.inventory.removeStack(i));
+            }
+            this.inventory = null;
+        }
+    }
+
+    @Override
+    public void dropItems() {
+        if (this.inventory != null) {
+            this.inventory.clearToList().forEach(this.holder::dropStack);
+        }
+    }
 
     @Override
     public CompoundTag getHungerData() {
@@ -52,13 +90,23 @@ public class PossessedDataImpl implements PossessedData {
 
     @Override
     public void readFromNbt(CompoundTag tag) {
-        if (tag.contains("hunger_data")) {
+        if (tag.contains("hunger_data", NbtType.COMPOUND)) {
             this.hungerData = tag.getCompound("hunger_data");
+        }
+
+        if (tag.contains("inventory_size", NbtType.NUMBER)) {
+            ListTag items = tag.getList("inventory", NbtType.COMPOUND);
+            this.inventory = new OrderedInventory(tag.getInt("inventory_size"));
+            this.inventory.readTags(items);
         }
     }
 
     @Override
     public void writeToNbt(CompoundTag tag) {
         if (this.hungerData != null) tag.put("hunger_data", this.hungerData.copy());
+        if (this.inventory != null) {
+            tag.putInt("inventory_size", this.inventory.size());
+            tag.put("inventory", this.inventory.getTags());
+        }
     }
 }

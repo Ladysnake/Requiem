@@ -83,7 +83,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerForPlayers(MovementAlterer.KEY, PlayerMovementAlterer::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerForPlayers(DeathSuspender.KEY, RevivingDeathSuspender::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerForPlayers(DialogueTracker.KEY, PlayerDialogueTracker::new, RespawnCopyStrategy.LOSSLESS_ONLY);
-        registry.registerFor(MobEntity.class, PossessedData.KEY, e -> new PossessedDataImpl());
+        registry.registerFor(MobEntity.class, PossessedData.KEY, PossessedDataImpl::new);
         registry.registerFor(MobEntity.class, MobAbilityController.KEY,
             e -> new ImmutableMobAbilityController<>(MobAbilityRegistry.instance().getConfig(e), e));
         registry.registerForPlayers(MobAbilityController.KEY, PlayerAbilityController::new, RespawnCopyStrategy.LOSSLESS_ONLY);

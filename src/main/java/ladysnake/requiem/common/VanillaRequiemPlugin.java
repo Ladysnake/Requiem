@@ -47,6 +47,7 @@ import ladysnake.requiem.api.v1.event.minecraft.*;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
+import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.possession.item.PossessionItemAction;
 import ladysnake.requiem.api.v1.remnant.*;
@@ -121,6 +122,10 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                 ((MobResurrectable) lazarus).setResurrectionEntity(secondLife);
                 return RemnantComponent.get(lazarus).getRemnantType().isDemon();
             }
+            return false;
+        });
+        LivingEntityDropCallback.EVENT.register((dead, deathCause) -> {
+            PossessedData.KEY.maybeGet(dead).ifPresent(PossessedData::dropItems);
             return false;
         });
         HumanityCheckCallback.EVENT.register(possessedEntity -> EnchantmentHelper.getEquipmentLevel(RequiemEnchantments.HUMANITY, possessedEntity));

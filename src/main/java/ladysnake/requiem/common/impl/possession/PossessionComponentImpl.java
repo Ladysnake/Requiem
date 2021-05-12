@@ -119,6 +119,9 @@ public final class PossessionComponentImpl implements PossessionComponent {
         possessable.setPossessor(null);
         // Transfer inventory and mount
         if (!player.world.isClient) {
+            if (RequiemEntityTypeTags.INVENTORY_CARRIERS.contains(host.getType())) {
+                PossessedData.KEY.get(host).moveItems(player.inventory, false);
+            }
             if (RequiemEntityTypeTags.ITEM_USERS.contains(host.getType())) {
                 InventoryHelper.transferEquipment(host, player);
             }
@@ -208,6 +211,9 @@ public final class PossessionComponentImpl implements PossessionComponent {
         if (player.world.getGameRules().get(RequiemGamerules.POSSESSION_KEEP_INVENTORY).get().shouldTransfer(possessed.isAlive())) {
             if (RequiemEntityTypeTags.ITEM_USERS.contains(possessed.getType())) {
                 InventoryHelper.transferEquipment(player, possessed);
+            }
+            if (RequiemEntityTypeTags.INVENTORY_CARRIERS.contains(possessed.getType())) {
+                PossessedData.KEY.get(possessed).moveItems(player.inventory, true);
             }
             ((LivingEntityAccessor) player).requiem$invokeDropInventory();
         }
