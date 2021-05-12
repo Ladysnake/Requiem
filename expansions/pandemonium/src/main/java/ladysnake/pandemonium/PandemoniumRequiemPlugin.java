@@ -40,6 +40,7 @@ import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.entity.ability.*;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
+import ladysnake.pandemonium.common.util.RayHelper;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
@@ -51,6 +52,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.ability.RangedAttackAbility;
 import ladysnake.requiem.common.entity.ability.SoulPossessAbility;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.mob.CreeperEntity;
@@ -61,6 +63,8 @@ import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+
+import java.util.Objects;
 
 public class PandemoniumRequiemPlugin implements RequiemPlugin {
 
@@ -86,9 +90,19 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
             if (!remnantState.isVagrant()) {
                 PlayerSplitter.split(player);
                 success = true;
-            } else if (possessionComponent.getPossessedEntity() != null && PlayerBodyTracker.get(player).getAnchor() != null) {
-                possessionComponent.stopPossessing();
-                success = true;
+            } else if (possessionComponent.isPossessing()) {
+                Entity targetedEntity = RayHelper.getTargetedEntity(player);
+                if (targetedEntity instanceof PlayerShellEntity && Objects.equals(player.getUuid(), ((PlayerShellEntity) targetedEntity).getOwnerUuid())) {
+                    possessionComponent.stopPossessing();
+                    PlayerSplitter.merge((PlayerShellEntity) targetedEntity, player);
+                    RequiemNetworking.sendBodyCureMessage(player);
+                    success = true;
+                } else if (PlayerBodyTracker.get(player).getAnchor() != null) {
+                    possessionComponent.stopPossessing();
+                    success = true;
+                } else {
+                    success = false;
+                }
             } else {
                 success = false;
             }

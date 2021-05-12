@@ -43,6 +43,7 @@ import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -192,9 +193,9 @@ public class RequiemNetworking {
         sendTo(player, createEmptyMessage(ETHEREAL_ANIMATION));
     }
 
-    public static void sendBodyCureMessage(ServerPlayerEntity player) {
+    public static void sendBodyCureMessage(LivingEntity entity) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
-        buf.writeVarInt(player.getEntityId());
-        sendTo(player, new CustomPayloadS2CPacket(BODY_CURE, buf));
+        buf.writeVarInt(entity.getEntityId());
+        sendToAllTrackingIncluding(entity, new CustomPayloadS2CPacket(BODY_CURE, buf));
     }
 }

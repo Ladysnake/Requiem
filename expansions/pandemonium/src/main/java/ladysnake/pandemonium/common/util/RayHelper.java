@@ -34,6 +34,7 @@
  */
 package ladysnake.pandemonium.common.util;
 
+import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.hit.BlockHitResult;
@@ -159,6 +160,17 @@ public class RayHelper {
             }
         }
         return pos;
+    }
+
+    @Nullable
+    public static Entity getTargetedEntity(LivingEntity watcher) {
+        EntityHitResult result = raycast(watcher);
+        return result != null ? result.getEntity() : null;
+    }
+
+    @Nullable
+    public static EntityHitResult raycast(LivingEntity watcher) {
+        return raycast(watcher, ReachEntityAttributes.getAttackRange(watcher, 3));
     }
 
     @Nullable
