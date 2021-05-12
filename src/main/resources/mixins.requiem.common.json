@@ -73,7 +73,8 @@
     "remnant.PlayerEntityMixin",
     "remnant.ServerPlayerEntityMixin",
     "remnant.ServerPlayNetworkHandlerMixin",
-    "remnant.ShapeContextMixin"
+    "remnant.ShapeContextMixin",
+    "remnant.TargetPredicateMixin"
   ],
   "injectors": {
     "defaultRequire": 1
