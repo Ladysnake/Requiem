@@ -80,7 +80,7 @@ public class BasePossessionHandlers {
     }
 
     private static PossessionStartCallback.Result handleEndermanPossession(MobEntity target, PlayerEntity possessor, boolean simulate) {
-        if (!target.world.isClient && target instanceof EndermanEntity) {
+        if (!target.world.isClient && target instanceof EndermanEntity && !RequiemEntityTypeTags.POSSESSABLES.contains(target.getType())) {
             if (!simulate) {
                 Entity tpDest;
                 // Maybe consider making the dimensional teleportation work in any dimension other than the overworld ?
