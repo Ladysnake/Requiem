@@ -1,4 +1,16 @@
 ------------------------------------------------------
+Version 1.7.6
+------------------------------------------------------
+**Changes**
+- Mobs that are added to `inventory_carriers.json` but not to `item_users.json` will now have their entire hotbar locked
+
+**Fixes**
+- Fixed endermen not being able to be added to `possessables.json` without pandemonium
+- Fixed sinking mobs (eg. zombies) being allowed to swim while possessed
+- Fixed possessed mobs being able to equip armor by shift-clicking in the inventory
+- Fixed previously possessed mobs losing their residual inventory when converted (eg. zombies drowning)
+
+------------------------------------------------------
 Version 1.7.5
 ------------------------------------------------------
 **Changes**
