@@ -1,4 +1,10 @@
 ------------------------------------------------------
+Version 1.7.6
+------------------------------------------------------
+**Changes**
+- Pandemonium is now kind of allowed to work with future versions of requiem
+
+------------------------------------------------------
 Version 1.7.5
 ------------------------------------------------------
 **First release as a separate curseforge project**

@@ -37,8 +37,9 @@
     }
   ],
   "depends": {
-    "requiemapi": "${version}",
-    "satin": "^1.2.0"
+    "requiem": "~${version}",
+    "impersonate": "^2.2.0",
+    "automatone": "^0.3.4"
   },
   "name": "Requiem: Pandemonium",
   "description": "Death revamped and ethereal powers",
