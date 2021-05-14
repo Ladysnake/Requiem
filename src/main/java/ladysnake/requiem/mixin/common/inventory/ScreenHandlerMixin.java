@@ -35,18 +35,29 @@
 package ladysnake.requiem.mixin.common.inventory;
 
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
+import ladysnake.requiem.common.impl.inventory.LockableSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.List;
+
 @Mixin(ScreenHandler.class)
 public abstract class ScreenHandlerMixin {
+    @Shadow
+    @Final
+    public List<Slot> slots;
+
     @Inject(
         method = "method_30010",
         slice = @Slice(
@@ -60,5 +71,14 @@ public abstract class ScreenHandlerMixin {
         if (InventoryLimiter.KEY.get(playerEntity).isSlotLocked(playerSlot)) {
             cir.setReturnValue(ItemStack.EMPTY);
         }
+    }
+
+    @ModifyVariable(method = "insertItem", at = @At("LOAD"), ordinal = 2)
+    private int skipLockedSlots(int checkedSlot, ItemStack stack, int startIndex, int endIndex, boolean fromLast) {
+        if (((LockableSlot) this.slots.get(checkedSlot)).requiem$shouldBeLocked()) {
+            return fromLast ? checkedSlot - 1 : checkedSlot + 1;
+        }
+
+        return checkedSlot;
     }
 }

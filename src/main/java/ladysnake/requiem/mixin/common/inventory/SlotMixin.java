@@ -40,6 +40,7 @@ import com.mojang.datafixers.util.Pair;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.InventoryPart;
 import ladysnake.requiem.client.RequiemClient;
+import ladysnake.requiem.common.impl.inventory.LockableSlot;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
@@ -63,7 +64,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Slot.class)
-public abstract class SlotMixin {
+public abstract class SlotMixin implements LockableSlot {
     @CheckEnv(Env.CLIENT)
     private static final Lazy<Pair<Identifier, Identifier>> LOCKED_SPRITE_REF = new Lazy<>(() -> Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, RequiemClient.LOCKED_SLOT_SPRITE));
 
@@ -88,8 +89,8 @@ public abstract class SlotMixin {
         }
     }
 
-    @Unique
-    private boolean shouldBeLocked() {
+    @Override
+    public boolean requiem$shouldBeLocked() {
         return this.limiter != null && (this.craftingSlot ? this.limiter.isLocked(InventoryPart.CRAFTING) : this.limiter.isSlotLocked(this.index));
     }
 
@@ -100,18 +101,18 @@ public abstract class SlotMixin {
 
     @Inject(method = "canInsert", at = @At("HEAD"), cancellable = true)
     private void canInsert(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
-        if (this.shouldBeLocked()) cir.setReturnValue(false);
+        if (this.requiem$shouldBeLocked()) cir.setReturnValue(false);
     }
 
     @Inject(method = "canTakeItems", at = @At("HEAD"), cancellable = true)
     private void canTakeItems(PlayerEntity playerEntity, CallbackInfoReturnable<Boolean> cir) {
-        if (this.shouldBeLocked()) cir.setReturnValue(false);
+        if (this.requiem$shouldBeLocked()) cir.setReturnValue(false);
     }
 
     @Environment(EnvType.CLIENT)    // TODO confirm that this does not crash servers
     @Inject(method = "getBackgroundSprite", at = @At("HEAD"), cancellable = true)
     private void getLockedSprite(CallbackInfoReturnable<@Nullable Pair<Identifier, Identifier>> cir) {
-        if (this.shouldBeLocked()) cir.setReturnValue(LOCKED_SPRITE_REF.get());
+        if (this.requiem$shouldBeLocked()) cir.setReturnValue(LOCKED_SPRITE_REF.get());
     }
 
     @Environment(EnvType.CLIENT)    // TODO confirm that this does not crash servers
