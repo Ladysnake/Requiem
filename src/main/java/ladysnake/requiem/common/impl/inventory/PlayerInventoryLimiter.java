@@ -107,13 +107,14 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
             return true;
         }
 
-        return this.isLocked(InventoryPart.HANDS) && (index == MAINHAND_SLOT || index == OFFHAND_SLOT);
+        return this.isLocked(InventoryPart.HANDS) && (index < 9 || index == OFFHAND_SLOT);
     }
 
     @Override
     public boolean isSlotInvisible(int playerSlot) {
         return this.player.currentScreenHandler == this.player.playerScreenHandler
             && this.getInventoryShape() != InventoryShape.NORMAL
+            && (this.getInventoryShape() != InventoryShape.ALT_SMALL || playerSlot >= 9)
             && (this.isSlotLocked(playerSlot) || (playerSlot == MAINHAND_SLOT && this.isMainInventoryLocked()));
     }
 
