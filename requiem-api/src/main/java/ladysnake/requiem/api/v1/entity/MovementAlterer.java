@@ -23,7 +23,6 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
@@ -64,6 +63,10 @@ public interface MovementAlterer extends CommonTickingComponent, AutoSyncedCompo
     boolean canClimbWalls();
 
     boolean isNoClipping();
+
+    void updateSwimming();
+
+    boolean disablesSwimming();
 
     void hugWall(boolean hugging);
 }

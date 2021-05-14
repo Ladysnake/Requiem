@@ -212,12 +212,8 @@ public class PlayerMovementAlterer implements MovementAlterer {
             return;
         }
         LivingEntity body = getPlayerOrPossessed(player);
-        SwimMode swimMode = getActualSwimMode(config, body);
-        if (swimMode == SwimMode.FORCED) {
-            player.setSwimming(true);
-        } else if (swimMode == SwimMode.DISABLED) {
-            player.setSwimming(false);
-        }
+        updateSwimming();
+
         if (getActualFlightMode(config, body) == FORCED || this.noClipping) {
             this.player.abilities.flying = true;
         }
@@ -230,6 +226,21 @@ public class PlayerMovementAlterer implements MovementAlterer {
         velocity = applyInertia(velocity, this.config.getInertia());
         this.player.setVelocity(velocity);
         this.lastVelocity = velocity;
+    }
+
+    @Override
+    public void updateSwimming() {
+        if (config != null) {
+            SwimMode swimMode = getActualSwimMode(config, getPlayerOrPossessed(player));
+            if (swimMode.sprintSwims() != TriState.DEFAULT) {
+                player.setSwimming(swimMode.sprintSwims().get());
+            }
+        }
+    }
+
+    @Override
+    public boolean disablesSwimming() {
+        return config != null && !getActualSwimMode(config, getPlayerOrPossessed(player)).sprintSwims().orElse(true);
     }
 
     @Override
