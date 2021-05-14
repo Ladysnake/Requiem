@@ -35,12 +35,15 @@
 package ladysnake.requiem.mixin.common.possession.possessed;
 
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Util;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -127,6 +130,8 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
             // The possession will start when the entity is added to the world
             ((Possessable)converted).setPossessor(possessor);
         }
+        // copy possessed data to avoid losing the inventory
+        PossessedData.KEY.get(converted).readFromNbt(Util.make(new CompoundTag(), PossessedData.KEY.get(this)::writeToNbt));
     }
 
     @Override
