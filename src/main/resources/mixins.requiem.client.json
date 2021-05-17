@@ -6,7 +6,6 @@
     "attrition.InGameHudMixin",
     "attrition.SpriteAtlasHolderAccessor",
     "event.ItemStackTooltipMixin",
-    "humanity.ModelLoaderMixin",
     "inventory.ClientPlayerInteractionManagerMixin",
     "inventory.CraftingScreenMixin",
     "inventory.InGameHudMixin",

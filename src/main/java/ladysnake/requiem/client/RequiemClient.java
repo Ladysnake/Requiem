@@ -41,21 +41,16 @@ import ladysnake.requiem.client.particle.CureParticle;
 import ladysnake.requiem.client.particle.GhostParticle;
 import ladysnake.requiem.client.render.entity.CuredPiglinEntityRenderer;
 import ladysnake.requiem.client.render.entity.CuredVillagerEntityRenderer;
-import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
-import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.PortalParticle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.EnchantedBookItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 
@@ -127,17 +122,6 @@ public final class RequiemClient implements ClientModInitializer {
     }
 
     private void registerModelPredicates() {
-        FabricModelPredicateProviderRegistry.register(Requiem.id("humanity"), (stack, world, entity) -> {
-            ListTag enchantments = EnchantedBookItem.getEnchantmentTag(stack);
-            for (int i = 0; i < enchantments.size(); i++) {
-                CompoundTag tag = enchantments.getCompound(i);
-                Identifier enchantId = Identifier.tryParse(tag.getString("id"));
-                if (enchantId != null && enchantId.equals(RequiemEnchantments.HUMANITY_ID)) {
-                    return tag.getInt("lvl");
-                }
-            }
-            return 0F;
-        });
     }
 
     private void registerSprites() {
