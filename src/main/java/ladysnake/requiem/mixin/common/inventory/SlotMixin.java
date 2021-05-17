@@ -71,19 +71,18 @@ public abstract class SlotMixin implements LockableSlot {
     @Shadow
     @Final
     private int index;
-    @Unique
-    protected @Nullable InventoryLimiter limiter;
+    protected @Nullable InventoryLimiter requiem$limiter;
     @Unique
     protected boolean craftingSlot;
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void constructor(Inventory inventory, int index, int x, int y, CallbackInfo ci) {
         if (inventory instanceof PlayerInventory) {
-            this.limiter = InventoryLimiter.KEY.maybeGet(((PlayerInventory) inventory).player).orElse(null);
+            this.requiem$limiter = InventoryLimiter.KEY.maybeGet(((PlayerInventory) inventory).player).orElse(null);
         } else if (inventory instanceof CraftingInventory) {
             ScreenHandler handler = ((CraftingInventoryAccessor) inventory).requiem$getHandler();
             if (handler instanceof PlayerScreenHandlerAccessor) {
-                this.limiter = InventoryLimiter.KEY.maybeGet(((PlayerScreenHandlerAccessor) handler).getOwner()).orElse(null);
+                this.requiem$limiter = InventoryLimiter.KEY.maybeGet(((PlayerScreenHandlerAccessor) handler).getOwner()).orElse(null);
                 this.craftingSlot = true;
             }
         }
@@ -91,12 +90,12 @@ public abstract class SlotMixin implements LockableSlot {
 
     @Override
     public boolean requiem$shouldBeLocked() {
-        return this.limiter != null && (this.craftingSlot ? this.limiter.isLocked(InventoryPart.CRAFTING) : this.limiter.isSlotLocked(this.index));
+        return this.requiem$limiter != null && (this.craftingSlot ? this.requiem$limiter.isLocked(InventoryPart.CRAFTING) : this.requiem$limiter.isSlotLocked(this.index));
     }
 
     @Unique
     private boolean shouldBeInvisible() {
-        return this.limiter != null && (this.craftingSlot ? this.limiter.isLocked(InventoryPart.CRAFTING) : this.limiter.isSlotInvisible(this.index));
+        return this.requiem$limiter != null && (this.craftingSlot ? this.requiem$limiter.isLocked(InventoryPart.CRAFTING) : this.requiem$limiter.isSlotInvisible(this.index));
     }
 
     @Inject(method = "canInsert", at = @At("HEAD"), cancellable = true)

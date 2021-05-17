@@ -49,7 +49,7 @@ public abstract class CraftingResultSlotMixin extends SlotMixin {
     @Inject(method = "<init>", at = @At("RETURN"))
     private void constructor(PlayerEntity player, CraftingInventory input, Inventory inventory, int index, int x, int y, CallbackInfo ci) {
         if (player != null) {
-            this.limiter = InventoryLimiter.KEY.get(player);
+            this.requiem$limiter = InventoryLimiter.KEY.get(player);
         }
         this.craftingSlot = true;
     }
