@@ -8,6 +8,7 @@
     "access.EndermanEntityAccessor",
     "access.EntityAccessor",
     "access.LivingEntityAccessor",
+    "access.LootContextTypesAccessor",
     "access.ProjectileEntityAccessor",
     "access.StatusEffectAccessor",
     "attrition.EffectCommandMixin",

@@ -35,6 +35,7 @@
 package ladysnake.requiem.common.loot;
 
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
+import ladysnake.requiem.mixin.common.access.LootContextTypesAccessor;
 import net.fabricmc.fabric.api.loot.v1.FabricLootPoolBuilder;
 import net.fabricmc.fabric.api.loot.v1.event.LootTableLoadingCallback;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
@@ -44,6 +45,8 @@ import net.minecraft.item.Items;
 import net.minecraft.loot.ConstantLootTableRange;
 import net.minecraft.loot.condition.RandomChanceLootCondition;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
@@ -51,6 +54,11 @@ import net.minecraft.loot.function.LootFunctionType;
 import java.util.regex.Pattern;
 
 public final class RequiemLootTables {
+    public static final LootContextType POSSESSION = LootContextTypesAccessor.requiem$register(
+        "requiem:possession",
+        builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.ORIGIN)
+    );
+
     private static final Pattern NETHER_CHEST = Pattern.compile("chests/.*nether.*");
     /** The chance that a nether chest gets a Humanity enchanted book */
     public static final float HUMANITY_CHANCE = 0.7f;

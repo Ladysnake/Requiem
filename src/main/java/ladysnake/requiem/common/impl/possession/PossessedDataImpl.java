@@ -36,18 +36,27 @@ package ladysnake.requiem.common.impl.possession;
 
 import ladysnake.requiem.api.v1.event.requiem.SoulboundStackCheckCallback;
 import ladysnake.requiem.api.v1.possession.PossessedData;
+import ladysnake.requiem.common.loot.RequiemLootTables;
 import ladysnake.requiem.common.util.OrderedInventory;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class PossessedDataImpl implements PossessedData {
     private final Entity holder;
     private @Nullable CompoundTag hungerData;
     private @Nullable OrderedInventory inventory;
+    private boolean previouslyPossessed;
 
     public PossessedDataImpl(Entity holder) {
         this.holder = holder;
@@ -55,6 +64,8 @@ public class PossessedDataImpl implements PossessedData {
 
     @Override
     public void moveItems(PlayerInventory inventory, boolean fromPlayerToThis) {
+        if (inventory.player.world.isClient) return;
+
         if (fromPlayerToThis) {
             this.dropItems();
             this.inventory = new OrderedInventory(inventory.size());
@@ -63,13 +74,41 @@ public class PossessedDataImpl implements PossessedData {
                     this.inventory.setStack(i, inventory.removeStack(i));
                 }
             }
-        } else if (this.inventory != null) {
-            for (int i = 0; i < this.inventory.size(); i++) {
-                this.holder.dropStack(inventory.removeStack(i));
-                inventory.setStack(i, this.inventory.removeStack(i));
+            this.previouslyPossessed = true;
+        } else {
+            if (this.inventory != null) {
+                for (int i = 0; i < this.inventory.size(); i++) {
+                    this.holder.dropStack(inventory.removeStack(i));
+                    inventory.setStack(i, this.inventory.removeStack(i));
+                }
+                this.inventory = null;
             }
-            this.inventory = null;
         }
+    }
+
+    @Override
+    public void giftFirstPossessionLoot(PlayerEntity player) {
+        if (!this.previouslyPossessed) {
+            this.dropLoot(player);
+            this.previouslyPossessed = true;
+        }
+    }
+
+    protected void dropLoot(PlayerEntity player) {
+        Identifier identifier = this.getLootTable();
+        ServerWorld world = (ServerWorld) this.holder.world;
+        LootTable lootTable = world.getServer().getLootManager().getTable(identifier);
+        LootContext.Builder builder = new LootContext.Builder(world)
+            .random(world.random)
+            .parameter(LootContextParameters.THIS_ENTITY, this.holder)
+            .parameter(LootContextParameters.ORIGIN, this.holder.getPos())
+            .luck(player.getLuck());
+        lootTable.generateLoot(builder.build(RequiemLootTables.POSSESSION), s -> player.inventory.offerOrDrop(world, s));
+    }
+
+    private Identifier getLootTable() {
+        Identifier identifier = Registry.ENTITY_TYPE.getId(this.holder.getType());
+        return new Identifier(identifier.getNamespace(), "requiem/possession/" + identifier.getPath());
     }
 
     @Override
@@ -99,6 +138,10 @@ public class PossessedDataImpl implements PossessedData {
             this.inventory = new OrderedInventory(tag.getInt("inventory_size"));
             this.inventory.readTags(items);
         }
+
+        if (tag.contains("previously_possessed")) {
+            this.previouslyPossessed = tag.getBoolean("previously_possessed");
+        }
     }
 
     @Override
@@ -107,6 +150,10 @@ public class PossessedDataImpl implements PossessedData {
         if (this.inventory != null) {
             tag.putInt("inventory_size", this.inventory.size());
             tag.put("inventory", this.inventory.getTags());
+        }
+
+        if (this.previouslyPossessed) {
+            tag.putBoolean("previously_possessed", true);
         }
     }
 }

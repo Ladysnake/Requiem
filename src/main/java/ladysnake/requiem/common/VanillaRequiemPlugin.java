@@ -250,6 +250,10 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                         inventoryLimiter.lock(InventoryPart.ARMOR);
                     }
                     PlayerAbilityController.get(player).usePossessedAbilities(possessed);
+
+                    if (!player.world.isClient) {
+                        PossessedData.KEY.get(possessed).giftFirstPossessionLoot(player);
+                    }
                 }
             }
         );

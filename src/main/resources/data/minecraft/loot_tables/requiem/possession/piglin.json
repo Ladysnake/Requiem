@@ -1,0 +1,37 @@
+{
+  "type": "requiem:possession",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 10.0,
+                "max": 22.0,
+                "type": "minecraft:uniform"
+              }
+            }
+          ],
+          "conditions": [
+            {
+              "condition": "minecraft:entity_properties",
+              "predicate": {
+                "equipment": {
+                  "mainhand": {
+                    "item": "minecraft:crossbow"
+                  }
+                }
+              },
+              "entity": "this"
+            }
+          ],
+          "name": "minecraft:arrow"
+        }
+      ]
+    }
+  ]
+}
