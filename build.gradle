@@ -202,6 +202,10 @@ dependencies {
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-scoreboard:${cca_version}"
     modImplementation ("io.github.ladysnake:PlayerAbilityLib:${pal_version}")
     include "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
+    modImplementation "io.github.ladysnake:locki:${locki_version}"
+    include "io.github.ladysnake:locki:${locki_version}"
+    modImplementation "io.github.emilyalexandra:chime:${chime_version}"
+    include "io.github.emilyalexandra:chime:${chime_version}"
     implementation "me.zeroeightsix:fiber:${project.fiber_version}"
     include "me.zeroeightsix:fiber:${project.fiber_version}"
     modImplementation "me.lucko:fabric-permissions-api:${fpa_version}"
