@@ -95,6 +95,7 @@ import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.SpiderEntity;
+import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
@@ -298,6 +299,8 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         abilityRegistry.register(EntityType.SNOW_GOLEM, MobAbilityConfig.<SnowGolemEntity>builder()
             .directAttack(e -> new RangedAttackAbility<>(e, 20, 10))
             .indirectInteract(SnowmanSnowballAbility::new).build());
+        abilityRegistry.register(EntityType.WITCH, MobAbilityConfig.<WitchEntity>builder()
+            .directAttack(owner -> new RangedAttackAbility<>(owner, 50, 10.)).build());
     }
 
     @Override
