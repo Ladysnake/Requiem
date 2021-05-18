@@ -1,4 +1,32 @@
 ------------------------------------------------------
+Version 1.7.7
+------------------------------------------------------
+**Additions**
+- Mobs can now give you loot when you possess them for the first time
+    - Skeletons, piglins and pillagers now come with some free arrows
+
+**Changes**
+- You can now possess a witch converted from a smitten villager
+    - Brought over witch abilities and gameplay fixes from Pandemonium
+
+**Mod Compatibility**
+- Chime: Fixed crash at launch when Chime was installed
+    - Requiem now bundles Chime :>
+- Biome Makeover: Fixed witches with attrition replacing all held items with bottles of antidote
+
+**Fixes**
+- Fixed a crash when shift clicking fuel out of a furnace
+- Fixed item cooldown not starting when eating the last item of a stack of mob food
+- Updated a bunch of libraries
+    - Fixed a crash with Fabric API <0.34 in some modpacks
+    - Fixed creative flight ability being lost when teleporting to another dimension
+
+#### Pandemonium
+**Fixes**
+- Fixed a crash when standing on blocks with dynamic collision boxes
+- Fixed player shells looking in the wrong direction on spawn
+
+------------------------------------------------------
 Version 1.7.6
 ------------------------------------------------------
 **Changes**

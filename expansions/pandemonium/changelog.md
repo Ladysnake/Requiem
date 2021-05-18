@@ -1,4 +1,11 @@
 ------------------------------------------------------
+Version 1.7.7
+------------------------------------------------------
+**Fixes**
+- Fixed a crash when standing on blocks with dynamic collision boxes
+- Fixed player shells looking in the wrong direction on spawn
+
+------------------------------------------------------
 Version 1.7.6
 ------------------------------------------------------
 **Changes**
