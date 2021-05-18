@@ -85,6 +85,8 @@ public final class PlayerSplitter {
         PlayerShellEntity shell = new PlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, whole.getServerWorld());
         shell.setGameMode(whole.interactionManager.getGameMode());  // use same gamemode for deserialization
         shell.storePlayerData(whole, computeCopyNbt(whole));
+        shell.headYaw = whole.headYaw;
+        shell.bodyYaw = whole.bodyYaw;
         shell.setGameMode(whole.interactionManager.isSurvivalLike() ? whole.interactionManager.getGameMode() : GameMode.SURVIVAL);
         RemnantComponent.get(shell).become(RemnantTypes.MORTAL, true);
         InventoryLimiter.KEY.get(shell).setEnabled(false);
