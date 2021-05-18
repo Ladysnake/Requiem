@@ -39,14 +39,12 @@ import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.InventoryPart;
 import ladysnake.requiem.api.v1.entity.InventoryShape;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.client.InventoryScreenAccessor;
 import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.common.impl.inventory.PossessionInventoryScreen;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -65,7 +63,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InventoryScreen.class)
-public abstract class InventoryScreenMixin extends AbstractInventoryScreen<PlayerScreenHandler> implements InventoryScreenAccessor {
+public abstract class InventoryScreenMixin extends AbstractInventoryScreen<PlayerScreenHandler> {
     @Unique
     private static final Identifier INVENTORY_SLOTS = Requiem.id("textures/gui/inventory_slots.png");
 
@@ -74,17 +72,10 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     @Unique
     private PossessionComponent possessionComponent;
     @Unique
-    private AbstractButtonWidget craftingBookButton;
-    @Unique
     private TexturedButtonWidget supercrafterButton;
 
     public InventoryScreenMixin(PlayerScreenHandler screenHandler, PlayerInventory playerInventory, Text text) {
         super(screenHandler, playerInventory, text);
-    }
-
-    @Override
-    public AbstractButtonWidget requiem$getRecipeBookButton() {
-        return this.craftingBookButton;
     }
 
     @Inject(method = {"init", "tick"}, at = @At("HEAD"), cancellable = true)
@@ -94,17 +85,6 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
             this.client.openScreen(new PossessionInventoryScreen(this.client.player));
             ci.cancel();
         }
-    }
-
-    @ModifyArg(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/InventoryScreen;addButton(Lnet/minecraft/client/gui/widget/AbstractButtonWidget;)Lnet/minecraft/client/gui/widget/AbstractButtonWidget;"), allow = 1)
-    private AbstractButtonWidget captureCraftingBookButton(AbstractButtonWidget button) {
-        this.craftingBookButton = button;
-
-        if (this.limiter.isLocked(InventoryPart.CRAFTING)) {
-            button.visible = false;
-        }
-
-        return button;
     }
 
     @Inject(method = "init", at = @At("RETURN"))

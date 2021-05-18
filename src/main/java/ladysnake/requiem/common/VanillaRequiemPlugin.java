@@ -43,18 +43,30 @@ import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.api.v1.event.minecraft.*;
+import ladysnake.requiem.api.v1.event.minecraft.AllowUseEntityCallback;
+import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
+import ladysnake.requiem.api.v1.event.minecraft.MobTravelRidingCallback;
+import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
+import ladysnake.requiem.api.v1.event.minecraft.PrepareRespawnCallback;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.possession.item.PossessionItemAction;
-import ladysnake.requiem.api.v1.remnant.*;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.api.v1.remnant.MobResurrectable;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
-import ladysnake.requiem.common.entity.ability.*;
+import ladysnake.requiem.common.entity.ability.AutoAimAbility;
+import ladysnake.requiem.common.entity.ability.RangedAttackAbility;
+import ladysnake.requiem.common.entity.ability.ShulkerPeekAbility;
+import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
+import ladysnake.requiem.common.entity.ability.SnowmanSnowballAbility;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
@@ -65,7 +77,11 @@ import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.mixin.common.access.StatusEffectAccessor;
-import net.fabricmc.fabric.api.event.player.*;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -74,7 +90,11 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectType;
-import net.minecraft.entity.mob.*;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.RavagerEntity;
+import net.minecraft.entity.mob.ShulkerEntity;
+import net.minecraft.entity.mob.SkeletonEntity;
+import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
@@ -226,32 +246,25 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         }));
         PossessionStateChangeCallback.EVENT.register((player, possessed) -> {
                 InventoryLimiter inventoryLimiter = InventoryLimiter.KEY.get(player);
+                if (!player.world.isClient) {
+                    inventoryLimiter.setEnabled(true);
+                }
                 if (possessed == null) {
-                    for (InventoryPart part : InventoryPart.VALUES) {
-                        inventoryLimiter.lock(part);
-                    }
                     PlayerAbilityController.get(player).resetAbilities(RemnantComponent.isIncorporeal(player));
                 } else {
-                    if (RequiemEntityTypeTags.INVENTORY_CARRIERS.contains(possessed.getType())) {
-                        inventoryLimiter.unlock(InventoryPart.MAIN);
-                    } else {
-                        inventoryLimiter.lock(InventoryPart.MAIN);
-                    }
-                    if (canUseItems(possessed)) {
-                        inventoryLimiter.unlock(InventoryPart.HANDS);
-                        inventoryLimiter.unlock(InventoryPart.CRAFTING);
-                    } else {
-                        inventoryLimiter.lock(InventoryPart.HANDS);
-                        inventoryLimiter.lock(InventoryPart.CRAFTING);
-                    }
-                    if (canWearArmor(possessed)) {
-                        inventoryLimiter.unlock(InventoryPart.ARMOR);
-                    } else {
-                        inventoryLimiter.lock(InventoryPart.ARMOR);
-                    }
                     PlayerAbilityController.get(player).usePossessedAbilities(possessed);
 
                     if (!player.world.isClient) {
+                        if (RequiemEntityTypeTags.INVENTORY_CARRIERS.contains(possessed.getType())) {
+                            inventoryLimiter.unlock(InventoryPart.MAIN);
+                        }
+                        if (canUseItems(possessed)) {
+                            inventoryLimiter.unlock(InventoryPart.HANDS);
+                            inventoryLimiter.unlock(InventoryPart.CRAFTING);
+                        }
+                        if (canWearArmor(possessed)) {
+                            inventoryLimiter.unlock(InventoryPart.ARMOR);
+                        }
                         PossessedData.KEY.get(possessed).giftFirstPossessionLoot(player);
                     }
                 }

@@ -81,6 +81,10 @@ public enum InventoryShape {
         return true;
     }
 
+    public boolean hidesMainInventory() {
+        return this == ALT || this == ALT_LARGE;
+    }
+
     /**
      * Sets up cropping before rendering an entity in the inventory
      */

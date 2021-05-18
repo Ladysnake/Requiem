@@ -37,11 +37,9 @@ package ladysnake.requiem.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
-import ladysnake.requiem.api.v1.entity.InventoryPart;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
-import ladysnake.requiem.api.v1.event.requiem.InventoryLockingChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.client.RenderSelfPossessedEntityCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
@@ -58,7 +56,13 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.*;
+import net.minecraft.entity.mob.AbstractSkeletonEntity;
+import net.minecraft.entity.mob.DrownedEntity;
+import net.minecraft.entity.mob.EndermanEntity;
+import net.minecraft.entity.mob.GuardianEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.ShulkerEntity;
+import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
@@ -75,8 +79,7 @@ import java.util.List;
 
 public final class RequiemClientListener implements
     ClientTickEvents.EndTick,
-    ItemTooltipCallback,
-    InventoryLockingChangeCallback {
+    ItemTooltipCallback {
 
     public static boolean skipNextGuardian =  false;
 
@@ -92,8 +95,6 @@ public final class RequiemClientListener implements
         ClientTickEvents.END_CLIENT_TICK.register(this);
         // Make the crosshair purple when able to teleport to the Overworld using an enderman
         CrosshairRenderCallback.EVENT.register(Requiem.id("enderman_color"), this::drawEnderCrosshair);
-        // Update the visibility of the crafting book button
-        InventoryLockingChangeCallback.EVENT.register(this);
         // Add custom tooltips to items when the player is possessing certain entities
         ItemTooltipCallback.EVENT.register(this);
         PossessionStateChangeCallback.EVENT.register((possessor, target) -> {
@@ -138,15 +139,6 @@ public final class RequiemClientListener implements
         if (client.targetedEntity instanceof EndermanEntity && client.player.world.getRegistryKey() == World.END) {
             // TODO probably replace with a proper texture
             RenderSystem.color3f(0.4f, 0.0f, 1.0f);
-        }
-    }
-
-    @Override
-    public void onInventoryLockingChange(PlayerEntity player, InventoryPart part, boolean locked) {
-        if (part == InventoryPart.CRAFTING && player == this.mc.player) {
-            if (this.mc.currentScreen instanceof InventoryScreenAccessor) {
-                ((InventoryScreenAccessor) this.mc.currentScreen).requiem$getRecipeBookButton().visible = !locked;
-            }
         }
     }
 
