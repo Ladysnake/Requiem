@@ -30,6 +30,10 @@ public interface PossessedData extends Component {
 
     CompoundTag getHungerData();
 
+    void setConvertedUnderPossession();
+
+    boolean wasConvertedUnderPossession();
+
     void moveItems(PlayerInventory inventory, boolean fromPlayerToThis);
 
     void giftFirstPossessionLoot(PlayerEntity player);

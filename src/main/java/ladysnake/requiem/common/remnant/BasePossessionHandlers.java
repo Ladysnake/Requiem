@@ -38,6 +38,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.mixin.common.access.EndermanEntityAccessor;
@@ -72,6 +73,12 @@ public class BasePossessionHandlers {
         });
         PossessionStartCallback.EVENT.register(Requiem.id("base_mobs"), (target, possessor, simulate) -> {
             if (RequiemEntityTypeTags.POSSESSABLES.contains(target.getType())) {
+                return PossessionStartCallback.Result.ALLOW;
+            }
+            return PossessionStartCallback.Result.PASS;
+        });
+        PossessionStartCallback.EVENT.register(Requiem.id("converted_mobs"), (target, possessor, simulate) -> {
+            if (PossessedData.KEY.get(target).wasConvertedUnderPossession()) {
                 return PossessionStartCallback.Result.ALLOW;
             }
             return PossessionStartCallback.Result.PASS;

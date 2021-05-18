@@ -34,12 +34,16 @@
  */
 package ladysnake.requiem.common.impl.possession;
 
+import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import ladysnake.requiem.api.v1.event.requiem.SoulboundStackCheckCallback;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessedData;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.loot.RequiemLootTables;
 import ladysnake.requiem.common.util.OrderedInventory;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.loot.LootTable;
@@ -47,19 +51,47 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
-public class PossessedDataImpl implements PossessedData {
+public class PossessedDataImpl implements PossessedData, AutoSyncedComponent {
+    public static void onMobConverted(MobEntity original, MobEntity converted) {
+        PlayerEntity possessor = ((Possessable) original).getPossessor();
+        PossessedData possessedData = KEY.get(converted);
+        if (possessor != null) {
+            PossessionComponent.get(possessor).stopPossessing(false);
+            possessedData.setConvertedUnderPossession();
+            // The possession will start when the entity is added to the world
+            ((Possessable) converted).setPossessor(possessor);
+        }
+        // copy possessed data to avoid losing the inventory
+        possessedData.readFromNbt(Util.make(new CompoundTag(), KEY.get(original)::writeToNbt));
+    }
+
     private final Entity holder;
     private @Nullable CompoundTag hungerData;
     private @Nullable OrderedInventory inventory;
     private boolean previouslyPossessed;
+    private boolean convertedUnderPossession;
 
     public PossessedDataImpl(Entity holder) {
         this.holder = holder;
+    }
+
+    @Override
+    public void setConvertedUnderPossession() {
+        this.convertedUnderPossession = true;
+        // Explicit sync not necessary as the entity will be spawned later
+    }
+
+    @Override
+    public boolean wasConvertedUnderPossession() {
+        return this.convertedUnderPossession;
     }
 
     @Override
@@ -128,6 +160,16 @@ public class PossessedDataImpl implements PossessedData {
     }
 
     @Override
+    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
+        buf.writeBoolean(this.convertedUnderPossession);
+    }
+
+    @Override
+    public void applySyncPacket(PacketByteBuf buf) {
+        this.convertedUnderPossession = buf.readBoolean();
+    }
+
+    @Override
     public void readFromNbt(CompoundTag tag) {
         if (tag.contains("hunger_data", NbtType.COMPOUND)) {
             this.hungerData = tag.getCompound("hunger_data");
@@ -142,6 +184,10 @@ public class PossessedDataImpl implements PossessedData {
         if (tag.contains("previously_possessed")) {
             this.previouslyPossessed = tag.getBoolean("previously_possessed");
         }
+
+        if (tag.contains("converted_under_possession")) {
+            this.convertedUnderPossession = tag.getBoolean("converted_under_possession");
+        }
     }
 
     @Override
@@ -154,6 +200,10 @@ public class PossessedDataImpl implements PossessedData {
 
         if (this.previouslyPossessed) {
             tag.putBoolean("previously_possessed", true);
+        }
+
+        if (this.convertedUnderPossession) {
+            tag.putBoolean("converted_under_possession", true);
         }
     }
 }
