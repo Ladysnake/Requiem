@@ -79,6 +79,14 @@ public abstract class WitchEntityMixin extends HostileEntity {
     @Inject(method = "isDrinking", at = @At("HEAD"), cancellable = true)
     private void isDrinking(CallbackInfoReturnable<Boolean> cir) {
         if (((Possessable)this).isBeingPossessed() && this.getMainHandStack().getItem() != Items.POTION) {
+            // some mods like Biome Makeover will artificially make witches drink their own potions
+            // this brings back the vanishing item issue, so we do a 4D chess move to tell other injectors
+            // that this witch is actually already drinking something
+            if (new Exception().getStackTrace()[2].toString().contains("handler$")) {
+                cir.setReturnValue(true);
+                return;
+            }
+            // Prevents witches from drinking your netherite sword
             cir.setReturnValue(false);
         }
     }
