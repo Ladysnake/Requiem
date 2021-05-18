@@ -34,17 +34,36 @@
  */
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
+import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.common.util.ItemUtil;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.WitchEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import javax.annotation.Nullable;
+
+import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 
 @Mixin(WitchEntity.class)
-public abstract class WitchEntityMixin {
+public abstract class WitchEntityMixin extends HostileEntity {
+    protected WitchEntityMixin(EntityType<? extends HostileEntity> type, World world) {
+        super(type, world);
+    }
+
     /**
      * Witches normally keep lobbing poison at zombies when trying to attack them.
      * This injection makes them prioritize a more useful weakness potion - making it easier to heal back to human when possessing a zombie.
@@ -55,5 +74,36 @@ public abstract class WitchEntityMixin {
             return Potions.WEAKNESS;
         }
         return thrownPotion;
+    }
+
+    @Inject(method = "isDrinking", at = @At("HEAD"), cancellable = true)
+    private void isDrinking(CallbackInfoReturnable<Boolean> cir) {
+        if (((Possessable)this).isBeingPossessed() && this.getMainHandStack().getItem() != Items.POTION) {
+            cir.setReturnValue(false);
+        }
+    }
+
+    @Nullable
+    @ModifyVariable(method = "tickMovement", ordinal = 0, at = @At("STORE"))
+    private Potion preventPotionOverride(final Potion selectedPotion) {
+        if (((Possessable)this).isBeingPossessed() && !ItemUtil.isWaterBottle(this.getMainHandStack())) {
+            return null;
+        }
+        return selectedPotion;
+    }
+
+    @Inject(
+        method = "tickMovement",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/entity/mob/WitchEntity;equipStack(Lnet/minecraft/entity/EquipmentSlot;Lnet/minecraft/item/ItemStack;)V",
+            ordinal = 0,
+            shift = AFTER
+        )
+    )
+    private void giveBottleBack(CallbackInfo ci) {
+        if (((Possessable)this).isBeingPossessed()) {
+            this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GLASS_BOTTLE));
+        }
     }
 }
