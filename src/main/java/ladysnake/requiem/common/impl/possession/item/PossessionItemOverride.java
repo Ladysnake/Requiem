@@ -46,6 +46,7 @@ import ladysnake.requiem.common.RequiemRegistries;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
@@ -261,10 +262,11 @@ public final class PossessionItemOverride implements Comparable<PossessionItemOv
         }
 
         public TypedActionResult<ItemStack> run(PlayerEntity player, MobEntity possessedEntity, ItemStack stack, World world, Hand hand) {
+            Item item = stack.getItem();    // get item beforehand, after interaction it will be empty
             TypedActionResult<ItemStack> result = this.getAction().interact(player, possessedEntity, stack, world, hand);
             if (result.getResult().isAccepted()) {
                 if (this.getCooldown() > 0) {
-                    player.getItemCooldownManager().set(stack.getItem(), this.getCooldown());
+                    player.getItemCooldownManager().set(item, this.getCooldown());
                 }
             }
             return result;
