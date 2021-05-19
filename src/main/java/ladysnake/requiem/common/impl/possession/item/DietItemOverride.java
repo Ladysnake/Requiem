@@ -145,6 +145,8 @@ public class DietItemOverride implements PossessionItemOverride {
     }
 
     public class Failure implements InstancedItemOverride {
+        private final Optional<Text> tooltip = DietItemOverride.this.tooltip.map(t -> t.shallowCopy().formatted(Formatting.STRIKETHROUGH));
+
         @Override
         public boolean shortCircuits() {
             return false;
@@ -162,7 +164,7 @@ public class DietItemOverride implements PossessionItemOverride {
 
         @Override
         public Optional<Text> getTooltip() {
-            return tooltip.map(t -> t.copy().styled(style -> style.withFormatting(Formatting.STRIKETHROUGH)));
+            return this.tooltip;
         }
     }
 }

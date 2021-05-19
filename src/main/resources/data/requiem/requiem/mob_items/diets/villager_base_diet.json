@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "priority": 120,
+  "priority": 80,
   "enabled": true,
   "override": {
     "type": "requiem:diet",

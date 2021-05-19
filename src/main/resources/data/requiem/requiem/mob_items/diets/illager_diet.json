@@ -1,6 +1,5 @@
 {
   "schema_version": 1,
-  "priority": 100,
   "override": {
     "type": "requiem:diet",
     "tooltip": {
