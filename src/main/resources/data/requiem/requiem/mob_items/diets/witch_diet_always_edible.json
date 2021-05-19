@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "priority": 80,
+  "override": {
+    "type": "requiem:diet",
+    "entity": {
+      "type": "#requiem:witches"
+    },
+    "food": {
+      "requiem:food": {
+        "always_edible": true
+      }
+    }
+  }
+}

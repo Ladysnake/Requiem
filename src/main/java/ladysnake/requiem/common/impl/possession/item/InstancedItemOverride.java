@@ -37,15 +37,22 @@ package ladysnake.requiem.common.impl.possession.item;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.world.World;
 
 import java.util.Optional;
 
-public interface PossessionItemOverride {
+public interface InstancedItemOverride {
+    boolean shortCircuits();
 
-    void initNow();
+    default Optional<Text> getTooltip() {
+        return Optional.empty();
+    }
 
-    Identifier getType();
+    TypedActionResult<ItemStack> use(PlayerEntity player, MobEntity possessedEntity, ItemStack heldStack, World world, Hand hand);
 
-    Optional<InstancedItemOverride> test(PlayerEntity player, MobEntity possessed, ItemStack stack);
+    TypedActionResult<ItemStack> finishUsing(PlayerEntity user, MobEntity possessedEntity, ItemStack heldStack, World world, Hand activeHand);
+
 }

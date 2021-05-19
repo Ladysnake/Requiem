@@ -1,16 +1,15 @@
 {
   "schema_version": 1,
+  "priority": 80,
   "override": {
     "type": "requiem:diet",
-    "tooltip": {
-      "translate": "requiem:tooltip.piglin_food",
-      "color": "dark_gray"
-    },
     "entity": {
       "type": "#requiem:piglins"
     },
     "food": {
-      "tag": "requiem:food/piglin_diet"
+      "requiem:food": {
+        "always_edible": true
+      }
     }
   }
 }

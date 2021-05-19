@@ -105,8 +105,10 @@ import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -369,17 +371,19 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
             return TypedActionResult.fail(stack);
         });
-        Registry.register(registry, Requiem.id("witch_eat"), (player, possessed, stack, world, hand) -> {
-            Map<StatusEffect, StatusEffectInstance> before = new HashMap<>(possessed.getActiveStatusEffects());
-            ItemStack ret = stack.getItem().finishUsing(stack, world, player);
-            Map<StatusEffect, StatusEffectInstance> after = new HashMap<>(possessed.getActiveStatusEffects());
-            // Remove all negative status effects from the food
-            revertHarmfulEffects(player, before, after);
-            return TypedActionResult.success(ret);
-        });
+        Registry.register(registry, Requiem.id("witch_eat"), VanillaRequiemPlugin::eatWitchFood);
     }
 
-    private void revertHarmfulEffects(PlayerEntity player, Map<StatusEffect, StatusEffectInstance> before, Map<StatusEffect, StatusEffectInstance> after) {
+    public static TypedActionResult<ItemStack> eatWitchFood(PlayerEntity player, MobEntity possessed, ItemStack stack, World world, Hand hand) {
+        Map<StatusEffect, StatusEffectInstance> before = new HashMap<>(possessed.getActiveStatusEffects());
+        ItemStack ret = stack.getItem().finishUsing(stack, world, player);
+        Map<StatusEffect, StatusEffectInstance> after = new HashMap<>(possessed.getActiveStatusEffects());
+        // Remove all negative status effects from the food
+        revertHarmfulEffects(player, before, after);
+        return TypedActionResult.success(ret);
+    }
+
+    private static void revertHarmfulEffects(PlayerEntity player, Map<StatusEffect, StatusEffectInstance> before, Map<StatusEffect, StatusEffectInstance> after) {
         for (StatusEffect statusEffect : after.keySet()) {
             if (((StatusEffectAccessor) statusEffect).requiem$getType() == StatusEffectType.HARMFUL) {
                 StatusEffectInstance previous = before.get(statusEffect);

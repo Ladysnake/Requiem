@@ -32,20 +32,43 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.impl.possession.item;
+package ladysnake.requiem.common.impl.data;
 
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
+import net.minecraft.entity.Entity;
+import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.server.world.ServerWorld;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
+public class LazyEntityPredicate extends LazyDataPredicate<EntityPredicate> {
+    public static final LazyEntityPredicate ANY = new LazyEntityPredicate(null);
 
-public interface PossessionItemOverride {
+    public static Codec<LazyEntityPredicate> codec(Codec<JsonElement> jsonCodec) {
+        return jsonCodec.xmap(LazyEntityPredicate::new, LazyDataPredicate::getJson);
+    }
 
-    void initNow();
+    public LazyEntityPredicate(@Nullable JsonElement json) {
+        super(json);
+    }
 
-    Identifier getType();
+    public boolean test(Entity entity) {
+        if (!entity.world.isClient) {
+            return this.get(entity.world).test((ServerWorld) entity.world, null, entity);
+        } else {
+            // We still need to have some idea of whether this test can succeed clientside
+            // Thankfully, most tests will never use the server world, so we can just pass null and pray
+            try {
+                return this.get(entity.world).test(null/*Possible NPE*/, null, entity);
+            } catch (NullPointerException npe) {
+                // We will have to check this serverside
+                return true;
+            }
+        }
+    }
 
-    Optional<InstancedItemOverride> test(PlayerEntity player, MobEntity possessed, ItemStack stack);
+    @Override
+    protected EntityPredicate deserialize(@Nullable JsonElement json) {
+        return EntityPredicate.fromJson(json);
+    }
 }

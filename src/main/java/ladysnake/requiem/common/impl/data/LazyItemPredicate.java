@@ -32,20 +32,32 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.impl.possession.item;
+package ladysnake.requiem.common.impl.data;
 
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
+public class LazyItemPredicate extends LazyDataPredicate<ItemPredicate> {
+    public static final LazyItemPredicate ANY = new LazyItemPredicate(null);
 
-public interface PossessionItemOverride {
+    public static Codec<LazyItemPredicate> codec(Codec<JsonElement> codec) {
+        return codec.xmap(LazyItemPredicate::new, LazyDataPredicate::getJson);
+    }
 
-    void initNow();
+    public LazyItemPredicate(@Nullable JsonElement json) {
+        super(json);
+    }
 
-    Identifier getType();
+    public boolean test(World world, ItemStack stack) {
+        return this.get(world).test(stack);
+    }
 
-    Optional<InstancedItemOverride> test(PlayerEntity player, MobEntity possessed, ItemStack stack);
+    @Override
+    protected ItemPredicate deserialize(@Nullable JsonElement json) {
+        return ItemPredicate.fromJson(json);
+    }
 }

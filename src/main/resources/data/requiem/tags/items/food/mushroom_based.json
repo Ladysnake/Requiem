@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:mushroom_stew",
+    {"id": "enhanced_mushrooms:roasted_mushrooms", "required": false}
+  ]
+}

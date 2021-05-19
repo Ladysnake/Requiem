@@ -46,7 +46,8 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.particle.GhostParticle;
-import ladysnake.requiem.common.impl.possession.item.PossessionItemOverride;
+import ladysnake.requiem.common.impl.possession.item.InstancedItemOverride;
+import ladysnake.requiem.common.impl.possession.item.PossessionItemOverrideWrapper;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.util.ItemUtil;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
@@ -150,7 +151,7 @@ public final class RequiemClientListener implements
                 return;
             }
 
-            PossessionItemOverride.findOverride(player.world, player, possessed, item).flatMap(PossessionItemOverride::getTooltip).ifPresent(lines::add);
+            PossessionItemOverrideWrapper.findOverride(player.world, player, possessed, item).flatMap(InstancedItemOverride::getTooltip).ifPresent(lines::add);
 
             String key;
             if (possessed instanceof AbstractSkeletonEntity && item.getItem() instanceof BowItem) {

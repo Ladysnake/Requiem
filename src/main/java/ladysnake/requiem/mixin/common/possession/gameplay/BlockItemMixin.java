@@ -32,20 +32,29 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.impl.possession.item;
+package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import net.minecraft.entity.mob.MobEntity;
+import ladysnake.requiem.common.impl.possession.item.PossessionItemOverrideWrapper;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.TypedActionResult;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.Optional;
-
-public interface PossessionItemOverride {
-
-    void initNow();
-
-    Identifier getType();
-
-    Optional<InstancedItemOverride> test(PlayerEntity player, MobEntity possessed, ItemStack stack);
+@Mixin(BlockItem.class)
+public abstract class BlockItemMixin {
+    @Inject(method = "useOnBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/BlockItem;use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/TypedActionResult;"), cancellable = true, locals = LocalCapture.CAPTURE_FAILSOFT)
+    private void applyItemOverrides(ItemUsageContext context, CallbackInfoReturnable<ActionResult> cir) {
+        PlayerEntity player = context.getPlayer();
+        if (player != null) {
+            PossessionItemOverrideWrapper.tryUseOverride(context.getWorld(), player, context.getStack(), context.getHand())
+                .map(TypedActionResult::getResult)
+                .ifPresent(cir::setReturnValue);
+        }
+    }
 }

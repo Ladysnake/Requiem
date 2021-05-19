@@ -39,7 +39,7 @@ import ladysnake.requiem.api.v1.event.minecraft.DynamicRegistryRegistrationCallb
 import ladysnake.requiem.api.v1.possession.item.PossessionItemAction;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.impl.possession.item.PossessionItemOverride;
+import ladysnake.requiem.common.impl.possession.item.PossessionItemOverrideWrapper;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
@@ -66,13 +66,13 @@ public final class RequiemRegistries {
             .attribute(RegistryAttribute.SYNCED)
             .buildAndRegister();
 
-    public static final RegistryKey<Registry<PossessionItemOverride>> MOB_ITEM_OVERRIDE_KEY = RegistryKey.ofRegistry(Requiem.id("requiem/mob_items"));
+    public static final RegistryKey<Registry<PossessionItemOverrideWrapper>> MOB_ITEM_OVERRIDE_KEY = RegistryKey.ofRegistry(Requiem.id("requiem/mob_items"));
 
     public static void init() {
         Registry.register(REMNANT_STATES, new Identifier(RemnantState.NULL_STATE_ID), RemnantTypes.MORTAL);
 
         RequiemBuiltinRegistries.init();
 
-        DynamicRegistryRegistrationCallback.EVENT.register(helper -> helper.registerSynced(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY, PossessionItemOverride.CODEC, PossessionItemOverride.NETWORK_CODEC));
+        DynamicRegistryRegistrationCallback.EVENT.register(helper -> helper.registerSynced(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY, PossessionItemOverrideWrapper.CODEC, PossessionItemOverrideWrapper.NETWORK_CODEC));
     }
 }

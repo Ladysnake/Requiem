@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    "#c:raw_meats"
+    "#c:raw_meats",
+    { "id": "biomemakeover:raw_toad", "required": false },
+    { "id": "llamarama:raw_llama_meat", "required": false }
   ]
 }

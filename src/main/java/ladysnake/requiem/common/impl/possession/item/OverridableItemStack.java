@@ -34,18 +34,19 @@
  */
 package ladysnake.requiem.common.impl.possession.item;
 
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 
-import java.util.Optional;
+public interface OverridableItemStack {
+    static OverridableItemStack get(ItemStack stack) {
+        @SuppressWarnings("ConstantConditions") OverridableItemStack s = (OverridableItemStack) (Object) stack;
+        return s;
+    }
 
-public interface PossessionItemOverride {
+    static void overrideMaxUseTime(ItemStack stack, int useTime) {
+        OverridableItemStack.get(stack).requiem$overrideMaxUseTime(useTime);
+    }
 
-    void initNow();
+    void requiem$clearOverriddenUseTime();
 
-    Identifier getType();
-
-    Optional<InstancedItemOverride> test(PlayerEntity player, MobEntity possessed, ItemStack stack);
+    void requiem$overrideMaxUseTime(int useTime);
 }

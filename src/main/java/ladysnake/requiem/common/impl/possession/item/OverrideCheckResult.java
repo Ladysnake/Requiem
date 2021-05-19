@@ -34,18 +34,10 @@
  */
 package ladysnake.requiem.common.impl.possession.item;
 
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+public enum OverrideCheckResult {
+    ACCEPT, PASS, FAIL_SOFT, FAIL_HARD;
 
-import java.util.Optional;
-
-public interface PossessionItemOverride {
-
-    void initNow();
-
-    Identifier getType();
-
-    Optional<InstancedItemOverride> test(PlayerEntity player, MobEntity possessed, ItemStack stack);
+    public boolean isFinal() {
+        return this == ACCEPT || this == FAIL_HARD;
+    }
 }

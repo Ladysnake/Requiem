@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "#requiem:food/plant_based",
+    "minecraft:honey_bottle",
+    { "id": "chocobacon:chocolate_bar", "required": false }
+  ]
+}
