@@ -11,6 +11,7 @@
     {"id": "mobz:tank_entity", "required": false},
     {"id": "mobz:armored_entity", "required": false},
     {"id": "mobz:smallzombie_entity", "required": false},
-    {"id": "mobz:fast_entity", "required": false}
+    {"id": "mobz:fast_entity", "required": false},
+    {"id": "biomemakeover:decayed", "required": false}
   ]
 }
