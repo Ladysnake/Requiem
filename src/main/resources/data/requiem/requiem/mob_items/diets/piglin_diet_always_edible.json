@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "priority": 80,
+  "mob": {
+    "type": "#requiem:piglins"
+  },
   "override": {
     "type": "requiem:diet",
-    "entity": {
-      "type": "#requiem:piglins"
-    },
     "food": {
       "requiem:food": {
         "always_edible": true

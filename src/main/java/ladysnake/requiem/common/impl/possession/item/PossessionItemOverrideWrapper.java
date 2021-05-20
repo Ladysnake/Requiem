@@ -39,11 +39,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.RequiemRegistries;
+import ladysnake.requiem.common.impl.data.LazyEntityPredicate;
 import ladysnake.requiem.common.util.MoreCodecs;
 import ladysnake.requiem.common.util.PolymorphicCodecBuilder;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -51,8 +53,12 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class PossessionItemOverrideWrapper implements Comparable<PossessionItemOverrideWrapper> {
     public static final int CURRENT_SCHEMA_VERSION = 0;
@@ -61,11 +67,11 @@ public class PossessionItemOverrideWrapper implements Comparable<PossessionItemO
     public static final Codec<PossessionItemOverrideWrapper> CODEC_V0 = RecordCodecBuilder.create((instance) -> instance.group(
         Codec.INT.optionalFieldOf("priority", 100).forGetter(PossessionItemOverrideWrapper::getPriority),
         Codec.BOOL.optionalFieldOf("enabled", true).forGetter(PossessionItemOverrideWrapper::isEnabled),
-        MoreCodecs.text(MoreCodecs.DYNAMIC_JSON).optionalFieldOf("tooltip").forGetter(w -> ((OldPossessionItemOverride) w.override).getTooltip()),
+        MoreCodecs.text(MoreCodecs.DYNAMIC_JSON).optionalFieldOf("tooltip").forGetter(w -> w.tooltip),
         OldPossessionItemOverride.Requirements.codec(MoreCodecs.DYNAMIC_JSON).fieldOf("requirements").forGetter(o -> ((OldPossessionItemOverride) o.override).getRequirements()),
         Codec.INT.optionalFieldOf("use_time", 0).forGetter(w -> ((OldPossessionItemOverride) w.override).getUseTime()),
         OldPossessionItemOverride.Result.CODEC.fieldOf("result").forGetter(w -> ((OldPossessionItemOverride) w.override).getResult())
-    ).apply(instance, (p, e, t, req, u, res) -> new PossessionItemOverrideWrapper(p, e, new OldPossessionItemOverride(t, req, u, res))));
+    ).apply(instance, (p, e, t, req, u, res) -> new PossessionItemOverrideWrapper(p, e, t, req.possessed, new OldPossessionItemOverride(req, u, res))));
 
     public static final Codec<PossessionItemOverrideWrapper> CODEC_V1 = codecV1(MoreCodecs.DYNAMIC_JSON);
 
@@ -82,6 +88,8 @@ public class PossessionItemOverrideWrapper implements Comparable<PossessionItemO
         return RecordCodecBuilder.create(instance -> instance.group(
             Codec.INT.optionalFieldOf("priority", 100).forGetter(PossessionItemOverrideWrapper::getPriority),
             Codec.BOOL.optionalFieldOf("enabled", true).forGetter(PossessionItemOverrideWrapper::isEnabled),
+            MoreCodecs.text(jsonCodec).optionalFieldOf("tooltip").forGetter(o -> o.tooltip),
+            LazyEntityPredicate.codec(jsonCodec).fieldOf("mob").forGetter(o -> o.mob),
             overrideCodecV1(jsonCodec).fieldOf("override").forGetter(w -> w.override)
         ).apply(instance, PossessionItemOverrideWrapper::new));
     }
@@ -90,13 +98,9 @@ public class PossessionItemOverrideWrapper implements Comparable<PossessionItemO
         return PolymorphicCodecBuilder.create("type", Identifier.CODEC, PossessionItemOverride::getType)
             .with(OldPossessionItemOverride.ID, OldPossessionItemOverride.codec(jsonCodec))
             .with(DietItemOverride.ID, DietItemOverride.codec(jsonCodec))
+            .with(HealingItemOverride.ID, HealingItemOverride.codec(jsonCodec))
+            .with(CureItemOverride.ID, CureItemOverride.codec(jsonCodec))
             .build();
-    }
-
-    public PossessionItemOverrideWrapper(int priority, boolean enabled, PossessionItemOverride override) {
-        this.priority = priority;
-        this.enabled = enabled;
-        this.override = override;
     }
 
     public static Optional<TypedActionResult<ItemStack>> tryUseOverride(World world, PlayerEntity player, ItemStack heldStack, Hand hand) {
@@ -126,27 +130,48 @@ public class PossessionItemOverrideWrapper implements Comparable<PossessionItemO
     }
 
     public static Optional<InstancedItemOverride> findOverride(World world, PlayerEntity player, MobEntity possessedEntity, ItemStack heldStack) {
-        return world.getRegistryManager().get(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY).stream()
-            .sorted()
-            .reduce(
-                Optional.empty(),     // identity
-                (previousResult, override) -> { // Accumulator, converts wrappers into partial results
-                    if (previousResult.filter(InstancedItemOverride::shortCircuits).isPresent()) return previousResult;
-                    Optional<InstancedItemOverride> tested = override.test(player, possessedEntity, heldStack);
-                    if (!previousResult.isPresent() || tested.filter(InstancedItemOverride::shortCircuits).isPresent()) {
-                        return tested;
-                    }
-                    return previousResult;
-                }, (r1, r2) -> {    // Combiner, combines partial results
-                    if (r1.filter(InstancedItemOverride::shortCircuits).isPresent()) return r1;
-                    if (!r1.isPresent() || r2.filter(InstancedItemOverride::shortCircuits).isPresent()) return r2;
-                    return r1;
-                });
+        InstancedItemOverride ret = null;
+        for (PossessionItemOverrideWrapper wrapper : world.getRegistryManager().get(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY).stream().sorted().collect(Collectors.toList())) {
+            Optional<InstancedItemOverride> tested = wrapper.test(player, possessedEntity, heldStack);
+            if (tested.isPresent()) {
+                ret = tested.get();
+                if (ret.shortCircuits()) {
+                    break;
+                }
+            }
+        }
+        return Optional.ofNullable(ret);
+    }
+
+    public static List<Text> buildTooltip(World world, PlayerEntity player, MobEntity possessedEntity, ItemStack heldStack) {
+        List<Text> lines = new ArrayList<>();
+        for (PossessionItemOverrideWrapper wrapper : world.getRegistryManager().get(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY).stream().sorted().collect(Collectors.toList())) {
+            Optional<InstancedItemOverride> tested = wrapper.test(player, possessedEntity, heldStack);
+            if (tested.isPresent()) {
+                InstancedItemOverride override = tested.get();
+                if (override.shortCircuits()) {
+                    return wrapper.tooltip.flatMap(override::tweakTooltip).map(Collections::singletonList).orElse(Collections.emptyList());
+                } else {
+                    wrapper.tooltip.flatMap(override::tweakTooltip).ifPresent(lines::add);
+                }
+            }
+        }
+        return lines;
     }
 
     private final int priority;
     private final boolean enabled;
+    private final Optional<Text> tooltip;
+    private final LazyEntityPredicate mob;
     final PossessionItemOverride override;
+
+    public PossessionItemOverrideWrapper(int priority, boolean enabled, Optional<Text> tooltip, LazyEntityPredicate mob, PossessionItemOverride override) {
+        this.priority = priority;
+        this.enabled = enabled;
+        this.tooltip = tooltip;
+        this.mob = mob;
+        this.override = override;
+    }
 
     public int getPriority() {
         return this.priority;
@@ -157,10 +182,11 @@ public class PossessionItemOverrideWrapper implements Comparable<PossessionItemO
     }
 
     public Optional<InstancedItemOverride> test(PlayerEntity player, MobEntity host, ItemStack stack) {
-        return this.isEnabled() ? this.override.test(player, host, stack) : Optional.empty();
+        return this.isEnabled() && this.mob.test(host) ? this.override.test(player, host, stack) : Optional.empty();
     }
 
     public PossessionItemOverrideWrapper initNow() {
+        this.mob.initNow();
         this.override.initNow();
         return this;
     }

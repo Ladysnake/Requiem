@@ -43,6 +43,7 @@ import ladysnake.requiem.common.impl.data.LazyItemPredicate;
 import ladysnake.requiem.common.util.MoreCodecs;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -51,29 +52,33 @@ import net.minecraft.world.World;
 
 import java.util.Optional;
 
-public class DietItemOverride implements PossessionItemOverride, InstancedItemOverride {
-    public static final Identifier ID = Requiem.id("diet");
+public class HealingItemOverride implements PossessionItemOverride, InstancedItemOverride {
+    public static final Identifier ID = Requiem.id("healing");
 
-    public static Codec<DietItemOverride> codec(Codec<JsonElement> jsonCodec) {
+    public static Codec<HealingItemOverride> codec(Codec<JsonElement> jsonCodec) {
         return RecordCodecBuilder.create(instance -> instance.group(
-            LazyItemPredicate.codec(jsonCodec).fieldOf("food").forGetter(o -> o.food),
-            MoreCodecs.enumeration(Filter.class).optionalFieldOf("filter", Filter.DEFAULT).forGetter(o -> o.filter)
-        ).apply(instance, DietItemOverride::new));
+            LazyItemPredicate.codec(jsonCodec).fieldOf("item").forGetter(o -> o.item),
+            Codec.INT.optionalFieldOf("use_time", 0).forGetter(o -> o.useTime),
+            Codec.INT.optionalFieldOf("cooldown", 0).forGetter(o -> o.cooldown),
+            MoreCodecs.enumeration(Filter.class).optionalFieldOf("filter", Filter.EAT_TO_HEAL).forGetter(o -> o.filter)
+        ).apply(instance, HealingItemOverride::new));
     }
 
-    private final LazyItemPredicate food;
+    private final LazyItemPredicate item;
+    private final int useTime;
+    private final int cooldown;
     private final Filter filter;
-    private final OverrideFailure failure;
 
-    public DietItemOverride(LazyItemPredicate food, Filter filter) {
-        this.food = food;
+    public HealingItemOverride(LazyItemPredicate item, int useTime, int cooldown, Filter filter) {
+        this.item = item;
+        this.useTime = useTime;
+        this.cooldown = cooldown;
         this.filter = filter;
-        failure = new OverrideFailure(true);
     }
 
     @Override
     public void initNow() {
-        this.food.initNow();
+        this.item.initNow();
     }
 
     @Override
@@ -83,10 +88,8 @@ public class DietItemOverride implements PossessionItemOverride, InstancedItemOv
 
     @Override
     public Optional<InstancedItemOverride> test(PlayerEntity player, MobEntity possessed, ItemStack stack) {
-        if (this.food.get(possessed.world).test(stack)) {
+        if (this.item.test(player.world, stack) && player.getHealth() < player.getMaxHealth()) {
             return Optional.of(this);
-        } else if (stack.isFood()) {
-            return Optional.of(this.failure);
         }
         return Optional.empty();
     }
@@ -98,25 +101,34 @@ public class DietItemOverride implements PossessionItemOverride, InstancedItemOv
 
     @Override
     public TypedActionResult<ItemStack> use(PlayerEntity player, MobEntity possessedEntity, ItemStack heldStack, World world, Hand hand) {
-        return TypedActionResult.pass(heldStack);
+        if (this.useTime <= 0) {
+            return this.finishUsing(player, possessedEntity, heldStack, world, hand);
+        } else {
+            OverridableItemStack.overrideMaxUseTime(heldStack, this.useTime);
+            player.setCurrentHand(hand);
+            return TypedActionResult.success(heldStack);
+        }
     }
 
     @Override
     public TypedActionResult<ItemStack> finishUsing(PlayerEntity user, MobEntity possessedEntity, ItemStack heldStack, World world, Hand activeHand) {
-        return this.filter.consume(user, possessedEntity, heldStack, world, activeHand);
+        Item item = heldStack.getItem();
+        TypedActionResult<ItemStack> ret = filter.consume(user, possessedEntity, heldStack, world, activeHand);
+        if (this.cooldown > 0) user.getItemCooldownManager().set(item, this.cooldown);
+        return ret;
     }
 
     public enum Filter implements OverrideFilter {
-        DEFAULT {
+        EAT_TO_HEAL {
             @Override
             public TypedActionResult<ItemStack> consume(PlayerEntity player, MobEntity possessedEntity, ItemStack heldStack, World world, Hand hand) {
-                return TypedActionResult.pass(heldStack);
+                return VanillaRequiemPlugin.healWithFood(player, possessedEntity, heldStack, world, hand);
             }
         },
-        REMOVE_HARMFUL_EFFECTS {
+        REPLACE_BONE {
             @Override
             public TypedActionResult<ItemStack> consume(PlayerEntity player, MobEntity possessedEntity, ItemStack heldStack, World world, Hand hand) {
-                return VanillaRequiemPlugin.eatWitchFood(player, possessedEntity, heldStack, world, hand);
+                return VanillaRequiemPlugin.replaceBone(player, possessedEntity, heldStack, world, hand);
             }
         }
     }

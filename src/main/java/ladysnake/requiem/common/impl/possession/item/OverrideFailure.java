@@ -34,90 +34,45 @@
  */
 package ladysnake.requiem.common.impl.possession.item;
 
-import com.google.gson.JsonElement;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.common.VanillaRequiemPlugin;
-import ladysnake.requiem.common.impl.data.LazyItemPredicate;
-import ladysnake.requiem.common.util.MoreCodecs;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 import java.util.Optional;
 
-public class DietItemOverride implements PossessionItemOverride, InstancedItemOverride {
-    public static final Identifier ID = Requiem.id("diet");
+public class OverrideFailure implements InstancedItemOverride {
+    private final boolean strikethrough;
 
-    public static Codec<DietItemOverride> codec(Codec<JsonElement> jsonCodec) {
-        return RecordCodecBuilder.create(instance -> instance.group(
-            LazyItemPredicate.codec(jsonCodec).fieldOf("food").forGetter(o -> o.food),
-            MoreCodecs.enumeration(Filter.class).optionalFieldOf("filter", Filter.DEFAULT).forGetter(o -> o.filter)
-        ).apply(instance, DietItemOverride::new));
-    }
-
-    private final LazyItemPredicate food;
-    private final Filter filter;
-    private final OverrideFailure failure;
-
-    public DietItemOverride(LazyItemPredicate food, Filter filter) {
-        this.food = food;
-        this.filter = filter;
-        failure = new OverrideFailure(true);
-    }
-
-    @Override
-    public void initNow() {
-        this.food.initNow();
-    }
-
-    @Override
-    public Identifier getType() {
-        return ID;
-    }
-
-    @Override
-    public Optional<InstancedItemOverride> test(PlayerEntity player, MobEntity possessed, ItemStack stack) {
-        if (this.food.get(possessed.world).test(stack)) {
-            return Optional.of(this);
-        } else if (stack.isFood()) {
-            return Optional.of(this.failure);
-        }
-        return Optional.empty();
+    public OverrideFailure(boolean strikethrough) {
+        this.strikethrough = strikethrough;
     }
 
     @Override
     public boolean shortCircuits() {
-        return true;
+        return false;
     }
 
     @Override
     public TypedActionResult<ItemStack> use(PlayerEntity player, MobEntity possessedEntity, ItemStack heldStack, World world, Hand hand) {
-        return TypedActionResult.pass(heldStack);
+        return TypedActionResult.fail(heldStack);
     }
 
     @Override
     public TypedActionResult<ItemStack> finishUsing(PlayerEntity user, MobEntity possessedEntity, ItemStack heldStack, World world, Hand activeHand) {
-        return this.filter.consume(user, possessedEntity, heldStack, world, activeHand);
+        return TypedActionResult.fail(heldStack);
     }
 
-    public enum Filter implements OverrideFilter {
-        DEFAULT {
-            @Override
-            public TypedActionResult<ItemStack> consume(PlayerEntity player, MobEntity possessedEntity, ItemStack heldStack, World world, Hand hand) {
-                return TypedActionResult.pass(heldStack);
-            }
-        },
-        REMOVE_HARMFUL_EFFECTS {
-            @Override
-            public TypedActionResult<ItemStack> consume(PlayerEntity player, MobEntity possessedEntity, ItemStack heldStack, World world, Hand hand) {
-                return VanillaRequiemPlugin.eatWitchFood(player, possessedEntity, heldStack, world, hand);
-            }
+    @Override
+    public Optional<Text> tweakTooltip(Text baseTooltip) {
+        if (this.strikethrough) {
+            return Optional.of(baseTooltip.shallowCopy().formatted(Formatting.STRIKETHROUGH));
+        } else {
+            return InstancedItemOverride.super.tweakTooltip(baseTooltip);
         }
     }
 }

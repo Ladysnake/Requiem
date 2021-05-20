@@ -343,35 +343,41 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     public void registerPossessionItemActions(Registry<PossessionItemAction> registry) {
         Registry.register(registry, Requiem.id("pass"), (player, possessed, stack, world, hand) -> TypedActionResult.pass(stack));
         Registry.register(registry, Requiem.id("fail"), (player, possessed, stack, world, hand) -> TypedActionResult.fail(stack));
-        Registry.register(registry, Requiem.id("cure"), (player, possessed, stack, world, hand) -> {
-            if (RemnantComponent.get(player).canCurePossessed(possessed)) {
-                PossessionComponent.get(player).startCuring();
-                stack.decrement(1);
-                return TypedActionResult.success(stack);
-            }
-
-            return TypedActionResult.fail(stack);
-        });
-        Registry.register(registry, Requiem.id("eat_to_heal"), (player, possessed, stack, world, hand) -> {
-            FoodComponent food = stack.getItem().getFoodComponent();
-
-            if (food != null) {
-                possessed.heal(food.getHunger());
-                player.eatFood(world, stack);
-                return TypedActionResult.success(stack);
-            }
-
-            return TypedActionResult.fail(stack);
-        });
-        Registry.register(registry, Requiem.id("replace_bone"), (player, possessed, stack, world, hand) -> {
-            if (SkeletonBoneComponent.KEY.get(possessed).replaceBone()) {
-                stack.decrement(1);
-                return TypedActionResult.success(stack);
-            }
-
-            return TypedActionResult.fail(stack);
-        });
+        Registry.register(registry, Requiem.id("cure"), VanillaRequiemPlugin::cure);
+        Registry.register(registry, Requiem.id("eat_to_heal"), VanillaRequiemPlugin::healWithFood);
+        Registry.register(registry, Requiem.id("replace_bone"), VanillaRequiemPlugin::replaceBone);
         Registry.register(registry, Requiem.id("witch_eat"), VanillaRequiemPlugin::eatWitchFood);
+    }
+
+    public static TypedActionResult<ItemStack> cure(PlayerEntity player, MobEntity possessed, ItemStack stack, World world, Hand hand) {
+        if (RemnantComponent.get(player).canCurePossessed(possessed)) {
+            PossessionComponent.get(player).startCuring();
+            stack.decrement(1);
+            return TypedActionResult.success(stack);
+        }
+
+        return TypedActionResult.fail(stack);
+    }
+
+    public static TypedActionResult<ItemStack> healWithFood(PlayerEntity player, MobEntity possessed, ItemStack stack, World world, Hand hand) {
+        FoodComponent food = stack.getItem().getFoodComponent();
+
+        if (food != null) {
+            possessed.heal(food.getHunger());
+            player.eatFood(world, stack);
+            return TypedActionResult.success(stack);
+        }
+
+        return TypedActionResult.fail(stack);
+    }
+
+    public static TypedActionResult<ItemStack> replaceBone(PlayerEntity player, MobEntity possessed, ItemStack stack, World world, Hand hand) {
+        if (SkeletonBoneComponent.KEY.get(possessed).replaceBone()) {
+            stack.decrement(1);
+            return TypedActionResult.success(stack);
+        }
+
+        return TypedActionResult.fail(stack);
     }
 
     public static TypedActionResult<ItemStack> eatWitchFood(PlayerEntity player, MobEntity possessed, ItemStack stack, World world, Hand hand) {

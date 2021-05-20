@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
+  "tooltip": {
+    "translate": "requiem:tooltip.illager_food",
+    "color": "dark_gray"
+  },
+  "mob": {
+    "type": "#requiem:illagers"
+  },
   "override": {
     "type": "requiem:diet",
-    "tooltip": {
-      "translate": "requiem:tooltip.illager_food",
-      "color": "dark_gray"
-    },
-    "entity": {
-      "type": "#requiem:illagers"
-    },
     "food": {
       "tag": "requiem:food/illager_diet"
     }

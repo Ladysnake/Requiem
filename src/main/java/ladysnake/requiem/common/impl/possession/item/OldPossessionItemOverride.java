@@ -42,13 +42,11 @@ import ladysnake.requiem.api.v1.possession.item.PossessionItemAction;
 import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.impl.data.LazyEntityPredicate;
 import ladysnake.requiem.common.impl.data.LazyItemPredicate;
-import ladysnake.requiem.common.util.MoreCodecs;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -61,23 +59,20 @@ public final class OldPossessionItemOverride implements InstancedItemOverride, P
 
     static Codec<OldPossessionItemOverride> codec(Codec<JsonElement> jsonCodec) {
         return RecordCodecBuilder.create((instance) -> instance.group(
-            MoreCodecs.text(jsonCodec).optionalFieldOf("tooltip").forGetter(OldPossessionItemOverride::getTooltip),
             Requirements.codec(jsonCodec).fieldOf("requirements").forGetter(OldPossessionItemOverride::getRequirements),
             Codec.INT.optionalFieldOf("use_time", 0).forGetter(OldPossessionItemOverride::getUseTime),
             Result.CODEC.fieldOf("result").forGetter(OldPossessionItemOverride::getResult)
         ).apply(instance, OldPossessionItemOverride::new));
     }
 
-    private final Optional<Text> tooltip;
     private final Requirements requirements;
     private final int useTime;
     private final Result result;
 
-    OldPossessionItemOverride(Optional<Text> tooltip, Requirements requirements, int useTime, Result result) {
+    OldPossessionItemOverride(Requirements requirements, int useTime, Result result) {
         this.requirements = requirements;
         this.useTime = useTime;
         this.result = result;
-        this.tooltip = tooltip;
     }
 
     /**
@@ -91,11 +86,6 @@ public final class OldPossessionItemOverride implements InstancedItemOverride, P
     @Override
     public Identifier getType() {
         return ID;
-    }
-
-    @Override
-    public Optional<Text> getTooltip() {
-        return tooltip;
     }
 
     public int getUseTime() {
@@ -145,7 +135,7 @@ public final class OldPossessionItemOverride implements InstancedItemOverride, P
             ).apply(instance, Requirements::new));
         }
 
-        private final LazyEntityPredicate possessed;
+        final LazyEntityPredicate possessed;
         private final LazyItemPredicate usedItem;
         private final Optional<Boolean> canEat;
 
@@ -164,9 +154,7 @@ public final class OldPossessionItemOverride implements InstancedItemOverride, P
             }
             if (this.canEat.isPresent()) {
                 FoodComponent foodComponent = stack.getItem().getFoodComponent();
-                if (this.canEat.get() != (foodComponent != null && player.canConsume(foodComponent.isAlwaysEdible()))) {
-                    return false;
-                }
+                return this.canEat.get() == (foodComponent != null && player.canConsume(foodComponent.isAlwaysEdible()));
             }
             return true;
         }
