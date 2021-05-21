@@ -13,8 +13,9 @@
     "type": "requiem:healing",
     "item": {
       "tag": "requiem:raw_meats"
-    }
-  },
-  "use_time": 32,
-  "cooldown": 150
+    },
+    "use_time": 32,
+    "cooldown": 150,
+    "usage": "eat_to_heal"
+  }
 }
