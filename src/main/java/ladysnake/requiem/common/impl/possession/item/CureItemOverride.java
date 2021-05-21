@@ -102,8 +102,8 @@ public class CureItemOverride implements PossessionItemOverride, InstancedItemOv
 
     @Override
     public Optional<InstancedItemOverride> test(PlayerEntity player, MobEntity possessed, ItemStack stack) {
-        if (RemnantComponent.get(player).canCurePossessed(possessed)) {
-            if (this.reagent.test(player.world, stack) && this.possessedState.test(possessed)) {
+        if (RemnantComponent.get(player).canCurePossessed(possessed) && this.reagent.test(player.world, stack)) {
+            if (this.possessedState.test(possessed)) {
                 return Optional.of(this);
             } else {
                 return Optional.of(this.failure);
