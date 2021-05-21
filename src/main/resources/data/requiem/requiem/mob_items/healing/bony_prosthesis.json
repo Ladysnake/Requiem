@@ -14,6 +14,6 @@
     },
     "use_time": 0,
     "cooldown": 60,
-    "filter": "replace_bone"
+    "usage": "replace_bone"
   }
 }

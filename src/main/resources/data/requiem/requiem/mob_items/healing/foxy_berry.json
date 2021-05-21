@@ -13,6 +13,7 @@
       "item": "minecraft:sweet_berries"
     },
     "use_time": 16,
-    "cooldown": 48
+    "cooldown": 48,
+    "usage": "eat_to_heal"
   }
 }

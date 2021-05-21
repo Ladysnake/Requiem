@@ -95,6 +95,7 @@ public class PossessionItemOverrideWrapper implements Comparable<PossessionItemO
     }
 
     private static Codec<PossessionItemOverride> overrideCodecV1(Codec<JsonElement> jsonCodec) {
+        // I promise I will make this a registry at some point
         return PolymorphicCodecBuilder.create("type", Identifier.CODEC, PossessionItemOverride::getType)
             .with(OldPossessionItemOverride.ID, OldPossessionItemOverride.codec(jsonCodec))
             .with(DietItemOverride.ID, DietItemOverride.codec(jsonCodec))
@@ -130,17 +131,18 @@ public class PossessionItemOverrideWrapper implements Comparable<PossessionItemO
     }
 
     public static Optional<InstancedItemOverride> findOverride(World world, PlayerEntity player, MobEntity possessedEntity, ItemStack heldStack) {
-        InstancedItemOverride ret = null;
+        Optional<InstancedItemOverride> fallback = Optional.empty();
         for (PossessionItemOverrideWrapper wrapper : world.getRegistryManager().get(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY).stream().sorted().collect(Collectors.toList())) {
             Optional<InstancedItemOverride> tested = wrapper.test(player, possessedEntity, heldStack);
             if (tested.isPresent()) {
-                ret = tested.get();
-                if (ret.shortCircuits()) {
-                    break;
+                if (tested.get().shortCircuits()) {
+                    return tested;
+                } else if (!fallback.isPresent()) {
+                    fallback = tested;
                 }
             }
         }
-        return Optional.ofNullable(ret);
+        return fallback;
     }
 
     public static List<Text> buildTooltip(World world, PlayerEntity player, MobEntity possessedEntity, ItemStack heldStack) {

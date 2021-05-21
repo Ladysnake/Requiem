@@ -60,20 +60,20 @@ public class HealingItemOverride implements PossessionItemOverride, InstancedIte
             LazyItemPredicate.codec(jsonCodec).fieldOf("item").forGetter(o -> o.item),
             Codec.INT.optionalFieldOf("use_time", 0).forGetter(o -> o.useTime),
             Codec.INT.optionalFieldOf("cooldown", 0).forGetter(o -> o.cooldown),
-            MoreCodecs.enumeration(Filter.class).optionalFieldOf("filter", Filter.EAT_TO_HEAL).forGetter(o -> o.filter)
+            MoreCodecs.enumeration(Usage.class).fieldOf("usage").forGetter(o -> o.usage)
         ).apply(instance, HealingItemOverride::new));
     }
 
     private final LazyItemPredicate item;
     private final int useTime;
     private final int cooldown;
-    private final Filter filter;
+    private final Usage usage;
 
-    public HealingItemOverride(LazyItemPredicate item, int useTime, int cooldown, Filter filter) {
+    public HealingItemOverride(LazyItemPredicate item, int useTime, int cooldown, Usage usage) {
         this.item = item;
         this.useTime = useTime;
         this.cooldown = cooldown;
-        this.filter = filter;
+        this.usage = usage;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class HealingItemOverride implements PossessionItemOverride, InstancedIte
 
     @Override
     public Optional<InstancedItemOverride> test(PlayerEntity player, MobEntity possessed, ItemStack stack) {
-        if (this.item.test(player.world, stack) && player.getHealth() < player.getMaxHealth()) {
+        if (this.item.test(player.world, stack) && possessed.getHealth() < possessed.getMaxHealth()) {
             return Optional.of(this);
         }
         return Optional.empty();
@@ -113,12 +113,12 @@ public class HealingItemOverride implements PossessionItemOverride, InstancedIte
     @Override
     public TypedActionResult<ItemStack> finishUsing(PlayerEntity user, MobEntity possessedEntity, ItemStack heldStack, World world, Hand activeHand) {
         Item item = heldStack.getItem();
-        TypedActionResult<ItemStack> ret = filter.consume(user, possessedEntity, heldStack, world, activeHand);
+        TypedActionResult<ItemStack> ret = usage.consume(user, possessedEntity, heldStack, world, activeHand);
         if (this.cooldown > 0) user.getItemCooldownManager().set(item, this.cooldown);
         return ret;
     }
 
-    public enum Filter implements OverrideFilter {
+    public enum Usage implements OverrideFilter {
         EAT_TO_HEAL {
             @Override
             public TypedActionResult<ItemStack> consume(PlayerEntity player, MobEntity possessedEntity, ItemStack heldStack, World world, Hand hand) {

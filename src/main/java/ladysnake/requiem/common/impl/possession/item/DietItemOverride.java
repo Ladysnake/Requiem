@@ -57,7 +57,7 @@ public class DietItemOverride implements PossessionItemOverride, InstancedItemOv
     public static Codec<DietItemOverride> codec(Codec<JsonElement> jsonCodec) {
         return RecordCodecBuilder.create(instance -> instance.group(
             LazyItemPredicate.codec(jsonCodec).fieldOf("food").forGetter(o -> o.food),
-            MoreCodecs.enumeration(Filter.class).optionalFieldOf("filter", Filter.DEFAULT).forGetter(o -> o.filter)
+            MoreCodecs.enumeration(Filter.class).optionalFieldOf("filter", Filter.NONE).forGetter(o -> o.filter)
         ).apply(instance, DietItemOverride::new));
     }
 
@@ -107,7 +107,7 @@ public class DietItemOverride implements PossessionItemOverride, InstancedItemOv
     }
 
     public enum Filter implements OverrideFilter {
-        DEFAULT {
+        NONE {
             @Override
             public TypedActionResult<ItemStack> consume(PlayerEntity player, MobEntity possessedEntity, ItemStack heldStack, World world, Hand hand) {
                 return TypedActionResult.pass(heldStack);
