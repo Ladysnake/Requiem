@@ -1,0 +1,19 @@
+{
+  "schema_version": 0,
+  "priority": 100,
+  "tooltip": {
+    "translate": "requiem:tooltip.illager_food",
+    "color": "dark_gray"
+  },
+  "requirements": {
+    "possessed": {
+      "type": "#requiem:illagers"
+    },
+    "used_item": {
+      "tag": "requiem:food/illager_diet"
+    }
+  },
+  "result": {
+    "action": "requiem:pass"
+  }
+}

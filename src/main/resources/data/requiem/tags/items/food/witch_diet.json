@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    "#requiem:raw_fishes",
+    "minecraft:poisonous_potato",
+    "minecraft:potato",
+    "minecraft:spider_eye",
+    "minecraft:rotten_flesh",
+    "minecraft:mushroom_stew",
+    "minecraft:chorus_fruit",
+    "minecraft:dried_kelp",
+    "minecraft:melon_slice",
+    "minecraft:beetroot",
+    "minecraft:beetroot_soup",
+    "minecraft:suspicious_stew"
+  ]
+}

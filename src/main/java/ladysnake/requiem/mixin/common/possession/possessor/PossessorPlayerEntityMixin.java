@@ -97,6 +97,11 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
         }
     }
 
+    @Inject(method = "updateSwimming", at = @At("RETURN"))
+    private void cancelSwimming(CallbackInfo ci) {
+        MovementAlterer.KEY.get(this).updateSwimming();
+    }
+
     /**
      * Players' sizes are hardcoded in an immutable enum map.
      * This injection delegates the call to the possessed entity, if any.

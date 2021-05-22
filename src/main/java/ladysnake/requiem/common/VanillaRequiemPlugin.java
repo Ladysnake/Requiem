@@ -46,19 +46,29 @@ import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.event.minecraft.AllowUseEntityCallback;
 import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
+import ladysnake.requiem.api.v1.event.minecraft.MobTravelRidingCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PrepareRespawnCallback;
 import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
+import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.possession.item.PossessionItemAction;
-import ladysnake.requiem.api.v1.remnant.*;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.api.v1.remnant.MobResurrectable;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
-import ladysnake.requiem.common.entity.ability.*;
+import ladysnake.requiem.common.entity.ability.AutoAimAbility;
+import ladysnake.requiem.common.entity.ability.RangedAttackAbility;
+import ladysnake.requiem.common.entity.ability.ShulkerPeekAbility;
+import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
+import ladysnake.requiem.common.entity.ability.SnowmanSnowballAbility;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
@@ -68,18 +78,26 @@ import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import net.fabricmc.fabric.api.event.player.*;
-import net.fabricmc.fabric.api.util.TriState;
+import ladysnake.requiem.mixin.common.access.StatusEffectAccessor;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.SpiderEntity;
+import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
@@ -87,11 +105,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
 
 import javax.annotation.Nonnull;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import static ladysnake.requiem.common.remnant.RemnantTypes.MORTAL;
@@ -127,6 +149,10 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                 ((MobResurrectable) lazarus).setResurrectionEntity(secondLife);
                 return RemnantComponent.get(lazarus).getRemnantType().isDemon();
             }
+            return false;
+        });
+        LivingEntityDropCallback.EVENT.register((dead, deathCause) -> {
+            PossessedData.KEY.maybeGet(dead).ifPresent(PossessedData::dropItems);
             return false;
         });
         HumanityCheckCallback.EVENT.register(possessedEntity -> EnchantmentHelper.getEquipmentLevel(RequiemEnchantments.HUMANITY, possessedEntity));
@@ -195,8 +221,23 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                     }
                     return ActionResult.SUCCESS;
                 }
+            } else if (entity instanceof RavagerEntity) {
+                LivingEntity possessed = PossessionComponent.get(player).getPossessedEntity();
+                if (possessed != null && possessed.getType().isIn(EntityTypeTags.RAIDERS)) {
+                    if (!world.isClient) {
+                        possessed.startRiding(entity);
+                    }
+                    return ActionResult.SUCCESS;
+                }
             }
             return ActionResult.PASS;
+        });
+        MobTravelRidingCallback.EVENT.register((mount, rider) -> {
+            if (mount.getType() == EntityType.RAVAGER) {
+                MobEntity possessedEntity = PossessionComponent.getPossessedEntity(rider);
+                return possessedEntity != null && possessedEntity.getType().isIn(EntityTypeTags.RAIDERS);
+            }
+            return false;
         });
         UseItemCallback.EVENT.register((player, world, hand) -> {
             LivingEntity possessed = PossessionComponent.getPossessedEntity(player);
@@ -212,30 +253,27 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         }));
         PossessionStateChangeCallback.EVENT.register((player, possessed) -> {
                 InventoryLimiter inventoryLimiter = InventoryLimiter.KEY.get(player);
+                if (!player.world.isClient) {
+                    inventoryLimiter.setEnabled(true);
+                }
                 if (possessed == null) {
-                    for (InventoryPart part : InventoryPart.VALUES) {
-                        inventoryLimiter.lock(part);
-                    }
                     PlayerAbilityController.get(player).resetAbilities(RemnantComponent.isIncorporeal(player));
                 } else {
-                    if (RequiemEntityTypeTags.INVENTORY_CARRIERS.contains(possessed.getType())) {
-                        inventoryLimiter.unlock(InventoryPart.MAIN);
-                    } else {
-                        inventoryLimiter.lock(InventoryPart.MAIN);
-                    }
-                    if (canUseItems(possessed)) {
-                        inventoryLimiter.unlock(InventoryPart.HANDS);
-                        inventoryLimiter.unlock(InventoryPart.CRAFTING);
-                    } else {
-                        inventoryLimiter.lock(InventoryPart.HANDS);
-                        inventoryLimiter.lock(InventoryPart.CRAFTING);
-                    }
-                    if (canWearArmor(possessed)) {
-                        inventoryLimiter.unlock(InventoryPart.ARMOR);
-                    } else {
-                        inventoryLimiter.lock(InventoryPart.ARMOR);
-                    }
                     PlayerAbilityController.get(player).usePossessedAbilities(possessed);
+
+                    if (!player.world.isClient) {
+                        if (RequiemEntityTypeTags.INVENTORY_CARRIERS.contains(possessed.getType())) {
+                            inventoryLimiter.unlock(InventoryPart.MAIN);
+                        }
+                        if (canUseItems(possessed)) {
+                            inventoryLimiter.unlock(InventoryPart.HANDS);
+                            inventoryLimiter.unlock(InventoryPart.CRAFTING);
+                        }
+                        if (canWearArmor(possessed)) {
+                            inventoryLimiter.unlock(InventoryPart.ARMOR);
+                        }
+                        PossessedData.KEY.get(possessed).giftFirstPossessionLoot(player);
+                    }
                 }
             }
         );
@@ -267,6 +305,8 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         abilityRegistry.register(EntityType.SNOW_GOLEM, MobAbilityConfig.<SnowGolemEntity>builder()
             .directAttack(e -> new RangedAttackAbility<>(e, 20, 10))
             .indirectInteract(SnowmanSnowballAbility::new).build());
+        abilityRegistry.register(EntityType.WITCH, MobAbilityConfig.<WitchEntity>builder()
+            .directAttack(owner -> new RangedAttackAbility<>(owner, 50, 10.)).build());
     }
 
     @Override
@@ -344,5 +384,36 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
             return TypedActionResult.fail(stack);
         });
+        Registry.register(registry, Requiem.id("witch_eat"), (player, possessed, stack, world, hand) -> {
+            Map<StatusEffect, StatusEffectInstance> before = new HashMap<>(possessed.getActiveStatusEffects());
+            ItemStack ret = stack.getItem().finishUsing(stack, world, player);
+            Map<StatusEffect, StatusEffectInstance> after = new HashMap<>(possessed.getActiveStatusEffects());
+            // Remove all negative status effects from the food
+            revertHarmfulEffects(player, before, after);
+            return TypedActionResult.success(ret);
+        });
+    }
+
+    private void revertHarmfulEffects(PlayerEntity player, Map<StatusEffect, StatusEffectInstance> before, Map<StatusEffect, StatusEffectInstance> after) {
+        for (StatusEffect statusEffect : after.keySet()) {
+            if (((StatusEffectAccessor) statusEffect).requiem$getType() == StatusEffectType.HARMFUL) {
+                StatusEffectInstance previous = before.get(statusEffect);
+                StatusEffectInstance current = after.get(statusEffect);
+                if (!Objects.equals(previous, current)) {
+                    player.removeStatusEffect(statusEffect);
+                    if (previous != null) {
+                        player.addStatusEffect(new StatusEffectInstance(
+                            statusEffect,
+                            Math.min(previous.getDuration(), current.getDuration()),
+                            Math.min(previous.getAmplifier(), current.getAmplifier()),
+                            previous.isAmbient(),
+                            previous.shouldShowParticles(),
+                            previous.shouldShowIcon(),
+                            previous
+                        ));
+                    }
+                }
+            }
+        }
     }
 }

@@ -5,11 +5,13 @@
     "translate": "requiem:tooltip.cure_reagent",
     "color": "dark_gray"
   },
-  "possessed": {
-    "requiem:can_be_cured": true
-  },
-  "used_item": {
-    "tag": "requiem:undead_cures"
+  "requirements": {
+    "possessed": {
+      "requiem:can_be_cured": true
+    },
+    "used_item": {
+      "tag": "requiem:undead_cures"
+    }
   },
   "result": {
     "action": "requiem:fail"

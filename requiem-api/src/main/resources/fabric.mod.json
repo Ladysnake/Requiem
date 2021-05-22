@@ -25,6 +25,7 @@
       "requiem:synced_gamerules",
       "requiem:remnant",
       "requiem:possessor",
+      "requiem:possessed_data",
       "requiem:movement_alterer",
       "requiem:death_suspension",
       "requiem:dialogue_tracker",

@@ -1,0 +1,19 @@
+{
+  "schema_version": 0,
+  "priority": 90,
+  "tooltip": {
+    "translate": "requiem:tooltip.villager_food",
+    "color": "dark_gray"
+  },
+  "requirements": {
+    "possessed": {
+      "type": "#requiem:villagers"
+    },
+    "used_item": {
+      "requiem:food": {}
+    }
+  },
+  "result": {
+    "action": "requiem:pass"
+  }
+}

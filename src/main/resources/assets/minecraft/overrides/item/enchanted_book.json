@@ -1,0 +1,16 @@
+{
+  "overrides": [
+    {
+      "predicate": {
+        "nbt": {
+          "StoredEnchantments": [
+            {
+              "id": "requiem:humanity"
+            }
+          ]
+        }
+      },
+      "model": "requiem:item/humanity_enchanted_book"
+    }
+  ]
+}

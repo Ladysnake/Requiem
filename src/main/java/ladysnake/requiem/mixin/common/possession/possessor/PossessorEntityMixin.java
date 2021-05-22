@@ -49,6 +49,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Entity.class)
 public abstract class PossessorEntityMixin {
 
+    @Invoker("isSprinting")
+    public abstract boolean requiem$isSprinting();
+
     @Invoker("getX")
     protected abstract double requiem$getX();
 

@@ -51,7 +51,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
-import net.minecraft.util.hit.EntityHitResult;
 
 public class PlayerMeleeTask extends Task<FakeServerPlayerEntity> {
     public PlayerMeleeTask() {
@@ -75,11 +74,7 @@ public class PlayerMeleeTask extends Task<FakeServerPlayerEntity> {
     }
 
     private boolean isLookingAt(FakeServerPlayerEntity executor, LivingEntity target) {
-        EntityHitResult result = RayHelper.raycast(
-            executor,
-            ReachEntityAttributes.getAttackRange(executor, 3)
-        );
-        return result != null && result.getEntity() == target;
+        return RayHelper.getTargetedEntity(executor) == target;
     }
 
     private boolean isAttackReady(PlayerEntity executor, LivingEntity target) {

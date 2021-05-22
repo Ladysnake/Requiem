@@ -32,6 +32,18 @@ public interface SearchConsumableCallback {
      * <p>If the action returns {@code true} for a stack,
      * this method must return {@code true} without submitting other stacks.
      *
+     * <p>Example implementation:
+     * <pre>{@code
+     * SearchConsumableCallback.EVENT.register((player, action) -> {
+     *     for (ItemStack stack : MyExternalInventory.get(player)) {
+     *         if (action.test(stack)) {
+     *             return true;
+     *         }
+     *     }
+     *     return false;
+     * }
+     * }</pre>
+     *
      * @param player  the player to search consumables for
      * @param action  the action to run for any stack found
      * @return {@code true} if a stack was found and accepted, {@code false} otherwise

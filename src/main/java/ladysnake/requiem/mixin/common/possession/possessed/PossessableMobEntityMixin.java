@@ -35,7 +35,7 @@
 package ladysnake.requiem.mixin.common.possession.possessed;
 
 import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.common.impl.possession.PossessedDataImpl;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
@@ -121,12 +121,7 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
 
     @Inject(method = "method_29243", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private <T extends MobEntity> void possessConvertedZombie(EntityType<T> type, boolean bl, CallbackInfoReturnable<T> ci, T converted) {
-        PlayerEntity possessor = this.getPossessor();
-        if (possessor != null) {
-            PossessionComponent.get(possessor).stopPossessing(false);
-            // The possession will start when the entity is added to the world
-            ((Possessable)converted).setPossessor(possessor);
-        }
+        PossessedDataImpl.onMobConverted((MobEntity) (Object) this, converted);
     }
 
     @Override

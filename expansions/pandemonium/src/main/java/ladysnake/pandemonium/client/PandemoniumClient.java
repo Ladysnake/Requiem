@@ -34,15 +34,21 @@
  */
 package ladysnake.pandemonium.client;
 
+import baritone.api.fakeplayer.AutomatoneFakePlayer;
 import ladysnake.pandemonium.Pandemonium;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.client.FractureKeyBinding;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 @CalledThroughReflection
 public class PandemoniumClient implements ClientModInitializer {
@@ -51,6 +57,18 @@ public class PandemoniumClient implements ClientModInitializer {
         ClientMessageHandling.init();
         EntityRendererRegistry.INSTANCE.register(PandemoniumEntities.PLAYER_SHELL, (r, it) -> new PlayerEntityRenderer(r));
         ClientTickEvents.END_WORLD_TICK.register(Pandemonium::tickAnchors);
+        MutableBoolean wasLookingAtShell = new MutableBoolean();
+        ClientTickEvents.START_CLIENT_TICK.register(client -> {
+            if (client.targetedEntity instanceof AutomatoneFakePlayer && client.player != null) {
+                if (PossessionComponent.getPossessedEntity(client.player) != null && client.player.getUuid().equals(((AutomatoneFakePlayer) client.targetedEntity).getOwnerUuid())) {
+                    client.inGameHud.setOverlayMessage(new TranslatableText("requiem:merge_hint", FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
+                    wasLookingAtShell.setTrue();
+                }
+            } else if (wasLookingAtShell.booleanValue()) {
+                client.inGameHud.setOverlayMessage(LiteralText.EMPTY, false);
+                wasLookingAtShell.setFalse();
+            }
+        });
         registerCallbacks();
     }
 

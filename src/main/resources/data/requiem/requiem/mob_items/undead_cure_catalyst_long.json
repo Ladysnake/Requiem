@@ -4,11 +4,13 @@
     "translate": "requiem:tooltip.cure_catalyst",
     "color": "dark_gray"
   },
-  "possessed": {
-    "requiem:can_be_cured": true
-  },
-  "used_item": {
-    "potion": "minecraft:long_weakness"
+  "requirements": {
+    "possessed": {
+      "requiem:can_be_cured": true
+    },
+    "used_item": {
+      "potion": "minecraft:long_weakness"
+    }
   },
   "result": {
     "action": "requiem:pass"

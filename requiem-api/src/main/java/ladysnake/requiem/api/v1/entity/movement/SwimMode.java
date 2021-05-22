@@ -18,31 +18,42 @@
 package ladysnake.requiem.api.v1.entity.movement;
 
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
+import net.fabricmc.fabric.api.util.TriState;
 
 public enum SwimMode {
     /**
      * The entity cannot swim but can still freely move in water
      */
-    DISABLED,
+    DISABLED(TriState.FALSE),
     /**
      * The entity can start swimming, and they can stop swimming when they want to
      */
-    ENABLED,
+    ENABLED(TriState.DEFAULT),
     /**
      * The entity is always swimming, like a fish
      */
-    FORCED,
+    FORCED(TriState.TRUE),
     /**
      * The entity is always sinking to the bottom
      */
-    SINKING,
+    SINKING(TriState.FALSE),
     /**
      * The entity is always floating at the surface of the water
      */
-    FLOATING,
+    FLOATING(TriState.FALSE),
     /**
      * No information, the {@link MovementAlterer} should use heuristics to determine which of the
      * other modes to use
      */
-    UNSPECIFIED
+    UNSPECIFIED(TriState.DEFAULT);
+
+    private final TriState sprintSwim;
+
+    SwimMode(TriState allowSprintSwim) {
+        this.sprintSwim = allowSprintSwim;
+    }
+
+    public TriState sprintSwims() {
+        return sprintSwim;
+    }
 }

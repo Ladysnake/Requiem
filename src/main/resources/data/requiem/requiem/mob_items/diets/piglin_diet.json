@@ -1,0 +1,18 @@
+{
+  "schema_version": 0,
+  "tooltip": {
+    "translate": "requiem:tooltip.piglin_food",
+    "color": "dark_gray"
+  },
+  "requirements": {
+    "possessed": {
+      "type": "#requiem:piglins"
+    },
+    "used_item": {
+      "tag": "requiem:pork"
+    }
+  },
+  "result": {
+    "action": "requiem:pass"
+  }
+}

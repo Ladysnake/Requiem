@@ -38,6 +38,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.mixin.common.access.EndermanEntityAccessor;
@@ -76,11 +77,17 @@ public class BasePossessionHandlers {
             }
             return PossessionStartCallback.Result.PASS;
         });
+        PossessionStartCallback.EVENT.register(Requiem.id("converted_mobs"), (target, possessor, simulate) -> {
+            if (PossessedData.KEY.get(target).wasConvertedUnderPossession()) {
+                return PossessionStartCallback.Result.ALLOW;
+            }
+            return PossessionStartCallback.Result.PASS;
+        });
         PossessionStartCallback.EVENT.register(Requiem.id("enderman"), BasePossessionHandlers::handleEndermanPossession);
     }
 
     private static PossessionStartCallback.Result handleEndermanPossession(MobEntity target, PlayerEntity possessor, boolean simulate) {
-        if (!target.world.isClient && target instanceof EndermanEntity) {
+        if (!target.world.isClient && target instanceof EndermanEntity && !RequiemEntityTypeTags.POSSESSABLES.contains(target.getType())) {
             if (!simulate) {
                 Entity tpDest;
                 // Maybe consider making the dimensional teleportation work in any dimension other than the overworld ?

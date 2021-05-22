@@ -112,7 +112,7 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
-    @Inject(method = "pushAway", at = @At("HEAD"), cancellable = true)
+    @Inject(method = {"pushAway", "pushAwayFrom"}, at = @At("HEAD"), cancellable = true)
     private void stopPushingAway(Entity entity, CallbackInfo ci) {
         if (RemnantComponent.isVagrant(this)) {
             ci.cancel();

@@ -39,10 +39,17 @@ import ladysnake.pandemonium.api.event.PlayerShellEvents;
 import ladysnake.pandemonium.common.PandemoniumConfig;
 import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
-import ladysnake.pandemonium.common.entity.ability.*;
-import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
-import ladysnake.pandemonium.common.entity.effect.PenanceStatusEffect;
+import ladysnake.pandemonium.common.entity.ability.BlazeFireballAbility;
+import ladysnake.pandemonium.common.entity.ability.BlinkAbility;
+import ladysnake.pandemonium.common.entity.ability.CreeperPrimingAbility;
+import ladysnake.pandemonium.common.entity.ability.EvokerFangAbility;
+import ladysnake.pandemonium.common.entity.ability.EvokerVexAbility;
+import ladysnake.pandemonium.common.entity.ability.EvokerWololoAbility;
+import ladysnake.pandemonium.common.entity.ability.GhastFireballAbility;
+import ladysnake.pandemonium.common.entity.ability.GuardianBeamAbility;
+import ladysnake.pandemonium.common.entity.ability.WitherSkullAbility;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
+import ladysnake.pandemonium.common.util.RayHelper;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
@@ -56,18 +63,19 @@ import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.api.v1.remnant.VagrantInteractionRegistry;
 import ladysnake.requiem.common.entity.ability.RangedAttackAbility;
 import ladysnake.requiem.common.network.RequiemNetworking;
-import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.GuardianEntity;
-import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+
+import java.util.Objects;
 
 public class PandemoniumRequiemPlugin implements RequiemPlugin {
 
@@ -96,9 +104,19 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
 
             if (PlayerSplitter.split(player)) {
                 success = true;
-            } else if (possessionComponent.getPossessedEntity() != null && PlayerBodyTracker.get(player).getAnchor() != null) {
-                possessionComponent.stopPossessing();
-                success = true;
+            } else if (possessionComponent.isPossessing()) {
+                Entity targetedEntity = RayHelper.getTargetedEntity(player);
+                if (targetedEntity instanceof PlayerShellEntity && Objects.equals(player.getUuid(), ((PlayerShellEntity) targetedEntity).getOwnerUuid())) {
+                    possessionComponent.stopPossessing();
+                    PlayerSplitter.merge((PlayerShellEntity) targetedEntity, player);
+                    RequiemNetworking.sendBodyCureMessage(player);
+                    success = true;
+                } else if (PlayerBodyTracker.get(player).getAnchor() != null) {
+                    possessionComponent.stopPossessing();
+                    success = true;
+                } else {
+                    success = false;
+                }
             } else {
                 success = false;
             }
@@ -126,7 +144,6 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
         abilityRegistry.register(EntityType.ELDER_GUARDIAN, MobAbilityConfig.<GuardianEntity>builder().directAttack(GuardianBeamAbility::new).build());
         abilityRegistry.register(EntityType.LLAMA, MobAbilityConfig.<LlamaEntity>builder().directAttack(RangedAttackAbility::new).build());
         abilityRegistry.register(EntityType.TRADER_LLAMA, MobAbilityConfig.<LlamaEntity>builder().directAttack(RangedAttackAbility::new).build());
-        abilityRegistry.register(EntityType.WITCH, MobAbilityConfig.<WitchEntity>builder().directAttack(owner -> new RangedAttackAbility<>(owner, 50, 10.)).build());
         abilityRegistry.register(EntityType.WITHER, MobAbilityConfig.<WitherEntity>builder().indirectAttack(WitherSkullAbility.BlueWitherSkullAbility::new).directAttack(WitherSkullAbility.BlackWitherSkullAbility::new).build());
     }
 

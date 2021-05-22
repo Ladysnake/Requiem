@@ -25,6 +25,12 @@ import net.minecraft.entity.damage.DamageSource;
 @FunctionalInterface
 public interface LivingEntityDropCallback {
 
+    /**
+     *
+     * @param entity the entity that is dropping its items
+     * @param deathCause the damage source causing the death
+     * @return {@code true} if the drop process should be cancelled
+     */
     boolean onEntityDrop(LivingEntity entity, DamageSource deathCause);
 
     Event<LivingEntityDropCallback> EVENT = EventFactory.createArrayBacked(LivingEntityDropCallback.class,

@@ -54,6 +54,7 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -62,6 +63,9 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(LivingEntity.class)
 public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
+
+    @Shadow
+    public abstract void setSprinting(boolean sprinting);
 
     @Invoker("getAttributeInstance")
     public abstract @Nullable EntityAttributeInstance requiem$getAttributeInstance(EntityAttribute attribute);
@@ -168,6 +172,23 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
             if (possessor instanceof ServerPlayerEntity) {
                 RequiemCriteria.POSSESSED_HIT_ENTITY.handle(((ServerPlayerEntity) possessor), attacker, (Entity) (Object) this, source, dealt, amount, blocked);
             }
+        }
+    }
+
+    private boolean requiem$wasSprinting;
+    @Inject(method = "method_26317", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSprinting()Z"))
+    private void preventWaterHovering(double d, boolean bl, Vec3d vec3d, CallbackInfoReturnable<Vec3d> cir) {
+        if (this.requiem$isSprinting() && MovementAlterer.KEY.get(this).disablesSwimming()) {
+            requiem$wasSprinting = true;
+            this.setSprinting(false);
+        }
+    }
+
+    @Inject(method = "method_26317", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSprinting()Z", shift = At.Shift.AFTER))
+    private void restoreSprint(double d, boolean bl, Vec3d vec3d, CallbackInfoReturnable<Vec3d> cir) {
+        if (requiem$wasSprinting) {
+            requiem$wasSprinting = false;
+            this.setSprinting(true);
         }
     }
 }

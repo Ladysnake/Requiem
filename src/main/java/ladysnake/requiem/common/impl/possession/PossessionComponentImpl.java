@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
@@ -118,6 +119,9 @@ public final class PossessionComponentImpl implements PossessionComponent {
         possessable.setPossessor(null);
         // Transfer inventory and mount
         if (!player.world.isClient) {
+            if (RequiemEntityTypeTags.INVENTORY_CARRIERS.contains(host.getType())) {
+                PossessedData.KEY.get(host).moveItems(player.inventory, false);
+            }
             if (RequiemEntityTypeTags.ITEM_USERS.contains(host.getType())) {
                 InventoryHelper.transferEquipment(host, player);
             }
@@ -134,6 +138,10 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 ((MobEntity) possessable).stopRiding();
                 player.startRiding(ridden);
             }
+            if (RequiemEntityTypeTags.EATERS.contains(host.getType())) {
+                player.getHungerManager().fromTag(PossessedData.KEY.get(host).getHungerData());
+            }
+
             host.setTarget(null);
         }
         // Actually set the possessed entity
@@ -171,26 +179,30 @@ public final class PossessionComponentImpl implements PossessionComponent {
      */
     @Override
     public void stopPossessing(boolean transfer) {
-        LivingEntity possessed = this.getPossessedEntity();
-        if (possessed != null) {
+        LivingEntity host = this.getPossessedEntity();
+        if (host != null) {
             this.resetState();
-            ((Possessable) possessed).setPossessor(null);
+            ((Possessable) host).setPossessor(null);
 
             if (player instanceof ServerPlayerEntity) {
                 if (transfer) {
-                    dropEquipment(possessed, player);
+                    dropEquipment(host, player);
+                }
+
+                if (RequiemEntityTypeTags.EATERS.contains(host.getType())) {
+                    player.getHungerManager().toTag(PossessedData.KEY.get(host).getHungerData());
                 }
 
                 // move soulbound effects from the host to the soul
                 // careful with ConcurrentModificationException
-                for (StatusEffectInstance effect : possessed.getStatusEffects().toArray(new StatusEffectInstance[0])) {
+                for (StatusEffectInstance effect : host.getStatusEffects().toArray(new StatusEffectInstance[0])) {
                     if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
-                        possessed.removeStatusEffect(effect.getEffectType());
+                        host.removeStatusEffect(effect.getEffectType());
                         player.addStatusEffect(new StatusEffectInstance(effect));
                     }
                 }
 
-                possessed.setSprinting(false);
+                host.setSprinting(false);
             }
         }
     }
@@ -199,6 +211,9 @@ public final class PossessionComponentImpl implements PossessionComponent {
         if (player.world.getGameRules().get(RequiemGamerules.POSSESSION_KEEP_INVENTORY).get().shouldTransfer(possessed.isAlive())) {
             if (RequiemEntityTypeTags.ITEM_USERS.contains(possessed.getType())) {
                 InventoryHelper.transferEquipment(player, possessed);
+            }
+            if (RequiemEntityTypeTags.INVENTORY_CARRIERS.contains(possessed.getType())) {
+                PossessedData.KEY.get(possessed).moveItems(player.inventory, true);
             }
             ((LivingEntityAccessor) player).requiem$invokeDropInventory();
         }

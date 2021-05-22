@@ -22,6 +22,7 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.player.PlayerEntity;
 
+@Deprecated
 @FunctionalInterface
 public interface InventoryLockingChangeCallback {
     void onInventoryLockingChange(PlayerEntity player, InventoryPart part, boolean locked);

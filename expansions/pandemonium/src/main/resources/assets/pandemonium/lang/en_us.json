@@ -12,5 +12,6 @@
   "pandemonium:commands.shell.fail.not_shell": "%s is not a player shell",
   "entity.pandemonium.player_shell": "Player Shell",
   "config.pandemonium.possession": "Possession",
-  "config.pandemonium.allow_possessing_all_mobs": "Allow possessing all mobs"
+  "config.pandemonium.allow_possessing_all_mobs": "Allow possessing all mobs",
+  "requiem:merge_hint": "Press %s to merge"
 }

@@ -34,23 +34,40 @@
  */
 package ladysnake.requiem.common.impl.inventory;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.EnumHashBiMap;
+import com.google.common.collect.ImmutableMap;
+import io.github.ladysnake.locki.DefaultInventoryNodes;
+import io.github.ladysnake.locki.InventoryKeeper;
+import io.github.ladysnake.locki.InventoryLock;
+import io.github.ladysnake.locki.InventoryLockingChangeCallback;
+import io.github.ladysnake.locki.InventoryNode;
+import io.github.ladysnake.locki.Locki;
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.InventoryPart;
 import ladysnake.requiem.api.v1.entity.InventoryShape;
-import ladysnake.requiem.api.v1.event.requiem.InventoryLockingChangeCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 
-import java.util.EnumSet;
-
 public final class PlayerInventoryLimiter implements InventoryLimiter {
     public static final int MAINHAND_SLOT = 0;
-    public static final int OFFHAND_SLOT = 40;
+
+    private static final BiMap<InventoryPart, InventoryNode> lockiMappings = EnumHashBiMap.create(ImmutableMap.of(
+        InventoryPart.MAIN, DefaultInventoryNodes.MAIN_INVENTORY,
+        InventoryPart.HANDS, DefaultInventoryNodes.HANDS,
+        InventoryPart.ARMOR, DefaultInventoryNodes.ARMOR,
+        InventoryPart.CRAFTING, DefaultInventoryNodes.CRAFTING
+    ));
+
+    private static final InventoryLock lock = Locki.registerLock(Requiem.id("inventory_limiter"));
+
+    static {
+        InventoryLockingChangeCallback.EVENT.register((player, part, l) -> ladysnake.requiem.api.v1.event.requiem.InventoryLockingChangeCallback.EVENT.invoker().onInventoryLockingChange(player, lockiMappings.inverse().get(part), l));
+    }
 
     private final PlayerEntity player;
-    private final EnumSet<InventoryPart> lockedParts = EnumSet.allOf(InventoryPart.class);
-    private boolean enabled;
 
     public PlayerInventoryLimiter(PlayerEntity player) {
         this.player = player;
@@ -58,31 +75,34 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
 
     @Override
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        if (!this.player.world.isClient) {
+            if (enabled) lock.lockInventory(this.player);
+            else lock.unlockInventory(this.player);
+        }
     }
 
     @Override
     public boolean isEnabled() {
-        return this.enabled && !this.player.isCreative();
+        return lock.isLocking(player, DefaultInventoryNodes.INVENTORY) && !this.player.isCreative();
     }
 
     @Override
     public void lock(InventoryPart part) {
-        if (this.lockedParts.add(part)) {
-            InventoryLockingChangeCallback.EVENT.invoker().onInventoryLockingChange(this.player, part, true);
+        if (!this.player.world.isClient) {
+            lock.lock(this.player, lockiMappings.get(part));
         }
     }
 
     @Override
     public void unlock(InventoryPart part) {
-        if (this.lockedParts.remove(part)) {
-            InventoryLockingChangeCallback.EVENT.invoker().onInventoryLockingChange(this.player, part, false);
+        if (!this.player.world.isClient) {
+            lock.unlock(this.player, lockiMappings.get(part));
         }
     }
 
     @Override
     public boolean isLocked(InventoryPart part) {
-        return this.isEnabled() && this.lockedParts.contains(part);
+        return InventoryKeeper.get(this.player).isLocked(lockiMappings.get(part));
     }
 
     @Override
@@ -93,59 +113,45 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
 
     @Override
     public boolean isSlotLocked(int index) {
-        if (!isEnabled()) return false;
-
-        int mainSize = player.inventory.main.size();
-
-        if (this.isLocked(InventoryPart.MAIN) && index > MAINHAND_SLOT && index < mainSize) {
-            return true;
-        }
-
-        int armorSize = player.inventory.armor.size();
-
-        if (this.isLocked(InventoryPart.ARMOR) && index >= mainSize && index < mainSize + armorSize) {
-            return true;
-        }
-
-        return this.isLocked(InventoryPart.HANDS) && (index == MAINHAND_SLOT || index == OFFHAND_SLOT);
+        return InventoryKeeper.get(this.player).isSlotLocked(index);
     }
 
     @Override
     public boolean isSlotInvisible(int playerSlot) {
         return this.player.currentScreenHandler == this.player.playerScreenHandler
             && this.getInventoryShape() != InventoryShape.NORMAL
+            && (this.getInventoryShape() != InventoryShape.ALT_SMALL || playerSlot >= 9)
             && (this.isSlotLocked(playerSlot) || (playerSlot == MAINHAND_SLOT && this.isMainInventoryLocked()));
     }
 
     @Override
     public InventoryShape getInventoryShape() {
-        if (this.isEnabled()) {
-            if (PossessionComponent.get(this.player).isPossessing()) {
-                if (this.lockedParts.size() == InventoryPart.VALUES.size()) {
-                    return InventoryShape.ALT_LARGE;
-                } else if (this.lockedParts.contains(InventoryPart.MAIN)) {
-                    return InventoryShape.ALT;
-                }
-                return InventoryShape.ALT_SMALL;
+        if (!player.isCreative() && PossessionComponent.get(this.player).isPossessing()) {
+            InventoryKeeper keeper = InventoryKeeper.get(this.player);
+            if (keeper.isEntirelyLocked(DefaultInventoryNodes.INVENTORY)) {
+                return InventoryShape.ALT_LARGE;
+            } else if (keeper.isLocked(DefaultInventoryNodes.MAIN_INVENTORY)) {
+                return InventoryShape.ALT;
             }
-//            return InventoryShape.ALT_SMALL;
+            return InventoryShape.ALT_SMALL;
         }
         return InventoryShape.NORMAL;
     }
 
     private boolean isMainInventoryLocked() {
-        return this.isEnabled() && this.lockedParts.contains(InventoryPart.MAIN);
+        return lock.isLocking(this.player, DefaultInventoryNodes.MAIN_INVENTORY);
     }
 
     @Override
     public void readFromNbt(CompoundTag compoundTag) {
         if (compoundTag.contains("enabled")) {
-            this.enabled = compoundTag.getBoolean("enabled");
+            // compat with old saves
+            this.setEnabled(compoundTag.getBoolean("enabled"));
         }
     }
 
     @Override
     public void writeToNbt(CompoundTag compoundTag) {
-        compoundTag.putBoolean("enabled", this.enabled);
+        // NO-OP
     }
 }

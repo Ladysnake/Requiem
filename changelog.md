@@ -1,4 +1,90 @@
 ------------------------------------------------------
+Version 1.7.7
+------------------------------------------------------
+**Additions**
+- Mobs can now give you loot when you possess them for the first time
+    - Skeletons, piglins and pillagers now come with some free arrows
+
+**Changes**
+- You can now possess a witch converted from a smitten villager
+    - Brought over witch abilities and gameplay fixes from Pandemonium
+
+**Mod Compatibility**
+- Chime: Fixed crash at launch when Chime was installed
+    - Requiem now bundles Chime :>
+- Biome Makeover: Fixed witches with attrition replacing all held items with bottles of antidote
+
+**Fixes**
+- Fixed a crash when shift clicking fuel out of a furnace
+- Fixed item cooldown not starting when eating the last item of a stack of mob food
+- Updated a bunch of libraries
+    - Fixed a crash with Fabric API <0.34 in some modpacks
+    - Fixed creative flight ability being lost when teleporting to another dimension
+
+#### Pandemonium
+**Fixes**
+- Fixed a crash when standing on blocks with dynamic collision boxes
+- Fixed player shells looking in the wrong direction on spawn
+
+------------------------------------------------------
+Version 1.7.6
+------------------------------------------------------
+**Changes**
+- Mobs that are added to `inventory_carriers.json` but not to `item_users.json` will now have their entire hotbar locked
+
+**Fixes**
+- Fixed endermen not being able to be added to `possessables.json` without pandemonium
+- Fixed sinking mobs (eg. zombies) being allowed to swim while possessed
+- Fixed possessed mobs being able to equip armor by shift-clicking in the inventory
+- Fixed previously possessed mobs losing their residual inventory when converted (eg. zombies drowning)
+
+------------------------------------------------------
+Version 1.7.5
+------------------------------------------------------
+**Changes**
+- Mobs will now keep items in their main inventory after possession ends instead of dropping everything
+- Added tooltips for the new mob diets
+
+**Fixes**
+- Fixed hunger bar resetting when you re-possess a mob
+- Mobs will no longer stare at incorporeal players
+- Fixed incorporeal players being able to push mobs around
+
+#### Pandemonium
+**Pandemonium is now released separately as part of [its own Curseforge project](https://curseforge.com/minecraft/mc-mods/requiem-pandemonium-expansion)**
+
+**Changes**
+- Players can now quickly merge with their body when looking at it while possessing a mob
+
+------------------------------------------------------
+Version 1.7.4
+------------------------------------------------------
+**Changes**
+- Weapons enchanted with Humanity can now hurt the Enderdragon
+- Added custom diets for villager folks
+    - Illagers are carnist
+    - Villagers are vegetarian
+    - Witches eat stuff no one reasonable would
+    - Everyone eats bread (bread is good)
+- Made a breaking change in the item override data format, hope no one did a datapack yet
+
+**Mod Compatibility**
+- Bumblezone: Fixed the "compatibility improvements" actually crashing the game
+
+**Fixes**
+- Fixed Requiem flat out not doing anything in Hardcore
+
+------------------------------------------------------
+Version 1.7.3
+------------------------------------------------------
+**Bugfixes**
+- Fixed players being unable to connect to multiplayer servers with requiem
+
+#### Pandemonium
+**Additions**
+- Raider mobs can now ride ravagers ✪ ω ✪
+
+------------------------------------------------------
 Version 1.7.2
 ------------------------------------------------------
 #### Pandemonium
