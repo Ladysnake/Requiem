@@ -100,6 +100,28 @@
     "flightMode": "FORCED",
     "inertia": 0.9
  },
+  "biomemakeover:blightbat": {
+    "fallSpeedModifier": 0.9,
+    "flightMode": "FORCED",
+    "swimMode": "DISABLED",
+    "inertia": 0.5,
+    "gravity":0.03,
+    "required": false
+  },
+  "biomemakeover:ghost": {
+    "fallSpeedModifier": 0.9,
+    "flightMode": "FORCED",
+    "swimMode": "DISABLED",
+    "inertia": 0.8,
+    "gravity":0.01,
+    "required": false
+  },
+  "adventurez:blaze_guardian":  {
+    "flightMode": "FORCED",
+    "inertia": 0.95,
+    "gravity": 0.005,
+    "required": false
+  },
  "mobz:frost_entity":  {
   "flightMode": "FORCED",
   "inertia": 0.95,
@@ -113,12 +135,6 @@
 "mobz:islandvex_entity": {
   "flightMode": "FORCED",
   "phasesThroughWalls": true,
-  "required": false
- },
- "adventurez:blaze_guardian":  {
-  "flightMode": "FORCED",
-  "inertia": 0.95,
-  "gravity": 0.005,
   "required": false
  }
 }

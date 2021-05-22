@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#c:illagers"
+    "#c:illagers",
+    { "id": "biomemakeover:cowboy", "required": false }
   ]
 }
