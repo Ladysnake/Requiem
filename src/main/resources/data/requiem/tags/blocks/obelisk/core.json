@@ -3,6 +3,6 @@
   "values": [
     "minecraft:crying_obsidian",
     "requiem:runic_obsidian_attrition",
-    "requiem:runic_obsidian_penance"
+    {"id": "requiem:runic_obsidian_penance", "required": false }
   ]
 }
