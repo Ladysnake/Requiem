@@ -37,6 +37,7 @@
     "possession.gameplay.BlockItemMixin",
     "possession.gameplay.BowItemMixin",
     "possession.gameplay.CraftingScreenHandlerMixin",
+    "possession.gameplay.CrossbowItemMixin",
     "possession.gameplay.HorseBaseEntityMixin",
     "possession.gameplay.ItemStackMixin",
     "possession.gameplay.LivingEntityMixin",

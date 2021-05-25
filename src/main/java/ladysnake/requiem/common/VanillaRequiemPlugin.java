@@ -130,6 +130,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         -0.66,
         EntityAttributeModifier.Operation.MULTIPLY_TOTAL
     );
+    public static final String INFINITY_SHOT_TAG = "requiem:infinity_shot";
 
     @Override
     public void onRequiemInitialize() {
