@@ -43,6 +43,7 @@ import ladysnake.requiem.common.entity.attribute.CooldownStrengthModifier;
 import ladysnake.requiem.common.entity.attribute.NonDeterministicAttribute;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
+import ladysnake.requiem.common.impl.movement.PlayerMovementAlterer;
 import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.impl.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
@@ -174,9 +175,11 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
         ((DisableableBrain) this.getBrain()).requiem_setDisabled(this.possessor != null);
 
-        this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).removeModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS_UUID);
+        EntityAttributeInstance speedAttribute = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+        speedAttribute.removeModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS_UUID);
+        speedAttribute.removeModifier(PlayerMovementAlterer.SPEED_MODIFIER_UUID);
         if (possessor != null) {
-            this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).addTemporaryModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS);
+            speedAttribute.addTemporaryModifier(VanillaRequiemPlugin.INHERENT_MOB_SLOWNESS);
         }
 
         this.onPossessorSet(possessor);

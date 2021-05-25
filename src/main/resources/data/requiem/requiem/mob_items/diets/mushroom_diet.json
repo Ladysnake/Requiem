@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "tooltip": {
+    "translate": "requiem:tooltip.mushroom_food",
+    "color": "dark_gray"
+  },
+  "mob": {
+    "type": "#requiem:mushroom_folk"
+  },
+  "override": {
+    "type": "requiem:diet",
+    "food": {
+      "tag": "requiem:food/mushroom_based"
+    }
+  }
+}

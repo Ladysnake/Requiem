@@ -4,6 +4,7 @@
     "minecraft:iron_golem",
     "minecraft:snow_golem",
     "minecraft:shulker",
+    {"id": "biomemakeover:stone_golem", "required": false},
     {"id": "snowmercy:mister_snuggles", "required": false},
     {"id": "snowmercy:mister_chill_snuggles", "required": false},
     {"id": "snowmercy:aftermarket_snowman", "required": false},

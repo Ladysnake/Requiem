@@ -58,9 +58,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
+import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
@@ -71,6 +75,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 import static ladysnake.requiem.api.v1.entity.MovementConfig.MovementMode.*;
 
@@ -78,6 +83,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
     public static final AbilitySource MOVEMENT_ALTERER_ABILITIES = Pal.getAbilitySource(Requiem.id("movement_alterer"));
     public static final int SYNC_NO_CLIP = 1;
     public static final int SYNC_PHASING_PARTICLES = 2;
+    public static final UUID SPEED_MODIFIER_UUID = UUID.fromString("3708adba-b37f-413f-8b66-62e05330c7da");
 
     @Nullable
     private MovementConfig config;
@@ -109,6 +115,17 @@ public class PlayerMovementAlterer implements MovementAlterer {
             }
             this.hugWall(false);
             this.underwaterJumpAscending = false;
+            this.applyWalkSpeedModifier();
+        }
+    }
+
+    private void applyWalkSpeedModifier() {
+        EntityAttributeInstance speedAttribute = getPlayerOrPossessed(this.player).getAttributes().getCustomInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+        if (speedAttribute != null) {
+            speedAttribute.removeModifier(SPEED_MODIFIER_UUID);
+            if (config != null && config.getWalkSpeedModifier() != 1.0f) {
+                speedAttribute.addTemporaryModifier(new EntityAttributeModifier(SPEED_MODIFIER_UUID, "Requiem altered movement", config.getWalkSpeedModifier(), EntityAttributeModifier.Operation.MULTIPLY_BASE));
+            }
         }
     }
 
@@ -217,7 +234,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
         if (getActualFlightMode(config, body) == FORCED || this.noClipping) {
             this.player.abilities.flying = true;
         }
-        if (this.player.isOnGround() && config.shouldFlopOnLand() && this.player.world.getFluidState(this.player.getBlockPos()).isEmpty()) {
+        if (this.player.isOnGround() && shouldActuallyFlopOnLand(config, body) && this.player.world.getFluidState(this.player.getBlockPos()).isEmpty()) {
             this.player.jump();
         }
         Vec3d velocity = this.player.getVelocity();
@@ -226,6 +243,14 @@ public class PlayerMovementAlterer implements MovementAlterer {
         velocity = applyInertia(velocity, this.config.getInertia());
         this.player.setVelocity(velocity);
         this.lastVelocity = velocity;
+    }
+
+    private boolean shouldActuallyFlopOnLand(MovementConfig config, LivingEntity body) {
+        TriState value = config.shouldFlopOnLand();
+        if (value != TriState.DEFAULT) {
+            return value.get();
+        }
+        return body instanceof FishEntity;
     }
 
     @Override
@@ -366,7 +391,10 @@ public class PlayerMovementAlterer implements MovementAlterer {
             return DISABLED;
         }
         if (config.getFlightMode() == UNSPECIFIED) {
-            return (entity instanceof FlyingEntity || entity instanceof Flutterer) ? FORCED : DISABLED;
+            return (entity instanceof FlyingEntity
+                || entity instanceof Flutterer
+                || ((EntityAccessor) entity).requiem$hasWings()
+            ) ? FORCED : DISABLED;
         }
         return config.getFlightMode();
     }

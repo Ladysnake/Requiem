@@ -53,7 +53,12 @@
     "walkMode": "JUMPY"
   },
   "minecraft:parrot": {
-    "flightMode": "ENABLED"
+    "flightMode": "ENABLED",
+    "swimMode": "DISABLED",
+    "gravity":0.01,
+    "fallSpeedModifier": 0.8,
+    "walkSpeedModifier": -0.8,
+    "required": false
   },
   "minecraft:phantom": {
     "flightMode": "FORCED",
@@ -115,6 +120,42 @@
     "inertia": 0.8,
     "gravity":0.01,
     "required": false
+  },
+  "biomemakeover:giant_slime": {
+    "swimMode": "FLOATING",
+    "walkMode": "JUMPY",
+    "required": false
+  },
+  "biomemakeover:lightning_bug": {
+    "flightMode": "FORCED",
+    "swimMode": "DISABLED",
+    "inertia": 0.1,
+    "required": false
+  },
+  "biomemakeover:lightning_bug_alternate": {
+    "flightMode": "FORCED",
+    "swimMode": "DISABLED",
+    "inertia": 0.1,
+    "required": false
+  },
+  "biomemakeover:moth": {
+    "flightMode": "FORCED",
+    "swimMode": "DISABLED",
+    "inertia": 0.65,
+    "gravity":0.008,
+    "required": false
+  },
+  "biomemakeover:owl": {
+    "flightMode": "ENABLED",
+    "swimMode": "DISABLED",
+    "gravity":0.01,
+    "fallSpeedModifier": 0.7,
+    "walkSpeedModifier": -0.8,
+    "required": false
+  },
+  "biomemakeover:tadpole": {
+    "swimMode": "FORCED",
+    "flopsOnLand": true
   },
   "adventurez:blaze_guardian":  {
     "flightMode": "FORCED",
