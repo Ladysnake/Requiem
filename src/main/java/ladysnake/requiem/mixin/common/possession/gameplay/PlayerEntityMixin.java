@@ -35,49 +35,33 @@
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.common.VanillaRequiemPlugin;
-import ladysnake.requiem.mixin.common.access.ArrowShooter;
-import ladysnake.requiem.mixin.common.access.ProjectileEntityAccessor;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.BowItem;
-import net.minecraft.item.Item;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.item.Items;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(BowItem.class)
-public abstract class BowItemMixin extends RangedWeaponItem {
-
-    public BowItemMixin(Item.Settings settings) {
-        super(settings);
+@Mixin(PlayerEntity.class)
+public abstract class PlayerEntityMixin extends LivingEntity {
+    protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
+        super(entityType, world);
     }
 
-    @ModifyVariable(method = "onStoppedUsing", ordinal = 0, at = @At("STORE"))
-    private boolean giveSkeletonInfinity(boolean infinity, ItemStack item, World world, LivingEntity user, int charge) {
-        MobEntity possessed = PossessionComponent.getPossessedEntity(user);
-        CompoundTag tag = item.getTag();
-        if (tag != null && tag.getBoolean(VanillaRequiemPlugin.INFINITY_SHOT_TAG)) {
-            tag.remove(VanillaRequiemPlugin.INFINITY_SHOT_TAG);
-            return true;
-        } else if (possessed instanceof AbstractSkeletonEntity) {
-            return infinity || RANDOM.nextFloat() < 0.8f;
+    @Inject(method = "getArrowType", at = @At("RETURN"), cancellable = true)
+    private void generateArrow(ItemStack weapon, CallbackInfoReturnable<ItemStack> cir) {
+        if (cir.getReturnValue().isEmpty()) {
+            MobEntity host = PossessionComponent.getPossessedEntity(this);
+            if (host != null && RequiemEntityTypeTags.ARROW_GENERATORS.contains(host.getType())) {
+                weapon.getOrCreateTag().putBoolean("requiem:infinity_shot", true);
+                cir.setReturnValue(new ItemStack(Items.ARROW));
+            }
         }
-        return infinity;
-    }
-
-    @ModifyVariable(method = "onStoppedUsing", ordinal = 0, at = @At("STORE"))
-    private PersistentProjectileEntity useSkeletonArrow(PersistentProjectileEntity firedArrow, ItemStack item, World world, LivingEntity user, int charge) {
-        LivingEntity possessed = PossessionComponent.getPossessedEntity(user);
-        if (possessed instanceof ArrowShooter) {
-            return ((ArrowShooter)possessed).requiem$invokeCreateArrow(((ProjectileEntityAccessor)firedArrow).requiem$invokeAsItemStack(), 1f);
-        }
-        return firedArrow;
     }
 }

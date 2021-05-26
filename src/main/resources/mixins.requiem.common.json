@@ -44,6 +44,7 @@
     "possession.gameplay.MilkBucketItemMixin",
     "possession.gameplay.MobEntityMixin",
     "possession.gameplay.PigEntityMixin",
+    "possession.gameplay.PlayerEntityMixin",
     "possession.gameplay.TridentItemMixin",
     "possession.gameplay.VillagerEntityMixin",
     "possession.gameplay.WitchEntityMixin",

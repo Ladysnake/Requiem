@@ -66,7 +66,8 @@
   "requiem:subtitles.effect.time.stop": "ZA WARUDO! TOKI WO TOMARE",
   "requiem:subtitles.item.opus.use": "Opus Daemonium Activates",
 
-  "requiem:tooltip.villager_base_food": "Village Food",
+  "requiem:tooltip.ammo_generator": "Ammo Generation",
+  "requiem:tooltip.bolt_hoarder": "Bolt Hoarder",
   "requiem:tooltip.bony_prosthesis": "Bony Prosthesis",
   "requiem:tooltip.calcium_bucket": "Calcium Goodness",
   "requiem:tooltip.cure_catalyst": "Cure Catalyst",
@@ -78,6 +79,7 @@
   "requiem:tooltip.mushroom_food": "Mushrooms",
   "requiem:tooltip.piglin_food": "Piglin Diet",
   "requiem:tooltip.skeletal_efficiency": "Skeletal Efficiency",
+  "requiem:tooltip.villager_base_food": "Village Food",
   "requiem:tooltip.villager_food": "Vegetarian",
   "requiem:tooltip.witch_food": "Witch Diet",
   "requiem:tooltip.zombie_food": "Zombie Snack",
