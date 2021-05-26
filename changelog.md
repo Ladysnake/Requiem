@@ -1,4 +1,25 @@
 ------------------------------------------------------
+Version 1.7.8
+------------------------------------------------------
+**Additions**  
+- Added the `Bolt Hoarder` passive mob ability, making mobs like pillagers and piglins use fewer arrows  
+- Added the `Ammo Generation` passive mob ability, although it is not assigned to any vanilla mob  
+    - If you really want skeletons to have infinite ammo, you can now add them to the relevant tag  
+
+**Changes**  
+- New format for datapack mob item overrides ! It's a lot cleaner now. (old ones are still compatible for now)  
+- Added raw rabbit to the list of raw meats  
+
+**Mod Compatibility**  
+- Biome Makeover: Added compatibility for all mobs
+  - Stone golems have the new exclusive "Ammo Generation" passive ability
+  - Mushroom traders can only eat mushrooms !
+- Added a bunch of random modded food to requiem's tags. I didn't do any of the big food mods so feel free to contribute or poke their authors (nicely, of course).  
+
+**Fixes**
+- Fixed the hunger bar being reset every time you left the game while possessing something
+
+------------------------------------------------------
 Version 1.7.7
 ------------------------------------------------------
 **Additions**
