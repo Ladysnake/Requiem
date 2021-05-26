@@ -2,16 +2,21 @@
   "replace": false,
   "values": [
     "#requiem:raw_fishes",
+    "#requiem:food/mushroom_based",
     "minecraft:poisonous_potato",
     "minecraft:potato",
     "minecraft:spider_eye",
     "minecraft:rotten_flesh",
-    "minecraft:mushroom_stew",
     "minecraft:chorus_fruit",
     "minecraft:dried_kelp",
     "minecraft:melon_slice",
     "minecraft:beetroot",
     "minecraft:beetroot_soup",
-    "minecraft:suspicious_stew"
+    "minecraft:suspicious_stew",
+    { "id": "biomemakeover:bulbus_root", "required": false },
+    { "id": "biomemakeover:roasted_bulbus_root", "required": false },
+    { "id": "cdsam:nether_wart_stew", "required": false },
+    { "id": "cdsam:chorus_fruit_stew", "required": false },
+    { "id": "gubbins:warped_fruit", "required": false }
   ]
 }

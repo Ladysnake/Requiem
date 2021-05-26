@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "priority": 100,
+  "enabled": true,
+  "tooltip": {
+    "translate": "requiem:tooltip.drowned_food",
+    "color": "dark_gray"
+  },
+  "mob": {
+    "type": "minecraft:drowned"
+  },
+  "override": {
+    "type": "requiem:healing",
+    "item": {
+      "tag": "requiem:raw_fishes"
+    },
+    "use_time": 32,
+    "cooldown": 150,
+    "usage": "eat_to_heal"
+  }
+}

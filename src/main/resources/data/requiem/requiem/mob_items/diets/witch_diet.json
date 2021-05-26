@@ -1,22 +1,17 @@
 {
-  "schema_version": 0,
-  "priority": 100,
-  "enabled": true,
+  "schema_version": 1,
   "tooltip": {
     "translate": "requiem:tooltip.witch_food",
     "color": "dark_gray"
   },
-  "requirements": {
-    "possessed": {
-      "type": "#requiem:witches"
-    },
-    "used_item": {
+  "mob": {
+    "type": "#requiem:witches"
+  },
+  "override": {
+    "type": "requiem:diet",
+    "food": {
       "tag": "requiem:food/witch_diet"
     },
-    "can_eat": true
-  },
-  "use_time": 32,
-  "result": {
-    "action": "requiem:witch_eat"
+    "filter": "remove_harmful_effects"
   }
 }

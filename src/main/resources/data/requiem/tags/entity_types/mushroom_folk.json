@@ -1,0 +1,6 @@
+{
+  "replace": false,
+  "values": [
+    {"id": "biomemakeover:mushroom_trader", "required": false}
+  ]
+}

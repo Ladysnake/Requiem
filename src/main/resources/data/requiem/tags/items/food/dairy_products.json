@@ -1,0 +1,6 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "llamarama:llama_cheese", "required": false }
+  ]
+}

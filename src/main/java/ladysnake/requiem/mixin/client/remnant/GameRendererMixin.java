@@ -37,7 +37,7 @@ package ladysnake.requiem.mixin.client.remnant;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.UpdateTargetedEntityCallback;
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.internal.ProtoPossessable;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.client.GameRendererAccessor;
@@ -92,8 +92,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
             remap = false
     )
     private static void unselectPossessedEntity(Entity tested, CallbackInfoReturnable<Boolean> info) {
-        Entity camera = MinecraftClient.getInstance().getCameraEntity();
-        if (camera != null && PossessionComponent.getPossessedEntity(camera) == tested) {
+        if (((ProtoPossessable)tested).getPossessor() == MinecraftClient.getInstance().getCameraEntity()) {
             info.setReturnValue(false);
         }
     }

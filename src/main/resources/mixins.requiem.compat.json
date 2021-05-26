@@ -8,6 +8,7 @@
   ],
   "mixins": [
     "bettergraves.BetterGravesMixin",
+    "biomemakeover.EntityPartMixin",
     "haema.VampireBloodInjectorItemMixin",
     "origins.PowerMixin",
     "snowmercy.WeaponizedSnowGolemEntityMixin",

@@ -36,16 +36,15 @@ package ladysnake.requiem.mixin.common.possession.gameplay;
 
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.common.impl.possession.item.PossessionItemOverride;
+import ladysnake.requiem.common.impl.possession.item.OverridableItemStack;
+import ladysnake.requiem.common.impl.possession.item.PossessionItemOverrideWrapper;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -53,55 +52,39 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemStack.class)
-public abstract class ItemStackMixin {
+public abstract class ItemStackMixin implements OverridableItemStack {
     @Shadow
     public abstract void decrement(int amount);
 
-    private @Nullable PossessionItemOverride requiem$currentOverride = null;
+    private Integer requiem$overriddenUseTime = null;
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(World world, PlayerEntity player, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        PossessionComponent possessionComponent = PossessionComponent.get(player);
-        MobEntity possessedEntity = possessionComponent.getPossessedEntity();
-        this.requiem$currentOverride = null;
+        PossessionItemOverrideWrapper.tryUseOverride(world, player, (ItemStack) (Object) this, hand)
+            .ifPresent(cir::setReturnValue);
+    }
 
-        if (possessedEntity != null) {
-            ItemStack heldStack = (ItemStack) (Object) this;
+    @Override
+    public void requiem$clearOverriddenUseTime() {
+        this.requiem$overriddenUseTime = null;
+    }
 
-            PossessionItemOverride.findOverride(world, player, possessedEntity, heldStack)
-                .ifPresent(override -> {
-                    if (override.getUseTime() <= 0) {
-                        TypedActionResult<ItemStack> res = override.runAction(player, possessedEntity, heldStack, world, hand);
-                        if (res.getResult() != ActionResult.PASS) cir.setReturnValue(res);
-                    } else {
-                        this.requiem$currentOverride = override;
-                        player.setCurrentHand(hand);
-                        cir.setReturnValue(TypedActionResult.success(heldStack));
-                    }
-                });
-        }
+    @Override
+    public void requiem$overrideMaxUseTime(int useTime) {
+        this.requiem$overriddenUseTime = useTime;
     }
 
     @Inject(method = "getMaxUseTime", at = @At("HEAD"), cancellable = true)
     private void overrideMaxUseTime(CallbackInfoReturnable<Integer> cir) {
-        if (this.requiem$currentOverride != null) cir.setReturnValue(this.requiem$currentOverride.getUseTime());
+        if (this.requiem$overriddenUseTime != null) cir.setReturnValue(this.requiem$overriddenUseTime);
     }
 
     @Inject(method = "finishUsing", at = @At("HEAD"), cancellable = true)
     private void overridePossessedUseEnd(World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
         if (!(user instanceof PlayerEntity)) return;
 
-        MobEntity possessedEntity = PossessionComponent.getPossessedEntity(user);
-
-        if (possessedEntity != null) {
-            ItemStack heldStack = (ItemStack) (Object) this;
-
-            PossessionItemOverride.findOverride(world, (PlayerEntity) user, possessedEntity, heldStack)
-                .ifPresent(override -> {
-                    TypedActionResult<ItemStack> res = override.runAction((PlayerEntity) user, possessedEntity, heldStack, world, user.getActiveHand());
-                    if (res.getResult() != ActionResult.PASS) cir.setReturnValue(res.getValue());
-                });
-        }
+        PossessionItemOverrideWrapper.tryFinishUsingOverride(world, (PlayerEntity) user, (ItemStack) (Object) this, user.getActiveHand())
+            .map(TypedActionResult::getValue).ifPresent(cir::setReturnValue);
     }
 
     @Inject(method = "useOnEntity", at = @At("RETURN"), cancellable = true)

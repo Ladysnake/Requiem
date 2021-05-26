@@ -46,7 +46,7 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.particle.GhostParticle;
-import ladysnake.requiem.common.impl.possession.item.PossessionItemOverride;
+import ladysnake.requiem.common.impl.possession.item.PossessionItemOverrideWrapper;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.util.ItemUtil;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
@@ -54,8 +54,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.CrossbowUser;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.EndermanEntity;
@@ -65,10 +64,11 @@ import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BowItem;
+import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MilkBucketItem;
+import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.TridentItem;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -150,10 +150,14 @@ public final class RequiemClientListener implements
                 return;
             }
 
-            PossessionItemOverride.findOverride(player.world, player, possessed, item).flatMap(PossessionItemOverride::getTooltip).ifPresent(lines::add);
+            lines.addAll(PossessionItemOverrideWrapper.buildTooltip(player.world, player, possessed, item));
 
             String key;
-            if (possessed instanceof AbstractSkeletonEntity && item.getItem() instanceof BowItem) {
+            if (possessed.getType().isIn(RequiemEntityTypeTags.ARROW_GENERATORS) && item.getItem() instanceof RangedWeaponItem) {
+                key = "requiem:tooltip.ammo_generator";
+            } else if (possessed instanceof CrossbowUser && item.getItem() instanceof CrossbowItem) {
+                key = "requiem:tooltip.bolt_hoarder";
+            } else if (possessed instanceof AbstractSkeletonEntity && item.getItem() instanceof BowItem) {
                 key = "requiem:tooltip.skeletal_efficiency";
             } else if (possessed instanceof AbstractSkeletonEntity && item.getItem() instanceof MilkBucketItem) {
                 key = "requiem:tooltip.calcium_bucket";
@@ -168,12 +172,4 @@ public final class RequiemClientListener implements
         }
     }
 
-    private static boolean isWeaknessPotion(ItemStack stack) {
-        for (StatusEffectInstance effect : PotionUtil.getPotionEffects(stack)) {
-            if (effect.getEffectType() == StatusEffects.WEAKNESS) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

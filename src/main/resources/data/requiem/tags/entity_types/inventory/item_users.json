@@ -12,6 +12,7 @@
     "#requiem:humans",
     "#requiem:piglins",
     {"id": "betterend:shadow_walker", "required": false},
+    {"id": "biomemakeover:stone_golem", "required": false},
     {"id": "thehallow:mummy", "required": false},
     {"id": "hwg:technodemon_greater_1","required": false},
     {"id": "hwg:technodemon_lesser_1","required": false},

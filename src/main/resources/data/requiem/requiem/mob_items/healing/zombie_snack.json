@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "priority": 100,
+  "enabled": true,
+  "tooltip": {
+    "translate": "requiem:tooltip.zombie_food",
+    "color": "dark_gray"
+  },
+  "mob": {
+    "type": "#requiem:zombies"
+  },
+  "override": {
+    "type": "requiem:healing",
+    "item": {
+      "tag": "requiem:raw_meats"
+    },
+    "use_time": 32,
+    "cooldown": 150,
+    "usage": "eat_to_heal"
+  }
+}

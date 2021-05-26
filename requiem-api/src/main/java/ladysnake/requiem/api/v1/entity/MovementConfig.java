@@ -46,6 +46,15 @@ public interface MovementConfig {
     float getFallSpeedModifier();
 
     /**
+     * Returns the speed modifier that should be applied while walking by movement alterers using this config.
+     * The entity's ground speed will be multiplied by this amount.
+     * The modification is applied using an {@link net.minecraft.entity.attribute.EntityAttributeModifier}.
+     *
+     * @return the ground speed modifier that should be applied by movement alterers using this config
+     */
+    float getWalkSpeedModifier();
+
+    /**
      * Returns the inertia that should be applied by movement alterers using this config.
      * Inertia here is the amount of motion from the previous tick that should be kept,
      * according to the following formula: <pre>
@@ -73,7 +82,7 @@ public interface MovementConfig {
     @Deprecated
     TriState shouldSinkInWater();
 
-    boolean shouldFlopOnLand();
+    TriState shouldFlopOnLand();
 
     boolean canClimbWalls();
 

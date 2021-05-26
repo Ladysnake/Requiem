@@ -35,13 +35,13 @@
 package ladysnake.requiem.common;
 
 import com.mojang.serialization.Lifecycle;
-import ladysnake.requiem.common.impl.possession.item.PossessionItemOverride;
+import ladysnake.requiem.common.impl.possession.item.PossessionItemOverrideWrapper;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.SimpleRegistry;
 
 public final class RequiemBuiltinRegistries {
-    public static final SimpleRegistry<PossessionItemOverride> MOB_ACTIONS = new SimpleRegistry<>(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY, Lifecycle.stable());
+    public static final SimpleRegistry<PossessionItemOverrideWrapper> MOB_ACTIONS = new SimpleRegistry<>(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY, Lifecycle.stable());
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void init() {

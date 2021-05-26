@@ -1,19 +1,16 @@
 {
-  "schema_version": 0,
-  "priority": 90,
+  "schema_version": 1,
   "tooltip": {
     "translate": "requiem:tooltip.villager_food",
     "color": "dark_gray"
   },
-  "requirements": {
-    "possessed": {
-      "type": "#requiem:villagers"
-    },
-    "used_item": {
-      "requiem:food": {}
-    }
+  "mob": {
+    "type": "#requiem:villagers"
   },
-  "result": {
-    "action": "requiem:pass"
+  "override": {
+    "type": "requiem:diet",
+    "food": {
+      "tag": "requiem:food/villager_diet"
+    }
   }
 }

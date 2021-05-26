@@ -1,8 +1,9 @@
 {
   "replace": false,
   "values": [
-    "#c:illagers",
+    "#requiem:illagers",
     "#requiem:villagers",
-    "#c:witches"
+    "#requiem:witches",
+    "#requiem:mushroom_folk"
   ]
 }

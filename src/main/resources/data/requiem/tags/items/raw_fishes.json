@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "#c:raw_fish",
-    "#c:raw_fishes"
+    "#c:raw_fishes",
+    { "id": "biomemakeover:raw_glowfish", "required": false }
   ]
 }

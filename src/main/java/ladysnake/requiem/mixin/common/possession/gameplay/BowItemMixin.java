@@ -35,6 +35,7 @@
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.mixin.common.access.ArrowShooter;
 import ladysnake.requiem.mixin.common.access.ProjectileEntityAccessor;
 import net.minecraft.entity.LivingEntity;
@@ -45,6 +46,7 @@ import net.minecraft.item.BowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.RangedWeaponItem;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -60,7 +62,11 @@ public abstract class BowItemMixin extends RangedWeaponItem {
     @ModifyVariable(method = "onStoppedUsing", ordinal = 0, at = @At("STORE"))
     private boolean giveSkeletonInfinity(boolean infinity, ItemStack item, World world, LivingEntity user, int charge) {
         MobEntity possessed = PossessionComponent.getPossessedEntity(user);
-        if (possessed instanceof AbstractSkeletonEntity) {
+        CompoundTag tag = item.getTag();
+        if (tag != null && tag.getBoolean(VanillaRequiemPlugin.INFINITY_SHOT_TAG)) {
+            tag.remove(VanillaRequiemPlugin.INFINITY_SHOT_TAG);
+            return true;
+        } else if (possessed instanceof AbstractSkeletonEntity) {
             return infinity || RANDOM.nextFloat() < 0.8f;
         }
         return infinity;

@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "#c:fruits",
+    "#c:vegetables",
+    "minecraft:golden_apple",
+    "minecraft:enchanted_golden_apple",
+    "minecraft:golden_carrot",
+    "minecraft:mushroom_stew",
+    { "id": "cdsam:cactus_stew", "required": false },
+    { "id": "cdsam:carrot_soup", "required": false },
+    { "id": "cdsam:potato_soup", "required": false },
+    { "id": "goldenberry:golden_berries", "required": false }
+  ]
+}

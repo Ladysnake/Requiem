@@ -192,7 +192,11 @@ public class PossessedDataImpl implements PossessedData, AutoSyncedComponent {
 
     @Override
     public void writeToNbt(CompoundTag tag) {
-        if (this.hungerData != null) tag.put("hunger_data", this.hungerData.copy());
+        if (this.hungerData != null) {
+            PlayerEntity possessor = ((Possessable) this.holder).getPossessor();
+            if (possessor != null) possessor.getHungerManager().toTag(this.hungerData);
+            tag.put("hunger_data", this.hungerData.copy());
+        }
         if (this.inventory != null) {
             tag.putInt("inventory_size", this.inventory.size());
             tag.put("inventory", this.inventory.getTags());

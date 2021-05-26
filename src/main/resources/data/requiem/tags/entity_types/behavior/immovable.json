@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "minecraft:shulker"
+    "minecraft:shulker",
+    { "id": "biomemakeover:stone_golem", "required": false }
   ]
 }

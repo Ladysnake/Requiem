@@ -1,18 +1,16 @@
 {
-  "schema_version": 0,
+  "schema_version": 1,
   "tooltip": {
     "translate": "requiem:tooltip.piglin_food",
     "color": "dark_gray"
   },
-  "requirements": {
-    "possessed": {
-      "type": "#requiem:piglins"
-    },
-    "used_item": {
-      "tag": "requiem:pork"
-    }
+  "mob": {
+    "type": "#requiem:piglins"
   },
-  "result": {
-    "action": "requiem:pass"
+  "override": {
+    "type": "requiem:diet",
+    "food": {
+      "tag": "requiem:food/piglin_diet"
+    }
   }
 }

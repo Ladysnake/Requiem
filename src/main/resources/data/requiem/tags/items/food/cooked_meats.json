@@ -1,12 +1,10 @@
 {
   "replace": false,
   "values": [
-    "minecraft:cooked_chicken",
-    "minecraft:cooked_rabbit",
-    "minecraft:cooked_porkchop",
-    "minecraft:cooked_cod",
-    "minecraft:cooked_beef",
-    "minecraft:cooked_mutton",
-    "minecraft:cooked_salmon"
+    "#c:cooked_meats",
+    { "id": "beefjerky:beef_jerky", "required": false },
+    { "id": "biomemakeover:cooked_toad", "required": false },
+    { "id": "chocobacon:cooked_bacon", "required": false },
+    { "id": "llamarama:roasted_llama_meat", "required": false }
   ]
 }
