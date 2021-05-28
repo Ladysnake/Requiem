@@ -45,7 +45,7 @@ import ladysnake.requiem.Requiem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import javax.annotation.Nonnull;
@@ -100,14 +100,14 @@ public final class PlayerBodyTracker implements ServerTickingComponent {
     }
 
     @Override
-    public void writeToNbt(@Nonnull CompoundTag tag) {
+    public void writeToNbt(@Nonnull NbtCompound tag) {
         if (this.anchorUuid != null) {
             tag.putUuid("AnchorUuid", this.anchorUuid);
         }
     }
 
     @Override
-    public void readFromNbt(@Nonnull CompoundTag tag) {
+    public void readFromNbt(@Nonnull NbtCompound tag) {
         if (tag.containsUuid("AnchorUuid")) {
             this.anchorUuid = tag.getUuid("AnchorUuid");
         }

@@ -22,13 +22,13 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 
 public interface PossessedData extends Component {
     ComponentKey<PossessedData> KEY = ComponentRegistry.getOrCreate(new Identifier("requiem", "possessed_data"), PossessedData.class);
 
-    CompoundTag getHungerData();
+    NbtCompound getHungerData();
 
     void setConvertedUnderPossession();
 

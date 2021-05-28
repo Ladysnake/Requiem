@@ -37,7 +37,7 @@ package ladysnake.requiem.common.util;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.ProjectileDamageSource;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,8 +63,8 @@ public final class DamageSourceSerialization {
         }
     }
 
-    public static CompoundTag toTag(DamageSource damage) {
-        CompoundTag tag = new CompoundTag();
+    public static NbtCompound toTag(DamageSource damage) {
+        NbtCompound tag = new NbtCompound();
         tag.putString("name", damage.name);
         if (damage.getSource() != null) {
             tag.putUuid("sourceUuid", damage.getSource().getUuid());
@@ -75,7 +75,7 @@ public final class DamageSourceSerialization {
         return tag;
     }
 
-    public static DamageSource fromTag(CompoundTag tag, @Nullable ServerWorld world) {
+    public static DamageSource fromTag(NbtCompound tag, @Nullable ServerWorld world) {
         String name = tag.getString("name");
         final Entity source;
         final Entity attacker;

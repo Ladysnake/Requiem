@@ -49,7 +49,7 @@ import ladysnake.requiem.api.v1.entity.InventoryPart;
 import ladysnake.requiem.api.v1.entity.InventoryShape;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 public final class PlayerInventoryLimiter implements InventoryLimiter {
     public static final int MAINHAND_SLOT = 0;
@@ -143,7 +143,7 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
     }
 
     @Override
-    public void readFromNbt(CompoundTag compoundTag) {
+    public void readFromNbt(NbtCompound compoundTag) {
         if (compoundTag.contains("enabled")) {
             // compat with old saves
             this.setEnabled(compoundTag.getBoolean("enabled"));
@@ -151,7 +151,7 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
     }
 
     @Override
-    public void writeToNbt(CompoundTag compoundTag) {
+    public void writeToNbt(NbtCompound compoundTag) {
         // NO-OP
     }
 }

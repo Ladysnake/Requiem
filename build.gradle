@@ -115,16 +115,8 @@ allprojects {
 }
 
 repositories {
-    jcenter()
     maven {
-        name = 'Ladysnake Mods 1'
-        url = 'https://dl.bintray.com/ladysnake/libs'
-        content {
-            includeGroup 'io.github.ladysnake'
-        }
-    }
-    maven {
-        name = 'Ladysnake Mods 2'
+        name = 'Ladysnake Mods'
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
         content {
             includeGroup 'io.github.ladysnake'
@@ -193,8 +185,8 @@ dependencies {
     }
 
     // Required dependencies
-    modApi("io.github.ladysnake:Satin:${rootProject.satin_version}")
-    include "io.github.ladysnake:Satin:${satin_version}"
+    modApi("io.github.ladysnake:satin:${rootProject.satin_version}")
+    include "io.github.ladysnake:satin:${satin_version}"
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${cca_version}"
     modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}")
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
@@ -220,9 +212,9 @@ dependencies {
     modRuntime ("me.shedaniel.cloth:cloth-config-fabric:${cloth_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
-    modCompileOnly ("me.shedaniel.cloth:fiber2cloth:${f2c_version}") { transitive = false }
-    modRuntime ("me.shedaniel.cloth:fiber2cloth:${f2c_version}") { transitive = false }
-    include ("me.shedaniel.cloth:fiber2cloth:${f2c_version}") { transitive = false }
+//    modCompileOnly ("me.shedaniel.cloth:fiber2cloth:${f2c_version}") { transitive = false }
+//    modRuntime ("me.shedaniel.cloth:fiber2cloth:${f2c_version}") { transitive = false }
+//    include ("me.shedaniel.cloth:fiber2cloth:${f2c_version}") { transitive = false }
 
     // Extra compatibility dependencies
 //    modRuntime curse.resolve('immersive-portals-mod', 2845123)

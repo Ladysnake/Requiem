@@ -42,7 +42,7 @@ import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.common.util.DamageSourceSerialization;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -104,7 +104,7 @@ public final class RevivingDeathSuspender implements DeathSuspender {
     }
 
     @Override
-    public void writeToNbt(CompoundTag tag) {
+    public void writeToNbt(NbtCompound tag) {
         tag.putBoolean("lifeTransient", this.lifeTransient);
         if (this.deathCause != null) {
             tag.put("deathCause", DamageSourceSerialization.toTag(this.deathCause));
@@ -112,7 +112,7 @@ public final class RevivingDeathSuspender implements DeathSuspender {
     }
 
     @Override
-    public void readFromNbt(CompoundTag tag) {
+    public void readFromNbt(NbtCompound tag) {
         this.setLifeTransient(tag.getBoolean("lifeTransient"));
         if (tag.contains("deathCause") && this.player.world.isClient) {
             this.deathCause = DamageSourceSerialization.fromTag(tag.getCompound("deathCause"), (ServerWorld)this.player.world);

@@ -36,7 +36,7 @@ package ladysnake.pandemonium.common.impl.anchor;
 
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 import java.util.UUID;
 
@@ -55,7 +55,7 @@ public class InertFractureAnchor implements FractureAnchor {
         this.uuid = uuid;
     }
 
-    protected InertFractureAnchor(FractureAnchorManager manager, CompoundTag tag, int id) {
+    protected InertFractureAnchor(FractureAnchorManager manager, NbtCompound tag, int id) {
         this(manager, tag.getUuid("AnchorUuid"), id);
     }
 
@@ -107,7 +107,7 @@ public class InertFractureAnchor implements FractureAnchor {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
+    public NbtCompound toTag(NbtCompound tag) {
         tag.putUuid("AnchorUuid", this.getUuid());
         tag.putDouble("X", this.x);
         tag.putDouble("Y", this.y);

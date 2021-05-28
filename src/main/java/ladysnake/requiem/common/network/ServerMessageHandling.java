@@ -51,8 +51,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -120,8 +120,8 @@ public class ServerMessageHandling {
                     }
                     player.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(player.experienceProgress, player.experienceLevel, player.experienceLevel));
                 } else {
-                    ListTag pages = new ListTag();
-                    pages.add(StringTag.of(content));
+                    NbtList pages = new NbtList();
+                    pages.add(NbtString.of(content));
                     book.putSubTag("pages", pages);
                 }
             });

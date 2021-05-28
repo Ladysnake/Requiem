@@ -90,7 +90,7 @@ public abstract class PlayerManagerMixin {
         REQUIEM$RESPAWN_WORLD.set(clone.getServerWorld());
         // Prevent players from respawning in fairly bad conditions
         while(!clone.world.isSpaceEmpty(clone) && clone.getY() < 256.0D) {
-            clone.updatePosition(clone.getX(), clone.getY() + 1.0D, clone.getZ());
+            clone.setPosition(clone.getX(), clone.getY() + 1.0D, clone.getZ());
         }
         return clone;
     }

@@ -35,6 +35,7 @@
 package ladysnake.requiem.common.advancement.criterion;
 
 import com.google.gson.JsonObject;
+import ladysnake.requiem.common.advancement.criterion.OnResurrectCriterion.Conditions;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.entity.Entity;
@@ -45,7 +46,7 @@ import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
 
-public class OnResurrectCriterion extends AbstractCriterion<OnResurrectCriterion.Conditions> {
+public class OnResurrectCriterion extends AbstractCriterion<Conditions> {
     private final Identifier id;
 
     public OnResurrectCriterion(Identifier id) {

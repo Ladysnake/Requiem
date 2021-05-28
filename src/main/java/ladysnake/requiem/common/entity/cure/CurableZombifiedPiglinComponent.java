@@ -39,7 +39,7 @@ import ladysnake.requiem.common.entity.RequiemEntities;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
@@ -65,12 +65,12 @@ public class CurableZombifiedPiglinComponent extends SimpleCurableEntityComponen
         @SuppressWarnings("unchecked") EntityType<? extends MobEntity> originalPiglinType = (EntityType<? extends MobEntity>) this.originalPiglinType;
         if (originalPiglinType != null) {
             try {
-                return this.entity.method_29243(getCuredVariant(originalPiglinType), true);
+                return this.entity.convertTo(getCuredVariant(originalPiglinType), true);
             } catch (ClassCastException e) {
                 Requiem.LOGGER.error("[Requiem] Invalid original piglin type", e);
             }
         }
-        return this.entity.method_29243(getCuredVariant(EntityType.PIGLIN), true);
+        return this.entity.convertTo(getCuredVariant(EntityType.PIGLIN), true);
     }
 
     private EntityType<? extends MobEntity> getCuredVariant(EntityType<? extends MobEntity> originalPiglinType) {
@@ -83,7 +83,7 @@ public class CurableZombifiedPiglinComponent extends SimpleCurableEntityComponen
     }
 
     @Override
-    public void readFromNbt(CompoundTag tag) {
+    public void readFromNbt(NbtCompound tag) {
         super.readFromNbt(tag);
         if (tag.contains("original_piglin_type")) {
             this.originalPiglinType = Registry.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(tag.getString("original_piglin_type"))).orElse(null);
@@ -91,7 +91,7 @@ public class CurableZombifiedPiglinComponent extends SimpleCurableEntityComponen
     }
 
     @Override
-    public void writeToNbt(CompoundTag tag) {
+    public void writeToNbt(NbtCompound tag) {
         super.writeToNbt(tag);
         if (this.originalPiglinType != null) {
             tag.putString("original_piglin_type", Registry.ENTITY_TYPE.getId(this.originalPiglinType).toString());

@@ -43,7 +43,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,12 +67,12 @@ public class SimpleCurableEntityComponent implements CurableEntityComponent {
     }
 
     @Override
-    public void readFromNbt(CompoundTag tag) {
+    public void readFromNbt(NbtCompound tag) {
         if (tag.contains("cured")) this.cured = tag.getBoolean("cured");
     }
 
     @Override
-    public void writeToNbt(CompoundTag tag) {
+    public void writeToNbt(NbtCompound tag) {
         if (this.cured) {
             tag.putBoolean("cured", true);
         }

@@ -39,7 +39,7 @@ import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,12 +79,12 @@ public class StatusEffectReapplicatorImpl implements StatusEffectReapplicator {
     }
 
     @Override
-    public void readFromNbt(CompoundTag tag) {
+    public void readFromNbt(NbtCompound tag) {
         // Nothing to deserialize for now - data should not last longer than a tick
     }
 
     @Override
-    public void writeToNbt(CompoundTag tag) {
+    public void writeToNbt(NbtCompound tag) {
         // Nothing to serialize for now - data should not last longer than a tick
     }
 }

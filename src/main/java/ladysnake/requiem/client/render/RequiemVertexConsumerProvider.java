@@ -36,7 +36,12 @@ package ladysnake.requiem.client.render;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.FixedColorVertexConsumer;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexConsumers;
 
 import javax.annotation.Nullable;
 
@@ -60,7 +65,7 @@ public class RequiemVertexConsumerProvider implements VertexConsumerProvider {
         if (secondaryLayer != null) {
             VertexConsumer effectBuffer = this.plainDrawer.getBuffer(this.secondaryLayer);
             FixedVertexConsumer fixedEffectBuffer = new FixedVertexConsumer(effectBuffer, this.red, this.green, this.blue, this.alpha);
-            return VertexConsumers.dual(fixedEffectBuffer, parentBuffer);
+            return VertexConsumers.union(fixedEffectBuffer, parentBuffer);
         }
         return parentBuffer;
     }

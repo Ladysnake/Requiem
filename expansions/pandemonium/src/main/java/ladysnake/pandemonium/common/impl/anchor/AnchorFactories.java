@@ -35,7 +35,7 @@
 package ladysnake.pandemonium.common.impl.anchor;
 
 import ladysnake.pandemonium.api.anchor.FractureAnchorFactory;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
@@ -46,18 +46,18 @@ public class AnchorFactories {
     }
 
     @Nonnull
-    public static FractureAnchorFactory fromTag(CompoundTag anchorTag) {
+    public static FractureAnchorFactory fromTag(NbtCompound anchorTag) {
         if (anchorTag.getString("AnchorType").equals("requiem:entity")) {
             return entityAnchorFromTag(anchorTag);
         }
         return trackedAnchorFromTag(anchorTag);
     }
 
-    private static FractureAnchorFactory entityAnchorFromTag(CompoundTag serializedAnchor) {
+    private static FractureAnchorFactory entityAnchorFromTag(NbtCompound serializedAnchor) {
         return (manager, uuid, id) -> new EntityFractureAnchor(manager, serializedAnchor, id);
     }
 
-    private static FractureAnchorFactory trackedAnchorFromTag(CompoundTag serializedAnchor) {
+    private static FractureAnchorFactory trackedAnchorFromTag(NbtCompound serializedAnchor) {
         return (manager, uuid, id) -> new TrackedFractureAnchor(manager, serializedAnchor, id);
     }
 }

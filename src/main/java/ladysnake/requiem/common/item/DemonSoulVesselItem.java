@@ -52,12 +52,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.ChatUtil;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -89,7 +93,7 @@ public class DemonSoulVesselItem extends Item {
         BlockPos pos = ctx.getBlockPos();
         BlockState state = world.getBlockState(pos);
         if (state.getBlock() == Blocks.LECTERN) {
-            return LecternBlock.putBookIfAbsent(world, pos, state, ctx.getStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
+            return LecternBlock.putBookIfAbsent(ctx.getPlayer(), world, pos, state, ctx.getStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
         } else {
             return ActionResult.PASS;
         }
@@ -151,7 +155,7 @@ public class DemonSoulVesselItem extends Item {
         lines.add(new TranslatableText(tooltip).formatted(this.getTooltipColor()));
 
         if (stack.hasTag()) {
-            CompoundTag tag = stack.getTag();
+            NbtCompound tag = stack.getTag();
             assert tag != null;
             String author = tag.getString("author");
             if (!ChatUtil.isEmpty(author)) {

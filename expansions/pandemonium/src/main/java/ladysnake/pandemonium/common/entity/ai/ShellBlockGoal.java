@@ -77,7 +77,7 @@ public class ShellBlockGoal<E extends Entity> extends PlayerShellGoal {
             return false;
         }
 
-        Box box = Box.method_29968(this.shell.getPos()).expand(searchRadius);
+        Box box = Box.from(this.shell.getPos()).expand(searchRadius);
         List<E> candidates = this.shell.world.getEntitiesIncludingUngeneratedChunks(
             this.targetClass,
             box,

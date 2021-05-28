@@ -42,9 +42,9 @@ import ladysnake.pandemonium.api.anchor.FractureAnchorFactory;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import ladysnake.requiem.Requiem;
 import net.fabricmc.fabric.api.util.NbtType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
@@ -148,14 +148,14 @@ public class CommonAnchorManager implements FractureAnchorManager, AutoSyncedCom
     }
 
     @Override
-    public void readFromNbt(CompoundTag tag) {
+    public void readFromNbt(NbtCompound tag) {
         if (!tag.contains("Anchors", NbtType.LIST)) {
             Requiem.LOGGER.error("Invalid save data. Expected list of FractureAnchors, found none. Discarding save data.");
             return;
         }
-        ListTag list = tag.getList("Anchors", NbtType.COMPOUND);
-        for (Tag anchorNbt : list) {
-            CompoundTag anchorTag = (CompoundTag) anchorNbt;
+        NbtList list = tag.getList("Anchors", NbtType.COMPOUND);
+        for (NbtElement anchorNbt : list) {
+            NbtCompound anchorTag = (NbtCompound) anchorNbt;
             FractureAnchor anchor = this.addAnchor(AnchorFactories.fromTag(anchorTag));
             if (anchorTag.contains("X", NbtType.DOUBLE)) {
                 anchor.setPosition(anchorTag.getDouble("X"), anchorTag.getDouble("Y"), anchorTag.getDouble("Z"));
@@ -166,10 +166,10 @@ public class CommonAnchorManager implements FractureAnchorManager, AutoSyncedCom
     }
 
     @Override
-    public void writeToNbt(CompoundTag tag) {
-        ListTag list = new ListTag();
+    public void writeToNbt(NbtCompound tag) {
+        NbtList list = new NbtList();
         for (FractureAnchor anchor : this.getAnchors()) {
-            list.add(anchor.toTag(new CompoundTag()));
+            list.add(anchor.toTag(new NbtCompound()));
         }
         tag.put("Anchors", list);
     }

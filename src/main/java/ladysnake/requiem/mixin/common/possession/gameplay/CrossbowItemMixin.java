@@ -42,7 +42,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -60,7 +60,7 @@ public abstract class CrossbowItemMixin extends RangedWeaponItem {
     private static boolean giveCrossbowInfinity(boolean creative, LivingEntity shooter, ItemStack crossbow) {
         if (!creative) {
             MobEntity possessed = PossessionComponent.getPossessedEntity(shooter);
-            if (possessed instanceof CrossbowUser && RANDOM.nextFloat() < 0.5f) {
+            if (possessed instanceof CrossbowUser && shooter.getRandom().nextFloat() < 0.5f) {
                 crossbow.getOrCreateTag().putBoolean(VanillaRequiemPlugin.INFINITY_SHOT_TAG, true);
                 return true;
             }
@@ -70,7 +70,7 @@ public abstract class CrossbowItemMixin extends RangedWeaponItem {
 
     @ModifyVariable(method = "shootAll", at = @At(value = "STORE", ordinal = 0), ordinal = 0)
     private static boolean preventBoltPickup(boolean creative, World world, LivingEntity entity, Hand hand, ItemStack crossbow) {
-        CompoundTag tag = crossbow.getTag();
+        NbtCompound tag = crossbow.getTag();
         if (tag != null && tag.getBoolean(VanillaRequiemPlugin.INFINITY_SHOT_TAG)) {
             tag.remove(VanillaRequiemPlugin.INFINITY_SHOT_TAG);
             return true;

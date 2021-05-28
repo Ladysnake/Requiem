@@ -41,8 +41,8 @@ import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 
 import javax.annotation.Nonnegative;
 import java.util.UUID;
@@ -78,12 +78,12 @@ public class SimpleAttritionFocus implements AttritionFocus {
     }
 
     @Override
-    public void readFromNbt(CompoundTag tag) {
+    public void readFromNbt(NbtCompound tag) {
         if (tag.contains("attrition_levels")) {
-            ListTag levels = tag.getList("attrition_levels", NbtType.COMPOUND);
+            NbtList levels = tag.getList("attrition_levels", NbtType.COMPOUND);
             this.attritionLevels.clear();
             for (int i = 0; i < levels.size(); i++) {
-                CompoundTag playerLevel = levels.getCompound(i);
+                NbtCompound playerLevel = levels.getCompound(i);
                 int level = playerLevel.getInt("level");
                 this.attritionLevels.put(playerLevel.getUuid("player_uuid"), level);
             }
@@ -91,11 +91,11 @@ public class SimpleAttritionFocus implements AttritionFocus {
     }
 
     @Override
-    public void writeToNbt(CompoundTag tag) {
+    public void writeToNbt(NbtCompound tag) {
         if (!this.attritionLevels.isEmpty()) {
-            ListTag levels = new ListTag();
+            NbtList levels = new NbtList();
             for (Object2IntMap.Entry<UUID> entry : attritionLevels.object2IntEntrySet()) {
-                CompoundTag level = new CompoundTag();
+                NbtCompound level = new NbtCompound();
                 level.putUuid("player_uuid", entry.getKey());
                 level.putInt("level", entry.getIntValue());
                 levels.add(level);

@@ -41,7 +41,7 @@ import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -70,15 +70,15 @@ public abstract class PlayerManagerMixin {
             ordinal = 0
     )
     @Nullable
-    private CompoundTag logInPossessedEntity(
-            @Nullable CompoundTag serializedPlayer,
+    private NbtCompound logInPossessedEntity(
+            @Nullable NbtCompound serializedPlayer,
             ClientConnection connection,
             ServerPlayerEntity player
     ) {
         if (serializedPlayer != null && serializedPlayer.contains(POSSESSED_ROOT_TAG, NbtType.COMPOUND)) {
             RemnantComponent.KEY.sync(player);
             ServerWorld world = player.getServerWorld();
-            CompoundTag serializedPossessedInfo = serializedPlayer.getCompound(POSSESSED_ROOT_TAG);
+            NbtCompound serializedPossessedInfo = serializedPlayer.getCompound(POSSESSED_ROOT_TAG);
             Entity possessedEntityMount = EntityType.loadEntityWithPassengers(
                     serializedPossessedInfo.getCompound(POSSESSED_ENTITY_TAG),
                     world,

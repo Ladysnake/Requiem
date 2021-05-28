@@ -115,7 +115,7 @@ public class RequiemNetworking {
 
     public static void sendItemConsumptionPacket(Entity user, ItemStack stack) {
         PacketByteBuf buf = createEmptyBuffer();
-        buf.writeVarInt(user.getEntityId());
+        buf.writeVarInt(user.getId());
         buf.writeItemStack(stack);
         sendToAllTrackingIncluding(user, new CustomPayloadS2CPacket(CONSUME_RESURRECTION_ITEM, buf));
     }
@@ -145,7 +145,7 @@ public class RequiemNetworking {
     @Contract(pure = true)
     public static PacketByteBuf createPossessionRequestBuffer(Entity entity) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
-        buf.writeInt(entity.getEntityId());
+        buf.writeInt(entity.getId());
         return buf;
     }
 
@@ -169,7 +169,7 @@ public class RequiemNetworking {
     public static void sendAbilityUseMessage(AbilityType type, Entity entity) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeEnumConstant(type);
-        buf.writeVarInt(entity.getEntityId());
+        buf.writeVarInt(entity.getId());
         sendToServer(USE_DIRECT_ABILITY, buf);
     }
 
@@ -195,7 +195,7 @@ public class RequiemNetworking {
 
     public static void sendBodyCureMessage(LivingEntity entity) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
-        buf.writeVarInt(entity.getEntityId());
+        buf.writeVarInt(entity.getId());
         sendToAllTrackingIncluding(entity, new CustomPayloadS2CPacket(BODY_CURE, buf));
     }
 }

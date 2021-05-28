@@ -49,7 +49,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
@@ -87,9 +87,9 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
     private final List<BiPredicate<ServerPlayerEntity, DamageSource>> specials;
 
     private final EntityType<?> entityType;
-    private final @Nullable CompoundTag entityNbt;
+    private final @Nullable NbtCompound entityNbt;
 
-    private ResurrectionData(int priority, @Nullable EntityPredicate playerPredicate, @Nullable EntityPredicate possessedPredicate, @Nullable ExtendedDamageSourcePredicate damageSourcePredicate, @Nullable ItemPredicate consumable, List<BiPredicate<ServerPlayerEntity, DamageSource>> specials, EntityType<?> entityType, @Nullable CompoundTag entityNbt) {
+    private ResurrectionData(int priority, @Nullable EntityPredicate playerPredicate, @Nullable EntityPredicate possessedPredicate, @Nullable ExtendedDamageSourcePredicate damageSourcePredicate, @Nullable ItemPredicate consumable, List<BiPredicate<ServerPlayerEntity, DamageSource>> specials, EntityType<?> entityType, @Nullable NbtCompound entityNbt) {
         this.priority = priority;
         this.playerPredicate = playerPredicate;
         this.possessedPredicate = possessedPredicate;
@@ -163,7 +163,7 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
     public Entity createEntity(World world) {
         Entity e = this.entityType.create(world);
         if (e != null && this.entityNbt != null) {
-            e.fromTag(this.entityNbt.copy());   // some entities may keep direct references to the passed NBT
+            e.readNbt(this.entityNbt.copy());   // some entities may keep direct references to the passed NBT
         }
         return e;
     }
@@ -202,7 +202,7 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
         JsonObject entityData = JsonHelper.getObject(json, "entity");
         String typeId = JsonHelper.getString(entityData, "type");
         EntityType<?> type = EntityType.get(typeId).orElseThrow(() -> new JsonParseException("Invalid entity id " + typeId));
-        @Nullable CompoundTag nbt;
+        @Nullable NbtCompound nbt;
         if (entityData.has("nbt")) {
             try {
                 nbt = StringNbtReader.parse(JsonHelper.getString(entityData, "nbt"));

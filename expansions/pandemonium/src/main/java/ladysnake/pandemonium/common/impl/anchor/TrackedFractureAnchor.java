@@ -35,7 +35,7 @@
 package ladysnake.pandemonium.common.impl.anchor;
 
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -45,7 +45,7 @@ public class TrackedFractureAnchor extends InertFractureAnchor {
         super(manager, uuid, id);
     }
 
-    protected TrackedFractureAnchor(FractureAnchorManager manager, CompoundTag tag, int id) {
+    protected TrackedFractureAnchor(FractureAnchorManager manager, NbtCompound tag, int id) {
         super(manager, tag, id);
     }
 
@@ -64,7 +64,7 @@ public class TrackedFractureAnchor extends InertFractureAnchor {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag anchorTag) {
+    public NbtCompound toTag(NbtCompound anchorTag) {
         super.toTag(anchorTag);
         anchorTag.putString("AnchorType", "requiem:tracked");
         return anchorTag;

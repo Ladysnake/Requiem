@@ -66,7 +66,7 @@ import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.FluidTags;
@@ -143,7 +143,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
 
     // Based on SwimGoal#canStart
     private static boolean isInFluid(LivingEntity entity) {
-        return entity.isTouchingWater() && entity.getFluidHeight(FluidTags.WATER) > entity.method_29241() || entity.isInLava();
+        return entity.isTouchingWater() && entity.getFluidHeight(FluidTags.WATER) > entity.getSwimHeight() || entity.isInLava();
     }
 
     @Override
@@ -405,12 +405,12 @@ public class PlayerMovementAlterer implements MovementAlterer {
     }
 
     @Override
-    public void readFromNbt(CompoundTag tag) {
+    public void readFromNbt(NbtCompound tag) {
         // NO-OP
     }
 
     @Override
-    public void writeToNbt(CompoundTag tag) {
+    public void writeToNbt(NbtCompound tag) {
         // NO-OP
     }
 }

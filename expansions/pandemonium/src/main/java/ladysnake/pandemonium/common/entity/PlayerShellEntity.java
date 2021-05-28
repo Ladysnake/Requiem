@@ -60,7 +60,11 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.goal.FleeEntityGoal;
+import net.minecraft.entity.ai.goal.GoToWalkTargetGoal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
@@ -69,7 +73,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -156,7 +160,7 @@ public class PlayerShellEntity extends GuidedFakePlayerEntity {
         this.getBrain().remember(MemoryModuleType.HOME, home);
     }
 
-    public void storePlayerData(ServerPlayerEntity player, CompoundTag respawnNbt) {
+    public void storePlayerData(ServerPlayerEntity player, NbtCompound respawnNbt) {
         // Save the complete representation of the player
         PlayerSplitter.performNbtCopy(respawnNbt, this);
 
@@ -320,8 +324,8 @@ public class PlayerShellEntity extends GuidedFakePlayerEntity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(NbtCompound tag) {
+        super.readCustomDataFromNbt(tag);
 
         if (tag.contains("PlayerProfile")) {    // port from previous versions
             this.setDisplayProfile(NbtHelper.toGameProfile(tag.getCompound("PlayerProfile")));
@@ -331,8 +335,8 @@ public class PlayerShellEntity extends GuidedFakePlayerEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(NbtCompound tag) {
+        super.writeCustomDataToNbt(tag);
         tag.putByte("PlayerModelParts", this.getDataTracker().get(PLAYER_MODEL_PARTS));
     }
 

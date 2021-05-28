@@ -57,7 +57,7 @@ public final class RequiemRenderPhases extends RenderLayer {
         256,
         false,
         true,
-        RenderLayer.MultiPhaseParameters.builder()
+        MultiPhaseParameters.builder()
             .texture(new Texture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE, false, false))
             .alpha(RenderPhase.ONE_TENTH_ALPHA)
             .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)

@@ -257,7 +257,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
                 this.setVelocity(player.getVelocity());
                 this.move(MovementType.SELF, this.getVelocity());
-                this.updatePosition(player.getX(), player.getY(), player.getZ());
+                this.setPosition(player.getX(), player.getY(), player.getZ());
                 // update limb movement
                 this.limbAngle = player.limbAngle;
                 this.limbDistance = player.limbDistance;

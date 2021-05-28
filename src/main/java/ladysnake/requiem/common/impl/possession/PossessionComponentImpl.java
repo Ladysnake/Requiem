@@ -62,7 +62,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -139,7 +139,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 player.startRiding(ridden);
             }
             if (RequiemEntityTypeTags.EATERS.contains(host.getType())) {
-                player.getHungerManager().fromTag(PossessedData.KEY.get(host).getHungerData());
+                player.getHungerManager().readNbt(PossessedData.KEY.get(host).getHungerData());
             }
 
             host.setTarget(null);
@@ -190,7 +190,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 }
 
                 if (RequiemEntityTypeTags.EATERS.contains(host.getType())) {
-                    player.getHungerManager().toTag(PossessedData.KEY.get(host).getHungerData());
+                    player.getHungerManager().writeNbt(PossessedData.KEY.get(host).getHungerData());
                 }
 
                 // move soulbound effects from the host to the soul
@@ -230,7 +230,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     @Override
     public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
-        buf.writeInt(this.possessed == null ? -1 : this.possessed.getEntityId());
+        buf.writeInt(this.possessed == null ? -1 : this.possessed.getId());
     }
 
     @Override
@@ -280,7 +280,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
         this.player.setAir(this.player.getMaxAir());
         PossessionComponent.KEY.sync(this.player);
         PossessionStateChangeCallback.EVENT.invoker().onPossessionStateChange(this.player, null);
-        RequiemNetworking.sendToAllTrackingIncluding(player, new EntityAttributesS2CPacket(player.getEntityId(), player.getAttributes().getAttributesToSend()));
+        RequiemNetworking.sendToAllTrackingIncluding(player, new EntityAttributesS2CPacket(player.getId(), player.getAttributes().getAttributesToSend()));
     }
 
     /**
@@ -337,12 +337,12 @@ public final class PossessionComponentImpl implements PossessionComponent {
     }
 
     @Override
-    public void writeToNbt(CompoundTag tag) {
+    public void writeToNbt(NbtCompound tag) {
         tag.putInt("conversionTimer", this.conversionTimer);
     }
 
     @Override
-    public void readFromNbt(CompoundTag compound) {
+    public void readFromNbt(NbtCompound compound) {
         this.conversionTimer = compound.getInt("conversionTimer");
     }
 

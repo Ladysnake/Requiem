@@ -53,7 +53,7 @@ import nerdhub.cardinal.components.api.util.EntityComponents;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import nerdhub.cardinal.components.api.util.container.AbstractComponentContainer;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -92,11 +92,11 @@ public final class PlayerSplitter {
 
     public static PlayerShellEntity createShell(ServerPlayerEntity whole) {
         PlayerShellEntity shell = new PlayerShellEntity(PandemoniumEntities.PLAYER_SHELL, whole.getServerWorld());
-        shell.setGameMode(whole.interactionManager.getGameMode());  // use same gamemode for deserialization
+        shell.changeGameMode(whole.interactionManager.getGameMode());  // use same gamemode for deserialization
         shell.storePlayerData(whole, computeCopyNbt(whole));
         shell.headYaw = whole.headYaw;
         shell.bodyYaw = whole.bodyYaw;
-        shell.setGameMode(whole.interactionManager.isSurvivalLike() ? whole.interactionManager.getGameMode() : GameMode.SURVIVAL);
+        shell.changeGameMode(whole.interactionManager.isSurvivalLike() ? whole.interactionManager.getGameMode() : GameMode.SURVIVAL);
         RemnantComponent.get(shell).become(RemnantTypes.MORTAL, true);
         InventoryLimiter.KEY.get(shell).setEnabled(false);
         PlayerShellEvents.DATA_TRANSFER.invoker().transferData(whole, shell, false);
@@ -116,7 +116,7 @@ public final class PlayerSplitter {
         shell.stopRiding();
         soul.inventory.dropAll();
         // Note: the teleport request must be before deserialization, as it only encodes the required relative movement
-        soul.networkHandler.teleportRequest(shell.getX(), shell.getY(), shell.getZ(), shell.yaw, shell.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
+        soul.networkHandler.requestTeleport(shell.getX(), shell.getY(), shell.getZ(), shell.yaw, shell.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
         // override common data that may have been altered during this shell's existence
         performNbtCopy(computeCopyNbt(shell), soul);
         PlayerShellEvents.DATA_TRANSFER.invoker().transferData(shell, soul, true);
@@ -157,16 +157,16 @@ public final class PlayerSplitter {
     }
 
     @NotNull
-    public static CompoundTag computeCopyNbt(Entity template) {
+    public static NbtCompound computeCopyNbt(Entity template) {
         //Player keeps everything that goes through death
-        CompoundTag templateNbt = template.toTag(new CompoundTag());
+        NbtCompound templateNbt = template.writeNbt(new NbtCompound());
         deduplicateVanillaData(templateNbt);
         deduplicateComponents(templateNbt, Objects.requireNonNull(ComponentProvider.fromEntity(template).getComponentContainer()).keys());
         return templateNbt;
     }
 
-    private static void deduplicateComponents(CompoundTag leftoverData, Set<ComponentKey<?>> keys) {
-        CompoundTag leftoverComponents = leftoverData.getCompound(AbstractComponentContainer.NBT_KEY);
+    private static void deduplicateComponents(NbtCompound leftoverData, Set<ComponentKey<?>> keys) {
+        NbtCompound leftoverComponents = leftoverData.getCompound(AbstractComponentContainer.NBT_KEY);
 
         for (ComponentKey<?> key : keys) {
             String keyId = key.getId().toString();
@@ -177,7 +177,7 @@ public final class PlayerSplitter {
         }
     }
 
-    private static void deduplicateVanillaData(CompoundTag leftoverData) {
+    private static void deduplicateVanillaData(NbtCompound leftoverData) {
         leftoverData.remove("UUID");
         leftoverData.remove("SpawnX");
         leftoverData.remove("SpawnY");
@@ -192,13 +192,13 @@ public final class PlayerSplitter {
         leftoverData.remove("seenCredits");
     }
 
-    public static void performNbtCopy(CompoundTag from, Entity to) {
+    public static void performNbtCopy(NbtCompound from, Entity to) {
         // Save the complete representation of the player
-        CompoundTag serialized = new CompoundTag();
+        NbtCompound serialized = new NbtCompound();
         // We write every attribute of the destination entity to the tag, then we override.
         // That way, attributes that do not exist in the base entity are kept intact during the copy.
-        to.toTag(serialized);
+        to.writeNbt(serialized);
         serialized.copyFrom(from);
-        to.fromTag(serialized);
+        to.readNbt(serialized);
     }
 }

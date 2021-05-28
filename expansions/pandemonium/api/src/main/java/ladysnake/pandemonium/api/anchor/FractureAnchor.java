@@ -17,7 +17,7 @@
  */
 package ladysnake.pandemonium.api.anchor;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 import java.util.UUID;
 
@@ -59,5 +59,5 @@ public interface FractureAnchor {
 
     void invalidate();
 
-    CompoundTag toTag(CompoundTag tag);
+    NbtCompound toTag(NbtCompound tag);
 }

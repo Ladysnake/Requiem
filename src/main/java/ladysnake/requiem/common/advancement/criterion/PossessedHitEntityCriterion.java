@@ -55,7 +55,7 @@ public class PossessedHitEntityCriterion extends AbstractCriterion<PossessedHitE
     }
 
     @Override
-    protected PossessedHitEntityCriterion.Conditions conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+    protected Conditions conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
         return new Conditions(
             this.id,
             playerPredicate,

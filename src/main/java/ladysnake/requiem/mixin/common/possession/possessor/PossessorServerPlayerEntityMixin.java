@@ -46,7 +46,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
@@ -67,7 +67,7 @@ import static ladysnake.requiem.mixin.common.possession.possessor.PlayerTagKeys.
 @Mixin(ServerPlayerEntity.class)
 public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity implements MobResurrectable, RequiemPlayer {
     @Nullable
-    private CompoundTag requiem_possessedEntityTag;
+    private NbtCompound requiem_possessedEntityTag;
 
     public PossessorServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
         super(world, pos, yaw, profile);
@@ -75,8 +75,8 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
 
     @Override
     public void setResurrectionEntity(MobEntity secondLife) {
-        CompoundTag tag = new CompoundTag();
-        if (secondLife.saveSelfToTag(tag)) {
+        NbtCompound tag = new NbtCompound();
+        if (secondLife.saveSelfNbt(tag)) {
             setResurrectionEntity(tag);
         } else {
             Requiem.LOGGER.warn("Could not serialize possessed entity {} !", secondLife);
@@ -110,7 +110,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
     }
 
     @Unique
-    private void setResurrectionEntity(@Nullable CompoundTag serializedSecondLife) {
+    private void setResurrectionEntity(@Nullable NbtCompound serializedSecondLife) {
         this.requiem_possessedEntityTag = serializedSecondLife;
     }
 
@@ -200,19 +200,19 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
 
 
     @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
-    private void writePossessedMobToTag(CompoundTag tag, CallbackInfo info) {
+    private void writePossessedMobToTag(NbtCompound tag, CallbackInfo info) {
         Entity possessedEntity = PossessionComponent.get(this).getPossessedEntity();
 
         if (possessedEntity != null) {
             Entity possessedEntityVehicle = possessedEntity.getRootVehicle();
-            CompoundTag possessedRoot = new CompoundTag();
-            CompoundTag serializedPossessed = new CompoundTag();
-            possessedEntityVehicle.saveSelfToTag(serializedPossessed);
+            NbtCompound possessedRoot = new NbtCompound();
+            NbtCompound serializedPossessed = new NbtCompound();
+            possessedEntityVehicle.saveSelfNbt(serializedPossessed);
             possessedRoot.put(POSSESSED_ENTITY_TAG, serializedPossessed);
             possessedRoot.putUuid(POSSESSED_UUID_TAG, possessedEntity.getUuid());
             tag.put(POSSESSED_ROOT_TAG, possessedRoot);
         } else if (this.requiem_possessedEntityTag != null) {
-            CompoundTag possessedRoot = new CompoundTag();
+            NbtCompound possessedRoot = new NbtCompound();
             possessedRoot.put(POSSESSED_ENTITY_TAG, this.requiem_possessedEntityTag);
             possessedRoot.putUuid(POSSESSED_UUID_TAG, this.requiem_possessedEntityTag.getUuid("UUID"));
             tag.put(POSSESSED_ROOT_TAG, possessedRoot);

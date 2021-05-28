@@ -34,10 +34,10 @@
  */
 package ladysnake.requiem.compat;
 
+import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
-import nerdhub.cardinal.components.api.component.ComponentProvider;
 import net.hyper_pigeon.eldritch_mobs.EldritchMobsMod;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -49,7 +49,6 @@ public final class EldritchMobsCompat implements PossessionStartCallback {
         PossessionStartCallback.EVENT.register(Requiem.id("eldritch_mobs"), new EldritchMobsCompat());
     }
 
-    @SuppressWarnings({"UnstableApiUsage", "deprecation"})
     @Override
     public Result onPossessionAttempted(MobEntity target, PlayerEntity possessor, boolean simulate) {
         ComponentProvider t = ComponentProvider.fromEntity(target);

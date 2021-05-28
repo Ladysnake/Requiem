@@ -49,7 +49,7 @@ import net.minecraft.entity.mob.WitherSkeletonEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public final class SkeletonBoneComponent implements Component {
@@ -79,7 +79,7 @@ public final class SkeletonBoneComponent implements Component {
 
     private void replaceSkeleton() {
         PlayerEntity possessor = ((Possessable) this.owner).getPossessor();
-        SkeletonEntity replacement = this.owner.method_29243(EntityType.SKELETON, true);
+        SkeletonEntity replacement = this.owner.convertTo(EntityType.SKELETON, true);
         if (replacement != null) {
             replacement.setHealth(this.owner.getHealth());
             if (possessor instanceof ServerPlayerEntity) {
@@ -112,14 +112,14 @@ public final class SkeletonBoneComponent implements Component {
     }
 
     @Override
-    public void readFromNbt(CompoundTag tag) {
+    public void readFromNbt(NbtCompound tag) {
         if (tag.contains("replaced_bones")) {
             this.replacedBones = tag.getInt("replaced_bones");
         }
     }
 
     @Override
-    public void writeToNbt(CompoundTag tag) {
+    public void writeToNbt(NbtCompound tag) {
         if (this.replacedBones > 0) {
             tag.putInt("replaced_bones", this.replacedBones);
         }

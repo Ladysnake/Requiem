@@ -37,7 +37,7 @@ package ladysnake.pandemonium.common.impl.anchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
@@ -55,7 +55,7 @@ public class EntityFractureAnchor extends TrackedFractureAnchor {
         this.entityUuid = entityUuid;
     }
 
-    protected EntityFractureAnchor(FractureAnchorManager manager, CompoundTag tag, int id) {
+    protected EntityFractureAnchor(FractureAnchorManager manager, NbtCompound tag, int id) {
         super(checkSide(manager), tag, id);
         this.entityUuid = tag.getUuid("AnchorEntity");
     }
@@ -93,7 +93,7 @@ public class EntityFractureAnchor extends TrackedFractureAnchor {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag anchorTag) {
+    public NbtCompound toTag(NbtCompound anchorTag) {
         super.toTag(anchorTag);
         anchorTag.putString("AnchorType", "requiem:entity");
         anchorTag.putUuid("AnchorEntity", this.entityUuid);

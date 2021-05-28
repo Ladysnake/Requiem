@@ -39,19 +39,19 @@ import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCall
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 
 import javax.annotation.Nullable;
 
 public class HeadDownTransformHandler implements ApplyCameraTransformsCallback {
 
-    public static final Quaternion QUATERNION_180_X = Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F);
-    public static final Quaternion QUATERNION_180_Y = Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F);
+    public static final Quaternion QUATERNION_180_X = Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F);
+    public static final Quaternion QUATERNION_180_Y = Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F);
 
     @Override
     public void applyCameraTransformations(Camera camera, MatrixStack matrices, float tickDelta) {

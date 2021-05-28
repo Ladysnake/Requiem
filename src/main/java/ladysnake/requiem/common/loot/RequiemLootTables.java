@@ -42,7 +42,6 @@ import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.loot.ConstantLootTableRange;
 import net.minecraft.loot.condition.RandomChanceLootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
@@ -50,6 +49,7 @@ import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 
 import java.util.regex.Pattern;
 
@@ -69,7 +69,7 @@ public final class RequiemLootTables {
         LootTableLoadingCallback.EVENT.register((resourceManager, lootManager, identifier, fabricLootSupplierBuilder, lootTableSetter) -> {
             if (NETHER_CHEST.matcher(identifier.getPath()).matches()) {
                 fabricLootSupplierBuilder.withPool(FabricLootPoolBuilder.builder()
-                    .rolls(ConstantLootTableRange.create(1))
+                    .rolls(ConstantLootNumberProvider.create(1))
                     .withEntry(ItemEntry.builder(Items.BOOK).apply(() -> new LootFunction() {
                         @Override
                         public LootFunctionType getType() {

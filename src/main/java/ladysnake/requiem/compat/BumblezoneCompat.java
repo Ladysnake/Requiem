@@ -34,6 +34,8 @@
  */
 package ladysnake.requiem.compat;
 
+import com.telepathicgrunt.bumblezone.Bumblezone;
+import com.telepathicgrunt.bumblezone.entities.PlayerTeleportation;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
@@ -47,15 +49,13 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import com.telepathicgrunt.bumblezone.Bumblezone;
-import com.telepathicgrunt.bumblezone.entities.PlayerTeleportation;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
 public final class BumblezoneCompat implements UseBlockCallback {
-    public static final RegistryKey<World> BZ_WORLD_KEY = RegistryKey.of(Registry.DIMENSION, Bumblezone.MOD_DIMENSION_ID);
+    public static final RegistryKey<World> BZ_WORLD_KEY = RegistryKey.of(Registry.WORLD_KEY, Bumblezone.MOD_DIMENSION_ID);
 
     private final Consumer<PlayerEntity> tpOutOfBz;
 

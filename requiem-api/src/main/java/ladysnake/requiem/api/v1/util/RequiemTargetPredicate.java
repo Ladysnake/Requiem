@@ -21,7 +21,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.entity.ai.TargetPredicate;
 
 /**
- * Interface implemented by {@link net.minecraft.entity.ai.TargetPredicate} when Requiem is installed.
+ * Interface implemented by {@link TargetPredicate} when Requiem is installed.
  */
 public interface RequiemTargetPredicate {
     static TargetPredicate includeIncorporeal(TargetPredicate predicate) {

@@ -60,7 +60,7 @@ public class ShellRevengeGoal extends RevengeGoal {
 
     protected void callForHelp() {
         double d = this.getFollowRange();
-        Box box = Box.method_29968(this.mob.getPos()).expand(d, 10.0D, d);
+        Box box = Box.from(this.mob.getPos()).expand(d, 10.0D, d);
         UUID ownerUuid = this.shell.getOwnerUuid();
 
         for (LivingEntity e : this.mob.world.getEntitiesIncludingUngeneratedChunks(LivingEntity.class, box)) {

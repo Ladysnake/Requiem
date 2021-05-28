@@ -49,8 +49,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -70,11 +70,11 @@ public class PossessedDataImpl implements PossessedData, AutoSyncedComponent {
             ((Possessable) converted).setPossessor(possessor);
         }
         // copy possessed data to avoid losing the inventory
-        possessedData.readFromNbt(Util.make(new CompoundTag(), KEY.get(original)::writeToNbt));
+        possessedData.readFromNbt(Util.make(new NbtCompound(), KEY.get(original)::writeToNbt));
     }
 
     private final Entity holder;
-    private @Nullable CompoundTag hungerData;
+    private @Nullable NbtCompound hungerData;
     private @Nullable OrderedInventory inventory;
     private boolean previouslyPossessed;
     private boolean convertedUnderPossession;
@@ -151,9 +151,9 @@ public class PossessedDataImpl implements PossessedData, AutoSyncedComponent {
     }
 
     @Override
-    public CompoundTag getHungerData() {
+    public NbtCompound getHungerData() {
         if (this.hungerData == null) {
-            this.hungerData = new CompoundTag();
+            this.hungerData = new NbtCompound();
             this.hungerData.putInt("foodLevel", 20);
         }
         return this.hungerData;
@@ -170,15 +170,15 @@ public class PossessedDataImpl implements PossessedData, AutoSyncedComponent {
     }
 
     @Override
-    public void readFromNbt(CompoundTag tag) {
+    public void readFromNbt(NbtCompound tag) {
         if (tag.contains("hunger_data", NbtType.COMPOUND)) {
             this.hungerData = tag.getCompound("hunger_data");
         }
 
         if (tag.contains("inventory_size", NbtType.NUMBER)) {
-            ListTag items = tag.getList("inventory", NbtType.COMPOUND);
+            NbtList items = tag.getList("inventory", NbtType.COMPOUND);
             this.inventory = new OrderedInventory(tag.getInt("inventory_size"));
-            this.inventory.readTags(items);
+            this.inventory.readNbtList(items);
         }
 
         if (tag.contains("previously_possessed")) {
@@ -191,15 +191,15 @@ public class PossessedDataImpl implements PossessedData, AutoSyncedComponent {
     }
 
     @Override
-    public void writeToNbt(CompoundTag tag) {
+    public void writeToNbt(NbtCompound tag) {
         if (this.hungerData != null) {
             PlayerEntity possessor = ((Possessable) this.holder).getPossessor();
-            if (possessor != null) possessor.getHungerManager().toTag(this.hungerData);
+            if (possessor != null) possessor.getHungerManager().writeNbt(this.hungerData);
             tag.put("hunger_data", this.hungerData.copy());
         }
         if (this.inventory != null) {
             tag.putInt("inventory_size", this.inventory.size());
-            tag.put("inventory", this.inventory.getTags());
+            tag.put("inventory", this.inventory.toNbtList());
         }
 
         if (this.previouslyPossessed) {

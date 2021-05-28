@@ -4,14 +4,7 @@ group = "${rootProject.group}.${rootProject.archivesBaseName}"
 repositories {
     mavenLocal()
     maven {
-        name = 'Ladysnake Libs'
-        url = 'https://dl.bintray.com/ladysnake/libs'
-        content {
-            includeGroup 'io.github.ladysnake'
-        }
-    }
-    maven {
-        name = 'Ladysnake Mods 2'
+        name = 'Ladysnake Mods'
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
         content {
             includeGroup 'io.github.ladysnake'

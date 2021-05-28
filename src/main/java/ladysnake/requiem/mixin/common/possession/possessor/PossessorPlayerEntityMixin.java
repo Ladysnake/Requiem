@@ -90,7 +90,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
         if (possessed != null && ((VariableMobilityEntity) possessed).requiem_isImmovable()) {
             if (!this.requiem$getWorld().isClient && (this.requiem$getX() != possessed.getX() || this.requiem$getY() != possessed.getY() || this.requiem$getZ() != possessed.getZ())) {
                 ServerPlayNetworkHandler networkHandler = ((ServerPlayerEntity) (Object) this).networkHandler;
-                networkHandler.teleportRequest(possessed.getX(), possessed.getY(), possessed.getZ(), this.requiem$getYaw(), this.requiem$getPitch(), EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
+                networkHandler.requestTeleport(possessed.getX(), possessed.getY(), possessed.getZ(), this.requiem$getYaw(), this.requiem$getPitch(), EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
                 networkHandler.syncWithPlayerPosition();
             }
             info.cancel();

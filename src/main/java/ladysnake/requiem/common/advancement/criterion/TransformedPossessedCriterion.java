@@ -57,7 +57,7 @@ public class TransformedPossessedCriterion extends AbstractCriterion<Transformed
     }
 
     @Override
-    protected TransformedPossessedCriterion.Conditions conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+    protected Conditions conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
         return new Conditions(
             this.id,
             playerPredicate,

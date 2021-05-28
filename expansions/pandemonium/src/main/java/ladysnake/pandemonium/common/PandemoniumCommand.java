@@ -102,7 +102,7 @@ public final class PandemoniumCommand {
 
     private static void createShell(Vec3d position, ServerPlayerEntity player) {
         PlayerShellEntity shell = PlayerSplitter.createShell(player);
-        shell.updatePosition(position.x, position.y, position.z);
+        shell.setPosition(position.x, position.y, position.z);
         player.world.spawnEntity(shell);
     }
 

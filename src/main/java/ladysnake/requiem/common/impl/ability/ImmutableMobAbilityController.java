@@ -34,7 +34,12 @@
  */
 package ladysnake.requiem.common.impl.ability;
 
-import ladysnake.requiem.api.v1.entity.ability.*;
+import ladysnake.requiem.api.v1.entity.ability.AbilityType;
+import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
+import ladysnake.requiem.api.v1.entity.ability.IndirectAbility;
+import ladysnake.requiem.api.v1.entity.ability.MobAbility;
+import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
+import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketByteBuf;

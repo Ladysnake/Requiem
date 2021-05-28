@@ -75,7 +75,7 @@ public class GhastFireballAbility extends IndirectAbilityBase<LivingEntity> {
         Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
         FireballEntity fireball = new FireballEntity(this.owner.world, this.owner, rot.x, rot.y, rot.z);
         fireball.explosionPower = this.owner instanceof GhastEntity ? ((GhastEntity) this.owner).getFireballStrength() : 1;
-        fireball.updatePosition(
+        fireball.setPosition(
             this.owner.getX() + scaledRot.x * 4.0D,
             this.owner.getY() + (double) (this.owner.getHeight() / 2.0F) + 0.5D,
             this.owner.getZ() + scaledRot.z * 4.0D

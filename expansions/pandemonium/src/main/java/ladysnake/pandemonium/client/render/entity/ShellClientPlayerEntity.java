@@ -43,7 +43,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
@@ -70,12 +70,12 @@ public class ShellClientPlayerEntity extends OtherClientPlayerEntity {
     }
 
     @Override
-    public CompoundTag getShoulderEntityLeft() {
+    public NbtCompound getShoulderEntityLeft() {
         return this.shell.getShoulderEntityLeft();
     }
 
     @Override
-    public CompoundTag getShoulderEntityRight() {
+    public NbtCompound getShoulderEntityRight() {
         return this.shell.getShoulderEntityRight();
     }
 

@@ -46,7 +46,7 @@ import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -181,14 +181,14 @@ public final class RemnantComponentImpl implements RemnantComponent {
     }
 
     @Override
-    public void readFromNbt(CompoundTag compoundTag) {
+    public void readFromNbt(NbtCompound compoundTag) {
         RemnantType remnantType = RemnantTypes.get(new Identifier(compoundTag.getString("id")));
         this.become(remnantType);
         this.setVagrant(compoundTag.getBoolean(ETHEREAL_TAG));
     }
 
     @Override
-    public void writeToNbt(CompoundTag compoundTag) {
+    public void writeToNbt(NbtCompound compoundTag) {
         compoundTag.putString("id", RemnantTypes.getId(this.remnantType).toString());
         compoundTag.putBoolean(ETHEREAL_TAG, this.isVagrant());
     }

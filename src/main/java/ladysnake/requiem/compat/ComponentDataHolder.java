@@ -39,7 +39,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import ladysnake.requiem.Requiem;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,7 +47,7 @@ public class ComponentDataHolder<C extends ComponentV3> implements Component {
 
     protected final ComponentKey<C> dataKey;
     protected final ComponentKey<?> selfKey;
-    protected @Nullable CompoundTag data;
+    protected @Nullable NbtCompound data;
 
     public ComponentDataHolder(ComponentKey<C> dataKey, ComponentKey<?> selfKey) {
         this.dataKey = dataKey;
@@ -57,7 +57,7 @@ public class ComponentDataHolder<C extends ComponentV3> implements Component {
     public void storeData(PlayerEntity player) {
         if (!player.world.isClient && this.data == null) {
             try {
-                CompoundTag originData = new CompoundTag();
+                NbtCompound originData = new NbtCompound();
                 this.dataKey.get(player).writeToNbt(originData);
                 this.data = originData;
             } catch (RuntimeException e) {
@@ -69,7 +69,7 @@ public class ComponentDataHolder<C extends ComponentV3> implements Component {
     public void restoreData(PlayerEntity player) {
         if (!player.world.isClient && this.data != null) {
             C component = this.dataKey.get(player);
-            CompoundTag backup = Util.make(new CompoundTag(), component::writeToNbt);
+            NbtCompound backup = Util.make(new NbtCompound(), component::writeToNbt);
             try {
                 component.readFromNbt(this.data);
             } catch (RuntimeException e) {
@@ -82,7 +82,7 @@ public class ComponentDataHolder<C extends ComponentV3> implements Component {
     }
 
     @Override
-    public void readFromNbt(CompoundTag tag) {
+    public void readFromNbt(NbtCompound tag) {
         if (tag.contains("originData")) {
             this.data = tag.getCompound("originData");
         } else if (tag.contains("componentData")) {
@@ -91,7 +91,7 @@ public class ComponentDataHolder<C extends ComponentV3> implements Component {
     }
 
     @Override
-    public void writeToNbt(CompoundTag tag) {
+    public void writeToNbt(NbtCompound tag) {
         if (this.data != null) {
             tag.put("componentData", this.data);
         }

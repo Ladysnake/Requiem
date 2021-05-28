@@ -58,9 +58,9 @@ public class UsedRequiemTotemCriterion extends AbstractCriterion<UsedRequiemTote
         return this.id;
     }
 
-    public UsedRequiemTotemCriterion.Conditions conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
+    public Conditions conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
         ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
-        return new UsedRequiemTotemCriterion.Conditions(this.id, extended, itemPredicate);
+        return new Conditions(this.id, extended, itemPredicate);
     }
 
     public void trigger(ServerPlayerEntity player, ItemStack stack) {

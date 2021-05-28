@@ -41,7 +41,7 @@ import ladysnake.pandemonium.client.render.entity.ClientWololoComponent;
 import ladysnake.requiem.Requiem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -95,14 +95,14 @@ public class WololoComponent implements AutoSyncedComponent {
     }
 
     @Override
-    public void readFromNbt(CompoundTag tag) {
+    public void readFromNbt(NbtCompound tag) {
         if (tag.contains("converted")) {
             this.converted = tag.getBoolean("converted");
         }
     }
 
     @Override
-    public void writeToNbt(CompoundTag tag) {
+    public void writeToNbt(NbtCompound tag) {
         if (this.converted) {
             tag.putBoolean("converted", true);
         }
