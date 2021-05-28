@@ -166,6 +166,11 @@ public class MutableRemnantState implements RemnantState {
         return true;
     }
 
+    @Override
+    public boolean canCaptureSouls() {
+        return !this.isVagrant();
+    }
+
     protected boolean canRegenerateBodyFrom(LivingEntity body) {
         return this.canRegenerateBody() && CurableEntityComponent.KEY.get(body).canBeAssimilated();
     }

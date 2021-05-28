@@ -158,6 +158,8 @@ public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComp
 
     boolean canDissociateFrom(MobEntity possessed);
 
+    boolean canCaptureSouls();
+
     /**
      * Called when this remnant state's player is cloned
      *

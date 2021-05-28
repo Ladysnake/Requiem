@@ -89,6 +89,11 @@ public interface RemnantState {
         return true;
     }
 
+    @API(status = API.Status.EXPERIMENTAL)
+    default boolean canCaptureSouls() {
+        return false;
+    }
+
     /**
      * Called when this remnant state's player is cloned
      *

@@ -151,6 +151,11 @@ public final class RemnantComponentImpl implements RemnantComponent {
     }
 
     @Override
+    public boolean canCaptureSouls() {
+        return this.state.canCaptureSouls();
+    }
+
+    @Override
     public void prepareRespawn(ServerPlayerEntity original, boolean lossless) {
         this.state.prepareRespawn(original, lossless);
     }
