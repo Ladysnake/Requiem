@@ -3,6 +3,8 @@
   "package": "ladysnake.pandemonium.mixin.common",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "entity.ai.TargetPredicateAccessor",
+    "entity.ai.goal.FollowTargetGoalMixin",
     "entity.EntityAccessor",
     "entity.PersistentProjectileEntityAccessor",
     "entity.ai.MemoryModuleTypeAccessor",

@@ -61,8 +61,15 @@ public class PandemoniumEntities {
         .dimensions(EntityDimensions.changing(PLAYER_SHELL.getWidth(), PLAYER_SHELL.getHeight()))
         .defaultAttributes(MobEntity::createMobAttributes)
         .build();
+    public static final EntityType<MorticianEntity> MORTICIAN = FabricEntityTypeBuilder.createLiving()
+        .spawnGroup(SpawnGroup.CREATURE)
+        .entityFactory(MorticianEntity::new)
+        .defaultAttributes(MorticianEntity::createMobAttributes)
+        .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
+        .build();
 
     public static void init() {
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("player_shell"), PLAYER_SHELL);
+        Registry.register(Registry.ENTITY_TYPE, Requiem.id("mortician"), MORTICIAN);
     }
 }
