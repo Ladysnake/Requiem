@@ -34,9 +34,9 @@
  */
 package ladysnake.requiem.compat;
 
-import io.github.franiscoder.golemsgalore.GolemsGalore;
-import io.github.franiscoder.golemsgalore.entity.LaserGolemEntity;
-import io.github.franiscoder.golemsgalore.entity.ai.laser.FireLaserGoal;
+import io.github.frqnny.golemsgalore.GolemsGalore;
+import io.github.frqnny.golemsgalore.entity.LaserGolemEntity;
+import io.github.frqnny.golemsgalore.entity.ai.laser.FireLaserGoal;
 import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
