@@ -50,7 +50,6 @@ import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import org.lwjgl.opengl.GL11;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -63,14 +62,14 @@ public final class RequiemRenderPhases extends RenderLayer {
     static {
         try {
             Method renderlayer$of = ReflectionHelper.findMethodFromIntermediary(
-                RenderLayer.class, "method_24048",
-                ReflectionHelper.findClass("class_1921$class_4687"),
+                RenderLayer.class, "method_24049",
+                ReflectionHelper.findClass("net.minecraft.class_1921$class_4687"),
                 String.class, VertexFormat.class, VertexFormat.DrawMode.class, int.class, boolean.class, boolean.class, RenderLayer.MultiPhaseParameters.class
             );
             GHOST_PARTICLE_LAYER = (RenderLayer) renderlayer$of.invoke(null,
                 "requiem:ghost_particle",
                 VertexFormats.POSITION_TEXTURE_COLOR_LIGHT,
-                GL11.GL_QUADS,
+                VertexFormat.DrawMode.QUADS,
                 256,
                 false,
                 true,

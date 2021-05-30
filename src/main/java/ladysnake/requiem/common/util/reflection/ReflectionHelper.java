@@ -40,7 +40,11 @@ import net.fabricmc.loader.launch.common.FabricLauncherBase;
 import org.apiguardian.api.API;
 import org.objectweb.asm.Type;
 
-import java.lang.invoke.*;
+import java.lang.invoke.CallSite;
+import java.lang.invoke.LambdaMetafactory;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -85,7 +89,8 @@ public class ReflectionHelper {
         if (lMatch.find()) {
             String coreClass = lMatch.group(1).replace('/', '.');
             String unmappedType = getMappingResolver().unmapClassName(INTERMEDIARY, coreClass);
-            desc = lMatch.replaceFirst("L" + unmappedType.replace('.', '/') + ";");
+            // Careful, inner classes contain dollar signs
+            desc = lMatch.replaceFirst(Matcher.quoteReplacement(String.format("L%s;", unmappedType.replace('.', '/'))));
         }
         return Type.getType(desc);
     }
