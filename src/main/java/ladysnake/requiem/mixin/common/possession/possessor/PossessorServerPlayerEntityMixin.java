@@ -179,7 +179,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
     }
 
     @Inject(method = "onStatusEffectUpgraded", at = @At("RETURN"))
-    private void onStatusEffectUpdated(StatusEffectInstance effect, boolean upgrade, CallbackInfo ci) {
+    private void onStatusEffectUpdated(StatusEffectInstance effect, boolean upgrade, @Nullable Entity entity, CallbackInfo ci) {
         if (upgrade) {
             MobEntity possessed = PossessionComponent.get(this).getPossessedEntity();
 

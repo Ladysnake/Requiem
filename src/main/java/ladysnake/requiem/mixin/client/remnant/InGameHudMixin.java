@@ -55,7 +55,11 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
@@ -157,7 +161,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     @ModifyVariable(
         method = "renderStatusBars",
         at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/gui/hud/InGameHud;getHeartCount(Lnet/minecraft/entity/LivingEntity;)I"),
-        index = 23
+        index = 22
     )
     private int preventFoodRender(int mountHeartCount) {
         ClientPlayerEntity player = this.client.player;
@@ -177,7 +181,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     @ModifyVariable(
         method = "renderStatusBars",
         at = @At(value = "CONSTANT", args = "stringValue=air"),
-        index = 23
+        index = 22
     )
     private int fixAirRender(int mountHeartCount) {
         if (skippedFood) return 0;

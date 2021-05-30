@@ -30,8 +30,8 @@ subprojects {
 
 allprojects {
 
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
 
     version = project.mod_version
 
@@ -198,7 +198,7 @@ dependencies {
     include "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
     modImplementation "io.github.ladysnake:locki:${locki_version}"
     include "io.github.ladysnake:locki:${locki_version}"
-    modImplementation "io.github.emilyalexandra:chime:${chime_version}"
+    modImplementation "dev.emi.chime:chime:${chime_version}"
     include "io.github.emilyalexandra:chime:${chime_version}"
     implementation "me.zeroeightsix:fiber:${project.fiber_version}"
     include "me.zeroeightsix:fiber:${project.fiber_version}"
@@ -223,25 +223,24 @@ dependencies {
 //    modRuntime "curse.maven:mobz:2965825"
     modCompileOnly("io.github.Terrails:Health-Overlay:1.16-Fabric-SNAPSHOT")
     modCompileOnly("io.github.CerulanLumina:better-graves:${better_graves_version}")
-    modRuntime("io.github.CerulanLumina:better-graves:${better_graves_version}")
+//    modRuntime("io.github.CerulanLumina:better-graves:${better_graves_version}")
     modCompileOnly("io.github.Lemonszz:Biome-Makeover:${biome_makeover_version}")
-    modRuntime("io.github.Lemonszz:Biome-Makeover:${biome_makeover_version}")
+//    modRuntime("io.github.Lemonszz:Biome-Makeover:${biome_makeover_version}")
 
     modRuntime "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
-    modRuntime "io.github.adriantodt:FallFlyingLib:${fallflyinglib_version}"
-    modCompileOnly("com.github.Virtuoel:Pehkui:${pehkui_version}") { transitive = false }
-    modRuntime("com.github.Virtuoel:Pehkui:${pehkui_version}") { transitive = false }
+//    modRuntime "io.github.adriantodt:FallFlyingLib:${fallflyinglib_version}"
+    modCompileOnly("curse.maven:Pehkui-319596:${pehkui_version}") { transitive = false }
+//    modRuntime("curse.maven:Pehkui-319596:${pehkui_version}") { transitive = false }
     modCompileOnly("curse.maven:Snow-Mercy-429949:${snowmercy_version}") { transitive = false }
-    modRuntime("curse.maven:Snow-Mercy-429949:${snowmercy_version}") { transitive = false }
+//    modRuntime("curse.maven:Snow-Mercy-429949:${snowmercy_version}") { transitive = false }
     modCompileOnly("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
-    modRuntime("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
+//    modRuntime("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:${eldritch_mobs_version}") { transitive = false }
-    modRuntime "io.github.cottonmc:LibGui:${libgui_version}"
+//    modRuntime "io.github.cottonmc:LibGui:${libgui_version}"
     modCompileOnly("curse.maven:haema-391257:${haema_version}")
-    modRuntime("curse.maven:haema-391257:${haema_version}")
-    modRuntime("vazkii.patchouli:Patchouli:${project.patchouli_version}")
-    modRuntime("top.theillusivec4.somnus:somnus-fabric:${somnus_version}")  // required by haema
-    modRuntime("me.sargunvohra.mcmods:autoconfig1u:${project.acu_version}")
+//    modRuntime("curse.maven:haema-391257:${haema_version}")
+//    modRuntime("vazkii.patchouli:Patchouli:${project.patchouli_version}")
+//    modRuntime("top.theillusivec4.somnus:somnus-fabric:${somnus_version}")  // required by haema
     modRuntime("net.fabricmc:fabric-language-kotlin:${flk_version}")
     modRuntime("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
     modCompileOnly("curse.maven:golems-galore-387197:${golems_galore_version}")

@@ -40,12 +40,12 @@
   ],
 
   "depends": {
-    "minecraft": ">=1.16",
+    "minecraft": ">=1.17-",
     "fabric-api-base": "*",
     "requiemapi": "${version}",
-    "satin": ">=1.5.0- <1.6.0-",
-    "cardinal-components-base": "^2.7.0",
-    "cardinal-components-scoreboard": "^2.7.10",
+    "satin": "^1.6.0-",
+    "cardinal-components-base": "^3.0.0-",
+    "cardinal-components-scoreboard": "^3.0.0-",
     "fabric-permissions-api-v0": "*"
   },
   "recommends": {
