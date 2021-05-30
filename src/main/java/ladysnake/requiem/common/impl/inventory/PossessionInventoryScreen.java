@@ -53,7 +53,7 @@ public class PossessionInventoryScreen extends AbstractInventoryScreen<PlayerScr
     private final PossessionComponent possessionComponent;
 
     public PossessionInventoryScreen(PlayerEntity player) {
-        super(player.playerScreenHandler, player.inventory, new TranslatableText("container.crafting"));
+        super(player.playerScreenHandler, player.getInventory(), new TranslatableText("container.crafting"));
         this.limiter = InventoryLimiter.KEY.get(player);
         this.possessionComponent = PossessionComponent.get(player);
     }
@@ -103,7 +103,7 @@ public class PossessionInventoryScreen extends AbstractInventoryScreen<PlayerScr
         assert this.client.player != null;
 
         //noinspection deprecation
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         InventoryShape shape = this.limiter.getInventoryShape();
         this.client.getTextureManager().bindTexture(shape.swapBackground(BACKGROUND_TEXTURE));
         int x = this.x;

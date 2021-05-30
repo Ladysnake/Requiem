@@ -138,7 +138,7 @@ public final class RequiemClientListener implements
         assert client.player != null;
         if (client.targetedEntity instanceof EndermanEntity && client.player.world.getRegistryKey() == World.END) {
             // TODO probably replace with a proper texture
-            RenderSystem.color3f(0.4f, 0.0f, 1.0f);
+            RenderSystem.setShaderColor(0.4f, 0.0f, 1.0f, 1.0f);
         }
     }
 

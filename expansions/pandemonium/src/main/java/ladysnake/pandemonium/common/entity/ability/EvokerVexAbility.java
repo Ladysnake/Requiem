@@ -34,19 +34,20 @@
  */
 package ladysnake.pandemonium.common.entity.ability;
 
+import ladysnake.pandemonium.common.entity.internal.SpellcastingIllagerAccess;
 import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
 import ladysnake.requiem.common.util.reflection.ReflectionHelper;
 import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.EvokerEntity;
-import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
-    private static final Constructor<? extends SpellcastingIllagerEntity.CastSpellGoal> VEX_GOAL_FACTORY;
+    private static final Constructor<? extends Goal> VEX_GOAL_FACTORY;
 
-    private final SpellcastingIllagerEntity.CastSpellGoal summonVexGoal;
+    private final Goal summonVexGoal;
     private boolean started;
 
     public EvokerVexAbility(EvokerEntity owner) {
@@ -92,7 +93,7 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
                 } else {
                     started = false;
                     this.summonVexGoal.stop();
-                    owner.setSpell(SpellcastingIllagerEntity.Spell.NONE);
+                    owner.setSpell(SpellcastingIllagerAccess.SPELL_NONE);
                 }
             } finally {
                 if (!hasTarget) owner.setTarget(null);
@@ -102,7 +103,7 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
 
     static {
         try {
-            Class<? extends SpellcastingIllagerEntity.CastSpellGoal> clazz = ReflectionHelper.findClass("net.minecraft.class_1564$class_1567");
+            Class<? extends Goal> clazz = ReflectionHelper.findClass("net.minecraft.class_1564$class_1567");
             VEX_GOAL_FACTORY = clazz.getDeclaredConstructor(EvokerEntity.class);
             VEX_GOAL_FACTORY.setAccessible(true);
         } catch (ClassNotFoundException e) {

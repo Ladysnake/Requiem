@@ -88,6 +88,7 @@ public class SimpleCurableEntityComponent implements CurableEntityComponent {
         return false;
     }
 
+    // Taken from ZombieVillagerEntity#finishConversion
     @Override
     public MobEntity cure() {
         MobEntity cured = this.createCuredEntity();
@@ -96,7 +97,7 @@ public class SimpleCurableEntityComponent implements CurableEntityComponent {
                 ItemStack itemStack = this.entity.getEquippedStack(equipmentSlot);
                 if (!itemStack.isEmpty()) {
                     if (EnchantmentHelper.hasBindingCurse(itemStack)) {
-                        cured.equip(equipmentSlot.getEntitySlotId() + 300, itemStack);
+                        cured.getCommandItemSlot(equipmentSlot.getEntitySlotId() + 300).set(itemStack);
                     } else {
                         this.entity.dropStack(itemStack);
                     }

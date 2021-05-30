@@ -34,9 +34,9 @@
  */
 package ladysnake.requiem.compat;
 
+import com.terraformersmc.modmenu.api.ConfigScreenFactory;
+import com.terraformersmc.modmenu.api.ModMenuApi;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigBranch;
-import io.github.prospector.modmenu.api.ConfigScreenFactory;
-import io.github.prospector.modmenu.api.ModMenuApi;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.RequiemConfig;
 import me.shedaniel.clothconfig2.api.AbstractConfigEntry;
@@ -45,7 +45,11 @@ import me.shedaniel.clothconfig2.gui.AbstractConfigScreen;
 import me.shedaniel.fiber2cloth.api.Fiber2Cloth;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.*;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 import java.util.Collections;

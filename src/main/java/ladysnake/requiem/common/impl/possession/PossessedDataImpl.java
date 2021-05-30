@@ -135,7 +135,7 @@ public class PossessedDataImpl implements PossessedData, AutoSyncedComponent {
             .parameter(LootContextParameters.THIS_ENTITY, this.holder)
             .parameter(LootContextParameters.ORIGIN, this.holder.getPos())
             .luck(player.getLuck());
-        lootTable.generateLoot(builder.build(RequiemLootTables.POSSESSION), s -> player.inventory.offerOrDrop(world, s));
+        lootTable.generateLoot(builder.build(RequiemLootTables.POSSESSION), player.getInventory()::offerOrDrop);
     }
 
     private Identifier getLootTable() {

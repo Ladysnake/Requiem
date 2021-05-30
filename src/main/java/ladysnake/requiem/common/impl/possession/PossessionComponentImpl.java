@@ -120,7 +120,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
         // Transfer inventory and mount
         if (!player.world.isClient) {
             if (RequiemEntityTypeTags.INVENTORY_CARRIERS.contains(host.getType())) {
-                PossessedData.KEY.get(host).moveItems(player.inventory, false);
+                PossessedData.KEY.get(host).moveItems(player.getInventory(), false);
             }
             if (RequiemEntityTypeTags.ITEM_USERS.contains(host.getType())) {
                 InventoryHelper.transferEquipment(host, player);
@@ -213,7 +213,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 InventoryHelper.transferEquipment(player, possessed);
             }
             if (RequiemEntityTypeTags.INVENTORY_CARRIERS.contains(possessed.getType())) {
-                PossessedData.KEY.get(possessed).moveItems(player.inventory, true);
+                PossessedData.KEY.get(possessed).moveItems(player.getInventory(), true);
             }
             ((LivingEntityAccessor) player).requiem$invokeDropInventory();
         }
@@ -257,7 +257,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
             return null;
         }
 
-        if (this.possessed.removed) {
+        if (this.possessed.isRemoved()) {
             UUID possessedUuid = this.possessed.getUuid();
             Requiem.LOGGER.debug("{}: this player's possessed entity has disappeared", this.player);
             this.resetState();

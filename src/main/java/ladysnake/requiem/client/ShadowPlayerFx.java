@@ -37,22 +37,18 @@ package ladysnake.requiem.client;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.client.render.RequiemRenderPhases;
+import ladysnake.requiem.mixin.client.access.FramebufferAccessor;
 import ladysnake.satin.api.event.EntitiesPreRenderCallback;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import ladysnake.satin.api.managed.ManagedFramebuffer;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
-import ladysnake.satin.api.managed.uniform.Uniform1f;
-import ladysnake.satin.api.util.RenderLayerHelper;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderPhase;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -69,14 +65,6 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
     private final ManagedShaderEffect shadowPlayerEffect = ShaderEffectManager.getInstance().manage(SHADOW_PLAYER_SHADER_ID, this::assignDepthTexture);
 
     private final ManagedFramebuffer playersFramebuffer = shadowPlayerEffect.getTarget("players");
-    private final RenderPhase.Target target = new RenderPhase.Target(
-        "requiem:shadow_players_target",
-        this::beginPlayersFbWrite,
-        () -> {
-            MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
-            RenderSystem.depthMask(true);
-        }
-    );
     private boolean renderedSoulPlayers;
 
     void registerCallbacks() {
@@ -90,7 +78,7 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
         if (depthTexture > -1) {
             playersFramebuffer.beginWrite(false);
             // Use the same depth texture for our framebuffer as the main one
-            GlStateManager.framebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+            GlStateManager._glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
         }
     }
 
@@ -100,8 +88,9 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
             playersFramebuffer.beginWrite(false);
             RenderSystem.depthMask(false);
             if (!this.renderedSoulPlayers) {
-                // no depth clearing
-                RenderSystem.clearColor(playersFramebuffer.clearColor[0], playersFramebuffer.clearColor[1], playersFramebuffer.clearColor[2], playersFramebuffer.clearColor[3]);
+                // clearing color but not depth
+                float[] clearColor = ((FramebufferAccessor) playersFramebuffer).getClearColor();
+                RenderSystem.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
                 RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
 
                 this.renderedSoulPlayers = true;
@@ -129,6 +118,6 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
     }
 
     public RenderLayer getRenderLayer(RenderLayer base) {
-        return RenderLayerHelper.copy(base, "requiem:shadow_players", builder -> builder.target(target));
+        return RequiemRenderPhases.getShadowRenderLayer(base);
     }
 }

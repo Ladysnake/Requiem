@@ -34,8 +34,8 @@
  */
 package ladysnake.pandemonium.compat;
 
+import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import ladysnake.pandemonium.api.event.PlayerShellEvents;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
@@ -67,7 +67,7 @@ public final class PandemoniumCompatibilityManager {
         }
     }
 
-    public static <C extends ComponentV3> void registerShellDataCallbacks(ComponentKey<ComponentDataHolder<C>> holderKey) {
+    public static <C extends Component> void registerShellDataCallbacks(ComponentKey<ComponentDataHolder<C>> holderKey) {
         PlayerShellEvents.DATA_TRANSFER.register((from, to, merge) -> {
             // First, store a backup of the player's actual origin
             if (merge) holderKey.get(to).storeData(to);

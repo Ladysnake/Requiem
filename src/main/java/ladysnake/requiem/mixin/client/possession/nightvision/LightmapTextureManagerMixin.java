@@ -55,7 +55,7 @@ public abstract class LightmapTextureManagerMixin {
         method = "update",
         slice = @Slice(
             from = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;getNightVisionStrength(Lnet/minecraft/entity/LivingEntity;F)F"),
-            to = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/Vector3f;<init>(FFF)V", ordinal = 0)
+            to = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3f;<init>(FFF)V", ordinal = 0)
         ),
         at = @At("STORE"),
         index = 5

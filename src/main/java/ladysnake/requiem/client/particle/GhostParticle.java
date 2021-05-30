@@ -38,7 +38,11 @@ import ladysnake.requiem.client.render.RequiemRenderPhases;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.particle.*;
+import net.minecraft.client.particle.AbstractSlowingParticle;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleFactory;
+import net.minecraft.client.particle.ParticleTextureSheet;
+import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
@@ -55,7 +59,6 @@ public class GhostParticle extends AbstractSlowingParticle {
     public static void draw(float tickDelta) {
         if (renderedGhostParticle) {
             // Somehow, the GL state can be really broken after another shader render
-            RequiemRenderPhases.ZERO_ALPHA.startDrawing();
             RequiemRenderPhases.GHOST_PARTICLE_SHADER.render(tickDelta);
             RequiemRenderPhases.GHOST_PARTICLE_FRAMEBUFFER.clear();
             // Somehow, the GL state can also be really broken after the shader render

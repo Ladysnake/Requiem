@@ -43,7 +43,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WitherEntity.class)
 public class WitherEntityMixin {
-    @Inject(method = "method_6877", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "shootSkullAt(IDDDZ)V", at = @At("HEAD"), cancellable = true)
     private void cancelAttack(int headIndex, double d, double e, double f, boolean bl, CallbackInfo ci) {
         if (((Possessable) this).isBeingPossessed()) {
             ci.cancel();

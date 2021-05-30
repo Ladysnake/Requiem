@@ -51,8 +51,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
-import net.minecraft.util.Tickable;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Contract;
@@ -62,7 +65,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
+public class RunicObsidianBlockEntity extends BlockEntity {
     public static final Direction[] OBELISK_SIDES = {Direction.SOUTH, Direction.EAST, Direction.NORTH, Direction.WEST};
     public static final int POWER_ATTEMPTS = 1;
 
@@ -71,40 +74,43 @@ public class RunicObsidianBlockEntity extends BlockEntity implements Tickable {
     private int obeliskWidth = 0;
     private int obeliskHeight = 0;
 
-    public RunicObsidianBlockEntity() {
-        super(RequiemBlockEntities.RUNIC_OBSIDIAN);
+    public RunicObsidianBlockEntity(BlockPos pos, BlockState state) {
+        super(RequiemBlockEntities.RUNIC_OBSIDIAN, pos, state);
     }
 
-    @Override
-    public void tick() {
-        assert this.world != null;
-        if (this.world.isClient) return;
+    public static void tick(World world, BlockPos pos, BlockState state, RunicObsidianBlockEntity blockEntity) {
+        if (world.isClient) return;
 
         // Salt the time to avoid checking every potential obelisk on the same tick
-        if ((this.world.getTime() + this.pos.hashCode()) % 80L == 0L) {
-            this.refresh();
+        if ((world.getTime() + pos.hashCode()) % 80L == 0L) {
+            blockEntity.refresh();
 
-            Vec3d obeliskCenter = new Vec3d(
-                MathHelper.lerp(0.5, this.pos.getX(), this.pos.getX() + obeliskWidth - 1),
-                this.pos.getY() - 2,
-                MathHelper.lerp(0.5, this.pos.getZ(), this.pos.getZ() + obeliskWidth - 1)
-            );
+            int obeliskWidth = blockEntity.obeliskWidth;
+            Vec3d obeliskCenter = getObeliskCenter(pos, obeliskWidth);
 
-            if (!this.levels.isEmpty() && this.findPowerSource((ServerWorld) this.world, obeliskCenter, this.obeliskWidth * 5)) {
-                this.applyPlayerEffects();
+            if (!blockEntity.levels.isEmpty() && blockEntity.findPowerSource((ServerWorld) world, obeliskCenter, obeliskWidth * 5)) {
+                blockEntity.applyPlayerEffects(world, pos);
             }
         }
     }
 
-    private void applyPlayerEffects() {
-        Preconditions.checkState(this.world != null);
+    @NotNull
+    private static Vec3d getObeliskCenter(BlockPos pos, int obeliskWidth) {
+        return new Vec3d(
+            MathHelper.lerp(0.5, pos.getX(), pos.getX() + obeliskWidth - 1),
+            pos.getY() - 2,
+            MathHelper.lerp(0.5, pos.getZ(), pos.getZ() + obeliskWidth - 1)
+        );
+    }
+
+    private void applyPlayerEffects(World world, BlockPos pos) {
         Preconditions.checkState(this.obeliskWidth > 0);
         Preconditions.checkState(this.obeliskHeight > 0);
 
         double range = this.obeliskWidth * 10 + 10;
-        Box box = (new Box(this.pos, this.pos.add(this.obeliskWidth - 1, obeliskHeight - 1, this.obeliskWidth - 1))).expand(range);
+        Box box = (new Box(pos, pos.add(this.obeliskWidth - 1, obeliskHeight - 1, this.obeliskWidth - 1))).expand(range);
 
-        List<PlayerEntity> players = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
+        List<PlayerEntity> players = world.getNonSpectatingEntities(PlayerEntity.class, box);
 
         for (PlayerEntity player : players) {
             if (RemnantComponent.get(player).getRemnantType().isDemon()) {

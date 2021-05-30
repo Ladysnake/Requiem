@@ -56,13 +56,13 @@ public abstract class LocationPredicateMixin {
     /**
      * For... reasons, we run tests on clients with a null server world. This does not work well with {@code LocationPredicate}s, so we skip all the world checks.
      */
-    @Inject(method = "test(Lnet/minecraft/server/world/ServerWorld;FFF)Z", at = @At(value = "FIELD", target = "Lnet/minecraft/predicate/entity/LocationPredicate;dimension:Lnet/minecraft/util/registry/RegistryKey;", ordinal = 0), cancellable = true)
-    private void cancelTestOnClients(@Nullable ServerWorld world, float x, float y, float z, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "test", at = @At(value = "FIELD", target = "Lnet/minecraft/predicate/entity/LocationPredicate;dimension:Lnet/minecraft/util/registry/RegistryKey;", ordinal = 0), cancellable = true)
+    private void cancelTestOnClients(@Nullable ServerWorld world, double x, double y, double z, CallbackInfoReturnable<Boolean> cir) {
         if (world == null) cir.setReturnValue(true);
     }
 
-    @Inject(method = "test(Lnet/minecraft/server/world/ServerWorld;FFF)Z", at = @At("RETURN"), cancellable = true)
-    private void test(ServerWorld world, float x, float y, float z, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "test", at = @At("RETURN"), cancellable = true)
+    private void test(ServerWorld world, double x, double y, double z, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValueZ() && this.requiem$biomeCategory != null) {
             BlockPos blockPos = new BlockPos(x, y, z);
             Biome biome = world.getBiome(blockPos);

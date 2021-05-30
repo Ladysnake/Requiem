@@ -56,7 +56,12 @@ import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.possession.item.PossessionItemAction;
-import ladysnake.requiem.api.v1.remnant.*;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.api.v1.remnant.MobResurrectable;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
+import ladysnake.requiem.api.v1.remnant.VagrantInteractionRegistry;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
@@ -89,6 +94,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
@@ -181,7 +187,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             ((MobResurrectable) player).spawnResurrectionEntity();
 
             for (StatusEffectInstance effect : player.getStatusEffects()) {
-                player.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getEntityId(), effect));
+                player.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), effect));
             }
         }));
         RemnantStateChangeCallback.EVENT.register((player, remnant) -> {
@@ -322,6 +328,11 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
     @Override
     public void registerVagrantInteractions(VagrantInteractionRegistry registry) {
+        registry.registerPossessionInteraction(
+            EndermanEntity.class,
+            (mob, player) -> !PossessionComponent.get(player).startPossessing(mob, true),
+            BasePossessionHandlers::performEndermanSoulAction
+        );
         registry.registerPossessionInteraction(
             MobEntity.class,
             (mob, player) -> PossessionComponent.get(player).startPossessing(mob, true),

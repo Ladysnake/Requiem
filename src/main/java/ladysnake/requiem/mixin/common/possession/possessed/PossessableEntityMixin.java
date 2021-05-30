@@ -45,29 +45,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import javax.annotation.Nullable;
-
 @Mixin(Entity.class)
 public abstract class PossessableEntityMixin implements ProtoPossessable {
-
-    /* * * * * * * * * * * * * * * * *
-      ProtoPossessable implementation
-     * * * * * * * * * * * * * * * * */
-
-    @Nullable
-    @Override
-    public PlayerEntity getPossessor() {
-        return null;
-    }
-
-    @Override
-    public boolean isBeingPossessed() {
-        return false;
-    }
-
-    /* * * * * * *
-      Injections
-     * * * * * * */
 
     @Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
     private void isInvulnerableTo(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
@@ -98,7 +77,7 @@ public abstract class PossessableEntityMixin implements ProtoPossessable {
         if (possessor != null) possessor.calculateDimensions();
     }
 
-    @Inject(method = "saveToTag", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "saveNbt", at = @At("HEAD"), cancellable = true)
     private void cancelPossessableSave(NbtCompound tag, CallbackInfoReturnable<Boolean> cir) {
         if (this.isBeingPossessed()) {
             cir.setReturnValue(false);

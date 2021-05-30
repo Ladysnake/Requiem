@@ -65,7 +65,7 @@ public abstract class AbstractInventoryScreenMixin<T extends ScreenHandler> exte
 
     // ModifyVariable is only used to capture the local variable more easily
     // we cannot use INVOKE_ASSIGN and Iterator#next, because there is a hidden cast instruction
-    @ModifyVariable(method = "drawStatusEffectBackgrounds", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;color4f(FFFF)V"))
+    @ModifyVariable(method = "drawStatusEffectBackgrounds", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/AbstractInventoryScreen;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"))
     private StatusEffectInstance customizeDrawnBackground(StatusEffectInstance effect) {
         if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
             assert client != null;

@@ -52,11 +52,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LecternScreen.class)
 public abstract class LecternScreenMixin extends BookScreen {
 
-    @Shadow @Final private LecternScreenHandler container;
+    @Shadow @Final private LecternScreenHandler handler;
 
     @Inject(method = "updatePageProvider", at = @At("HEAD"), cancellable = true)
     private void updatePageProvider(CallbackInfo ci) {
-        ItemStack book = this.container.getBookItem();
+        ItemStack book = this.handler.getBookItem();
         Item bookItem = book.getItem();
         if (bookItem instanceof OpusDemoniumItem) {
             this.setPageProvider(new WritableBookContents(book));

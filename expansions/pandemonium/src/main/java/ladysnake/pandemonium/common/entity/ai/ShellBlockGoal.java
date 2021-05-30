@@ -57,7 +57,7 @@ import java.util.function.Predicate;
 
 public class ShellBlockGoal<E extends Entity> extends PlayerShellGoal {
     private final int searchRadius;
-    private final Class<? extends E> targetClass;
+    private final Class<E> targetClass;
     private final Comparator<E> comparator;
     private final Predicate<E> candidatePredicate;
     protected @Nullable E target;
@@ -78,7 +78,7 @@ public class ShellBlockGoal<E extends Entity> extends PlayerShellGoal {
         }
 
         Box box = Box.from(this.shell.getPos()).expand(searchRadius);
-        List<E> candidates = this.shell.world.getEntitiesIncludingUngeneratedChunks(
+        List<E> candidates = this.shell.world.getEntitiesByClass(
             this.targetClass,
             box,
             this.candidatePredicate

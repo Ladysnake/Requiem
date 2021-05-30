@@ -50,6 +50,7 @@ import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.PortalParticle;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
@@ -135,9 +136,9 @@ public final class RequiemClient implements ClientModInitializer {
     }
 
     private void registerEntityRenderers() {
-        EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_VILLAGER, (r, it) -> new CuredVillagerEntityRenderer(r, it.getResourceManager()));
-        EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_PIGLIN, (r, it) -> new CuredPiglinEntityRenderer(r, false));
-        EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_PIGLIN_BRUTE, (r, it) -> new CuredPiglinEntityRenderer(r, false));
+        EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_VILLAGER, CuredVillagerEntityRenderer::new);
+        EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_PIGLIN, (ctx) -> new CuredPiglinEntityRenderer(ctx, EntityModelLayers.PIGLIN, EntityModelLayers.PIGLIN_INNER_ARMOR, EntityModelLayers.PIGLIN_OUTER_ARMOR, false));
+        EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_PIGLIN_BRUTE, (ctx) -> new CuredPiglinEntityRenderer(ctx, EntityModelLayers.PIGLIN_BRUTE, EntityModelLayers.PIGLIN_BRUTE_INNER_ARMOR, EntityModelLayers.PIGLIN_BRUTE_OUTER_ARMOR, false));
     }
 
     private void initListeners() {

@@ -296,7 +296,7 @@ public class PlayerShellEntity extends GuidedFakePlayerEntity {
     protected void swapItem(PlayerEntity player, EquipmentSlot targetedSlot, ItemStack playerItemStack,
                             Hand hand) {
         ItemStack equippedStack = this.getEquippedStack(targetedSlot);
-        if (player.abilities.creativeMode && equippedStack.isEmpty() && !playerItemStack.isEmpty()) {
+        if (player.getAbilities().creativeMode && equippedStack.isEmpty() && !playerItemStack.isEmpty()) {
             ItemStack copy = playerItemStack.copy();
             copy.setCount(1);
             this.equipStack(targetedSlot, copy);

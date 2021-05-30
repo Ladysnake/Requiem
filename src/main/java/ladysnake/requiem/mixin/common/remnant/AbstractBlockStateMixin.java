@@ -39,6 +39,7 @@ import ladysnake.requiem.common.util.ExtendedShapeContext;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -54,13 +55,16 @@ public abstract class AbstractBlockStateMixin {
     @Shadow
     public abstract Block getBlock();
 
+    @Shadow
+    public abstract boolean isIn(Tag<Block> tag);
+
     @Inject(
         at = @At("HEAD"),
         method = "getCollisionShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/ShapeContext;)Lnet/minecraft/util/shape/VoxelShape;",
         cancellable = true
     )
     private void phaseThroughBlocks(BlockView world, BlockPos pos, ShapeContext context, CallbackInfoReturnable<VoxelShape> info) {
-        if (((ExtendedShapeContext) context).requiem_isNoClipping() && !this.getBlock().isIn(RequiemBlockTags.SOUL_IMPERMEABLE)) {
+        if (((ExtendedShapeContext) context).requiem_isNoClipping() && !this.isIn(RequiemBlockTags.SOUL_IMPERMEABLE)) {
             info.setReturnValue(VoxelShapes.empty());
         }
     }

@@ -36,14 +36,13 @@ package ladysnake.requiem.compat;
 
 import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import ladysnake.requiem.Requiem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
-public class ComponentDataHolder<C extends ComponentV3> implements Component {
+public class ComponentDataHolder<C extends Component> implements Component {
 
     protected final ComponentKey<C> dataKey;
     protected final ComponentKey<?> selfKey;

@@ -34,7 +34,9 @@
  */
 package ladysnake.pandemonium.common.entity.fakeplayer;
 
+import com.google.common.collect.ImmutableList;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
+import ladysnake.pandemonium.mixin.common.entity.EntityAccessor;
 import ladysnake.requiem.common.entity.attribute.PossessionDelegatingModifier;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -47,8 +49,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class FakePlayerGuide extends PathAwareEntity {
     protected final LivingEntity owner;
@@ -73,6 +73,7 @@ public class FakePlayerGuide extends PathAwareEntity {
 
     public void tickAi() {
         copyState(this.owner, this);
+        ((EntityAccessor) this).setPassengerList((ImmutableList<Entity>) this.owner.getPassengerList());
         this.despawnCounter = 0;
         this.setBoundingBox(this.owner.getBoundingBox());
         this.tickNewAi();
@@ -93,9 +94,9 @@ public class FakePlayerGuide extends PathAwareEntity {
         // TODO consider merging the following code with RequiemFx#setupRenderDelegate
         to.bodyYaw = from.bodyYaw;
         to.prevBodyYaw = from.prevBodyYaw;
-        to.yaw = from.yaw;
+        to.setYaw(from.getYaw());
         to.prevYaw = from.prevYaw;
-        to.pitch = from.pitch;
+        to.setPitch(from.getPitch());
         to.prevPitch = from.prevPitch;
         to.headYaw = from.headYaw;
         to.prevHeadYaw = from.prevHeadYaw;
@@ -139,11 +140,6 @@ public class FakePlayerGuide extends PathAwareEntity {
     @Override
     public void setJumping(boolean jumping) {
         this.owner.setJumping(jumping);
-    }
-
-    @Override
-    public List<Entity> getPassengerList() {
-        return this.owner.getPassengerList();
     }
 
     @Override

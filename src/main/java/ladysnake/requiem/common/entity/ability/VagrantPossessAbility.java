@@ -83,7 +83,7 @@ public class VagrantPossessAbility extends DirectAbilityBase<PlayerEntity, Livin
     protected void onCooldownEnd() {
         if (this.owner.world.isClient && this.owner == MinecraftClient.getInstance().player) {
             RequiemClient.INSTANCE.getRequiemFxRenderer().onPossessionAck();
-        } else if (this.action != null && this.target != null && !this.target.removed && this.target.isAlive()) {
+        } else if (this.action != null && this.target != null && !this.target.isRemoved() && this.target.isAlive()) {
             this.action.accept(this.target, this.owner);
         }
         this.action = null;

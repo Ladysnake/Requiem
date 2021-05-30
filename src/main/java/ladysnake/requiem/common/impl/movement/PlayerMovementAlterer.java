@@ -217,7 +217,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
     private static Vec3d getIntendedMovement(PlayerEntity player) {
         if (player instanceof ClientPlayerEntity) {
             float verticalMovement = (((ClientPlayerEntity) player).input.jumping ? 1 : 0) - (((ClientPlayerEntity) player).input.sneaking ? 1 : 0);
-            return EntityAccessor.requiem$invokeMovementInputToVelocity(new Vec3d(player.sidewaysSpeed, verticalMovement, player.forwardSpeed), 1, player.yaw);
+            return EntityAccessor.requiem$invokeMovementInputToVelocity(new Vec3d(player.sidewaysSpeed, verticalMovement, player.forwardSpeed), 1, player.getYaw());
         } else {
             return Vec3d.ZERO;
         }
@@ -232,7 +232,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
         updateSwimming();
 
         if (getActualFlightMode(config, body) == FORCED || this.noClipping) {
-            this.player.abilities.flying = true;
+            this.player.getAbilities().flying = true;
         }
         if (this.player.isOnGround() && shouldActuallyFlopOnLand(config, body) && this.player.world.getFluidState(this.player.getBlockPos()).isEmpty()) {
             this.player.jump();

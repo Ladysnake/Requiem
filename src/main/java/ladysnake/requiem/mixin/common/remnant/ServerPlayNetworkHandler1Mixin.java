@@ -32,22 +32,38 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.impl.inventory;
+package ladysnake.requiem.mixin.common.remnant;
 
-import ladysnake.requiem.api.v1.entity.InventoryLimiter;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.slot.Slot;
+import ladysnake.requiem.api.v1.event.minecraft.AllowUseEntityCallback;
+import net.minecraft.entity.Entity;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Hand;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Coerce;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-public class MainHandSlot extends Slot {
-    private final InventoryLimiter limiter;
+@Mixin(targets = "net/minecraft/server/network/ServerPlayNetworkHandler$1")
+public abstract class ServerPlayNetworkHandler1Mixin implements PlayerInteractEntityC2SPacket.Handler {
+    @SuppressWarnings("ShadowTarget")   // synthetic
+    @Shadow
+    public ServerPlayNetworkHandler field_28963;
 
-    public MainHandSlot(PlayerEntity owner, int x, int y) {
-        super(owner.getInventory(), 0, x, y);
-        limiter = InventoryLimiter.KEY.get(owner);
-    }
+    @SuppressWarnings("ShadowTarget")   // synthetic
+    @Shadow
+    public Entity field_28962;
 
-    @Override
-    public boolean doDrawHoveringEffect() {
-        return !limiter.isSlotLocked(PlayerInventoryLimiter.MAINHAND_SLOT) && limiter.getInventoryShape().hidesMainInventory();
+    @SuppressWarnings("InvalidInjectorMethodSignature")
+    @Inject(method = "processInteract", at = @At("HEAD"), cancellable = true)
+    private void onPlayerInteractEntity(Hand hand, @Coerce Object action, CallbackInfo ci) {
+        ServerWorld world = field_28963.getPlayer().getServerWorld();
+
+        if (!AllowUseEntityCallback.EVENT.invoker().allow(field_28963.getPlayer(), world, hand, field_28962)) {
+            ci.cancel();
+        }
     }
 }

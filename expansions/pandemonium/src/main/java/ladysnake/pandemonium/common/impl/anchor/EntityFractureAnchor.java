@@ -35,6 +35,7 @@
 package ladysnake.pandemonium.common.impl.anchor;
 
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
+import ladysnake.pandemonium.mixin.common.access.WorldChunkAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -43,8 +44,6 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.UUID;
 
 public class EntityFractureAnchor extends TrackedFractureAnchor {
@@ -79,8 +78,8 @@ public class EntityFractureAnchor extends TrackedFractureAnchor {
             }
         } else {
             WorldChunk chunk = (WorldChunk) this.manager.getWorld().getChunk(((int) this.x) >> 4, ((int) this.z) >> 4, ChunkStatus.FULL, false);
-            // In some circumstances, it seems that a chunk can be loaded without the entity being found in the world
-            if (chunk != null && Arrays.stream(chunk.getEntitySectionArray()).flatMap(Collection::stream).map(Entity::getUuid).noneMatch(this.entityUuid::equals)) {
+            // In some circumstances, it seems that a chunk can exist without its entities being found in the world
+            if (chunk != null && ((WorldChunkAccessor) chunk).isLoadedToWorld()) {
                 // chunk is loaded but entity not in it -- assume dead
                 this.invalidate();
             }

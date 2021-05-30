@@ -91,7 +91,7 @@ public abstract class ItemStackMixin implements OverridableItemStack {
     private void useOnEntity(PlayerEntity user, LivingEntity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         PlayerEntity possessor = ((Possessable) entity).getPossessor();
         if (possessor != null && PossessionComponent.get(possessor).canBeCured(((ItemStack) (Object) this))) {
-            if (!user.abilities.creativeMode) {
+            if (!user.getAbilities().creativeMode) {
                 this.decrement(1);
             }
 

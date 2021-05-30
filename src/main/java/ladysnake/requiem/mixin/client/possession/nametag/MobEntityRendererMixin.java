@@ -36,7 +36,7 @@ package ladysnake.requiem.mixin.client.possession.nametag;
 
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.common.gamerule.RequiemSyncedGamerules;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -49,8 +49,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MobEntityRenderer.class)
 public abstract class MobEntityRendererMixin<T extends MobEntity, M extends EntityModel<T>> extends LivingEntityRenderer<T, M> {
-    public MobEntityRendererMixin(EntityRenderDispatcher dispatcher, M model, float shadowRadius) {
-        super(dispatcher, model, shadowRadius);
+    public MobEntityRendererMixin(EntityRendererFactory.Context ctx, M model, float shadowRadius) {
+        super(ctx, model, shadowRadius);
     }
 
     @Inject(method = "hasLabel", at = @At("HEAD"), cancellable = true)

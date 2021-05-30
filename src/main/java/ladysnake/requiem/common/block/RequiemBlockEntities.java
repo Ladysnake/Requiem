@@ -35,11 +35,12 @@
 package ladysnake.requiem.common.block;
 
 import ladysnake.requiem.Requiem;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.registry.Registry;
 
 public final class RequiemBlockEntities {
-    public static final BlockEntityType<RunicObsidianBlockEntity> RUNIC_OBSIDIAN = BlockEntityType.Builder.create(RunicObsidianBlockEntity::new, RequiemBlocks.RUNIC_OBSIDIAN_ATTRITION).build(null);
+    public static final BlockEntityType<RunicObsidianBlockEntity> RUNIC_OBSIDIAN = FabricBlockEntityTypeBuilder.create(RunicObsidianBlockEntity::new, RequiemBlocks.RUNIC_OBSIDIAN_ATTRITION).build(null);
 
     public static void init() {
         register("runic_obsidian", RUNIC_OBSIDIAN);

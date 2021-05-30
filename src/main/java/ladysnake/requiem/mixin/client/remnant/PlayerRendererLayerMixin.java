@@ -69,7 +69,7 @@ public abstract class PlayerRendererLayerMixin extends LivingEntityRendererMixin
                 if (RequiemConfig.graphics.fancyDemonRender) {
                     return RequiemClient.INSTANCE.getShadowPlayerFxRenderer().getRenderLayer(base);
                 } else {
-                    return RenderLayer.getEndPortal(0);
+                    return RenderLayer.getEndPortal();
                 }
             }
         }

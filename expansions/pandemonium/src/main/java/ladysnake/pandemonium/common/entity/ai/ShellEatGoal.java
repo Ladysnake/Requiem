@@ -62,7 +62,7 @@ public class ShellEatGoal extends PlayerShellGoal {
     @Override
     public void start() {
         if (this.hotbarSlot >= 0) {
-            this.previousSlot = this.shell.inventory.selectedSlot;
+            this.previousSlot = this.shell.getInventory().selectedSlot;
             this.shell.selectHotbarSlot(this.hotbarSlot);
             this.shell.useItem(Hand.MAIN_HAND);
         } else {

@@ -36,11 +36,13 @@ package ladysnake.requiem.mixin.common.opus;
 
 import ladysnake.requiem.common.item.DemonSoulVesselItem;
 import ladysnake.requiem.common.item.OpusDemoniumItem;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.LecternBlockEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -51,9 +53,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class LecternBlockEntityMixin extends BlockEntity {
     @Shadow private ItemStack book;
 
-    public LecternBlockEntityMixin(BlockEntityType<?> type) {
-        super(type);
+    public LecternBlockEntityMixin(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
+
 
     @Inject(method = "hasBook", at = @At("RETURN"), cancellable = true)
     private void hasBook(CallbackInfoReturnable<Boolean> cir) {

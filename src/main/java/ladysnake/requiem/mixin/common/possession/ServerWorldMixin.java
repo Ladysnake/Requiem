@@ -37,21 +37,19 @@ package ladysnake.requiem.mixin.common.possession;
 import ladysnake.requiem.api.v1.internal.ProtoPossessable;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.world.ServerEntityManager;
+import net.minecraft.world.entity.EntityLike;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
-
-@Mixin(ServerWorld.class)
+@Mixin(ServerEntityManager.class)
 public abstract class ServerWorldMixin {
-    @Inject(method = "loadEntityUnchecked", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerChunkManager;loadEntity(Lnet/minecraft/entity/Entity;)V", shift = AFTER))
-    private void possessLoadedEntities(Entity entity, CallbackInfo ci) {
+    @Inject(method = "addEntity(Lnet/minecraft/world/entity/EntityLike;Z)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/EntityTrackingStatus;shouldTrack()Z"))
+    private void possessLoadedEntities(EntityLike entity, boolean existing, CallbackInfoReturnable<Boolean> cir) {
         PlayerEntity possessor = ((ProtoPossessable) entity).getPossessor();
 
         if (possessor != null && entity instanceof MobEntity) {

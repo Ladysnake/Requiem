@@ -10,6 +10,7 @@
     "access.LivingEntityAccessor",
     "access.LootContextTypesAccessor",
     "access.ProjectileEntityAccessor",
+    "access.ShulkerEntityAccessor",
     "access.StatusEffectAccessor",
     "attrition.EffectCommandMixin",
     "attrition.LivingEntityMixin",
@@ -51,6 +52,7 @@
     "possession.gameplay.ZombieVillagerEntityMixin",
     "possession.possessed.BowItemMixin",
     "possession.possessed.BrainMixin",
+    "possession.possessed.EntityLikeMixin",
     "possession.possessed.IronGolemEntityMixin",
     "possession.possessed.PossessableEntityMixin",
     "possession.possessed.PossessableLivingEntityMixin",
@@ -73,6 +75,7 @@
     "remnant.LivingEntityMixin",
     "remnant.PlayerEntityMixin",
     "remnant.ServerPlayerEntityMixin",
+    "remnant.ServerPlayNetworkHandler1Mixin",
     "remnant.ServerPlayNetworkHandlerMixin",
     "remnant.ShapeContextMixin",
     "remnant.TargetPredicateMixin"

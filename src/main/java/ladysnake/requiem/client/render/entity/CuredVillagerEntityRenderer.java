@@ -35,17 +35,16 @@
 package ladysnake.requiem.client.render.entity;
 
 import ladysnake.requiem.Requiem;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.VillagerEntityRenderer;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.util.Identifier;
 
 public class CuredVillagerEntityRenderer extends VillagerEntityRenderer {
     private static final Identifier TEXTURE = Requiem.id("textures/entity/cured_villager.png");
 
-    public CuredVillagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ReloadableResourceManager resourceManager) {
-        super(entityRenderDispatcher, resourceManager);
+    public CuredVillagerEntityRenderer(EntityRendererFactory.Context ctx) {
+        super(ctx);
     }
 
     @Override

@@ -50,7 +50,7 @@ public abstract class BetterGravesMixin {
     @Inject(method = "placeGrave", at = @At("HEAD"), cancellable = true, remap = false)
     private static void preventGravePlacement(BlockPos deathLocation, ServerPlayerEntity player, ServerWorld world, DamageSource deathBlow, CallbackInfo ci) {
         if (player.isAlive() && RemnantComponent.isVagrant(player)) {
-            player.inventory.dropAll();
+            player.getInventory().dropAll();
             ci.cancel();
         }
     }

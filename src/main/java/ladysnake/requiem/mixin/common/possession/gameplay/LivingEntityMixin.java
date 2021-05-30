@@ -65,13 +65,7 @@ public abstract class LivingEntityMixin extends Entity {
     public abstract double getAttributeValue(EntityAttribute attribute);
 
     @Shadow
-    public abstract void travel(Vec3d movementInput);
-
-    @Shadow
-    public abstract void method_29242(LivingEntity livingEntity, boolean bl);
-
-    @Shadow
-    public float sidewaysSpeed;
+    public abstract void updateLimbs(LivingEntity livingEntity, boolean bl);
 
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);

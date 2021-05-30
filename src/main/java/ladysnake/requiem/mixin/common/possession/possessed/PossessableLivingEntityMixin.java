@@ -138,7 +138,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     @Nullable
     @Override
     public PlayerEntity getPossessor() {
-        if (this.possessor != null && this.possessor.removed) {
+        if (this.possessor != null && this.possessor.isRemoved()) {
             PossessionComponent.get(this.possessor).stopPossessing();
             // Make doubly sure
             this.setPossessor(null);
@@ -148,7 +148,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
 
     @Override
     public boolean canBePossessedBy(PlayerEntity player) {
-        return !this.removed && this.getHealth() > 0 && (this.possessor == null || this.possessor.getUuid().equals(player.getUuid()));
+        return !this.isRemoved() && this.getHealth() > 0 && (this.possessor == null || this.possessor.getUuid().equals(player.getUuid()));
     }
 
     @Override
@@ -248,8 +248,8 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
         PlayerEntity player = this.getPossessor();
         // If anyone has a better idea for immovable mobs, tell me
         if (player != null) {
-            this.setRotation(player.yaw, player.pitch);
-            this.headYaw = this.bodyYaw = this.prevYaw = this.yaw;
+            this.setRotation(player.getYaw(), player.getPitch());
+            this.headYaw = this.bodyYaw = this.prevYaw = this.getYaw();
             if (!this.requiem_immovable) {
                 this.setSwimming(player.isSwimming());
                 // Prevent this entity from taking fall damage unless triggered by the possessor
@@ -320,15 +320,15 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     }
 
     @Inject(method = "onStatusEffectApplied", at = @At("RETURN"))
-    private void onStatusEffectAdded(StatusEffectInstance effect, CallbackInfo ci) {
+    private void onStatusEffectAdded(StatusEffectInstance effect, Entity entity, CallbackInfo ci) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor instanceof ServerPlayerEntity) {
             possessor.addStatusEffect(new StatusEffectInstance(effect));
         }
     }
     @Inject(method = "onStatusEffectUpgraded", at = @At("RETURN"))
-    private void onStatusEffectUpdated(StatusEffectInstance effect, boolean upgrade, CallbackInfo ci) {
-        if (upgrade) {
+    private void onStatusEffectUpdated(StatusEffectInstance effect, boolean reapplyEffect, Entity entity, CallbackInfo ci) {
+        if (reapplyEffect) {
             PlayerEntity possessor = this.getPossessor();
             if (possessor instanceof ServerPlayerEntity) {
                 possessor.addStatusEffect(new StatusEffectInstance(effect));
@@ -367,10 +367,10 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
      * Knockback
      */
     @Inject(method = "takeKnockback", at = @At("HEAD"), cancellable = true)
-    private void knockback(float vx, double vy, double vz, CallbackInfo ci) {
+    private void knockback(double strength, double x, double z, CallbackInfo ci) {
         PlayerEntity possessing = getPossessor();
         if (possessing != null) {
-            possessing.takeKnockback(vx, vy, vz);
+            possessing.takeKnockback(strength, x, z);
             ci.cancel();
         }
     }

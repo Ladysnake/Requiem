@@ -63,7 +63,7 @@ public class ShellRevengeGoal extends RevengeGoal {
         Box box = Box.from(this.mob.getPos()).expand(d, 10.0D, d);
         UUID ownerUuid = this.shell.getOwnerUuid();
 
-        for (LivingEntity e : this.mob.world.getEntitiesIncludingUngeneratedChunks(LivingEntity.class, box)) {
+        for (LivingEntity e : this.mob.world.getEntitiesByClass(LivingEntity.class, box, e -> true)) {
             if (isFriendlyShell(ownerUuid, e)) {
                 this.setMobEntityTarget(((PlayerShellEntity) e).getGuide(), target);
             } else if (isPet(ownerUuid, e)) {

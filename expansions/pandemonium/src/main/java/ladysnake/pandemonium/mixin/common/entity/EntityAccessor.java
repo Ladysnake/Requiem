@@ -34,14 +34,17 @@
  */
 package ladysnake.pandemonium.mixin.common.entity;
 
+import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
-import org.spongepowered.asm.mixin.injection.Inject;
 
 @Mixin(Entity.class)
 public interface EntityAccessor {
     @Accessor
     void setType(EntityType<?> type);
+
+    @Accessor
+    void setPassengerList(ImmutableList<Entity> passengerList);
 }

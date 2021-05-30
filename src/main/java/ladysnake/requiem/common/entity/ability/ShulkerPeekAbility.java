@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.common.entity.ability;
 
+import ladysnake.requiem.mixin.common.access.ShulkerEntityAccessor;
 import net.minecraft.entity.mob.ShulkerEntity;
 
 public class ShulkerPeekAbility extends IndirectAbilityBase<ShulkerEntity> {
@@ -44,10 +45,10 @@ public class ShulkerPeekAbility extends IndirectAbilityBase<ShulkerEntity> {
     @Override
     public boolean run() {
         if (!this.owner.world.isClient) {
-            if (this.owner.getPeekAmount() > 0) {
-                this.owner.setPeekAmount(0);
+            if (((ShulkerEntityAccessor) this.owner).requiem$getPeekAmount() > 0) {
+                ((ShulkerEntityAccessor) this.owner).requiem$setPeekAmount(0);
             } else {
-                this.owner.setPeekAmount(100);
+                ((ShulkerEntityAccessor) this.owner).requiem$setPeekAmount(100);
             }
         }
         return true;

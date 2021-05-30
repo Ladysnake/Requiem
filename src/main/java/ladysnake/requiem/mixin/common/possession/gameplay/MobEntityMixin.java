@@ -70,11 +70,11 @@ public abstract class MobEntityMixin extends LivingEntityMixin implements Posses
                 return movementInput;
             }
 
-            this.yaw = livingEntity.yaw;
-            this.prevYaw = this.yaw;
-            this.pitch = livingEntity.pitch * 0.5F;
-            this.setRotation(this.yaw, this.pitch);
-            this.bodyYaw = this.yaw;
+            this.setYaw(livingEntity.getYaw());
+            this.prevYaw = this.getYaw();
+            this.setPitch(livingEntity.getPitch() * 0.5F);
+            this.setRotation(this.getYaw(), this.getPitch());
+            this.bodyYaw = this.getYaw();
             this.headYaw = this.bodyYaw;
             float sidewaysSpeed = livingEntity.sidewaysSpeed * 0.5F;
             float forwardSpeed = livingEntity.forwardSpeed;
@@ -95,6 +95,6 @@ public abstract class MobEntityMixin extends LivingEntityMixin implements Posses
 
     @Override
     protected void requiem$travelEnd(Vec3d movementInput, CallbackInfo ci) {
-        this.method_29242((LivingEntity) (Object) this, false);
+        this.updateLimbs((LivingEntity) (Object) this, false);
     }
 }

@@ -119,7 +119,7 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
         }
     }
 
-    @Inject(method = "method_29243", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"), locals = LocalCapture.CAPTURE_FAILSOFT)
+    @Inject(method = "convertTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private <T extends MobEntity> void possessConvertedZombie(EntityType<T> type, boolean bl, CallbackInfoReturnable<T> ci, T converted) {
         PossessedDataImpl.onMobConverted((MobEntity) (Object) this, converted);
     }

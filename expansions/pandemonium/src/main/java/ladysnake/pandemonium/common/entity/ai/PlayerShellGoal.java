@@ -56,7 +56,7 @@ public abstract class PlayerShellGoal extends Goal {
         }
 
         for (int slot = 0; slot < 9; slot++) {
-            if (stackPredicate.test(this.shell.inventory.getStack(slot))) {
+            if (stackPredicate.test(this.shell.getInventory().getStack(slot))) {
                 hotbarSlot = slot;
                 return true;
             }

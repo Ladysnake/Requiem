@@ -106,11 +106,7 @@ public abstract class PlayerManagerMixin {
 
         if (!player.isPossessing()) {
             Requiem.LOGGER.warn("Couldn't reattach possessed entity to player");
-            world.removeEntity(possessedEntityMount);
-
-            for (Entity entity : possessedEntityMount.getPassengersDeep()) {
-                world.removeEntity(entity);
-            }
+            possessedEntityMount.streamPassengersAndSelf().forEach(e -> e.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER));
         }
     }
 
@@ -127,11 +123,8 @@ public abstract class PlayerManagerMixin {
         Entity possessedEntity = PossessionComponent.get(player).getPossessedEntity();
         if (possessedEntity != null) {
             ServerWorld world = player.getServerWorld();
-            world.removeEntity(possessedEntity);
-            for (Entity ridden : possessedEntity.getPassengersDeep()) {
-                world.removeEntity(ridden);
-            }
-            world.getChunk(player.chunkX, player.chunkZ).markDirty();
+            possessedEntity.streamPassengersAndSelf().forEach(e -> e.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER));
+            world.getChunk(player.getChunkPos().x, player.getChunkPos().z).markDirty();
         }
     }
 }

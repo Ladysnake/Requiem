@@ -91,7 +91,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     private void addSupercrafterButton(CallbackInfo ci) {
         MobEntity possessedEntity = this.possessionComponent.getPossessedEntity();
         if (possessedEntity != null && RequiemEntityTypeTags.SUPERCRAFTERS.contains(possessedEntity.getType())) {
-            this.supercrafterButton = this.addButton(new TexturedButtonWidget(
+            this.supercrafterButton = this.addDrawableChild(new TexturedButtonWidget(
                 this.x + 131,
                 this.height / 2 - 22,
                 20,
@@ -138,7 +138,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
         this.limiter.getInventoryShape().tearDownEntityCrop();
     }
 
-    @ModifyArg(method = "drawBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/texture/TextureManager;bindTexture(Lnet/minecraft/util/Identifier;)V"))
+    @ModifyArg(method = "drawBackground", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderTexture(ILnet/minecraft/util/Identifier;)V"))
     private Identifier swapBackground(Identifier background) {
         return this.limiter.getInventoryShape().swapBackground(background);
     }

@@ -34,26 +34,24 @@
  */
 package ladysnake.pandemonium.common.entity.ability;
 
+import ladysnake.pandemonium.common.entity.internal.SpellcastingIllagerAccess;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
 import ladysnake.requiem.common.util.reflection.ReflectionHelper;
-import ladysnake.requiem.common.util.reflection.UnableToFindMethodException;
 import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.EvokerEntity;
-import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEntity> {
-    private static final Constructor<? extends SpellcastingIllagerEntity.CastSpellGoal> FANGS_GOAL_FACTORY;
-    private static final Method CAST_SPELL_GOAL$CAST_SPELL;
+    private static final Constructor<? extends Goal> FANGS_GOAL_FACTORY;
     public static final int FANG_COOLDOWN = 40;
     public static final int HOSTILE_TIME = 200;
 
-    private final SpellcastingIllagerEntity.CastSpellGoal conjureFangsGoal;
+    private final Goal conjureFangsGoal;
     private int hostileTime;
 
     public EvokerFangAbility(EvokerEntity owner) {
@@ -75,7 +73,7 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEnt
 
         if (this.conjureFangsGoal.canStart()) {
             this.castSpell();
-            this.owner.setSpell(SpellcastingIllagerEntity.Spell.FANGS);
+            this.owner.setSpell(SpellcastingIllagerAccess.SPELL_FANGS);
             this.beginCooldown();
             return true;
         } else {
@@ -98,7 +96,7 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEnt
 
     private void castSpell() {
         try {
-            CAST_SPELL_GOAL$CAST_SPELL.invoke(conjureFangsGoal);
+            SpellcastingIllagerAccess.CAST_SPELL_GOAL$CAST_SPELL.invoke(conjureFangsGoal);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new UncheckedReflectionException("Failed to trigger evoker fang ability", e);
         }
@@ -107,11 +105,11 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEnt
     @Override
     public void onCooldownEnd() {
         if (!this.owner.world.isClient) {
-            this.owner.setSpell(SpellcastingIllagerEntity.Spell.NONE);
+            this.owner.setSpell(SpellcastingIllagerAccess.SPELL_NONE);
         }
     }
 
-    private static SpellcastingIllagerEntity.CastSpellGoal makeGoal(EvokerEntity owner) {
+    private static Goal makeGoal(EvokerEntity owner) {
         try {
             return FANGS_GOAL_FACTORY.newInstance(owner);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -121,14 +119,11 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEnt
 
     static {
         try {
-            CAST_SPELL_GOAL$CAST_SPELL = ReflectionHelper.findMethodFromIntermediary(SpellcastingIllagerEntity.CastSpellGoal.class, "method_7148", void.class);
-            Class<? extends SpellcastingIllagerEntity.CastSpellGoal> clazz = ReflectionHelper.findClass("net.minecraft.class_1564$class_1565");
+            Class<? extends Goal> clazz = ReflectionHelper.findClass("net.minecraft.class_1564$class_1565");
             FANGS_GOAL_FACTORY = clazz.getDeclaredConstructor(EvokerEntity.class);
             FANGS_GOAL_FACTORY.setAccessible(true);
         } catch (ClassNotFoundException e) {
             throw new UncheckedReflectionException("Could not find the ConjureFangsGoal class", e);
-        } catch (UnableToFindMethodException e) {
-            throw new UncheckedReflectionException("Could not find the castSpell method", e);
         } catch (NoSuchMethodException e) {
             throw new UncheckedReflectionException("Could not find the ConjureFangsGoal constructor", e);
         }

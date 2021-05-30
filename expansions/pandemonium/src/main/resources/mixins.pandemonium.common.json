@@ -3,6 +3,7 @@
   "package": "ladysnake.pandemonium.mixin.common",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "access.WorldChunkAccessor",
     "entity.EntityAccessor",
     "entity.PersistentProjectileEntityAccessor",
     "entity.ai.MemoryModuleTypeAccessor",

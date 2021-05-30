@@ -88,9 +88,9 @@ public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEv
     public static void setupRenderDelegate(LivingEntity rendered, LivingEntity delegate) {
         delegate.bodyYaw = rendered.bodyYaw;
         delegate.prevBodyYaw = rendered.prevBodyYaw;
-        delegate.yaw = rendered.yaw;
+        delegate.setYaw(rendered.getYaw());
         delegate.prevYaw = rendered.prevYaw;
-        delegate.pitch = rendered.pitch;
+        delegate.setPitch(rendered.getPitch());
         delegate.prevPitch = rendered.prevPitch;
         delegate.headYaw = rendered.headYaw;
         delegate.prevHeadYaw = rendered.prevHeadYaw;

@@ -13,6 +13,7 @@ plugins {
     id 'com.github.breadmoirai.github-release' version '2.2.12'
     id 'com.modrinth.minotaur' version '1.2.1'
     id 'maven-publish'
+    id 'java-library'
 }
 
 group = rootProject.maven_group
@@ -24,6 +25,7 @@ subprojects {
     apply plugin: 'maven-publish'
     apply plugin: 'org.cadixdev.licenser'
     apply plugin: 'com.jfrog.artifactory'
+    apply plugin: 'java-library'
 }
 
 allprojects {
@@ -178,7 +180,7 @@ repositories {
 }
 
 dependencies {
-    implementation project(":requiem-api")
+    api project(":requiem-api")
     // including too early causes a circular dependency somehow
     afterEvaluate {
         include project(":requiem-api")
@@ -212,9 +214,9 @@ dependencies {
     modRuntime ("me.shedaniel.cloth:cloth-config-fabric:${cloth_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
-//    modCompileOnly ("me.shedaniel.cloth:fiber2cloth:${f2c_version}") { transitive = false }
-//    modRuntime ("me.shedaniel.cloth:fiber2cloth:${f2c_version}") { transitive = false }
-//    include ("me.shedaniel.cloth:fiber2cloth:${f2c_version}") { transitive = false }
+    modCompileOnly ("com.github.pyrofab:fibertocloth:${f2c_version}") { transitive = false }
+    modRuntime ("com.github.pyrofab:fibertocloth:${f2c_version}") { transitive = false }
+    include ("com.github.pyrofab:fibertocloth:${f2c_version}") { transitive = false }
 
     // Extra compatibility dependencies
 //    modRuntime curse.resolve('immersive-portals-mod', 2845123)

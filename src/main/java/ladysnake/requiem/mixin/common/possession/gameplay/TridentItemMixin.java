@@ -60,8 +60,8 @@ public abstract class TridentItemMixin extends Item {
 
     @Inject(method = "onStoppedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/TridentEntity;setProperties(Lnet/minecraft/entity/Entity;FFFFF)V"))
     private void giveDrownedInfinity(ItemStack stack, World world, LivingEntity user, int ticks, CallbackInfo ci) {
-        if (PossessionComponent.getPossessedEntity(user) instanceof DrownedEntity && RANDOM.nextFloat() < 0.8f) {
-            PlayerAbilities abilities = ((PlayerEntity) user).abilities;
+        if (PossessionComponent.getPossessedEntity(user) instanceof DrownedEntity && world.getRandom().nextFloat() < 0.8f) {
+            PlayerAbilities abilities = ((PlayerEntity) user).getAbilities();
             if (!abilities.creativeMode) {
                 // Makes the trident not consume the item
                 abilities.creativeMode = true;
@@ -73,7 +73,7 @@ public abstract class TridentItemMixin extends Item {
     @Inject(method = "onStoppedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;incrementStat(Lnet/minecraft/stat/Stat;)V"))
     private void revertCreativeMode(ItemStack stack, World world, LivingEntity user, int ticks, CallbackInfo ci) {
         if (REVERT_CREATIVE_MODE.get()) {
-            ((PlayerEntity)user).abilities.creativeMode = false;
+            ((PlayerEntity)user).getAbilities().creativeMode = false;
             REVERT_CREATIVE_MODE.set(false);
         }
     }

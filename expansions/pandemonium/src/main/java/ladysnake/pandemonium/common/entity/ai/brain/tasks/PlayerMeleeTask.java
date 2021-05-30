@@ -91,7 +91,7 @@ public class PlayerMeleeTask extends Task<FakeServerPlayerEntity> {
     }
 
     private boolean isHoldingRangedWeapon(PlayerEntity player) {
-        return player.isHolding((item) -> item instanceof RangedWeaponItem);
+        return player.isHolding((item) -> item.getItem() instanceof RangedWeaponItem);
     }
 
     private LivingEntity getAttackTarget(LivingEntity executor) {

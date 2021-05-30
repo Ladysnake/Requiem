@@ -39,7 +39,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 
 import java.util.Optional;
@@ -59,13 +58,14 @@ public class LivingForgetAttackTargetTask<E extends LivingEntity> extends Task<E
 
     @Override
     protected void run(ServerWorld serverWorld, E mobEntity, long l) {
-        if (cannotReachTarget(mobEntity)) {
+        LivingEntity livingEntity = this.getAttackTarget(mobEntity);
+        if (!livingEntity.canTakeDamage()) {
+            this.forgetAttackTarget(mobEntity);
+        } else if (cannotReachTarget(mobEntity)) {
             this.forgetAttackTarget(mobEntity);
         } else if (this.isAttackTargetDead(mobEntity)) {
             this.forgetAttackTarget(mobEntity);
         } else if (this.isAttackTargetInAnotherWorld(mobEntity)) {
-            this.forgetAttackTarget(mobEntity);
-        } else if (!EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(this.getAttackTarget(mobEntity))) {
             this.forgetAttackTarget(mobEntity);
         } else if (this.alternativeCondition.test(this.getAttackTarget(mobEntity))) {
             this.forgetAttackTarget(mobEntity);

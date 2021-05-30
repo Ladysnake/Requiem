@@ -132,9 +132,9 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
 
         if (possessionComponent.isPossessing()) {
             MobEntity current = possessionComponent.getPossessedEntity();
-            if (current != null && !current.removed) {
+            if (current != null && !current.isRemoved()) {
                 this.setResurrectionEntity(current);
-                current.remove();
+                current.remove(RemovalReason.UNLOADED_WITH_PLAYER);
             }
         }
     }
@@ -151,12 +151,12 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
 
     @Inject(method = "copyFrom", at = @At("RETURN"))
     private void clonePlayer(ServerPlayerEntity original, boolean fromEnd, CallbackInfo ci) {
-        // We can safely cast a class to a mixin from another mixin
+        // We can safely cast a class to a mixin from that same mixin
         //noinspection ConstantConditions
         this.requiem_possessedEntityTag = ((PossessorServerPlayerEntityMixin) (Object) original).requiem_possessedEntityTag;
 
         if (this.requiem_possessedEntityTag != null) {
-            this.inventory.clone(original.inventory);
+            this.getInventory().clone(original.getInventory());
         }
     }
 
@@ -170,7 +170,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
     }
 
     @Inject(method = "onStatusEffectApplied", at = @At("RETURN"))
-    private void onStatusEffectAdded(StatusEffectInstance effect, CallbackInfo ci) {
+    private void onStatusEffectAdded(StatusEffectInstance effect, Entity entity, CallbackInfo ci) {
         MobEntity possessed = PossessionComponent.get(this).getPossessedEntity();
 
         if (possessed != null) {
@@ -199,7 +199,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
     }
 
 
-    @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
+    @Inject(method = "writeCustomDataToNbt", at = @At("RETURN"))
     private void writePossessedMobToTag(NbtCompound tag, CallbackInfo info) {
         Entity possessedEntity = PossessionComponent.get(this).getPossessedEntity();
 

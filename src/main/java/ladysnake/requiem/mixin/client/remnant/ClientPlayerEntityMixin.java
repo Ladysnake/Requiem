@@ -93,7 +93,7 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Re
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;setSprinting(Z)V", ordinal = 0)
     )
     private boolean continueFlyingLikeSuperman(boolean value) {
-        if (this.abilities.flying && this.input.movementForward > 0F && this.isSprinting() && RemnantComponent.get(this).isIncorporeal()) {
+        if (this.getAbilities().flying && this.input.movementForward > 0F && this.isSprinting() && RemnantComponent.get(this).isIncorporeal()) {
             return true;
         }
         return value;

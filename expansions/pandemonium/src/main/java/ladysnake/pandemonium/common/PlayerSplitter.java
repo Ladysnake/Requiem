@@ -37,6 +37,9 @@ package ladysnake.pandemonium.common;
 import com.mojang.authlib.GameProfile;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
+import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
+import dev.onyxstudios.cca.internal.base.AbstractComponentContainer;
+import dev.onyxstudios.cca.internal.entity.SwitchablePlayerEntity;
 import io.github.ladysnake.impersonate.Impersonator;
 import ladysnake.pandemonium.Pandemonium;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
@@ -49,9 +52,6 @@ import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.remnant.RemnantTypes;
-import nerdhub.cardinal.components.api.util.EntityComponents;
-import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
-import nerdhub.cardinal.components.api.util.container.AbstractComponentContainer;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
@@ -69,12 +69,17 @@ import java.util.Set;
 
 public final class PlayerSplitter {
     public static boolean split(ServerPlayerEntity whole) {
-        if (!RemnantComponent.isVagrant(whole) && PlayerShellEvents.PRE_SPLIT.invoker().canSplit(whole)) {
+        if (isReadyForSplit(whole) && PlayerShellEvents.PRE_SPLIT.invoker().canSplit(whole)) {
             doSplit(whole);
             return true;
         }
 
         return false;
+    }
+
+    private static boolean isReadyForSplit(ServerPlayerEntity whole) {
+        return !RemnantComponent.isVagrant(whole)
+            && !((SwitchablePlayerEntity) whole).cca$isSwitchingCharacter();
     }
 
     private static void doSplit(ServerPlayerEntity whole) {
@@ -114,14 +119,14 @@ public final class PlayerSplitter {
     private static void doMerge(PlayerShellEntity shell, ServerPlayerEntity soul) {
         Entity mount = shell.getVehicle();
         shell.stopRiding();
-        soul.inventory.dropAll();
+        soul.getInventory().dropAll();
         // Note: the teleport request must be before deserialization, as it only encodes the required relative movement
-        soul.networkHandler.requestTeleport(shell.getX(), shell.getY(), shell.getZ(), shell.yaw, shell.pitch, EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
+        soul.networkHandler.requestTeleport(shell.getX(), shell.getY(), shell.getZ(), shell.getYaw(), shell.getPitch(), EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
         // override common data that may have been altered during this shell's existence
         performNbtCopy(computeCopyNbt(shell), soul);
         PlayerShellEvents.DATA_TRANSFER.invoker().transferData(shell, soul, true);
 
-        shell.remove();
+        shell.remove(Entity.RemovalReason.DISCARDED);
         if (mount != null) soul.startRiding(mount);
 
         GameProfile shellProfile = shell.getDisplayProfile();
@@ -144,8 +149,8 @@ public final class PlayerSplitter {
 
         try {
             keepInventory.set(false, player.getServer());
+            ((SwitchablePlayerEntity) player).cca$markAsSwitchingCharacter();
 
-            //Setup location for dummy
             ServerPlayerEntity clone = player.getServerWorld().getServer().getPlayerManager().respawnPlayer(player, false);
             clone.setSpawnPoint(dimension, blockPos, angle, spawnPointSet, false);
             player.networkHandler.player = clone;
@@ -170,7 +175,7 @@ public final class PlayerSplitter {
 
         for (ComponentKey<?> key : keys) {
             String keyId = key.getId().toString();
-            if (EntityComponents.getRespawnCopyStrategy(key) == RespawnCopyStrategy.ALWAYS_COPY) {
+            if (RespawnCopyStrategy.get(key) == RespawnCopyStrategy.ALWAYS_COPY) {
                 // avoid duplicating soulbound data
                 leftoverComponents.remove(keyId);
             }

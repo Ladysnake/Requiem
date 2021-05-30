@@ -37,7 +37,13 @@ package ladysnake.pandemonium.common.entity.ai.brain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
-import ladysnake.pandemonium.common.entity.ai.brain.tasks.*;
+import ladysnake.pandemonium.common.entity.ai.brain.tasks.LivingApproachTargetTask;
+import ladysnake.pandemonium.common.entity.ai.brain.tasks.LivingForgetAttackTargetTask;
+import ladysnake.pandemonium.common.entity.ai.brain.tasks.LivingUpdateAttackTargetTask;
+import ladysnake.pandemonium.common.entity.ai.brain.tasks.PlayerGoHomeTask;
+import ladysnake.pandemonium.common.entity.ai.brain.tasks.PlayerLookAroundTask;
+import ladysnake.pandemonium.common.entity.ai.brain.tasks.PlayerMeleeTask;
+import ladysnake.pandemonium.common.entity.ai.brain.tasks.PlayerWanderAroundTask;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -47,7 +53,7 @@ import net.minecraft.entity.ai.brain.task.TimeLimitedTask;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.IntRange;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 import java.util.Optional;
 
@@ -71,7 +77,7 @@ public final class PlayerShellBrain {
         brain.setTaskList(Activity.IDLE, 10, ImmutableList.of(
             new PlayerGoHomeTask(MemoryModuleType.HOME, 1f, 10, 5000),  // TODO fix the attempt thing
             new LivingUpdateAttackTargetTask<>(PlayerShellBrain::canFight, PlayerShellBrain::getPriorityAttackTarget),
-            new TimeLimitedTask<>(new FollowMobTask(8.0F), IntRange.between(30, 60))
+            new TimeLimitedTask<>(new FollowMobTask(8.0F), UniformIntProvider.create(30, 60))
         ));
     }
 

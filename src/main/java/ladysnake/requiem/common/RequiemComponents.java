@@ -36,6 +36,7 @@ package ladysnake.requiem.common;
 
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
+import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import dev.onyxstudios.cca.api.v3.scoreboard.ScoreboardComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.scoreboard.ScoreboardComponentInitializer;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
@@ -67,7 +68,6 @@ import ladysnake.requiem.common.impl.remnant.RemnantComponentImpl;
 import ladysnake.requiem.common.impl.remnant.RevivingDeathSuspender;
 import ladysnake.requiem.common.impl.remnant.SimpleAttritionFocus;
 import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
-import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
@@ -98,7 +98,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
 
     @Override
     public void registerScoreboardComponentFactories(ScoreboardComponentFactoryRegistry registry) {
-        registry.registerForScoreboards(AttritionFocus.KEY, GlobalAttritionFocus.class, (sc, server) -> new GlobalAttritionFocus(server));
-        registry.registerForScoreboards(RequiemSyncedGamerules.KEY, (scoreboard, server) -> new RequiemSyncedGamerules(server));
+        registry.registerScoreboardComponent(AttritionFocus.KEY, GlobalAttritionFocus.class, (sc, server) -> new GlobalAttritionFocus(server));
+        registry.registerScoreboardComponent(RequiemSyncedGamerules.KEY, (scoreboard, server) -> new RequiemSyncedGamerules(server));
     }
 }

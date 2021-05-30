@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.common.entity.ability;
 
+import ladysnake.requiem.mixin.common.access.ShulkerEntityAccessor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
@@ -48,7 +49,7 @@ public class ShulkerShootAbility extends DirectAbilityBase<ShulkerEntity, Living
 
     @Override
     public boolean canTarget(LivingEntity target) {
-        return super.canTarget(target) && this.owner.getPeekAmount() > 50;
+        return super.canTarget(target) && ((ShulkerEntityAccessor) this.owner).requiem$getPeekAmount() > 50;
     }
 
     @Override

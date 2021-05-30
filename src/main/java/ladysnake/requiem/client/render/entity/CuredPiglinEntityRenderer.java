@@ -37,8 +37,9 @@ package ladysnake.requiem.client.render.entity;
 import com.google.common.collect.ImmutableMap;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.entity.RequiemEntities;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.PiglinEntityRenderer;
+import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.Identifier;
@@ -61,7 +62,7 @@ public class CuredPiglinEntityRenderer extends PiglinEntityRenderer {
         }
     }
 
-    public CuredPiglinEntityRenderer(EntityRenderDispatcher dispatcher, boolean zombified) {
-        super(dispatcher, zombified);
+    public CuredPiglinEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer mainLayer, EntityModelLayer innerArmorLayer, EntityModelLayer outerArmorLayer, boolean zombified) {
+        super(ctx, mainLayer, innerArmorLayer, outerArmorLayer, zombified);
     }
 }
