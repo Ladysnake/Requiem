@@ -1,4 +1,14 @@
 ------------------------------------------------------
+Version 1.7.9
+------------------------------------------------------
+**Fixes**
+- Fixed a crash when Biome Overhaul was ***not*** installed.
+
+#### Pandemonium
+**Fixes**
+- Fixed a crash when Biome Overhaul was ***not*** installed.
+
+------------------------------------------------------
 Version 1.7.8
 ------------------------------------------------------
 **Additions**  

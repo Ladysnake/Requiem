@@ -4,6 +4,8 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "access.WorldChunkAccessor",
+    "entity.ai.TargetPredicateAccessor",
+    "entity.ai.goal.FollowTargetGoalMixin",
     "entity.EntityAccessor",
     "entity.PersistentProjectileEntityAccessor",
     "entity.ai.MemoryModuleTypeAccessor",

@@ -36,6 +36,7 @@ package ladysnake.pandemonium.client;
 
 import baritone.api.fakeplayer.AutomatoneFakePlayer;
 import ladysnake.pandemonium.Pandemonium;
+import ladysnake.pandemonium.client.render.entity.MorticianEntityRenderer;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
@@ -60,6 +61,7 @@ public class PandemoniumClient implements ClientModInitializer {
         // shh, it's fine
         @SuppressWarnings({"unchecked", "RedundantCast"}) EntityType<? extends AbstractClientPlayerEntity> playerShellType = (EntityType<? extends AbstractClientPlayerEntity>) (EntityType<?>) PandemoniumEntities.PLAYER_SHELL;
         EntityRendererRegistry.INSTANCE.register(playerShellType, ctx -> new PlayerEntityRenderer(ctx, false));
+        EntityRendererRegistry.INSTANCE.register(PandemoniumEntities.MORTICIAN, MorticianEntityRenderer::new);
         ClientTickEvents.END_WORLD_TICK.register(Pandemonium::tickAnchors);
         MutableBoolean wasLookingAtShell = new MutableBoolean();
         ClientTickEvents.START_CLIENT_TICK.register(client -> {

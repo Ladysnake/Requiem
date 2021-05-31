@@ -34,42 +34,44 @@
  */
 package ladysnake.pandemonium.common.entity;
 
-import baritone.api.fakeplayer.FakePlayers;
-import ladysnake.pandemonium.common.entity.fakeplayer.FakePlayerGuide;
-import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.MerchantEntity;
+import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.village.TradeOffer;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
-public class PandemoniumEntities {
-    public static final EntityType<PlayerEntity> PLAYER_SHELL = FabricEntityTypeBuilder.<PlayerEntity>createLiving()
-        .spawnGroup(SpawnGroup.MISC)
-        .entityFactory(FakePlayers.entityFactory(PlayerShellEntity::new))
-        .defaultAttributes(PlayerShellEntity::createPlayerShellAttributes)
-        .dimensions(EntityDimensions.changing(EntityType.PLAYER.getWidth(), EntityType.PLAYER.getHeight()))
-        .trackRangeBlocks(64)
-        .trackedUpdateRate(1)
-        .forceTrackedVelocityUpdates(true)
-        .build();
-    public static final EntityType<FakePlayerGuide> FAKE_PLAYER_AI = FabricEntityTypeBuilder.<FakePlayerGuide>createLiving()
-        .disableSaving()
-        .disableSummon()
-        .dimensions(EntityDimensions.changing(PLAYER_SHELL.getWidth(), PLAYER_SHELL.getHeight()))
-        .defaultAttributes(MobEntity::createMobAttributes)
-        .build();
-    public static final EntityType<MorticianEntity> MORTICIAN = FabricEntityTypeBuilder.createLiving()
-        .spawnGroup(SpawnGroup.CREATURE)
-        .entityFactory(MorticianEntity::new)
-        .defaultAttributes(MorticianEntity::createMobAttributes)
-        .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
-        .build();
+public class MorticianEntity extends MerchantEntity {
+    public MorticianEntity(EntityType<? extends MerchantEntity> entityType, World world) {
+        super(entityType, world);
+    }
 
-    public static void init() {
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("player_shell"), PLAYER_SHELL);
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("mortician"), MORTICIAN);
+    @Override
+    protected void afterUsing(TradeOffer offer) {
+
+    }
+
+    @Override
+    protected void fillRecipes() {
+
+    }
+
+    @Nullable
+    @Override
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return null;
+    }
+
+    @Override
+    public boolean canRefreshTrades() {
+        return super.canRefreshTrades();
+    }
+
+    @Override
+    public void sendOffers(PlayerEntity playerEntity, Text text, int i) {
+        super.sendOffers(playerEntity, text, i);
     }
 }
