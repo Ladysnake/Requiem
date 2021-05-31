@@ -43,28 +43,20 @@ import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.common.entity.ability.TickingGoalAbility;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 
 public final class GolemsGaloreCompat implements RequiemPlugin {
 
     @CalledThroughReflection
     public static void init() {
-        RequiemCompatibilityManager.<LaserGolemEntity>findEntityType(GolemsGalore.id("laser_golem"), object -> {
-            RequiemApi.registerPlugin(new GolemsGaloreCompat(object));
-        });
-    }
-
-    private final EntityType<LaserGolemEntity> laserGolemType;
-
-    private GolemsGaloreCompat(EntityType<LaserGolemEntity> laserGolemType) {
-        this.laserGolemType = laserGolemType;
+        RequiemApi.registerPlugin(new GolemsGaloreCompat());
     }
 
     @Override
     public void registerMobAbilities(MobAbilityRegistry registry) {
-        registry.register(laserGolemType, MobAbilityConfig.<LaserGolemEntity>builder()
-            .directAttack(golem -> new TickingGoalAbility<>(golem, new FireLaserGoal(golem), 20*2, 15, LivingEntity.class))
-            .build());
+        RequiemCompatibilityManager.<LaserGolemEntity>findEntityType(GolemsGalore.id("laser_golem"), object ->
+            registry.register(object, MobAbilityConfig.<LaserGolemEntity>builder().directAttack(golem -> new TickingGoalAbility<>(golem, new FireLaserGoal(golem), 20*2, 15, LivingEntity.class)).build()));
+        RequiemCompatibilityManager.<LaserGolemEntity>findEntityType(GolemsGalore.id("diamond_laser_golem"), object ->
+            registry.register(object, MobAbilityConfig.<LaserGolemEntity>builder().directAttack(golem -> new TickingGoalAbility<>(golem, new FireLaserGoal(golem), 20*2, 15, LivingEntity.class)).build()));
     }
 }
