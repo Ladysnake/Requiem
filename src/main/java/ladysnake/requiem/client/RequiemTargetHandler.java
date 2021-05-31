@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
@@ -41,7 +42,6 @@ import ladysnake.requiem.api.v1.event.minecraft.client.UpdateTargetedEntityCallb
 import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -119,18 +119,18 @@ public final class RequiemTargetHandler implements UpdateTargetedEntityCallback,
             float f = abilityController.getCooldownProgress(renderedType);
 
             if (f < 1 || abilityController.getTargetedEntity(renderedType) != null) {
-                drawCrosshairIcon(client.getTextureManager(), matrices, scaledWidth, scaledHeight, abilityController.getIconTexture(renderedType), f);
+                drawCrosshairIcon(matrices, scaledWidth, scaledHeight, abilityController.getIconTexture(renderedType), f);
             }
         }
     }
 
-    static void drawCrosshairIcon(TextureManager textureManager, MatrixStack matrices, int scaledWidth, int scaledHeight, Identifier abilityIcon, float progress) {
+    static void drawCrosshairIcon(MatrixStack matrices, int scaledWidth, int scaledHeight, Identifier abilityIcon, float progress) {
         int x = (scaledWidth - 32) / 2 + 8;
         int y = (scaledHeight - 16) / 2 + 16;
-        textureManager.bindTexture(abilityIcon);
+        RenderSystem.setShaderTexture(0, abilityIcon);
         int height = (int)(progress * 8.0F);
         DrawableHelper.drawTexture(matrices, x, y, 16, 8, 0, 0, 16, 8, 16, 16);
         DrawableHelper.drawTexture(matrices, x, y + 8 - height, 16, height, 0, 16 - height, 16, height, 16, 16);
-        textureManager.bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
+        RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
     }
 }

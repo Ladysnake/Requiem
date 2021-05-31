@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.mixin.client.inventory;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.InventoryPart;
@@ -156,7 +157,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
 
         InventoryShape inventoryShape = this.limiter.getInventoryShape();
         if (inventoryShape.isAltShape()) {
-            this.client.getTextureManager().bindTexture(INVENTORY_SLOTS);
+            RenderSystem.setShaderTexture(0, INVENTORY_SLOTS);
             int x = this.x;
             int y = this.y;
             if (!this.limiter.isLocked(InventoryPart.ARMOR)) {

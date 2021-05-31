@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.mixin.client.attrition;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
@@ -69,7 +70,7 @@ public abstract class AbstractInventoryScreenMixin<T extends ScreenHandler> exte
     private StatusEffectInstance customizeDrawnBackground(StatusEffectInstance effect) {
         if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
             assert client != null;
-            client.getTextureManager().bindTexture(AttritionStatusEffect.ATTRITION_BACKGROUND);
+            RenderSystem.setShaderTexture(0, AttritionStatusEffect.ATTRITION_BACKGROUND);
             boundSpecialBackground = true;
         }
         return effect;
@@ -79,7 +80,7 @@ public abstract class AbstractInventoryScreenMixin<T extends ScreenHandler> exte
     private void restoreDrawnBackground(MatrixStack matrices, int x, int yIncrement, Iterable<StatusEffectInstance> effects, CallbackInfo ci) {
         if (boundSpecialBackground) {
             assert client != null;
-            client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
+            RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
             boundSpecialBackground = false;
         }
     }

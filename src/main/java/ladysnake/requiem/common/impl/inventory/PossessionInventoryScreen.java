@@ -102,10 +102,9 @@ public class PossessionInventoryScreen extends AbstractInventoryScreen<PlayerScr
         assert this.client != null;
         assert this.client.player != null;
 
-        //noinspection deprecation
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         InventoryShape shape = this.limiter.getInventoryShape();
-        this.client.getTextureManager().bindTexture(shape.swapBackground(BACKGROUND_TEXTURE));
+        RenderSystem.setShaderTexture(0, shape.swapBackground(BACKGROUND_TEXTURE));
         int x = this.x;
         int y = this.y;
         this.drawTexture(matrices, x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
