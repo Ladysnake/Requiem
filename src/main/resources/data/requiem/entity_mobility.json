@@ -155,7 +155,8 @@
   },
   "biomemakeover:tadpole": {
     "swimMode": "FORCED",
-    "flopsOnLand": true
+    "flopsOnLand": true,
+    "required": false
   },
   "adventurez:blaze_guardian":  {
     "flightMode": "FORCED",
