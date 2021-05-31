@@ -262,9 +262,9 @@ public class RunicObsidianBlockEntity extends BlockEntity {
             }
 
             @Nullable RuneSearchResult result = findRune(world, origin, width, height);
-            if (!result.valid) return height;
-            if (result.rune != null && levels.getInt(result.rune) <= result.rune.getMaxLevel()) {
-                levels.mergeInt(result.rune, 1, Integer::sum);
+            if (!result.valid()) return height;
+            if (result.rune() != null && levels.getInt(result.rune()) <= result.rune().getMaxLevel()) {
+                levels.mergeInt(result.rune(), 1, Integer::sum);
             }
             height++;
         }
@@ -368,20 +368,12 @@ public class RunicObsidianBlockEntity extends BlockEntity {
         return lastSideLength;
     }
 
-    private static class RuneSearchResult {
+    private record RuneSearchResult(boolean valid, @Nullable ObeliskRune rune) {
         static final RuneSearchResult FAILED = new RuneSearchResult(false, null);
         static final RuneSearchResult INERT = new RuneSearchResult(true, null);
 
         static RuneSearchResult of(@Nullable ObeliskRune rune) {
             return rune == null ? INERT : new RuneSearchResult(true, rune);
-        }
-
-        final boolean valid;
-        final @Nullable ObeliskRune rune;
-
-        RuneSearchResult(boolean valid, @Nullable ObeliskRune rune) {
-            this.valid = valid;
-            this.rune = rune;
         }
     }
 }

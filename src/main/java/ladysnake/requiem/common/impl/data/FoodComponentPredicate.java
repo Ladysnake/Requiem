@@ -42,22 +42,14 @@ import net.minecraft.predicate.NumberRange;
 import net.minecraft.util.JsonHelper;
 import org.jetbrains.annotations.Nullable;
 
-public class FoodComponentPredicate {
+public record FoodComponentPredicate(
+    NumberRange.IntRange hunger,
+    NumberRange.FloatRange saturationModifier,
+    @Nullable Boolean meat,
+    @Nullable Boolean alwaysEdible,
+    @Nullable Boolean snack
+) {
     public static final FoodComponentPredicate ANY = new FoodComponentPredicate(NumberRange.IntRange.ANY, NumberRange.FloatRange.ANY, null, null, null);
-
-    private final NumberRange.IntRange hunger;
-    private final NumberRange.FloatRange saturationModifier;
-    private final @Nullable Boolean meat;
-    private final @Nullable Boolean alwaysEdible;
-    private final @Nullable Boolean snack;
-
-    public FoodComponentPredicate(NumberRange.IntRange hunger, NumberRange.FloatRange saturationModifier, @Nullable Boolean meat, @Nullable Boolean alwaysEdible, @Nullable Boolean snack) {
-        this.hunger = hunger;
-        this.saturationModifier = saturationModifier;
-        this.meat = meat;
-        this.alwaysEdible = alwaysEdible;
-        this.snack = snack;
-    }
 
     public static FoodComponentPredicate fromJson(@Nullable JsonElement json) {
         if (json != null && !json.isJsonNull()) {

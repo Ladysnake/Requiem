@@ -54,25 +54,19 @@ import net.minecraft.world.World;
 
 import java.util.Optional;
 
-public final class OldPossessionItemOverride implements InstancedItemOverride, PossessionItemOverride {
+public record OldPossessionItemOverride(
+    OldPossessionItemOverride.Requirements requirements,
+    int useTime,
+    OldPossessionItemOverride.Result result
+) implements InstancedItemOverride, PossessionItemOverride {
     public static final Identifier ID = Requiem.id("override_v0");
 
     static Codec<OldPossessionItemOverride> codec(Codec<JsonElement> jsonCodec) {
         return RecordCodecBuilder.create((instance) -> instance.group(
-            Requirements.codec(jsonCodec).fieldOf("requirements").forGetter(OldPossessionItemOverride::getRequirements),
-            Codec.INT.optionalFieldOf("use_time", 0).forGetter(OldPossessionItemOverride::getUseTime),
-            Result.CODEC.fieldOf("result").forGetter(OldPossessionItemOverride::getResult)
+            Requirements.codec(jsonCodec).fieldOf("requirements").forGetter(OldPossessionItemOverride::requirements),
+            Codec.INT.optionalFieldOf("use_time", 0).forGetter(OldPossessionItemOverride::useTime),
+            Result.CODEC.fieldOf("result").forGetter(OldPossessionItemOverride::result)
         ).apply(instance, OldPossessionItemOverride::new));
-    }
-
-    private final Requirements requirements;
-    private final int useTime;
-    private final Result result;
-
-    OldPossessionItemOverride(Requirements requirements, int useTime, Result result) {
-        this.requirements = requirements;
-        this.useTime = useTime;
-        this.result = result;
     }
 
     /**
@@ -88,14 +82,6 @@ public final class OldPossessionItemOverride implements InstancedItemOverride, P
         return ID;
     }
 
-    public int getUseTime() {
-        return useTime;
-    }
-
-    public Result getResult() {
-        return result;
-    }
-
     @Override
     public Optional<InstancedItemOverride> test(PlayerEntity player, MobEntity possessed, ItemStack stack) {
         return this.requirements.test(player, possessed, stack) ? Optional.of(this) : Optional.empty();
@@ -108,10 +94,10 @@ public final class OldPossessionItemOverride implements InstancedItemOverride, P
 
     @Override
     public TypedActionResult<ItemStack> use(PlayerEntity player, MobEntity possessedEntity, ItemStack heldStack, World world, Hand hand) {
-        if (this.getUseTime() <= 0) {
+        if (this.useTime() <= 0) {
             return this.result.run(player, possessedEntity, heldStack, world, hand);
         } else {
-            OverridableItemStack.overrideMaxUseTime(heldStack, this.getUseTime());
+            OverridableItemStack.overrideMaxUseTime(heldStack, this.useTime());
             player.setCurrentHand(hand);
             return TypedActionResult.success(heldStack);
         }
@@ -120,10 +106,6 @@ public final class OldPossessionItemOverride implements InstancedItemOverride, P
     @Override
     public TypedActionResult<ItemStack> finishUsing(PlayerEntity user, MobEntity possessedEntity, ItemStack heldStack, World world, Hand activeHand) {
         return this.result.run(user, possessedEntity, heldStack, world, activeHand);
-    }
-
-    public Requirements getRequirements() {
-        return this.requirements;
     }
 
     public static class Requirements {

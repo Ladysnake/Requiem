@@ -45,15 +45,8 @@ import net.minecraft.util.math.Vec3d;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public final class ExtendedDamageSourcePredicate {
+public record ExtendedDamageSourcePredicate(DamageSourcePredicate base, String damageName) {
     public static final ExtendedDamageSourcePredicate EMPTY = new ExtendedDamageSourcePredicate(DamageSourcePredicate.EMPTY, null);
-    private final DamageSourcePredicate base;
-    private final String damageName;
-
-    private ExtendedDamageSourcePredicate(DamageSourcePredicate base, String damageName) {
-        this.base = base;
-        this.damageName = damageName;
-    }
 
     public boolean test(ServerPlayerEntity player, DamageSource damage) {
         return (damageName == null || damageName.equals(damage.name)) && base.test(player, damage);

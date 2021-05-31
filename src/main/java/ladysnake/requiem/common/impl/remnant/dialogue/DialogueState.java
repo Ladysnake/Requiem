@@ -70,15 +70,15 @@ public final class DialogueState {
     }
 
     public ImmutableList<Text> getAvailableChoices() {
-        ImmutableList.Builder<Text> ret = ImmutableList.builder();
+        ImmutableList.Builder<Text> builder = ImmutableList.builder();
         for (Choice choice : this.choices) {
-            ret.add(choice.text);
+            builder.add(choice.text());
         }
-        return ret.build();
+        return builder.build();
     }
 
     public String getNextState(int choice) {
-        return this.choices.get(choice).next;
+        return this.choices.get(choice).next();
     }
 
     public ChoiceResult getType() {
@@ -110,8 +110,8 @@ public final class DialogueState {
         buf.writeText(this.text);
         buf.writeByte((byte)this.choices.size());
         for (Choice choice : this.choices) {
-            buf.writeText(choice.text);
-            buf.writeString(choice.next);
+            buf.writeText(choice.text());
+            buf.writeString(choice.next());
         }
         buf.writeString(this.action == null ? "" : this.action.toString());
         buf.writeEnumConstant(this.type);
@@ -129,13 +129,5 @@ public final class DialogueState {
         return representation + '}';
     }
 
-    public static final class Choice {
-        private final Text text;
-        private final String next;
-
-        private Choice(Text text, String next) {
-            this.text = text;
-            this.next = next;
-        }
-    }
+    public record Choice(Text text, String next) {}
 }

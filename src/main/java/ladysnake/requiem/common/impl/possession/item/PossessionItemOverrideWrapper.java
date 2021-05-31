@@ -60,17 +60,23 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class PossessionItemOverrideWrapper implements Comparable<PossessionItemOverrideWrapper> {
+public record PossessionItemOverrideWrapper(
+    int priority,
+    boolean enabled,
+    Optional<Text> tooltip,
+    LazyEntityPredicate mob,
+    PossessionItemOverride override
+) implements Comparable<PossessionItemOverrideWrapper> {
     public static final int CURRENT_SCHEMA_VERSION = 0;
 
     // the fun bit is that V0 is both a schema version and an override type, so we need to flatten some stuff here
     public static final Codec<PossessionItemOverrideWrapper> CODEC_V0 = RecordCodecBuilder.create((instance) -> instance.group(
-        Codec.INT.optionalFieldOf("priority", 100).forGetter(PossessionItemOverrideWrapper::getPriority),
-        Codec.BOOL.optionalFieldOf("enabled", true).forGetter(PossessionItemOverrideWrapper::isEnabled),
+        Codec.INT.optionalFieldOf("priority", 100).forGetter(PossessionItemOverrideWrapper::priority),
+        Codec.BOOL.optionalFieldOf("enabled", true).forGetter(PossessionItemOverrideWrapper::enabled),
         MoreCodecs.text(MoreCodecs.DYNAMIC_JSON).optionalFieldOf("tooltip").forGetter(w -> w.tooltip),
-        OldPossessionItemOverride.Requirements.codec(MoreCodecs.DYNAMIC_JSON).fieldOf("requirements").forGetter(o -> ((OldPossessionItemOverride) o.override).getRequirements()),
-        Codec.INT.optionalFieldOf("use_time", 0).forGetter(w -> ((OldPossessionItemOverride) w.override).getUseTime()),
-        OldPossessionItemOverride.Result.CODEC.fieldOf("result").forGetter(w -> ((OldPossessionItemOverride) w.override).getResult())
+        OldPossessionItemOverride.Requirements.codec(MoreCodecs.DYNAMIC_JSON).fieldOf("requirements").forGetter(o -> ((OldPossessionItemOverride) o.override).requirements()),
+        Codec.INT.optionalFieldOf("use_time", 0).forGetter(w -> ((OldPossessionItemOverride) w.override).useTime()),
+        OldPossessionItemOverride.Result.CODEC.fieldOf("result").forGetter(w -> ((OldPossessionItemOverride) w.override).result())
     ).apply(instance, (p, e, t, req, u, res) -> new PossessionItemOverrideWrapper(p, e, t, req.possessed, new OldPossessionItemOverride(req, u, res))));
 
     public static final Codec<PossessionItemOverrideWrapper> CODEC_V1 = codecV1(MoreCodecs.DYNAMIC_JSON);
@@ -86,8 +92,8 @@ public class PossessionItemOverrideWrapper implements Comparable<PossessionItemO
 
     private static Codec<PossessionItemOverrideWrapper> codecV1(Codec<JsonElement> jsonCodec) {
         return RecordCodecBuilder.create(instance -> instance.group(
-            Codec.INT.optionalFieldOf("priority", 100).forGetter(PossessionItemOverrideWrapper::getPriority),
-            Codec.BOOL.optionalFieldOf("enabled", true).forGetter(PossessionItemOverrideWrapper::isEnabled),
+            Codec.INT.optionalFieldOf("priority", 100).forGetter(PossessionItemOverrideWrapper::priority),
+            Codec.BOOL.optionalFieldOf("enabled", true).forGetter(PossessionItemOverrideWrapper::enabled),
             MoreCodecs.text(jsonCodec).optionalFieldOf("tooltip").forGetter(o -> o.tooltip),
             LazyEntityPredicate.codec(jsonCodec).fieldOf("mob").forGetter(o -> o.mob),
             overrideCodecV1(jsonCodec).fieldOf("override").forGetter(w -> w.override)
@@ -137,7 +143,7 @@ public class PossessionItemOverrideWrapper implements Comparable<PossessionItemO
             if (tested.isPresent()) {
                 if (tested.get().shortCircuits()) {
                     return tested;
-                } else if (!fallback.isPresent()) {
+                } else if (fallback.isEmpty()) {
                     fallback = tested;
                 }
             }
@@ -161,30 +167,8 @@ public class PossessionItemOverrideWrapper implements Comparable<PossessionItemO
         return lines;
     }
 
-    private final int priority;
-    private final boolean enabled;
-    private final Optional<Text> tooltip;
-    private final LazyEntityPredicate mob;
-    final PossessionItemOverride override;
-
-    public PossessionItemOverrideWrapper(int priority, boolean enabled, Optional<Text> tooltip, LazyEntityPredicate mob, PossessionItemOverride override) {
-        this.priority = priority;
-        this.enabled = enabled;
-        this.tooltip = tooltip;
-        this.mob = mob;
-        this.override = override;
-    }
-
-    public int getPriority() {
-        return this.priority;
-    }
-
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
     public Optional<InstancedItemOverride> test(PlayerEntity player, MobEntity host, ItemStack stack) {
-        return this.isEnabled() && this.mob.test(host) ? this.override.test(player, host, stack) : Optional.empty();
+        return this.enabled() && this.mob.test(host) ? this.override.test(player, host, stack) : Optional.empty();
     }
 
     public PossessionItemOverrideWrapper initNow() {

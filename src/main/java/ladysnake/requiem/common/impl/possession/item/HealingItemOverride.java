@@ -52,28 +52,21 @@ import net.minecraft.world.World;
 
 import java.util.Optional;
 
-public class HealingItemOverride implements PossessionItemOverride, InstancedItemOverride {
+public record HealingItemOverride(
+    LazyItemPredicate item,
+    int useTime,
+    int cooldown,
+    HealingItemOverride.Usage usage
+) implements PossessionItemOverride, InstancedItemOverride {
     public static final Identifier ID = Requiem.id("healing");
 
     public static Codec<HealingItemOverride> codec(Codec<JsonElement> jsonCodec) {
         return RecordCodecBuilder.create(instance -> instance.group(
-            LazyItemPredicate.codec(jsonCodec).fieldOf("item").forGetter(o -> o.item),
-            Codec.INT.optionalFieldOf("use_time", 0).forGetter(o -> o.useTime),
-            Codec.INT.optionalFieldOf("cooldown", 0).forGetter(o -> o.cooldown),
-            MoreCodecs.enumeration(Usage.class).fieldOf("usage").forGetter(o -> o.usage)
+            LazyItemPredicate.codec(jsonCodec).fieldOf("item").forGetter(HealingItemOverride::item),
+            Codec.INT.optionalFieldOf("use_time", 0).forGetter(HealingItemOverride::useTime),
+            Codec.INT.optionalFieldOf("cooldown", 0).forGetter(HealingItemOverride::cooldown),
+            MoreCodecs.enumeration(Usage.class).fieldOf("usage").forGetter(HealingItemOverride::usage)
         ).apply(instance, HealingItemOverride::new));
-    }
-
-    private final LazyItemPredicate item;
-    private final int useTime;
-    private final int cooldown;
-    private final Usage usage;
-
-    public HealingItemOverride(LazyItemPredicate item, int useTime, int cooldown, Usage usage) {
-        this.item = item;
-        this.useTime = useTime;
-        this.cooldown = cooldown;
-        this.usage = usage;
     }
 
     @Override

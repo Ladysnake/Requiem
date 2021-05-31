@@ -45,12 +45,7 @@ import net.minecraft.world.World;
 
 import java.util.Optional;
 
-public class OverrideFailure implements InstancedItemOverride {
-    private final boolean strikethrough;
-
-    public OverrideFailure(boolean strikethrough) {
-        this.strikethrough = strikethrough;
-    }
+public record OverrideFailure(boolean strikethrough) implements InstancedItemOverride {
 
     @Override
     public boolean shortCircuits() {
@@ -69,7 +64,7 @@ public class OverrideFailure implements InstancedItemOverride {
 
     @Override
     public Optional<Text> tweakTooltip(Text baseTooltip) {
-        if (this.strikethrough) {
+        if (this.strikethrough()) {
             return Optional.of(baseTooltip.shallowCopy().formatted(Formatting.STRIKETHROUGH));
         } else {
             return InstancedItemOverride.super.tweakTooltip(baseTooltip);

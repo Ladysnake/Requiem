@@ -70,7 +70,16 @@ import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-public final class ResurrectionData implements Comparable<ResurrectionData> {
+public record ResurrectionData(
+    int priority,
+    @Nullable EntityPredicate playerPredicate,
+    @Nullable EntityPredicate possessedPredicate,
+    @Nullable ExtendedDamageSourcePredicate damageSourcePredicate,
+    @Nullable ItemPredicate consumable,
+    List<BiPredicate<ServerPlayerEntity, DamageSource>> specials,
+    EntityType<?> entityType,
+    @Nullable NbtCompound entityNbt
+) implements Comparable<ResurrectionData> {
     private static final Map<String, BiPredicate<ServerPlayerEntity, DamageSource>> SPECIAL_PREDICATES = Util.make(new HashMap<>(), m -> {
         m.put("head_in_sand", (lazarus, killingBlow) -> {
             EntityPose pose = lazarus.getPose();
@@ -78,28 +87,6 @@ public final class ResurrectionData implements Comparable<ResurrectionData> {
             return BlockTags.SAND.contains(lazarus.world.getBlockState(lazarus.getBlockPos().add(0, eyeHeight, 0)).getBlock());
         });
     });
-
-    private final int priority;
-    private final @Nullable EntityPredicate playerPredicate;
-    private final @Nullable EntityPredicate possessedPredicate;
-    private final @Nullable ExtendedDamageSourcePredicate damageSourcePredicate;
-    private final @Nullable ItemPredicate consumable;
-    private final List<BiPredicate<ServerPlayerEntity, DamageSource>> specials;
-
-    private final EntityType<?> entityType;
-    private final @Nullable NbtCompound entityNbt;
-
-    private ResurrectionData(int priority, @Nullable EntityPredicate playerPredicate, @Nullable EntityPredicate possessedPredicate, @Nullable ExtendedDamageSourcePredicate damageSourcePredicate, @Nullable ItemPredicate consumable, List<BiPredicate<ServerPlayerEntity, DamageSource>> specials, EntityType<?> entityType, @Nullable NbtCompound entityNbt) {
-        this.priority = priority;
-        this.playerPredicate = playerPredicate;
-        this.possessedPredicate = possessedPredicate;
-        this.damageSourcePredicate = damageSourcePredicate;
-        this.specials = specials;
-        this.consumable = consumable;
-        this.entityType = entityType;
-        this.entityNbt = entityNbt;
-    }
-
 
     public boolean matches(ServerPlayerEntity player, @Nullable LivingEntity possessed, DamageSource killingBlow) {
         if (killingBlow.isOutOfWorld()) return false;
