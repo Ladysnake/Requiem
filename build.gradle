@@ -176,6 +176,10 @@ repositories {
         }
     }
     maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/"
+    }
+    maven {
         name = 'JitPack'
         url = 'https://jitpack.io'
         content {
@@ -235,6 +239,7 @@ dependencies {
 
     modRuntime "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
     modRuntime "io.github.adriantodt:FallFlyingLib:${fallflyinglib_version}"
+    modCompileOnly "dev.emi:trinkets:${trinkets_version}"
     modCompileOnly("com.github.Virtuoel:Pehkui:${pehkui_version}") { transitive = false }
     modRuntime("com.github.Virtuoel:Pehkui:${pehkui_version}") { transitive = false }
     modCompileOnly("curse.maven:Snow-Mercy-429949:${snowmercy_version}") { transitive = false }

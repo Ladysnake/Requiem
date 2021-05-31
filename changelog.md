@@ -1,12 +1,15 @@
 ------------------------------------------------------
 Version 1.7.9
 ------------------------------------------------------
+**Mod Compatibility**
+- Trinkets: Fixed trinkets disappearing when resurrecting as another mob
+
 **Fixes**
 - Fixed a crash when Biome Overhaul was ***not*** installed.
 
 #### Pandemonium
 **Fixes**
-- Fixed a crash when Biome Overhaul was ***not*** installed.
+- Fixed a bug allowing players to make multiple duplicated shells at once
 
 ------------------------------------------------------
 Version 1.7.8

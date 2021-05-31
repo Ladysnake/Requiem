@@ -60,6 +60,7 @@ public final class RequiemCompatibilityManager {
             load("origins", OriginsCompat.class);
             load("snowmercy", SnowMercyCompat.class);
             load("the_bumblezone", BumblezoneCompat.class);
+            load("trinkets", TrinketsCompat.class);
         } catch (Throwable t) {
             Requiem.LOGGER.error("[Requiem] Failed to load compatibility hooks", t);
         }
