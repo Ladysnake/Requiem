@@ -44,7 +44,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TargetPredicate.class)
 public abstract class TargetPredicateMixin {
-    @Inject(method = "test", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/ai/TargetPredicate;ignoreEntityTargetRules:Z"), cancellable = true)
+    @Inject(method = "test", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/ai/TargetPredicate;attackable:Z"), cancellable = true)
     private void testFakePlayers(LivingEntity baseEntity, LivingEntity targetEntity, CallbackInfoReturnable<Boolean> cir) {
         if (baseEntity instanceof FakePlayerGuide && ((FakePlayerGuide) baseEntity).getOwner() == targetEntity) {
             cir.setReturnValue(false);
