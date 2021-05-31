@@ -5,7 +5,7 @@
     "type": "#requiem:transformation/skeletonizable"
   },
   "consumable": {
-    "item": "requiem:totem_of_skeletonization"
+    "items": ["requiem:totem_of_skeletonization"]
   },
   "entity": {
     "type": "minecraft:skeleton"
