@@ -1,6 +1,9 @@
 ------------------------------------------------------
 Version 1.7.9
 ------------------------------------------------------
+**Additions**
+- Added Dutch localization (thanks Tijmen !)
+
 **Mod Compatibility**
 - Trinkets: Fixed trinkets disappearing when resurrecting as another mob
 - Golems Galore: You can now possess laser diamond golems
