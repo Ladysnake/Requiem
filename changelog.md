@@ -3,9 +3,12 @@ Version 1.7.9
 ------------------------------------------------------
 **Mod Compatibility**
 - Trinkets: Fixed trinkets disappearing when resurrecting as another mob
+- Golems Galore: You can now possess laser diamond golems
+- Into the Omega: Fixed a crash at launch due to mixin incompatibility
 
 **Fixes**
 - Fixed a crash when Biome Overhaul was ***not*** installed.
+- Fixed an inventory desync issue with arrows when using a crossbow as a Bolt Hoarder
 
 #### Pandemonium
 **Fixes**
