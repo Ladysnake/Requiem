@@ -34,18 +34,27 @@
  */
 package ladysnake.requiem.compat;
 
-import dev.emi.trinkets.api.TrinketsApi;
+import com.google.common.base.Suppliers;
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import dev.onyxstudios.cca.api.v3.entity.PlayerCopyCallback;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.remnant.MobResurrectable;
-import nerdhub.cardinal.components.api.event.PlayerCopyCallback;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
+
+import java.util.function.Supplier;
 
 public final class TrinketsCompat {
+    private static final Supplier<ComponentKey<?>> TRINKETS = Suppliers.memoize(() -> ComponentRegistry.get(new Identifier("trinkets:trinkets")));
+
     @CalledThroughReflection
     public static void init() {
         PlayerCopyCallback.EVENT.register((original, clone, lossless) -> {
-            if (((MobResurrectable) original).hasResurrectionEntity()) {
-                TrinketsApi.TRINKETS.get(clone).fromTag(TrinketsApi.TRINKETS.get(original).toTag(new CompoundTag()));
+            ComponentKey<?> trinketsKey = TRINKETS.get();
+            if (trinketsKey != null && ((MobResurrectable) original).hasResurrectionEntity()) {
+                trinketsKey.get(clone).readFromNbt(Util.make(new NbtCompound(), trinketsKey.get(original)::writeToNbt));
             }
         });
     }
