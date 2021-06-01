@@ -37,7 +37,7 @@ package ladysnake.requiem.mixin.common.remnant;
 import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
 import ladysnake.requiem.api.v1.remnant.MobResurrectable;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.common.entity.RequiemEntities;
+import ladysnake.requiem.common.entity.RequiemEntityAttributes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -76,7 +76,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "createLivingAttributes", at = @At("RETURN"))
     private static void addSoulDefenseAttribute(CallbackInfoReturnable<DefaultAttributeContainer.Builder> cir) {
-        cir.getReturnValue().add(RequiemEntities.SOUL_DEFENSE);
+        cir.getReturnValue().add(RequiemEntityAttributes.SOUL_DEFENSE);
     }
 
     @Inject(

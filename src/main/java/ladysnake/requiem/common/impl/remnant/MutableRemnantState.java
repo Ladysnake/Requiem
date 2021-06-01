@@ -61,6 +61,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
+import java.util.Optional;
+
 public class MutableRemnantState implements RemnantState {
 
     public static final AbilitySource SOUL_STATE = Pal.getAbilitySource(Requiem.id("soul_state"));
@@ -168,7 +170,7 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public boolean canCaptureSouls() {
-        return !this.isVagrant();
+        return !this.isVagrant() && Optional.ofNullable(this.player.getStatusEffect(RequiemStatusEffects.ATTRITION)).map(StatusEffectInstance::getAmplifier).orElse(-1) >= 3;
     }
 
     protected boolean canRegenerateBodyFrom(LivingEntity body) {

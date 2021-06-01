@@ -35,9 +35,12 @@
 package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.common.entity.RequiemEntities;
+import ladysnake.requiem.common.entity.RequiemEntityAttributes;
+import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -82,9 +85,12 @@ public class SoulVesselItem extends Item {
 
         int targetSoulStrength = computeSoulDefense(target);
         int playerSoulStrength = computeSoulOffense(remnant);
-        if (!wins(remnant, playerSoulStrength, target, targetSoulStrength)) return stack;
+        if (!wins(remnant, playerSoulStrength, target, targetSoulStrength)) {
+            AttritionStatusEffect.apply(remnant, 1, 20*60*5);
+            return new ItemStack(RequiemItems.SHATTERED_SOUL_VESSEL);
+        }
 
-        return new ItemStack(RequiemItems.OMINOUS_SOUL_VESSEL);
+        return new ItemStack(RequiemItems.FILLED_SOUL_VESSEL);
     }
 
     @Override
@@ -94,15 +100,32 @@ public class SoulVesselItem extends Item {
     }
 
     private boolean wins(PlayerEntity user, int playerSoulStrength, LivingEntity entity, int targetSoulStrength) {
-        return playerSoulStrength > targetSoulStrength;
+        if (playerSoulStrength > targetSoulStrength) {
+            return true;
+        }
+        float strengthRatio = (float) playerSoulStrength / targetSoulStrength;
+        return user.getRandom().nextFloat() > (strengthRatio * strengthRatio);
     }
 
     private int computeSoulOffense(PlayerEntity user) {
-        return (int) user.getAttributeValue(RequiemEntities.SOUL_OFFENSE);
+        return (int) Math.round(user.getAttributeValue(RequiemEntityAttributes.SOUL_OFFENSE));
     }
 
-    private int computeSoulDefense(LivingEntity entity) {
-        return (int) entity.getAttributeValue(RequiemEntities.SOUL_DEFENSE);
+    public static int computeSoulDefense(LivingEntity entity) {
+        double base = entity.getAttributeValue(RequiemEntityAttributes.SOUL_DEFENSE);
+        double maxHealth = entity.getMaxHealth();
+        double intrinsicArmor = getAttributeBaseValue(entity, EntityAttributes.GENERIC_ARMOR);
+        double intrinsicArmorToughness = getAttributeBaseValue(entity, EntityAttributes.GENERIC_ARMOR_TOUGHNESS);
+        double intrinsicStrength = getAttributeBaseValue(entity, EntityAttributes.GENERIC_ATTACK_DAMAGE);
+        double invertedHealthRatio = entity.getMaxHealth() / entity.getHealth();
+        double woundedModifier = 1 - (invertedHealthRatio * invertedHealthRatio * invertedHealthRatio);
+        double physicalModifier = woundedModifier * 0.75 + 0.25;
+        return (int) Math.round(base + physicalModifier * (maxHealth + intrinsicStrength * 2 + intrinsicArmor * 2 + intrinsicArmorToughness * 3));
+    }
+
+    private static double getAttributeBaseValue(LivingEntity entity, EntityAttribute attribute) {
+        if (!entity.getAttributes().hasAttribute(attribute)) return 0;
+        return entity.getAttributeBaseValue(attribute);
     }
 
     @Override
