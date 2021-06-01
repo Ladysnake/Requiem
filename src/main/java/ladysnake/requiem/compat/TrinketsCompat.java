@@ -34,29 +34,19 @@
  */
 package ladysnake.requiem.compat;
 
-import io.github.frqnny.golemsgalore.GolemsGalore;
-import io.github.frqnny.golemsgalore.entity.LaserGolemEntity;
-import io.github.frqnny.golemsgalore.entity.ai.laser.FireLaserGoal;
-import ladysnake.requiem.api.v1.RequiemApi;
-import ladysnake.requiem.api.v1.RequiemPlugin;
+import dev.emi.trinkets.api.TrinketsApi;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.common.entity.ability.TickingGoalAbility;
-import net.minecraft.entity.LivingEntity;
+import ladysnake.requiem.api.v1.remnant.MobResurrectable;
+import nerdhub.cardinal.components.api.event.PlayerCopyCallback;
+import net.minecraft.nbt.CompoundTag;
 
-public final class GolemsGaloreCompat implements RequiemPlugin {
-
+public final class TrinketsCompat {
     @CalledThroughReflection
     public static void init() {
-        RequiemApi.registerPlugin(new GolemsGaloreCompat());
-    }
-
-    @Override
-    public void registerMobAbilities(MobAbilityRegistry registry) {
-        RequiemCompatibilityManager.<LaserGolemEntity>findEntityType(GolemsGalore.id("laser_golem"), object ->
-            registry.register(object, MobAbilityConfig.<LaserGolemEntity>builder().directAttack(golem -> new TickingGoalAbility<>(golem, new FireLaserGoal(golem), 20*2, 15, LivingEntity.class)).build()));
-        RequiemCompatibilityManager.<LaserGolemEntity>findEntityType(GolemsGalore.id("diamond_laser_golem"), object ->
-            registry.register(object, MobAbilityConfig.<LaserGolemEntity>builder().directAttack(golem -> new TickingGoalAbility<>(golem, new FireLaserGoal(golem), 20*2, 15, LivingEntity.class)).build()));
+        PlayerCopyCallback.EVENT.register((original, clone, lossless) -> {
+            if (((MobResurrectable) original).hasResurrectionEntity()) {
+                TrinketsApi.TRINKETS.get(clone).fromTag(TrinketsApi.TRINKETS.get(original).toTag(new CompoundTag()));
+            }
+        });
     }
 }

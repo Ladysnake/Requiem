@@ -33,6 +33,8 @@ public interface MobResurrectable {
      */
     void setResurrectionEntity(MobEntity secondLife);
 
+    boolean hasResurrectionEntity();
+
     /**
      * Spawns a previously set resurrection entity, and make the player start possessing the entity.
      */

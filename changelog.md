@@ -1,12 +1,21 @@
 ------------------------------------------------------
 Version 1.7.9
 ------------------------------------------------------
+**Additions**
+- Added Dutch localization (thanks Tijmen !)
+
+**Mod Compatibility**
+- Trinkets: Fixed trinkets disappearing when resurrecting as another mob
+- Golems Galore: You can now possess laser diamond golems
+- Into the Omega: Fixed a crash at launch due to mixin incompatibility
+
 **Fixes**
 - Fixed a crash when Biome Overhaul was ***not*** installed.
+- Fixed an inventory desync issue with arrows when using a crossbow as a Bolt Hoarder
 
 #### Pandemonium
 **Fixes**
-- Fixed a crash when Biome Overhaul was ***not*** installed.
+- Fixed a bug allowing players to make multiple duplicated shells at once
 
 ------------------------------------------------------
 Version 1.7.8

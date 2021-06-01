@@ -170,6 +170,10 @@ repositories {
         }
     }
     maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/"
+    }
+    maven {
         name = 'JitPack'
         url = 'https://jitpack.io'
         content {
@@ -229,6 +233,7 @@ dependencies {
 
     modRuntime "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
 //    modRuntime "io.github.adriantodt:FallFlyingLib:${fallflyinglib_version}"
+    modCompileOnly "dev.emi:trinkets:${trinkets_version}"
     modCompileOnly("curse.maven:Pehkui-319596:${pehkui_version}") { transitive = false }
 //    modRuntime("curse.maven:Pehkui-319596:${pehkui_version}") { transitive = false }
     modCompileOnly("curse.maven:Snow-Mercy-429949:${snowmercy_version}") { transitive = false }
@@ -244,6 +249,8 @@ dependencies {
     modRuntime("net.fabricmc:fabric-language-kotlin:${flk_version}")
     modRuntime("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
     modCompileOnly("curse.maven:golems-galore-387197:${golems_galore_version}")
+    modRuntime("curse.maven:golems-galore-387197:${golems_galore_version}")
+    modRuntime 'com.github.Draylar:structurized:1.2.0-1.16.5'
     modCompileOnly("curse.maven:the-bumblezone-fabric-363949:${bumblezone_version}")
 }
 

@@ -60,7 +60,11 @@ public abstract class CrossbowItemMixin extends RangedWeaponItem {
     private static boolean giveCrossbowInfinity(boolean creative, LivingEntity shooter, ItemStack crossbow) {
         if (!creative) {
             MobEntity possessed = PossessionComponent.getPossessedEntity(shooter);
-            if (possessed instanceof CrossbowUser && shooter.getRandom().nextFloat() < 0.5f) {
+            // the arrow consumption code is run on both sides for whatever reason. That complicates the random behaviour:
+            // - if we tell the client to eat an arrow but the server does not, the server will not update back => desync
+            // - if we tell the client to *not* eat an arrow but the server does, the server will update back => everything's fine
+            // so we default to telling the client that we are never using arrows and letting the server do the work
+            if (possessed instanceof CrossbowUser && (shooter.getRandom().nextFloat() < 0.5f || shooter.world.isClient)) {
                 crossbow.getOrCreateTag().putBoolean(VanillaRequiemPlugin.INFINITY_SHOT_TAG, true);
                 return true;
             }
@@ -68,12 +72,14 @@ public abstract class CrossbowItemMixin extends RangedWeaponItem {
         return creative;
     }
 
-    @ModifyVariable(method = "shootAll", at = @At(value = "STORE", ordinal = 0), ordinal = 0)
-    private static boolean preventBoltPickup(boolean creative, World world, LivingEntity entity, Hand hand, ItemStack crossbow) {
-        NbtCompound tag = crossbow.getTag();
-        if (tag != null && tag.getBoolean(VanillaRequiemPlugin.INFINITY_SHOT_TAG)) {
-            tag.remove(VanillaRequiemPlugin.INFINITY_SHOT_TAG);
-            return true;
+    @ModifyVariable(method = "shoot", at = @At("HEAD"), ordinal = 0, argsOnly = true)
+    private static boolean preventBoltPickup(boolean creative, World world, LivingEntity shooter, Hand hand, ItemStack crossbow, ItemStack projectile, float soundPitch, boolean creative2, float speed, float divergence, float simulated) {
+        if (!world.isClient && simulated == 0) {
+            NbtCompound tag = crossbow.getTag();
+            if (tag != null && tag.getBoolean(VanillaRequiemPlugin.INFINITY_SHOT_TAG)) {
+                tag.remove(VanillaRequiemPlugin.INFINITY_SHOT_TAG);
+                return true;
+            }
         }
         return creative;
     }

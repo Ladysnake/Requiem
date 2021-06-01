@@ -84,6 +84,11 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
     }
 
     @Override
+    public boolean hasResurrectionEntity() {
+        return this.requiem_possessedEntityTag != null;
+    }
+
+    @Override
     public void spawnResurrectionEntity() {
         if (this.requiem_possessedEntityTag != null) {
             Entity formerPossessed = EntityType.loadEntityWithPassengers(

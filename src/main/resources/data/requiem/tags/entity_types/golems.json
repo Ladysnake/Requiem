@@ -12,6 +12,7 @@
     {"id": "snowmercy:sawman", "required": false},
     {"id": "golemsgalore:anti_creeper_golem", "required": false},
     {"id": "golemsgalore:diamond_golem", "required": false},
+    {"id": "golemsgalore:diamond_laser_golem", "required": false},
     {"id": "golemsgalore:golden_golem", "required": false},
     {"id": "golemsgalore:hay_golem", "required": false},
     {"id": "golemsgalore:laser_golem", "required": false},
