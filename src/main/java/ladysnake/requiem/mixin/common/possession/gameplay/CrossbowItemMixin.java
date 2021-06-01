@@ -68,12 +68,14 @@ public abstract class CrossbowItemMixin extends RangedWeaponItem {
         return creative;
     }
 
-    @ModifyVariable(method = "shootAll", at = @At(value = "STORE", ordinal = 0), ordinal = 0)
-    private static boolean preventBoltPickup(boolean creative, World world, LivingEntity entity, Hand hand, ItemStack crossbow) {
-        CompoundTag tag = crossbow.getTag();
-        if (tag != null && tag.getBoolean(VanillaRequiemPlugin.INFINITY_SHOT_TAG)) {
-            tag.remove(VanillaRequiemPlugin.INFINITY_SHOT_TAG);
-            return true;
+    @ModifyVariable(method = "shoot", at = @At("HEAD"), ordinal = 0, argsOnly = true)
+    private static boolean preventBoltPickup(boolean creative, World world, LivingEntity shooter, Hand hand, ItemStack crossbow, ItemStack projectile, float soundPitch, boolean creative2, float speed, float divergence, float simulated) {
+        if (!world.isClient && simulated == 0) {
+            CompoundTag tag = crossbow.getTag();
+            if (tag != null && tag.getBoolean(VanillaRequiemPlugin.INFINITY_SHOT_TAG)) {
+                tag.remove(VanillaRequiemPlugin.INFINITY_SHOT_TAG);
+                return true;
+            }
         }
         return creative;
     }
