@@ -97,7 +97,7 @@ public class SimpleCurableEntityComponent implements CurableEntityComponent {
                 ItemStack itemStack = this.entity.getEquippedStack(equipmentSlot);
                 if (!itemStack.isEmpty()) {
                     if (EnchantmentHelper.hasBindingCurse(itemStack)) {
-                        cured.getCommandItemSlot(equipmentSlot.getEntitySlotId() + 300).set(itemStack);
+                        cured.getStackReference(equipmentSlot.getEntitySlotId() + 300).set(itemStack);
                     } else {
                         this.entity.dropStack(itemStack);
                     }

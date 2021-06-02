@@ -47,7 +47,7 @@ public class MainHandSlot extends Slot {
     }
 
     @Override
-    public boolean doDrawHoveringEffect() {
+    public boolean isEnabled() {
         return !limiter.isSlotLocked(PlayerInventoryLimiter.MAINHAND_SLOT) && limiter.getInventoryShape().hidesMainInventory();
     }
 }

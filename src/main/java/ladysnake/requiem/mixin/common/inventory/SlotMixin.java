@@ -83,7 +83,7 @@ public abstract class SlotMixin {
     }
 
     @Environment(EnvType.CLIENT)
-    @Inject(method = "doDrawHoveringEffect", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "isEnabled", at = @At("HEAD"), cancellable = true)
     private void preventSpecialRender(CallbackInfoReturnable<Boolean> cir) {
         if (this.shouldBeInvisible()) cir.setReturnValue(false);
     }
