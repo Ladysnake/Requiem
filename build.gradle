@@ -35,6 +35,10 @@ allprojects {
 
     version = project.mod_version
 
+    configurations {
+        dev
+    }
+
     repositories {
         mavenLocal()
         mavenCentral()
@@ -55,9 +59,8 @@ allprojects {
         options.encoding = 'UTF-8'
     }
 
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        archiveClassifier = 'sources'
-        from sourceSets.main.allSource
+    java {
+        withSourcesJar()
     }
 
     apply from: rootProject.file('utilities.gradle')
@@ -77,6 +80,12 @@ allprojects {
         compileOnly "com.demonwav.mcdev:annotations:1.0"
 
         testImplementation "org.junit.jupiter:junit-jupiter-api:5.4.0-M1"
+    }
+
+    afterEvaluate {
+        artifacts {
+            dev file: file("${project.buildDir}/libs/$archivesBaseName-${version}-dev.jar"), type: "jar", builtBy: jar
+        }
     }
 
     license {
@@ -184,7 +193,7 @@ repositories {
 }
 
 dependencies {
-    api project(":requiem-api")
+    api project(path: ":requiem-api", configuration: "dev")
     // including too early causes a circular dependency somehow
     afterEvaluate {
         include project(":requiem-api")
@@ -249,8 +258,8 @@ dependencies {
     modRuntime("net.fabricmc:fabric-language-kotlin:${flk_version}")
     modRuntime("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
     modCompileOnly("curse.maven:golems-galore-387197:${golems_galore_version}")
-    modRuntime("curse.maven:golems-galore-387197:${golems_galore_version}")
-    modRuntime 'com.github.Draylar:structurized:1.2.0-1.16.5'
+//    modRuntime("curse.maven:golems-galore-387197:${golems_galore_version}")
+//    modRuntime 'com.github.Draylar:structurized:1.3.0-21w20a'
     modCompileOnly("curse.maven:the-bumblezone-fabric-363949:${bumblezone_version}")
 }
 
