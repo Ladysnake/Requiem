@@ -66,7 +66,7 @@ public class DebugItem extends Item {
                 case 0:
                     if (world.isClient) {
                         if (DeathSuspender.get(player).isLifeTransient()) {
-                            RequiemNetworking.sendToServer(RequiemNetworking.createDialogueActionMessage(PlayerDialogueTracker.BECOME_REMNANT));
+                            RequiemNetworking.sendDialogueActionMessage(PlayerDialogueTracker.BECOME_REMNANT);
                             DeathSuspender.get(player).setLifeTransient(false);
                         } else {
                             DeathSuspender.get(player).setLifeTransient(true);

@@ -23,8 +23,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.apiguardian.api.API;
 
-import javax.annotation.Nullable;
-
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 public interface DialogueRegistry {
@@ -36,14 +34,13 @@ public interface DialogueRegistry {
      * one should prefer using implementing {@link RequiemPlugin#registerDialogueActions(DialogueRegistry)}
      * to do so at an appropriate time.
      *
-     * @param world the world for which to get the dialogue registry, or {@code null} to get the main registry
      * @return the dialogue registry for the given world
      */
-    static DialogueRegistry get(@Nullable World world) {
-        return ApiInternals.getDialogueRegistry(world);
+    static DialogueRegistry get() {
+        return ApiInternals.getDialogueRegistry();
     }
 
-    CutsceneDialogue getDialogue(Identifier id);
+    CutsceneDialogue startDialogue(World world, Identifier id);
 
     @API(status = EXPERIMENTAL)
     void registerAction(Identifier actionId, DialogueAction action);

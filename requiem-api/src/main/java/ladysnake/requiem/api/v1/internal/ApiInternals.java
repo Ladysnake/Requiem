@@ -71,11 +71,11 @@ public final class ApiInternals {
     @AccessedThroughReflection
     private static SubDataManagerHelper serverSubDataManagerHelper;
     @AccessedThroughReflection
+    private static DialogueRegistry dialogueRegistry;
+    @AccessedThroughReflection
     private static MobAbilityRegistry mobAbilityRegistry;
     @AccessedThroughReflection
     private static SoulbindingRegistry soulbindingRegistry;
-    @AccessedThroughReflection
-    private static Function<@Nullable World, DialogueRegistry> dialogueRegistryGetter;
     @AccessedThroughReflection
     private static Function<@Nullable World, MovementRegistry> movementRegistryGetter;
     @AccessedThroughReflection
@@ -127,9 +127,9 @@ public final class ApiInternals {
         return soulbindingRegistry;
     }
 
-    public static DialogueRegistry getDialogueRegistry(@Nullable World world) {
-        if (dialogueRegistryGetter == null) throw new UninitializedApiException("DialogueRegistry is not available");
-        return dialogueRegistryGetter.apply(world);
+    public static DialogueRegistry getDialogueRegistry() {
+        if (dialogueRegistry == null) throw new UninitializedApiException("DialogueRegistry is not available");
+        return dialogueRegistry;
     }
 
     public static MovementRegistry getMovementRegistry(@Nullable World world) {

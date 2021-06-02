@@ -35,38 +35,31 @@
 package ladysnake.requiem.common.impl.remnant.dialogue;
 
 import com.google.common.collect.ImmutableList;
-import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
+import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
-import net.minecraft.network.PacketByteBuf;
+import ladysnake.requiem.common.util.MoreCodecs;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-public final class DialogueState {
-    private Text text;
-    private List<Choice> choices;
-    @Nullable
-    private Identifier action;
-    private ChoiceResult type;
-
-    @CalledThroughReflection
-    public DialogueState() {
-        this(LiteralText.EMPTY, Collections.emptyList(), null, ChoiceResult.DEFAULT);
-    }
-
-    private DialogueState(Text text, List<Choice> choices, @Nullable Identifier action, ChoiceResult type) {
-        this.text = text;
-        this.choices = choices;
-        this.action = action;
-        this.type = type;
-    }
-
-    public Text getText() {
-        return text;
+public record DialogueState(
+    Text text,
+    List<Choice> choices,
+    Optional<Identifier> action,
+    ChoiceResult type
+) {
+    static Codec<DialogueState> codec(Codec<JsonElement> jsonCodec) {
+        return RecordCodecBuilder.create(instance -> instance.group(
+            MoreCodecs.text(jsonCodec).optionalFieldOf("text", LiteralText.EMPTY).forGetter(DialogueState::text),
+            Codec.list(Choice.codec(jsonCodec)).optionalFieldOf("choices", List.of()).forGetter(DialogueState::choices),
+            Identifier.CODEC.optionalFieldOf("action").forGetter(DialogueState::action),
+            MoreCodecs.enumeration(ChoiceResult.class).optionalFieldOf("type", ChoiceResult.DEFAULT).forGetter(DialogueState::type)
+        ).apply(instance, DialogueState::new));
     }
 
     public ImmutableList<Text> getAvailableChoices() {
@@ -81,53 +74,24 @@ public final class DialogueState {
         return this.choices.get(choice).next();
     }
 
-    public ChoiceResult getType() {
-        return type;
-    }
-
-    @Nullable
-    public Identifier getAction() {
-        return action;
-    }
-
-    public DialogueState readFromPacket(PacketByteBuf buf) {
-        this.text = buf.readText();
-        int nbChoices = buf.readByte();
-        ImmutableList.Builder<Choice> choices = ImmutableList.builder();
-        for (int i = 0; i < nbChoices; i++) {
-            choices.add(new Choice(buf.readText(), buf.readString()));
-        }
-        this.choices = choices.build();
-        String actionStr = buf.readString();
-        if (!actionStr.isEmpty()) {
-            this.action = new Identifier(actionStr);
-        }
-        this.type = buf.readEnumConstant(ChoiceResult.class);
-        return this;
-    }
-
-    public void writeToPacket(PacketByteBuf buf) {
-        buf.writeText(this.text);
-        buf.writeByte((byte)this.choices.size());
-        for (Choice choice : this.choices) {
-            buf.writeText(choice.text());
-            buf.writeString(choice.next());
-        }
-        buf.writeString(this.action == null ? "" : this.action.toString());
-        buf.writeEnumConstant(this.type);
-    }
-
     @Override
     public String toString() {
         String representation = "DialogueState{" +
-                "text='" + text + '\'' +
-                ", choices=" + choices +
-                ", type=" + type;
-        if (this.action != null) {
-            representation += ", action=" + action;
+            "text='" + text + '\'' +
+            ", choices=" + choices +
+            ", type=" + type;
+        if (this.action.isPresent()) {
+            representation += ", action=" + action.get();
         }
         return representation + '}';
     }
 
-    public record Choice(Text text, String next) {}
+    public record Choice(Text text, String next) {
+        static Codec<Choice> codec(Codec<JsonElement> jsonCodec) {
+            return RecordCodecBuilder.create(instance -> instance.group(
+                MoreCodecs.text(jsonCodec).fieldOf("text").forGetter(Choice::text),
+                Codec.STRING.fieldOf("next").forGetter(Choice::next)
+            ).apply(instance, Choice::new));
+        }
+    }
 }

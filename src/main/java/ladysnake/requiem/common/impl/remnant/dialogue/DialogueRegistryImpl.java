@@ -32,25 +32,41 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.possession.possessed;
+package ladysnake.requiem.common.impl.remnant.dialogue;
 
-import ladysnake.requiem.api.v1.internal.ProtoPossessable;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.entity.EntityLike;
-import org.spongepowered.asm.mixin.Mixin;
+import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
+import ladysnake.requiem.api.v1.dialogue.DialogueAction;
+import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
+import ladysnake.requiem.common.RequiemRegistries;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
-@Mixin(EntityLike.class)
-public interface EntityLikeMixin extends ProtoPossessable {
-    @Nullable
+public final class DialogueRegistryImpl implements DialogueRegistry {
+    private final Map<Identifier, DialogueAction> actions = new HashMap<>();
+
     @Override
-    default PlayerEntity getPossessor() {
-        return null;
+    public CutsceneDialogue startDialogue(World world, Identifier id) {
+        return new DialogueStateMachine(
+            world.getRegistryManager().get(RequiemRegistries.DIALOGUES).getOrEmpty(id)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown dialogue " + id))
+        );
     }
 
     @Override
-    default boolean isBeingPossessed() {
-        return false;
+    public void registerAction(Identifier actionId, DialogueAction action) {
+        this.actions.put(actionId, action);
+    }
+
+    @Override
+    public DialogueAction getAction(Identifier actionId) {
+        if (!this.actions.containsKey(actionId)) {
+            Requiem.LOGGER.warn("[Requiem] Unknown dialogue action {}", actionId);
+            return DialogueAction.NONE;
+        }
+        return this.actions.get(actionId);
     }
 }

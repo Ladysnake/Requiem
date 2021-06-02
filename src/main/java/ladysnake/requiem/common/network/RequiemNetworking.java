@@ -160,10 +160,10 @@ public class RequiemNetworking {
         return new CustomPayloadC2SPacket(OPUS_UPDATE, buf);
     }
 
-    public static CustomPayloadC2SPacket createDialogueActionMessage(Identifier action) {
+    public static void sendDialogueActionMessage(Identifier action) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeIdentifier(action);
-        return new CustomPayloadC2SPacket(DIALOGUE_ACTION, buf);
+        sendToServer(new CustomPayloadC2SPacket(DIALOGUE_ACTION, buf));
     }
 
     public static void sendAbilityUseMessage(AbilityType type, Entity entity) {

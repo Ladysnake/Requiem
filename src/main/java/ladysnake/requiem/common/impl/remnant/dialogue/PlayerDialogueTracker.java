@@ -54,7 +54,7 @@ public final class PlayerDialogueTracker implements DialogueTracker {
     private @Nullable CutsceneDialogue currentDialogue;
 
     public PlayerDialogueTracker(PlayerEntity player) {
-        this.manager = DialogueRegistry.get(player.world);
+        this.manager = DialogueRegistry.get();
         this.player = player;
     }
 
@@ -69,8 +69,7 @@ public final class PlayerDialogueTracker implements DialogueTracker {
 
     @Override
     public void startDialogue(Identifier id) {
-        this.currentDialogue = this.manager.getDialogue(id);
-        this.currentDialogue.start();
+        this.currentDialogue = this.manager.startDialogue(this.player.world, id);
     }
 
     @Override

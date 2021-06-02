@@ -37,6 +37,7 @@ package ladysnake.requiem.common.impl;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.RequiemPlugin;
+import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.internal.ApiInternals;
@@ -49,7 +50,7 @@ import ladysnake.requiem.common.impl.data.CommonSubDataManagerHelper;
 import ladysnake.requiem.common.impl.data.ServerSubDataManagerHelper;
 import ladysnake.requiem.common.impl.movement.MovementAltererManager;
 import ladysnake.requiem.common.impl.remnant.SoulbindingRegistryImpl;
-import ladysnake.requiem.common.impl.remnant.dialogue.DialogueManager;
+import ladysnake.requiem.common.impl.remnant.dialogue.DialogueRegistryImpl;
 import ladysnake.requiem.common.util.reflection.ReflectionHelper;
 import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
 import net.fabricmc.loader.api.FabricLoader;
@@ -74,6 +75,8 @@ public final class ApiInitializer {
                 new ServerSubDataManagerHelper());
             ReflectionHelper.<SubDataManagerHelper>setField(ApiInternals.class.getDeclaredField("clientSubDataManagerHelper"),
                 new CommonSubDataManagerHelper());
+            ReflectionHelper.<DialogueRegistry>setField(ApiInternals.class.getDeclaredField("dialogueRegistry"),
+                new DialogueRegistryImpl());
             ReflectionHelper.<MobAbilityRegistry>setField(ApiInternals.class.getDeclaredField("mobAbilityRegistry"),
                 new DefaultedMobAbilityRegistry(ImmutableMobAbilityConfig.DEFAULT));
             ReflectionHelper.<SoulbindingRegistry>setField(ApiInternals.class.getDeclaredField("soulbindingRegistry"),
@@ -86,7 +89,6 @@ public final class ApiInitializer {
     }
 
     private static void initSubDataManagers() throws IllegalAccessException, NoSuchFieldException {
-        initSubDataManager(DialogueManager::new, ApiInternals.class.getDeclaredField("dialogueRegistryGetter"));
         initSubDataManager(MovementAltererManager::new, ApiInternals.class.getDeclaredField("movementRegistryGetter"));
     }
 

@@ -28,7 +28,6 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.api.v1.remnant.VagrantInteractionRegistry;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
 import org.apiguardian.api.API;
 
 /**
@@ -73,7 +72,7 @@ public interface RequiemPlugin {
      * are registered.
      *
      * @param registry Requiem's dialogue registry
-     * @see DialogueRegistry#get(World)
+     * @see DialogueRegistry#get()
      */
     default void registerDialogueActions(DialogueRegistry registry) {}
 

@@ -21,8 +21,6 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.text.Text;
 
 public interface CutsceneDialogue {
-    void start();
-
     Text getCurrentText();
 
     ImmutableList<Text> getCurrentChoices();

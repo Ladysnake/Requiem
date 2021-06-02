@@ -35,48 +35,33 @@
 package ladysnake.requiem.common.impl.remnant.dialogue;
 
 import com.google.common.collect.ImmutableList;
-import com.google.gson.annotations.SerializedName;
 import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.common.network.RequiemNetworking;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class DialogueStateMachine implements CutsceneDialogue {
-    @SerializedName("start_at")
-    private String start;
-    private Map<String, DialogueState> states;
-    @Nullable
-    private transient DialogueState currentState;
-    private transient ImmutableList<Text> currentChoices = ImmutableList.of();
 
-    public DialogueStateMachine() {
-        this("", new HashMap<>());
-    }
+    private final Map<String, DialogueState> states;
+    private @Nullable DialogueState currentState;
+    private ImmutableList<Text> currentChoices = ImmutableList.of();
 
-    private DialogueStateMachine(String start, Map<String, DialogueState> states) {
-        this.start = start;
-        this.states = states;
-    }
-
-    @Override
-    public void start() {
-        this.selectState(this.start);
+    public DialogueStateMachine(DialogueTemplate template) {
+        this.states = template.states();
+        this.selectState(template.start());
     }
 
     private DialogueState getCurrentState() {
-        return Objects.requireNonNull(this.currentState, "{} has not been initialized !");
+        return Objects.requireNonNull(this.currentState, () -> this + " has not been initialized !");
     }
 
     @Override
     public Text getCurrentText() {
-        return this.getCurrentState().getText();
+        return this.getCurrentState().text();
     }
 
     @Override
@@ -95,37 +80,13 @@ public class DialogueStateMachine implements CutsceneDialogue {
         }
         this.currentState = this.states.get(state);
         this.currentChoices = this.currentState.getAvailableChoices();
-        Identifier action = currentState.getAction();
-        if (action != null) {
-            RequiemNetworking.sendToServer(RequiemNetworking.createDialogueActionMessage(action));
-        }
-        return this.currentState.getType();
-    }
-
-    public DialogueStateMachine readFromPacket(PacketByteBuf buf) {
-        this.start = buf.readString();
-        int nbStates = buf.readVarInt();
-        this.states = new HashMap<>(nbStates);
-        for (int i = 0; i < nbStates; i++) {
-            this.states.put(buf.readString(), new DialogueState().readFromPacket(buf));
-        }
-        return this;
-    }
-
-    public void writeToPacket(PacketByteBuf buf) {
-        buf.writeString(this.start);
-        buf.writeVarInt((byte) this.states.size());
-        for (Map.Entry<String, DialogueState> entry : this.states.entrySet()) {
-            buf.writeString(entry.getKey());
-            entry.getValue().writeToPacket(buf);
-        }
+        currentState.action().ifPresent(RequiemNetworking::sendDialogueActionMessage);
+        return this.currentState.type();
     }
 
     @Override
     public String toString() {
-        return "DialogueStateMachine{" +
-                "start_at:'" + start + '\'' +
-                ", states:" + states +
-                '}';
+        return "DialogueStateMachine" + this.states;
     }
+
 }

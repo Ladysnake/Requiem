@@ -113,7 +113,7 @@ public final class Requiem implements ModInitializer {
         plugin.registerMobAbilities(MobAbilityRegistry.instance());
         plugin.registerSoulBindings(SoulbindingRegistry.instance());
         plugin.registerVagrantInteractions(VagrantInteractionRegistryImpl.INSTANCE);
-        plugin.registerDialogueActions(DialogueRegistry.get(null));
+        plugin.registerDialogueActions(DialogueRegistry.get());
         plugin.registerPossessionItemActions(RequiemRegistries.MOB_ACTIONS);
     }
 }
