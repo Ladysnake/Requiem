@@ -118,10 +118,11 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
 
     @Override
     public boolean isSlotInvisible(int playerSlot) {
+        InventoryShape inventoryShape = this.getInventoryShape();
         return this.player.currentScreenHandler == this.player.playerScreenHandler
-            && this.getInventoryShape() != InventoryShape.NORMAL
-            && (this.getInventoryShape() != InventoryShape.ALT_SMALL || playerSlot >= 9)
-            && (this.isSlotLocked(playerSlot) || (playerSlot == MAINHAND_SLOT && this.isMainInventoryLocked()));
+            && inventoryShape != InventoryShape.NORMAL
+            && (inventoryShape != InventoryShape.ALT_SMALL || playerSlot >= 9)
+            && (this.isSlotLocked(playerSlot) || (playerSlot == MAINHAND_SLOT && inventoryShape == InventoryShape.ALT));
     }
 
     @Override
