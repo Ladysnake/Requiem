@@ -8,6 +8,7 @@
     "event.ItemStackTooltipMixin",
     "inventory.CraftingScreenMixin",
     "inventory.InventoryScreenMixin",
+    "inventory.RecipeBookWidgetMixin",
     "opus.BookScreenMixin",
     "opus.EditBookScreenAccessor",
     "opus.LecternScreenMixin",
