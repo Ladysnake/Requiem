@@ -4,7 +4,7 @@
     "flightMode": "FORCED",
     "swimMode": "DISABLED",
     "inertia": 0.5,
-    "gravity":0.03
+    "gravity": 0.03
   },
   "minecraft:bee": {
     "fallSpeedModifier": 0.9,
@@ -13,7 +13,7 @@
     "inertia": 0.8,
     "gravity": 0.005
   },
-  "minecraft:blaze":  {
+  "minecraft:blaze": {
     "flightMode": "FORCED",
     "inertia": 0.95,
     "gravity": 0.005
@@ -55,7 +55,7 @@
   "minecraft:parrot": {
     "flightMode": "ENABLED",
     "swimMode": "DISABLED",
-    "gravity":0.01,
+    "gravity": 0.01,
     "fallSpeedModifier": 0.8,
     "walkSpeedModifier": -0.8,
     "required": false
@@ -104,13 +104,13 @@
   "minecraft:ender_dragon": {
     "flightMode": "FORCED",
     "inertia": 0.9
- },
+  },
   "biomemakeover:blightbat": {
     "fallSpeedModifier": 0.9,
     "flightMode": "FORCED",
     "swimMode": "DISABLED",
     "inertia": 0.5,
-    "gravity":0.03,
+    "gravity": 0.03,
     "required": false
   },
   "biomemakeover:ghost": {
@@ -118,7 +118,7 @@
     "flightMode": "FORCED",
     "swimMode": "DISABLED",
     "inertia": 0.8,
-    "gravity":0.01,
+    "gravity": 0.01,
     "required": false
   },
   "biomemakeover:giant_slime": {
@@ -142,13 +142,13 @@
     "flightMode": "FORCED",
     "swimMode": "DISABLED",
     "inertia": 0.65,
-    "gravity":0.008,
+    "gravity": 0.008,
     "required": false
   },
   "biomemakeover:owl": {
     "flightMode": "ENABLED",
     "swimMode": "DISABLED",
-    "gravity":0.01,
+    "gravity": 0.01,
     "fallSpeedModifier": 0.7,
     "walkSpeedModifier": -0.8,
     "required": false
@@ -158,25 +158,25 @@
     "flopsOnLand": true,
     "required": false
   },
-  "adventurez:blaze_guardian":  {
+  "adventurez:blaze_guardian": {
     "flightMode": "FORCED",
     "inertia": 0.95,
     "gravity": 0.005,
     "required": false
   },
- "mobz:frost_entity":  {
-  "flightMode": "FORCED",
-  "inertia": 0.95,
-  "gravity": 0.005,
-  "required": false
- },
- "mobz:gchicken_entity": {
-  "fallSpeedModifier": 0.6,
-  "required":false
- },
-"mobz:islandvex_entity": {
-  "flightMode": "FORCED",
-  "phasesThroughWalls": true,
-  "required": false
- }
+  "mobz:frost_entity": {
+    "flightMode": "FORCED",
+    "inertia": 0.95,
+    "gravity": 0.005,
+    "required": false
+  },
+  "mobz:gchicken_entity": {
+    "fallSpeedModifier": 0.6,
+    "required": false
+  },
+  "mobz:islandvex_entity": {
+    "flightMode": "FORCED",
+    "phasesThroughWalls": true,
+    "required": false
+  }
 }
