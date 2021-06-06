@@ -120,7 +120,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
     }
 
     private void applyWalkSpeedModifier() {
-        EntityAttributeInstance speedAttribute = getPlayerOrPossessed(this.player).getAttributes().getCustomInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+        EntityAttributeInstance speedAttribute = getCurrentBody(this.player).getAttributes().getCustomInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
         if (speedAttribute != null) {
             speedAttribute.removeModifier(SPEED_MODIFIER_UUID);
             if (config != null && config.getWalkSpeedModifier() != 1.0f) {
@@ -133,7 +133,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
     @Override
     public void alterControls() {
         if (this.config != null
-            && getActualSwimMode(this.config, getPlayerOrPossessed(this.player)) == SwimMode.FLOATING
+            && getActualSwimMode(this.config, getCurrentBody(this.player)) == SwimMode.FLOATING
             && isInFluid(this.player)
             && this.player.getRandom().nextFloat() < 0.8F
         ) {
@@ -148,7 +148,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
 
     @Override
     public float getSwimmingAcceleration(float baseAcceleration) {
-        if (this.config != null && getActualSwimMode(this.config, getPlayerOrPossessed(player)) == SwimMode.FORCED) {
+        if (this.config != null && getActualSwimMode(this.config, getCurrentBody(player)) == SwimMode.FORCED) {
             return 0.96F;
         }
         return baseAcceleration;
@@ -156,7 +156,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
 
     @Override
     public double getSwimmingUpwardsVelocity(double baseUpwardsVelocity) {
-        if (this.config != null && getActualSwimMode(this.config, getPlayerOrPossessed(player)) == SwimMode.SINKING) {
+        if (this.config != null && getActualSwimMode(this.config, getCurrentBody(player)) == SwimMode.SINKING) {
             double y = this.player.getY();
             if (this.player.isOnGround()) {    // starting the jump
                 this.underwaterJumpStartY = y;
@@ -194,7 +194,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
                     this.playPhaseEffects();
                 }
             }
-            if (this.config.getWalkMode() == WalkMode.JUMPY && this.player.isOnGround() && !getIntendedMovement(player).equals(Vec3d.ZERO)) {
+            if (getActualWalkMode(this.config, getCurrentBody(player)) == WalkMode.JUMPY && this.player.isOnGround() && !getIntendedMovement(player).equals(Vec3d.ZERO)) {
                 this.player.jump();
             }
             if (this.underwaterJumpAscending && !mainPlayer.input.jumping) {
@@ -228,7 +228,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
         if (this.config == null) {
             return;
         }
-        LivingEntity body = getPlayerOrPossessed(player);
+        LivingEntity body = getCurrentBody(player);
         updateSwimming();
 
         if (getActualFlightMode(config, body) == FORCED || this.noClipping) {
@@ -256,7 +256,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
     @Override
     public void updateSwimming() {
         if (config != null) {
-            SwimMode swimMode = getActualSwimMode(config, getPlayerOrPossessed(player));
+            SwimMode swimMode = getActualSwimMode(config, getCurrentBody(player));
             if (swimMode.sprintSwims() != TriState.DEFAULT) {
                 player.setSwimming(swimMode.sprintSwims().get());
             }
@@ -265,7 +265,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
 
     @Override
     public boolean disablesSwimming() {
-        return config != null && !getActualSwimMode(config, getPlayerOrPossessed(player)).sprintSwims().orElse(true);
+        return config != null && !getActualSwimMode(config, getCurrentBody(player)).sprintSwims().orElse(true);
     }
 
     @Override
@@ -358,7 +358,7 @@ public class PlayerMovementAlterer implements MovementAlterer {
         return velocity;
     }
 
-    private static LivingEntity getPlayerOrPossessed(PlayerEntity player) {
+    private static LivingEntity getCurrentBody(PlayerEntity player) {
         LivingEntity possessed = PossessionComponent.get(player).getPossessedEntity();
         return possessed == null ? player : possessed;
     }
@@ -370,6 +370,14 @@ public class PlayerMovementAlterer implements MovementAlterer {
             return RequiemEntityTypeTags.GOLEMS.contains(type) || entity instanceof LivingEntity && ((LivingEntity) entity).isUndead();
         }
         return config.shouldSinkInWater().get();
+    }
+
+    private static WalkMode getActualWalkMode(MovementConfig config, LivingEntity body) {
+        WalkMode walkMode = config.getWalkMode();
+        if (walkMode == WalkMode.UNSPECIFIED) {
+            return body instanceof SlimeEntity ? WalkMode.JUMPY : WalkMode.NORMAL;
+        }
+        return walkMode;
     }
 
     private static SwimMode getActualSwimMode(MovementConfig config, Entity entity) {
