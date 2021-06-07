@@ -56,7 +56,7 @@ public final class FractureKeyBinding {
     public static final KeyBinding etherealFractureKey = new KeyBinding(
             ETHEREAL_FRACTURE,
             InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_WORLD_2,  // '<'
+            GLFW.GLFW_KEY_COMMA,  // '<'
             "key.categories.gameplay"
         );
 
