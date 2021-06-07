@@ -260,7 +260,7 @@ dependencies {
     modRuntime("curse.maven:golems-galore-387197:${golems_galore_version}")
     modRuntime 'com.github.Draylar:structurized:1.2.0-1.16.5'
     modCompileOnly("curse.maven:the-bumblezone-fabric-363949:${bumblezone_version}")
-    modCompile "curse.maven:bewitchment-394915:${bewitchment_version}"
+    modCompileOnly "curse.maven:bewitchment-394915:${bewitchment_version}"
     modRuntime "curse.maven:bewitchment-394915:${bewitchment_version}"
 }
 
