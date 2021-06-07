@@ -71,10 +71,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
-import java.util.Collections;
 import java.util.Objects;
-import java.util.Set;
-import java.util.WeakHashMap;
 
 public class PandemoniumRequiemPlugin implements RequiemPlugin {
 
@@ -93,15 +90,14 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
             PossessionStartCallback.EVENT.register(Pandemonium.id("allow_everything"), (target, possessor, simulate) -> PossessionStartCallback.Result.ALLOW);
         }
 
-        // lag can cause multiple fractures to be initiated in the same tick
-        // the old player however will never be marked as vagrant, only the new one will
-        Set<ServerPlayerEntity> splittingPlayers = Collections.newSetFromMap(new WeakHashMap<>());
         InitiateFractureCallback.EVENT.register(player -> {
             RemnantComponent remnantState = RemnantComponent.get(player);
             PossessionComponent possessionComponent = PossessionComponent.get(player);
             boolean success;
 
-            if (!remnantState.isVagrant() && splittingPlayers.add(player)) {
+            // lag can cause multiple fractures to be initiated in the same tick
+            // the old player however will never be marked as vagrant, only the new one will
+            if (!remnantState.isVagrant() && !player.removed) {
                 PlayerSplitter.split(player);
                 success = true;
             } else if (possessionComponent.isPossessing()) {
