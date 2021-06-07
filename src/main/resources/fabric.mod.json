@@ -46,7 +46,9 @@
     "satin": "^1.6.0-",
     "cardinal-components-base": "^3.0.0-",
     "cardinal-components-scoreboard": "^3.0.0-",
-    "fabric-permissions-api-v0": "*"
+    "fabric-permissions-api-v0": "*",
+    "locki": "*",
+    "playerabilitylib": "*"
   },
   "recommends": {
     "cloth-config2": ">=4.11"

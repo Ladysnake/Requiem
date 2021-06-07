@@ -31,6 +31,12 @@ repositories {
         }
     }
     maven {
+        url = 'https://oss.sonatype.org/content/repositories/snapshots'
+        content {
+            includeGroup 'me.lucko'
+        }
+    }
+    maven {
         name = 'JitPack'
         url = 'https://jitpack.io'
     }
@@ -45,6 +51,10 @@ dependencies {
     modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${rootProject.cca_version}")
     modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
     include ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
+    modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-scoreboard:${cca_version}")
+    modImplementation "me.lucko:fabric-permissions-api:${fpa_version}"
+    modImplementation ("io.github.ladysnake:PlayerAbilityLib:${pal_version}")
+    modImplementation ("io.github.ladysnake:locki:${locki_version}")
     modImplementation ("io.github.ladysnake:Impersonate:${impersonate_version}") { transitive = false }
     include "io.github.ladysnake:Impersonate:${impersonate_version}"
     modImplementation "io.github.ladysnake:automatone:${automatone_version}"
