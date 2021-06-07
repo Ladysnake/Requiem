@@ -68,6 +68,7 @@
     "possession.possessor.StatusEffectInstanceMixin",
     "remnant.AbstractBlockStateMixin",
     "remnant.DamageTrackerMixin",
+    "remnant.EntityMixin",
     "remnant.EntityPredicatesMixin",
     "remnant.EntityShapeContextMixin",
     "remnant.HungerManagerMixin",
