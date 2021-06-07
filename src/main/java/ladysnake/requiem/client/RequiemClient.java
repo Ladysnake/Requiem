@@ -38,6 +38,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
 import ladysnake.requiem.client.network.ClientMessageHandler;
 import ladysnake.requiem.client.particle.CureParticle;
+import ladysnake.requiem.client.particle.EntityDustParticle;
 import ladysnake.requiem.client.particle.GhostParticle;
 import ladysnake.requiem.client.render.entity.CuredPiglinEntityRenderer;
 import ladysnake.requiem.client.render.entity.CuredVillagerEntityRenderer;
@@ -116,9 +117,11 @@ public final class RequiemClient implements ClientModInitializer {
     }
 
     private void registerParticleFactories() {
-        ParticleFactoryRegistry.getInstance().register(RequiemParticleTypes.GHOST, GhostParticle.Factory::new);
-        ParticleFactoryRegistry.getInstance().register(RequiemParticleTypes.ATTRITION, PortalParticle.Factory::new);
-        ParticleFactoryRegistry.getInstance().register(RequiemParticleTypes.CURE, CureParticle.Factory::new);
+        ParticleFactoryRegistry registry = ParticleFactoryRegistry.getInstance();
+        registry.register(RequiemParticleTypes.ATTRITION, PortalParticle.Factory::new);
+        registry.register(RequiemParticleTypes.CURE, CureParticle.Factory::new);
+        registry.register(RequiemParticleTypes.GHOST, GhostParticle.Factory::new);
+        registry.register(RequiemParticleTypes.ENTITY_DUST, new EntityDustParticle.Factory());
     }
 
     private void registerModelPredicates() {
