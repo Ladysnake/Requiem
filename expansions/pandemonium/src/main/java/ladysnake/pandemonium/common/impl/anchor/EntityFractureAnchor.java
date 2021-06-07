@@ -39,6 +39,7 @@ import ladysnake.pandemonium.mixin.common.access.WorldChunkAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
@@ -78,8 +79,8 @@ public class EntityFractureAnchor extends TrackedFractureAnchor {
             }
         } else {
             WorldChunk chunk = (WorldChunk) this.manager.getWorld().getChunk(((int) this.x) >> 4, ((int) this.z) >> 4, ChunkStatus.FULL, false);
-            // In some circumstances, it seems that a chunk can exist without its entities being found in the world
-            if (chunk != null && ((WorldChunkAccessor) chunk).isLoadedToWorld()) {
+            // In some circumstances, it seems that a chunk can be loaded without the entity being found in the world
+            if (chunk != null && chunk.getLevelType().isAfter(ChunkHolder.LevelType.ENTITY_TICKING)) {
                 // chunk is loaded but entity not in it -- assume dead
                 this.invalidate();
             }

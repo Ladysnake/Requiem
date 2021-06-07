@@ -213,7 +213,8 @@ dependencies {
     include "io.github.ladysnake:locki:${locki_version}"
     modImplementation "dev.emi.chime:chime:${chime_version}"
     include "io.github.emilyalexandra:chime:${chime_version}"
-    implementation "me.zeroeightsix:fiber:${project.fiber_version}"
+    // Fiber is technically not a mod and could use implementation, however that leaves it out of the generated pom.xml
+    modImplementation "me.zeroeightsix:fiber:${project.fiber_version}"
     include "me.zeroeightsix:fiber:${project.fiber_version}"
     modImplementation "me.lucko:fabric-permissions-api:${fpa_version}"
     include "me.lucko:fabric-permissions-api:${fpa_version}"
@@ -261,6 +262,8 @@ dependencies {
 //    modRuntime("curse.maven:golems-galore-387197:${golems_galore_version}")
 //    modRuntime 'com.github.Draylar:structurized:1.3.0-21w20a'
     modCompileOnly("curse.maven:the-bumblezone-fabric-363949:${bumblezone_version}")
+    modCompile "curse.maven:bewitchment-394915:${bewitchment_version}"
+    modRuntime "curse.maven:bewitchment-394915:${bewitchment_version}"
 }
 
 remapJar.dependsOn(project(":requiem-api").tasks.remapJar)

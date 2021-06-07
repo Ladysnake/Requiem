@@ -17,7 +17,20 @@
  */
 package ladysnake.requiem.api.v1.entity.movement;
 
+import ladysnake.requiem.api.v1.entity.MovementAlterer;
+
 public enum WalkMode {
+    /**
+     * The entity walks normally
+     */
     NORMAL,
-    JUMPY
+    /**
+     * The entity always jumps, like slimes
+     */
+    JUMPY,
+    /**
+     * No information, the {@link MovementAlterer} should use heuristics to determine which of the
+     * other modes to use
+     */
+    UNSPECIFIED
 }

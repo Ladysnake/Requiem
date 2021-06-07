@@ -64,7 +64,7 @@ public class SerializableMovementConfig implements MovementConfig {
     @CalledThroughReflection
     @API(status = API.Status.INTERNAL)
     public SerializableMovementConfig() {
-        this(MovementMode.UNSPECIFIED, SwimMode.UNSPECIFIED, WalkMode.NORMAL, TriState.DEFAULT, TriState.DEFAULT, false, 0, 1f, 1f, 0);
+        this(MovementMode.UNSPECIFIED, SwimMode.UNSPECIFIED, WalkMode.UNSPECIFIED, TriState.DEFAULT, TriState.DEFAULT, false, 0, 1f, 1f, 0);
     }
 
     @API(status = API.Status.INTERNAL)

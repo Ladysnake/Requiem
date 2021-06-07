@@ -1,0 +1,24 @@
+{
+  "replace": false,
+  "values": [
+    "#c:bosses",
+    {"id": "mobz:boss_entity", "required": false},
+    {"id": "mobz:bigboss_entity", "required": false},
+    {"id": "mobz:test_entity", "required": false},
+    {"id": "mobz:pillagerboss_entity", "required": false},
+    {"id": "adventurez:the_eye", "required": false},
+    {"id": "hugetater:potato", "required": false},
+    {"id": "battletowers:tower_guard", "required": false},
+    {"id": "bosses_of_mass_destruction:lich", "required": false},
+    {"id": "bosses_of_mass_destruction:obsidilith", "required": false},
+    {"id": "bosses_of_mass_destruction:gauntlet", "required": false},
+    {"id": "lint:king_tater", "required": false},
+    {"id": "lint:i509vcb", "required": false},
+    {"id": "terrarianslimes:king_slime", "required": false},
+    {"id": "intotheomega:enigma_king", "required": false},
+    {"id": "bewitchment:baphomet", "required": false},
+    {"id": "bewitchment:herne", "required": false},
+    {"id": "bewitchment:leonard", "required": false},
+    {"id": "bewitchment:lilith", "required": false}
+  ]
+}
