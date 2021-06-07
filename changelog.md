@@ -1,4 +1,23 @@
 ------------------------------------------------------
+Version 1.7.10
+------------------------------------------------------
+**Mod Compatibility**
+- Slimes should now be auto-detected as Jumpy
+- Ghosts from Bewitchment and Biome Makeover are in the possession blacklist by default (why are you trying to possess ghosts??)
+- Battle Towers/Bewitchment/Bosses of Mass Destruction/Lint/Terrarian Slimes/Into The Omega: all bosses have been blacklisted from possession
+- Eldritch Mobs: fixed crash at launch
+
+**Fixes**
+- Fixed the first hotbar slot appearing when it shouldn't
+
+#### Pandemonium
+**Changes**
+- Clarified wording for merging your soul with your original body
+
+**Fixes**
+- Hopefully fixed player shells being randomly considered dead when in an unloading chunk
+
+------------------------------------------------------
 Version 1.7.9
 ------------------------------------------------------
 **Additions**
