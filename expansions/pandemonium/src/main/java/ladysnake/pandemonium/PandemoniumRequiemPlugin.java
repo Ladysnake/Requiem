@@ -101,7 +101,7 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
             PossessionComponent possessionComponent = PossessionComponent.get(player);
             boolean success;
 
-            if (!remnantState.isVagrant() && !splittingPlayers.add(player)) {
+            if (!remnantState.isVagrant() && splittingPlayers.add(player)) {
                 PlayerSplitter.split(player);
                 success = true;
             } else if (possessionComponent.isPossessing()) {
