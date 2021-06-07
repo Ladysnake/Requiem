@@ -263,7 +263,6 @@ dependencies {
 //    modRuntime 'com.github.Draylar:structurized:1.3.0-21w20a'
     modCompileOnly("curse.maven:the-bumblezone-fabric-363949:${bumblezone_version}")
     modCompileOnly "curse.maven:bewitchment-394915:${bewitchment_version}"
-    modRuntime "curse.maven:bewitchment-394915:${bewitchment_version}"
 }
 
 remapJar.dependsOn(project(":requiem-api").tasks.remapJar)

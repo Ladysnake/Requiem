@@ -60,7 +60,8 @@
     "origins": "<0.6.0"
   },
   "breaks": {
-    "optifabric": "*"
+    "optifabric": "*",
+    "eldritch_mobs": "<1.8.0"
   },
 
   "name": "Requiem",
