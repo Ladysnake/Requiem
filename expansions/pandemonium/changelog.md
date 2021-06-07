@@ -1,4 +1,13 @@
 ------------------------------------------------------
+Version 1.7.10
+------------------------------------------------------
+**Changes**
+- Clarified wording for merging your soul with your original body
+
+**Fixes**
+- Hopefully fixed player shells being randomly considered dead when in an unloading chunk
+
+------------------------------------------------------
 Version 1.7.9
 ------------------------------------------------------
 **Fixes**
