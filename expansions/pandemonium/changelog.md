@@ -1,4 +1,11 @@
 ------------------------------------------------------
+Version 1.7.11
+------------------------------------------------------
+**Fixes**
+- Fixed a bug allowing players to make multiple duplicated shells at once, but for real this time
+- Fixed a bug requiring players to press the dissociation key twice to make a shell
+
+------------------------------------------------------
 Version 1.7.10
 ------------------------------------------------------
 **Changes**

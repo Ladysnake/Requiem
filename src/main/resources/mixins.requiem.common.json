@@ -29,6 +29,7 @@
     "inventory.PlayerScreenHandlerAccessor",
     "inventory.PlayerScreenHandlerMixin",
     "inventory.SlotMixin",
+    "inventory.balance.EntityPredicatesEquipableMixin",
     "opus.LecternBlockEntityMixin",
     "possession.EntityAttributeInstanceMixin",
     "possession.ServerWorldMixin",
