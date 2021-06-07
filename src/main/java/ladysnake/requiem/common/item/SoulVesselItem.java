@@ -37,6 +37,7 @@ package ladysnake.requiem.common.item;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.RequiemEntityAttributes;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
+import ladysnake.requiem.common.impl.remnant.WandererRemnantState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -44,14 +45,20 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
 public class SoulVesselItem extends Item {
+
+    public static final String ACTIVE_DATA_TAG = "requiem:soul_capture";
+
     public SoulVesselItem(Settings settings) {
         super(settings);
     }
@@ -61,42 +68,52 @@ public class SoulVesselItem extends Item {
         if (RemnantComponent.get(user).canCaptureSouls()) {
             int targetSoulStrength = computeSoulDefense(entity);
             int playerSoulStrength = computeSoulOffense(user);
-            NbtCompound activeData = stack.getOrCreateSubTag("requiem:soul_capture");
+            NbtCompound activeData = stack.getOrCreateSubTag(ACTIVE_DATA_TAG);
             activeData.putInt("use_time", computeCaptureTime(targetSoulStrength, playerSoulStrength));
             activeData.putUuid("target", entity.getUuid());
+            // will be a copy in creative mode, so need to copy changes too
+            user.getStackInHand(hand).getOrCreateSubTag(ACTIVE_DATA_TAG).copyFrom(activeData);
+            user.setCurrentHand(hand);
+            return ActionResult.CONSUME;
         }
         return super.useOnEntity(stack, user, entity, hand);
     }
 
     private int computeCaptureTime(int targetSoulStrength, int playerSoulStrength) {
-        return 96 * targetSoulStrength / playerSoulStrength;
+        return Math.round(96.0f * Math.max(1.0f, (float) targetSoulStrength / playerSoulStrength));
     }
 
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
         if (!(world instanceof ServerWorld serverWorld)) return stack;
-        NbtCompound activeData = stack.getSubTag("requiem:soul_capture");
+        NbtCompound activeData = stack.getSubTag(ACTIVE_DATA_TAG);
         if (activeData == null) return stack;
 
+        stack.removeSubTag(ACTIVE_DATA_TAG);
         Entity entity = serverWorld.getEntity(activeData.getUuid("target"));
 
         if (!(entity instanceof LivingEntity target)) return stack;
-        if (!(user instanceof PlayerEntity remnant && RemnantComponent.get(remnant).canCaptureSouls())) return stack;
+        if (!(user instanceof ServerPlayerEntity remnant && RemnantComponent.get(remnant).canCaptureSouls())) return stack;
 
         int targetSoulStrength = computeSoulDefense(target);
         int playerSoulStrength = computeSoulOffense(remnant);
+        ItemStack result;
+        remnant.incrementStat(Stats.USED.getOrCreateStat(this));
         if (!wins(remnant, playerSoulStrength, target, targetSoulStrength)) {
             AttritionStatusEffect.apply(remnant, 1, 20*60*5);
-            return new ItemStack(RequiemItems.SHATTERED_SOUL_VESSEL);
+            WandererRemnantState.spawnAttritionParticles(remnant, remnant);
+            remnant.incrementStat(Stats.BROKEN.getOrCreateStat(this));
+            result = new ItemStack(RequiemItems.SHATTERED_SOUL_VESSEL);
+        } else {
+            result = new ItemStack(RequiemItems.FILLED_SOUL_VESSEL);
         }
-
-        return new ItemStack(RequiemItems.FILLED_SOUL_VESSEL);
+        return ItemUsage.exchangeStack(stack, remnant, result, false);
     }
 
     @Override
     public int getMaxUseTime(ItemStack stack) {
-        NbtCompound tag = stack.getTag();
-        return tag == null ? 0 : tag.getInt("soulStealingTime");
+        NbtCompound tag = stack.getSubTag(ACTIVE_DATA_TAG);
+        return tag == null ? 0 : tag.getInt("use_time");
     }
 
     private boolean wins(PlayerEntity user, int playerSoulStrength, LivingEntity entity, int targetSoulStrength) {
@@ -107,7 +124,7 @@ public class SoulVesselItem extends Item {
         return user.getRandom().nextFloat() > (strengthRatio * strengthRatio);
     }
 
-    private int computeSoulOffense(PlayerEntity user) {
+    private static int computeSoulOffense(PlayerEntity user) {
         return (int) Math.round(user.getAttributeValue(RequiemEntityAttributes.SOUL_OFFENSE));
     }
 

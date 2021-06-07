@@ -170,7 +170,7 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public boolean canCaptureSouls() {
-        return !this.isVagrant() && Optional.ofNullable(this.player.getStatusEffect(RequiemStatusEffects.ATTRITION)).map(StatusEffectInstance::getAmplifier).orElse(-1) >= 3;
+        return !this.isVagrant() && Optional.ofNullable(this.player.getStatusEffect(RequiemStatusEffects.ATTRITION)).map(StatusEffectInstance::getAmplifier).orElse(-1) < 3;
     }
 
     protected boolean canRegenerateBodyFrom(LivingEntity body) {
