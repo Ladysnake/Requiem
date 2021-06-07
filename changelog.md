@@ -1,4 +1,17 @@
 ------------------------------------------------------
+Version 1.7.12
+------------------------------------------------------
+**Changes**
+- Piglin brutes can no longer equip armor, be it through dispensers or otherwise.
+
+**Mod Compatibility**
+- Besmirchment: fixed demon player being unable to phase through blocks when Besmirchment was installed
+
+#### Pandemonium
+**Fixes**
+- Fixed dissociating from a player body just kinda breaking randomly
+
+------------------------------------------------------
 Version 1.7.11
 ------------------------------------------------------
 **Fixes**
