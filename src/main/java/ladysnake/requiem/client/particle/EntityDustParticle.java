@@ -13,6 +13,7 @@ import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class EntityDustParticle extends SpriteBillboardParticle {
@@ -38,6 +39,13 @@ public class EntityDustParticle extends SpriteBillboardParticle {
         this.scale /= 2.0F;
         this.sampleU = this.random.nextFloat() * 3.0F;
         this.sampleV = this.random.nextFloat() * 3.0F;
+    }
+
+    @Override
+    public void tick() {
+        Vec3d dir = this.target.getEyePos().subtract(this.x, this.y + 0.2, this.z).normalize();
+        this.setVelocity(dir.x*0.8, dir.y*0.8, dir.z*0.8);
+        super.tick();
     }
 
     @Override

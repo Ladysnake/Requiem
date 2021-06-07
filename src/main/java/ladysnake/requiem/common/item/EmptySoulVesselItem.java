@@ -38,6 +38,9 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.RequiemEntityAttributes;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.impl.remnant.WandererRemnantState;
+import ladysnake.requiem.common.particle.RequiemEntityParticleEffect;
+import ladysnake.requiem.common.particle.RequiemParticleTypes;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -81,7 +84,7 @@ public class EmptySoulVesselItem extends Item {
     }
 
     private int computeCaptureTime(int targetSoulStrength, int playerSoulStrength) {
-        return Math.round(96.0f * Math.max(1.0f, (float) targetSoulStrength / playerSoulStrength));
+        return Math.round(96.0f * Math.min(3.0f, Math.max(1.0f, (float) targetSoulStrength / playerSoulStrength)));
     }
 
     @Override
@@ -94,14 +97,16 @@ public class EmptySoulVesselItem extends Item {
         Entity entity = serverWorld.getEntity(activeData.getUuid("target"));
 
         if (!(entity instanceof LivingEntity target)) return stack;
-        if (!(user instanceof ServerPlayerEntity remnant && RemnantComponent.get(remnant).canCaptureSouls())) return stack;
+        if (!(user instanceof ServerPlayerEntity remnant && RemnantComponent.get(remnant).canCaptureSouls())) {
+            return stack;
+        }
 
         int targetSoulStrength = computeSoulDefense(target);
         int playerSoulStrength = computeSoulOffense(remnant);
         ItemStack result;
         remnant.incrementStat(Stats.USED.getOrCreateStat(this));
         if (!wins(remnant, playerSoulStrength, target, targetSoulStrength)) {
-            AttritionStatusEffect.apply(remnant, 1, 20*60*5);
+            AttritionStatusEffect.apply(remnant, 1, 20 * 60 * 5);
             WandererRemnantState.spawnAttritionParticles(remnant, remnant);
             remnant.incrementStat(Stats.BROKEN.getOrCreateStat(this));
             result = new ItemStack(RequiemItems.SHATTERED_SOUL_VESSEL);
@@ -118,12 +123,33 @@ public class EmptySoulVesselItem extends Item {
         return tag == null ? 0 : tag.getInt("use_time");
     }
 
+    @Override
+    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+        if (world instanceof ServerWorld serverWorld) {
+            NbtCompound useData = stack.getSubTag(ACTIVE_DATA_TAG);
+            if (useData != null) {
+                Entity target = serverWorld.getEntity(useData.getUuid("target"));
+                if (target instanceof LivingEntity) {
+                    serverWorld.spawnParticles(
+                        new RequiemEntityParticleEffect(RequiemParticleTypes.ENTITY_DUST, Blocks.SOUL_SAND.getDefaultState(), user.getId()),
+                        target.getX(), target.getBodyY(0.5), target.getZ(),
+                        3,
+                        target.getWidth() * 0.5,
+                        target.getHeight() * 0.3,
+                        target.getWidth() * 0.5,
+                        1.0
+                    );
+                }
+            }
+        }
+    }
+
     private boolean wins(PlayerEntity user, int playerSoulStrength, LivingEntity entity, int targetSoulStrength) {
         if (playerSoulStrength > targetSoulStrength) {
             return true;
         }
         float strengthRatio = (float) playerSoulStrength / targetSoulStrength;
-        return user.getRandom().nextFloat() > (strengthRatio * strengthRatio);
+        return user.getRandom().nextFloat() < (strengthRatio * strengthRatio);
     }
 
     private static int computeSoulOffense(PlayerEntity user) {
@@ -136,7 +162,7 @@ public class EmptySoulVesselItem extends Item {
         double intrinsicArmor = getAttributeBaseValue(entity, EntityAttributes.GENERIC_ARMOR);
         double intrinsicArmorToughness = getAttributeBaseValue(entity, EntityAttributes.GENERIC_ARMOR_TOUGHNESS);
         double intrinsicStrength = getAttributeBaseValue(entity, EntityAttributes.GENERIC_ATTACK_DAMAGE);
-        double invertedHealthRatio = entity.getMaxHealth() / entity.getHealth();
+        double invertedHealthRatio = 1 - entity.getHealth() / entity.getMaxHealth();
         double woundedModifier = 1 - (invertedHealthRatio * invertedHealthRatio * invertedHealthRatio);
         double physicalModifier = woundedModifier * 0.75 + 0.25;
         return (int) Math.round(base + physicalModifier * (maxHealth + intrinsicStrength * 2 + intrinsicArmor * 2 + intrinsicArmorToughness * 3));
