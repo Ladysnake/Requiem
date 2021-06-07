@@ -66,6 +66,8 @@
   "requiem:subtitles.effect.time.stop": "ZA WARUDO! TOKI WO TOMARE",
   "requiem:subtitles.item.soul_vessel.use": "Soul Vessel Activates",
 
+  "requiem:tooltip.filled_vessel": "Soul fragments from a %s",
+
   "requiem:tooltip.ammo_generator": "Ammo Generation",
   "requiem:tooltip.bolt_hoarder": "Bolt Hoarder",
   "requiem:tooltip.bony_prosthesis": "Bony Prosthesis",

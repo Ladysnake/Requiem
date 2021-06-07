@@ -39,6 +39,7 @@ import ladysnake.requiem.common.entity.RequiemEntityAttributes;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.impl.remnant.WandererRemnantState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -55,11 +56,11 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
-public class SoulVesselItem extends Item {
+public class EmptySoulVesselItem extends Item {
 
     public static final String ACTIVE_DATA_TAG = "requiem:soul_capture";
 
-    public SoulVesselItem(Settings settings) {
+    public EmptySoulVesselItem(Settings settings) {
         super(settings);
     }
 
@@ -106,6 +107,7 @@ public class SoulVesselItem extends Item {
             result = new ItemStack(RequiemItems.SHATTERED_SOUL_VESSEL);
         } else {
             result = new ItemStack(RequiemItems.FILLED_SOUL_VESSEL);
+            result.getOrCreateSubTag(FilledSoulVesselItem.SOUL_FRAGMENT_NBT).putString("type", EntityType.getId(entity.getType()).toString());
         }
         return ItemUsage.exchangeStack(stack, remnant, result, false);
     }
