@@ -79,7 +79,7 @@ public final class PlayerSplitter {
 
     private static boolean isReadyForSplit(ServerPlayerEntity whole) {
         return !RemnantComponent.isVagrant(whole)
-            && !((SwitchablePlayerEntity) whole).cca$isSwitchingCharacter();
+            && !whole.isRemoved();
     }
 
     private static void doSplit(ServerPlayerEntity whole) {
