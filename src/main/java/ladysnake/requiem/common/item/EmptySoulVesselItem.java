@@ -40,7 +40,6 @@ import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.impl.remnant.WandererRemnantState;
 import ladysnake.requiem.common.particle.RequiemEntityParticleEffect;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -129,14 +128,14 @@ public class EmptySoulVesselItem extends Item {
             NbtCompound useData = stack.getSubTag(ACTIVE_DATA_TAG);
             if (useData != null) {
                 Entity target = serverWorld.getEntity(useData.getUuid("target"));
-                if (target instanceof LivingEntity) {
+                if (target instanceof LivingEntity && world.getRandom().nextFloat() < 0.75f) {
                     serverWorld.spawnParticles(
-                        new RequiemEntityParticleEffect(RequiemParticleTypes.ENTITY_DUST, Blocks.SOUL_SAND.getDefaultState(), user.getId()),
+                        new RequiemEntityParticleEffect(RequiemParticleTypes.ENTITY_DUST, target.getId(), user.getId()),
                         target.getX(), target.getBodyY(0.5), target.getZ(),
-                        3,
-                        target.getWidth() * 0.5,
-                        target.getHeight() * 0.3,
-                        target.getWidth() * 0.5,
+                        world.random.nextInt(3) + 2,
+                        target.getWidth() * 0.2,
+                        target.getHeight() * 0.2,
+                        target.getWidth() * 0.2,
                         1.0
                     );
                 }
