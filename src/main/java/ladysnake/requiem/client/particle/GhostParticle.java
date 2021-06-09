@@ -78,6 +78,7 @@ public class GhostParticle extends AbstractSlowingParticle {
         this.setSpriteForAge(spriteProvider);
     }
 
+    @Override
     public ParticleTextureSheet getType() {
         return ParticleTextureSheet.CUSTOM;
     }
@@ -90,6 +91,7 @@ public class GhostParticle extends AbstractSlowingParticle {
         renderedGhostParticle = true;
     }
 
+    @Override
     public void tick() {
         super.tick();
         if (!this.dead) {
@@ -119,6 +121,7 @@ public class GhostParticle extends AbstractSlowingParticle {
             this.spriteProvider = spriteProvider;
         }
 
+        @Override
         public Particle createParticle(DefaultParticleType particleType, ClientWorld world, double x, double y, double z, double vx, double vy, double vz) {
             GhostParticle soulParticle = new GhostParticle(world, x, y, z, vx, vy, vz, this.spriteProvider);
             soulParticle.setColorAlpha(1.0F);

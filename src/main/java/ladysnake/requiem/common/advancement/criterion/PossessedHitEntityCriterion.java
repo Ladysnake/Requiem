@@ -96,6 +96,7 @@ public class PossessedHitEntityCriterion extends AbstractCriterion<PossessedHitE
             return false;
         }
 
+        @Override
         public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
             JsonObject jsonObject = super.toJson(predicateSerializer);
             jsonObject.add("damage", this.damage.toJson());

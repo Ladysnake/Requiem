@@ -49,10 +49,12 @@ import javax.annotation.Nullable;
 
 public abstract class RemnantTypePredicate {
     public static final RemnantTypePredicate ANY = new RemnantTypePredicate() {
+        @Override
         public boolean matches(RemnantType type) {
             return true;
         }
 
+        @Override
         public JsonElement serialize() {
             return JsonNull.INSTANCE;
         }
@@ -79,10 +81,12 @@ public abstract class RemnantTypePredicate {
             this.type = type;
         }
 
+        @Override
         public boolean matches(RemnantType type) {
             return this.type == type;
         }
 
+        @Override
         public JsonElement serialize() {
             return new JsonPrimitive(RemnantTypes.getId(this.type).toString());
         }

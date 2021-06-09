@@ -61,6 +61,7 @@ public class MorticianEntityRenderer extends MobEntityRenderer<MorticianEntity, 
         return TEXTURE;
     }
 
+    @Override
     protected void scale(MorticianEntity morticianEntity, MatrixStack matrixStack, float f) {
         matrixStack.scale(0.9375F, 0.9375F, 0.9375F);
     }

@@ -56,6 +56,7 @@ public abstract class HorseBaseEntityMixin extends MobEntity {
         super(type, world);
     }
 
+    @Override
     @Shadow @Nullable public abstract Entity getPrimaryPassenger();
 
     /**

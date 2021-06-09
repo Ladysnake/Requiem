@@ -69,6 +69,7 @@ public class RemnantArgumentType implements ArgumentType<RemnantType> {
         return context.getArgument(name, RemnantType.class);
     }
 
+    @Override
     public RemnantType parse(StringReader stringReader) throws CommandSyntaxException {
         try {
             return stringReader.readBoolean() ? RemnantTypes.REMNANT : RemnantTypes.MORTAL;
@@ -110,6 +111,7 @@ public class RemnantArgumentType implements ArgumentType<RemnantType> {
         return CommandSource.suggestIdentifiers(RequiemRegistries.REMNANT_STATES.getIds(), builder);
     }
 
+    @Override
     public Collection<String> getExamples() {
         return EXAMPLES;
     }

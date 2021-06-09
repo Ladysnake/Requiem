@@ -57,6 +57,7 @@ public class ShellPathfindingProcess implements IBaritoneProcess {
         this.executing = false;
     }
 
+    @Override
     public boolean isActive() {
         return this.goal != null;
     }

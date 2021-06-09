@@ -98,6 +98,7 @@ public class OnDeathAfterPossessionCriterion extends AbstractCriterion<OnDeathAf
                 && (seppukku == null || seppukku == (killingBlow.getAttacker() == entity));
         }
 
+        @Override
         public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
             JsonObject jsonObject = super.toJson(predicateSerializer);
             jsonObject.add("entity", this.entity.toJson(predicateSerializer));

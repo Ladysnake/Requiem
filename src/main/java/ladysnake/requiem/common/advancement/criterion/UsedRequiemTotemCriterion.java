@@ -54,10 +54,12 @@ public class UsedRequiemTotemCriterion extends AbstractCriterion<UsedRequiemTote
         this.id = id;
     }
 
+    @Override
     public Identifier getId() {
         return this.id;
     }
 
+    @Override
     public Conditions conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
         ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
         return new Conditions(this.id, extended, itemPredicate);
@@ -83,6 +85,7 @@ public class UsedRequiemTotemCriterion extends AbstractCriterion<UsedRequiemTote
             return this.item.test(stack);
         }
 
+        @Override
         public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
             JsonObject jsonObject = super.toJson(predicateSerializer);
             jsonObject.add("item", this.item.toJson());

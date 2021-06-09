@@ -95,6 +95,7 @@ public class TransformedPossessedCriterion extends AbstractCriterion<Transformed
             return this.before.test(beforeCtx) && this.after.test(afterCtx) && (this.cure == null || this.cure == cure);
         }
 
+        @Override
         public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
             JsonObject jsonObject = super.toJson(predicateSerializer);
             jsonObject.add("before", this.before.toJson(predicateSerializer));

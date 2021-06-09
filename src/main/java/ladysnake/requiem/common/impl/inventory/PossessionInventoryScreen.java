@@ -66,6 +66,7 @@ public class PossessionInventoryScreen extends AbstractInventoryScreen<PlayerScr
         }
     }
 
+    @Override
     public void tick() {
         this.trySwapInventoryScreen();
     }
@@ -91,6 +92,7 @@ public class PossessionInventoryScreen extends AbstractInventoryScreen<PlayerScr
         super.render(matrices, mouseX, mouseY, delta);
     }
 
+    @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
         MobEntity possessedEntity = this.possessionComponent.getPossessedEntity();
         Text title = possessedEntity != null ? possessedEntity.getName() : this.title;

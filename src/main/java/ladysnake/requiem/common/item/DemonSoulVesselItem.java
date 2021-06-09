@@ -88,6 +88,7 @@ public class DemonSoulVesselItem extends Item {
         return color;
     }
 
+    @Override
     public ActionResult useOnBlock(ItemUsageContext ctx) {
         World world = ctx.getWorld();
         BlockPos pos = ctx.getBlockPos();
