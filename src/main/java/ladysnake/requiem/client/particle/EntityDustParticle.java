@@ -56,18 +56,22 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 @Environment(EnvType.CLIENT)
 public class EntityDustParticle extends BillboardParticle {
     private final ParticleTextureSheet sheet;
     private final Entity target;
-    private @Nullable Vec3d nextStep;
+    private final Set<BlockPos> exploredBlocks = new LinkedHashSet<>();
     private final float sampleU;
     private final float sampleV;
+    private @Nullable Vec3d nextStep;
 
     public EntityDustParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, Entity src, Entity target) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
@@ -90,30 +94,56 @@ public class EntityDustParticle extends BillboardParticle {
 
     @Override
     public void tick() {
-        if (this.nextStep == null || this.nextStep.squaredDistanceTo(this.x, this.y, this.z) < 0.1) {
-            Vec3d targetPos = this.target.getEyePos().subtract(0, 0.2, 0);
+        if (this.nextStep == null || this.reachedNextStep(this.nextStep)) {
+            Vec3d targetPos = this.getTargetPos();
             double distanceToTarget = targetPos.squaredDistanceTo(this.x, this.y, this.z);
             if (distanceToTarget < 0.1) {
                 this.markDead();
                 return;
-            } else if (distanceToTarget < 1) {
-                this.nextStep = targetPos;
-            } else {
-                BlockPos nextPos = findNextPos();
-                this.nextStep = new Vec3d(
-                    nextPos.getX() + world.random.nextFloat(),
-                    nextPos.getY() + world.random.nextFloat(),
-                    nextPos.getZ() + world.random.nextFloat()
-                );
             }
+            this.nextStep = this.findNextStep(targetPos, distanceToTarget);
         }
-        Vec3d desiredDir = this.nextStep.subtract(this.x, this.y, this.z).normalize();
+        this.moveTowardsGoal(this.nextStep);
+        super.tick();
+    }
+
+    private boolean reachedNextStep(Vec3d nextStep) {
+        if (nextStep.squaredDistanceTo(this.x, this.y, this.z) < 0.1) {
+            this.exploredBlocks.add(new BlockPos(nextStep));
+            return true;
+        }
+        return false;
+    }
+
+    private void moveTowardsGoal(Vec3d nextStep) {
+        Vec3d desiredDir = nextStep.subtract(this.x, this.y, this.z).normalize();
         this.setVelocity(
             MathHelper.lerp(0.4, this.velocityX, desiredDir.x*0.7),
             MathHelper.lerp(0.4, this.velocityY, desiredDir.y*0.7),
             MathHelper.lerp(0.4, this.velocityZ, desiredDir.z*0.7)
         );
-        super.tick();
+    }
+
+    private Vec3d getTargetPos() {
+        return this.target.getEyePos().subtract(0, 0.2, 0);
+    }
+
+    private Vec3d findNextStep(Vec3d targetPos, double distanceToTarget) {
+        if (distanceToTarget < 1) {
+            return targetPos;
+        } else {
+            BlockPos nextPos = findNextPos();
+            return swizzle(nextPos);
+        }
+    }
+
+    @NotNull
+    private Vec3d swizzle(BlockPos nextPos) {
+        return new Vec3d(
+            nextPos.getX() + world.random.nextFloat() - 0.5,
+            nextPos.getY() + world.random.nextFloat() - 0.5,
+            nextPos.getZ() + world.random.nextFloat() - 0.5
+        );
     }
 
     private BlockPos findNextPos() {
@@ -128,10 +158,12 @@ public class EntityDustParticle extends BillboardParticle {
             MathHelper.floor(this.y) + 1,
             MathHelper.floor(this.z) + 1
         )) {
-            double candidateDistance = candidate.getSquaredDistance(eyePos.x, eyePos.y, eyePos.z, false);
-            if (candidateDistance < bestDistance) {
-                bestDistance = candidateDistance;
-                best = candidate.toImmutable();
+            if (!this.exploredBlocks.contains(candidate) && !this.world.getBlockState(candidate).isFullCube(this.world, candidate)) {
+                double candidateDistance = candidate.getSquaredDistance(eyePos.x, eyePos.y, eyePos.z, false);
+                if (candidateDistance < bestDistance) {
+                    bestDistance = candidateDistance;
+                    best = candidate.toImmutable();
+                }
             }
         }
         return best;
