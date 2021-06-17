@@ -40,6 +40,12 @@ allprojects {
         dev
     }
 
+    configurations.all {
+        resolutionStrategy {
+            force "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${cca_version}"
+        }
+    }
+
     repositories {
         mavenLocal()
         mavenCentral()
