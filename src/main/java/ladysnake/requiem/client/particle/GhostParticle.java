@@ -50,7 +50,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 
-public class GhostParticle extends AbstractSlowingParticle {
+public final class GhostParticle extends AbstractSlowingParticle {
     private static boolean renderedGhostParticle;
     private static final VertexConsumerProvider.Immediate ghostVertexConsumers = VertexConsumerProvider.immediate(
         new BufferBuilder(RequiemRenderPhases.GHOST_PARTICLE_LAYER.getExpectedBufferSize())
@@ -100,7 +100,7 @@ public class GhostParticle extends AbstractSlowingParticle {
     }
 
     public boolean isColliding() {
-        return !this.world.hasBlockCollision(null, this.getBoundingBox(),
+        return this.world.hasBlockCollision(null, this.getBoundingBox(),
             (blockState, blockPosx) -> blockState.shouldSuffocate(this.world, blockPosx));
     }
 

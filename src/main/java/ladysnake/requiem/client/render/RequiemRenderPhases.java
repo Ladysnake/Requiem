@@ -45,6 +45,7 @@ import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
 import ladysnake.satin.api.util.RenderLayerHelper;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
@@ -75,6 +76,7 @@ public final class RequiemRenderPhases extends RenderLayer {
                 true,
                 MultiPhaseParameters.builder()
                     .texture(new Texture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE, false, false))
+                    .shader(new Shader(GameRenderer::getParticleShader))
                     .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
                     .lightmap(RenderPhase.ENABLE_LIGHTMAP)
                     .depthTest(RenderPhase.ALWAYS_DEPTH_TEST)
