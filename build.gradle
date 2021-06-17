@@ -5,7 +5,8 @@ import java.time.Year
 import com.modrinth.minotaur.TaskModrinthUpload
 
 plugins {
-    id 'fabric-loom' version '0.8-SNAPSHOT'
+    id 'fabric-loom' version '0.9-SNAPSHOT'
+    id 'io.github.juuxel.loom-quiltflower' version '1.1.1'
     id 'org.cadixdev.licenser' version '0.6.0'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
     id 'com.jfrog.artifactory' version '4.21.0'
