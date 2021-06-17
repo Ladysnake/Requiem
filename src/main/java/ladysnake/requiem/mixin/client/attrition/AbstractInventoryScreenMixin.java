@@ -36,8 +36,8 @@ package ladysnake.requiem.mixin.client.attrition;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
+import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
-import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.texture.Sprite;
@@ -93,7 +93,7 @@ public abstract class AbstractInventoryScreenMixin<T extends ScreenHandler> exte
 
     @ModifyVariable(method = "drawStatusEffectSprites", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/texture/StatusEffectSpriteManager;getSprite(Lnet/minecraft/entity/effect/StatusEffect;)Lnet/minecraft/client/texture/Sprite;"))
     private Sprite customizeDrawnSprite(Sprite baseSprite) {
-        return RequiemStatusEffects.substituteSprite(baseSprite, renderedEffect);
+        return RequiemClient.instance().statusEffectSpriteManager().substituteSprite(baseSprite, renderedEffect);
     }
 
 }

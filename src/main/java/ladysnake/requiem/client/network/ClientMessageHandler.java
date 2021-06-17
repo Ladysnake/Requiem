@@ -85,9 +85,9 @@ public class ClientMessageHandler {
                     mc.gameRenderer.showFloatingItem(remnantType.getConversionBook(player));
                 }
                 if (cure) {
-                    this.rc.getRequiemFxRenderer().playEtherealPulseAnimation(16, 0.0f, 0.8f, 0.6f);
+                    this.rc.fxRenderer().playEtherealPulseAnimation(16, 0.0f, 0.8f, 0.6f);
                 } else {
-                    this.rc.getRequiemFxRenderer().playEtherealPulseAnimation(16, 1.0f, 0.25f, 0.27f);
+                    this.rc.fxRenderer().playEtherealPulseAnimation(16, 1.0f, 0.25f, 0.27f);
                 }
             });
         }));
@@ -107,7 +107,7 @@ public class ClientMessageHandler {
             MinecraftClient mc = this.mc;
             assert mc.player != null;
             mc.player.world.playSound(mc.player, mc.player.getX(), mc.player.getY(), mc.player.getZ(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2, 0.6f);
-            this.rc.getRequiemFxRenderer().beginEtherealAnimation();
+            this.rc.fxRenderer().beginEtherealAnimation();
         }));
         ClientPlayNetworking.registerGlobalReceiver(BODY_CURE, (client, handler, buf, responseSender) -> {
             int entityId = buf.readVarInt();

@@ -56,13 +56,13 @@ public abstract class FeatureRendererMixin {
 
     @Inject(method = "renderModel", at = @At("HEAD"))
     private static <T extends LivingEntity> void captureEntity(EntityModel<T> model, Identifier texture, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float red, float green, float blue, CallbackInfo ci) {
-        goZoom = entity == RequiemClient.INSTANCE.getRequiemFxRenderer().getAnimationEntity();
+        goZoom = entity == RequiemClient.instance().fxRenderer().getAnimationEntity();
     }
 
     @ModifyArg(method = "renderModel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/VertexConsumerProvider;getBuffer(Lnet/minecraft/client/render/RenderLayer;)Lnet/minecraft/client/render/VertexConsumer;"))
     private static RenderLayer replaceRenderLayer(RenderLayer base) {
         if (goZoom) {
-            return RequiemClient.INSTANCE.getRequiemFxRenderer().getZoomFx(base);
+            return RequiemClient.instance().fxRenderer().getZoomFx(base);
         }
 
         return base;

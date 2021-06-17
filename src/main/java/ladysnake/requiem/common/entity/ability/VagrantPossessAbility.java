@@ -72,7 +72,7 @@ public class VagrantPossessAbility extends DirectAbilityBase<PlayerEntity, Livin
     protected boolean run(LivingEntity target) {
         this.target = target;
         if (this.owner.world.isClient && this.owner == MinecraftClient.getInstance().player) {
-            RequiemClient.INSTANCE.getRequiemFxRenderer().beginFishEyeAnimation(target);
+            RequiemClient.instance().fxRenderer().beginFishEyeAnimation(target);
         }
         target.world.playSound(this.owner, target.getX(), target.getY(), target.getZ(), RequiemSoundEvents.EFFECT_POSSESSION_ATTEMPT, SoundCategory.PLAYERS, 2, 0.6f);
         this.beginCooldown();
@@ -82,7 +82,7 @@ public class VagrantPossessAbility extends DirectAbilityBase<PlayerEntity, Livin
     @Override
     protected void onCooldownEnd() {
         if (this.owner.world.isClient && this.owner == MinecraftClient.getInstance().player) {
-            RequiemClient.INSTANCE.getRequiemFxRenderer().onPossessionAck();
+            RequiemClient.instance().fxRenderer().onPossessionAck();
         } else if (this.action != null && this.target != null && !this.target.isRemoved() && this.target.isAlive()) {
             this.action.accept(this.target, this.owner);
         }

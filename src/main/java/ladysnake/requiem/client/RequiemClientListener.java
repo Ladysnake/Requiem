@@ -81,7 +81,15 @@ public final class RequiemClientListener implements
     ClientTickEvents.EndTick,
     ItemTooltipCallback {
 
-    public static boolean skipNextGuardian =  false;
+    private static boolean skipNextGuardian =  false;
+
+    public static boolean shouldSkipNextGuardian() {
+        if (skipNextGuardian) {
+            skipNextGuardian = false;
+            return true;
+        }
+        return false;
+    }
 
     private final RequiemClient rc;
     private final MinecraftClient mc = MinecraftClient.getInstance();
@@ -125,7 +133,7 @@ public final class RequiemClientListener implements
                 if (--timeBeforeDialogueGui == 0) {
                     DialogueTracker dialogueTracker = DialogueTracker.get(client.player);
                     dialogueTracker.startDialogue(Requiem.id("remnant_choice"));
-                    client.openScreen(new CutsceneDialogueScreen(new TranslatableText("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue(), this.rc.getWorldFreezeFxRenderer()));
+                    client.openScreen(new CutsceneDialogueScreen(new TranslatableText("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue(), this.rc.worldFreezeFxRenderer()));
                 } else if (timeBeforeDialogueGui < 0) {
                     timeBeforeDialogueGui = 20;
                 }

@@ -240,10 +240,10 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
         if (entity instanceof MobEntity) {
             this.startPossessing((MobEntity) entity);
-            RequiemClient.INSTANCE.updateCamera(this.player, entity);
+            RequiemClient.instance().updateCamera(this.player, entity);
         } else {
             this.stopPossessing();
-            RequiemClient.INSTANCE.updateCamera(this.player, this.player);
+            RequiemClient.instance().updateCamera(this.player, this.player);
         }
     }
 

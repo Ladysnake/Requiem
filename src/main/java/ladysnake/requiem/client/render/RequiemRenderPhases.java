@@ -91,7 +91,7 @@ public final class RequiemRenderPhases extends RenderLayer {
 
     public static final Target shadowPlayerTarget = new Target(
         "requiem:shadow_players_target",
-        RequiemClient.INSTANCE.getShadowPlayerFxRenderer()::beginPlayersFbWrite,
+        RequiemClient.instance().shadowPlayerFxRenderer()::beginPlayersFbWrite,
         () -> {
             MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
             RenderSystem.depthMask(true);

@@ -6,7 +6,7 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "ladysnake.requiem.client.RequiemClient::INSTANCE"
+      "ladysnake.requiem.client.RequiemClient::onInitializeClient"
     ],
     "main": [
       "ladysnake.requiem.Requiem"

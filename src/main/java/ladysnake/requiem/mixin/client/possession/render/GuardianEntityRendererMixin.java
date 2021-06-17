@@ -49,8 +49,7 @@ public abstract class GuardianEntityRendererMixin extends LivingEntityRendererMi
     @Nullable
     @Override
     protected RenderLayer requiem$replaceRenderLayer(@Nullable RenderLayer base, LivingEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-        if (RequiemClientListener.skipNextGuardian) {
-            RequiemClientListener.skipNextGuardian = false;
+        if (RequiemClientListener.shouldSkipNextGuardian()) {
             return null;
         }
         return super.requiem$replaceRenderLayer(base, entity, yaw, tickDelta, matrices, vertexConsumers, light);
