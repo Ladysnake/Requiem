@@ -325,6 +325,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     public void registerSoulBindings(SoulbindingRegistry registry) {
         registry.registerSoulbound(RequiemStatusEffects.ATTRITION);
         registry.registerSoulbound(RequiemStatusEffects.EMANCIPATION);
+        registry.registerSoulbound(RequiemStatusEffects.RECLAMATION);
     }
 
     @Override
