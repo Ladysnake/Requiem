@@ -85,6 +85,7 @@ public class BasePossessionHandlers {
         });
         PossessionStartCallback.EVENT.register(Requiem.id("emancipation"), (target, possessor, simulate) -> {
             if (possessor.hasStatusEffect(RequiemStatusEffects.EMANCIPATION)) {
+                // TODO check that the mob is soulless
                 return PossessionStartCallback.Result.ALLOW;
             }
             return PossessionStartCallback.Result.PASS;
