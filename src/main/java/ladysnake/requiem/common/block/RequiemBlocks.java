@@ -38,7 +38,11 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.block.ObeliskRune;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.item.RequiemItems;
-import net.minecraft.block.*;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.SlabBlock;
+import net.minecraft.block.StairsBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -49,12 +53,14 @@ public class RequiemBlocks {
     public static final Block POLISHED_OBSIDIAN_SLAB = new SlabBlock(AbstractBlock.Settings.copy(POLISHED_OBSIDIAN));
     public static final Block POLISHED_OBSIDIAN_STAIRS = new StairsBlock(POLISHED_OBSIDIAN.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_OBSIDIAN)) {};   // anon class for protected constructor
     public static final RunicObsidianBlock RUNIC_OBSIDIAN_ATTRITION = new RunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), RequiemStatusEffects.ATTRITION, 3);
+    public static final RunicObsidianBlock RUNIC_OBSIDIAN_EMANCIPATION = new RunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), RequiemStatusEffects.EMANCIPATION, 1);
 
     public static void init() {
         register(POLISHED_OBSIDIAN, "polished_obsidian");
         register(POLISHED_OBSIDIAN_SLAB, "polished_obsidian_slab");
         register(POLISHED_OBSIDIAN_STAIRS, "polished_obsidian_stairs");
         registerRunic(RUNIC_OBSIDIAN_ATTRITION, "runic_obsidian_attrition");
+        registerRunic(RUNIC_OBSIDIAN_EMANCIPATION, "runic_obsidian_emancipation");
     }
 
     public static <T extends Block & ObeliskRune> void registerRunic(T block, String name) {
