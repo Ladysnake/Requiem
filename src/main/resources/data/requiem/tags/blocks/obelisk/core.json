@@ -2,7 +2,7 @@
   "replace": false,
   "values": [
     "minecraft:crying_obsidian",
-    "requiem:runic_obsidian_attrition",
-    {"id": "requiem:runic_obsidian_penance", "required": false }
+    "requiem:tachylite/runic/attrition",
+    {"id": "requiem:tachylite/runic/penance", "required": false }
   ]
 }

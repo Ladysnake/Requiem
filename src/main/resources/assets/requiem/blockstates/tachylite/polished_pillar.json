@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "requiem:block/tachylite/polished_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "requiem:block/tachylite/polished"
+    },
+    "axis=z": {
+      "model": "requiem:block/tachylite/polished_horizontal",
+      "x": 90
+    }
+  }
+}
