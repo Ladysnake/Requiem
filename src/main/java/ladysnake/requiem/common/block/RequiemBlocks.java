@@ -34,33 +34,70 @@
  */
 package ladysnake.requiem.common.block;
 
+import com.google.common.base.Suppliers;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.block.ObeliskRune;
-import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.item.RequiemItems;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SlabBlock;
-import net.minecraft.block.StairsBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.registry.Registry;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
 public class RequiemBlocks {
-    public static final Block POLISHED_OBSIDIAN = new Block(AbstractBlock.Settings.copy(Blocks.OBSIDIAN));
-    public static final Block POLISHED_OBSIDIAN_SLAB = new SlabBlock(AbstractBlock.Settings.copy(POLISHED_OBSIDIAN));
-    public static final Block POLISHED_OBSIDIAN_STAIRS = new StairsBlock(POLISHED_OBSIDIAN.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_OBSIDIAN)) {};   // anon class for protected constructor
-    public static final RunicObsidianBlock RUNIC_OBSIDIAN_ATTRITION = new RunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), RequiemStatusEffects.ATTRITION, 3);
-    public static final RunicObsidianBlock RUNIC_OBSIDIAN_EMANCIPATION = new RunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), RequiemStatusEffects.EMANCIPATION, 1);
+    private static final Map<Block, String> allBlocks = new LinkedHashMap<>();
+
+    public static final Block TACHYLITE = makeVariant(Blocks.OBSIDIAN, "tachylite/tachylite");
+    public static final Block CHISELED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/chiseled");
+    public static final Block CHISELED_TACHYLITE_PILLAR = makeVariant(TACHYLITE, "tachylite/chiseled_pillar");
+    public static final Block CHISELED_TACHYLITE_SLAB = makeSlab(CHISELED_TACHYLITE);
+    public static final Block CHISELED_TACHYLITE_STAIRS = makeStairs(RequiemBlocks.CHISELED_TACHYLITE);
+    public static final Block POLISHED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/polished");
+    public static final Block POLISHED_TACHYLITE_PILLAR = makeVariant(TACHYLITE, "tachylite/polished_pillar");
+    public static final Block POLISHED_TACHYLITE_SLAB = makeSlab(POLISHED_TACHYLITE);
+    public static final Block POLISHED_TACHYLITE_STAIRS = makeStairs(RequiemBlocks.POLISHED_TACHYLITE);
+    public static final Block SCRAPED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/scraped");
+    public static final RunicObsidianBlock RUNIC_TACHYLITE_ATTRITION = makeRunic("attrition", 3);
+    public static final RunicObsidianBlock RUNIC_TACHYLITE_EMANCIPATION = makeRunic("emancipation", 1);
+
+    private static Block makeVariant(Block base, String id) {
+        Block ret = new Block(AbstractBlock.Settings.copy(base));
+        allBlocks.put(ret, id);
+        return ret;
+    }
+
+    private static StairsBlock makeStairs(Block base) {
+        return make(() -> new StairsBlock(base.getDefaultState(), AbstractBlock.Settings.copy(base)), allBlocks.get(base) + "_stairs");
+    }
+
+    private static SlabBlock makeSlab(Block base) {
+        return make(() -> new SlabBlock(AbstractBlock.Settings.copy(base)), allBlocks.get(base) + "_slab");
+    }
+
+    private static RunicObsidianBlock makeRunic(String effectName, int maxLevel) {
+        return make(() -> new RunicObsidianBlock(
+            AbstractBlock.Settings.copy(TACHYLITE),
+            Suppliers.memoize(() -> Registry.STATUS_EFFECT.getOrEmpty(Requiem.id(effectName)).orElseThrow()),
+            maxLevel
+        ), "tachylite/runic/" + effectName);
+    }
+
+    private static <B extends Block> B make(Supplier<B> factory, String name) {
+        B ret = factory.get();
+        allBlocks.put(ret, name);
+        return ret;
+    }
 
     public static void init() {
-        register(POLISHED_OBSIDIAN, "polished_obsidian");
-        register(POLISHED_OBSIDIAN_SLAB, "polished_obsidian_slab");
-        register(POLISHED_OBSIDIAN_STAIRS, "polished_obsidian_stairs");
-        registerRunic(RUNIC_OBSIDIAN_ATTRITION, "runic_obsidian_attrition");
-        registerRunic(RUNIC_OBSIDIAN_EMANCIPATION, "runic_obsidian_emancipation");
+        allBlocks.forEach(RequiemBlocks::register);
     }
 
     public static <T extends Block & ObeliskRune> void registerRunic(T block, String name) {
@@ -68,11 +105,14 @@ public class RequiemBlocks {
         ObeliskRune.LOOKUP.registerForBlocks((world, pos, state, blockEntity, context) -> block, block);
     }
 
-    public static Block register(Block block, String name) {
-        return register(block, name, true);
+    public static void register(Block block, String name) {
+        register(block, name, true);
+        if (block instanceof ObeliskRune rune) {
+            ObeliskRune.LOOKUP.registerForBlocks((world, pos, state, blockEntity, context) -> rune, block);
+        }
     }
 
-    private static Block register(Block block, String name, boolean doItem) {
+    private static void register(Block block, String name, boolean doItem) {
         Registry.register(Registry.BLOCK, Requiem.id(name), block);
 
         if (doItem) {
@@ -81,7 +121,12 @@ public class RequiemBlocks {
             RequiemItems.registerItem(item, name);
         }
 
-        return block;
     }
 
+    // haha protected constructor haha
+    private static class StairsBlock extends net.minecraft.block.StairsBlock {
+        StairsBlock(BlockState defaultState, Settings settings) {
+            super(defaultState, settings);
+        }
+    }
 }

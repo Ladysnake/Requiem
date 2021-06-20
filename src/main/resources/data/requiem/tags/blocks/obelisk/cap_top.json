@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "requiem:polished_obsidian_slab"
+    "requiem:tachylite/chiseled_slab",
+    "requiem:tachylite/polished_slab"
   ]
 }

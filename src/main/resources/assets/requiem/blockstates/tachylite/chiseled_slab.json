@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "requiem:block/tachylite/chiseled_slab"
+    },
+    "type=double": {
+      "model": "requiem:block/tachylite/chiseled"
+    },
+    "type=top": {
+      "model": "requiem:block/tachylite/chiseled_slab_top"
+    }
+  }
+}

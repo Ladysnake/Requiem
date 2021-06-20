@@ -40,7 +40,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.registry.Registry;
 
 public final class RequiemBlockEntities {
-    public static final BlockEntityType<RunicObsidianBlockEntity> RUNIC_OBSIDIAN = FabricBlockEntityTypeBuilder.create(RunicObsidianBlockEntity::new, RequiemBlocks.RUNIC_OBSIDIAN_ATTRITION, RequiemBlocks.RUNIC_OBSIDIAN_EMANCIPATION).build(null);
+    public static final BlockEntityType<RunicObsidianBlockEntity> RUNIC_OBSIDIAN = FabricBlockEntityTypeBuilder.create(RunicObsidianBlockEntity::new, RequiemBlocks.RUNIC_TACHYLITE_ATTRITION, RequiemBlocks.RUNIC_TACHYLITE_EMANCIPATION).build(null);
 
     public static void init() {
         register("runic_obsidian", RUNIC_OBSIDIAN);

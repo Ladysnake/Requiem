@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "requiem:polished_obsidian_stairs"
+    "requiem:tachylite/chiseled_stairs",
+    "requiem:tachylite/polished_stairs"
   ]
 }

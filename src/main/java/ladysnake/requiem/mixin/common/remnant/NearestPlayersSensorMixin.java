@@ -32,18 +32,25 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.block;
+package ladysnake.requiem.mixin.common.remnant;
 
-import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
-import ladysnake.requiem.common.block.RequiemBlocks;
-import ladysnake.requiem.common.block.RunicObsidianBlock;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Blocks;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.sensor.NearestPlayersSensor;
+import net.minecraft.server.network.ServerPlayerEntity;
+import org.spongepowered.asm.mixin.Dynamic;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-public class PandemoniumBlocks {
-    public static final RunicObsidianBlock RUNIC_OBSIDIAN_PENANCE = new RunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), () -> PandemoniumStatusEffects.PENANCE, 1);
-
-    public static void init() {
-        RequiemBlocks.registerRunic(RUNIC_OBSIDIAN_PENANCE, "tachylite/runic/penance");
+@Mixin(NearestPlayersSensor.class)
+public abstract class NearestPlayersSensorMixin {
+    @Dynamic("Lambda method injection")
+    @Inject(method = "method_19098", at = @At("RETURN"), cancellable = true)
+    private static void preventSensingVagrantPlayers(LivingEntity subject, ServerPlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
+        if (cir.getReturnValueZ() && RemnantComponent.isVagrant(player)) {
+            cir.setReturnValue(false);
+        }
     }
 }

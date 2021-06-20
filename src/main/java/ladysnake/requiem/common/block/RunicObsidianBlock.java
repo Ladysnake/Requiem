@@ -52,11 +52,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Supplier;
+
 public class RunicObsidianBlock extends BlockWithEntity implements ObeliskEffectRune {
-    private final StatusEffect effect;
+    private final Supplier<StatusEffect> effect;
     private final int maxLevel;
 
-    public RunicObsidianBlock(Settings settings, StatusEffect effect, int maxLevel) {
+    public RunicObsidianBlock(Settings settings, Supplier<StatusEffect> effect, int maxLevel) {
         super(settings);
         this.effect = effect;
         this.maxLevel = maxLevel;
@@ -65,12 +67,8 @@ public class RunicObsidianBlock extends BlockWithEntity implements ObeliskEffect
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (player.getStackInHand(hand).getItem() == RequiemItems.DEBUG_ITEM) {
-            if (!world.isClient) {
-                BlockEntity blockEntity = world.getBlockEntity(pos);
-                if (blockEntity instanceof RunicObsidianBlockEntity) {
-                    RunicObsidianBlockEntity core = (RunicObsidianBlockEntity) blockEntity;
-                    player.sendMessage(new LiteralText("Width: " + core.getRangeLevel() + ", Height: " + core.getPowerLevel()), true);
-                }
+            if (!world.isClient && world.getBlockEntity(pos) instanceof RunicObsidianBlockEntity core) {
+                player.sendMessage(new LiteralText("Width: %d, Height: %d".formatted(core.getRangeLevel(), core.getPowerLevel())), true);
             }
             return ActionResult.SUCCESS;
         }
@@ -96,7 +94,7 @@ public class RunicObsidianBlock extends BlockWithEntity implements ObeliskEffect
 
     @Override
     public StatusEffect getEffect() {
-        return effect;
+        return effect.get();
     }
 
     @Override
