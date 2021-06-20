@@ -89,6 +89,10 @@ public interface RemnantState {
         return true;
     }
 
+    default boolean canSplit() {
+        return false;
+    }
+
     /**
      * Called when this remnant state's player is cloned
      *

@@ -34,24 +34,31 @@
  */
 package ladysnake.requiem.common.entity.effect;
 
-import ladysnake.requiem.Requiem;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
+import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.common.network.RequiemNetworking;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-public final class RequiemStatusEffects {
-    public static final StatusEffect ATTRITION = new AttritionStatusEffect(StatusEffectType.HARMFUL, 0xAA3322)
-        .addAttributeModifier(EntityAttributes.GENERIC_MAX_HEALTH, "069ae0b1-4014-41dd-932f-a5da4417d711", -0.2, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
-    public static final StatusEffect EMANCIPATION = new EmancipationStatusEffect(StatusEffectType.BENEFICIAL, 0x7799FF);
-
-    public static void init() {
-        registerEffect(ATTRITION, "attrition");
-        registerEffect(EMANCIPATION, "emancipation");
+public class EmancipationStatusEffect extends StatusEffect {
+    public EmancipationStatusEffect(StatusEffectType type, int color) {
+        super(type, color);
     }
 
-    public static void registerEffect(StatusEffect effect, String name) {
-        Registry.register(Registry.STATUS_EFFECT, Requiem.id(name), effect);
+    @Override
+    public void onRemoved(LivingEntity entity, AttributeContainer attributes, int amplifier) {
+        super.onRemoved(entity, attributes, amplifier);
+        if (entity instanceof ServerPlayerEntity player) {
+            PossessionComponent possessionComponent = PossessionComponent.get(player);
+            MobEntity host = possessionComponent.getPossessedEntity();
+            if (host != null && PossessionStartCallback.EVENT.invoker().onPossessionAttempted(host, player, true) != PossessionStartCallback.Result.ALLOW) {
+                possessionComponent.stopPossessing();
+                RequiemNetworking.sendEtherealAnimationMessage(player);
+            }
+        }
     }
 }

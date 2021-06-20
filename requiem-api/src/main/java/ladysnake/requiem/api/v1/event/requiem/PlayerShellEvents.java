@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.pandemonium.api.event;
+package ladysnake.requiem.api.v1.event.requiem;
 
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.event.Event;
@@ -23,6 +23,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Experimental
 public final class PlayerShellEvents {
@@ -109,7 +110,7 @@ public final class PlayerShellEvents {
          * @param shellProfile the profile of the player which created this shell
          * @return {@code true} if the merge can happen, {@code false} otherwise
          */
-        boolean canMerge(PlayerEntity player, PlayerEntity playerShell, GameProfile shellProfile);
+        boolean canMerge(PlayerEntity player, PlayerEntity playerShell, @Nullable GameProfile shellProfile);
     }
 
     @FunctionalInterface

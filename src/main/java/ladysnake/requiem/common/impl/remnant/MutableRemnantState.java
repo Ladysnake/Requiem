@@ -118,7 +118,8 @@ public class MutableRemnantState implements RemnantState {
 
     @Override
     public boolean canDissociateFrom(MobEntity possessed) {
-        return RequiemEntityTypeTags.FRICTIONLESS_HOSTS.contains(possessed.getType());
+        return RequiemEntityTypeTags.FRICTIONLESS_HOSTS.contains(possessed.getType())
+            || this.player.hasStatusEffect(RequiemStatusEffects.EMANCIPATION);
     }
 
     @Override
@@ -164,6 +165,11 @@ public class MutableRemnantState implements RemnantState {
     @Override
     public boolean canRegenerateBody() {
         return true;
+    }
+
+    @Override
+    public boolean canSplit() {
+        return this.player.hasStatusEffect(RequiemStatusEffects.EMANCIPATION);
     }
 
     protected boolean canRegenerateBodyFrom(LivingEntity body) {
