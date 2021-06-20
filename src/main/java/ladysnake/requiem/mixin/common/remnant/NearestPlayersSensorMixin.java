@@ -35,23 +35,22 @@
 package ladysnake.requiem.mixin.common.remnant;
 
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import net.minecraft.entity.Entity;
-import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.sensor.NearestPlayersSensor;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import javax.annotation.Nullable;
-
-@Mixin(EntityPredicates.class)
-public abstract class EntityPredicatesMixin {
+@Mixin(NearestPlayersSensor.class)
+public abstract class NearestPlayersSensorMixin {
     @Dynamic("Lambda method injection")
-    @Inject(method = {"method_5910"}, at = @At("RETURN"), cancellable = true)
-    private static void exceptCreativeOrSpectator(@Nullable Entity tested, CallbackInfoReturnable<Boolean> info) {
-        if (info.getReturnValueZ() && tested != null && RemnantComponent.isVagrant(tested)) {
-            info.setReturnValue(false);
+    @Inject(method = "method_19098", at = @At("RETURN"), cancellable = true)
+    private static void preventSensingVagrantPlayers(LivingEntity subject, ServerPlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
+        if (cir.getReturnValueZ() && RemnantComponent.isVagrant(player)) {
+            cir.setReturnValue(false);
         }
     }
 }

@@ -75,6 +75,7 @@
     "remnant.EntityShapeContextMixin",
     "remnant.HungerManagerMixin",
     "remnant.LivingEntityMixin",
+    "remnant.NearestPlayersSensorMixin",
     "remnant.PlayerEntityMixin",
     "remnant.ServerPlayerEntityMixin",
     "remnant.ServerPlayNetworkHandler1Mixin",
