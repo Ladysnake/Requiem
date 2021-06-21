@@ -41,6 +41,7 @@ import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.mixin.common.access.EndermanEntityAccessor;
 import net.minecraft.entity.Entity;
@@ -78,6 +79,13 @@ public class BasePossessionHandlers {
         });
         PossessionStartCallback.EVENT.register(Requiem.id("converted_mobs"), (target, possessor, simulate) -> {
             if (PossessedData.KEY.get(target).wasConvertedUnderPossession()) {
+                return PossessionStartCallback.Result.ALLOW;
+            }
+            return PossessionStartCallback.Result.PASS;
+        });
+        PossessionStartCallback.EVENT.register(Requiem.id("emancipation"), (target, possessor, simulate) -> {
+            if (possessor.hasStatusEffect(RequiemStatusEffects.EMANCIPATION)) {
+                // TODO check that the mob is soulless
                 return PossessionStartCallback.Result.ALLOW;
             }
             return PossessionStartCallback.Result.PASS;

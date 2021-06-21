@@ -85,6 +85,7 @@
   "requiem:tooltip.zombie_food": "Zombie Snack",
 
   "block.requiem.tachylite.runic.attrition": "Runic Tachylite of Attrition",
+  "block.requiem.tachylite.runic.emancipation": "Runic Tachylite of Emancipation",
   "block.requiem.tachylite.runic.penance": "Runic Tachylite of Penance",
   "block.requiem.tachylite.chiseled": "Chiseled Tachylite",
   "block.requiem.tachylite.chiseled_pillar": "Chiseled Tachylite Pillar",
@@ -117,6 +118,7 @@
   "gamerule.requiem:possessionKeepInventory": "(Requiem) Keep inventory         after possession ends",
 
   "effect.requiem.attrition": "Attrition",
+  "effect.requiem.emancipation": "Emancipation",
 
   "enchantment.requiem.humanity": "Humanity",
 

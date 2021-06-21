@@ -35,6 +35,7 @@
 package ladysnake.requiem.common.impl.remnant;
 
 import com.google.common.base.Preconditions;
+import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
@@ -148,6 +149,11 @@ public final class RemnantComponentImpl implements RemnantComponent {
     @Override
     public boolean canDissociateFrom(MobEntity possessed) {
         return this.state.canDissociateFrom(possessed);
+    }
+
+    @Override
+    public boolean canPerformSplit() {
+        return !this.player.isRemoved() && this.state.canSplit() && !this.isVagrant() && PlayerShellEvents.PRE_SPLIT.invoker().canSplit(this.player);
     }
 
     @Override

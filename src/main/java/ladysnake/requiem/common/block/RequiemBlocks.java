@@ -66,6 +66,7 @@ public class RequiemBlocks {
     public static final Block POLISHED_TACHYLITE_STAIRS = makeStairs(RequiemBlocks.POLISHED_TACHYLITE);
     public static final Block SCRAPED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/scraped");
     public static final RunicObsidianBlock RUNIC_TACHYLITE_ATTRITION = makeRunic("attrition", 3);
+    public static final RunicObsidianBlock RUNIC_TACHYLITE_EMANCIPATION = makeRunic("emancipation", 1);
 
     private static Block makeVariant(Block base, String id) {
         Block ret = new Block(AbstractBlock.Settings.copy(base));
