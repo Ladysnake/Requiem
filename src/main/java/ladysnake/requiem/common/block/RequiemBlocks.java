@@ -42,6 +42,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.PillarBlock;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -57,13 +58,13 @@ public class RequiemBlocks {
 
     public static final Block TACHYLITE = makeVariant(Blocks.OBSIDIAN, "tachylite/tachylite");
     public static final Block CHISELED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/chiseled");
-    public static final Block CHISELED_TACHYLITE_PILLAR = makeVariant(TACHYLITE, "tachylite/chiseled_pillar");
-    public static final Block CHISELED_TACHYLITE_SLAB = makeSlab(CHISELED_TACHYLITE);
-    public static final Block CHISELED_TACHYLITE_STAIRS = makeStairs(RequiemBlocks.CHISELED_TACHYLITE);
+    public static final PillarBlock CHISELED_TACHYLITE_PILLAR = makePillar(CHISELED_TACHYLITE);
+    public static final SlabBlock CHISELED_TACHYLITE_SLAB = makeSlab(CHISELED_TACHYLITE);
+    public static final StairsBlock CHISELED_TACHYLITE_STAIRS = makeStairs(CHISELED_TACHYLITE);
     public static final Block POLISHED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/polished");
-    public static final Block POLISHED_TACHYLITE_PILLAR = makeVariant(TACHYLITE, "tachylite/polished_pillar");
-    public static final Block POLISHED_TACHYLITE_SLAB = makeSlab(POLISHED_TACHYLITE);
-    public static final Block POLISHED_TACHYLITE_STAIRS = makeStairs(RequiemBlocks.POLISHED_TACHYLITE);
+    public static final PillarBlock POLISHED_TACHYLITE_PILLAR = makePillar(POLISHED_TACHYLITE);
+    public static final SlabBlock POLISHED_TACHYLITE_SLAB = makeSlab(POLISHED_TACHYLITE);
+    public static final StairsBlock POLISHED_TACHYLITE_STAIRS = makeStairs(POLISHED_TACHYLITE);
     public static final Block SCRAPED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/scraped");
     public static final RunicObsidianBlock RUNIC_TACHYLITE_ATTRITION = makeRunic("attrition", 3);
     public static final RunicObsidianBlock RUNIC_TACHYLITE_EMANCIPATION = makeRunic("emancipation", 1);
@@ -72,6 +73,10 @@ public class RequiemBlocks {
         Block ret = new Block(AbstractBlock.Settings.copy(base));
         allBlocks.put(ret, id);
         return ret;
+    }
+
+    private static PillarBlock makePillar(Block base) {
+        return make(() -> new PillarBlock(AbstractBlock.Settings.copy(base)), allBlocks.get(base) + "_pillar");
     }
 
     private static StairsBlock makeStairs(Block base) {
@@ -102,7 +107,6 @@ public class RequiemBlocks {
 
     public static <T extends Block & ObeliskRune> void registerRunic(T block, String name) {
         register(block, name);
-        ObeliskRune.LOOKUP.registerForBlocks((world, pos, state, blockEntity, context) -> block, block);
     }
 
     public static void register(Block block, String name) {
