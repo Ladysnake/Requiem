@@ -36,13 +36,9 @@ package ladysnake.pandemonium.common.entity.ability;
 
 import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
 import ladysnake.requiem.api.v1.entity.ability.IndirectAbility;
-import ladysnake.requiem.common.entity.ability.AbilityBase;
-import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
-import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
-import net.minecraft.entity.Entity;
+import ladysnake.requiem.core.entity.ability.AbilityBase;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;

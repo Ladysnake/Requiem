@@ -37,13 +37,17 @@ package ladysnake.requiem.common.remnant;
 import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import dev.onyxstudios.cca.api.v3.entity.TrackingStartCallback;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
+import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import ladysnake.requiem.core.tag.RequiemCoreTags;
 import ladysnake.requiem.mixin.common.access.EndermanEntityAccessor;
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -65,8 +69,11 @@ public class BasePossessionHandlers {
                 }
             }
         });
+        PossessionEvents.INVENTORY_TRANSFER_CHECK.register(
+            (possessor, host) -> possessor.world.getGameRules().get(RequiemGamerules.POSSESSION_KEEP_INVENTORY).get().shouldTransfer(host.isAlive()) ? TriState.TRUE : TriState.DEFAULT
+        );
         PossessionStartCallback.EVENT.register(Requiem.id("blacklist"), (target, possessor, simulate) -> {
-            if (RequiemEntityTypeTags.POSSESSION_BLACKLIST.contains(target.getType())) {
+            if (RequiemCoreTags.Entity.POSSESSION_BLACKLIST.contains(target.getType())) {
                 return PossessionStartCallback.Result.DENY;
             }
             return PossessionStartCallback.Result.PASS;

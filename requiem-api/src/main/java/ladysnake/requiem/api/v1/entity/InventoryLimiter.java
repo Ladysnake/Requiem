@@ -17,26 +17,25 @@
  */
 package ladysnake.requiem.api.v1.entity;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
-import net.minecraft.util.Identifier;
+import io.github.ladysnake.locki.InventoryLock;
+import io.github.ladysnake.locki.InventoryNode;
+import ladysnake.requiem.api.v1.internal.ApiInternals;
+import net.minecraft.entity.player.PlayerEntity;
 
-public interface InventoryLimiter extends Component {
-    ComponentKey<InventoryLimiter> KEY = ComponentRegistry.getOrCreate(new Identifier("requiem", "inventory_limiter"), InventoryLimiter.class);
-
-    void setEnabled(boolean enabled);
-    @Deprecated boolean isEnabled();
-    void unlock(InventoryPart part);
-    void lock(InventoryPart part);
-    boolean isLocked(InventoryPart part);
-    @Deprecated HotbarAvailability getHotbarAvailability();
-    boolean isSlotLocked(int playerSlot);
-    boolean isSlotInvisible(int playerSlot);
-    InventoryShape getInventoryShape();
-
-    enum HotbarAvailability {
-        FULL, HANDS, NONE
+public interface InventoryLimiter {
+    static InventoryLimiter instance() {
+        return ApiInternals.getInventoryLimiter();
     }
 
+    InventoryLock getLock();
+
+    void enable(PlayerEntity player);
+    void disable(PlayerEntity player);
+
+    void unlock(PlayerEntity player, InventoryNode part);
+    void lock(PlayerEntity player, InventoryNode part);
+    boolean isLocked(PlayerEntity player, InventoryNode part);
+    boolean isSlotLocked(PlayerEntity player, int playerSlot);
+    boolean isSlotInvisible(PlayerEntity player, int playerSlot);
+    InventoryShape getInventoryShape(PlayerEntity player);
 }

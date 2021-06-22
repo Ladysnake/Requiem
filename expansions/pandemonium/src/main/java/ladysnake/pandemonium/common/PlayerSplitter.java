@@ -102,7 +102,7 @@ public final class PlayerSplitter {
         shell.bodyYaw = whole.bodyYaw;
         shell.changeGameMode(whole.interactionManager.isSurvivalLike() ? whole.interactionManager.getGameMode() : GameMode.SURVIVAL);
         RemnantComponent.get(shell).become(RemnantTypes.MORTAL, true);
-        InventoryLimiter.KEY.get(shell).setEnabled(false);
+        InventoryLimiter.instance().disable(shell);
         PlayerShellEvents.DATA_TRANSFER.invoker().transferData(whole, shell, false);
         return shell;
     }

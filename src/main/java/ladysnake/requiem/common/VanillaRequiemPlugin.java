@@ -34,12 +34,12 @@
  */
 package ladysnake.requiem.common;
 
+import io.github.ladysnake.locki.DefaultInventoryNodes;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
-import ladysnake.requiem.api.v1.entity.InventoryPart;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
@@ -50,6 +50,7 @@ import ladysnake.requiem.api.v1.event.minecraft.MobTravelRidingCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.minecraft.PrepareRespawnCallback;
 import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
+import ladysnake.requiem.api.v1.event.requiem.ConsumableItemEvents;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
@@ -63,22 +64,25 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.api.v1.remnant.VagrantInteractionRegistry;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
+import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
-import ladysnake.requiem.common.entity.ability.AutoAimAbility;
-import ladysnake.requiem.common.entity.ability.RangedAttackAbility;
 import ladysnake.requiem.common.entity.ability.ShulkerPeekAbility;
 import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
-import ladysnake.requiem.common.entity.ability.SnowmanSnowballAbility;
+import ladysnake.requiem.common.entity.ability.VagrantPossessAbility;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
-import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
-import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
-import ladysnake.requiem.common.impl.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import ladysnake.requiem.core.ability.PlayerAbilityController;
+import ladysnake.requiem.core.entity.ability.AutoAimAbility;
+import ladysnake.requiem.core.entity.ability.DelegatingDirectAbility;
+import ladysnake.requiem.core.entity.ability.RangedAttackAbility;
+import ladysnake.requiem.core.entity.ability.SnowmanSnowballAbility;
+import ladysnake.requiem.core.resurrection.ResurrectionDataLoader;
+import ladysnake.requiem.core.tag.RequiemCoreTags;
 import ladysnake.requiem.mixin.common.access.StatusEffectAccessor;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
@@ -136,6 +140,10 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         EntityAttributeModifier.Operation.MULTIPLY_TOTAL
     );
     public static final String INFINITY_SHOT_TAG = "requiem:infinity_shot";
+    public static final MobAbilityConfig<PlayerEntity> SOUL_ABILITY_CONFIG = MobAbilityConfig.<PlayerEntity>builder()
+        .directAttack(player -> new DelegatingDirectAbility<>(player, LivingEntity.class, AbilityType.INTERACT))
+        .directInteract(VagrantPossessAbility::new)
+        .build();
 
     @Override
     public void onRequiemInitialize() {
@@ -162,6 +170,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             return false;
         });
         HumanityCheckCallback.EVENT.register(possessedEntity -> EnchantmentHelper.getEquipmentLevel(RequiemEnchantments.HUMANITY, possessedEntity));
+        ConsumableItemEvents.POST_CONSUMED.register(RequiemCriteria.USED_TOTEM::trigger);
     }
 
     private void registerEtherealEventHandlers() {
@@ -191,8 +200,12 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             }
         }));
         RemnantStateChangeCallback.EVENT.register((player, remnant) -> {
-            if (!remnant.isVagrant()) PossessionComponent.get(player).stopPossessing(false);
-            InventoryLimiter.KEY.get(player).setEnabled(remnant.isVagrant());
+            if (!remnant.isVagrant()) {
+                PossessionComponent.get(player).stopPossessing(false);
+                InventoryLimiter.instance().enable(player);
+            } else {
+                InventoryLimiter.instance().disable(player);
+            }
             MobEntity possessed = PossessionComponent.getPossessedEntity(player);
             if (possessed != null) {
                 PlayerAbilityController.get(player).usePossessedAbilities(possessed);
@@ -247,7 +260,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         });
         UseItemCallback.EVENT.register((player, world, hand) -> {
             LivingEntity possessed = PossessionComponent.getPossessedEntity(player);
-            if (possessed != null && !RequiemEntityTypeTags.ITEM_USERS.contains(possessed.getType()) && !player.isCreative()) {
+            if (possessed != null && !RequiemCoreTags.Entity.ITEM_USERS.contains(possessed.getType()) && !player.isCreative()) {
                 return new TypedActionResult<>(ActionResult.FAIL, player.getStackInHand(hand));
             }
             return new TypedActionResult<>(ActionResult.PASS, player.getStackInHand(hand));
@@ -258,9 +271,9 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             }
         }));
         PossessionStateChangeCallback.EVENT.register((player, possessed) -> {
-                InventoryLimiter inventoryLimiter = InventoryLimiter.KEY.get(player);
+                InventoryLimiter inventoryLimiter = InventoryLimiter.instance();
                 if (!player.world.isClient) {
-                    inventoryLimiter.setEnabled(true);
+                    inventoryLimiter.enable(player);
                 }
                 if (possessed == null) {
                     PlayerAbilityController.get(player).resetAbilities(RemnantComponent.isIncorporeal(player));
@@ -268,15 +281,15 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                     PlayerAbilityController.get(player).usePossessedAbilities(possessed);
 
                     if (!player.world.isClient) {
-                        if (RequiemEntityTypeTags.INVENTORY_CARRIERS.contains(possessed.getType())) {
-                            inventoryLimiter.unlock(InventoryPart.MAIN);
+                        if (RequiemCoreTags.Entity.INVENTORY_CARRIERS.contains(possessed.getType())) {
+                            inventoryLimiter.unlock(player, DefaultInventoryNodes.MAIN_INVENTORY);
                         }
                         if (canUseItems(possessed)) {
-                            inventoryLimiter.unlock(InventoryPart.HANDS);
-                            inventoryLimiter.unlock(InventoryPart.CRAFTING);
+                            inventoryLimiter.unlock(player, DefaultInventoryNodes.HANDS);
+                            inventoryLimiter.unlock(player, DefaultInventoryNodes.CRAFTING);
                         }
                         if (canWearArmor(possessed)) {
-                            inventoryLimiter.unlock(InventoryPart.ARMOR);
+                            inventoryLimiter.unlock(player, DefaultInventoryNodes.ARMOR);
                         }
                         PossessedData.KEY.get(possessed).giftFirstPossessionLoot(player);
                     }
@@ -286,7 +299,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     private static boolean canUseItems(MobEntity possessed) {
-        if (RequiemEntityTypeTags.ITEM_USERS.contains(possessed.getType())) {
+        if (RequiemCoreTags.Entity.ITEM_USERS.contains(possessed.getType())) {
             return true;
         }
         return possessed.canPickUpLoot();

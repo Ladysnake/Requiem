@@ -1,0 +1,29 @@
+archivesBaseName = "requiem-core"
+group = rootProject.group
+
+repositories {
+    mavenLocal()
+    maven {
+        name = "Ladysnake Libs"
+        url = 'https://ladysnake.jfrog.io/artifactory/mods'
+        content {
+            includeGroup 'io.github.ladysnake'
+            includeGroupByRegex "io\\.github\\.onyxstudios.*"
+        }
+    }
+    maven {
+        url = 'https://oss.sonatype.org/content/repositories/snapshots'
+        content {
+            includeGroup 'me.lucko'
+        }
+    }
+}
+
+dependencies {
+    api project(path: ":requiem-api", configuration: "dev")
+    modImplementation "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
+    modImplementation "io.github.ladysnake:locki:${locki_version}"
+    modImplementation "me.lucko:fabric-permissions-api:${fpa_version}"
+}
+
+remapJar.dependsOn(project(":requiem-api").tasks.remapJar)

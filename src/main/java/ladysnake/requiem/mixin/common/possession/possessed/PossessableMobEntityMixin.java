@@ -35,8 +35,8 @@
 package ladysnake.requiem.mixin.common.possession.possessed;
 
 import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.common.impl.possession.PossessedDataImpl;
 import ladysnake.requiem.common.util.PossessionHooks;
+import ladysnake.requiem.core.possession.PossessedDataBase;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
@@ -123,7 +123,7 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
     @Inject(method = "convertTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private <T extends MobEntity> void possessConvertedZombie(EntityType<T> type, boolean bl, CallbackInfoReturnable<T> ci, T converted) {
         PossessionHooks.dropArmorIfBanned(converted);
-        PossessedDataImpl.onMobConverted((MobEntity) (Object) this, converted);
+        PossessedDataBase.onMobConverted((MobEntity) (Object) this, converted);
     }
 
     @Override

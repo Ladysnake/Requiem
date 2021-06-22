@@ -34,8 +34,8 @@
  */
 package ladysnake.requiem.mixin.common.possession;
 
-import ladysnake.requiem.common.entity.attribute.NonDeterministicAttribute;
-import ladysnake.requiem.common.entity.attribute.NonDeterministicModifier;
+import ladysnake.requiem.core.entity.attribute.NonDeterministicAttribute;
+import ladysnake.requiem.core.entity.attribute.NonDeterministicModifier;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;

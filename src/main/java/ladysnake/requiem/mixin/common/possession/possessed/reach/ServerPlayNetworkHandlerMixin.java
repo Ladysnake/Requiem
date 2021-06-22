@@ -35,8 +35,7 @@
 package ladysnake.requiem.mixin.common.possession.possessed.reach;
 
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
-import ladysnake.requiem.mixin.common.access.EntityAccessor;
+import ladysnake.requiem.core.possession.PossessionComponentImpl;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -59,7 +58,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
     private double onPlayerInteractBlockModifyDistance(double posY) {
         MobEntity host = PossessionComponent.getPossessedEntity(player);
         if (host != null) {
-            return posY - ((EntityAccessor) host).requiem$invokeGetEyeHeight(host.getPose(), host.getDimensions(host.getPose()));
+            return posY - host.getEyeHeight(host.getPose());
         }
         return posY;
     }

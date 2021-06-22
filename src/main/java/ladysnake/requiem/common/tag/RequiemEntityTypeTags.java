@@ -43,25 +43,19 @@ public final class RequiemEntityTypeTags {
     public static final Tag<EntityType<?>> DICHROMATS = register("vision/dichromats");
     public static final Tag<EntityType<?>> TETRACHROMATS = register("vision/tetrachromats");
 
-    public static final Tag<EntityType<?>> POSSESSION_BLACKLIST = register("possession/possession_blacklist");
     public static final Tag<EntityType<?>> POSSESSABLES = register("possession/possessables");
-    public static final Tag<EntityType<?>> FRICTIONLESS_HOSTS = register("possession/frictionless_hosts");
 
     public static final Tag<EntityType<?>> ARMOR_BANNED = register("inventory/armor_banned");
     public static final Tag<EntityType<?>> ARMOR_USERS = register("inventory/armor_users");
-    public static final Tag<EntityType<?>> ITEM_USERS = register("inventory/item_users");
-    public static final Tag<EntityType<?>> INVENTORY_CARRIERS = register("inventory/inventory_carriers");
     public static final Tag<EntityType<?>> SUPERCRAFTERS = register("inventory/supercrafters");
 
     public static final Tag<EntityType<?>> ARROW_GENERATORS = register("behavior/arrow_generators");
-    public static final Tag<EntityType<?>> EATERS = register("behavior/regular_eaters");
     public static final Tag<EntityType<?>> IMMOVABLE = register("behavior/immovable");
 
     public static final Tag<EntityType<?>> REPLACEABLE_SKELETONS = register("transformation/replaceable_skeletons");
 
     public static final Tag<EntityType<?>> SKELETONS = register("skeletons");
     public static final Tag<EntityType<?>> ZOMBIES = register("zombies");
-    public static final Tag<EntityType<?>> GOLEMS = register("golems");
     public static final Tag<EntityType<?>> PIGLINS = register("piglins");
 
     public static void init() {

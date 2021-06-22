@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.common.inventory;
 
-import ladysnake.requiem.common.impl.inventory.MainHandSlot;
+import ladysnake.requiem.core.inventory.MainHandSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingInventory;

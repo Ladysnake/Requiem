@@ -15,6 +15,7 @@ pluginManagement {
 rootProject.name = 'requiem'
 
 include "requiem-api"
+include "requiem-core"
 
 ['pandemonium'].forEach {
     include it

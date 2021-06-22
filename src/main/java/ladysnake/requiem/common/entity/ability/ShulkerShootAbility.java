@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.common.entity.ability;
 
+import ladysnake.requiem.core.entity.ability.DirectAbilityBase;
 import ladysnake.requiem.mixin.common.access.ShulkerEntityAccessor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ShulkerEntity;

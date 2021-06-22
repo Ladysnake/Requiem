@@ -34,11 +34,12 @@
  */
 package ladysnake.requiem.mixin.common.inventory;
 
+import io.github.ladysnake.locki.DefaultInventoryNodes;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
-import ladysnake.requiem.api.v1.entity.InventoryPart;
 import ladysnake.requiem.api.v1.entity.InventoryShape;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.Inventory;
@@ -60,6 +61,7 @@ public abstract class SlotMixin {
     @Shadow
     @Final
     private int index;
+    protected @Nullable PlayerEntity requiem$player;
     protected @Nullable InventoryLimiter requiem$limiter;
     @Unique
     protected boolean craftingSlot;
@@ -67,11 +69,11 @@ public abstract class SlotMixin {
     @Inject(method = "<init>", at = @At("RETURN"))
     private void constructor(Inventory inventory, int index, int x, int y, CallbackInfo ci) {
         if (inventory instanceof PlayerInventory) {
-            this.requiem$limiter = InventoryLimiter.KEY.maybeGet(((PlayerInventory) inventory).player).orElse(null);
+            this.requiem$player = ((PlayerInventory) inventory).player;
         } else if (inventory instanceof CraftingInventory) {
             ScreenHandler handler = ((CraftingInventoryAccessor) inventory).requiem$getHandler();
             if (handler instanceof PlayerScreenHandlerAccessor) {
-                this.requiem$limiter = InventoryLimiter.KEY.maybeGet(((PlayerScreenHandlerAccessor) handler).getOwner()).orElse(null);
+                this.requiem$player = ((PlayerScreenHandlerAccessor) handler).getOwner();
                 this.craftingSlot = true;
             }
         }
@@ -79,7 +81,12 @@ public abstract class SlotMixin {
 
     @Unique
     private boolean shouldBeInvisible() {
-        return this.requiem$limiter != null && this.requiem$limiter.getInventoryShape() != InventoryShape.NORMAL && (this.craftingSlot ? this.requiem$limiter.isLocked(InventoryPart.CRAFTING) : this.requiem$limiter.isSlotInvisible(this.index));
+        if (this.requiem$player == null) return false;
+        InventoryLimiter limiter = InventoryLimiter.instance();
+        return limiter.getInventoryShape(requiem$player) != InventoryShape.NORMAL
+            && (this.craftingSlot
+            ? limiter.isLocked(this.requiem$player, DefaultInventoryNodes.CRAFTING)
+            : limiter.isSlotInvisible(requiem$player, this.index));
     }
 
     @Environment(EnvType.CLIENT)

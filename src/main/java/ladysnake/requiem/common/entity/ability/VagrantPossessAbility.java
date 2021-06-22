@@ -36,8 +36,9 @@ package ladysnake.requiem.common.entity.ability;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.client.RequiemClient;
-import ladysnake.requiem.common.impl.remnant.VagrantInteractionRegistryImpl;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
+import ladysnake.requiem.core.entity.ability.DirectAbilityBase;
+import ladysnake.requiem.core.remnant.VagrantInteractionRegistryImpl;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

@@ -35,7 +35,7 @@
 package ladysnake.requiem.mixin.common.possession.possessed.reach;
 
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
+import ladysnake.requiem.core.possession.PossessionComponentImpl;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;

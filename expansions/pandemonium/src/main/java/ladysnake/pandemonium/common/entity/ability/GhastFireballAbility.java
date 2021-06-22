@@ -34,7 +34,7 @@
  */
 package ladysnake.pandemonium.common.entity.ability;
 
-import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
+import ladysnake.requiem.core.entity.ability.IndirectAbilityBase;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.projectile.FireballEntity;

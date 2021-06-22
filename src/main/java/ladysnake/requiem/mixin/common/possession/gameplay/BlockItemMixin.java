@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import ladysnake.requiem.common.impl.possession.item.PossessionItemOverrideWrapper;
+import ladysnake.requiem.common.possession.item.PossessionItemOverrideWrapper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemUsageContext;

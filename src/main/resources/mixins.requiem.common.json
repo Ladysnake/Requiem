@@ -6,8 +6,6 @@
   "mixins": [
     "access.ArrowShooter",
     "access.EndermanEntityAccessor",
-    "access.EntityAccessor",
-    "access.LivingEntityAccessor",
     "access.LootContextTypesAccessor",
     "access.ProjectileEntityAccessor",
     "access.ShulkerEntityAccessor",

@@ -37,7 +37,7 @@ package ladysnake.pandemonium.common.entity.fakeplayer;
 import com.google.common.collect.ImmutableList;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.mixin.common.entity.EntityAccessor;
-import ladysnake.requiem.common.entity.attribute.PossessionDelegatingModifier;
+import ladysnake.requiem.core.entity.attribute.PossessionDelegatingModifier;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

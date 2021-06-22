@@ -39,15 +39,16 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.entity.ai.DisableableBrain;
-import ladysnake.requiem.common.entity.attribute.CooldownStrengthModifier;
-import ladysnake.requiem.common.entity.attribute.NonDeterministicAttribute;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
-import ladysnake.requiem.common.impl.movement.PlayerMovementAlterer;
-import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
-import ladysnake.requiem.common.impl.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
+import ladysnake.requiem.core.entity.attribute.CooldownStrengthModifier;
+import ladysnake.requiem.core.entity.attribute.NonDeterministicAttribute;
+import ladysnake.requiem.core.mixin.access.LivingEntityAccessor;
+import ladysnake.requiem.core.movement.PlayerMovementAlterer;
+import ladysnake.requiem.core.possession.PossessionComponentImpl;
+import ladysnake.requiem.core.resurrection.ResurrectionDataLoader;
+import ladysnake.requiem.core.tag.RequiemCoreTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -90,7 +91,7 @@ abstract class PossessableLivingEntityMixin extends Entity implements Possessabl
     @Unique
     private final boolean requiem_immovable = RequiemEntityTypeTags.IMMOVABLE.contains(this.getType());
     @Unique
-    private final boolean requiem_regularEater = RequiemEntityTypeTags.EATERS.contains(this.getType());
+    private final boolean requiem_regularEater = RequiemCoreTags.Entity.EATERS.contains(this.getType());
     @Unique
     @Nullable
     private UUID requiem_previousPossessorUuid;

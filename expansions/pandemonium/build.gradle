@@ -44,6 +44,7 @@ repositories {
 
 dependencies {
     implementation project(path: ":requiem-api", configuration: "dev")
+    implementation project(path: ":requiem-core", configuration: "dev")
     implementation project(path: ":", configuration: "dev")
     implementation project(path: ":pandemonium-api", configuration: "dev")
     include project(":pandemonium-api")

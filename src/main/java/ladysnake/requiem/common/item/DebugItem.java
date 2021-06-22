@@ -35,7 +35,7 @@
 package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
-import ladysnake.requiem.common.impl.remnant.dialogue.PlayerDialogueTracker;
+import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;

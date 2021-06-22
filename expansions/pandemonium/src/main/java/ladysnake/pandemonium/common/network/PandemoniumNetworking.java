@@ -34,21 +34,19 @@
  */
 package ladysnake.pandemonium.common.network;
 
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.core.RequiemCore;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-import static ladysnake.requiem.common.network.RequiemNetworking.createEmptyBuffer;
-
 public final class PandemoniumNetworking {
-    public static final Identifier ANCHOR_DAMAGE = Requiem.id("anchor_damage");
+    public static final Identifier ANCHOR_DAMAGE = RequiemCore.id("anchor_damage");
 
     public static void sendAnchorDamageMessage(ServerPlayerEntity player, boolean dead) {
-        PacketByteBuf buf = createEmptyBuffer();
+        PacketByteBuf buf = PacketByteBufs.create();
         buf.writeBoolean(dead);
-        RequiemNetworking.sendTo(player, new CustomPayloadS2CPacket(ANCHOR_DAMAGE, buf));
+        ServerPlayNetworking.send(player, ANCHOR_DAMAGE, buf);
     }
 }

@@ -42,6 +42,7 @@ import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.RemnantTypes;
+import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
@@ -123,7 +124,7 @@ public class ClientMessageHandler {
                 }
             });
         });
-        ClientPlayNetworking.registerGlobalReceiver(CONSUME_RESURRECTION_ITEM, (client, handler, buf, responseSender) -> {
+        ClientPlayNetworking.registerGlobalReceiver(RequiemCoreNetworking.CONSUME_RESURRECTION_ITEM, (client, handler, buf, responseSender) -> {
             int entityId = buf.readVarInt();
             ItemStack stack = buf.readItemStack();
             client.execute(() -> {

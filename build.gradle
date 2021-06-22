@@ -201,31 +201,33 @@ repositories {
 
 dependencies {
     api project(path: ":requiem-api", configuration: "dev")
+    api project(path: ":requiem-core", configuration: "dev")
     // including too early causes a circular dependency somehow
     afterEvaluate {
         include project(":requiem-api")
+        include project(":requiem-core")
     }
 
     // Required dependencies
-    modApi("io.github.ladysnake:satin:${rootProject.satin_version}")
+    modApi "io.github.ladysnake:satin:${satin_version}"
     include "io.github.ladysnake:satin:${satin_version}"
+    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${cca_version}"
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${cca_version}"
-    modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}")
+    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
-    modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-scoreboard:${cca_version}")
+    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-scoreboard:${cca_version}"
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-scoreboard:${cca_version}"
-    modImplementation ("io.github.ladysnake:PlayerAbilityLib:${pal_version}")
+    modImplementation "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
     include "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
     modImplementation "io.github.ladysnake:locki:${locki_version}"
     include "io.github.ladysnake:locki:${locki_version}"
     modImplementation "dev.emi.chime:chime:${chime_version}"
-    include "io.github.emilyalexandra:chime:${chime_version}"
+    include "dev.emi.chime:chime:${chime_version}"
     // Fiber is technically not a mod and could use implementation, however that leaves it out of the generated pom.xml
-    modImplementation "me.zeroeightsix:fiber:${project.fiber_version}"
-    include "me.zeroeightsix:fiber:${project.fiber_version}"
+    modImplementation "me.zeroeightsix:fiber:${fiber_version}"
+    include "me.zeroeightsix:fiber:${fiber_version}"
     modImplementation "me.lucko:fabric-permissions-api:${fpa_version}"
     include "me.lucko:fabric-permissions-api:${fpa_version}"
-
     // Optional dependencies
     modCompileOnly ("io.github.prospector:modmenu:${modmenu_version}") { transitive = false }
     modRuntime ("io.github.prospector:modmenu:${modmenu_version}") { transitive = false }
@@ -272,7 +274,7 @@ dependencies {
     modCompileOnly "curse.maven:bewitchment-394915:${bewitchment_version}"
 }
 
-remapJar.dependsOn(project(":requiem-api").tasks.remapJar)
+remapJar.dependsOn(project(":requiem-core").tasks.remapJar)
 
 jar {
     from 'LICENSE-CODE'

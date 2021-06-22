@@ -36,8 +36,8 @@ package ladysnake.requiem.mixin.client.possession;
 
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
-import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.core.ability.PlayerAbilityController;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;

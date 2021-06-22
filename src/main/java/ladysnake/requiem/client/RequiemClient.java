@@ -49,8 +49,6 @@ import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.PortalParticle;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
 public final class RequiemClient {
@@ -89,12 +87,6 @@ public final class RequiemClient {
         this.statusEffectSpriteManager = new RequiemStatusEffectSpriteManager();
         this.shadowPlayerFxRenderer = new ShadowPlayerFx();
         this.worldFreezeFxRenderer = new ZaWorldFx();
-    }
-
-    public void updateCamera(PlayerEntity player, Entity cameraEntity) {
-        if (this.mc.options.getPerspective().isFirstPerson() && player == this.mc.player) {
-            this.mc.gameRenderer.onCameraEntitySet(cameraEntity);
-        }
     }
 
     public RequiemStatusEffectSpriteManager statusEffectSpriteManager() {

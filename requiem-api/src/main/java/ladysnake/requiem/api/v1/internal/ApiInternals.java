@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableSet;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
+import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
@@ -72,6 +73,8 @@ public final class ApiInternals {
     private static SubDataManagerHelper serverSubDataManagerHelper;
     @AccessedThroughReflection
     private static DialogueRegistry dialogueRegistry;
+    @AccessedThroughReflection
+    private static InventoryLimiter inventoryLimiter;
     @AccessedThroughReflection
     private static MobAbilityRegistry mobAbilityRegistry;
     @AccessedThroughReflection
@@ -135,5 +138,9 @@ public final class ApiInternals {
     public static MovementRegistry getMovementRegistry(@Nullable World world) {
         if (movementRegistryGetter == null) throw new UninitializedApiException("MovementRegistry is not available");
         return movementRegistryGetter.apply(world);
+    }
+
+    public static InventoryLimiter getInventoryLimiter() {
+        return inventoryLimiter;
     }
 }

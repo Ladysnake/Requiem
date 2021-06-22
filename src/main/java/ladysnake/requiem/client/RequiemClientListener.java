@@ -46,9 +46,10 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.particle.GhostParticle;
-import ladysnake.requiem.common.impl.possession.item.PossessionItemOverrideWrapper;
+import ladysnake.requiem.common.possession.item.PossessionItemOverrideWrapper;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.util.ItemUtil;
+import ladysnake.requiem.core.tag.RequiemCoreTags;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
@@ -109,7 +110,7 @@ public final class RequiemClientListener implements
             if (possessor.world.isClient && target != null) {
                 if (RequiemEntityTypeTags.IMMOVABLE.contains(target.getType())) {
                     this.mc.inGameHud.setOverlayMessage(new TranslatableText("requiem:shulker.onboard", mc.options.keySneak.getBoundKeyLocalizedText(), FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
-                } else if (RequiemEntityTypeTags.FRICTIONLESS_HOSTS.contains(target.getType())) {
+                } else if (RequiemCoreTags.Entity.FRICTIONLESS_HOSTS.contains(target.getType())) {
                     this.mc.inGameHud.setOverlayMessage(new TranslatableText("requiem:dissociate_hint", FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
                 }
             }

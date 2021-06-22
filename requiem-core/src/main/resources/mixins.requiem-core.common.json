@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "ladysnake.requiem.core.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "minVersion": "0.7.11-SNAPSHOT",
+  "mixins": [
+    "access.EntityAccessor",
+    "access.LivingEntityAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

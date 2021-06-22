@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import ladysnake.requiem.common.impl.possession.PossessedDataImpl;
+import ladysnake.requiem.core.possession.PossessedDataBase;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.mob.WitchEntity;
@@ -56,6 +56,6 @@ public abstract class VillagerEntityMixin extends MerchantEntity {
 
     @Inject(method = "onStruckByLightning", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;spawnEntityAndPassengers(Lnet/minecraft/entity/Entity;)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void possessConvertedWitch(ServerWorld world, LightningEntity lightning, CallbackInfo ci, WitchEntity converted) {
-        PossessedDataImpl.onMobConverted(this, converted);
+        PossessedDataBase.onMobConverted(this, converted);
     }
 }

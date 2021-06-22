@@ -37,7 +37,7 @@ package ladysnake.pandemonium.common.entity.ability;
 import ladysnake.pandemonium.common.entity.WololoComponent;
 import ladysnake.pandemonium.common.entity.internal.SpellcastingIllagerAccess;
 import ladysnake.pandemonium.mixin.common.entity.mob.EvokerEntityAccessor;
-import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
+import ladysnake.requiem.core.entity.ability.DirectAbilityBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.passive.SheepEntity;

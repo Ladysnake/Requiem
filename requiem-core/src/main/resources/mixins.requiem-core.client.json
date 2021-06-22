@@ -1,0 +1,6 @@
+{
+  "parent": "mixins.requiem-core.common.json",
+  "package": "ladysnake.requiem.core.mixin.client",
+  "mixins": [
+  ]
+}

@@ -37,7 +37,7 @@ package ladysnake.requiem.mixin.common.data;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import ladysnake.requiem.api.v1.event.minecraft.DynamicRegistryRegistrationCallback;
-import ladysnake.requiem.common.impl.data.DynamicRegistryRegistrationHelperImpl;
+import ladysnake.requiem.common.util.data.DynamicRegistryRegistrationHelperImpl;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
