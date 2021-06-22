@@ -19,8 +19,17 @@
   "environment": "*",
 
   "custom": {
-    "modmenu:api": true,
-    "modmenu:parent": "requiem",
+    "modmenu": {
+      "badges": [
+        "library"
+      ],
+      "parent": {
+        "id": "requiem",
+        "name": "Requiem",
+        "description": "Death revamped and ethereal powers",
+        "icon": "skull_logo.png"
+      }
+    },
     "cardinal-components": [
       "requiem:synced_gamerules",
       "requiem:remnant",
