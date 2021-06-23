@@ -32,30 +32,17 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.core;
+package ladysnake.requiem.core.mixin.possession.possessor;
 
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 
-import java.util.UUID;
+/**
+ * NBT keys used to serialize the {@link PossessionComponent}
+ */
+public final class PlayerTagKeys {
+    private PlayerTagKeys() { throw new AssertionError(); }
 
-public final class RequiemCore {
-    public static final String MOD_ID = "requiem";
-    public static final Logger LOGGER = LogManager.getLogger("requiem-core");
-    public static final UUID INHERENT_MOB_SLOWNESS_UUID = UUID.fromString("a2ebbb6b-fd10-4a30-a0c7-dadb9700732e");
-    /**
-     * Mobs do not use 100% of their movement speed attribute, so we compensate with this modifier when they are possessed
-     */
-    public static final EntityAttributeModifier INHERENT_MOB_SLOWNESS = new EntityAttributeModifier(
-        INHERENT_MOB_SLOWNESS_UUID,
-        "Inherent Mob Slowness",
-        -0.66,
-        EntityAttributeModifier.Operation.MULTIPLY_TOTAL
-    );
-
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
-    }
+    public static final String POSSESSED_ROOT_TAG = "requiem:possessed_root";
+    public static final String POSSESSED_ENTITY_TAG = "requiem:possessed_entity";
+    public static final String POSSESSED_UUID_TAG = "requiem:possessed_uuid";
 }

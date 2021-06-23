@@ -32,65 +32,57 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.humanity;
+package ladysnake.requiem.core.mixin.possession.possessed;
 
-import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.core.util.DamageHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.RangedWeaponItem;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity {
+@Mixin(BowItem.class)
+public abstract class BowItemMixin extends RangedWeaponItem {
+    @Unique
+    private static final ThreadLocal<LivingEntity> REQUIEM__CURRENT_USER = new ThreadLocal<>();
 
-    @Shadow
-    protected int playerHitTimer;
-
-    @Shadow
-    protected PlayerEntity attackingPlayer;
-
-    public LivingEntityMixin(EntityType<?> type, World world) {
-        super(type, world);
+    public BowItemMixin(Settings settings) {
+        super(settings);
     }
 
-    /**
-     * Allows mobs to drop player-restricted loot when wielding a humanity weapon
-     */
-    @ModifyVariable(method = "drop", at = @At(value = "HEAD"), argsOnly = true)
-    private DamageSource enableHumanity(DamageSource deathCause) {
-        if (DamageHelper.getHumanityLevel(deathCause) > 0) {
-            assert deathCause.getAttacker() != null : "Humanity implies attacker";
-            PlayerEntity possessor = ((Possessable) deathCause.getAttacker()).getPossessor();
-            if (possessor != null) {
-                this.playerHitTimer = 100;
-                this.attackingPlayer = possessor;
-                DamageSource proxiedDamage = DamageHelper.createProxiedDamage(deathCause, possessor);
-                if (proxiedDamage != null) {
-                    return proxiedDamage;
-                }
-            }
+    @Inject(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;setCurrentHand(Lnet/minecraft/util/Hand;)V"))
+    private void setAttackingMode(World world, PlayerEntity player, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
+        MobEntity possessed = PossessionComponent.get(player).getPossessedEntity();
+        if (possessed != null) {
+            possessed.setAttacking(true);
         }
-        return deathCause;
     }
 
     @Inject(
-        method = "drop",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;dropInventory()V"),
-        cancellable = true
+            method = "onStoppedUsing",
+            at = @At(
+                    value = "FIELD",
+                    opcode = Opcodes.GETFIELD,
+                    target = "Lnet/minecraft/entity/player/PlayerAbilities;creativeMode:Z",
+                    ordinal = 0
+            )
     )
-    private void preventXpDrop(DamageSource deathCause, CallbackInfo ci) {
-        // prevent xp drops if not enough humanity
-        if (DamageHelper.getHumanityLevel(deathCause) == 1) {
-            this.playerHitTimer = 0;
+    private void setCurrentUser(ItemStack item, World world, LivingEntity user, int charge, CallbackInfo ci) {
+        MobEntity possessed = PossessionComponent.getPossessedEntity(user);
+        REQUIEM__CURRENT_USER.set(possessed);
+        if (possessed != null) {    // counterpart to setAttackingMode
+            possessed.setAttacking(false);
         }
     }
 }

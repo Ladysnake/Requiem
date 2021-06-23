@@ -32,30 +32,25 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.core;
+package ladysnake.requiem.core.mixin.possession.possessed;
 
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import ladysnake.requiem.api.v1.internal.ProtoPossessable;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.EntityLike;
+import org.spongepowered.asm.mixin.Mixin;
 
-import java.util.UUID;
+import javax.annotation.Nullable;
 
-public final class RequiemCore {
-    public static final String MOD_ID = "requiem";
-    public static final Logger LOGGER = LogManager.getLogger("requiem-core");
-    public static final UUID INHERENT_MOB_SLOWNESS_UUID = UUID.fromString("a2ebbb6b-fd10-4a30-a0c7-dadb9700732e");
-    /**
-     * Mobs do not use 100% of their movement speed attribute, so we compensate with this modifier when they are possessed
-     */
-    public static final EntityAttributeModifier INHERENT_MOB_SLOWNESS = new EntityAttributeModifier(
-        INHERENT_MOB_SLOWNESS_UUID,
-        "Inherent Mob Slowness",
-        -0.66,
-        EntityAttributeModifier.Operation.MULTIPLY_TOTAL
-    );
+@Mixin(EntityLike.class)
+public interface EntityLikeMixin extends ProtoPossessable {
+    @Nullable
+    @Override
+    default PlayerEntity getPossessor() {
+        return null;
+    }
 
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
+    @Override
+    default boolean isBeingPossessed() {
+        return false;
     }
 }

@@ -32,65 +32,39 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.humanity;
+package ladysnake.requiem.core.mixin.possession.possessed;
 
-import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.core.util.DamageHelper;
+import ladysnake.requiem.api.v1.internal.ProtoPossessable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.passive.GolemEntity;
+import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity {
-
-    @Shadow
-    protected int playerHitTimer;
-
-    @Shadow
-    protected PlayerEntity attackingPlayer;
-
-    public LivingEntityMixin(EntityType<?> type, World world) {
+@Mixin(IronGolemEntity.class)
+public abstract class IronGolemEntityMixin extends GolemEntity {
+    protected IronGolemEntityMixin(EntityType<? extends GolemEntity> type, World world) {
         super(type, world);
     }
 
     /**
-     * Allows mobs to drop player-restricted loot when wielding a humanity weapon
+     * Make golem attacks correctly knock back possessed entities.
+     *
+     * <p>This could theoretically be replaced by a generic patch to make any
+     * velocity change in the possessed entity affect its player, but given
+     * the small amount of external changes to velocity and all the pitfalls
+     * associated with a generic approach, special casing is currently preferred.
      */
-    @ModifyVariable(method = "drop", at = @At(value = "HEAD"), argsOnly = true)
-    private DamageSource enableHumanity(DamageSource deathCause) {
-        if (DamageHelper.getHumanityLevel(deathCause) > 0) {
-            assert deathCause.getAttacker() != null : "Humanity implies attacker";
-            PlayerEntity possessor = ((Possessable) deathCause.getAttacker()).getPossessor();
-            if (possessor != null) {
-                this.playerHitTimer = 100;
-                this.attackingPlayer = possessor;
-                DamageSource proxiedDamage = DamageHelper.createProxiedDamage(deathCause, possessor);
-                if (proxiedDamage != null) {
-                    return proxiedDamage;
-                }
-            }
-        }
-        return deathCause;
-    }
-
-    @Inject(
-        method = "drop",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;dropInventory()V"),
-        cancellable = true
-    )
-    private void preventXpDrop(DamageSource deathCause, CallbackInfo ci) {
-        // prevent xp drops if not enough humanity
-        if (DamageHelper.getHumanityLevel(deathCause) == 1) {
-            this.playerHitTimer = 0;
+    @Inject(method = "tryAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
+    private void knockbackPossessor(Entity target, CallbackInfoReturnable<Boolean> cir) {
+        PlayerEntity possessor = ((ProtoPossessable)target).getPossessor();
+        if (possessor != null) {
+            possessor.setVelocity(possessor.getVelocity().add(0.0D, 0.4D, 0.0D));
         }
     }
 }

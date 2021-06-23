@@ -32,30 +32,33 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.core;
+package ladysnake.requiem.core.mixin.possession;
 
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import ladysnake.requiem.core.entity.attribute.NonDeterministicAttribute;
+import ladysnake.requiem.core.entity.attribute.NonDeterministicModifier;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.UUID;
+@Mixin(EntityAttributeInstance.class)
+public abstract class EntityAttributeInstanceMixin implements NonDeterministicAttribute {
+    @Unique
+    private @Nullable NonDeterministicModifier finalModifier;
 
-public final class RequiemCore {
-    public static final String MOD_ID = "requiem";
-    public static final Logger LOGGER = LogManager.getLogger("requiem-core");
-    public static final UUID INHERENT_MOB_SLOWNESS_UUID = UUID.fromString("a2ebbb6b-fd10-4a30-a0c7-dadb9700732e");
-    /**
-     * Mobs do not use 100% of their movement speed attribute, so we compensate with this modifier when they are possessed
-     */
-    public static final EntityAttributeModifier INHERENT_MOB_SLOWNESS = new EntityAttributeModifier(
-        INHERENT_MOB_SLOWNESS_UUID,
-        "Inherent Mob Slowness",
-        -0.66,
-        EntityAttributeModifier.Operation.MULTIPLY_TOTAL
-    );
+    @Override
+    public void addFinalModifier(NonDeterministicModifier modifier) {
+        if (this.finalModifier != null) finalModifier = finalModifier.andThen(modifier);
+        else this.finalModifier = modifier;
+    }
 
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
+    @Inject(method = "getValue", at = @At("RETURN"), cancellable = true)
+    private void getValue(CallbackInfoReturnable<Double> cir) {
+        if (this.finalModifier != null) {
+            this.finalModifier.apply(cir.getReturnValueD()).ifPresent(cir::setReturnValue);
+        }
     }
 }

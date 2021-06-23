@@ -32,53 +32,44 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.client;
+package ladysnake.requiem.core.mixin.possession.possessed.reach;
 
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.common.network.RequiemNetworking;
-import ladysnake.requiem.core.tag.RequiemCoreTags;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
+import ladysnake.requiem.core.possession.PossessionComponentImpl;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
-import org.lwjgl.glfw.GLFW;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-import static ladysnake.requiem.common.network.RequiemNetworking.createEmptyBuffer;
-import static ladysnake.requiem.common.network.RequiemNetworking.sendToServer;
+@Mixin(ServerPlayNetworkHandler.class)
+public abstract class ServerPlayNetworkHandlerMixin {
+    @Shadow public ServerPlayerEntity player;
 
-public final class FractureKeyBinding {
-
-    public static final String ETHEREAL_FRACTURE = "key.requiem.dissociation";
-
-    public static final KeyBinding etherealFractureKey = new KeyBinding(
-            ETHEREAL_FRACTURE,
-            InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_COMMA,  // '<'
-            "key.categories.gameplay"
-        );
-
-    public static void init() {
-        KeyBindingHelper.registerKeyBinding(etherealFractureKey);
-        ClientTickEvents.END_CLIENT_TICK.register(FractureKeyBinding::update);
+    /**
+     * Minecraft's cheat detection computes distance from the feet instead of from the eyes.
+     * This means giants cannot interact with blocks right in front of them
+     */
+    // TODO consider applying the fix to horizontal dimensions as well
+    @ModifyArg(method = "onPlayerInteractBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;squaredDistanceTo(DDD)D"), index = 1)
+    private double onPlayerInteractBlockModifyDistance(double posY) {
+        MobEntity host = PossessionComponent.getPossessedEntity(player);
+        if (host != null) {
+            return posY - host.getEyeHeight(host.getPose());
+        }
+        return posY;
     }
 
-    public static void update(MinecraftClient client) {
-        if (client.player != null) {
-            if (etherealFractureKey.wasPressed() || pressesEmergencyFracture(client.player)) {
-                sendToServer(RequiemNetworking.ETHEREAL_FRACTURE, createEmptyBuffer());
-            }
+    @ModifyArg(method = "onPlayerInteractEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;squaredDistanceTo(Lnet/minecraft/entity/Entity;)D"))
+    private Entity onPlayerInteractEntityModifyDistance(Entity target) {
+        MobEntity host = PossessionComponent.getPossessedEntity(player);
+        // TODO consider compatibility with Reach attributes
+        if (host != null && PossessionComponentImpl.reachSq(target.getBlockPos(), host) < 36.0D) {
+            return host;
         }
-    }
-
-    private static boolean pressesEmergencyFracture(ClientPlayerEntity player) {
-        // Immovable mobs are a specific kind of boring, so we let players leave them through a simple sneak
-        if (player.isSneaking()) {
-            MobEntity possessedEntity = PossessionComponent.getPossessedEntity(player);
-            return possessedEntity != null && RequiemCoreTags.Entity.IMMOVABLE.contains(possessedEntity.getType());
-        }
-        return false;
+        return target;
     }
 }

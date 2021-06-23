@@ -32,65 +32,55 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.humanity;
+package ladysnake.requiem.core.mixin.possession.possessed;
 
-import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.core.util.DamageHelper;
+import ladysnake.requiem.api.v1.internal.ProtoPossessable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.nbt.NbtCompound;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity {
+@Mixin(Entity.class)
+public abstract class PossessableEntityMixin implements ProtoPossessable {
 
-    @Shadow
-    protected int playerHitTimer;
-
-    @Shadow
-    protected PlayerEntity attackingPlayer;
-
-    public LivingEntityMixin(EntityType<?> type, World world) {
-        super(type, world);
-    }
-
-    /**
-     * Allows mobs to drop player-restricted loot when wielding a humanity weapon
-     */
-    @ModifyVariable(method = "drop", at = @At(value = "HEAD"), argsOnly = true)
-    private DamageSource enableHumanity(DamageSource deathCause) {
-        if (DamageHelper.getHumanityLevel(deathCause) > 0) {
-            assert deathCause.getAttacker() != null : "Humanity implies attacker";
-            PlayerEntity possessor = ((Possessable) deathCause.getAttacker()).getPossessor();
-            if (possessor != null) {
-                this.playerHitTimer = 100;
-                this.attackingPlayer = possessor;
-                DamageSource proxiedDamage = DamageHelper.createProxiedDamage(deathCause, possessor);
-                if (proxiedDamage != null) {
-                    return proxiedDamage;
-                }
-            }
+    @Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
+    private void isInvulnerableTo(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
+        PlayerEntity player = this.getPossessor();
+        if (player != null && player.isCreative()) {
+            cir.setReturnValue(!source.isOutOfWorld());
         }
-        return deathCause;
     }
 
-    @Inject(
-        method = "drop",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;dropInventory()V"),
-        cancellable = true
-    )
-    private void preventXpDrop(DamageSource deathCause, CallbackInfo ci) {
-        // prevent xp drops if not enough humanity
-        if (DamageHelper.getHumanityLevel(deathCause) == 1) {
-            this.playerHitTimer = 0;
+    @Inject(method = "canUsePortals", at = @At("HEAD"), cancellable = true)
+    private void canUsePortals(CallbackInfoReturnable<Boolean> cir) {
+        if (this.isBeingPossessed()) {
+            cir.setReturnValue(false);
+        }
+    }
+
+    @Inject(method = "startRiding(Lnet/minecraft/entity/Entity;Z)Z", at = @At("HEAD"), cancellable = true)
+    private void startRiding(Entity mount, boolean force, CallbackInfoReturnable<Boolean> cir) {
+        PlayerEntity player = this.getPossessor();
+        if (player != null) {
+            cir.setReturnValue(player.startRiding(mount, force));
+        }
+    }
+
+    @Inject(method = "calculateDimensions", at = @At("RETURN"))
+    private void calculatePossessorDimensions(CallbackInfo ci) {
+        PlayerEntity possessor = this.getPossessor();
+        if (possessor != null) possessor.calculateDimensions();
+    }
+
+    @Inject(method = "saveNbt", at = @At("HEAD"), cancellable = true)
+    private void cancelPossessableSave(NbtCompound tag, CallbackInfoReturnable<Boolean> cir) {
+        if (this.isBeingPossessed()) {
+            cir.setReturnValue(false);
         }
     }
 }

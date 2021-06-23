@@ -21,6 +21,7 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public final class PossessionEvents {
@@ -37,8 +38,28 @@ public final class PossessionEvents {
             }
             return ret;
         });
+    public static final Event<HostDeath> HOST_DEATH = EventFactory.createArrayBacked(HostDeath.class,
+        callbacks -> (player, host, deathCause) -> {
+            for (HostDeath callback : callbacks) {
+                callback.onHostDeath(player, host, deathCause);
+            }
+        });
+    public static final Event<PostResurrection> POST_RESURRECTION = EventFactory.createArrayBacked(PostResurrection.class,
+        callbacks -> (player, secondLife) -> {
+            for (PostResurrection callback : callbacks) {
+                callback.onResurrected(player, secondLife);
+            }
+        });
 
     public interface InventoryTransferCheck {
         TriState shouldTransfer(ServerPlayerEntity possessor, LivingEntity host);
+    }
+
+    public interface HostDeath {
+        void onHostDeath(ServerPlayerEntity player, LivingEntity host, DamageSource deathCause);
+    }
+
+    public interface PostResurrection {
+        void onResurrected(ServerPlayerEntity player, LivingEntity secondLife);
     }
 }

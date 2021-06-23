@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.common.inventory.balance;
 
-import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import ladysnake.requiem.core.tag.RequiemCoreTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import org.spongepowered.asm.mixin.Mixin;
@@ -46,7 +46,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class EntityPredicatesEquipableMixin {
     @Inject(method = "test", at = @At("RETURN"), cancellable = true)
     private void requiem$noArmorForYou(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        if (cir.getReturnValueZ() && RequiemEntityTypeTags.ARMOR_BANNED.contains(entity.getType())) {
+        if (cir.getReturnValueZ() && RequiemCoreTags.Entity.ARMOR_BANNED.contains(entity.getType())) {
             cir.setReturnValue(false);
         }
     }

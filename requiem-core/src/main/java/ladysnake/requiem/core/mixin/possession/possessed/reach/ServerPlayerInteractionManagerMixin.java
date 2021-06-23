@@ -32,30 +32,33 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.core;
+package ladysnake.requiem.core.mixin.possession.possessed.reach;
 
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.core.possession.PossessionComponentImpl;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.network.ServerPlayerInteractionManager;
+import net.minecraft.util.math.BlockPos;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-import java.util.UUID;
+@Mixin(ServerPlayerInteractionManager.class)
+public abstract class ServerPlayerInteractionManagerMixin {
+    @Final
+    @Shadow
+    protected ServerPlayerEntity player;
 
-public final class RequiemCore {
-    public static final String MOD_ID = "requiem";
-    public static final Logger LOGGER = LogManager.getLogger("requiem-core");
-    public static final UUID INHERENT_MOB_SLOWNESS_UUID = UUID.fromString("a2ebbb6b-fd10-4a30-a0c7-dadb9700732e");
-    /**
-     * Mobs do not use 100% of their movement speed attribute, so we compensate with this modifier when they are possessed
-     */
-    public static final EntityAttributeModifier INHERENT_MOB_SLOWNESS = new EntityAttributeModifier(
-        INHERENT_MOB_SLOWNESS_UUID,
-        "Inherent Mob Slowness",
-        -0.66,
-        EntityAttributeModifier.Operation.MULTIPLY_TOTAL
-    );
-
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
+    @ModifyVariable(method = "processBlockBreakingAction", at = @At(value = "STORE"), ordinal = 3)
+    private double recalculateDistance(double distanceToBlock, BlockPos pos) {
+        MobEntity host = PossessionComponent.getPossessedEntity(this.player);
+        if (host != null) {
+            return PossessionComponentImpl.reachSq(pos, host);
+        }
+        return distanceToBlock;
     }
+
 }

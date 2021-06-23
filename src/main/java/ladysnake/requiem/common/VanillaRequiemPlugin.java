@@ -94,7 +94,6 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectType;
@@ -123,22 +122,11 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 import static ladysnake.requiem.common.remnant.RemnantTypes.MORTAL;
 
 public final class VanillaRequiemPlugin implements RequiemPlugin {
 
-    public static final UUID INHERENT_MOB_SLOWNESS_UUID = UUID.fromString("a2ebbb6b-fd10-4a30-a0c7-dadb9700732e");
-    /**
-     * Mobs do not use 100% of their movement speed attribute, so we compensate with this modifier when they are possessed
-     */
-    public static final EntityAttributeModifier INHERENT_MOB_SLOWNESS = new EntityAttributeModifier(
-        INHERENT_MOB_SLOWNESS_UUID,
-        "Inherent Mob Slowness",
-        -0.66,
-        EntityAttributeModifier.Operation.MULTIPLY_TOTAL
-    );
     public static final String INFINITY_SHOT_TAG = "requiem:infinity_shot";
     public static final MobAbilityConfig<PlayerEntity> SOUL_ABILITY_CONFIG = MobAbilityConfig.<PlayerEntity>builder()
         .directAttack(player -> new DelegatingDirectAbility<>(player, LivingEntity.class, AbilityType.INTERACT))
@@ -154,10 +142,9 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             return (curableEntityComponent.canBeCured() || curableEntityComponent.canBeAssimilated()) ? TriState.TRUE : TriState.DEFAULT;
         });
         LivingEntityDropCallback.EVENT.register((dead, deathCause) -> {
-            if (!(dead instanceof ServerPlayerEntity)) {
+            if (!(dead instanceof ServerPlayerEntity lazarus)) {
                 return false;
             }
-            ServerPlayerEntity lazarus = (ServerPlayerEntity) dead;
             MobEntity secondLife = ResurrectionDataLoader.INSTANCE.getNextBody(lazarus, deathCause);
             if (secondLife != null) {
                 ((MobResurrectable) lazarus).setResurrectionEntity(secondLife);
@@ -306,7 +293,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     private static boolean canWearArmor(MobEntity possessed) {
-        if (RequiemEntityTypeTags.ARMOR_BANNED.contains(possessed.getType())) {
+        if (RequiemCoreTags.Entity.ARMOR_BANNED.contains(possessed.getType())) {
             return false;
         }
         if (RequiemEntityTypeTags.ARMOR_USERS.contains(possessed.getType())) {

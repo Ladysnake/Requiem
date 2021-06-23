@@ -41,6 +41,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import ladysnake.requiem.core.tag.RequiemCoreTags;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
@@ -87,7 +88,7 @@ public final class SkeletonBoneComponent implements Component {
             }
             if (this.owner instanceof WitherSkeletonEntity
                 && replacement.getEquippedStack(EquipmentSlot.HEAD).isEmpty()
-                && !RequiemEntityTypeTags.ARMOR_BANNED.contains(replacement.getType())) {
+                && !RequiemCoreTags.Entity.ARMOR_BANNED.contains(replacement.getType())) {
                 if (this.owner.getRandom().nextInt(5) == 0) {
                     replacement.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.WITHER_SKELETON_SKULL));
                 }
@@ -97,16 +98,12 @@ public final class SkeletonBoneComponent implements Component {
 
     private boolean shouldBeReplaced() {
         if (RequiemEntityTypeTags.REPLACEABLE_SKELETONS.contains(this.owner.getType())) {
-            switch (this.owner.world.getDifficulty()) {
-                case PEACEFUL:
-                    return false; // what is this skeleton doing in peaceful anyway....?
-                case EASY:
-                    return this.replacedBones > 8;
-                case NORMAL:
-                    return this.replacedBones > 4;
-                default:
-                    return this.replacedBones > 2;
-            }
+            return switch (this.owner.world.getDifficulty()) {
+                case PEACEFUL -> false; // what is this skeleton doing in peaceful anyway....?
+                case EASY -> this.replacedBones > 8;
+                case NORMAL -> this.replacedBones > 4;
+                default -> this.replacedBones > 2;
+            };
         }
         return false;
     }

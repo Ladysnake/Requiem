@@ -42,6 +42,8 @@ import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
+import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
@@ -72,12 +74,14 @@ public class BasePossessionHandlers {
         PossessionEvents.INVENTORY_TRANSFER_CHECK.register(
             (possessor, host) -> possessor.world.getGameRules().get(RequiemGamerules.POSSESSION_KEEP_INVENTORY).get().shouldTransfer(host.isAlive()) ? TriState.TRUE : TriState.DEFAULT
         );
+        PossessionEvents.HOST_DEATH.register((player, host, deathCause) -> AttritionStatusEffect.apply(player));
         PossessionStartCallback.EVENT.register(Requiem.id("blacklist"), (target, possessor, simulate) -> {
             if (RequiemCoreTags.Entity.POSSESSION_BLACKLIST.contains(target.getType())) {
                 return PossessionStartCallback.Result.DENY;
             }
             return PossessionStartCallback.Result.PASS;
         });
+        PossessionEvents.POST_RESURRECTION.register(RequiemCriteria.PLAYER_RESURRECTED_AS_ENTITY::handle);
         PossessionStartCallback.EVENT.register(Requiem.id("base_mobs"), (target, possessor, simulate) -> {
             if (RequiemEntityTypeTags.POSSESSABLES.contains(target.getType())) {
                 return PossessionStartCallback.Result.ALLOW;

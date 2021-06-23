@@ -32,65 +32,51 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.humanity;
+package ladysnake.requiem.core.mixin.possession.possessed;
 
-import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.core.util.DamageHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
+import ladysnake.requiem.core.entity.ai.DisableableBrain;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.server.world.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity {
+import java.util.Optional;
 
-    @Shadow
-    protected int playerHitTimer;
+@Mixin(Brain.class)
+public abstract class BrainMixin implements DisableableBrain {
+    @Unique
+    private boolean disabled;
 
-    @Shadow
-    protected PlayerEntity attackingPlayer;
-
-    public LivingEntityMixin(EntityType<?> type, World world) {
-        super(type, world);
+    @Override
+    public void requiem_setDisabled(boolean disabled) {
+        this.disabled = disabled;
     }
 
-    /**
-     * Allows mobs to drop player-restricted loot when wielding a humanity weapon
-     */
-    @ModifyVariable(method = "drop", at = @At(value = "HEAD"), argsOnly = true)
-    private DamageSource enableHumanity(DamageSource deathCause) {
-        if (DamageHelper.getHumanityLevel(deathCause) > 0) {
-            assert deathCause.getAttacker() != null : "Humanity implies attacker";
-            PlayerEntity possessor = ((Possessable) deathCause.getAttacker()).getPossessor();
-            if (possessor != null) {
-                this.playerHitTimer = 100;
-                this.attackingPlayer = possessor;
-                DamageSource proxiedDamage = DamageHelper.createProxiedDamage(deathCause, possessor);
-                if (proxiedDamage != null) {
-                    return proxiedDamage;
-                }
-            }
+    @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
+    private void tick(ServerWorld world, LivingEntity entity, CallbackInfo ci) {
+        if (this.disabled) {
+            ci.cancel();
         }
-        return deathCause;
     }
 
-    @Inject(
-        method = "drop",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;dropInventory()V"),
-        cancellable = true
-    )
-    private void preventXpDrop(DamageSource deathCause, CallbackInfo ci) {
-        // prevent xp drops if not enough humanity
-        if (DamageHelper.getHumanityLevel(deathCause) == 1) {
-            this.playerHitTimer = 0;
+    @Inject(method = "isMemoryInState", at = @At("HEAD"), cancellable = true)
+    private void isMemoryInState(MemoryModuleType<?> type, MemoryModuleState state, CallbackInfoReturnable<Boolean> cir) {
+        if (this.disabled) {
+            cir.setReturnValue(false);
+        }
+    }
+
+    @Inject(method = "getOptionalMemory", at = @At("HEAD"), cancellable = true)
+    private void getOptionalMemory(MemoryModuleType<?> type, CallbackInfoReturnable<Optional<?>> cir) {
+        if (this.disabled) {
+            cir.setReturnValue(Optional.empty());
         }
     }
 }

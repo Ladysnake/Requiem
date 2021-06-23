@@ -37,7 +37,7 @@ package ladysnake.requiem.mixin.client.possession;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.client.RequiemFx;
-import ladysnake.requiem.common.entity.internal.VariableMobilityEntity;
+import ladysnake.requiem.core.entity.VariableMobilityEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;

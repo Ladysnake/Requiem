@@ -32,65 +32,58 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.humanity;
+package ladysnake.requiem.core.mixin.possession.possessor;
 
 import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.core.util.DamageHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity {
+@Mixin(HungerManager.class)
+public abstract class HungerManagerMixin {
+    @Unique
+    private static final ThreadLocal<PlayerEntity> PLAYER_ENTITY_THREAD_LOCAL = new ThreadLocal<>();
 
     @Shadow
-    protected int playerHitTimer;
+    private float exhaustion;
 
     @Shadow
-    protected PlayerEntity attackingPlayer;
+    private int foodLevel;
 
-    public LivingEntityMixin(EntityType<?> type, World world) {
-        super(type, world);
+    @Inject(method = "update", at = @At(value = "INVOKE", ordinal = 0))
+    private void updateSoulHunger(PlayerEntity player, CallbackInfo ci) {
+        Possessable possessed = (Possessable) PossessionComponent.get(player).getPossessedEntity();
+        if (possessed != null && !possessed.isRegularEater()) {
+            this.exhaustion = 0;
+            this.foodLevel = 20;
+        }
+        PLAYER_ENTITY_THREAD_LOCAL.set(player);
     }
 
-    /**
-     * Allows mobs to drop player-restricted loot when wielding a humanity weapon
-     */
-    @ModifyVariable(method = "drop", at = @At(value = "HEAD"), argsOnly = true)
-    private DamageSource enableHumanity(DamageSource deathCause) {
-        if (DamageHelper.getHumanityLevel(deathCause) > 0) {
-            assert deathCause.getAttacker() != null : "Humanity implies attacker";
-            PlayerEntity possessor = ((Possessable) deathCause.getAttacker()).getPossessor();
-            if (possessor != null) {
-                this.playerHitTimer = 100;
-                this.attackingPlayer = possessor;
-                DamageSource proxiedDamage = DamageHelper.createProxiedDamage(deathCause, possessor);
-                if (proxiedDamage != null) {
-                    return proxiedDamage;
-                }
-            }
+    @ModifyArg(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;heal(F)V"))
+    private float healPossessedEntity(float amount) {
+        LivingEntity possessedEntity = PossessionComponent.get(PLAYER_ENTITY_THREAD_LOCAL.get()).getPossessedEntity();
+        if (possessedEntity != null && ((Possessable) possessedEntity).isRegularEater()) {
+            possessedEntity.heal(amount);
         }
-        return deathCause;
+        return amount;
     }
 
-    @Inject(
-        method = "drop",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;dropInventory()V"),
-        cancellable = true
-    )
-    private void preventXpDrop(DamageSource deathCause, CallbackInfo ci) {
-        // prevent xp drops if not enough humanity
-        if (DamageHelper.getHumanityLevel(deathCause) == 1) {
-            this.playerHitTimer = 0;
+    @ModifyArg(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
+    private float damagePossessedEntity(float amount) {
+        LivingEntity possessedEntity = PossessionComponent.get(PLAYER_ENTITY_THREAD_LOCAL.get()).getPossessedEntity();
+        if (possessedEntity != null && ((Possessable) possessedEntity).isRegularEater()) {
+            possessedEntity.damage(DamageSource.STARVE, amount);
         }
+        return amount;
     }
 }

@@ -32,65 +32,32 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.humanity;
+package ladysnake.requiem.core.mixin.possession;
 
+import ladysnake.requiem.api.v1.internal.ProtoPossessable;
 import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.core.util.DamageHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.server.world.ServerEntityManager;
+import net.minecraft.world.entity.EntityLike;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity {
+@Mixin(ServerEntityManager.class)
+public abstract class ServerWorldMixin {
+    @Inject(method = "addEntity(Lnet/minecraft/world/entity/EntityLike;Z)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/EntityTrackingStatus;shouldTrack()Z"))
+    private void possessLoadedEntities(EntityLike entity, boolean existing, CallbackInfoReturnable<Boolean> cir) {
+        PlayerEntity possessor = ((ProtoPossessable) entity).getPossessor();
 
-    @Shadow
-    protected int playerHitTimer;
-
-    @Shadow
-    protected PlayerEntity attackingPlayer;
-
-    public LivingEntityMixin(EntityType<?> type, World world) {
-        super(type, world);
-    }
-
-    /**
-     * Allows mobs to drop player-restricted loot when wielding a humanity weapon
-     */
-    @ModifyVariable(method = "drop", at = @At(value = "HEAD"), argsOnly = true)
-    private DamageSource enableHumanity(DamageSource deathCause) {
-        if (DamageHelper.getHumanityLevel(deathCause) > 0) {
-            assert deathCause.getAttacker() != null : "Humanity implies attacker";
-            PlayerEntity possessor = ((Possessable) deathCause.getAttacker()).getPossessor();
-            if (possessor != null) {
-                this.playerHitTimer = 100;
-                this.attackingPlayer = possessor;
-                DamageSource proxiedDamage = DamageHelper.createProxiedDamage(deathCause, possessor);
-                if (proxiedDamage != null) {
-                    return proxiedDamage;
-                }
+        if (possessor != null && entity instanceof MobEntity) {
+            PossessionComponent possessionComponent = PossessionComponent.get(possessor);
+            if (possessionComponent.getPossessedEntity() != entity) {
+                ((Possessable) entity).setPossessor(null);  // reset the possessor in case the possession actually fails
+                possessionComponent.startPossessing((MobEntity) entity);
             }
-        }
-        return deathCause;
-    }
-
-    @Inject(
-        method = "drop",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;dropInventory()V"),
-        cancellable = true
-    )
-    private void preventXpDrop(DamageSource deathCause, CallbackInfo ci) {
-        // prevent xp drops if not enough humanity
-        if (DamageHelper.getHumanityLevel(deathCause) == 1) {
-            this.playerHitTimer = 0;
         }
     }
 }
