@@ -225,6 +225,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
         if (player.world.getLevelProperties().isHardcore()) {
             AttritionFocus.KEY.get(possessed).applyAttrition(player);
         }
+        PossessionEvents.DISSOCIATION_CLEANUP.invoker().cleanUpAfterDissociation(player, possessed);
     }
 
     @Override

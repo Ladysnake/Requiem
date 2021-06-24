@@ -34,13 +34,40 @@
  */
 package ladysnake.requiem.common.entity.effect;
 
+import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
+import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
+import ladysnake.requiem.common.sound.RequiemSoundEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+
+import java.util.Map;
+import java.util.WeakHashMap;
 
 public class ReclamationStatusEffect extends StatusEffect {
+    private static final Map<LivingEntity, Integer> playersToHeal = new WeakHashMap<>();
+
     public ReclamationStatusEffect(StatusEffectType type, int color) {
         super(type, color);
+    }
+
+    public static void registerEventHandlers() {
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            playersToHeal.forEach(AttritionStatusEffect::reduce);
+            playersToHeal.clear();
+        });
+        PossessionEvents.DISSOCIATION_CLEANUP.register(ReclamationStatusEffect::clearReclamation);
+        PlayerShellEvents.PLAYER_SPLIT.register((whole, soul, playerShell) -> clearReclamation(soul, whole));
+    }
+
+    private static void clearReclamation(ServerPlayerEntity soul, LivingEntity body) {
+        if (body.hasStatusEffect(RequiemStatusEffects.RECLAMATION)) {
+            body.removeStatusEffect(RequiemStatusEffects.RECLAMATION);
+            soul.playSound(RequiemSoundEvents.EFFECT_RECLAMATION_CLEAR, SoundCategory.PLAYERS, 1, 0.8f);
+        }
     }
 
     @Override
@@ -50,6 +77,8 @@ public class ReclamationStatusEffect extends StatusEffect {
 
     @Override
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-        AttritionStatusEffect.reduce(entity, amplifier);
+        if (!entity.world.isClient()) {
+            playersToHeal.put(entity, amplifier + 1);
+        }
     }
 }

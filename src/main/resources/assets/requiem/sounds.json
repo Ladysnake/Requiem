@@ -46,6 +46,12 @@
       "item/totem/use_totem"
     ]
   },
+  "effect.reclamation.clear": {
+    "subtitle": "requiem:subtitles.effect.reclamation.clear",
+    "sounds": [
+      "dig/snow1"
+    ]
+  },
   "effect.phase": {
     "subtitle": "requiem:subtitles.effect.phasing",
     "sounds": [
