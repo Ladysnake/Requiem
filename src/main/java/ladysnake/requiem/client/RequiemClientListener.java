@@ -46,9 +46,10 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.particle.GhostParticle;
-import ladysnake.requiem.common.impl.possession.item.PossessionItemOverrideWrapper;
+import ladysnake.requiem.common.possession.item.PossessionItemOverrideWrapper;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.util.ItemUtil;
+import ladysnake.requiem.core.tag.RequiemCoreTags;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
@@ -81,7 +82,15 @@ public final class RequiemClientListener implements
     ClientTickEvents.EndTick,
     ItemTooltipCallback {
 
-    public static boolean skipNextGuardian =  false;
+    private static boolean skipNextGuardian =  false;
+
+    public static boolean shouldSkipNextGuardian() {
+        if (skipNextGuardian) {
+            skipNextGuardian = false;
+            return true;
+        }
+        return false;
+    }
 
     private final RequiemClient rc;
     private final MinecraftClient mc = MinecraftClient.getInstance();
@@ -99,9 +108,9 @@ public final class RequiemClientListener implements
         ItemTooltipCallback.EVENT.register(this);
         PossessionStateChangeCallback.EVENT.register((possessor, target) -> {
             if (possessor.world.isClient && target != null) {
-                if (RequiemEntityTypeTags.IMMOVABLE.contains(target.getType())) {
+                if (RequiemCoreTags.Entity.IMMOVABLE.contains(target.getType())) {
                     this.mc.inGameHud.setOverlayMessage(new TranslatableText("requiem:shulker.onboard", mc.options.keySneak.getBoundKeyLocalizedText(), FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
-                } else if (RequiemEntityTypeTags.FRICTIONLESS_HOSTS.contains(target.getType())) {
+                } else if (RequiemCoreTags.Entity.FRICTIONLESS_HOSTS.contains(target.getType())) {
                     this.mc.inGameHud.setOverlayMessage(new TranslatableText("requiem:dissociate_hint", FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
                 }
             }
@@ -125,7 +134,7 @@ public final class RequiemClientListener implements
                 if (--timeBeforeDialogueGui == 0) {
                     DialogueTracker dialogueTracker = DialogueTracker.get(client.player);
                     dialogueTracker.startDialogue(Requiem.id("remnant_choice"));
-                    client.openScreen(new CutsceneDialogueScreen(new TranslatableText("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue(), this.rc.getWorldFreezeFxRenderer()));
+                    client.openScreen(new CutsceneDialogueScreen(new TranslatableText("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue(), this.rc.worldFreezeFxRenderer()));
                 } else if (timeBeforeDialogueGui < 0) {
                     timeBeforeDialogueGui = 20;
                 }

@@ -38,7 +38,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import ladysnake.pandemonium.client.render.entity.ClientWololoComponent;
-import ladysnake.requiem.Requiem;
+import ladysnake.requiem.core.RequiemCore;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -46,7 +46,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class WololoComponent implements AutoSyncedComponent {
-    public static final ComponentKey<WololoComponent> KEY = ComponentRegistry.getOrCreate(Requiem.id("wololo"), WololoComponent.class);
+    public static final ComponentKey<WololoComponent> KEY = ComponentRegistry.getOrCreate(RequiemCore.id("wololo"), WololoComponent.class);
 
     public static boolean canBeConverted(Entity entity) {
         WololoComponent w = KEY.getNullable(entity);

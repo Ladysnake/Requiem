@@ -50,6 +50,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRendererMixin {
@@ -58,25 +59,19 @@ public abstract class LivingEntityRendererMixin {
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getVehicle()Lnet/minecraft/entity/Entity;"))
     private Entity getPossessorRiddenEntity(LivingEntity entity) {
         PlayerEntity possessor = ((Possessable) entity).getPossessor();
-        if (possessor != null) {
-            return possessor.getVehicle();
-        }
-        return entity.getVehicle();
+        return Objects.requireNonNullElse(possessor, entity).getVehicle();
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;hasVehicle()Z"))
     private boolean doesPossessorHaveVehicle(LivingEntity entity) {
         PlayerEntity possessor = ((Possessable) entity).getPossessor();
-        if (possessor != null) {
-            return possessor.hasVehicle();
-        }
-        return entity.hasVehicle();
+        return Objects.requireNonNullElse(possessor, entity).hasVehicle();
     }
 
     @ModifyVariable(method = "render", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;getRenderLayer(Lnet/minecraft/entity/LivingEntity;ZZZ)Lnet/minecraft/client/render/RenderLayer;"))
     protected @Nullable RenderLayer requiem$replaceRenderLayer(@Nullable RenderLayer base, LivingEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         if (base != null) {
-            RequiemFx requiemFxRenderer = RequiemClient.INSTANCE.getRequiemFxRenderer();
+            RequiemFx requiemFxRenderer = RequiemClient.instance().fxRenderer();
 
             if (entity == requiemFxRenderer.getAnimationEntity()) {
                 return requiemFxRenderer.getZoomFx(base);

@@ -6,11 +6,19 @@ repositories {
         name = "Ladysnake Libs"
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
         content {
+            includeGroup "io.github.ladysnake"
             includeGroupByRegex "io\\.github\\.onyxstudios.*"
+        }
+    }
+    maven {
+        url = 'https://oss.sonatype.org/content/repositories/snapshots'
+        content {
+            includeGroup 'me.lucko'
         }
     }
 }
 
 dependencies {
-    modApi ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${rootProject.cca_version}")
+    modApi ("io.github.ladysnake:locki:${locki_version}")
+    modApi ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${cca_version}")
 }

@@ -35,7 +35,7 @@
 package ladysnake.requiem.client;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
+import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.client.network.ClientMessageHandler;
 import ladysnake.requiem.client.particle.CureParticle;
 import ladysnake.requiem.client.particle.EntityDustParticle;
@@ -45,23 +45,27 @@ import ladysnake.requiem.client.render.entity.CuredVillagerEntityRenderer;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.PortalParticle;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
-public final class RequiemClient implements ClientModInitializer {
+public final class RequiemClient {
 
     public static final Identifier CRAFTING_BUTTON_TEXTURE = Requiem.id("textures/gui/crafting_button.png");
 
-    @AccessedThroughReflection
-    public static final RequiemClient INSTANCE = new RequiemClient();
+    private static final RequiemClient INSTANCE = new RequiemClient();
+
+    @CalledThroughReflection
+    public static void onInitializeClient() {
+        INSTANCE.init();
+    }
+
+    public static RequiemClient instance() {
+        return INSTANCE;
+    }
 
     private final MinecraftClient mc = MinecraftClient.getInstance();
 
@@ -69,6 +73,7 @@ public final class RequiemClient implements ClientModInitializer {
     private final RequiemClientListener listener;
     private final RequiemTargetHandler targetHandler;
     private final RequiemEntityShaderPicker shaderPicker;
+    private final RequiemStatusEffectSpriteManager statusEffectSpriteManager;
 
     private final RequiemFx requiemFxRenderer;
     private final ShadowPlayerFx shadowPlayerFxRenderer;
@@ -80,34 +85,28 @@ public final class RequiemClient implements ClientModInitializer {
         this.targetHandler = new RequiemTargetHandler();
         this.requiemFxRenderer = new RequiemFx();
         this.shaderPicker = new RequiemEntityShaderPicker();
+        this.statusEffectSpriteManager = new RequiemStatusEffectSpriteManager();
         this.shadowPlayerFxRenderer = new ShadowPlayerFx();
         this.worldFreezeFxRenderer = new ZaWorldFx();
     }
 
-    public void updateCamera(PlayerEntity player, Entity cameraEntity) {
-        if (this.mc.options.getPerspective().isFirstPerson() && player == this.mc.player) {
-            this.mc.gameRenderer.onCameraEntitySet(cameraEntity);
-        }
+    public RequiemStatusEffectSpriteManager statusEffectSpriteManager() {
+        return statusEffectSpriteManager;
     }
 
-    public RequiemTargetHandler getTargetHandler() {
-        return targetHandler;
-    }
-
-    public ShadowPlayerFx getShadowPlayerFxRenderer() {
+    public ShadowPlayerFx shadowPlayerFxRenderer() {
         return shadowPlayerFxRenderer;
     }
 
-    public ZaWorldFx getWorldFreezeFxRenderer() {
+    public ZaWorldFx worldFreezeFxRenderer() {
         return worldFreezeFxRenderer;
     }
 
-    public RequiemFx getRequiemFxRenderer() {
+    public RequiemFx fxRenderer() {
         return requiemFxRenderer;
     }
 
-    @Override
-    public void onInitializeClient() {
+    private void init() {
         this.registerEntityRenderers();
         this.registerModelPredicates();
         this.registerParticleFactories();
@@ -128,14 +127,7 @@ public final class RequiemClient implements ClientModInitializer {
     }
 
     private void registerSprites() {
-        // Register special icons for different levels of attrition
-        ClientSpriteRegistryCallback.event(new Identifier("textures/atlas/mob_effects.png")).register((atlasTexture, registry) -> {
-            for (Identifier[] altSprites : RequiemStatusEffects.spriteMappings.values()) {
-                for (Identifier altSprite : altSprites) {
-                    registry.register(altSprite);
-                }
-            }
-        });
+        this.statusEffectSpriteManager().registerAltSprites(RequiemStatusEffects.ATTRITION, 4);
     }
 
     private void registerEntityRenderers() {
@@ -152,5 +144,6 @@ public final class RequiemClient implements ClientModInitializer {
         this.worldFreezeFxRenderer.registerCallbacks();
         this.listener.registerCallbacks();
         this.targetHandler.registerCallbacks();
+        this.statusEffectSpriteManager.registerCallbacks();
     }
 }

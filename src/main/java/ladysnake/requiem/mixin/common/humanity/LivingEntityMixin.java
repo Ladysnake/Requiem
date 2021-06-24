@@ -35,7 +35,7 @@
 package ladysnake.requiem.mixin.common.humanity;
 
 import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.common.util.DamageHelper;
+import ladysnake.requiem.core.util.DamageHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;

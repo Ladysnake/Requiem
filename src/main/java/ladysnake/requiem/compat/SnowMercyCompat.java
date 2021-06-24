@@ -39,7 +39,7 @@ import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.common.entity.ability.RangedAttackAbility;
+import ladysnake.requiem.core.entity.ability.RangedAttackAbility;
 import ladysnake.snowmercy.common.SnowMercy;
 import ladysnake.snowmercy.common.entity.ChillSnugglesEntity;
 import ladysnake.snowmercy.common.entity.MortarsEntity;

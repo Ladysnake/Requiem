@@ -35,7 +35,7 @@
 package ladysnake.requiem.common.entity.cure;
 
 import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
-import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import ladysnake.requiem.core.tag.RequiemCoreTags;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnReason;
@@ -80,7 +80,7 @@ public class SimpleCurableEntityComponent implements CurableEntityComponent {
 
     @Override
     public boolean canBeAssimilated() {
-        return this.entity.isUndead() && RequiemEntityTypeTags.ITEM_USERS.contains(this.entity.getType());
+        return this.entity.isUndead() && RequiemCoreTags.Entity.ITEM_USERS.contains(this.entity.getType());
     }
 
     @Override

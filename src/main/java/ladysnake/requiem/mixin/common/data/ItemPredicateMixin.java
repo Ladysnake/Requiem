@@ -36,7 +36,7 @@ package ladysnake.requiem.mixin.common.data;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import ladysnake.requiem.common.impl.data.FoodComponentPredicate;
+import ladysnake.requiem.core.data.FoodComponentPredicate;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.item.ItemPredicate;
 import org.spongepowered.asm.mixin.Mixin;

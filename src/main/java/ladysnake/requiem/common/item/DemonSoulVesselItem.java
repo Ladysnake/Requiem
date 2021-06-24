@@ -37,10 +37,10 @@ package ladysnake.requiem.common.item;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.impl.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
-import ladysnake.requiem.mixin.common.access.LivingEntityAccessor;
+import ladysnake.requiem.core.mixin.access.LivingEntityAccessor;
+import ladysnake.requiem.core.possession.PossessionComponentImpl;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -104,7 +104,7 @@ public class DemonSoulVesselItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        if (!world.isClient && stack.getItem() == this) {
+        if (player instanceof ServerPlayerEntity serverPlayer && stack.getItem() == this) {
             RemnantComponent remnantComponent = RemnantComponent.get(player);
             RemnantType currentState = remnantComponent.getRemnantType();
 
@@ -123,7 +123,7 @@ public class DemonSoulVesselItem extends Item {
                         this.remnantType.isDemon() ? RequiemSoundEvents.EFFECT_BECOME_REMNANT : RequiemSoundEvents.EFFECT_BECOME_MORTAL,
                         player.getSoundCategory(), 1.4F, 0.1F
                     );
-                    RequiemNetworking.sendTo((ServerPlayerEntity) player, RequiemNetworking.createOpusUsePacket(this.remnantType, true));
+                    RequiemNetworking.sendTo(serverPlayer, RequiemNetworking.createOpusUsePacket(this.remnantType, true));
 
                     remnantComponent.become(this.remnantType, true);
 
@@ -133,9 +133,9 @@ public class DemonSoulVesselItem extends Item {
                         } else if (remnantComponent.isVagrant()) {
                             possessionComponent.startPossessing(possessedEntity);
                         } else {
-                            PossessionComponentImpl.dropEquipment(possessedEntity, player);
+                            PossessionComponentImpl.dropEquipment(possessedEntity, serverPlayer);
                         }
-                    } else if (remnantComponent.isIncorporeal() && ((ServerPlayerEntity) player).interactionManager.isSurvivalLike()) {
+                    } else if (remnantComponent.isIncorporeal() && serverPlayer.interactionManager.isSurvivalLike()) {
                         ((LivingEntityAccessor)player).requiem$invokeDropInventory();
                     }
 

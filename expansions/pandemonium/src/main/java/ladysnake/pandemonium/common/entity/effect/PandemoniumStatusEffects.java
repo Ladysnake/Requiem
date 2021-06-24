@@ -35,16 +35,15 @@
 package ladysnake.pandemonium.common.entity.effect;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.util.registry.Registry;
 
-public class PandemoniumStatusEffects {
+public final class PandemoniumStatusEffects {
     public static final StatusEffect PENANCE = new PenanceStatusEffect(StatusEffectType.HARMFUL, 0xAA3322); //TODO change the color
 
     public static void init() {
-        RequiemStatusEffects.registerEffect(PENANCE, "penance", 2);
+        registerEffect(PENANCE, "penance");
     }
 
     public static void registerEffect(StatusEffect effect, String name) {

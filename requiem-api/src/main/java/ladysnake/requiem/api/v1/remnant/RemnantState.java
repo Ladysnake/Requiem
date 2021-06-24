@@ -89,6 +89,10 @@ public interface RemnantState {
         return true;
     }
 
+    default boolean canSplit() {
+        return false;
+    }
+
     @API(status = API.Status.EXPERIMENTAL)
     default boolean canCaptureSouls() {
         return false;

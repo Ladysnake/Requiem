@@ -35,7 +35,6 @@
 package ladysnake.pandemonium;
 
 import baritone.api.fakeplayer.AutomatoneFakePlayer;
-import ladysnake.pandemonium.api.event.PlayerShellEvents;
 import ladysnake.pandemonium.common.PandemoniumConfig;
 import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
@@ -58,13 +57,13 @@ import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
 import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
+import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.api.v1.remnant.VagrantInteractionRegistry;
-import ladysnake.requiem.common.entity.ability.RangedAttackAbility;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.core.entity.ability.RangedAttackAbility;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -101,8 +100,8 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
         PossessionStartCallback.EVENT.register(Pandemonium.id("deny_penance_three"), ((target, possessor, simulate) ->
             PenanceStatusEffect.getLevel(possessor) >= 2 ? PossessionStartCallback.Result.DENY : PossessionStartCallback.Result.PASS));
         InitiateFractureCallback.EVENT.register(player -> {
-            RemnantComponent remnantState = RemnantComponent.get(player);
             PossessionComponent possessionComponent = PossessionComponent.get(player);
+
             boolean success;
 
             if (PlayerSplitter.split(player)) {

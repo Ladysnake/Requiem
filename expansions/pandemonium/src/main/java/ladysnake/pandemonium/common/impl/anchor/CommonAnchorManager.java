@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorFactory;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
-import ladysnake.requiem.Requiem;
+import ladysnake.requiem.core.RequiemCore;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -150,7 +150,7 @@ public class CommonAnchorManager implements FractureAnchorManager, AutoSyncedCom
     @Override
     public void readFromNbt(NbtCompound tag) {
         if (!tag.contains("Anchors", NbtType.LIST)) {
-            Requiem.LOGGER.error("Invalid save data. Expected list of FractureAnchors, found none. Discarding save data.");
+            RequiemCore.LOGGER.error("Invalid save data. Expected list of FractureAnchors, found none. Discarding save data.");
             return;
         }
         NbtList list = tag.getList("Anchors", NbtType.COMPOUND);
@@ -160,7 +160,7 @@ public class CommonAnchorManager implements FractureAnchorManager, AutoSyncedCom
             if (anchorTag.contains("X", NbtType.DOUBLE)) {
                 anchor.setPosition(anchorTag.getDouble("X"), anchorTag.getDouble("Y"), anchorTag.getDouble("Z"));
             } else {
-                Requiem.LOGGER.error("Invalid save data. Expected position information, found none. Skipping.");
+                RequiemCore.LOGGER.error("Invalid save data. Expected position information, found none. Skipping.");
             }
         }
     }

@@ -34,7 +34,6 @@
  */
 package ladysnake.requiem.mixin.common.inventory;
 
-import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.Inventory;
@@ -49,7 +48,7 @@ public abstract class CraftingResultSlotMixin extends SlotMixin {
     @Inject(method = "<init>", at = @At("RETURN"))
     private void constructor(PlayerEntity player, CraftingInventory input, Inventory inventory, int index, int x, int y, CallbackInfo ci) {
         if (player != null) {
-            this.requiem$limiter = InventoryLimiter.KEY.get(player);
+            this.requiem$player = player;
         }
         this.craftingSlot = true;
     }

@@ -36,8 +36,8 @@ package ladysnake.requiem.mixin.common.possession.gameplay;
 
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.common.impl.possession.item.OverridableItemStack;
-import ladysnake.requiem.common.impl.possession.item.PossessionItemOverrideWrapper;
+import ladysnake.requiem.common.possession.item.OverridableItemStack;
+import ladysnake.requiem.common.possession.item.PossessionItemOverrideWrapper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;

@@ -39,8 +39,8 @@ import ladysnake.requiem.api.v1.event.minecraft.DynamicRegistryRegistrationCallb
 import ladysnake.requiem.api.v1.possession.item.PossessionItemAction;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.impl.possession.item.PossessionItemOverrideWrapper;
-import ladysnake.requiem.common.impl.remnant.dialogue.DialogueTemplate;
+import ladysnake.requiem.common.dialogue.DialogueTemplate;
+import ladysnake.requiem.common.possession.item.PossessionItemOverrideWrapper;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.event.registry.RegistryAttribute;

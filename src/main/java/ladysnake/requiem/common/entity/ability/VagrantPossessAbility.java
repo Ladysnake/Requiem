@@ -36,8 +36,9 @@ package ladysnake.requiem.common.entity.ability;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.client.RequiemClient;
-import ladysnake.requiem.common.impl.remnant.VagrantInteractionRegistryImpl;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
+import ladysnake.requiem.core.entity.ability.DirectAbilityBase;
+import ladysnake.requiem.core.remnant.VagrantInteractionRegistryImpl;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -72,7 +73,7 @@ public class VagrantPossessAbility extends DirectAbilityBase<PlayerEntity, Livin
     protected boolean run(LivingEntity target) {
         this.target = target;
         if (this.owner.world.isClient && this.owner == MinecraftClient.getInstance().player) {
-            RequiemClient.INSTANCE.getRequiemFxRenderer().beginFishEyeAnimation(target);
+            RequiemClient.instance().fxRenderer().beginFishEyeAnimation(target);
         }
         target.world.playSound(this.owner, target.getX(), target.getY(), target.getZ(), RequiemSoundEvents.EFFECT_POSSESSION_ATTEMPT, SoundCategory.PLAYERS, 2, 0.6f);
         this.beginCooldown();
@@ -82,7 +83,7 @@ public class VagrantPossessAbility extends DirectAbilityBase<PlayerEntity, Livin
     @Override
     protected void onCooldownEnd() {
         if (this.owner.world.isClient && this.owner == MinecraftClient.getInstance().player) {
-            RequiemClient.INSTANCE.getRequiemFxRenderer().onPossessionAck();
+            RequiemClient.instance().fxRenderer().onPossessionAck();
         } else if (this.action != null && this.target != null && !this.target.isRemoved() && this.target.isAlive()) {
             this.action.accept(this.target, this.owner);
         }

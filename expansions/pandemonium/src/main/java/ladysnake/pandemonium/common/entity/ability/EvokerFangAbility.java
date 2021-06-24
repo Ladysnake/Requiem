@@ -36,9 +36,9 @@ package ladysnake.pandemonium.common.entity.ability;
 
 import ladysnake.pandemonium.common.entity.internal.SpellcastingIllagerAccess;
 import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.common.entity.ability.DirectAbilityBase;
-import ladysnake.requiem.common.util.reflection.ReflectionHelper;
-import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
+import ladysnake.requiem.core.entity.ability.DirectAbilityBase;
+import ladysnake.requiem.core.util.reflection.ReflectionHelper;
+import ladysnake.requiem.core.util.reflection.UncheckedReflectionException;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.EvokerEntity;

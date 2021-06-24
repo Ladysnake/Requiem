@@ -47,7 +47,7 @@ import party.lemons.biomemakeover.entity.MultiPartEntity;
 
 @Mixin(EntityPart.class)
 public abstract class EntityPartMixin<T extends LivingEntity & MultiPartEntity<?>> implements ProtoPossessable {
-    @Shadow
+    @Shadow(remap = false)
     @Final
     public T owner;
 

@@ -86,11 +86,19 @@
   "requiem:tooltip.witch_food": "Witch Diet",
   "requiem:tooltip.zombie_food": "Zombie Snack",
 
-  "block.requiem.runic_obsidian_attrition": "Runic Obsidian of Attrition",
-  "block.requiem.runic_obsidian_penance": "Runic Obsidian of Penance",
-  "block.requiem.polished_obsidian": "Polished Obsidian",
-  "block.requiem.polished_obsidian_slab": "Polished Obsidian Slab",
-  "block.requiem.polished_obsidian_stairs": "Polished Obsidian Stairs",
+  "block.requiem.tachylite.runic.attrition": "Runic Tachylite of Attrition",
+  "block.requiem.tachylite.runic.emancipation": "Runic Tachylite of Emancipation",
+  "block.requiem.tachylite.runic.penance": "Runic Tachylite of Penance",
+  "block.requiem.tachylite.chiseled": "Chiseled Tachylite",
+  "block.requiem.tachylite.chiseled_pillar": "Chiseled Tachylite Pillar",
+  "block.requiem.tachylite.chiseled_slab": "Chiseled Tachylite Slab",
+  "block.requiem.tachylite.chiseled_stairs": "Chiseled Tachylite Stairs",
+  "block.requiem.tachylite.polished": "Polished Tachylite",
+  "block.requiem.tachylite.polished_pillar": "Polished Tachylite Pillar",
+  "block.requiem.tachylite.polished_slab": "Polished Tachylite Slab",
+  "block.requiem.tachylite.polished_stairs": "Polished Tachylite Stairs",
+  "block.requiem.tachylite.scraped": "Scraped Tachylite",
+  "block.requiem.tachylite.tachylite": "Tachylite",
 
   "config.requiem.title": "Requiem Config Menu",
   "config.requiem.graphics": "Graphics",
@@ -113,6 +121,7 @@
   "gamerule.requiem:possessionKeepInventory": "(Requiem) Keep inventory         after possession ends",
 
   "effect.requiem.attrition": "Attrition",
+  "effect.requiem.emancipation": "Emancipation",
 
   "enchantment.requiem.humanity": "Humanity",
 

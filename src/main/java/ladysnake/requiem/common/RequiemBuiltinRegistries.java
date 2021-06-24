@@ -35,7 +35,7 @@
 package ladysnake.requiem.common;
 
 import com.mojang.serialization.Lifecycle;
-import ladysnake.requiem.common.impl.possession.item.PossessionItemOverrideWrapper;
+import ladysnake.requiem.common.possession.item.PossessionItemOverrideWrapper;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.SimpleRegistry;

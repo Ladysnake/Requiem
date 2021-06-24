@@ -44,12 +44,12 @@ import io.github.ladysnake.impersonate.Impersonator;
 import ladysnake.pandemonium.Pandemonium;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
-import ladysnake.pandemonium.api.event.PlayerShellEvents;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.impl.anchor.AnchorFactories;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
+import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.entity.Entity;
@@ -69,7 +69,7 @@ import java.util.Set;
 
 public final class PlayerSplitter {
     public static boolean split(ServerPlayerEntity whole) {
-        if (isReadyForSplit(whole) && PlayerShellEvents.PRE_SPLIT.invoker().canSplit(whole)) {
+        if (isReadyForSplit(whole)) {
             doSplit(whole);
             return true;
         }
@@ -78,8 +78,7 @@ public final class PlayerSplitter {
     }
 
     private static boolean isReadyForSplit(ServerPlayerEntity whole) {
-        return !RemnantComponent.isVagrant(whole)
-            && !whole.isRemoved();
+        return RemnantComponent.get(whole).canPerformSplit();
     }
 
     private static void doSplit(ServerPlayerEntity whole) {
@@ -103,7 +102,7 @@ public final class PlayerSplitter {
         shell.bodyYaw = whole.bodyYaw;
         shell.changeGameMode(whole.interactionManager.isSurvivalLike() ? whole.interactionManager.getGameMode() : GameMode.SURVIVAL);
         RemnantComponent.get(shell).become(RemnantTypes.MORTAL, true);
-        InventoryLimiter.KEY.get(shell).setEnabled(false);
+        InventoryLimiter.instance().disable(shell);
         PlayerShellEvents.DATA_TRANSFER.invoker().transferData(whole, shell, false);
         return shell;
     }

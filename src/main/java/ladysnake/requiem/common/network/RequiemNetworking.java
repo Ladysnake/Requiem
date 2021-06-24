@@ -40,17 +40,15 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.common.remnant.RemnantTypes;
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Contract;
@@ -64,16 +62,13 @@ public class RequiemNetworking {
     public static final Identifier OPUS_USE = Requiem.id("opus_use");
     public static final Identifier DATA_SYNC = Requiem.id("data_sync");
     public static final Identifier ETHEREAL_ANIMATION = Requiem.id("ethereal_animation");
-    public static final Identifier CONSUME_RESURRECTION_ITEM = Requiem.id("consume_resurrection_item");
     public static final Identifier BODY_CURE = Requiem.id("body_cure");
 
     // Client -> Server
-    public static final Identifier USE_DIRECT_ABILITY = Requiem.id("direct_ability");
     public static final Identifier USE_INDIRECT_ABILITY = Requiem.id("indirect_ability");
     public static final Identifier ETHEREAL_FRACTURE = Requiem.id("ethereal_fracture");
     public static final Identifier OPUS_UPDATE = Requiem.id("opus_update");
     public static final Identifier DIALOGUE_ACTION = Requiem.id("dialogue_action");
-    public static final Identifier HUGGING_WALL = Requiem.id("hugging_wall");
     public static final Identifier OPEN_CRAFTING_MENU = Requiem.id("open_crafting");
 
     public static void sendToServer(Identifier identifier, PacketByteBuf data) {
@@ -89,17 +84,6 @@ public class RequiemNetworking {
         sendToPlayer(player, message);
     }
 
-    public static void sendToAllTrackingIncluding(Entity tracked, Packet<?> message) {
-        if (tracked.world instanceof ServerWorld) {
-            for (ServerPlayerEntity p : PlayerLookup.tracking(tracked)) {
-                sendToPlayer(p, message);
-            }
-            if (tracked instanceof ServerPlayerEntity) {
-                sendToPlayer((ServerPlayerEntity) tracked, message);
-            }
-        }
-    }
-
     private static void sendToPlayer(ServerPlayerEntity player, Packet<?> message) {
         if (player.networkHandler != null) {
             player.networkHandler.sendPacket(message);
@@ -111,13 +95,6 @@ public class RequiemNetworking {
         buf.writeVarInt(RemnantTypes.getRawId(chosenType));
         buf.writeBoolean(showBook);
         return new CustomPayloadS2CPacket(OPUS_USE, buf);
-    }
-
-    public static void sendItemConsumptionPacket(Entity user, ItemStack stack) {
-        PacketByteBuf buf = createEmptyBuffer();
-        buf.writeVarInt(user.getId());
-        buf.writeItemStack(stack);
-        sendToAllTrackingIncluding(user, new CustomPayloadS2CPacket(CONSUME_RESURRECTION_ITEM, buf));
     }
 
     @Contract(pure = true)
@@ -166,23 +143,10 @@ public class RequiemNetworking {
         sendToServer(new CustomPayloadC2SPacket(DIALOGUE_ACTION, buf));
     }
 
-    public static void sendAbilityUseMessage(AbilityType type, Entity entity) {
-        PacketByteBuf buf = new PacketByteBuf(buffer());
-        buf.writeEnumConstant(type);
-        buf.writeVarInt(entity.getId());
-        sendToServer(USE_DIRECT_ABILITY, buf);
-    }
-
     public static void sendIndirectAbilityUseMessage(AbilityType type) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeEnumConstant(type);
         sendToServer(USE_INDIRECT_ABILITY, buf);
-    }
-
-    public static void sendHugWallMessage(boolean hugging) {
-        PacketByteBuf buf = new PacketByteBuf(buffer());
-        buf.writeBoolean(hugging);
-        sendToServer(new CustomPayloadC2SPacket(HUGGING_WALL, buf));
     }
 
     public static void sendSupercrafterMessage() {
@@ -196,6 +160,6 @@ public class RequiemNetworking {
     public static void sendBodyCureMessage(LivingEntity entity) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeVarInt(entity.getId());
-        sendToAllTrackingIncluding(entity, new CustomPayloadS2CPacket(BODY_CURE, buf));
+        RequiemCoreNetworking.sendToAllTrackingIncluding(entity, new CustomPayloadS2CPacket(BODY_CURE, buf));
     }
 }

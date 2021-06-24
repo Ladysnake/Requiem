@@ -37,14 +37,15 @@ package ladysnake.requiem.client.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.client.RequiemClient;
-import ladysnake.requiem.common.util.reflection.ReflectionHelper;
-import ladysnake.requiem.common.util.reflection.UnableToFindMethodException;
-import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
+import ladysnake.requiem.core.util.reflection.ReflectionHelper;
+import ladysnake.requiem.core.util.reflection.UnableToFindMethodException;
+import ladysnake.requiem.core.util.reflection.UncheckedReflectionException;
 import ladysnake.satin.api.managed.ManagedFramebuffer;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
 import ladysnake.satin.api.util.RenderLayerHelper;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
@@ -75,6 +76,7 @@ public final class RequiemRenderPhases extends RenderLayer {
                 true,
                 MultiPhaseParameters.builder()
                     .texture(new Texture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE, false, false))
+                    .shader(new Shader(GameRenderer::getParticleShader))
                     .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
                     .lightmap(RenderPhase.ENABLE_LIGHTMAP)
                     .depthTest(RenderPhase.ALWAYS_DEPTH_TEST)
@@ -91,7 +93,7 @@ public final class RequiemRenderPhases extends RenderLayer {
 
     public static final Target shadowPlayerTarget = new Target(
         "requiem:shadow_players_target",
-        RequiemClient.INSTANCE.getShadowPlayerFxRenderer()::beginPlayersFbWrite,
+        RequiemClient.instance().shadowPlayerFxRenderer()::beginPlayersFbWrite,
         () -> {
             MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
             RenderSystem.depthMask(true);

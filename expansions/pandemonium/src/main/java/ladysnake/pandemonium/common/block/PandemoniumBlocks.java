@@ -40,10 +40,10 @@ import ladysnake.requiem.common.block.RunicObsidianBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Blocks;
 
-public class PandemoniumBlocks {
-    public static final RunicObsidianBlock RUNIC_OBSIDIAN_PENANCE = new RunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), PandemoniumStatusEffects.PENANCE, 1);
+public final class PandemoniumBlocks {
+    public static final RunicObsidianBlock RUNIC_OBSIDIAN_PENANCE = new RunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), () -> PandemoniumStatusEffects.PENANCE, 1);
 
     public static void init() {
-        RequiemBlocks.registerRunic(RUNIC_OBSIDIAN_PENANCE, "runic_obsidian_penance");
+        RequiemBlocks.registerRunic(RUNIC_OBSIDIAN_PENANCE, "tachylite/runic/penance");
     }
 }

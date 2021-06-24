@@ -34,9 +34,9 @@
  */
 package ladysnake.pandemonium.common.entity.internal;
 
-import ladysnake.requiem.common.util.reflection.ReflectionHelper;
-import ladysnake.requiem.common.util.reflection.UnableToFindMethodException;
-import ladysnake.requiem.common.util.reflection.UncheckedReflectionException;
+import ladysnake.requiem.core.util.reflection.ReflectionHelper;
+import ladysnake.requiem.core.util.reflection.UnableToFindMethodException;
+import ladysnake.requiem.core.util.reflection.UncheckedReflectionException;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 import net.minecraft.world.World;

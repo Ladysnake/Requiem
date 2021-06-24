@@ -46,6 +46,7 @@ import ladysnake.requiem.common.item.OpusDemoniumItem;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -64,7 +65,7 @@ import static ladysnake.requiem.common.network.RequiemNetworking.*;
 public class ServerMessageHandling {
 
     public static void init() {
-        ServerPlayNetworking.registerGlobalReceiver(USE_DIRECT_ABILITY, (server, player, handler, buf, responseSender) -> {
+        ServerPlayNetworking.registerGlobalReceiver(RequiemCoreNetworking.USE_DIRECT_ABILITY, (server, player, handler, buf, responseSender) -> {
             AbilityType type = buf.readEnumConstant(AbilityType.class);
             int entityId = buf.readVarInt();
             server.execute(() -> {
@@ -130,7 +131,7 @@ public class ServerMessageHandling {
             Identifier action = buf.readIdentifier();
             server.execute(() -> DialogueTracker.get(player).handleAction(action));
         });
-        ServerPlayNetworking.registerGlobalReceiver(HUGGING_WALL, (server, player, handler, buf, responseSender) -> {
+        ServerPlayNetworking.registerGlobalReceiver(RequiemCoreNetworking.HUGGING_WALL, (server, player, handler, buf, responseSender) -> {
             boolean yes = buf.readBoolean();
             // Possible failure points: the player may not actually be against a block, or it may not have the right movement
             // we do not handle those right now, as movement is entirely done clientside

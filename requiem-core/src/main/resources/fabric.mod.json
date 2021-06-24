@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "requiem-core",
+  "version": "${version}",
+
+  "name": "Requiem-Core",
+  "icon": "skull_logo.png",
+  "description": "Requiem's modding API",
+  "license": "LGPL-3.0-or-later",
+  "authors": [
+    "Pyrofab"
+  ],
+  "contact": {
+    "sources": "https://github.com/Ladysnake/Dissolution",
+    "issues": "https://github.com/Ladysnake/Dissolution/issues",
+    "discord": "ladysnake.glitch.me/discord"
+  },
+
+  "environment": "*",
+
+  "mixins": [
+    {
+      "environment": "client",
+      "config": "mixins.requiem-core.client.json"
+    },
+    {
+      "environment": "*",
+      "config": "mixins.requiem-core.common.json"
+    }
+  ],
+
+  "custom": {
+    "modmenu": {
+      "parent": {
+        "id": "requiem",
+        "name": "Requiem",
+        "description": "Death revamped and ethereal powers",
+        "icon": "skull_logo.png"
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "required": true,
+  "package": "ladysnake.requiem.core.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "minVersion": "0.7.11-SNAPSHOT",
+  "mixins": [
+    "access.EntityAccessor",
+    "access.LivingEntityAccessor",
+    "possession.EntityAttributeInstanceMixin",
+    "possession.ServerWorldMixin",
+    "possession.WorldMixin",
+    "possession.command.EntitySelectorOptionsMixin",
+    "possession.possessed.BowItemMixin",
+    "possession.possessed.BrainMixin",
+    "possession.possessed.EntityLikeMixin",
+    "possession.possessed.IronGolemEntityMixin",
+    "possession.possessed.PossessableEntityMixin",
+    "possession.possessed.PossessableLivingEntityMixin",
+    "possession.possessed.PossessableMobEntityMixin",
+    "possession.possessed.reach.ServerPlayerInteractionManagerMixin",
+    "possession.possessed.reach.ServerPlayNetworkHandlerMixin",
+    "possession.possessor.HungerManagerMixin",
+    "possession.possessor.PlayerManagerMixin",
+    "possession.possessor.PossessorEntityMixin",
+    "possession.possessor.PossessorLivingEntityMixin",
+    "possession.possessor.PossessorPlayerEntityMixin",
+    "possession.possessor.PossessorServerPlayerEntityMixin",
+    "possession.possessor.PotionItemMixin",
+    "possession.possessor.StatusEffectInstanceMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

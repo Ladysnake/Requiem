@@ -44,6 +44,7 @@ repositories {
 
 dependencies {
     implementation project(path: ":requiem-api", configuration: "dev")
+    implementation project(path: ":requiem-core", configuration: "dev")
     implementation project(path: ":", configuration: "dev")
     implementation project(path: ":pandemonium-api", configuration: "dev")
     include project(":pandemonium-api")
@@ -55,8 +56,8 @@ dependencies {
     modImplementation "me.lucko:fabric-permissions-api:${fpa_version}"
     modImplementation ("io.github.ladysnake:PlayerAbilityLib:${pal_version}")
     modImplementation ("io.github.ladysnake:locki:${locki_version}")
-    modImplementation ("io.github.ladysnake:Impersonate:${impersonate_version}") { transitive = false }
-    include "io.github.ladysnake:Impersonate:${impersonate_version}"
+    modImplementation ("io.github.ladysnake:impersonate:${impersonate_version}") { transitive = false }
+    include "io.github.ladysnake:impersonate:${impersonate_version}"
     modImplementation "io.github.ladysnake:automatone:${automatone_version}"
     include "io.github.ladysnake:automatone:${automatone_version}:optimized"
     implementation "me.zeroeightsix:fiber:${rootProject.fiber_version}"

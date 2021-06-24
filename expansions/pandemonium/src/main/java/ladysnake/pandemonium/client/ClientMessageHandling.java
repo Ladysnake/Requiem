@@ -39,13 +39,13 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 import static ladysnake.pandemonium.common.network.PandemoniumNetworking.ANCHOR_DAMAGE;
 
-public class ClientMessageHandling {
+public final class ClientMessageHandling {
     private static final float[] ETHEREAL_DAMAGE_COLOR = {0.5f, 0.0f, 0.0f};
 
     public static void init() {
         ClientPlayNetworking.registerGlobalReceiver(ANCHOR_DAMAGE, (client, handler, buf, responseSender) -> {
             boolean dead = buf.readBoolean();
-            client.execute(() -> RequiemClient.INSTANCE.getRequiemFxRenderer().playEtherealPulseAnimation(
+            client.execute(() -> RequiemClient.instance().fxRenderer().playEtherealPulseAnimation(
                 dead ? 4 : 1, ETHEREAL_DAMAGE_COLOR[0], ETHEREAL_DAMAGE_COLOR[1], ETHEREAL_DAMAGE_COLOR[2]
             ));
         });

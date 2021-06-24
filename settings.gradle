@@ -4,6 +4,10 @@ pluginManagement {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
         }
+        maven {
+            name = 'Cotton'
+            url = 'https://server.bbkr.space/artifactory/libs-release/'
+        }
         gradlePluginPortal()
     }
 }
@@ -11,6 +15,7 @@ pluginManagement {
 rootProject.name = 'requiem'
 
 include "requiem-api"
+include "requiem-core"
 
 ['pandemonium'].forEach {
     include it

@@ -52,13 +52,17 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.world.GameRules;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class RequiemCommand {
+public final class RequiemCommand {
 
     public static final String REQUIEM_ROOT_COMMAND = "requiem";
     public static final String POSSESSION_SUBCOMMAND = "possession";

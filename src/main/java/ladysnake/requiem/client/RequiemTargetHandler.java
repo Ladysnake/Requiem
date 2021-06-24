@@ -39,7 +39,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.UpdateTargetedEntityCallback;
-import ladysnake.requiem.common.impl.ability.PlayerAbilityController;
+import ladysnake.requiem.core.ability.PlayerAbilityController;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;

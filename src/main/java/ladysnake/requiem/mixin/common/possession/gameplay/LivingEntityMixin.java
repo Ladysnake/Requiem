@@ -34,21 +34,34 @@
  */
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
+import ladysnake.requiem.api.v1.internal.ProtoPossessable;
+import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import java.util.UUID;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity {
+public abstract class LivingEntityMixin extends Entity implements Possessable {
     @Shadow
     public float bodyYaw;
 
@@ -57,6 +70,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow
     public float flyingSpeed;
+    private @Nullable UUID requiem$previousPossessorUuid;
 
     @Shadow
     public abstract float getMovementSpeed();
@@ -80,5 +94,33 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "travel", at = @At("RETURN"))
     protected void requiem$travelEnd(Vec3d movementInput, CallbackInfo ci) {
 
+    }
+
+    @Inject(method = "damage",
+        slice = @Slice(
+            from = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;increaseStat(Lnet/minecraft/util/Identifier;I)V"),
+            to = @At(value = "INVOKE", target = "Lnet/minecraft/advancement/criterion/PlayerHurtEntityCriterion;trigger(Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/damage/DamageSource;FFZ)V")),
+        at = @At(value = "JUMP", opcode = Opcodes.IFEQ),
+        locals = LocalCapture.CAPTURE_FAILSOFT,
+        allow = 1
+    )
+    private void triggerCriterion(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir, float dealt, boolean blocked, float attackAngle, boolean playDamageEffects, @Nullable Entity attacker, boolean didDamage) {
+        if (attacker != null) {
+            PlayerEntity possessor = ((ProtoPossessable) attacker).getPossessor();
+            if (possessor instanceof ServerPlayerEntity) {
+                RequiemCriteria.POSSESSED_HIT_ENTITY.handle(((ServerPlayerEntity) possessor), attacker, this, source, dealt, amount, blocked);
+            }
+        }
+    }
+
+    @Inject(method = "onDeath", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;drop(Lnet/minecraft/entity/damage/DamageSource;)V", shift = At.Shift.AFTER))
+    private void onDeath(DamageSource deathCause, CallbackInfo ci) {
+        if (!this.isBeingPossessed() && this.requiem$previousPossessorUuid != null) {
+            PlayerEntity previousPossessor = this.world.getPlayerByUuid(this.requiem$previousPossessorUuid);
+
+            if (previousPossessor != null) {
+                RequiemCriteria.DEATH_AFTER_POSSESSION.handle((ServerPlayerEntity) previousPossessor, this, deathCause);
+            }
+        }
     }
 }

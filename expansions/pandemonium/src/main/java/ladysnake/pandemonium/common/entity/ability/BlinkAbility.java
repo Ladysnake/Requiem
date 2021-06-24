@@ -35,7 +35,7 @@
 package ladysnake.pandemonium.common.entity.ability;
 
 import ladysnake.pandemonium.common.util.RayHelper;
-import ladysnake.requiem.common.entity.ability.IndirectAbilityBase;
+import ladysnake.requiem.core.entity.ability.IndirectAbilityBase;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;

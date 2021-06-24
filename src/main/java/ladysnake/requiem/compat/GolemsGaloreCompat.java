@@ -42,7 +42,7 @@ import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.common.entity.ability.TickingGoalAbility;
+import ladysnake.requiem.core.entity.ability.TickingGoalAbility;
 import net.minecraft.entity.LivingEntity;
 
 public final class GolemsGaloreCompat implements RequiemPlugin {

@@ -52,13 +52,13 @@ public abstract class ArmorFeatureRendererMixin {
 
     @Inject(method = "render", at = @At("HEAD"))
     private <T extends LivingEntity> void captureEntity(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T entity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-        goZoom = entity == RequiemClient.INSTANCE.getRequiemFxRenderer().getAnimationEntity();
+        goZoom = entity == RequiemClient.instance().fxRenderer().getAnimationEntity();
     }
 
     @ModifyArg(method = "renderArmorParts", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;getArmorGlintConsumer(Lnet/minecraft/client/render/VertexConsumerProvider;Lnet/minecraft/client/render/RenderLayer;ZZ)Lnet/minecraft/client/render/VertexConsumer;"))
     private RenderLayer replaceRenderLayer(RenderLayer base) {
         if (goZoom) {
-            RenderLayer ret = RequiemClient.INSTANCE.getRequiemFxRenderer().getZoomFx(base);
+            RenderLayer ret = RequiemClient.instance().fxRenderer().getZoomFx(base);
             goZoom = false;
             return ret;
         }
