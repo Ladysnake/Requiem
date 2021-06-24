@@ -138,6 +138,7 @@ repositories {
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
         content {
             includeGroup 'io.github.ladysnake'
+            includeGroupByRegex 'dev\\.emi.*'
             includeGroupByRegex 'io\\.github\\.onyxstudios.*'
         }
     }
