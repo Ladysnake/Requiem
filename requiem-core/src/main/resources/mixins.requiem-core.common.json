@@ -6,9 +6,10 @@
   "mixins": [
     "access.EntityAccessor",
     "access.LivingEntityAccessor",
+    "access.MobEntityAccessor",
     "noai.BrainMixin",
-    "noai.DisableableAiLivingEntityMixin",
-    "noai.DisableableAiMobEntityMixin",
+    "noai.EntityNavigationMixin",
+    "noai.GoalSelectorMixin",
     "noai.WitherEntityMixin",
     "possession.EntityAttributeInstanceMixin",
     "possession.ServerWorldMixin",
