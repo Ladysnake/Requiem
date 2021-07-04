@@ -61,11 +61,21 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
     @Shadow
     public abstract boolean isAttacking();
 
+    @Shadow
+    protected abstract void mobTick();
+
     @Unique
     private int attackingCountdown;
 
     public PossessableMobEntityMixin(EntityType<? extends MobEntity> type, World world) {
         super(type, world);
+    }
+
+    @Override
+    protected void requiem$mobTick() {
+        this.world.getProfiler().push("mob tick");
+        this.mobTick();
+        this.world.getProfiler().pop();
     }
 
     @Inject(method = "setAttacking", at = @At("RETURN"))

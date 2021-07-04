@@ -40,7 +40,8 @@ import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import ladysnake.requiem.core.RequiemCore;
-import ladysnake.requiem.core.entity.ai.DisableableBrain;
+import ladysnake.requiem.core.entity.ai.DisableableAiController;
+import ladysnake.requiem.core.mixin.access.MobEntityAccessor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -83,7 +84,16 @@ public class EntityAiToggle implements Component {
         boolean nowDisabled = this.isAiDisabled();
 
         if (wasDisabled != nowDisabled) {
-            ((DisableableBrain) this.owner.getBrain()).requiem$setDisabled(nowDisabled);
+            this.refresh(nowDisabled);
+        }
+    }
+
+    private void refresh(boolean nowDisabled) {
+        ((DisableableAiController) this.owner.getBrain()).requiem$setDisabled(nowDisabled);
+        if (this.owner instanceof MobEntityAccessor mob) {
+            ((DisableableAiController) mob.getGoalSelector()).requiem$setDisabled(nowDisabled);
+            ((DisableableAiController) mob.getTargetSelector()).requiem$setDisabled(nowDisabled);
+            ((DisableableAiController) mob.requiem$getNavigation()).requiem$setDisabled(nowDisabled);
         }
     }
 
@@ -99,6 +109,7 @@ public class EntityAiToggle implements Component {
             .map(Identifier::tryParse)
             .filter(Objects::nonNull)
             .forEach(id -> this.aiInhibitors.put(id, true));
+        this.refresh(this.isAiDisabled());
     }
 
     @Override

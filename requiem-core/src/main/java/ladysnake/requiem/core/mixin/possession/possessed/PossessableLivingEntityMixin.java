@@ -197,6 +197,24 @@ public abstract class PossessableLivingEntityMixin extends Entity implements Pos
         Entity overrides
     * * * * * * * * * * */
 
+    @Inject(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;canMoveVoluntarily()Z", ordinal = 1))
+    private void requiem$mobTick(CallbackInfo ci) {
+        if (this.isBeingPossessed() && !world.isClient) {
+            this.requiem$mobTick();
+        }
+    }
+
+    protected void requiem$mobTick() {
+        // NO-OP
+    }
+
+    @Inject(method = "canMoveVoluntarily", at = @At("HEAD"), cancellable = true)
+    private void canMoveVoluntarily(CallbackInfoReturnable<Boolean> cir) {
+        if (this.isBeingPossessed()) {
+            cir.setReturnValue(false);
+        }
+    }
+
     @Inject(method = "<init>", at = @At("RETURN"))
     private void initAttributes(CallbackInfo ci) {
         EntityAttributeInstance attributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE);

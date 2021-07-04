@@ -32,46 +32,8 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.core.mixin.noai;
+package ladysnake.requiem.core.entity.ai;
 
-import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.core.entity.EntityAiToggle;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-@Mixin(LivingEntity.class)
-public abstract class DisableableAiLivingEntityMixin extends Entity implements Possessable {
-    @Shadow
-    public abstract Brain<?> getBrain();
-
-    public DisableableAiLivingEntityMixin(EntityType<?> type, World world) {
-        super(type, world);
-    }
-
-    @Inject(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;canMoveVoluntarily()Z", ordinal = 1))
-    private void requiem$mobTick(CallbackInfo ci) {
-        if (EntityAiToggle.KEY.get(this).isAiDisabled() && !world.isClient) {
-            this.requiem$mobTick();
-        }
-    }
-
-    protected void requiem$mobTick() {
-        // NO-OP
-    }
-
-    @Inject(method = "canMoveVoluntarily", at = @At("HEAD"), cancellable = true)
-    private void canMoveVoluntarily(CallbackInfoReturnable<Boolean> cir) {
-        if (EntityAiToggle.KEY.get(this).isAiDisabled()) {
-            cir.setReturnValue(false);
-        }
-    }
+public interface DisableableAiController {
+    void requiem$setDisabled(boolean disable);
 }

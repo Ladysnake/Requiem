@@ -34,25 +34,26 @@
  */
 package ladysnake.requiem.core.mixin.noai;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.world.World;
+import ladysnake.requiem.core.entity.ai.DisableableAiController;
+import net.minecraft.entity.ai.goal.GoalSelector;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(MobEntity.class)
-public abstract class DisableableAiMobEntityMixin extends DisableableAiLivingEntityMixin {
-    @Shadow
-    protected abstract void mobTick();
-
-    public DisableableAiMobEntityMixin(EntityType<?> type, World world) {
-        super(type, world);
-    }
+@Mixin(GoalSelector.class)
+public abstract class GoalSelectorMixin implements DisableableAiController {
+    private boolean requiem$disabled;
 
     @Override
-    protected void requiem$mobTick() {
-        this.world.getProfiler().push("mob tick");
-        this.mobTick();
-        this.world.getProfiler().pop();
+    public void requiem$setDisabled(boolean disabled) {
+        this.requiem$disabled = disabled;
+    }
+
+    @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
+    private void tick(CallbackInfo ci) {
+        if (this.requiem$disabled) {
+            ci.cancel();
+        }
     }
 }
