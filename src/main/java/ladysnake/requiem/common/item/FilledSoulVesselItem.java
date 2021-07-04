@@ -34,13 +34,20 @@
  */
 package ladysnake.requiem.common.item;
 
+import ladysnake.requiem.core.entity.EntityAiToggle;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,5 +67,21 @@ public class FilledSoulVesselItem extends Item {
         Optional.ofNullable(stack.getSubTag(SOUL_FRAGMENT_NBT))
             .flatMap(fragmentData -> EntityType.get(fragmentData.getString("type")))
             .ifPresent(contained -> tooltip.add(new TranslatableText("requiem:tooltip.filled_vessel", contained.getName()).formatted(Formatting.GRAY)));
+    }
+
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack stack = user.getStackInHand(hand);
+        if (world instanceof ServerWorld sw) {
+            Optional.ofNullable(stack.getSubTag(FilledSoulVesselItem.SOUL_FRAGMENT_NBT))
+                .filter(data -> data.containsUuid("uuid"))
+                .map(data -> data.getUuid("uuid"))
+                .map(sw::getEntity)
+                .flatMap(EntityAiToggle.KEY::maybeGet)
+                .ifPresent(toggle -> toggle.toggleAi(Registry.ITEM.getId(RequiemItems.EMPTY_SOUL_VESSEL), false, false));
+            ItemStack result = new ItemStack(RequiemItems.FILLED_SOUL_VESSEL);
+            return TypedActionResult.success(ItemUsage.exchangeStack(stack, user, result));
+        }
+        return TypedActionResult.success(stack);
     }
 }

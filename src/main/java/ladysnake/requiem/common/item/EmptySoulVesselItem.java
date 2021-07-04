@@ -57,6 +57,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.UseAction;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class EmptySoulVesselItem extends Item {
@@ -113,7 +114,10 @@ public class EmptySoulVesselItem extends Item {
             result = new ItemStack(RequiemItems.SHATTERED_SOUL_VESSEL);
         } else {
             result = new ItemStack(RequiemItems.FILLED_SOUL_VESSEL);
-            result.getOrCreateSubTag(FilledSoulVesselItem.SOUL_FRAGMENT_NBT).putString("type", EntityType.getId(entity.getType()).toString());
+            NbtCompound data = result.getOrCreateSubTag(FilledSoulVesselItem.SOUL_FRAGMENT_NBT);
+            data.putString("type", EntityType.getId(entity.getType()).toString());
+            data.putUuid("uuid", entity.getUuid());
+            EntityAiToggle.KEY.get(target).toggleAi(Registry.ITEM.getId(this), true, true);
         }
         return ItemUsage.exchangeStack(stack, remnant, result, false);
     }
