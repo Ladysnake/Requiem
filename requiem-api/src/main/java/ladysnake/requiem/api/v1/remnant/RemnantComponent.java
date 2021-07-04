@@ -158,8 +158,6 @@ public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComp
 
     boolean canDissociateFrom(MobEntity possessed);
 
-    boolean canCaptureSouls();
-
     /**
      *
      * @return {@code true} if this player can currently split into a player shell and a vagrant form

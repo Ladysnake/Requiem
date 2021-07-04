@@ -34,12 +34,13 @@
  */
 package ladysnake.requiem.common.item;
 
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.event.requiem.SoulCaptureEvents;
 import ladysnake.requiem.common.entity.RequiemEntityAttributes;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
-import ladysnake.requiem.common.impl.remnant.WandererRemnantState;
 import ladysnake.requiem.common.particle.RequiemEntityParticleEffect;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
+import ladysnake.requiem.common.remnant.WandererRemnantState;
+import ladysnake.requiem.core.entity.EntityAiToggle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -68,7 +69,7 @@ public class EmptySoulVesselItem extends Item {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (RemnantComponent.get(user).canCaptureSouls()) {
+        if (SoulCaptureEvents.BEFORE_ATTEMPT.invoker().canAttemptCapturing(user, entity)) {
             int targetSoulStrength = computeSoulDefense(entity);
             int playerSoulStrength = computeSoulOffense(user);
             NbtCompound activeData = stack.getOrCreateSubTag(ACTIVE_DATA_TAG);
@@ -96,7 +97,8 @@ public class EmptySoulVesselItem extends Item {
         Entity entity = serverWorld.getEntity(activeData.getUuid("target"));
 
         if (!(entity instanceof LivingEntity target)) return stack;
-        if (!(user instanceof ServerPlayerEntity remnant && RemnantComponent.get(remnant).canCaptureSouls())) {
+        if (!(user instanceof ServerPlayerEntity remnant
+            && SoulCaptureEvents.BEFORE_ATTEMPT.invoker().canAttemptCapturing(remnant, target))) {
             return stack;
         }
 
