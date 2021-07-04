@@ -73,13 +73,14 @@ public class FilledSoulVesselItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
         if (world instanceof ServerWorld sw) {
+            EmptySoulVesselItem emptyVesselItem = RequiemItems.EMPTY_SOUL_VESSEL;
             Optional.ofNullable(stack.getSubTag(FilledSoulVesselItem.SOUL_FRAGMENT_NBT))
                 .filter(data -> data.containsUuid("uuid"))
                 .map(data -> data.getUuid("uuid"))
                 .map(sw::getEntity)
                 .flatMap(EntityAiToggle.KEY::maybeGet)
-                .ifPresent(toggle -> toggle.toggleAi(Registry.ITEM.getId(RequiemItems.EMPTY_SOUL_VESSEL), false, false));
-            ItemStack result = new ItemStack(RequiemItems.FILLED_SOUL_VESSEL);
+                .ifPresent(toggle -> toggle.toggleAi(Registry.ITEM.getId(emptyVesselItem), false, false));
+            ItemStack result = new ItemStack(emptyVesselItem);
             return TypedActionResult.success(ItemUsage.exchangeStack(stack, user, result));
         }
         return TypedActionResult.success(stack);
