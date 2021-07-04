@@ -32,51 +32,46 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.core.mixin.possession.possessed;
+package ladysnake.requiem.core.mixin.noai;
 
-import ladysnake.requiem.core.entity.ai.DisableableBrain;
+import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.core.entity.EntityAiToggle;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Optional;
+@Mixin(LivingEntity.class)
+public abstract class DisableableAiLivingEntityMixin extends Entity implements Possessable {
+    @Shadow
+    public abstract Brain<?> getBrain();
 
-@Mixin(Brain.class)
-public abstract class BrainMixin implements DisableableBrain {
-    @Unique
-    private boolean disabled;
-
-    @Override
-    public void requiem_setDisabled(boolean disabled) {
-        this.disabled = disabled;
+    public DisableableAiLivingEntityMixin(EntityType<?> type, World world) {
+        super(type, world);
     }
 
-    @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
-    private void tick(ServerWorld world, LivingEntity entity, CallbackInfo ci) {
-        if (this.disabled) {
-            ci.cancel();
+    @Inject(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;canMoveVoluntarily()Z", ordinal = 1))
+    private void requiem$mobTick(CallbackInfo ci) {
+        if (EntityAiToggle.KEY.get(this).isAiDisabled() && !world.isClient) {
+            this.requiem$mobTick();
         }
     }
 
-    @Inject(method = "isMemoryInState", at = @At("HEAD"), cancellable = true)
-    private void isMemoryInState(MemoryModuleType<?> type, MemoryModuleState state, CallbackInfoReturnable<Boolean> cir) {
-        if (this.disabled) {
+    protected void requiem$mobTick() {
+        // NO-OP
+    }
+
+    @Inject(method = "canMoveVoluntarily", at = @At("HEAD"), cancellable = true)
+    private void canMoveVoluntarily(CallbackInfoReturnable<Boolean> cir) {
+        if (EntityAiToggle.KEY.get(this).isAiDisabled()) {
             cir.setReturnValue(false);
-        }
-    }
-
-    @Inject(method = "getOptionalMemory", at = @At("HEAD"), cancellable = true)
-    private void getOptionalMemory(MemoryModuleType<?> type, CallbackInfoReturnable<Optional<?>> cir) {
-        if (this.disabled) {
-            cir.setReturnValue(Optional.empty());
         }
     }
 }

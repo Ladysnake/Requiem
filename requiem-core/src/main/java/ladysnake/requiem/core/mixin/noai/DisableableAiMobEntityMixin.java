@@ -32,31 +32,27 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.core;
+package ladysnake.requiem.core.mixin.noai;
 
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-import java.util.UUID;
+@Mixin(MobEntity.class)
+public abstract class DisableableAiMobEntityMixin extends DisableableAiLivingEntityMixin {
+    @Shadow
+    protected abstract void mobTick();
 
-public final class RequiemCore {
-    public static final String MOD_ID = "requiem";
-    public static final Logger LOGGER = LogManager.getLogger("requiem-core");
-    public static final Identifier POSSESSION_MECHANISM_ID = id("possession");
-    public static final UUID INHERENT_MOB_SLOWNESS_UUID = UUID.fromString("a2ebbb6b-fd10-4a30-a0c7-dadb9700732e");
-    /**
-     * Mobs do not use 100% of their movement speed attribute, so we compensate with this modifier when they are possessed
-     */
-    public static final EntityAttributeModifier INHERENT_MOB_SLOWNESS = new EntityAttributeModifier(
-        INHERENT_MOB_SLOWNESS_UUID,
-        "Inherent Mob Slowness",
-        -0.66,
-        EntityAttributeModifier.Operation.MULTIPLY_TOTAL
-    );
+    public DisableableAiMobEntityMixin(EntityType<?> type, World world) {
+        super(type, world);
+    }
 
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
+    @Override
+    protected void requiem$mobTick() {
+        this.world.getProfiler().push("mob tick");
+        this.mobTick();
+        this.world.getProfiler().pop();
     }
 }

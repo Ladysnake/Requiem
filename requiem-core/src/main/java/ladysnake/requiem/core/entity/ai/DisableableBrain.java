@@ -35,5 +35,5 @@
 package ladysnake.requiem.core.entity.ai;
 
 public interface DisableableBrain {
-    void requiem_setDisabled(boolean disable);
+    void requiem$setDisabled(boolean disable);
 }

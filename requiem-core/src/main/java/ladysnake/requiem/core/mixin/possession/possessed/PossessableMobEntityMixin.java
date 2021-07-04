@@ -61,9 +61,6 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
     @Shadow
     public abstract boolean isAttacking();
 
-    @Shadow
-    protected abstract void mobTick();
-
     @Unique
     private int attackingCountdown;
 
@@ -124,12 +121,5 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
     private <T extends MobEntity> void possessConvertedZombie(EntityType<T> type, boolean bl, CallbackInfoReturnable<T> ci, T converted) {
         PossessionHooks.dropArmorIfBanned(converted);
         PossessedDataBase.onMobConverted((MobEntity) (Object) this, converted);
-    }
-
-    @Override
-    protected void requiem_mobTick() {
-        this.world.getProfiler().push("mob tick");
-        this.mobTick();
-        this.world.getProfiler().pop();
     }
 }

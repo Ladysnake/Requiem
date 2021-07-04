@@ -32,31 +32,28 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.core;
+package ladysnake.requiem.core.mixin.noai;
 
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import ladysnake.requiem.core.entity.EntityAiToggle;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.UUID;
+@Mixin(WitherEntity.class)
+public abstract class WitherEntityMixin extends HostileEntity {
+    protected WitherEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {
+        super(entityType, world);
+    }
 
-public final class RequiemCore {
-    public static final String MOD_ID = "requiem";
-    public static final Logger LOGGER = LogManager.getLogger("requiem-core");
-    public static final Identifier POSSESSION_MECHANISM_ID = id("possession");
-    public static final UUID INHERENT_MOB_SLOWNESS_UUID = UUID.fromString("a2ebbb6b-fd10-4a30-a0c7-dadb9700732e");
-    /**
-     * Mobs do not use 100% of their movement speed attribute, so we compensate with this modifier when they are possessed
-     */
-    public static final EntityAttributeModifier INHERENT_MOB_SLOWNESS = new EntityAttributeModifier(
-        INHERENT_MOB_SLOWNESS_UUID,
-        "Inherent Mob Slowness",
-        -0.66,
-        EntityAttributeModifier.Operation.MULTIPLY_TOTAL
-    );
-
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
+    @Inject(method = "shootSkullAt(IDDDZ)V", at = @At("HEAD"), cancellable = true)
+    private void cancelAttack(int headIndex, double d, double e, double f, boolean bl, CallbackInfo ci) {
+        if (EntityAiToggle.isAiDisabled(this)) {
+            ci.cancel();
+        }
     }
 }
