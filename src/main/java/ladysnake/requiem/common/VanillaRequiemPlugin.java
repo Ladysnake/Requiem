@@ -192,9 +192,9 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         RemnantStateChangeCallback.EVENT.register((player, remnant) -> {
             if (!remnant.isVagrant()) {
                 PossessionComponent.get(player).stopPossessing(false);
-                InventoryLimiter.instance().enable(player);
-            } else {
                 InventoryLimiter.instance().disable(player);
+            } else {
+                InventoryLimiter.instance().enable(player);
             }
             MobEntity possessed = PossessionComponent.getPossessedEntity(player);
             if (possessed != null) {
@@ -256,8 +256,8 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             return new TypedActionResult<>(ActionResult.PASS, player.getStackInHand(hand));
         });
         PossessionStateChangeCallback.EVENT.register(((player, possessed) -> {
-            if (player instanceof ServerPlayerEntity && possessed != null) {
-                RequiemCriteria.PLAYER_POSSESSED_ENTITY.handle((ServerPlayerEntity) player, possessed);
+            if (player instanceof ServerPlayerEntity serverPlayer && possessed != null) {
+                RequiemCriteria.PLAYER_POSSESSED_ENTITY.handle(serverPlayer, possessed);
             }
         }));
         PossessionStateChangeCallback.EVENT.register((player, possessed) -> {
