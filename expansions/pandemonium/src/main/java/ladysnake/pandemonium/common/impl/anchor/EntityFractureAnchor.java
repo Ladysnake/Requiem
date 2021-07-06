@@ -34,34 +34,28 @@
  */
 package ladysnake.pandemonium.common.impl.anchor;
 
-import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
-import ladysnake.pandemonium.mixin.common.access.WorldChunkAccessor;
+import ladysnake.pandemonium.api.anchor.GlobalEntityPos;
+import ladysnake.pandemonium.api.anchor.GlobalEntityTracker;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.UUID;
 
-public class EntityFractureAnchor extends TrackedFractureAnchor {
-    private final UUID entityUuid;
+public class EntityFractureAnchor extends InertFractureAnchor {
 
-    public EntityFractureAnchor(UUID entityUuid, FractureAnchorManager manager, UUID uuid, int id) {
-        super(checkSide(manager), uuid, id);
-        this.entityUuid = entityUuid;
+    public EntityFractureAnchor(GlobalEntityTracker manager, UUID uuid, int id, GlobalEntityPos pos, boolean synced) {
+        super(checkSide(manager), uuid, id, pos, synced);
     }
 
-    protected EntityFractureAnchor(FractureAnchorManager manager, NbtCompound tag, int id) {
-        super(checkSide(manager), tag, id);
-        this.entityUuid = tag.getUuid("AnchorEntity");
-    }
-
-    private static FractureAnchorManager checkSide(FractureAnchorManager manager) {
-        if (!(manager.getWorld() instanceof ServerWorld)) {
+    private static GlobalEntityTracker checkSide(GlobalEntityTracker manager) {
+        if (!(manager instanceof ServerAnchorManager)) {
             throw new IllegalArgumentException("EntityFractureAnchor is only supported on ServerWorld!");
         }
         return manager;
@@ -70,33 +64,37 @@ public class EntityFractureAnchor extends TrackedFractureAnchor {
     @Override
     public void update() {
         super.update();
-        Entity entity = this.getEntity();
-        if (entity != null) {
-            if (entity instanceof LivingEntity && ((LivingEntity)entity).getHealth() <= 0.0F) {
-                this.invalidate();
-            } else if (entity.getX() != this.x || entity.getY() != this.y || entity.getZ() != this.z) {
-                this.setPosition(entity.getX(), entity.getY(), entity.getZ());
-            }
-        } else {
-            WorldChunk chunk = (WorldChunk) this.manager.getWorld().getChunk(((int) this.x) >> 4, ((int) this.z) >> 4, ChunkStatus.FULL, false);
-            // In some circumstances, it seems that a chunk can be loaded without the entity being found in the world
-            if (chunk != null && chunk.getLevelType().isAfter(ChunkHolder.LevelType.ENTITY_TICKING)) {
-                // chunk is loaded but entity not in it -- assume dead
-                this.invalidate();
-            }
-        }
+        this.getEntity().ifPresentOrElse(
+            this::syncWithEntity,
+            () -> this.getWorld().ifPresentOrElse(
+                this::checkEntityAlive,
+                this::invalidate
+            ));
     }
 
-    @Nullable
-    public Entity getEntity() {
-        return ((ServerWorld)this.manager.getWorld()).getEntity(this.entityUuid);
+    public Optional<Entity> getEntity() {
+        return this.getWorld().map(world -> ((ServerWorld) world).getEntity(this.getUuid()));
     }
 
     @Override
-    public NbtCompound toTag(NbtCompound anchorTag) {
-        super.toTag(anchorTag);
-        anchorTag.putString("AnchorType", "requiem:entity");
-        anchorTag.putUuid("AnchorEntity", this.entityUuid);
-        return anchorTag;
+    public Identifier getType() {
+        return ENTITY_TYPE;
+    }
+
+    private void checkEntityAlive(World world) {
+        WorldChunk chunk = (WorldChunk) world.getChunk(((int) this.getPos().x()) >> 4, ((int) this.getPos().z()) >> 4, ChunkStatus.FULL, false);
+        // In some circumstances, it seems that a chunk can be loaded without the entity being found in the world
+        if (chunk != null && chunk.getLevelType().isAfter(ChunkHolder.LevelType.ENTITY_TICKING)) {
+            // chunk is loaded but entity not in it -- assume dead
+            this.invalidate();
+        }
+    }
+
+    private void syncWithEntity(Entity entity) {
+        if (entity instanceof LivingEntity living && living.getHealth() <= 0.0F) {
+            this.invalidate();
+        } else if (entity.getX() != this.getPos().x() || entity.getY() != this.getPos().y() || entity.getZ() != this.getPos().z()) {
+            this.setPos(new GlobalEntityPos(entity));
+        }
     }
 }

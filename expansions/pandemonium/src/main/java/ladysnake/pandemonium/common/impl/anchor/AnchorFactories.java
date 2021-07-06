@@ -34,30 +34,35 @@
  */
 package ladysnake.pandemonium.common.impl.anchor;
 
+import com.mojang.datafixers.util.Function5;
+import com.mojang.serialization.DataResult;
+import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorFactory;
+import ladysnake.pandemonium.api.anchor.GlobalEntityPos;
+import ladysnake.pandemonium.api.anchor.GlobalEntityTracker;
+import ladysnake.requiem.core.util.DataResults;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 
-import javax.annotation.Nonnull;
 import java.util.UUID;
+import java.util.function.Function;
 
-public class AnchorFactories {
-    public static FractureAnchorFactory fromEntityUuid(UUID entityUuid) {
-        return (manager, uuid, id) -> new EntityFractureAnchor(entityUuid, manager, uuid, id);
+public final class AnchorFactories {
+    public static FractureAnchorFactory fromEntity(Entity entity, boolean synced) {
+        return (manager, id) -> new EntityFractureAnchor(manager, entity.getUuid(), id, new GlobalEntityPos(entity), synced);
     }
 
-    @Nonnull
-    public static FractureAnchorFactory fromTag(NbtCompound anchorTag) {
-        if (anchorTag.getString("AnchorType").equals("requiem:entity")) {
-            return entityAnchorFromTag(anchorTag);
-        }
-        return trackedAnchorFromTag(anchorTag);
-    }
-
-    private static FractureAnchorFactory entityAnchorFromTag(NbtCompound serializedAnchor) {
-        return (manager, uuid, id) -> new EntityFractureAnchor(manager, serializedAnchor, id);
-    }
-
-    private static FractureAnchorFactory trackedAnchorFromTag(NbtCompound serializedAnchor) {
-        return (manager, uuid, id) -> new TrackedFractureAnchor(manager, serializedAnchor, id);
+    public static DataResult<FractureAnchorFactory> fromTag(NbtCompound anchorTag) {
+        // Point-free style at its finest
+        return GlobalEntityPos.CODEC.parse(NbtOps.INSTANCE, anchorTag.getCompound("pos")).<UUID, Boolean, Function<Function5<GlobalEntityTracker, UUID, Integer, GlobalEntityPos, Boolean, FractureAnchor>, FractureAnchorFactory>>apply3(
+            (pos, uuid, synced) -> factory -> (manager, networkId) -> factory.apply(manager, uuid, networkId, pos, synced),
+            DataResults.tryGet(() -> anchorTag.getUuid(InertFractureAnchor.ANCHOR_UUID_NBT)),
+            DataResult.success(anchorTag.getBoolean(InertFractureAnchor.SYNCED_NBT))
+        ).flatMap(preprocessor -> switch (anchorTag.getString(InertFractureAnchor.ANCHOR_TYPE_NBT)) {
+            case InertFractureAnchor.ENTITY_TYPE_ID -> DataResult.success(preprocessor.apply(EntityFractureAnchor::new));
+            case InertFractureAnchor.INERT_TYPE_ID -> DataResult.success(preprocessor.apply(InertFractureAnchor::new));
+            default -> DataResult.error("Unknown anchor type");
+        });
     }
 }

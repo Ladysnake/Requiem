@@ -38,11 +38,10 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
-import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
+import ladysnake.pandemonium.api.anchor.GlobalEntityTracker;
 import ladysnake.pandemonium.common.impl.anchor.EntityFractureAnchor;
 import ladysnake.pandemonium.common.network.PandemoniumNetworking;
 import ladysnake.requiem.Requiem;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -50,6 +49,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.UUID;
 
 public final class PlayerBodyTracker implements ServerTickingComponent {
@@ -70,13 +70,11 @@ public final class PlayerBodyTracker implements ServerTickingComponent {
 
     @Override
     public void serverTick() {
-        FractureAnchor anchor = this.getAnchor();
         assert this.player instanceof ServerPlayerEntity;
 
-        if (anchor instanceof EntityFractureAnchor) {
-            Entity anchorEntity = ((EntityFractureAnchor) anchor).getEntity();
-            if (anchorEntity instanceof LivingEntity) {
-                float health = ((LivingEntity) anchorEntity).getHealth();
+        if (this.getAnchor() instanceof EntityFractureAnchor entityAnchor) {
+            if (entityAnchor.getEntity().orElse(null) instanceof LivingEntity anchorEntity) {
+                float health = anchorEntity.getHealth();
                 if (health < this.previousAnchorHealth) {
                     PandemoniumNetworking.sendAnchorDamageMessage((ServerPlayerEntity) this.player, false);
                 }
@@ -94,9 +92,7 @@ public final class PlayerBodyTracker implements ServerTickingComponent {
 
     @Nullable
     public FractureAnchor getAnchor() {
-        return this.anchorUuid != null
-                ? FractureAnchorManager.get(this.player.world).getAnchor(this.anchorUuid)
-                : null;
+        return Optional.ofNullable(this.anchorUuid).flatMap(GlobalEntityTracker.get(this.player.world)::getAnchor).orElse(null);
     }
 
     @Override

@@ -39,54 +39,60 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
 import ladysnake.pandemonium.api.anchor.FractureAnchorFactory;
-import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
+import ladysnake.pandemonium.api.anchor.GlobalEntityPos;
+import ladysnake.pandemonium.api.anchor.GlobalEntityTracker;
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.core.RequiemCore;
-import net.fabricmc.fabric.api.util.NbtType;
+import ladysnake.requiem.core.util.DataResults;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.util.profiler.Profiler;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
-public class CommonAnchorManager implements FractureAnchorManager, AutoSyncedComponent {
+public abstract class CommonAnchorManager implements GlobalEntityTracker, AutoSyncedComponent {
     public static final byte ANCHOR_SYNC = 0;
     public static final byte ANCHOR_REMOVE = 1;
 
     private final Map<UUID, FractureAnchor> anchorsByUuid = new HashMap<>();
     private final Int2ObjectMap<FractureAnchor> anchorsById = new Int2ObjectOpenHashMap<>();
-    private final World world;
-    private int nextId;
+    protected final Scoreboard scoreboard;
+    private int nextIdCandidate;
 
-    public CommonAnchorManager(World world) {
-        this.world = world;
+    public CommonAnchorManager(Scoreboard scoreboard) {
+        this.scoreboard = scoreboard;
     }
 
     @Override
-    public FractureAnchor addAnchor(FractureAnchorFactory anchorFactory) {
-        return addAnchor(anchorFactory, UUID.randomUUID(), getNextId());
-    }
+    public FractureAnchor getOrCreate(FractureAnchorFactory anchorFactory) {
+        FractureAnchor anchor = anchorFactory.create(this, this.nextId());
+        FractureAnchor existing = anchorsByUuid.get(anchor.getUuid());
+        if (existing != null) return existing;
 
-    protected FractureAnchor addAnchor(FractureAnchorFactory anchorFactory, UUID uuid, int id) {
-        FractureAnchor anchor = anchorFactory.create(this, uuid, id);
-        anchorsByUuid.put(anchor.getUuid(), anchor);
-        anchorsById.put(anchor.getId(), anchor);
+        this.addAnchor(anchor);
 
         return anchor;
     }
 
-    private int getNextId() {
+    protected void addAnchor(FractureAnchor anchor) {
+        anchorsByUuid.put(anchor.getUuid(), anchor);
+        anchorsById.put(anchor.getId(), anchor);
+    }
+
+    private int nextId() {
         // Guarantee that the next id is unused
-        while (anchorsById.containsKey(nextId)) {
-            nextId++;
+        while (anchorsById.containsKey(nextIdCandidate)) {
+            nextIdCandidate++;
         }
-        return nextId;
+        return nextIdCandidate;
     }
 
     @Override
@@ -95,37 +101,32 @@ public class CommonAnchorManager implements FractureAnchorManager, AutoSyncedCom
     }
 
     @Override
-    public void updateAnchors(long time) {
+    public void tick() {
+        Profiler profiler = this.getProfiler();
+        profiler.push("requiem:global_entities");
         this.anchorsById.values().removeIf(anchor -> {
-            anchor.update();
+            if (!anchor.isInvalid()) {
+                anchor.update();
+            }   // no else, invalidation can happen in update
             if (anchor.isInvalid()) {
                 this.anchorsByUuid.remove(anchor.getUuid());
                 return true;
             }
             return false;
         });
+        profiler.pop();
     }
 
-    @Nullable
+    protected abstract Profiler getProfiler();
+
     @Override
-    public FractureAnchor getAnchor(int anchorId) {
-        return checkValidity(anchorsById.get(anchorId));
-    }
-
-    @Nullable
-    @Override
-    public FractureAnchor getAnchor(UUID anchorUuid) {
-        return checkValidity(anchorsByUuid.get(anchorUuid));
-    }
-
-    @Nullable
-    private static FractureAnchor checkValidity(@Nullable FractureAnchor anchor) {
-        return anchor == null || anchor.isInvalid() ? null : anchor;
+    public Optional<FractureAnchor> getAnchor(int anchorId) {
+        return Optional.ofNullable(this.anchorsById.get(anchorId)).filter(a -> !a.isInvalid());
     }
 
     @Override
-    public World getWorld() {
-        return this.world;
+    public Optional<FractureAnchor> getAnchor(UUID anchorUuid) {
+        return Optional.ofNullable(this.anchorsByUuid.get(anchorUuid)).filter(a -> !a.isInvalid());
     }
 
     @Override
@@ -140,28 +141,25 @@ public class CommonAnchorManager implements FractureAnchorManager, AutoSyncedCom
             buf.writeByte(action);
 
             if (action == ANCHOR_SYNC) {
-                buf.writeDouble(anchor.getX());
-                buf.writeDouble(anchor.getY());
-                buf.writeDouble(anchor.getZ());
+                buf.encode(GlobalEntityPos.CODEC, anchor.getPos());
             }
         }
     }
 
     @Override
     public void readFromNbt(NbtCompound tag) {
-        if (!tag.contains("Anchors", NbtType.LIST)) {
+        if (!tag.contains("anchors", NbtElement.LIST_TYPE)) {
             RequiemCore.LOGGER.error("Invalid save data. Expected list of FractureAnchors, found none. Discarding save data.");
             return;
         }
-        NbtList list = tag.getList("Anchors", NbtType.COMPOUND);
-        for (NbtElement anchorNbt : list) {
-            NbtCompound anchorTag = (NbtCompound) anchorNbt;
-            FractureAnchor anchor = this.addAnchor(AnchorFactories.fromTag(anchorTag));
-            if (anchorTag.contains("X", NbtType.DOUBLE)) {
-                anchor.setPosition(anchorTag.getDouble("X"), anchorTag.getDouble("Y"), anchorTag.getDouble("Z"));
-            } else {
-                RequiemCore.LOGGER.error("Invalid save data. Expected position information, found none. Skipping.");
-            }
+        NbtList list = tag.getList("anchors", NbtElement.COMPOUND_TYPE);
+        for (int i = 0; i < list.size(); i++) {
+            NbtCompound anchorTag = list.getCompound(i);
+            DataResults.ifPresentOrElse(
+                AnchorFactories.fromTag(anchorTag),
+                this::getOrCreate,
+                partialResult -> Requiem.LOGGER.error("Invalid save data - failed to decode global entity: %s %s".formatted(partialResult.message(), anchorTag))
+            );
         }
     }
 
@@ -171,6 +169,6 @@ public class CommonAnchorManager implements FractureAnchorManager, AutoSyncedCom
         for (FractureAnchor anchor : this.getAnchors()) {
             list.add(anchor.toTag(new NbtCompound()));
         }
-        tag.put("Anchors", list);
+        tag.put("anchors", list);
     }
 }

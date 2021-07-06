@@ -32,41 +32,26 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.impl.anchor;
+package ladysnake.requiem.core.util;
 
-import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
-import net.minecraft.nbt.NbtCompound;
+import com.mojang.serialization.DataResult;
 
-import java.util.Collections;
-import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
-public class TrackedFractureAnchor extends InertFractureAnchor {
-    public TrackedFractureAnchor(FractureAnchorManager manager, UUID uuid, int id) {
-        super(manager, uuid, id);
+public final class DataResults {
+    public static <T> void ifPresentOrElse(DataResult<T> dataResult, Consumer<T> action, Consumer<DataResult.PartialResult<T>> emptyAction) {
+        dataResult.result().ifPresentOrElse(
+            action,
+            () -> dataResult.error().ifPresent(emptyAction)
+        );
     }
 
-    protected TrackedFractureAnchor(FractureAnchorManager manager, NbtCompound tag, int id) {
-        super(manager, tag, id);
-    }
-
-    @Override
-    public void setPosition(double x, double y, double z) {
-        super.setPosition(x, y, z);
-        FractureAnchorManager.KEY.sync(this.manager.getWorld(),
-            (buf, p) -> CommonAnchorManager.writeToPacket(buf, Collections.singleton(this), CommonAnchorManager.ANCHOR_SYNC));
-    }
-
-    @Override
-    public void invalidate() {
-        super.invalidate();
-        FractureAnchorManager.KEY.sync(this.manager.getWorld(),
-            (buf, p) -> CommonAnchorManager.writeToPacket(buf, Collections.singleton(this), CommonAnchorManager.ANCHOR_REMOVE));
-    }
-
-    @Override
-    public NbtCompound toTag(NbtCompound anchorTag) {
-        super.toTag(anchorTag);
-        anchorTag.putString("AnchorType", "requiem:tracked");
-        return anchorTag;
+    public static <T> DataResult<T> tryGet(Callable<T> action) {
+        try {
+            return DataResult.success(action.call());
+        } catch (Throwable t) {
+            return DataResult.error(t.toString());
+        }
     }
 }

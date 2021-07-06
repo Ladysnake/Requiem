@@ -43,7 +43,7 @@ import dev.onyxstudios.cca.internal.entity.SwitchablePlayerEntity;
 import io.github.ladysnake.impersonate.Impersonator;
 import ladysnake.pandemonium.Pandemonium;
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
-import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
+import ladysnake.pandemonium.api.anchor.GlobalEntityTracker;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.common.impl.anchor.AnchorFactories;
@@ -82,14 +82,12 @@ public final class PlayerSplitter {
     }
 
     private static void doSplit(ServerPlayerEntity whole) {
-        FractureAnchorManager anchorManager = FractureAnchorManager.get(whole.world);
         PlayerShellEntity shell = createShell(whole);
         Entity mount = whole.getVehicle();
         ServerPlayerEntity soul = performRespawn(whole);
         soul.world.spawnEntity(shell);
         if (mount != null) shell.startRiding(mount);
-        FractureAnchor anchor = anchorManager.addAnchor(AnchorFactories.fromEntityUuid(shell.getUuid()));
-        anchor.setPosition(shell.getX(), shell.getY(), shell.getZ());
+        FractureAnchor anchor = GlobalEntityTracker.get(whole.world).getOrCreate(AnchorFactories.fromEntity(shell, true));
         PlayerBodyTracker.get(soul).setAnchor(anchor);
         PlayerShellEvents.PLAYER_SPLIT.invoker().onPlayerSplit(whole, soul, shell);
     }

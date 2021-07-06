@@ -35,28 +35,40 @@
 package ladysnake.pandemonium.common.impl.anchor;
 
 import ladysnake.pandemonium.api.anchor.FractureAnchor;
-import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
+import ladysnake.pandemonium.api.anchor.GlobalEntityPos;
+import ladysnake.pandemonium.api.anchor.GlobalEntityTracker;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 
+import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 
 public class InertFractureAnchor implements FractureAnchor {
-    protected final FractureAnchorManager manager;
+    public static final String ANCHOR_UUID_NBT = "uuid";
+    public static final String SYNCED_NBT = "synced";
+    public static final String ANCHOR_POS_NBT = "pos";
+    public static final String ANCHOR_TYPE_NBT = "type";
+    public static final String INERT_TYPE_ID = "requiem:inert";
+    public static final Identifier INERT_TYPE = new Identifier(INERT_TYPE_ID);
+    public static final String ENTITY_TYPE_ID = "requiem:entity";
+    public static final Identifier ENTITY_TYPE = new Identifier(ENTITY_TYPE_ID);
+
+    protected final GlobalEntityTracker manager;
     private final int id;
     private final UUID uuid;
-    protected double z;
-    protected double x;
-    protected double y;
+    private final boolean syncWithClient;
+    private GlobalEntityPos pos;
     private boolean invalid;
 
-    public InertFractureAnchor(FractureAnchorManager manager, UUID uuid, int id) {
+    public InertFractureAnchor(GlobalEntityTracker manager, UUID uuid, int id, GlobalEntityPos pos, boolean syncWithClient) {
         this.manager = manager;
         this.id = id;
         this.uuid = uuid;
-    }
-
-    protected InertFractureAnchor(FractureAnchorManager manager, NbtCompound tag, int id) {
-        this(manager, tag.getUuid("AnchorUuid"), id);
+        this.pos = pos;
+        this.syncWithClient = syncWithClient;
     }
 
     @Override
@@ -70,25 +82,20 @@ public class InertFractureAnchor implements FractureAnchor {
     }
 
     @Override
-    public double getX() {
-        return this.x;
+    public GlobalEntityPos getPos() {
+        return this.pos;
     }
 
     @Override
-    public double getY() {
-        return this.y;
+    public void setPos(GlobalEntityPos pos) {
+        this.pos = pos;
+        if (this.syncWithClient) {
+            this.manager.sync((buf, p) -> CommonAnchorManager.writeToPacket(buf, Collections.singleton(this), CommonAnchorManager.ANCHOR_SYNC));
+        }
     }
 
-    @Override
-    public double getZ() {
-        return this.z;
-    }
-
-    @Override
-    public void setPosition(double x, double y, double z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    protected Optional<World> getWorld() {
+        return this.manager.getWorld(this.pos.world());
     }
 
     @Override
@@ -99,6 +106,9 @@ public class InertFractureAnchor implements FractureAnchor {
     @Override
     public void invalidate() {
         this.invalid = true;
+        if (this.syncWithClient) {
+            this.manager.sync((buf, p) -> CommonAnchorManager.writeToPacket(buf, Collections.singleton(this), CommonAnchorManager.ANCHOR_REMOVE));
+        }
     }
 
     @Override
@@ -107,11 +117,16 @@ public class InertFractureAnchor implements FractureAnchor {
     }
 
     @Override
+    public Identifier getType() {
+        return INERT_TYPE;
+    }
+
+    @Override
     public NbtCompound toTag(NbtCompound tag) {
-        tag.putUuid("AnchorUuid", this.getUuid());
-        tag.putDouble("X", this.x);
-        tag.putDouble("Y", this.y);
-        tag.putDouble("Z", this.z);
+        tag.putString(ANCHOR_TYPE_NBT, this.getType().toString());
+        tag.putUuid(ANCHOR_UUID_NBT, this.getUuid());
+        tag.put(ANCHOR_POS_NBT, GlobalEntityPos.CODEC.encodeStart(NbtOps.INSTANCE, pos).result().orElseThrow());
+        tag.putBoolean(SYNCED_NBT, this.syncWithClient);
         return tag;
     }
 }

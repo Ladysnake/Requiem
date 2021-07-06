@@ -17,9 +17,7 @@
  */
 package ladysnake.pandemonium.api.anchor;
 
-import java.util.UUID;
-
 @FunctionalInterface
 public interface FractureAnchorFactory {
-    FractureAnchor create(FractureAnchorManager manager, UUID persistentId, int networkId);
+    FractureAnchor create(GlobalEntityTracker manager, int networkId);
 }

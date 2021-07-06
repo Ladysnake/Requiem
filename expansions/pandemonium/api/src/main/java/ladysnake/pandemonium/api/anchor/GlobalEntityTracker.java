@@ -17,18 +17,20 @@
  */
 package ladysnake.pandemonium.api.anchor;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import dev.onyxstudios.cca.api.v3.component.sync.ComponentPacketWriter;
+import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
- * A {@link FractureAnchorManager} tracks origins of ethereal players
+ * A {@link GlobalEntityTracker} tracks origins of ethereal players
  * having left their body.
  * <p>
  * Positions are saved to avoid having to load chunks and keep track
@@ -37,11 +39,11 @@ import java.util.UUID;
  * <p>
  * The tracker is kept synchronized between server and clients.
  */
-public interface FractureAnchorManager extends Component {
-    ComponentKey<FractureAnchorManager> KEY = ComponentRegistry.getOrCreate(new Identifier("pandemonium", "anchor_provider"), FractureAnchorManager.class);
+public interface GlobalEntityTracker extends CommonTickingComponent {
+    ComponentKey<GlobalEntityTracker> KEY = ComponentRegistry.getOrCreate(new Identifier("pandemonium", "anchor_provider"), GlobalEntityTracker.class);
 
-    static FractureAnchorManager get(World world) {
-        return KEY.get(world);
+    static GlobalEntityTracker get(World world) {
+        return KEY.get(world.getScoreboard());
     }
 
     /**
@@ -49,15 +51,18 @@ public interface FractureAnchorManager extends Component {
      * @param anchorFactory the factory to use to create the anchor to track
      * @return the created anchor
      */
-    FractureAnchor addAnchor(FractureAnchorFactory anchorFactory);
+    FractureAnchor getOrCreate(FractureAnchorFactory anchorFactory);
 
-    @Nullable FractureAnchor getAnchor(int anchorId);
+    Optional<FractureAnchor> getAnchor(int anchorId);
 
-    @Nullable FractureAnchor getAnchor(UUID anchorUuid);
+    Optional<FractureAnchor> getAnchor(UUID anchorUuid);
 
     Collection<FractureAnchor> getAnchors();
 
-    void updateAnchors(long time);
+    @Override
+    void tick();
 
-    World getWorld();
+    void sync(ComponentPacketWriter writer);
+
+    Optional<World> getWorld(RegistryKey<World> worldKey);
 }

@@ -32,69 +32,37 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.client;
+package ladysnake.pandemonium.common.impl.anchor;
 
 import dev.onyxstudios.cca.api.v3.component.sync.ComponentPacketWriter;
-import ladysnake.pandemonium.api.anchor.FractureAnchor;
-import ladysnake.pandemonium.api.anchor.GlobalEntityPos;
-import ladysnake.pandemonium.common.impl.anchor.CommonAnchorManager;
-import ladysnake.pandemonium.common.impl.anchor.InertFractureAnchor;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 import java.util.Optional;
-import java.util.UUID;
 
-public class ClientAnchorManager extends CommonAnchorManager {
-    public ClientAnchorManager(Scoreboard scoreboard) {
+public class ServerAnchorManager extends CommonAnchorManager {
+    private final MinecraftServer server;
+
+    public ServerAnchorManager(Scoreboard scoreboard, MinecraftServer server) {
         super(scoreboard);
-    }
-
-    private FractureAnchor getOrCreate(int id) {
-        return this.getAnchor(id).orElseGet(() -> {
-            FractureAnchor created = new InertFractureAnchor(this, UUID.randomUUID(), id, GlobalEntityPos.ORIGIN, false);
-            this.addAnchor(created);
-            return created;
-        });
+        this.server = server;
     }
 
     @Override
     public Optional<World> getWorld(RegistryKey<World> worldKey) {
-        World world = MinecraftClient.getInstance().world;
-        if (world == null) throw new IllegalStateException();
-        if (world.getRegistryKey().equals(worldKey)) return Optional.of(world);
-        return Optional.empty();
-    }
-
-    @Override
-    protected Profiler getProfiler() {
-        return MinecraftClient.getInstance().getProfiler();
+        return Optional.ofNullable(this.server.getWorld(worldKey));
     }
 
     @Override
     public void sync(ComponentPacketWriter writer) {
-        // NO-OP
+        KEY.sync(this.scoreboard, writer);
     }
 
     @Override
-    public void applySyncPacket(PacketByteBuf buf) {
-        int size = buf.readVarInt();
-        for (int i = 0; i < size; i++) {
-            int id = buf.readVarInt();
-            byte action = buf.readByte();
-            if (action == CommonAnchorManager.ANCHOR_SYNC) {
-                updatePosition(buf, this.getOrCreate(id));
-            } else if (action == CommonAnchorManager.ANCHOR_REMOVE) {
-                this.getAnchor(id).ifPresent(FractureAnchor::invalidate);
-            }
-        }
-    }
-
-    private void updatePosition(PacketByteBuf buf, FractureAnchor anchor) {
-        anchor.setPos(buf.decode(GlobalEntityPos.CODEC));
+    protected Profiler getProfiler() {
+        return this.server.getProfiler();
     }
 }

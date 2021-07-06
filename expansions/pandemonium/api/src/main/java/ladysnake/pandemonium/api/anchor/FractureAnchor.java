@@ -18,6 +18,7 @@
 package ladysnake.pandemonium.api.anchor;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Identifier;
 
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ import java.util.UUID;
 public interface FractureAnchor {
     /**
      * Returns the constant shorter ID of the fracture anchor that uniquely identifies the fracture anchor
-     * within its {@link FractureAnchorManager}. This ID may change whenever the fracture anchor is
+     * within its {@link GlobalEntityTracker}. This ID may change whenever the fracture anchor is
      * loaded from disk and may be reused.
      *
      * @return the constant short ID of the anchor
@@ -38,20 +39,16 @@ public interface FractureAnchor {
 
     /**
      * Returns the constant longer UUID of the fracture anchor that uniquely identifies the fracture anchor
-     * within its {@link FractureAnchorManager}. This ID will not change whenever the fracture anchor is
+     * within its {@link GlobalEntityTracker}. This ID will not change whenever the fracture anchor is
      * loaded from disk and may not be reused.
      *
      * @return the constant UUID of the anchor
      */
     UUID getUuid();
 
-    double getX();
+    GlobalEntityPos getPos();
 
-    double getY();
-
-    double getZ();
-
-    void setPosition(double x, double y, double z);
+    void setPos(GlobalEntityPos pos);
 
     void update();
 
@@ -60,4 +57,6 @@ public interface FractureAnchor {
     void invalidate();
 
     NbtCompound toTag(NbtCompound tag);
+
+    Identifier getType();
 }
