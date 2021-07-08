@@ -34,7 +34,7 @@
  */
 package ladysnake.pandemonium.mixin.common.entity.tracking;
 
-import ladysnake.pandemonium.common.impl.anchor.EntityPositionClerk;
+import ladysnake.requiem.core.record.EntityPositionClerk;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.entity.EntityHandler;
 import org.spongepowered.asm.mixin.Mixin;

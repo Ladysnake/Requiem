@@ -1,10 +1,7 @@
-/**
- * Classes implementing {@link ladysnake.pandemonium.api.anchor.GlobalRecord} mechanism
- */
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package ladysnake.pandemonium.common.impl.anchor;
+package ladysnake.requiem.api.v1.record;
 
 import ladysnake.requiem.api.v1.annotation.FieldsAreNonnullByDefault;
 import ladysnake.requiem.api.v1.annotation.MethodsReturnNonnullByDefault;

@@ -15,9 +15,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; If not, see <https://www.gnu.org/licenses>.
  */
-package ladysnake.pandemonium.api.anchor;
+package ladysnake.requiem.api.v1.record;
 
-import ladysnake.requiem.api.v1.record.RecordType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 

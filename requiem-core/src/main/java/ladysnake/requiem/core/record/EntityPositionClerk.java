@@ -32,16 +32,16 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.impl.anchor;
+package ladysnake.requiem.core.record;
 
 import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
-import ladysnake.pandemonium.api.anchor.GlobalRecord;
-import ladysnake.pandemonium.api.anchor.GlobalRecordKeeper;
-import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.record.EntityPointer;
+import ladysnake.requiem.api.v1.record.GlobalRecord;
+import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.api.v1.record.RecordType;
+import ladysnake.requiem.core.RequiemCore;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -54,8 +54,8 @@ import java.util.Optional;
 import java.util.Set;
 
 public final class EntityPositionClerk implements Component {
-    public static final ComponentKey<EntityPositionClerk> KEY = ComponentRegistry.getOrCreate(Requiem.id("entity_clerk"), EntityPositionClerk.class);
-    public static final Identifier UPDATE_ACTION_ID = Requiem.id("entity_status_sync");
+    public static final ComponentKey<EntityPositionClerk> KEY = ComponentRegistry.getOrCreate(RequiemCore.id("entity_clerk"), EntityPositionClerk.class);
+    public static final Identifier UPDATE_ACTION_ID = RequiemCore.id("entity_status_sync");
 
     public static EntityPositionClerk get(LivingEntity entity) {
         return KEY.get(entity);

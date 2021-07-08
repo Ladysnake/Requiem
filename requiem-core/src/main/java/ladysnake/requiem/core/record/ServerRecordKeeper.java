@@ -32,10 +32,10 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.impl.anchor;
+package ladysnake.requiem.core.record;
 
-import ladysnake.pandemonium.api.anchor.GlobalRecord;
 import ladysnake.requiem.api.v1.record.EntityPointer;
+import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.RecordType;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;

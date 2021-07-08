@@ -34,7 +34,7 @@
  */
 package ladysnake.pandemonium.client;
 
-import ladysnake.pandemonium.common.impl.anchor.CommonRecordKeeper;
+import ladysnake.requiem.core.record.CommonRecordKeeper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.profiler.Profiler;
