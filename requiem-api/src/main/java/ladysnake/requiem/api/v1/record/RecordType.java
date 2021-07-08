@@ -30,7 +30,7 @@ public final class RecordType<T> {
     public static final SimpleRegistry<RecordType<?>> REGISTRY =
         FabricRegistryBuilder.createSimple((Class<RecordType<?>>) (Class<?>) RecordType.class, new Identifier("requiem", "record_types")).buildAndRegister();
 
-    public static final RecordType<EntityPointer> ENTITY_POINTER = register("entity_ref", EntityPointer.CODEC);
+    public static final RecordType<EntityPointer> ENTITY_POINTER = register(new Identifier("requiem", "entity_ref"), EntityPointer.CODEC);
 
     public static Identifier getId(RecordType<?> type) {
         return Objects.requireNonNull(REGISTRY.getId(type));
@@ -40,18 +40,10 @@ public final class RecordType<T> {
         return codec;
     }
 
-    public Identifier getId() {
-        return REGISTRY.getId(this);
-    }
-
     private final Codec<T> codec;
 
     private RecordType(Codec<T> codec) {
         this.codec = codec;
-    }
-
-    private static <T> RecordType<T> register(String id, Codec<T> codec) {
-        return register(new Identifier("requiem", id), codec);
     }
 
     public static <T> RecordType<T> register(Identifier id, Codec<T> codec) {

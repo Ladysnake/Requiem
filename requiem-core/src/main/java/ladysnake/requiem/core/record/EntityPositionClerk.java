@@ -37,6 +37,7 @@ package ladysnake.requiem.core.record;
 import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import ladysnake.requiem.api.v1.event.requiem.EntityRecordUpdateCallback;
 import ladysnake.requiem.api.v1.record.EntityPointer;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
@@ -105,6 +106,7 @@ public final class EntityPositionClerk implements Component {
             if (ptr.isEmpty() || entity.getX() != ptr.get().x() || entity.getY() != ptr.get().y() || entity.getZ() != ptr.get().z()) {
                 record.put(RecordType.ENTITY_POINTER, new EntityPointer(entity));
             }
+            EntityRecordUpdateCallback.EVENT.invoker().update(entity, record);
         }
     }
 

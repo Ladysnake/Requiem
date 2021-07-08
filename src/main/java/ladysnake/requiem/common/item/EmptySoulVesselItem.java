@@ -35,12 +35,15 @@
 package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.api.v1.event.requiem.SoulCaptureEvents;
+import ladysnake.requiem.api.v1.record.GlobalRecord;
+import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.common.entity.RequiemEntityAttributes;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.particle.RequiemEntityParticleEffect;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.WandererRemnantState;
 import ladysnake.requiem.core.entity.EntityAiToggle;
+import ladysnake.requiem.core.record.EntityPositionClerk;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -116,10 +119,16 @@ public class EmptySoulVesselItem extends Item {
             result = new ItemStack(RequiemItems.FILLED_SOUL_VESSEL);
             NbtCompound data = result.getOrCreateSubTag(FilledSoulVesselItem.SOUL_FRAGMENT_NBT);
             data.putString("type", EntityType.getId(entity.getType()).toString());
-            data.putUuid("uuid", entity.getUuid());
+            this.setupRecord(entity, target, data);
             EntityAiToggle.KEY.get(target).toggleAi(Registry.ITEM.getId(this), true, true);
         }
         return ItemUsage.exchangeStack(stack, remnant, result, false);
+    }
+
+    private void setupRecord(Entity entity, LivingEntity target, NbtCompound data) {
+        GlobalRecord record = GlobalRecordKeeper.get(entity.getEntityWorld()).createRecord();
+        EntityPositionClerk.get(target).linkWith(record);
+        data.putUuid("uuid", record.getUuid());
     }
 
     @Override

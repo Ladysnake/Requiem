@@ -34,6 +34,10 @@
  */
 package ladysnake.requiem.common.item;
 
+import com.mojang.datafixers.util.Unit;
+import ladysnake.requiem.api.v1.event.requiem.EntityRecordUpdateCallback;
+import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
+import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.core.entity.EntityAiToggle;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
@@ -55,11 +59,19 @@ import java.util.List;
 import java.util.Optional;
 
 public class FilledSoulVesselItem extends Item {
-
     public static final String SOUL_FRAGMENT_NBT = "requiem:soul_fragment";
 
-    public FilledSoulVesselItem(Settings settings) {
+    private final EmptySoulVesselItem emptySoulVessel;
+
+    public FilledSoulVesselItem(Settings settings, EmptySoulVesselItem emptySoulVessel) {
         super(settings);
+        this.emptySoulVessel = emptySoulVessel;
+    }
+
+    public void registerCallbacks() {
+        EntityRecordUpdateCallback.EVENT.register((entity, linkedRecord) ->
+            linkedRecord.get(RequiemRecordTypes.RELEASED_SOUL).flatMap(u -> EntityAiToggle.KEY.maybeGet(entity)).ifPresent(aiSwitch ->
+                aiSwitch.toggleAi(Registry.ITEM.getId(this.emptySoulVessel), false, false)));
     }
 
     @Override
@@ -73,14 +85,12 @@ public class FilledSoulVesselItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
         if (world instanceof ServerWorld sw) {
-            EmptySoulVesselItem emptyVesselItem = RequiemItems.EMPTY_SOUL_VESSEL;
             Optional.ofNullable(stack.getSubTag(FilledSoulVesselItem.SOUL_FRAGMENT_NBT))
                 .filter(data -> data.containsUuid("uuid"))
                 .map(data -> data.getUuid("uuid"))
-                .map(sw::getEntity)
-                .flatMap(EntityAiToggle.KEY::maybeGet)
-                .ifPresent(toggle -> toggle.toggleAi(Registry.ITEM.getId(emptyVesselItem), false, false));
-            ItemStack result = new ItemStack(emptyVesselItem);
+                .flatMap(GlobalRecordKeeper.get(sw)::getRecord)
+                .ifPresent(record -> record.put(RequiemRecordTypes.RELEASED_SOUL, Unit.INSTANCE));
+            ItemStack result = new ItemStack(this.emptySoulVessel);
             return TypedActionResult.success(ItemUsage.exchangeStack(stack, user, result));
         }
         return TypedActionResult.success(stack);

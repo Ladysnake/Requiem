@@ -42,12 +42,12 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
-public class RequiemItems {
+public final class RequiemItems {
     public static final DebugItem DEBUG_ITEM = new DebugItem(new Item.Settings());
     public static final Item TOTEM_OF_SKELETONIZATION = new Item((new Item.Settings()).maxCount(1).group(ItemGroup.COMBAT).rarity(Rarity.UNCOMMON));
     public static final OpusDemoniumItem OPUS_DEMONIUM = new OpusDemoniumItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1));
     public static final EmptySoulVesselItem EMPTY_SOUL_VESSEL = new EmptySoulVesselItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1));
-    public static final FilledSoulVesselItem FILLED_SOUL_VESSEL = new FilledSoulVesselItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1));
+    public static final FilledSoulVesselItem FILLED_SOUL_VESSEL = new FilledSoulVesselItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1), EMPTY_SOUL_VESSEL);
     public static final Item SHATTERED_SOUL_VESSEL = new Item(new Item.Settings().group(ItemGroup.MISC).maxCount(1));
     public static final DemonSoulVesselItem SOUL_VESSEL = new DemonSoulVesselItem(RemnantTypes.MORTAL, Formatting.AQUA, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.cure");
     public static final DemonSoulVesselItem OMINOUS_SOUL_VESSEL = new DemonSoulVesselItem(RemnantTypes.REMNANT, Formatting.RED, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.curse");
@@ -63,6 +63,8 @@ public class RequiemItems {
         registerItem(SHATTERED_SOUL_VESSEL, "shattered_soul_vessel");
         registerItem(OMINOUS_SOUL_VESSEL, "ominous_soul_vessel");
         registerItem(BALEFUL_SOUL_VESSEL, "baleful_soul_vessel");
+
+        FILLED_SOUL_VESSEL.registerCallbacks();
     }
 
     public static <T extends Item> void registerItem(T item, String name) {

@@ -19,6 +19,7 @@ package ladysnake.requiem.api.v1.record;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -31,7 +32,7 @@ import java.util.function.Consumer;
 public interface GlobalRecord {
     /**
      * Returns the constant shorter ID that uniquely identifies the record
-     * within its {@link GlobalRecordKeeper}. This ID may change whenever the fracture anchor is
+     * within its {@link GlobalRecordKeeper}. This ID may change whenever the record is
      * loaded from disk and may be reused.
      *
      * @return the constant short ID for this record
@@ -47,7 +48,7 @@ public interface GlobalRecord {
      */
     UUID getUuid();
 
-    <T> void put(RecordType<T> type, T data);
+    <T> void put(RecordType<T> type, @Nullable T data);
 
     <T> Optional<T> get(RecordType<T> type);
 

@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.record.RecordType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -81,8 +82,9 @@ public class GlobalRecordImpl implements GlobalRecord {
     }
 
     @Override
-    public <T> void put(RecordType<T> type, T data) {
-        this.data.put(type, data);
+    public <T> void put(RecordType<T> type, @Nullable T data) {
+        if (data == null) this.data.remove(type);
+        else this.data.put(type, data);
     }
 
     @Override

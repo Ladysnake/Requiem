@@ -133,7 +133,7 @@ public abstract class CommonRecordKeeper implements GlobalRecordKeeper {
 
     @Override
     public void readFromNbt(NbtCompound tag) {
-        tag.getList("anchors", NbtElement.COMPOUND_TYPE).stream()
+        tag.getList("records", NbtElement.COMPOUND_TYPE).stream()
             .mapMulti(MoreStreams.instanceOf(NbtCompound.class))
             .forEach(nbt -> DataResults.ifPresentOrElse(
                 this.deserialize(nbt),
@@ -180,6 +180,6 @@ public abstract class CommonRecordKeeper implements GlobalRecordKeeper {
         for (GlobalRecord anchor : this.getRecords()) {
             list.add(anchor.toTag(new NbtCompound()));
         }
-        tag.put("anchors", list);
+        if (!list.isEmpty()) tag.put("records", list);
     }
 }
