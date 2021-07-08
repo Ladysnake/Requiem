@@ -8,6 +8,7 @@
     "entity.PersistentProjectileEntityAccessor",
     "entity.ai.MemoryModuleTypeAccessor",
     "entity.ai.SensorTypeAccessor",
+    "entity.ai.SerializableMemoryModuleTypeAccessor",
     "entity.ai.TargetPredicateAccessor",
     "entity.ai.goal.FollowTargetGoalMixin",
     "entity.mob.BlazeEntityAccessor",
@@ -18,7 +19,8 @@
     "entity.mob.LivingEntityAccessor",
     "entity.mob.PandaEntityMixin",
     "entity.mob.WololoGoalMixin",
-    "entity.player.TargetPredicateMixin"
+    "entity.player.TargetPredicateMixin",
+    "entity.tracking.ServerEntityHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

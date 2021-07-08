@@ -34,32 +34,19 @@
  */
 package ladysnake.pandemonium.client;
 
-import dev.onyxstudios.cca.api.v3.component.sync.ComponentPacketWriter;
-import ladysnake.pandemonium.api.anchor.FractureAnchor;
-import ladysnake.pandemonium.api.anchor.GlobalEntityPos;
-import ladysnake.pandemonium.common.impl.anchor.CommonAnchorManager;
-import ladysnake.pandemonium.common.impl.anchor.InertFractureAnchor;
+import ladysnake.pandemonium.common.impl.anchor.CommonRecordKeeper;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 import java.util.Optional;
-import java.util.UUID;
 
-public class ClientAnchorManager extends CommonAnchorManager {
-    public ClientAnchorManager(Scoreboard scoreboard) {
+// Currently unused, global records may one day be synchronized though
+public class ClientRecordKeeper extends CommonRecordKeeper {
+    public ClientRecordKeeper(Scoreboard scoreboard) {
         super(scoreboard);
-    }
-
-    private FractureAnchor getOrCreate(int id) {
-        return this.getAnchor(id).orElseGet(() -> {
-            FractureAnchor created = new InertFractureAnchor(this, UUID.randomUUID(), id, GlobalEntityPos.ORIGIN, false);
-            this.addAnchor(created);
-            return created;
-        });
     }
 
     @Override
@@ -73,28 +60,5 @@ public class ClientAnchorManager extends CommonAnchorManager {
     @Override
     protected Profiler getProfiler() {
         return MinecraftClient.getInstance().getProfiler();
-    }
-
-    @Override
-    public void sync(ComponentPacketWriter writer) {
-        // NO-OP
-    }
-
-    @Override
-    public void applySyncPacket(PacketByteBuf buf) {
-        int size = buf.readVarInt();
-        for (int i = 0; i < size; i++) {
-            int id = buf.readVarInt();
-            byte action = buf.readByte();
-            if (action == CommonAnchorManager.ANCHOR_SYNC) {
-                updatePosition(buf, this.getOrCreate(id));
-            } else if (action == CommonAnchorManager.ANCHOR_REMOVE) {
-                this.getAnchor(id).ifPresent(FractureAnchor::invalidate);
-            }
-        }
-    }
-
-    private void updatePosition(PacketByteBuf buf, FractureAnchor anchor) {
-        anchor.setPos(buf.decode(GlobalEntityPos.CODEC));
     }
 }

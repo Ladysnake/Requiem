@@ -1,5 +1,5 @@
 /**
- * Classes implementing {@link ladysnake.pandemonium.api.anchor.FractureAnchor} mechanism
+ * Classes implementing {@link ladysnake.pandemonium.api.anchor.GlobalRecord} mechanism
  */
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault

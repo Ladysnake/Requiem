@@ -37,11 +37,11 @@ package ladysnake.pandemonium.common.remnant;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
-import ladysnake.pandemonium.api.anchor.FractureAnchor;
-import ladysnake.pandemonium.api.anchor.GlobalEntityTracker;
-import ladysnake.pandemonium.common.impl.anchor.EntityFractureAnchor;
+import ladysnake.pandemonium.api.anchor.GlobalRecord;
+import ladysnake.pandemonium.api.anchor.GlobalRecordKeeper;
 import ladysnake.pandemonium.common.network.PandemoniumNetworking;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.record.RecordType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -72,27 +72,18 @@ public final class PlayerBodyTracker implements ServerTickingComponent {
     public void serverTick() {
         assert this.player instanceof ServerPlayerEntity;
 
-        if (this.getAnchor() instanceof EntityFractureAnchor entityAnchor) {
-            if (entityAnchor.getEntity().orElse(null) instanceof LivingEntity anchorEntity) {
-                float health = anchorEntity.getHealth();
-                if (health < this.previousAnchorHealth) {
-                    PandemoniumNetworking.sendAnchorDamageMessage((ServerPlayerEntity) this.player, false);
-                }
-                this.previousAnchorHealth = health;
-            }
-        } else if (this.previousAnchorHealth > 0) {
-            PandemoniumNetworking.sendAnchorDamageMessage((ServerPlayerEntity) this.player, true);
-            this.previousAnchorHealth = -1;
-        }
+        this.getAnchor().ifPresentOrElse(
+            this::updateBodyHealth,
+            this::onBodyDisappeared
+        );
     }
 
-    public void setAnchor(FractureAnchor anchor) {
+    public void setAnchor(GlobalRecord anchor) {
         this.anchorUuid = anchor.getUuid();
     }
 
-    @Nullable
-    public FractureAnchor getAnchor() {
-        return Optional.ofNullable(this.anchorUuid).flatMap(GlobalEntityTracker.get(this.player.world)::getAnchor).orElse(null);
+    public Optional<GlobalRecord> getAnchor() {
+        return Optional.ofNullable(this.anchorUuid).flatMap(GlobalRecordKeeper.get(this.player.world)::getRecord);
     }
 
     @Override
@@ -106,6 +97,24 @@ public final class PlayerBodyTracker implements ServerTickingComponent {
     public void readFromNbt(@Nonnull NbtCompound tag) {
         if (tag.containsUuid("AnchorUuid")) {
             this.anchorUuid = tag.getUuid("AnchorUuid");
+        }
+    }
+
+    private void updateBodyHealth(GlobalRecord anchor) {
+        ServerPlayerEntity player = (ServerPlayerEntity) this.player;
+        if (anchor.get(RecordType.ENTITY_POINTER).flatMap(ptr -> ptr.resolve(player.server)).orElse(null) instanceof LivingEntity anchorEntity) {
+            float health = anchorEntity.getHealth();
+            if (health < this.previousAnchorHealth) {
+                PandemoniumNetworking.sendAnchorDamageMessage(player, false);
+            }
+            this.previousAnchorHealth = health;
+        }
+    }
+
+    private void onBodyDisappeared() {
+        if (this.previousAnchorHealth > 0) {
+            PandemoniumNetworking.sendAnchorDamageMessage((ServerPlayerEntity) this.player, true);
+            this.previousAnchorHealth = -1;
         }
     }
 }

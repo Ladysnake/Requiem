@@ -32,31 +32,30 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity.ai.brain;
+package ladysnake.pandemonium.mixin.common.entity.tracking;
 
-import com.mojang.serialization.Codec;
-import ladysnake.pandemonium.Pandemonium;
-import ladysnake.pandemonium.mixin.common.entity.ai.MemoryModuleTypeAccessor;
-import ladysnake.pandemonium.mixin.common.entity.ai.SerializableMemoryModuleTypeAccessor;
-import ladysnake.requiem.api.v1.record.EntityPointer;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
+import ladysnake.pandemonium.common.impl.anchor.EntityPositionClerk;
+import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.EntityHandler;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
-import java.util.UUID;
-
-public final class PandemoniumMemoryModules {
-    public static final MemoryModuleType<EntityPointer> GLOBAL_ENTITY_POS = register("global_entity_pos", EntityPointer.CODEC);
-    public static final MemoryModuleType<UUID> LINKED_ENTITY = register("linked_entity", DynamicSerializableUuid.CODEC);
-    public static final MemoryModuleType<Integer> GO_HOME_ATTEMPTS = register("pathfinding_failures");
-    public static final MemoryModuleType<List<LivingEntity>> VISIBLE_HOSTILES = register("visible_hostiles");
-
-    private static <U> MemoryModuleType<U> register(String id) {
-        return MemoryModuleTypeAccessor.pandemonium$register(Pandemonium.MOD_ID + ":" + id);
+@Mixin(targets = "net/minecraft/server/world/ServerWorld$ServerEntityHandler")
+public abstract class ServerEntityHandlerMixin implements EntityHandler<Entity> {
+    @Inject(method = "destroy", at = @At("RETURN"))
+    private void onDestroyed(Entity entity, CallbackInfo ci) {
+        EntityPositionClerk.KEY.maybeGet(entity).ifPresent(EntityPositionClerk::destroy);
     }
 
-    private static <U> MemoryModuleType<U> register(String id, Codec<U> codec) {
-        return SerializableMemoryModuleTypeAccessor.pandemonium$register(Pandemonium.MOD_ID + ":" + id, codec);
+    @Inject(method = "startTicking", at = @At("RETURN"))
+    private void onStartTicking(Entity entity, CallbackInfo ci) {
+        EntityPositionClerk.KEY.maybeGet(entity).ifPresent(EntityPositionClerk::startTicking);
+    }
+
+    @Inject(method = "stopTicking", at = @At("RETURN"))
+    private void onStopTicking(Entity entity, CallbackInfo ci) {
+        EntityPositionClerk.KEY.maybeGet(entity).ifPresent(EntityPositionClerk::stopTicking);
     }
 }

@@ -32,37 +32,17 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.impl.anchor;
+package ladysnake.pandemonium.mixin.common.entity.ai;
 
-import dev.onyxstudios.cca.api.v3.component.sync.ComponentPacketWriter;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
+import com.mojang.serialization.Codec;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-import java.util.Optional;
-
-public class ServerAnchorManager extends CommonAnchorManager {
-    private final MinecraftServer server;
-
-    public ServerAnchorManager(Scoreboard scoreboard, MinecraftServer server) {
-        super(scoreboard);
-        this.server = server;
-    }
-
-    @Override
-    public Optional<World> getWorld(RegistryKey<World> worldKey) {
-        return Optional.ofNullable(this.server.getWorld(worldKey));
-    }
-
-    @Override
-    public void sync(ComponentPacketWriter writer) {
-        KEY.sync(this.scoreboard, writer);
-    }
-
-    @Override
-    protected Profiler getProfiler() {
-        return this.server.getProfiler();
+@Mixin(MemoryModuleType.class)
+public interface SerializableMemoryModuleTypeAccessor {
+    @Invoker("register")
+    static <U> MemoryModuleType<U> pandemonium$register(String id, Codec<U> codec) {
+        throw new IllegalStateException("Untransformed mixin");
     }
 }

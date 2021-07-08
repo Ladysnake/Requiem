@@ -32,31 +32,39 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity.ai.brain;
+package ladysnake.pandemonium.common.impl.anchor;
 
-import com.mojang.serialization.Codec;
-import ladysnake.pandemonium.Pandemonium;
-import ladysnake.pandemonium.mixin.common.entity.ai.MemoryModuleTypeAccessor;
-import ladysnake.pandemonium.mixin.common.entity.ai.SerializableMemoryModuleTypeAccessor;
+import ladysnake.pandemonium.api.anchor.GlobalRecord;
 import ladysnake.requiem.api.v1.record.EntityPointer;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
+import ladysnake.requiem.api.v1.record.RecordType;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
-public final class PandemoniumMemoryModules {
-    public static final MemoryModuleType<EntityPointer> GLOBAL_ENTITY_POS = register("global_entity_pos", EntityPointer.CODEC);
-    public static final MemoryModuleType<UUID> LINKED_ENTITY = register("linked_entity", DynamicSerializableUuid.CODEC);
-    public static final MemoryModuleType<Integer> GO_HOME_ATTEMPTS = register("pathfinding_failures");
-    public static final MemoryModuleType<List<LivingEntity>> VISIBLE_HOSTILES = register("visible_hostiles");
+public class ServerRecordKeeper extends CommonRecordKeeper {
+    private final MinecraftServer server;
 
-    private static <U> MemoryModuleType<U> register(String id) {
-        return MemoryModuleTypeAccessor.pandemonium$register(Pandemonium.MOD_ID + ":" + id);
+    public ServerRecordKeeper(Scoreboard scoreboard, MinecraftServer server) {
+        super(scoreboard);
+        this.server = server;
     }
 
-    private static <U> MemoryModuleType<U> register(String id, Codec<U> codec) {
-        return SerializableMemoryModuleTypeAccessor.pandemonium$register(Pandemonium.MOD_ID + ":" + id, codec);
+    @Override
+    public Optional<World> getWorld(RegistryKey<World> worldKey) {
+        return Optional.ofNullable(this.server.getWorld(worldKey));
+    }
+
+    @Override
+    protected Profiler getProfiler() {
+        return this.server.getProfiler();
+    }
+
+    @Override
+    protected boolean isValid(GlobalRecord anchor) {
+        return super.isValid(anchor) && anchor.get(RecordType.ENTITY_POINTER).map(EntityPointer::world).map(w -> this.getWorld(w).isPresent()).orElse(true);
     }
 }

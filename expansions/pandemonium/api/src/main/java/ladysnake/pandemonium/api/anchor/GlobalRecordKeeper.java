@@ -19,7 +19,6 @@ package ladysnake.pandemonium.api.anchor;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
-import dev.onyxstudios.cca.api.v3.component.sync.ComponentPacketWriter;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.RegistryKey;
@@ -30,39 +29,33 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * A {@link GlobalEntityTracker} tracks origins of ethereal players
- * having left their body.
- * <p>
- * Positions are saved to avoid having to load chunks and keep track
+ * A {@link GlobalRecordKeeper} stores recorded data for access from anywhere
+ * in the world.
+ *
+ * <p>Positions are saved to avoid having to load chunks and keep track
  * of every origin entity. Instead, such entities update their corresponding
  * tracked entry whenever their state changes.
- * <p>
- * The tracker is kept synchronized between server and clients.
+ *
+ * <p><strike>The tracker is kept synchronized between server and clients.</strike>
+ * (To be reimplemented if needed)
  */
-public interface GlobalEntityTracker extends CommonTickingComponent {
-    ComponentKey<GlobalEntityTracker> KEY = ComponentRegistry.getOrCreate(new Identifier("pandemonium", "anchor_provider"), GlobalEntityTracker.class);
+public interface GlobalRecordKeeper extends CommonTickingComponent {
+    ComponentKey<GlobalRecordKeeper> KEY = ComponentRegistry.getOrCreate(new Identifier("requiem", "global_record_keeper"), GlobalRecordKeeper.class);
 
-    static GlobalEntityTracker get(World world) {
+    static GlobalRecordKeeper get(World world) {
         return KEY.get(world.getScoreboard());
     }
 
-    /**
-     *
-     * @param anchorFactory the factory to use to create the anchor to track
-     * @return the created anchor
-     */
-    FractureAnchor getOrCreate(FractureAnchorFactory anchorFactory);
+    GlobalRecord createRecord();
 
-    Optional<FractureAnchor> getAnchor(int anchorId);
+    Optional<GlobalRecord> getRecord(int anchorId);
 
-    Optional<FractureAnchor> getAnchor(UUID anchorUuid);
+    Optional<GlobalRecord> getRecord(UUID anchorUuid);
 
-    Collection<FractureAnchor> getAnchors();
+    Collection<GlobalRecord> getRecords();
 
     @Override
     void tick();
-
-    void sync(ComponentPacketWriter writer);
 
     Optional<World> getWorld(RegistryKey<World> worldKey);
 }

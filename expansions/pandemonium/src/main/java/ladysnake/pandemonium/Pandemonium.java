@@ -40,15 +40,16 @@ import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import dev.onyxstudios.cca.api.v3.scoreboard.ScoreboardComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.scoreboard.ScoreboardComponentInitializer;
 import io.github.ladysnake.impersonate.Impersonate;
-import ladysnake.pandemonium.api.anchor.GlobalEntityTracker;
-import ladysnake.pandemonium.client.ClientAnchorManager;
+import ladysnake.pandemonium.api.anchor.GlobalRecordKeeper;
+import ladysnake.pandemonium.client.ClientRecordKeeper;
 import ladysnake.pandemonium.common.PandemoniumCommand;
 import ladysnake.pandemonium.common.PandemoniumConfig;
 import ladysnake.pandemonium.common.block.PandemoniumBlocks;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.WololoComponent;
 import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
-import ladysnake.pandemonium.common.impl.anchor.ServerAnchorManager;
+import ladysnake.pandemonium.common.impl.anchor.EntityPositionClerk;
+import ladysnake.pandemonium.common.impl.anchor.ServerRecordKeeper;
 import ladysnake.pandemonium.common.network.ServerMessageHandling;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
 import ladysnake.pandemonium.compat.PandemoniumCompatibilityManager;
@@ -59,6 +60,7 @@ import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 import ladysnake.requiem.core.RequiemCore;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.util.Identifier;
 
@@ -94,13 +96,14 @@ public final class Pandemonium implements ModInitializer, EntityComponentInitial
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         registry.registerForPlayers(PlayerBodyTracker.KEY, PlayerBodyTracker::new, RespawnCopyStrategy.ALWAYS_COPY);
         registry.registerFor(EndermanEntity.class, WololoComponent.KEY, WololoComponent::create);
+        registry.registerFor(LivingEntity.class, EntityPositionClerk.KEY, EntityPositionClerk::new);
     }
 
     @Override
     public void registerScoreboardComponentFactories(ScoreboardComponentFactoryRegistry registry) {
-        registry.registerScoreboardComponent(GlobalEntityTracker.KEY, (scoreboard, server) -> server == null
-            ? new ClientAnchorManager(scoreboard)
-            : new ServerAnchorManager(scoreboard, server)
+        registry.registerScoreboardComponent(GlobalRecordKeeper.KEY, (scoreboard, server) -> server == null
+            ? new ClientRecordKeeper(scoreboard)
+            : new ServerRecordKeeper(scoreboard, server)
         );
     }
 

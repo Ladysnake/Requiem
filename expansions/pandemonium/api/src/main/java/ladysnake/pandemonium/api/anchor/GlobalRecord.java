@@ -17,38 +17,44 @@
  */
 package ladysnake.pandemonium.api.anchor;
 
+import ladysnake.requiem.api.v1.record.RecordType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
- * A {@link FractureAnchor} represents the origin of an ethereal player
- * who left their body.
- * Anchors are tracked regardless of distance and loaded chunks.
+ * A {@link GlobalRecord} represents a serializable collection of data accessible from anywhere in the world.
+ * Global records are tracked regardless of distance and loaded chunks.
  */
-public interface FractureAnchor {
+public interface GlobalRecord {
     /**
-     * Returns the constant shorter ID of the fracture anchor that uniquely identifies the fracture anchor
-     * within its {@link GlobalEntityTracker}. This ID may change whenever the fracture anchor is
+     * Returns the constant shorter ID that uniquely identifies the record
+     * within its {@link GlobalRecordKeeper}. This ID may change whenever the fracture anchor is
      * loaded from disk and may be reused.
      *
-     * @return the constant short ID of the anchor
+     * @return the constant short ID for this record
      */
     int getId();
 
     /**
-     * Returns the constant longer UUID of the fracture anchor that uniquely identifies the fracture anchor
-     * within its {@link GlobalEntityTracker}. This ID will not change whenever the fracture anchor is
+     * Returns the constant longer UUID that uniquely identifies the record
+     * within its {@link GlobalRecordKeeper}. This ID will not change whenever the record is
      * loaded from disk and may not be reused.
      *
      * @return the constant UUID of the anchor
      */
     UUID getUuid();
 
-    GlobalEntityPos getPos();
+    <T> void put(RecordType<T> type, T data);
 
-    void setPos(GlobalEntityPos pos);
+    <T> Optional<T> get(RecordType<T> type);
+
+    void addTickingAction(Identifier actionId, Consumer<GlobalRecord> action);
+
+    void removeTickingAction(Identifier actionId);
 
     void update();
 
@@ -58,5 +64,4 @@ public interface FractureAnchor {
 
     NbtCompound toTag(NbtCompound tag);
 
-    Identifier getType();
 }

@@ -34,41 +34,40 @@
  */
 package ladysnake.pandemonium.common.impl.anchor;
 
-import ladysnake.pandemonium.api.anchor.FractureAnchor;
-import ladysnake.pandemonium.api.anchor.GlobalEntityPos;
-import ladysnake.pandemonium.api.anchor.GlobalEntityTracker;
+import ladysnake.pandemonium.api.anchor.GlobalRecord;
+import ladysnake.pandemonium.api.anchor.GlobalRecordKeeper;
+import ladysnake.requiem.api.v1.record.RecordType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
 
-import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
-public class InertFractureAnchor implements FractureAnchor {
+public class GlobalRecordImpl implements GlobalRecord {
     public static final String ANCHOR_UUID_NBT = "uuid";
-    public static final String SYNCED_NBT = "synced";
-    public static final String ANCHOR_POS_NBT = "pos";
-    public static final String ANCHOR_TYPE_NBT = "type";
-    public static final String INERT_TYPE_ID = "requiem:inert";
-    public static final Identifier INERT_TYPE = new Identifier(INERT_TYPE_ID);
-    public static final String ENTITY_TYPE_ID = "requiem:entity";
-    public static final Identifier ENTITY_TYPE = new Identifier(ENTITY_TYPE_ID);
 
-    protected final GlobalEntityTracker manager;
+    protected final GlobalRecordKeeper manager;
     private final int id;
     private final UUID uuid;
-    private final boolean syncWithClient;
-    private GlobalEntityPos pos;
+    private final Map<RecordType<?>, Object> data;
+    private final Map<Identifier, Consumer<GlobalRecord>> tickingActions;
     private boolean invalid;
 
-    public InertFractureAnchor(GlobalEntityTracker manager, UUID uuid, int id, GlobalEntityPos pos, boolean syncWithClient) {
+    public GlobalRecordImpl(GlobalRecordKeeper manager, UUID uuid, int id) {
         this.manager = manager;
         this.id = id;
         this.uuid = uuid;
-        this.pos = pos;
-        this.syncWithClient = syncWithClient;
+        this.data = new LinkedHashMap<>();
+        this.tickingActions = new LinkedHashMap<>();
+    }
+
+    GlobalRecordImpl(GlobalRecordKeeper manager, UUID uuid, int id, Map<RecordType<?>, Object> data) {
+        this(manager, uuid, id);
+        this.data.putAll(data);
     }
 
     @Override
@@ -82,33 +81,36 @@ public class InertFractureAnchor implements FractureAnchor {
     }
 
     @Override
-    public GlobalEntityPos getPos() {
-        return this.pos;
+    public <T> void put(RecordType<T> type, T data) {
+        this.data.put(type, data);
     }
 
     @Override
-    public void setPos(GlobalEntityPos pos) {
-        this.pos = pos;
-        if (this.syncWithClient) {
-            this.manager.sync((buf, p) -> CommonAnchorManager.writeToPacket(buf, Collections.singleton(this), CommonAnchorManager.ANCHOR_SYNC));
-        }
+    public <T> Optional<T> get(RecordType<T> type) {
+        @SuppressWarnings("unchecked") T ret = (T) this.data.get(type);
+        return Optional.ofNullable(ret);
     }
 
-    protected Optional<World> getWorld() {
-        return this.manager.getWorld(this.pos.world());
+    @Override
+    public void addTickingAction(Identifier actionId, Consumer<GlobalRecord> action) {
+        this.tickingActions.put(actionId, action);
+    }
+
+    @Override
+    public void removeTickingAction(Identifier actionId) {
+        this.tickingActions.remove(actionId);
     }
 
     @Override
     public void update() {
-        // NO-OP
+        for (Consumer<GlobalRecord> runnable : this.tickingActions.values()) {
+            runnable.accept(this);
+        }
     }
 
     @Override
     public void invalidate() {
         this.invalid = true;
-        if (this.syncWithClient) {
-            this.manager.sync((buf, p) -> CommonAnchorManager.writeToPacket(buf, Collections.singleton(this), CommonAnchorManager.ANCHOR_REMOVE));
-        }
     }
 
     @Override
@@ -117,16 +119,15 @@ public class InertFractureAnchor implements FractureAnchor {
     }
 
     @Override
-    public Identifier getType() {
-        return INERT_TYPE;
+    public NbtCompound toTag(NbtCompound tag) {
+        tag.putUuid(ANCHOR_UUID_NBT, this.getUuid());
+        NbtCompound data = new NbtCompound();
+        for (var entry : this.data.keySet()) writeToTag(data, entry);
+        tag.put("data", data);
+        return tag;
     }
 
-    @Override
-    public NbtCompound toTag(NbtCompound tag) {
-        tag.putString(ANCHOR_TYPE_NBT, this.getType().toString());
-        tag.putUuid(ANCHOR_UUID_NBT, this.getUuid());
-        tag.put(ANCHOR_POS_NBT, GlobalEntityPos.CODEC.encodeStart(NbtOps.INSTANCE, pos).result().orElseThrow());
-        tag.putBoolean(SYNCED_NBT, this.syncWithClient);
-        return tag;
+    private <U> void writeToTag(NbtCompound tag, RecordType<U> type) {
+        tag.put(RecordType.getId(type).toString(), this.get(type).flatMap(v -> type.getCodec().encodeStart(NbtOps.INSTANCE, v).result()).orElseThrow());
     }
 }
