@@ -34,8 +34,10 @@
  */
 package ladysnake.requiem.common.entity;
 
+import ladysnake.requiem.Requiem;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.util.registry.Registry;
 
 public class RequiemEntityAttributes {
     public static final EntityAttribute SOUL_OFFENSE = new ClampedEntityAttribute(
@@ -44,4 +46,9 @@ public class RequiemEntityAttributes {
     public static final EntityAttribute SOUL_DEFENSE = new ClampedEntityAttribute(
         "attribute.name.remnant.requiem.soul_defense", 0, -1024, 1024
     ).setTracked(true);
+
+    public static void init() {
+        Registry.register(Registry.ATTRIBUTE, Requiem.id("soul_offense"), RequiemEntityAttributes.SOUL_OFFENSE);
+        Registry.register(Registry.ATTRIBUTE, Requiem.id("soul_defense"), RequiemEntityAttributes.SOUL_DEFENSE);
+    }
 }

@@ -37,6 +37,7 @@ package ladysnake.requiem.common.entity;
 import com.google.common.collect.ImmutableMap;
 import ladysnake.requiem.Requiem;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PiglinBruteEntity;
@@ -46,6 +47,12 @@ import net.minecraft.util.registry.Registry;
 
 public final class RequiemEntities {
 
+    public static final EntityType<SoulEntity> SOUL = FabricEntityTypeBuilder.create()
+        .entityFactory(SoulEntity::new)
+        .dimensions(EntityDimensions.changing(0.25f, 0.25f))
+        .trackRangeChunks(4)
+        .trackedUpdateRate(10)
+        .build();
     public static final EntityType<CuredVillagerEntity> CURED_VILLAGER = FabricEntityTypeBuilder.<CuredVillagerEntity>createMob()
         .entityFactory(CuredVillagerEntity::new)
         .dimensions(EntityType.VILLAGER.getDimensions())
@@ -79,8 +86,7 @@ public final class RequiemEntities {
         ImmutableMap.of(EntityType.PIGLIN, CURED_PIGLIN, EntityType.PIGLIN_BRUTE, CURED_PIGLIN_BRUTE);
 
     public static void init() {
-        Registry.register(Registry.ATTRIBUTE, Requiem.id("soul_offense"), RequiemEntityAttributes.SOUL_OFFENSE);
-        Registry.register(Registry.ATTRIBUTE, Requiem.id("soul_defense"), RequiemEntityAttributes.SOUL_DEFENSE);
+        Registry.register(Registry.ENTITY_TYPE, Requiem.id("soul"), SOUL);
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_villager"), CURED_VILLAGER);
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_piglin"), CURED_PIGLIN);
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_piglin_brute"), CURED_PIGLIN_BRUTE);

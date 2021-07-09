@@ -32,37 +32,44 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.particle;
+package ladysnake.requiem.common.entity;
 
-import com.mojang.serialization.Codec;
-import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
-import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.particle.ParticleType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.entity.data.TrackedDataHandler;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.math.Vec3d;
 
-public final class RequiemParticleTypes {
-    public static final DefaultParticleType ATTRITION = FabricParticleTypes.simple(false);
-    public static final DefaultParticleType CURE = FabricParticleTypes.simple(false);
-    public static final ParticleType<RequiemEntityParticleEffect> ENTITY_DUST = new ParticleType<>(false, RequiemEntityParticleEffect.PARAMETERS_FACTORY) {
+import java.util.Optional;
+
+public final class RequiemTrackedDataHandlers {
+    public static final TrackedDataHandler<Optional<Vec3d>> OPTIONAL_VEC_3D = new TrackedDataHandler<>() {
         @Override
-        public Codec<RequiemEntityParticleEffect> getCodec() {
-            return RequiemEntityParticleEffect.codec(this);
+        public void write(PacketByteBuf buf, Optional<Vec3d> value) {
+            buf.writeBoolean(value.isPresent());
+            value.ifPresent(vec -> {
+                buf.writeDouble(vec.getX());
+                buf.writeDouble(vec.getY());
+                buf.writeDouble(vec.getZ());
+            });
         }
-    };
-    public static final DefaultParticleType GHOST = FabricParticleTypes.simple(true);
-    public static final ParticleType<WispTrailParticleEffect> SOUL_TRAIL = new ParticleType<>(true, WispTrailParticleEffect.PARAMETERS_FACTORY) {
+
         @Override
-        public Codec<WispTrailParticleEffect> getCodec() {
-            return WispTrailParticleEffect.CODEC;
+        public Optional<Vec3d> read(PacketByteBuf buf) {
+            return buf.readBoolean()
+                ? Optional.of(new Vec3d(
+                    buf.readDouble(),
+                    buf.readDouble(),
+                    buf.readDouble()
+                )) : Optional.empty();
+        }
+
+        @Override
+        public Optional<Vec3d> copy(Optional<Vec3d> value) {
+            return value;
         }
     };
 
     public static void init() {
-        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("ghost"), GHOST);
-        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("attrition"), ATTRITION);
-        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("cure"), CURE);
-        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("entity_dust"), ENTITY_DUST);
-        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("soul_trail"), SOUL_TRAIL);
+        TrackedDataHandlerRegistry.register(OPTIONAL_VEC_3D);
     }
 }

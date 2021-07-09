@@ -40,10 +40,10 @@ import ladysnake.requiem.client.network.ClientMessageHandler;
 import ladysnake.requiem.client.particle.CureParticle;
 import ladysnake.requiem.client.particle.EntityDustParticle;
 import ladysnake.requiem.client.particle.GhostParticle;
-import ladysnake.requiem.client.particle.wisp.WillOWispParticle;
 import ladysnake.requiem.client.particle.wisp.WispTrailParticle;
 import ladysnake.requiem.client.render.entity.CuredPiglinEntityRenderer;
 import ladysnake.requiem.client.render.entity.CuredVillagerEntityRenderer;
+import ladysnake.requiem.client.render.entity.WillOWispEntityRenderer;
 import ladysnake.requiem.client.render.entity.model.WillOWispModel;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
@@ -108,6 +108,7 @@ public final class RequiemClient {
     }
 
     private void init() {
+        this.registerEntityModels();
         this.registerEntityRenderers();
         this.registerModelPredicates();
         this.registerParticleFactories();
@@ -122,7 +123,6 @@ public final class RequiemClient {
         registry.register(RequiemParticleTypes.CURE, CureParticle.Factory::new);
         registry.register(RequiemParticleTypes.GHOST, GhostParticle.Factory::new);
         registry.register(RequiemParticleTypes.ENTITY_DUST, new EntityDustParticle.Factory());
-        registry.register(RequiemParticleTypes.SOUL, WillOWispParticle.DefaultFactory::new);
         registry.register(RequiemParticleTypes.SOUL_TRAIL, WispTrailParticle.Factory::new);
     }
 
@@ -133,11 +133,15 @@ public final class RequiemClient {
         this.statusEffectSpriteManager().registerAltSprites(RequiemStatusEffects.ATTRITION, 4);
     }
 
+    private void registerEntityModels() {
+        EntityModelLayerRegistry.registerModelLayer(WillOWispModel.MODEL_LAYER, WillOWispModel::getTexturedModelData);
+    }
+
     private void registerEntityRenderers() {
+        EntityRendererRegistry.INSTANCE.register(RequiemEntities.SOUL, WillOWispEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_VILLAGER, CuredVillagerEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_PIGLIN, (ctx) -> new CuredPiglinEntityRenderer(ctx, EntityModelLayers.PIGLIN, EntityModelLayers.PIGLIN_INNER_ARMOR, EntityModelLayers.PIGLIN_OUTER_ARMOR, false));
         EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_PIGLIN_BRUTE, (ctx) -> new CuredPiglinEntityRenderer(ctx, EntityModelLayers.PIGLIN_BRUTE, EntityModelLayers.PIGLIN_BRUTE_INNER_ARMOR, EntityModelLayers.PIGLIN_BRUTE_OUTER_ARMOR, false));
-        EntityModelLayerRegistry.registerModelLayer(WillOWispModel.MODEL_LAYER, WillOWispModel::getTexturedModelData);
     }
 
     private void initListeners() {
