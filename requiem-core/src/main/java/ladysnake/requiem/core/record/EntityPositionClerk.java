@@ -103,7 +103,7 @@ public final class EntityPositionClerk implements Component {
             record.invalidate();
         } else {
             Optional<EntityPointer> ptr = record.get(RecordType.ENTITY_POINTER);
-            if (ptr.isEmpty() || entity.getX() != ptr.get().x() || entity.getY() != ptr.get().y() || entity.getZ() != ptr.get().z()) {
+            if (ptr.isEmpty() || !entity.getPos().equals(ptr.get().pos())) {
                 record.put(RecordType.ENTITY_POINTER, new EntityPointer(entity));
             }
             EntityRecordUpdateCallback.EVENT.invoker().update(entity, record);

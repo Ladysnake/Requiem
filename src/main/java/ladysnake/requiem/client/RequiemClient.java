@@ -138,7 +138,7 @@ public final class RequiemClient {
     }
 
     private void registerEntityRenderers() {
-        EntityRendererRegistry.INSTANCE.register(RequiemEntities.SOUL, WillOWispEntityRenderer::new);
+        EntityRendererRegistry.INSTANCE.register(RequiemEntities.RELEASED_SOUL, WillOWispEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_VILLAGER, CuredVillagerEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_PIGLIN, (ctx) -> new CuredPiglinEntityRenderer(ctx, EntityModelLayers.PIGLIN, EntityModelLayers.PIGLIN_INNER_ARMOR, EntityModelLayers.PIGLIN_OUTER_ARMOR, false));
         EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_PIGLIN_BRUTE, (ctx) -> new CuredPiglinEntityRenderer(ctx, EntityModelLayers.PIGLIN_BRUTE, EntityModelLayers.PIGLIN_BRUTE_INNER_ARMOR, EntityModelLayers.PIGLIN_BRUTE_OUTER_ARMOR, false));

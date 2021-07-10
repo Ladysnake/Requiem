@@ -117,6 +117,7 @@ public class EmptySoulVesselItem extends Item {
             result = new ItemStack(RequiemItems.SHATTERED_SOUL_VESSEL);
         } else {
             result = new ItemStack(RequiemItems.FILLED_SOUL_VESSEL);
+            remnant.getItemCooldownManager().set(RequiemItems.FILLED_SOUL_VESSEL, 100);
             NbtCompound data = result.getOrCreateSubTag(FilledSoulVesselItem.SOUL_FRAGMENT_NBT);
             data.putString("type", EntityType.getId(entity.getType()).toString());
             this.setupRecord(entity, target, data);

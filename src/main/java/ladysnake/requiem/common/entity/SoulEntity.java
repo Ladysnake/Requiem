@@ -43,6 +43,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
@@ -59,13 +60,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class SoulEntity extends Entity {
-    public static final byte PLAY_DEATH_PARTICLES = 1;
+    public static final byte SOUL_EXPIRED_STATUS = 1;
     public static final double RADIANS_TO_DEGREES = 180 / Math.PI;
 
-    public static final TrackedData<Optional<Vec3d>> TARGET = DataTracker.registerData(SoulEntity.class, RequiemTrackedDataHandlers.OPTIONAL_VEC_3D);
+    public static final TrackedData<Optional<Vec3d>> NEXT_TARGET = DataTracker.registerData(SoulEntity.class, RequiemTrackedDataHandlers.OPTIONAL_VEC_3D);
     public static final TrackedData<Float> SPEED_MODIFIER = DataTracker.registerData(SoulEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
-    private final int maxAge;
+    protected int maxAge;
     protected int targetChangeCooldown = 0;
     protected int timeInSolid = -1;
 
@@ -74,9 +75,13 @@ public class SoulEntity extends Entity {
         this.maxAge = 600 + random.nextInt(600);
     }
 
+    public void setMaxAge(int maxAge) {
+        this.maxAge = maxAge;
+    }
+
     @Override
     protected void initDataTracker() {
-        this.getDataTracker().startTracking(TARGET, Optional.empty());
+        this.getDataTracker().startTracking(NEXT_TARGET, Optional.empty());
         this.getDataTracker().startTracking(SPEED_MODIFIER, 0f);
     }
 
@@ -85,15 +90,15 @@ public class SoulEntity extends Entity {
         super.tick();
 
         if (!this.world.isClient()) {
-            if (this.age >= this.maxAge) {
-                this.world.sendEntityStatus(this, PLAY_DEATH_PARTICLES);
-                this.remove(RemovalReason.DISCARDED);
+            if (this.maxAge >= 0 && this.age >= this.maxAge) {
+                this.world.sendEntityStatus(this, SOUL_EXPIRED_STATUS);
+                this.discard();
             }
 
             this.targetChangeCooldown -= this.getPos().squaredDistanceTo(this.prevX, this.prevY, this.prevZ) < 0.0125 ? 10 : 1;
 
             if ((this.world.getTime() % 20 == 0) && (this.getTarget().map(this.getPos()::squaredDistanceTo).orElse(Double.NaN) < 9 || targetChangeCooldown <= 0)) {
-                this.selectBlockTarget();
+                this.updateTarget();
             }
 
             if (random.nextInt(20) == 0) {
@@ -109,7 +114,7 @@ public class SoulEntity extends Entity {
             }
 
             if (timeInSolid > 25) {
-                this.remove(RemovalReason.KILLED);
+                this.kill();
             }
         }
 
@@ -133,23 +138,27 @@ public class SoulEntity extends Entity {
             }
         });
 
-        if (world.isClient()) {
-            for (int i = 0; i < 10 * getSpeedModifier(); i++) {
-                if (this.getBlockStateAtPos().isIn(BlockTags.SOUL_FIRE_BASE_BLOCKS)) {
-                    this.world.addParticle(ParticleTypes.SOUL, this.getX() + random.nextGaussian() / 10, this.getY() + random.nextGaussian() / 10, this.getZ() + random.nextGaussian() / 10, random.nextGaussian() / 20, random.nextGaussian() / 20, random.nextGaussian() / 20);
-                } else {
-                    this.world.addParticle(new WispTrailParticleEffect(1.0f, 1.0f, 1.0f, -0.1f, -0.01f, 0.0f), this.getX() + random.nextGaussian() / 15, this.getY() + random.nextGaussian() / 15, this.getZ() + random.nextGaussian() / 15, 0, 0.2d, 0);
-                }
+        if (this.world.isClient()) {
+            for (int i = 0; i < 10 * this.getSpeedModifier(); i++) {
+                this.spawnTrailParticle();
             }
         }
     }
 
+    protected void spawnTrailParticle() {
+        if (this.getBlockStateAtPos().isIn(BlockTags.SOUL_FIRE_BASE_BLOCKS)) {
+            this.world.addParticle(ParticleTypes.SOUL, this.getX() + random.nextGaussian() / 10, this.getY() + random.nextGaussian() / 10, this.getZ() + random.nextGaussian() / 10, random.nextGaussian() / 20, random.nextGaussian() / 20, random.nextGaussian() / 20);
+        } else {
+            this.world.addParticle(new WispTrailParticleEffect(1.0f, 1.0f, 1.0f, -0.1f, -0.01f, 0.0f), this.getX() + random.nextGaussian() / 15, this.getY() + random.nextGaussian() / 15, this.getZ() + random.nextGaussian() / 15, 0, 0.2d, 0);
+        }
+    }
+
     private Optional<Vec3d> getTarget() {
-        return this.getDataTracker().get(TARGET);
+        return this.getDataTracker().get(NEXT_TARGET);
     }
 
     private void setTarget(Vec3d target) {
-        this.getDataTracker().set(TARGET, Optional.of(target));
+        this.getDataTracker().set(NEXT_TARGET, Optional.of(target));
     }
 
     private float getSpeedModifier() {
@@ -163,7 +172,7 @@ public class SoulEntity extends Entity {
     @Override
     public void handleStatus(byte status) {
         switch (status) {
-            case PLAY_DEATH_PARTICLES -> {
+            case SOUL_EXPIRED_STATUS -> {
                 for (int i = 0; i < 25; i++) {
                     this.world.addParticle(new WispTrailParticleEffect(1.0f, 1.0f, 1.0f, -0.1f, -0.01f, 0.0f), this.getX() + random.nextGaussian() / 15, this.getY() + random.nextGaussian() / 15, this.getZ() + random.nextGaussian() / 15, 0, 0.2d, 0);
                     this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.SOUL_SAND.getDefaultState()), this.getX() + random.nextGaussian() / 10, this.getY() + random.nextGaussian() / 10, this.getZ() + random.nextGaussian() / 10, random.nextGaussian() / 20, random.nextGaussian() / 20, random.nextGaussian() / 20);
@@ -175,7 +184,7 @@ public class SoulEntity extends Entity {
         }
     }
 
-    protected void selectBlockTarget() {
+    protected void updateTarget() {
         Vec3d newTarget = this.selectNextTarget();
         this.setTarget(newTarget);
 
@@ -199,12 +208,14 @@ public class SoulEntity extends Entity {
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
-
+        if (nbt.contains("max_age", NbtElement.INT_TYPE)) {
+            this.maxAge = nbt.getInt("max_age");
+        }
     }
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound nbt) {
-
+        nbt.putInt("max_age", this.maxAge);
     }
 
     @Override

@@ -34,10 +34,10 @@
  */
 package ladysnake.requiem.common.item;
 
-import com.mojang.datafixers.util.Unit;
 import ladysnake.requiem.api.v1.event.requiem.EntityRecordUpdateCallback;
-import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.common.RequiemRecordTypes;
+import ladysnake.requiem.common.entity.ReleasedSoulEntity;
+import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.core.entity.EntityAiToggle;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
@@ -45,7 +45,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -70,8 +69,10 @@ public class FilledSoulVesselItem extends Item {
 
     public void registerCallbacks() {
         EntityRecordUpdateCallback.EVENT.register((entity, linkedRecord) ->
-            linkedRecord.get(RequiemRecordTypes.RELEASED_SOUL).flatMap(u -> EntityAiToggle.KEY.maybeGet(entity)).ifPresent(aiSwitch ->
-                aiSwitch.toggleAi(Registry.ITEM.getId(this.emptySoulVessel), false, false)));
+            linkedRecord.get(RequiemRecordTypes.RELEASED_SOUL).flatMap(u -> EntityAiToggle.KEY.maybeGet(entity)).ifPresent(aiSwitch -> {
+                aiSwitch.toggleAi(Registry.ITEM.getId(this.emptySoulVessel), false, false);
+                linkedRecord.invalidate();
+            }));
     }
 
     @Override
@@ -84,12 +85,14 @@ public class FilledSoulVesselItem extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
-        if (world instanceof ServerWorld sw) {
-            Optional.ofNullable(stack.getSubTag(FilledSoulVesselItem.SOUL_FRAGMENT_NBT))
+        if (!world.isClient()) {
+            ReleasedSoulEntity releasedSoul = new ReleasedSoulEntity(RequiemEntities.RELEASED_SOUL, world, Optional.ofNullable(stack.getSubTag(FilledSoulVesselItem.SOUL_FRAGMENT_NBT))
                 .filter(data -> data.containsUuid("uuid"))
                 .map(data -> data.getUuid("uuid"))
-                .flatMap(GlobalRecordKeeper.get(sw)::getRecord)
-                .ifPresent(record -> record.put(RequiemRecordTypes.RELEASED_SOUL, Unit.INSTANCE));
+                .orElse(null));
+            releasedSoul.setPosition(user.getX(), user.getBodyY(0.5D), user.getZ());
+            releasedSoul.setVelocity(user.getRotationVector());
+            world.spawnEntity(releasedSoul);
             ItemStack result = new ItemStack(this.emptySoulVessel);
             return TypedActionResult.success(ItemUsage.exchangeStack(stack, user, result));
         }

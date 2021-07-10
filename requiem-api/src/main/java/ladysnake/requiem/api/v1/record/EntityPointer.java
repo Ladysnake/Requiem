@@ -22,24 +22,27 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public record EntityPointer(UUID uuid, RegistryKey<World> world, double x, double y, double z) {
-    public static final EntityPointer ORIGIN = new EntityPointer(new UUID(0, 0), World.OVERWORLD, 0, 0, 0);
+public record EntityPointer(UUID uuid, RegistryKey<World> world, Vec3d pos) {
+    public static final EntityPointer ORIGIN = new EntityPointer(new UUID(0, 0), World.OVERWORLD, Vec3d.ZERO);
     public static final Codec<EntityPointer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         DynamicSerializableUuid.CODEC.fieldOf("uuid").forGetter(EntityPointer::uuid),
         World.CODEC.fieldOf("world").forGetter(EntityPointer::world),
-        Codec.DOUBLE.fieldOf("x").forGetter(EntityPointer::x),
-        Codec.DOUBLE.fieldOf("y").forGetter(EntityPointer::y),
-        Codec.DOUBLE.fieldOf("z").forGetter(EntityPointer::z)
+        RecordCodecBuilder.<Vec3d>create(instance2 -> instance2.group(
+            Codec.DOUBLE.fieldOf("x").forGetter(Vec3d::getX),
+            Codec.DOUBLE.fieldOf("y").forGetter(Vec3d::getY),
+            Codec.DOUBLE.fieldOf("z").forGetter(Vec3d::getZ)
+        ).apply(instance2, Vec3d::new)).fieldOf("pos").forGetter(EntityPointer::pos)
     ).apply(instance, EntityPointer::new));
 
     public EntityPointer(Entity entity) {
-        this(entity.getUuid(), entity.world.getRegistryKey(), entity.getX(), entity.getY(), entity.getZ());
+        this(entity.getUuid(), entity.world.getRegistryKey(), entity.getPos());
     }
 
     public Optional<Entity> resolve(MinecraftServer server) {
