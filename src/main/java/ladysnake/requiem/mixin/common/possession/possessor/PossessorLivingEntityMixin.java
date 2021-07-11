@@ -56,7 +56,11 @@ import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Invoker;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -178,7 +182,7 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
     private boolean requiem$wasSprinting;
     @Inject(method = "method_26317", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSprinting()Z"))
     private void preventWaterHovering(double d, boolean bl, Vec3d vec3d, CallbackInfoReturnable<Vec3d> cir) {
-        if (this.requiem$isSprinting() && MovementAlterer.KEY.get(this).disablesSwimming()) {
+        if (this.requiem$isSprinting() && MovementAlterer.KEY.maybeGet(this).map(MovementAlterer::disablesSwimming).orElse(false)) {
             requiem$wasSprinting = true;
             this.setSprinting(false);
         }
