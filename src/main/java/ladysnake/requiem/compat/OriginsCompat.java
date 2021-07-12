@@ -36,17 +36,17 @@ package ladysnake.requiem.compat;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import io.github.apace100.apoli.power.factory.PowerFactory;
+import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
+import io.github.apace100.apoli.registry.ApoliRegistries;
+import io.github.apace100.calio.data.SerializableData;
+import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.integration.OriginDataLoadedCallback;
 import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.origin.OriginLayer;
 import io.github.apace100.origins.origin.OriginRegistry;
-import io.github.apace100.origins.power.factory.PowerFactory;
-import io.github.apace100.origins.power.factory.condition.ConditionFactory;
 import io.github.apace100.origins.registry.ModComponents;
-import io.github.apace100.origins.registry.ModRegistries;
-import io.github.apace100.origins.util.SerializableData;
-import io.github.apace100.origins.util.SerializableDataType;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
@@ -74,7 +74,7 @@ public final class OriginsCompat {
         new SerializableData().add("value", REMNANT_TYPE),
         instance -> {
             RemnantType remnantType = ((RemnantType) instance.get("value"));
-            return (type, player) -> new OriginsRemnantPower(type, player, remnantType);
+            return (type, entity) -> new OriginsRemnantPower(type, entity, remnantType);
         }
     );
 
@@ -108,8 +108,8 @@ public final class OriginsCompat {
 
     @CalledThroughReflection
     public static void init() {
-        Registry.register(ModRegistries.POWER_FACTORY, FACTORY_ID, REMNANT_POWER_FACTORY);
-        Registry.register(ModRegistries.ENTITY_CONDITION, GAMERULE_CONDITION_ID, GAMERULE_CONDITION_FACTORY);
+        Registry.register(ApoliRegistries.POWER_FACTORY, FACTORY_ID, REMNANT_POWER_FACTORY);
+        Registry.register(ApoliRegistries.ENTITY_CONDITION, GAMERULE_CONDITION_ID, GAMERULE_CONDITION_FACTORY);
         RemnantStateChangeCallback.EVENT.register((player, state) -> {
             if (!player.world.isClient) {
                 if (state.isVagrant()) {
@@ -120,14 +120,10 @@ public final class OriginsCompat {
                 }
             }
         });
-        try {
-            OriginDataLoadedCallback.EVENT.register(isClient -> {
-                vagrant = OriginRegistry.get(Requiem.id("vagrant"));
-                if (vagrant == null) throw new IllegalStateException("Special vagrant origin not found");
-                vagrant.setSpecial();
-            });
-        } catch (NoClassDefFoundError e) {
-            Requiem.LOGGER.error("[Requiem] Failed to register special Vagrant origin, consider updating Origins");
-        }
+        OriginDataLoadedCallback.EVENT.register(isClient -> {
+            vagrant = OriginRegistry.get(Requiem.id("vagrant"));
+            if (vagrant == null) throw new IllegalStateException("Special vagrant origin not found");
+            vagrant.setSpecial();
+        });
     }
 }

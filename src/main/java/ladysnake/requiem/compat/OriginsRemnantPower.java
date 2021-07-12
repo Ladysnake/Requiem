@@ -34,22 +34,33 @@
  */
 package ladysnake.requiem.compat;
 
-import io.github.apace100.origins.power.Power;
-import io.github.apace100.origins.power.PowerType;
+import io.github.apace100.apoli.power.Power;
+import io.github.apace100.apoli.power.PowerType;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import net.minecraft.entity.player.PlayerEntity;
+import ladysnake.requiem.common.remnant.RemnantTypes;
+import net.minecraft.entity.LivingEntity;
 
 public class OriginsRemnantPower extends Power {
     private final RemnantType remnantType;
 
-    public OriginsRemnantPower(PowerType<?> type, PlayerEntity player, RemnantType remnantType) {
+    public OriginsRemnantPower(PowerType<?> type, LivingEntity player, RemnantType remnantType) {
         super(type, player);
         this.remnantType = remnantType;
     }
 
     @Override
-    public void onChosen(boolean isOrbOfOrigin) {
-        RemnantComponent.get(this.player).become(this.remnantType, true);
+    public void onGained() {
+        RemnantComponent.KEY.maybeGet(this.entity).ifPresent(r -> r.become(this.remnantType, true));
+    }
+
+    @Override
+    public void onAdded() {
+        RemnantComponent.KEY.maybeGet(this.entity).ifPresent(r -> r.become(this.remnantType, false));
+    }
+
+    @Override
+    public void onLost() {
+        RemnantComponent.KEY.maybeGet(this.entity).ifPresent(r -> r.become(RemnantTypes.MORTAL, false));
     }
 }
