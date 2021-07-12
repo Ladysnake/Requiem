@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:block/cube",
   "textures": {
-    "particle": "requiem:block/polished_tachylite_pillar",
+    "particle": "requiem:block/polished_tachylite_pillar_lit",
     "down": "requiem:block/polished_tachylite",
     "up": "requiem:block/polished_tachylite",
     "north": "requiem:block/polished_tachylite_pillar_horizontal_lit",
