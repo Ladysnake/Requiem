@@ -77,7 +77,7 @@ public class FilledSoulVesselItem extends Item {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        Optional.ofNullable(stack.getSubTag(SOUL_FRAGMENT_NBT))
+        Optional.ofNullable(stack.getSubNbt(SOUL_FRAGMENT_NBT))
             .flatMap(fragmentData -> EntityType.get(fragmentData.getString("type")))
             .ifPresent(contained -> tooltip.add(new TranslatableText("requiem:tooltip.filled_vessel", contained.getName()).formatted(Formatting.GRAY)));
     }
@@ -86,7 +86,7 @@ public class FilledSoulVesselItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
         if (!world.isClient()) {
-            ReleasedSoulEntity releasedSoul = new ReleasedSoulEntity(RequiemEntities.RELEASED_SOUL, world, Optional.ofNullable(stack.getSubTag(FilledSoulVesselItem.SOUL_FRAGMENT_NBT))
+            ReleasedSoulEntity releasedSoul = new ReleasedSoulEntity(RequiemEntities.RELEASED_SOUL, world, Optional.ofNullable(stack.getSubNbt(FilledSoulVesselItem.SOUL_FRAGMENT_NBT))
                 .filter(data -> data.containsUuid("uuid"))
                 .map(data -> data.getUuid("uuid"))
                 .orElse(null));

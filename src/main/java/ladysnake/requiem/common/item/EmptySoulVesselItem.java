@@ -76,11 +76,11 @@ public class EmptySoulVesselItem extends Item {
         if (SoulCaptureEvents.BEFORE_ATTEMPT.invoker().canAttemptCapturing(user, entity)) {
             int targetSoulStrength = computeSoulDefense(entity);
             int playerSoulStrength = computeSoulOffense(user);
-            NbtCompound activeData = stack.getOrCreateSubTag(ACTIVE_DATA_TAG);
+            NbtCompound activeData = stack.getOrCreateSubNbt(ACTIVE_DATA_TAG);
             activeData.putInt("use_time", computeCaptureTime(targetSoulStrength, playerSoulStrength));
             activeData.putUuid("target", entity.getUuid());
             // will be a copy in creative mode, so need to copy changes too
-            user.getStackInHand(hand).getOrCreateSubTag(ACTIVE_DATA_TAG).copyFrom(activeData);
+            user.getStackInHand(hand).getOrCreateSubNbt(ACTIVE_DATA_TAG).copyFrom(activeData);
             user.setCurrentHand(hand);
             return ActionResult.CONSUME;
         }
@@ -94,10 +94,10 @@ public class EmptySoulVesselItem extends Item {
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
         if (!(world instanceof ServerWorld serverWorld)) return stack;
-        NbtCompound activeData = stack.getSubTag(ACTIVE_DATA_TAG);
+        NbtCompound activeData = stack.getSubNbt(ACTIVE_DATA_TAG);
         if (activeData == null) return stack;
 
-        stack.removeSubTag(ACTIVE_DATA_TAG);
+        stack.removeSubNbt(ACTIVE_DATA_TAG);
         Entity entity = serverWorld.getEntity(activeData.getUuid("target"));
 
         if (!(entity instanceof LivingEntity target)) return stack;
@@ -118,7 +118,7 @@ public class EmptySoulVesselItem extends Item {
         } else {
             result = new ItemStack(RequiemItems.FILLED_SOUL_VESSEL);
             remnant.getItemCooldownManager().set(RequiemItems.FILLED_SOUL_VESSEL, 100);
-            NbtCompound data = result.getOrCreateSubTag(FilledSoulVesselItem.SOUL_FRAGMENT_NBT);
+            NbtCompound data = result.getOrCreateSubNbt(FilledSoulVesselItem.SOUL_FRAGMENT_NBT);
             data.putString("type", EntityType.getId(entity.getType()).toString());
             this.setupRecord(entity, target, data);
             EntityAiToggle.KEY.get(target).toggleAi(Registry.ITEM.getId(this), true, true);
@@ -134,14 +134,14 @@ public class EmptySoulVesselItem extends Item {
 
     @Override
     public int getMaxUseTime(ItemStack stack) {
-        NbtCompound tag = stack.getSubTag(ACTIVE_DATA_TAG);
+        NbtCompound tag = stack.getSubNbt(ACTIVE_DATA_TAG);
         return tag == null ? 0 : tag.getInt("use_time");
     }
 
     @Override
     public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         if (world instanceof ServerWorld serverWorld) {
-            NbtCompound useData = stack.getSubTag(ACTIVE_DATA_TAG);
+            NbtCompound useData = stack.getSubNbt(ACTIVE_DATA_TAG);
             if (useData != null) {
                 Entity target = serverWorld.getEntity(useData.getUuid("target"));
                 if (target instanceof LivingEntity && world.getRandom().nextFloat() < 0.75f) {
