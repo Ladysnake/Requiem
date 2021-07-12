@@ -37,7 +37,6 @@ package ladysnake.requiem.mixin.client.attrition;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.client.RequiemClient;
-import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.texture.Sprite;
@@ -70,7 +69,7 @@ public abstract class AbstractInventoryScreenMixin<T extends ScreenHandler> exte
     private StatusEffectInstance customizeDrawnBackground(StatusEffectInstance effect) {
         if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
             assert client != null;
-            RenderSystem.setShaderTexture(0, AttritionStatusEffect.ATTRITION_BACKGROUND);
+            RenderSystem.setShaderTexture(0, RequiemClient.SOULBOUND_BACKGROUND);
             boundSpecialBackground = true;
         }
         return effect;
