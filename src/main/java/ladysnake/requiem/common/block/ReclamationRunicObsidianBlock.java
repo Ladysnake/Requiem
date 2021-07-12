@@ -32,28 +32,24 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.entity.effect;
+package ladysnake.requiem.common.block;
 
-import ladysnake.requiem.Requiem;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-public final class RequiemStatusEffects {
-    public static final StatusEffect ATTRITION = new AttritionStatusEffect(StatusEffectType.HARMFUL, 0xAA3322)
-        .addAttributeModifier(EntityAttributes.GENERIC_MAX_HEALTH, "069ae0b1-4014-41dd-932f-a5da4417d711", -0.2, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
-    public static final StatusEffect EMANCIPATION = new EmancipationStatusEffect(StatusEffectType.BENEFICIAL, 0x7799FF);
-    public static final StatusEffect RECLAMATION = new ReclamationStatusEffect(StatusEffectType.BENEFICIAL, 0xFFDF00);
+import java.util.function.Supplier;
 
-    public static void init() {
-        registerEffect(ATTRITION, "attrition");
-        registerEffect(EMANCIPATION, "emancipation");
-        registerEffect(RECLAMATION, "reclamation");
+public class ReclamationRunicObsidianBlock extends RunicObsidianBlock {
+    public ReclamationRunicObsidianBlock(Settings settings, Supplier<StatusEffect> effect, int maxLevel) {
+        super(settings, effect, maxLevel);
     }
 
-    public static void registerEffect(StatusEffect effect, String name) {
-        Registry.register(Registry.STATUS_EFFECT, Requiem.id(name), effect);
+    @Override
+    public void applyEffect(ServerPlayerEntity target, int runeLevel, int obeliskWidth) {
+        if (!target.hasStatusEffect(this.getEffect())) {
+            int effectDuration = (10 - obeliskWidth) * 20 * 60;
+            target.addStatusEffect(new StatusEffectInstance(this.getEffect(), effectDuration, runeLevel - 1, true, true));
+        }
     }
 }
