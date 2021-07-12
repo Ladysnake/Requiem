@@ -45,7 +45,6 @@ import net.minecraft.util.registry.Registry;
 public final class RequiemItems {
     public static final DebugItem DEBUG_ITEM = new DebugItem(new Item.Settings());
     public static final Item TOTEM_OF_SKELETONIZATION = new Item((new Item.Settings()).maxCount(1).group(ItemGroup.COMBAT).rarity(Rarity.UNCOMMON));
-    public static final OpusDemoniumItem OPUS_DEMONIUM = new OpusDemoniumItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1));
     public static final EmptySoulVesselItem EMPTY_SOUL_VESSEL = new EmptySoulVesselItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1));
     public static final FilledSoulVesselItem FILLED_SOUL_VESSEL = new FilledSoulVesselItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1), EMPTY_SOUL_VESSEL);
     public static final Item SHATTERED_SOUL_VESSEL = new Item(new Item.Settings().group(ItemGroup.MISC).maxCount(1));
@@ -56,7 +55,6 @@ public final class RequiemItems {
     public static void init() {
         registerItem(DEBUG_ITEM, "debug_item");
         registerItem(TOTEM_OF_SKELETONIZATION, "totem_of_skeletonization");
-        registerItem(OPUS_DEMONIUM, "opus_daemonium");
         registerItem(SOUL_VESSEL, "soul_vessel");
         registerItem(EMPTY_SOUL_VESSEL, "empty_soul_vessel");
         registerItem(FILLED_SOUL_VESSEL, "filled_soul_vessel");

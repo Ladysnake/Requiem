@@ -68,6 +68,7 @@ import java.util.function.Predicate;
 public class RunicObsidianBlockEntity extends BlockEntity {
     public static final Direction[] OBELISK_SIDES = {Direction.SOUTH, Direction.EAST, Direction.NORTH, Direction.WEST};
     public static final int POWER_ATTEMPTS = 1;
+    public static final int MAX_OBELISK_WIDTH = 5;
 
     private final Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
     private @Nullable BlockPos delegate;
@@ -347,7 +348,7 @@ public class RunicObsidianBlockEntity extends BlockEntity {
                     }
                 } else if (state.isIn(edgeTag)) {
                     sideLength++;
-                    if (sideLength > 5) {
+                    if (sideLength > MAX_OBELISK_WIDTH) {
                         // Too large: not a valid base
                         return 0;
                     }

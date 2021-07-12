@@ -61,7 +61,7 @@ public abstract class BowItemMixin extends RangedWeaponItem {
     @ModifyVariable(method = "onStoppedUsing", ordinal = 0, at = @At("STORE"))
     private boolean giveSkeletonInfinity(boolean infinity, ItemStack item, World world, LivingEntity user, int charge) {
         MobEntity possessed = PossessionComponent.getPossessedEntity(user);
-        NbtCompound tag = item.getTag();
+        NbtCompound tag = item.getNbt();
         if (tag != null && tag.getBoolean(VanillaRequiemPlugin.INFINITY_SHOT_TAG)) {
             tag.remove(VanillaRequiemPlugin.INFINITY_SHOT_TAG);
             return true;

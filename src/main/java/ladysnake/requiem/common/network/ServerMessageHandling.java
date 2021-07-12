@@ -41,28 +41,17 @@ import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.item.OpusDemoniumItem;
-import ladysnake.requiem.common.item.RequiemItems;
-import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
-import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
-public class ServerMessageHandling {
+public final class ServerMessageHandling {
 
     public static void init() {
         ServerPlayNetworking.registerGlobalReceiver(RequiemCoreNetworking.USE_DIRECT_ABILITY, (server, player, handler, buf, responseSender) -> {
@@ -99,34 +88,6 @@ public class ServerMessageHandling {
                 }
             }
         }));
-        ServerPlayNetworking.registerGlobalReceiver(OPUS_UPDATE, (server, player, handler, buf, responseSender) -> {
-            String content = buf.readString(32767);
-            boolean sign = buf.readBoolean();
-            RemnantType type = sign ? RemnantTypes.get(buf.readIdentifier()) : null;
-            Hand hand = buf.readEnumConstant(Hand.class);
-            server.execute(() -> {
-                ItemStack book = player.getStackInHand(hand);
-                if (book.getItem() != RequiemItems.OPUS_DEMONIUM) {
-                    return;
-                }
-                int requiredXp = player.isCreative() ? 0 : OpusDemoniumItem.REQUIRED_CONVERSION_XP;
-                if (sign && player.experienceLevel >= requiredXp) {
-                    player.setStackInHand(hand, type.getConversionBook(player));
-                    player.world.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, player.world.random.nextFloat() * 0.1F + 0.9F);
-                    player.experienceLevel -= requiredXp;
-                    if (player.experienceLevel < 0) {
-                        player.experienceLevel = 0;
-                        player.experienceProgress = 0.0F;
-                        player.totalExperience = 0;
-                    }
-                    player.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(player.experienceProgress, player.experienceLevel, player.experienceLevel));
-                } else {
-                    NbtList pages = new NbtList();
-                    pages.add(NbtString.of(content));
-                    book.putSubTag("pages", pages);
-                }
-            });
-        });
         ServerPlayNetworking.registerGlobalReceiver(DIALOGUE_ACTION, (server, player, handler, buf, responseSender) -> {
             Identifier action = buf.readIdentifier();
             server.execute(() -> DialogueTracker.get(player).handleAction(action));

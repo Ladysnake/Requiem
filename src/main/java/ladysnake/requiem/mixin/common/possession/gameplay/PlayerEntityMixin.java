@@ -59,7 +59,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         if (cir.getReturnValue().isEmpty()) {
             MobEntity host = PossessionComponent.getPossessedEntity(this);
             if (host != null && RequiemEntityTypeTags.ARROW_GENERATORS.contains(host.getType())) {
-                weapon.getOrCreateTag().putBoolean("requiem:infinity_shot", true);
+                weapon.getOrCreateNbt().putBoolean("requiem:infinity_shot", true);
                 cir.setReturnValue(new ItemStack(Items.ARROW));
             }
         }

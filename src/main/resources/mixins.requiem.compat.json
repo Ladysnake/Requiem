@@ -10,7 +10,6 @@
     "bettergraves.BetterGravesMixin",
     "biomemakeover.EntityPartMixin",
     "haema.VampireBloodInjectorItemMixin",
-    "origins.PowerMixin",
     "snowmercy.WeaponizedSnowGolemEntityMixin",
     "the_bumblezone.BeehiveBlockMixin"
   ]

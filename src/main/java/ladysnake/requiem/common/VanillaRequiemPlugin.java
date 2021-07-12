@@ -71,6 +71,7 @@ import ladysnake.requiem.common.entity.SkeletonBoneComponent;
 import ladysnake.requiem.common.entity.ability.ShulkerPeekAbility;
 import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
 import ladysnake.requiem.common.entity.ability.VagrantPossessAbility;
+import ladysnake.requiem.common.entity.effect.ReclamationStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
@@ -139,6 +140,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     public void onRequiemInitialize() {
         registerEtherealEventHandlers();
         registerPossessionEventHandlers();
+        ReclamationStatusEffect.registerEventHandlers();
         CanCurePossessedCallback.EVENT.register((body) -> {
             CurableEntityComponent curableEntityComponent = CurableEntityComponent.KEY.get(body);
             return (curableEntityComponent.canBeCured() || curableEntityComponent.canBeAssimilated()) ? TriState.TRUE : TriState.DEFAULT;
@@ -328,6 +330,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     public void registerSoulBindings(SoulbindingRegistry registry) {
         registry.registerSoulbound(RequiemStatusEffects.ATTRITION);
         registry.registerSoulbound(RequiemStatusEffects.EMANCIPATION);
+        registry.registerSoulbound(RequiemStatusEffects.RECLAMATION);
     }
 
     @Override

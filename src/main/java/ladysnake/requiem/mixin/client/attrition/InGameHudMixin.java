@@ -37,7 +37,6 @@ package ladysnake.requiem.mixin.client.attrition;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.client.RequiemClient;
-import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -68,7 +67,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     private StatusEffectInstance customizeDrawnBackground(StatusEffectInstance effect) {
         if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
             assert this.client != null;
-            RenderSystem.setShaderTexture(0, AttritionStatusEffect.ATTRITION_BACKGROUND);
+            RenderSystem.setShaderTexture(0, RequiemClient.SOULBOUND_BACKGROUND);
             boundSpecialBackground = true;
         }
         renderedEffect = effect;

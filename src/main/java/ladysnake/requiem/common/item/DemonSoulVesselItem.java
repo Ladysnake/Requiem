@@ -155,8 +155,8 @@ public class DemonSoulVesselItem extends Item {
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> lines, TooltipContext ctx) {
         lines.add(new TranslatableText(tooltip).formatted(this.getTooltipColor()));
 
-        if (stack.hasTag()) {
-            NbtCompound tag = stack.getTag();
+        if (stack.hasNbt()) {
+            NbtCompound tag = stack.getNbt();
             assert tag != null;
             String author = tag.getString("author");
             if (!ChatUtil.isEmpty(author)) {
