@@ -78,7 +78,7 @@ public abstract class CraftingScreenMixin extends HandledScreen<CraftingScreenHa
                 (buttonWidget) -> {
                     assert this.client != null;
                     this.onClose();
-                    this.client.openScreen(new InventoryScreen(this.client.player));
+                    this.client.setScreen(new InventoryScreen(this.client.player));
                 })
             );
         }

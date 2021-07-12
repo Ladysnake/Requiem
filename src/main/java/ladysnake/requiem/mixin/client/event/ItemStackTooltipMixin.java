@@ -51,7 +51,7 @@ import java.util.List;
 public abstract class ItemStackTooltipMixin {
     @Inject(
             method = "getTooltip",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;hasTag()Z", ordinal = 0),
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;hasNbt()Z", ordinal = 0),
             locals = LocalCapture.CAPTURE_FAILSOFT
     )
     private void fireTooltipEvent(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> lines) {

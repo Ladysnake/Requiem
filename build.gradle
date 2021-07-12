@@ -188,7 +188,7 @@ repositories {
     }
     maven {
         name = "TerraformersMC"
-        url = "https://maven.terraformersmc.com/"
+        url = "https://maven.kotlindiscord.com/repository/terraformers/"
     }
     maven {
         name = 'JitPack'

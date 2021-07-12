@@ -65,7 +65,7 @@ public class PossessionInventoryScreen extends AbstractInventoryScreen<PlayerScr
     }
 
     @Override
-    public void tick() {
+    public void handledScreenTick() {
         this.trySwapInventoryScreen();
     }
 
@@ -75,10 +75,10 @@ public class PossessionInventoryScreen extends AbstractInventoryScreen<PlayerScr
         assert this.client.player != null;
 
         if (this.client.interactionManager.hasCreativeInventory()) {
-            this.client.openScreen(new CreativeInventoryScreen(this.client.player));
+            this.client.setScreen(new CreativeInventoryScreen(this.client.player));
             return true;
         } else if (InventoryLimiter.instance().getInventoryShape(this.player) != InventoryShape.ALT_LARGE) {
-            this.client.openScreen(new InventoryScreen(this.client.player));
+            this.client.setScreen(new InventoryScreen(this.client.player));
             return true;
         }
         return false;

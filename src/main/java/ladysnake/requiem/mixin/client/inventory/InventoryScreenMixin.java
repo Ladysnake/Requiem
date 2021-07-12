@@ -76,11 +76,11 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
         super(screenHandler, playerInventory, text);
     }
 
-    @Inject(method = {"init", "tick"}, at = @At("HEAD"), cancellable = true)
+    @Inject(method = {"init", "handledScreenTick"}, at = @At("HEAD"), cancellable = true)
     private void trySwapInventoryInit(CallbackInfo ci) {
         if (InventoryLimiter.instance().getInventoryShape(requiem$player) == InventoryShape.ALT_LARGE) {
             assert this.client != null && this.client.player != null;
-            this.client.openScreen(new PossessionInventoryScreen(this.client.player));
+            this.client.setScreen(new PossessionInventoryScreen(this.client.player));
             ci.cancel();
         }
     }

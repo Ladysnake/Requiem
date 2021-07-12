@@ -123,7 +123,7 @@ public class ServerMessageHandling {
                 } else {
                     NbtList pages = new NbtList();
                     pages.add(NbtString.of(content));
-                    book.putSubTag("pages", pages);
+                    book.setSubNbt("pages", pages);
                 }
             });
         });

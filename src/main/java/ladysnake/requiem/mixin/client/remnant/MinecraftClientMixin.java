@@ -57,7 +57,7 @@ public abstract class MinecraftClientMixin {
     public ClientPlayerEntity player;
 
     @Inject(
-            method = "openScreen",
+            method = "setScreen",
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;currentScreen:Lnet/minecraft/client/gui/screen/Screen;", ordinal = 0, opcode = Opcodes.PUTFIELD),
             cancellable = true
     )

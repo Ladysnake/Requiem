@@ -85,13 +85,13 @@ public class CutsceneDialogueScreen extends Screen {
         ChoiceResult result = this.dialogue.choose(selectedChoice);
 
         if (result == ChoiceResult.END_DIALOGUE) {
-            this.client.openScreen(null);
+            this.client.setScreen(null);
             assert this.client.player != null;
             DialogueTracker.get(this.client.player).endDialogue();
             DeathSuspender.get(this.client.player).setLifeTransient(false);
         } else if (result == ChoiceResult.ASK_CONFIRMATION) {
             ImmutableList<Text> choices = this.dialogue.getCurrentChoices();
-            this.client.openScreen(new ConfirmScreen(
+            this.client.setScreen(new ConfirmScreen(
                     this::onBigChoiceMade,
                     this.dialogue.getCurrentText(),
                     new LiteralText(""),
@@ -107,7 +107,7 @@ public class CutsceneDialogueScreen extends Screen {
     private void onBigChoiceMade(boolean yes) {
         assert client != null;
         if (this.confirmChoice(yes ? 0 : 1) == ChoiceResult.DEFAULT) {
-            this.client.openScreen(this);
+            this.client.setScreen(this);
         }
     }
 

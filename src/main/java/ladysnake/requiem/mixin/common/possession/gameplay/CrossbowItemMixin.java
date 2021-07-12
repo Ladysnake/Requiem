@@ -65,7 +65,7 @@ public abstract class CrossbowItemMixin extends RangedWeaponItem {
             // - if we tell the client to *not* eat an arrow but the server does, the server will update back => everything's fine
             // so we default to telling the client that we are never using arrows and letting the server do the work
             if (possessed instanceof CrossbowUser && (shooter.getRandom().nextFloat() < 0.5f || shooter.world.isClient)) {
-                crossbow.getOrCreateTag().putBoolean(VanillaRequiemPlugin.INFINITY_SHOT_TAG, true);
+                crossbow.getOrCreateNbt().putBoolean(VanillaRequiemPlugin.INFINITY_SHOT_TAG, true);
                 return true;
             }
         }
@@ -75,7 +75,7 @@ public abstract class CrossbowItemMixin extends RangedWeaponItem {
     @ModifyVariable(method = "shoot", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     private static boolean preventBoltPickup(boolean creative, World world, LivingEntity shooter, Hand hand, ItemStack crossbow, ItemStack projectile, float soundPitch, boolean creative2, float speed, float divergence, float simulated) {
         if (!world.isClient && simulated == 0) {
-            NbtCompound tag = crossbow.getTag();
+            NbtCompound tag = crossbow.getNbt();
             if (tag != null && tag.getBoolean(VanillaRequiemPlugin.INFINITY_SHOT_TAG)) {
                 tag.remove(VanillaRequiemPlugin.INFINITY_SHOT_TAG);
                 return true;
