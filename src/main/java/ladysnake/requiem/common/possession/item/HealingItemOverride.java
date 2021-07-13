@@ -81,8 +81,12 @@ public record HealingItemOverride(
 
     @Override
     public Optional<InstancedItemOverride> test(PlayerEntity player, MobEntity possessed, ItemStack stack) {
-        if (this.item.test(player.world, stack) && possessed.getHealth() < possessed.getMaxHealth()) {
-            return Optional.of(this);
+        if (this.item.test(player.world, stack)) {
+            if (possessed.getHealth() < possessed.getMaxHealth()) {
+                return Optional.of(this);
+            } else {
+                return Optional.of(OverrideFailure.get(false));
+            }
         }
         return Optional.empty();
     }
