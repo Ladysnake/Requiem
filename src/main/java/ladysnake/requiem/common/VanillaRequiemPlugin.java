@@ -79,6 +79,7 @@ import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.ability.PlayerAbilityController;
+import ladysnake.requiem.core.entity.EntityAiToggle;
 import ladysnake.requiem.core.entity.ability.AutoAimAbility;
 import ladysnake.requiem.core.entity.ability.DelegatingDirectAbility;
 import ladysnake.requiem.core.entity.ability.RangedAttackAbility;
@@ -163,6 +164,8 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         HumanityCheckCallback.EVENT.register(possessedEntity -> EnchantmentHelper.getEquipmentLevel(RequiemEnchantments.HUMANITY, possessedEntity));
         ConsumableItemEvents.POST_CONSUMED.register(RequiemCriteria.USED_TOTEM::trigger);
         SoulCaptureEvents.BEFORE_ATTEMPT.register((player, target) -> Optional.ofNullable(player.getStatusEffect(RequiemStatusEffects.ATTRITION)).map(StatusEffectInstance::getAmplifier).orElse(-1) < 3);
+        SoulCaptureEvents.BEFORE_ATTEMPT.register((player, target) -> !target.getType().isIn(RequiemEntityTypeTags.SOULLESS));
+        SoulCaptureEvents.BEFORE_ATTEMPT.register((player, target) -> !EntityAiToggle.isAiDisabled(target));
     }
 
     private void registerEtherealEventHandlers() {
