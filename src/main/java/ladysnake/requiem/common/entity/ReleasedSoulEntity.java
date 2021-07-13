@@ -73,7 +73,6 @@ public class ReleasedSoulEntity extends SoulEntity {
     public static final TrackedData<Byte> BODY_STATUS = DataTracker.registerData(ReleasedSoulEntity.class, TrackedDataHandlerRegistry.BYTE);
     private int targetChanges = 0;
     private @Nullable UUID ownerRecord;
-    private int ticksUntilDespawn = 60;
 
     public ReleasedSoulEntity(EntityType<? extends ReleasedSoulEntity> type, World world) {
         this(type, world, null);
@@ -103,29 +102,34 @@ public class ReleasedSoulEntity extends SoulEntity {
                         .isPresent() ? BODY_FOUND : BODY_ISEKAI)
                     .orElse(BODY_MISSING)
             );
-        }
-        if (this.getBodyStatus() != BODY_FOUND) {
-            this.ticksUntilDespawn--;
-            if (this.ticksUntilDespawn <= 0) {
-                if (this.getBodyStatus() == BODY_ISEKAI) {
-                    // Will be retrieved later
-                    this.getRecord().ifPresent(data -> data.put(RequiemRecordTypes.RELEASED_SOUL, Unit.INSTANCE));
-                    this.world.sendEntityStatus(this, TELEPORT_AWAY_STATUS);
-                } else {
-                    // RIP
-                    this.getRecord().ifPresent(GlobalRecord::invalidate);
+
+            if (this.getBodyStatus() != BODY_FOUND) {
+                this.setMaxAge(60);
+            } else {
+                this.setMaxAge(-1);
+                this.getCollidingBody().ifPresent(body -> {
                     this.world.sendEntityStatus(this, SOUL_EXPIRED_STATUS);
-                }
-                this.discard();
+                    EntityAiToggle.KEY.maybeGet(body).ifPresent(t -> t.toggleAi(Registry.ITEM.getId(RequiemItems.EMPTY_SOUL_VESSEL), false, false));
+                    this.getRecord().ifPresent(data -> data.put(RequiemRecordTypes.RELEASED_SOUL, Unit.INSTANCE));
+                    this.discard();
+                });
             }
-        } else if (!this.world.isClient()) {
-            this.getCollidingBody().ifPresent(body -> {
-                this.world.sendEntityStatus(this, SOUL_EXPIRED_STATUS);
-                EntityAiToggle.KEY.maybeGet(body).ifPresent(t -> t.toggleAi(Registry.ITEM.getId(RequiemItems.EMPTY_SOUL_VESSEL), false, false));
-                this.discard();
-            });
         }
         super.tick();
+    }
+
+    @Override
+    protected void expire() {
+        if (this.getBodyStatus() == BODY_ISEKAI) {
+            // Will be retrieved later
+            this.getRecord().ifPresent(data -> data.put(RequiemRecordTypes.RELEASED_SOUL, Unit.INSTANCE));
+            this.world.sendEntityStatus(this, TELEPORT_AWAY_STATUS);
+        } else {
+            // RIP
+            this.getRecord().ifPresent(GlobalRecord::invalidate);
+            this.world.sendEntityStatus(this, SOUL_EXPIRED_STATUS);
+        }
+        this.discard();
     }
 
     private Optional<Entity> getCollidingBody() {
@@ -157,29 +161,44 @@ public class ReleasedSoulEntity extends SoulEntity {
     protected void spawnTrailParticle() {
         switch (this.getBodyStatus()) {
             case BODY_ISEKAI -> this.world.addParticle(ParticleTypes.PORTAL, this.getParticleX(0.5D), this.getRandomBodyY() - 0.25D, this.getParticleZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
-            case BODY_MISSING -> world.addParticle(ParticleTypes.SMOKE, this.getX() + random.nextDouble() / 5.0D, this.getY() + random.nextDouble(), this.getZ() + random.nextDouble() / 5.0D, 0.0D, 0.0D, 0.0D);
+            case BODY_MISSING -> world.addParticle(ParticleTypes.SMOKE, this.getX() + random.nextDouble() / 5.0D, this.getY() + random.nextDouble() / 3, this.getZ() + random.nextDouble() / 5.0D, 0.0D, 0.05D, 0.0D);
             default -> super.spawnTrailParticle();
         }
+    }
+
+    @Override
+    protected float getMaxSpeedModifier() {
+        final float maxSpeed404 = 0.4f;
+        if (this.getBodyStatus() != BODY_FOUND) return maxSpeed404;
+        return super.getMaxSpeedModifier();
     }
 
     @Override
     protected Vec3d selectNextTarget() {
         this.targetChanges++;
 
-        return this.getTarget().filter(ptr -> ptr.world() == this.world.getRegistryKey()).map(target -> {
-            double distanceToTarget = this.getPos().distanceTo(target.pos());
-            final double maxStepDistance = 15.0;
-            double scuffedDistanceToTarget = Math.min(maxStepDistance, distanceToTarget);
-            Vec3d towardsTarget = target.pos().subtract(this.getPos()).normalize().multiply(scuffedDistanceToTarget);
-            assert targetChanges > 0;
-            double fuzzyFactor = (scuffedDistanceToTarget * 1.5) / this.targetChanges;
-            Vec3d fuzzyTarget = towardsTarget.multiply(
-                Math.abs(1 + random.nextGaussian() * fuzzyFactor),
-                Math.abs(1 + random.nextGaussian() * fuzzyFactor),
-                Math.abs(1 + random.nextGaussian() * fuzzyFactor)
+        return switch (this.getBodyStatus()) {
+            case BODY_FOUND -> this.getTarget().map(target -> {
+                double distanceToTarget = this.getPos().distanceTo(target.pos());
+                final double maxStepDistance = 15.0;
+                double scuffedDistanceToTarget = Math.min(maxStepDistance, distanceToTarget);
+                Vec3d towardsTarget = target.pos().subtract(this.getPos()).normalize().multiply(scuffedDistanceToTarget);
+                assert targetChanges > 0;
+                double fuzzyFactor = (scuffedDistanceToTarget * 1.5) / this.targetChanges;
+                Vec3d fuzzyTarget = towardsTarget.multiply(
+                    Math.abs(1 + random.nextGaussian() * fuzzyFactor),
+                    Math.abs(1 + random.nextGaussian() * fuzzyFactor),
+                    Math.abs(1 + random.nextGaussian() * fuzzyFactor)
+                );
+                return this.getPos().add(fuzzyTarget);
+            }).orElseThrow();
+            case BODY_ISEKAI -> this.getPos().add(0, this.random.nextGaussian() * 0.1, 0);
+            default -> this.getPos().add(
+                random.nextGaussian(),
+                random.nextGaussian(),
+                random.nextGaussian()
             );
-            return this.getPos().add(fuzzyTarget);
-        }).orElseGet(this::getPos);
+        };
     }
 
     @Override

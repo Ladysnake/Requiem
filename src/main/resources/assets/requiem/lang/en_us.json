@@ -65,6 +65,7 @@
   "requiem:subtitles.effect.possession.attempt": "Possession Attempt",
   "requiem:subtitles.effect.time.stop": "ZA WARUDO! TOKI WO TOMARE",
   "requiem:subtitles.entity.soul.teleport": "Soul teleports away",
+  "requiem:subtitles.item.filled_vessel.use": "Soul gets released",
   "requiem:subtitles.item.soul_vessel.use": "Soul Vessel Activates",
 
   "requiem:tooltip.filled_vessel": "Soul fragments from a %s",

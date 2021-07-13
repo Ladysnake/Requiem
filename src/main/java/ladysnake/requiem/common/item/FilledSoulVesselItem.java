@@ -38,6 +38,7 @@ import ladysnake.requiem.api.v1.event.requiem.EntityRecordUpdateCallback;
 import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.entity.ReleasedSoulEntity;
 import ladysnake.requiem.common.entity.RequiemEntities;
+import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.entity.EntityAiToggle;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
@@ -90,12 +91,13 @@ public class FilledSoulVesselItem extends Item {
                 .filter(data -> data.containsUuid("uuid"))
                 .map(data -> data.getUuid("uuid"))
                 .orElse(null));
-            releasedSoul.setPosition(user.getX(), user.getBodyY(0.5D), user.getZ());
-            releasedSoul.setVelocity(user.getRotationVector());
+            releasedSoul.setPosition(user.getX(), user.getBodyY(0.8D), user.getZ());
+            releasedSoul.setVelocity(user.getRotationVector().normalize().multiply(0.15));
             world.spawnEntity(releasedSoul);
             ItemStack result = new ItemStack(this.emptySoulVessel);
             return TypedActionResult.success(ItemUsage.exchangeStack(stack, user, result));
         }
+        user.playSound(RequiemSoundEvents.ITEM_FILLED_VESSEL_USE, 3f, 0.6F + user.getRandom().nextFloat() * 0.4F);
         return TypedActionResult.success(stack);
     }
 }

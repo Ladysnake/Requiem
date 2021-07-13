@@ -48,6 +48,8 @@ public final class RequiemSoundEvents {
     public static final SoundEvent EFFECT_TIME_STOP = register("effect.time.stop");
     public static final SoundEvent ENTITY_SOUL_TELEPORT = register("entity.soul.teleport");
     public static final SoundEvent ITEM_OPUS_USE = register("item.opus.use");
+    public static final SoundEvent ITEM_EMPTY_VESSEL_USE = register("item.empty_vessel.use");
+    public static final SoundEvent ITEM_FILLED_VESSEL_USE = register("item.filled_vessel.use");
 
     private static SoundEvent register(String name) {
         Identifier id = Requiem.id(name);

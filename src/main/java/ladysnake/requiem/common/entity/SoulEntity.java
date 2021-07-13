@@ -91,18 +91,13 @@ public class SoulEntity extends Entity {
 
         if (!this.world.isClient()) {
             if (this.maxAge >= 0 && this.age >= this.maxAge) {
-                this.world.sendEntityStatus(this, SOUL_EXPIRED_STATUS);
-                this.discard();
+                this.expire();
             }
 
             this.targetChangeCooldown -= this.getPos().squaredDistanceTo(this.prevX, this.prevY, this.prevZ) < 0.0125 ? 10 : 1;
 
             if ((this.world.getTime() % 20 == 0) && (this.getTarget().map(this.getPos()::squaredDistanceTo).orElse(Double.NaN) < 9 || targetChangeCooldown <= 0)) {
                 this.updateTarget();
-            }
-
-            if (random.nextInt(20) == 0) {
-                this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.PARTICLE_SOUL_ESCAPE, SoundCategory.AMBIENT, 1.0f, 1.5f, true);
             }
 
             if (!this.getBlockStateAtPos().isAir()) {
@@ -121,28 +116,44 @@ public class SoulEntity extends Entity {
         this.getTarget().ifPresent(target -> {
             Vec3d targetVector = target.subtract(this.getPos());
             double length = targetVector.length();
-            targetVector = targetVector.multiply(getSpeedModifier() / length);
+            targetVector = targetVector.multiply(getSpeedModifier() / Math.max(1, length));
 
             // newVelocity = 0.9 * velocity + 0.1 * targetVector
             Vec3d newVelocity = this.getVelocity().multiply(0.9).add(targetVector.multiply(0.1));
+            if (Objects.equals(new BlockPos(target), this.getBlockPos())) {
+                newVelocity = newVelocity.multiply(0.8);
+            }
             this.setVelocity(newVelocity);
 
-            float f = (float) Math.sqrt(newVelocity.x * newVelocity.x + newVelocity.z * newVelocity.z);
-            this.setRotation(
-                (float) (MathHelper.atan2(newVelocity.x, newVelocity.z) * RADIANS_TO_DEGREES),
-                (float) (MathHelper.atan2(newVelocity.y, f) * RADIANS_TO_DEGREES)
-            );
-
-            if (!Objects.equals(new BlockPos(target), this.getBlockPos())) {
-                this.move(MovementType.SELF, this.getVelocity());
+            if (newVelocity.lengthSquared() > 0.001) {
+                float f = (float) Math.sqrt(newVelocity.x * newVelocity.x + newVelocity.z * newVelocity.z);
+                // it's okay, the maths check out
+                //noinspection SuspiciousNameCombination
+                this.setRotation(
+                    (float) (MathHelper.atan2(newVelocity.x, newVelocity.z) * RADIANS_TO_DEGREES),
+                    (float) (MathHelper.atan2(newVelocity.y, f) * RADIANS_TO_DEGREES)
+                );
             }
         });
+
+        if (this.getVelocity().lengthSquared() > 0.0001) {
+            this.move(MovementType.SELF, this.getVelocity());
+        }
 
         if (this.world.isClient()) {
             for (int i = 0; i < 10 * this.getSpeedModifier(); i++) {
                 this.spawnTrailParticle();
             }
+
+            if (random.nextInt(20) == 0) {
+                this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.PARTICLE_SOUL_ESCAPE, SoundCategory.AMBIENT, 1.0f, 1.5f, true);
+            }
         }
+    }
+
+    protected void expire() {
+        this.world.sendEntityStatus(this, SOUL_EXPIRED_STATUS);
+        this.discard();
     }
 
     protected void spawnTrailParticle() {
@@ -161,11 +172,11 @@ public class SoulEntity extends Entity {
         this.getDataTracker().set(NEXT_TARGET, Optional.of(target));
     }
 
-    private float getSpeedModifier() {
+    protected float getSpeedModifier() {
         return this.getDataTracker().get(SPEED_MODIFIER);
     }
 
-    private void setSpeedModifier(float speedModifier) {
+    protected void setSpeedModifier(float speedModifier) {
         this.getDataTracker().set(SPEED_MODIFIER, speedModifier);
     }
 
@@ -194,8 +205,12 @@ public class SoulEntity extends Entity {
             return;
         }
 
-        this.setSpeedModifier(0.1f + Math.max(0, random.nextFloat() - 0.1f));
+        this.setSpeedModifier(0.1f + Math.max(0, random.nextFloat() * this.getMaxSpeedModifier() - 0.1f));
         this.targetChangeCooldown = random.nextInt() % (int) (100 / getSpeedModifier());
+    }
+
+    protected float getMaxSpeedModifier() {
+        return 1;
     }
 
     protected Vec3d selectNextTarget() {
