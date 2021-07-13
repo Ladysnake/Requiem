@@ -38,12 +38,10 @@ import baritone.api.fakeplayer.AutomatoneFakePlayer;
 import ladysnake.pandemonium.Pandemonium;
 import ladysnake.pandemonium.client.render.entity.MorticianEntityRenderer;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
-import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.client.FractureKeyBinding;
-import ladysnake.requiem.client.RequiemClient;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
@@ -82,7 +80,7 @@ public class PandemoniumClient implements ClientModInitializer {
     }
 
     private void registerSprites() {
-        RequiemClient.instance().statusEffectSpriteManager().registerAltSprites(PandemoniumStatusEffects.PENANCE, 2);
+
     }
 
     private void registerCallbacks() {

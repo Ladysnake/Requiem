@@ -32,26 +32,24 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.compat.mixin.origins;
+package ladysnake.requiem.common.block;
 
-import io.github.apace100.origins.power.Power;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import net.minecraft.entity.player.PlayerEntity;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-import java.util.function.Predicate;
+import java.util.function.Supplier;
 
-@Mixin(Power.class)
-public abstract class PowerMixin {
-    @Shadow(remap = false)
-    public abstract Power addCondition(Predicate<PlayerEntity> condition);
+public class ReclamationRunicObsidianBlock extends RunicObsidianBlock {
+    public ReclamationRunicObsidianBlock(Settings settings, Supplier<StatusEffect> effect, int maxLevel) {
+        super(settings, effect, maxLevel);
+    }
 
-    @Inject(method = "<init>*", at = @At("RETURN"), remap = false)
-    private void cancelSoulPowers(CallbackInfo ci) {
-        this.addCondition(p -> !RemnantComponent.isVagrant(p));
+    @Override
+    public void applyEffect(ServerPlayerEntity target, int runeLevel, int obeliskWidth) {
+        if (!target.hasStatusEffect(this.getEffect())) {
+            int effectDuration = (10 - obeliskWidth) * 20 * 60;
+            target.addStatusEffect(new StatusEffectInstance(this.getEffect(), effectDuration, runeLevel - 1, true, true));
+        }
     }
 }

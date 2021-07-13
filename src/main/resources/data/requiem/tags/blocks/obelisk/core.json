@@ -4,6 +4,7 @@
     "minecraft:crying_obsidian",
     "requiem:tachylite/runic/attrition",
     "requiem:tachylite/runic/emancipation",
+    "requiem:tachylite/runic/reclamation",
     {"id": "requiem:tachylite/runic/penance", "required": false }
   ]
 }

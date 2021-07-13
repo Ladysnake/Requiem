@@ -34,26 +34,51 @@
  */
 package ladysnake.requiem.common.entity.effect;
 
-import ladysnake.requiem.Requiem;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
+import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
+import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
+import ladysnake.requiem.common.sound.RequiemSoundEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
 
-public final class RequiemStatusEffects {
-    public static final StatusEffect ATTRITION = new AttritionStatusEffect(StatusEffectType.HARMFUL, 0xAA3322)
-        .addAttributeModifier(EntityAttributes.GENERIC_MAX_HEALTH, "069ae0b1-4014-41dd-932f-a5da4417d711", -0.2, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
-    public static final StatusEffect EMANCIPATION = new EmancipationStatusEffect(StatusEffectType.BENEFICIAL, 0x7799FF);
-    public static final StatusEffect RECLAMATION = new ReclamationStatusEffect(StatusEffectType.BENEFICIAL, 0xFFDF00);
+import java.util.Map;
+import java.util.WeakHashMap;
 
-    public static void init() {
-        registerEffect(ATTRITION, "attrition");
-        registerEffect(EMANCIPATION, "emancipation");
-        registerEffect(RECLAMATION, "reclamation");
+public class ReclamationStatusEffect extends StatusEffect {
+    private static final Map<LivingEntity, Integer> playersToHeal = new WeakHashMap<>();
+
+    public ReclamationStatusEffect(StatusEffectType type, int color) {
+        super(type, color);
     }
 
-    public static void registerEffect(StatusEffect effect, String name) {
-        Registry.register(Registry.STATUS_EFFECT, Requiem.id(name), effect);
+    public static void registerEventHandlers() {
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            playersToHeal.forEach(AttritionStatusEffect::reduce);
+            playersToHeal.clear();
+        });
+        PossessionEvents.DISSOCIATION_CLEANUP.register(ReclamationStatusEffect::clearReclamation);
+        PlayerShellEvents.PLAYER_SPLIT.register((whole, soul, playerShell) -> clearReclamation(soul, whole));
+    }
+
+    private static void clearReclamation(ServerPlayerEntity soul, LivingEntity body) {
+        if (body.hasStatusEffect(RequiemStatusEffects.RECLAMATION)) {
+            body.removeStatusEffect(RequiemStatusEffects.RECLAMATION);
+            soul.playSound(RequiemSoundEvents.EFFECT_RECLAMATION_CLEAR, SoundCategory.PLAYERS, 1, 0.8f);
+        }
+    }
+
+    @Override
+    public boolean canApplyUpdateEffect(int duration, int amplifier) {
+        return duration == 1;
+    }
+
+    @Override
+    public void applyUpdateEffect(LivingEntity entity, int amplifier) {
+        if (!entity.world.isClient()) {
+            playersToHeal.put(entity, amplifier + 1);
+        }
     }
 }

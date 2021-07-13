@@ -26,7 +26,7 @@ public interface RemnantStateChangeCallback {
     void onRemnantStateChange(PlayerEntity player, RemnantComponent state);
 
     /**
-     * Fired after a player dissociates from or merges with a congruous body
+     * Fired after a player becomes or stops being {@link RemnantComponent#isVagrant() vagrant}.
      */
     Event<RemnantStateChangeCallback> EVENT = EventFactory.createArrayBacked(RemnantStateChangeCallback.class,
         (callbacks) -> (player, remnant) -> {

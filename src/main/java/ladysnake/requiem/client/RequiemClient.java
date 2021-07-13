@@ -54,6 +54,7 @@ import net.minecraft.util.Identifier;
 public final class RequiemClient {
 
     public static final Identifier CRAFTING_BUTTON_TEXTURE = Requiem.id("textures/gui/crafting_button.png");
+    public static final Identifier SOULBOUND_BACKGROUND = Requiem.id("textures/gui/soulbound_background.png");
 
     private static final RequiemClient INSTANCE = new RequiemClient();
 

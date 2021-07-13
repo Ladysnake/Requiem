@@ -188,7 +188,7 @@ repositories {
     }
     maven {
         name = "TerraformersMC"
-        url = "https://maven.terraformersmc.com/"
+        url = "https://maven.kotlindiscord.com/repository/terraformers/"
     }
     maven {
         name = 'JitPack'
@@ -258,8 +258,10 @@ dependencies {
 //    modRuntime("curse.maven:Pehkui-319596:${pehkui_version}") { transitive = false }
     modCompileOnly("curse.maven:Snow-Mercy-429949:${snowmercy_version}") { transitive = false }
 //    modRuntime("curse.maven:Snow-Mercy-429949:${snowmercy_version}") { transitive = false }
+    modCompileOnly("com.github.apace100:apoli:${apoli_version}") { transitive = false }
+    modCompileOnly("com.github.apace100:calio:${calio_version}") { transitive = false }
     modCompileOnly("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
-//    modRuntime("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
+    modRuntime("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:${eldritch_mobs_version}") { transitive = false }
 //    modRuntime "io.github.cottonmc:LibGui:${libgui_version}"
     modCompileOnly("curse.maven:haema-391257:${haema_version}")

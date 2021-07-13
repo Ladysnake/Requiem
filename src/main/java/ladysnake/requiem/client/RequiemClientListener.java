@@ -134,7 +134,7 @@ public final class RequiemClientListener implements
                 if (--timeBeforeDialogueGui == 0) {
                     DialogueTracker dialogueTracker = DialogueTracker.get(client.player);
                     dialogueTracker.startDialogue(Requiem.id("remnant_choice"));
-                    client.openScreen(new CutsceneDialogueScreen(new TranslatableText("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue(), this.rc.worldFreezeFxRenderer()));
+                    client.setScreen(new CutsceneDialogueScreen(new TranslatableText("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue(), this.rc.worldFreezeFxRenderer()));
                 } else if (timeBeforeDialogueGui < 0) {
                     timeBeforeDialogueGui = 20;
                 }

@@ -37,6 +37,7 @@ package ladysnake.requiem.common.block;
 import com.google.common.base.Suppliers;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.block.ObeliskRune;
+import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.item.RequiemItems;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -68,6 +69,7 @@ public class RequiemBlocks {
     public static final Block SCRAPED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/scraped");
     public static final RunicObsidianBlock RUNIC_TACHYLITE_ATTRITION = makeRunic("attrition", 3);
     public static final RunicObsidianBlock RUNIC_TACHYLITE_EMANCIPATION = makeRunic("emancipation", 1);
+    public static final ReclamationRunicObsidianBlock RUNIC_TACHYLITE_RECLAMATION = new ReclamationRunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), () -> RequiemStatusEffects.RECLAMATION, 1);
 
     private static Block makeVariant(Block base, String id) {
         Block ret = new Block(AbstractBlock.Settings.copy(base));
@@ -103,6 +105,7 @@ public class RequiemBlocks {
 
     public static void init() {
         allBlocks.forEach(RequiemBlocks::register);
+        registerRunic(RUNIC_TACHYLITE_RECLAMATION, "tachylite/runic/reclamation");
     }
 
     public static <T extends Block & ObeliskRune> void registerRunic(T block, String name) {

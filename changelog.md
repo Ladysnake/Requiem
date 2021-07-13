@@ -1,4 +1,37 @@
 ------------------------------------------------------
+Version 2.0.0
+------------------------------------------------------
+**Warning: this update is still in early alpha. Most new features are still unavailable in survival mode, some are still completely missing, and things may randomly break.**
+
+**Really important warning: future alphas are extremely likely to break compatibility with worlds started with this alpha. Don't start using those versions on any world you care about.**
+
+### The "Cry of the Obelisks" update
+
+Updated to MC 1.17
+
+**Additions**
+- Added the Emancipation status effect, letting you freely leave your current body
+- Added the Reclamation status effect, letting you cure attrition over time
+- Added the Tachylite block family
+- Added Runic Tachylite for all soulbound status effects
+- Added Tachylite Obelisks, a new player-made structure
+
+**Changes**
+- Some datapack things have changed
+    - Dialogues are now in the `requiem:requiem/dialogues` directory
+- Possessed pillagers can now ride ravagers
+
+**Mod Interaction**
+- Updated Origins compatibility
+- Updated Golems Galore compatibility
+- Updated Mod Menu metadata
+- **Requiem's API got breaking changes, if you are a modder doing compatibility with Requiem make sure to check things work fine !**
+
+#### Pandemonium
+**Additions**
+- Added the Penance status effect, preventing you from leaving your current body
+
+------------------------------------------------------
 Version 1.7.12
 ------------------------------------------------------
 **Changes**

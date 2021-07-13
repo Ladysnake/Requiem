@@ -38,6 +38,12 @@ public final class PossessionEvents {
             }
             return ret;
         });
+    public static final Event<DissociationCleanup> DISSOCIATION_CLEANUP = EventFactory.createArrayBacked(DissociationCleanup.class,
+        callbacks -> (possessor, formerHost) -> {
+            for (DissociationCleanup callback : callbacks) {
+                callback.cleanUpAfterDissociation(possessor, formerHost);
+            }
+        });
     public static final Event<HostDeath> HOST_DEATH = EventFactory.createArrayBacked(HostDeath.class,
         callbacks -> (player, host, deathCause) -> {
             for (HostDeath callback : callbacks) {
@@ -55,11 +61,15 @@ public final class PossessionEvents {
         TriState shouldTransfer(ServerPlayerEntity possessor, LivingEntity host);
     }
 
+    public interface DissociationCleanup {
+        void cleanUpAfterDissociation(ServerPlayerEntity possessor, LivingEntity formerHost);
+    }
+
     public interface HostDeath {
-        void onHostDeath(ServerPlayerEntity player, LivingEntity host, DamageSource deathCause);
+        void onHostDeath(ServerPlayerEntity possessor, LivingEntity host, DamageSource deathCause);
     }
 
     public interface PostResurrection {
-        void onResurrected(ServerPlayerEntity player, LivingEntity secondLife);
+        void onResurrected(ServerPlayerEntity resurrected, LivingEntity secondLife);
     }
 }
