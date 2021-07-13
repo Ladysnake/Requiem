@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#requiem:soulless",
+    "#requiem:possession/soulless",
     "requiem:cured_piglin",
     "requiem:cured_piglin_brute",
     "requiem:cured_villager",
