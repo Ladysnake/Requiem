@@ -36,8 +36,11 @@ package ladysnake.pandemonium.common.entity.effect;
 
 import com.mojang.authlib.GameProfile;
 import ladysnake.pandemonium.common.PlayerSplitter;
+import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
+import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
@@ -48,24 +51,44 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class PenanceStatusEffect extends StatusEffect {
+
+    public static final int PREVENT_CURE_THRESHOLD = 0;
+    public static final int PLAYER_BAN_THRESHOLD = 1;
+    public static final int MOB_BAN_THRESHOLD = 2;
+
     protected PenanceStatusEffect(StatusEffectType type, int color) {
         super(type, color);
+    }
+
+    public static void registerCallbacks() {
+        CanCurePossessedCallback.EVENT.register((body) -> {
+            if (body.hasStatusEffect(PandemoniumStatusEffects.PENANCE)) {
+                return TriState.FALSE;
+            }
+            return TriState.DEFAULT;
+        });
+        PlayerShellEvents.PRE_MERGE.register(PenanceStatusEffect::canMerge);
     }
 
     @Override
     public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
         super.onApplied(entity, attributes, amplifier);
-        if (amplifier >= 1 && entity instanceof ServerPlayerEntity) { // level 2+
-            ServerPlayerEntity player = (ServerPlayerEntity) entity;
-            if (amplifier >= 2) { // level 3+
+        if (PenanceComponent.KEY.maybeGet(entity).filter(PenanceComponent::shouldApplyPenance).isPresent()) {
+            applyPenance(entity, amplifier);
+        }
+    }
+
+    public static void applyPenance(LivingEntity entity, int amplifier) {
+        if (amplifier >= PLAYER_BAN_THRESHOLD && entity instanceof ServerPlayerEntity player) { // level 2+
+            if (amplifier >= MOB_BAN_THRESHOLD) { // level 3+
 	            PossessionComponent.get(player).stopPossessing();
 	        }
             RemnantComponent remnant = RemnantComponent.get(player);
             if (!remnant.isVagrant()) {
                 if (remnant.getRemnantType().isDemon()) {
-                    PlayerSplitter.split(player);
+                    PlayerSplitter.split(player, true);
                 } else {
-                    player.damage(DamageSource.MAGIC, amplifier*4);
+                    player.damage(DamageSource.MAGIC, amplifier * 4);
                 }
             }
         }

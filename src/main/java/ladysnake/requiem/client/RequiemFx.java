@@ -34,6 +34,8 @@
  */
 package ladysnake.requiem.client;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
@@ -44,10 +46,16 @@ import ladysnake.satin.api.managed.uniform.Uniform1f;
 import ladysnake.satin.api.managed.uniform.Uniform3f;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
@@ -57,6 +65,8 @@ import static ladysnake.requiem.client.FxHelper.impulse;
 public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEvents.EndTick {
     public static final Identifier SPECTRE_SHADER_ID = Requiem.id("shaders/post/spectre.json");
     public static final Identifier ZOOM_SHADER_ID = Requiem.id("shaders/post/zoom.json");
+    private static final Identifier PENANCE_OVERLAY = new Identifier("textures/misc/nausea.png");
+
     private static final float[] ETHEREAL_COLOR = {0.0f, 0.7f, 1.0f};
 
     public static final int PULSE_ANIMATION_TIME = 20;
@@ -188,4 +198,36 @@ public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEv
         return this.zoomFramebuffer.getRenderLayer(base);
     }
 
+    public void renderPenanceOverlay(int rgb, float intensity) {
+        int windowWidth = this.mc.getWindow().getScaledWidth();
+        int windowHeight = this.mc.getWindow().getScaledHeight();
+        double stretch = MathHelper.lerp(intensity, 2.0, 1.0);
+        float r = ((rgb >> 16 & 0xFF) / 255f) * intensity;
+        float g = ((rgb >> 8 & 0xFF) / 255f) * intensity;
+        float b = ((rgb & 0xFF) / 255f) * intensity;
+        double effectWidth = (double)windowWidth * stretch;
+        double effectHeight = (double)windowHeight * stretch;
+        double left = ((double)windowWidth - effectWidth) / 2.0;
+        double top = ((double)windowHeight - effectHeight) / 2.0;
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
+        RenderSystem.setShaderColor(r, g, b, 1.0F);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, PENANCE_OVERLAY);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        bufferBuilder.vertex(left, top + effectHeight, -90.0).texture(0.0F, 1.0F).next();
+        bufferBuilder.vertex(left + effectWidth, top + effectHeight, -90.0).texture(1.0F, 1.0F).next();
+        bufferBuilder.vertex(left + effectWidth, top, -90.0).texture(1.0F, 0.0F).next();
+        bufferBuilder.vertex(left, top, -90.0).texture(0.0F, 0.0F).next();
+        tessellator.draw();
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableBlend();
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
+    }
 }

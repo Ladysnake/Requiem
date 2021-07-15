@@ -55,7 +55,6 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
 import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
 import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
@@ -64,7 +63,6 @@ import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.api.v1.remnant.VagrantInteractionRegistry;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.core.entity.ability.RangedAttackAbility;
-import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.WitherEntity;
@@ -83,12 +81,7 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
 
     @Override
     public void onRequiemInitialize() {
-        CanCurePossessedCallback.EVENT.register((body) -> {
-            if (body.hasStatusEffect(PandemoniumStatusEffects.PENANCE)) {
-                return TriState.FALSE;
-            }
-            return TriState.DEFAULT;
-        });
+        PenanceStatusEffect.registerCallbacks();
 
         if (PandemoniumConfig.possession.allowPossessingAllMobs) {
             // Enderman specific behaviour is unneeded now that players can possess them

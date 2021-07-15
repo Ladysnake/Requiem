@@ -48,6 +48,7 @@ import ladysnake.pandemonium.common.block.PandemoniumBlocks;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.WololoComponent;
 import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
+import ladysnake.pandemonium.common.entity.effect.PenanceComponent;
 import ladysnake.pandemonium.common.impl.anchor.CommonAnchorManager;
 import ladysnake.pandemonium.common.network.ServerMessageHandling;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
@@ -66,7 +67,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.World;
 
 @CalledThroughReflection
-public class Pandemonium implements ModInitializer, EntityComponentInitializer, WorldComponentInitializer {
+public final class Pandemonium implements ModInitializer, EntityComponentInitializer, WorldComponentInitializer {
     public static final String MOD_ID = "pandemonium";
     public static final Identifier BODY_IMPERSONATION = RequiemCore.id("body_impersonation");
     public static final Pandemonium INSTANCE = new Pandemonium();
@@ -104,6 +105,7 @@ public class Pandemonium implements ModInitializer, EntityComponentInitializer, 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         registry.registerForPlayers(PlayerBodyTracker.KEY, PlayerBodyTracker::new, RespawnCopyStrategy.ALWAYS_COPY);
+        registry.registerForPlayers(PenanceComponent.KEY, PenanceComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerFor(EndermanEntity.class, WololoComponent.KEY, WololoComponent::create);
     }
 

@@ -152,8 +152,8 @@ public final class RemnantComponentImpl implements RemnantComponent {
     }
 
     @Override
-    public boolean canPerformSplit() {
-        return !this.player.isRemoved() && this.state.canSplit() && !this.isVagrant() && PlayerShellEvents.PRE_SPLIT.invoker().canSplit(this.player);
+    public boolean canPerformSplit(boolean forced) {
+        return !this.player.isRemoved() && this.state.canSplit(forced) && !this.isVagrant() && PlayerShellEvents.PRE_SPLIT.invoker().canSplit(this.player);
     }
 
     @Override
