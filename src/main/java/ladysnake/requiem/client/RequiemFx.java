@@ -146,6 +146,13 @@ public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEv
         this.etherealAnimation = 10;
     }
 
+    public void playEtherealPulseAnimation(int intensity, int color) {
+        float r = ((color >> 16 & 0xFF) / 255f);
+        float g = ((color >> 8 & 0xFF) / 255f);
+        float b = ((color & 0xFF) / 255f);
+        this.playEtherealPulseAnimation(intensity, r, g, b);
+    }
+
     public void playEtherealPulseAnimation(int intensity, float accentColorR, float accentColorG, float accentColorB) {
         this.pulseAnimation = PULSE_ANIMATION_TIME * intensity;
         this.accentColorR = accentColorR;

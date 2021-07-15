@@ -43,6 +43,8 @@ import dev.onyxstudios.cca.api.v3.component.tick.ClientTickingComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.client.RequiemClient;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -52,7 +54,12 @@ import net.minecraft.util.math.MathHelper;
 
 public final class PenanceComponent implements ServerTickingComponent, ClientTickingComponent, AutoSyncedComponent {
     public static final ComponentKey<PenanceComponent> KEY = ComponentRegistry.getOrCreate(Requiem.id("penance"), PenanceComponent.class);
+
+    public static final byte DATA_SYNC = 0;
+    public static final byte FX_SYNC = 1;
+
     public static final int PENANCE_WARNING_TIME = 30 * 20;
+    public static final int PENANCE_FLASH_INTENSITY = 5;
 
     private final PlayerEntity owner;
     private int timeWithPenance = -1;
@@ -76,7 +83,11 @@ public final class PenanceComponent implements ServerTickingComponent, ClientTic
     @Override
     public void clientTick() {
         this.lastPenanceStrength = this.nextPenanceStrength;
-        this.nextPenanceStrength = Math.min(1, (float) this.timeWithPenance / PENANCE_WARNING_TIME);
+        if (RemnantComponent.isIncorporeal(this.owner) && this.owner.hasStatusEffect(PandemoniumStatusEffects.PENANCE)) {
+            this.nextPenanceStrength = 0.4f;
+        } else {
+            this.nextPenanceStrength = Math.min(1, (float) this.timeWithPenance / PENANCE_WARNING_TIME);
+        }
     }
 
     @Override
@@ -86,6 +97,10 @@ public final class PenanceComponent implements ServerTickingComponent, ClientTic
             this.timeWithPenance++;
             if (this.shouldApplyPenance()) {
                 PenanceStatusEffect.applyPenance(this.owner, penance.getAmplifier());
+                // Probably not sending to the right player object, but they share the same connection anyway
+                RequiemNetworking.sendEtherealAnimationMessage((ServerPlayerEntity) this.owner);
+                // Again doesn't matter which player object carries the message
+                KEY.sync(this.owner, this::writeFxPacket);
             }
             // if we sync here right after the player has respawned,
             // we will sync the old value to the new player, causing a desync
@@ -121,12 +136,21 @@ public final class PenanceComponent implements ServerTickingComponent, ClientTic
 
     @Override
     public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
+        buf.writeByte(DATA_SYNC);
         buf.writeVarInt(this.timeWithPenance);
+    }
+
+    private void writeFxPacket(PacketByteBuf buf, ServerPlayerEntity player) {
+        buf.writeByte(FX_SYNC);
     }
 
     @Override
     public void applySyncPacket(PacketByteBuf buf) {
-        this.timeWithPenance = buf.readVarInt();
+        byte op = buf.readByte();
+        switch (op) {
+            case DATA_SYNC -> this.timeWithPenance = buf.readVarInt();
+            case FX_SYNC -> RequiemClient.instance().fxRenderer().playEtherealPulseAnimation(PENANCE_FLASH_INTENSITY, PandemoniumStatusEffects.PENANCE.getColor());
+        }
     }
 
     @Override
