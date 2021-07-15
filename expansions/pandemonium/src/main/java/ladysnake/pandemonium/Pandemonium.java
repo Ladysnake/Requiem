@@ -46,7 +46,6 @@ import ladysnake.pandemonium.common.PandemoniumCommand;
 import ladysnake.pandemonium.common.PandemoniumConfig;
 import ladysnake.pandemonium.common.block.PandemoniumBlocks;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
-import ladysnake.pandemonium.common.entity.WololoComponent;
 import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
 import ladysnake.pandemonium.common.entity.effect.PenanceComponent;
 import ladysnake.pandemonium.common.impl.anchor.CommonAnchorManager;
@@ -55,6 +54,7 @@ import ladysnake.pandemonium.common.network.ServerMessageHandling;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
 import ladysnake.pandemonium.compat.PandemoniumCompatibilityManager;
 import ladysnake.requiem.api.v1.RequiemApi;
+import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
@@ -62,7 +62,6 @@ import ladysnake.requiem.core.RequiemCore;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.World;
@@ -71,6 +70,7 @@ import net.minecraft.world.World;
 public final class Pandemonium implements ModInitializer, EntityComponentInitializer, WorldComponentInitializer {
     public static final String MOD_ID = "pandemonium";
     public static final Identifier BODY_IMPERSONATION = RequiemCore.id("body_impersonation");
+    @AccessedThroughReflection
     public static final Pandemonium INSTANCE = new Pandemonium();
 
     public static Identifier id(String path) {
@@ -108,7 +108,6 @@ public final class Pandemonium implements ModInitializer, EntityComponentInitial
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         registry.registerForPlayers(PlayerBodyTracker.KEY, PlayerBodyTracker::new, RespawnCopyStrategy.ALWAYS_COPY);
         registry.registerForPlayers(PenanceComponent.KEY, PenanceComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
-        registry.registerFor(EndermanEntity.class, WololoComponent.KEY, WololoComponent::create);
     }
 
     @Override

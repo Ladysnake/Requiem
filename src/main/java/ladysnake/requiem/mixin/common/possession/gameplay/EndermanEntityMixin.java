@@ -32,30 +32,30 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.client.render.entity;
+package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import ladysnake.pandemonium.Pandemonium;
-import ladysnake.pandemonium.common.entity.WololoComponent;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.entity.LivingEntity;
+import ladysnake.requiem.common.entity.WololoComponent;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.EndermanEntity;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-public class ClientWololoComponent extends WololoComponent {
-    private static final RenderLayer CLASSIC_ENDERMAN_EYES = RenderLayer.getEyes(Pandemonium.id("textures/entity/enderman/classic_enderman_eyes.png"));
-
-    private final @Nullable RenderLayer eyesLayer;
-
-    public ClientWololoComponent(LivingEntity entity) {
-        super(entity);
-        if (entity instanceof EndermanEntity) {
-            eyesLayer = CLASSIC_ENDERMAN_EYES;
-        } else {
-            eyesLayer = null;
-        }
+@Mixin(EndermanEntity.class)
+public abstract class EndermanEntityMixin extends HostileEntity {
+    protected EndermanEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {
+        super(entityType, world);
     }
 
-    public @Nullable RenderLayer getEyesLayer() {
-        return this.isConverted() ? eyesLayer : null;
+    @ModifyArg(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)V"))
+    private ParticleEffect swapParticleEffect(ParticleEffect baseEffect) {
+        if (WololoComponent.isConverted(this)) {
+            return ParticleTypes.SMOKE;
+        }
+        return baseEffect;
     }
 }

@@ -32,37 +32,35 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.mixin.client.render;
+package ladysnake.requiem.mixin.client.possession;
 
-import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
-import ladysnake.pandemonium.common.entity.effect.PenanceComponent;
-import ladysnake.requiem.client.RequiemClient;
-import net.minecraft.client.MinecraftClient;
+import ladysnake.requiem.common.entity.WololoComponent;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.entity.Entity;
 import org.objectweb.asm.Opcodes;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import javax.annotation.Nullable;
+
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
-    @Shadow
-    @Final
-    private MinecraftClient client;
-
-    @Shadow
-    protected abstract void method_31136(float f);
-
-    @Inject(method = "render", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/network/ClientPlayerEntity;lastNauseaStrength:F"))
-    private void renderPenanceOverlay(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
-        assert this.client.player != null;
-        float f = PenanceComponent.KEY.get(this.client.player).getOverlayStrength(tickDelta);
-        if (f > 0.0F) {
-            RequiemClient.instance().fxRenderer().renderPenanceOverlay(PandemoniumStatusEffects.PENANCE.getColor(), f);
+    @Inject(
+        method = "onCameraEntitySet",
+        at = @At(
+            value = "FIELD",
+            opcode = Opcodes.PUTFIELD,
+            target = "Lnet/minecraft/client/render/GameRenderer;shader:Lnet/minecraft/client/gl/ShaderEffect;",
+            shift = At.Shift.AFTER
+        ),
+        require = 0,       // optibad compatibility (yes this is a relic now, no I won't do more efforts)
+        cancellable = true
+    )
+    private void useCustomEntityShader(@Nullable Entity entity, CallbackInfo info) {
+        if (entity != null && WololoComponent.isConverted(entity)) {
+            info.cancel();
         }
     }
-
 }
