@@ -34,9 +34,9 @@
  */
 package ladysnake.pandemonium.common.entity.ability;
 
-import ladysnake.pandemonium.common.entity.WololoComponent;
 import ladysnake.pandemonium.common.entity.internal.SpellcastingIllagerAccess;
 import ladysnake.pandemonium.mixin.common.entity.mob.EvokerEntityAccessor;
+import ladysnake.requiem.common.entity.WololoComponent;
 import ladysnake.requiem.core.entity.ability.DirectAbilityBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.EvokerEntity;
@@ -92,7 +92,7 @@ public class EvokerWololoAbility extends DirectAbilityBase<EvokerEntity, Entity>
         }
     }
 
-    class CustomWololoGoal extends EvokerEntity.WololoGoal implements ExtendedWololoGoal {
+    final class CustomWololoGoal extends EvokerEntity.WololoGoal implements ExtendedWololoGoal {
         private @Nullable Entity target;
 
         private CustomWololoGoal(EvokerEntity evoker) {

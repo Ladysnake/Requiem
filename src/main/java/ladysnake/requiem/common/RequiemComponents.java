@@ -53,6 +53,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.entity.CoolPlayerMovementAlterer;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
+import ladysnake.requiem.common.entity.WololoComponent;
 import ladysnake.requiem.common.entity.cure.CurableZombifiedPiglinComponent;
 import ladysnake.requiem.common.entity.cure.DelegatingCurableEntityComponent;
 import ladysnake.requiem.common.entity.cure.SimpleCurableEntityComponent;
@@ -64,8 +65,11 @@ import ladysnake.requiem.common.remnant.RemnantComponentImpl;
 import ladysnake.requiem.common.remnant.SimpleAttritionFocus;
 import ladysnake.requiem.core.ability.ImmutableMobAbilityController;
 import ladysnake.requiem.core.ability.PlayerAbilityController;
+import ladysnake.requiem.core.entity.EntityAiToggle;
 import ladysnake.requiem.core.possession.PossessionComponentImpl;
 import ladysnake.requiem.core.remnant.RevivingDeathSuspender;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
@@ -81,6 +85,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerForPlayers(MovementAlterer.KEY, CoolPlayerMovementAlterer::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerForPlayers(DeathSuspender.KEY, RevivingDeathSuspender::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerForPlayers(DialogueTracker.KEY, PlayerDialogueTracker::new, RespawnCopyStrategy.LOSSLESS_ONLY);
+        registry.registerFor(EndermanEntity.class, WololoComponent.KEY, WololoComponent::create);
         registry.registerFor(MobEntity.class, PossessedData.KEY, LootingPossessedData::new);
         registry.registerFor(MobEntity.class, MobAbilityController.KEY,
             e -> new ImmutableMobAbilityController<>(MobAbilityRegistry.instance().getConfig(e), e));
@@ -91,6 +96,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerFor(MobEntity.class, CurableEntityComponent.KEY, SimpleCurableEntityComponent::new);
         registry.registerFor(ZombieVillagerEntity.class, CurableEntityComponent.KEY, DelegatingCurableEntityComponent::new);
         registry.registerFor(ZombifiedPiglinEntity.class, CurableEntityComponent.KEY, CurableZombifiedPiglinComponent::new);
+        registry.registerFor(LivingEntity.class, EntityAiToggle.KEY, EntityAiToggle::new);
     }
 
     @Override

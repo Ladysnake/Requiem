@@ -32,6 +32,16 @@ Updated to MC 1.17
 - Added the Penance status effect, preventing you from leaving your current body
 
 ------------------------------------------------------
+Version 1.7.13
+------------------------------------------------------
+**Fixes**
+- Fixed damage effects not playing correctly when possessing a mob
+- Fixed sprinting cats and ocelots crashing the game when they touched water
+- Fixed possessed cats and ocelots being unable to sprint for more than a second
+- Updated some libraries
+    - Fixed a random crash when crafting something during possession
+
+------------------------------------------------------
 Version 1.7.12
 ------------------------------------------------------
 **Changes**

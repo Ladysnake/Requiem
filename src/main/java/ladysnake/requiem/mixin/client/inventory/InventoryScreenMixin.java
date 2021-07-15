@@ -135,7 +135,8 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
         InventoryLimiter.instance().getInventoryShape(requiem$player).tearDownEntityCrop();
     }
 
-    @ModifyArg(method = "drawBackground", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderTexture(ILnet/minecraft/util/Identifier;)V"))
+    // looks like the target is not getting remapped, so we have to resort to good ol ordinal
+    @ModifyArg(method = "drawBackground", at = @At(value = "INVOKE", ordinal = 2/* target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderTexture(ILnet/minecraft/util/Identifier;)V"*/))
     private Identifier swapBackground(Identifier background) {
         return InventoryLimiter.instance().getInventoryShape(requiem$player).swapBackground(background);
     }

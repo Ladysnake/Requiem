@@ -46,6 +46,12 @@ import net.minecraft.world.World;
 import java.util.Optional;
 
 public record OverrideFailure(boolean strikethrough) implements InstancedItemOverride {
+    private static final OverrideFailure defaultFormatting = new OverrideFailure(false);
+    private static final OverrideFailure strikeThrough = new OverrideFailure(true);
+
+    public static OverrideFailure get(boolean strikethrough) {
+        return strikethrough ? strikeThrough : defaultFormatting;
+    }
 
     @Override
     public boolean shortCircuits() {

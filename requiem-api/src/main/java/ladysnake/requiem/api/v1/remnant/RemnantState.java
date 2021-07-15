@@ -89,7 +89,7 @@ public interface RemnantState {
         return true;
     }
 
-    default boolean canSplit() {
+    default boolean canSplit(boolean forced) {
         return false;
     }
 

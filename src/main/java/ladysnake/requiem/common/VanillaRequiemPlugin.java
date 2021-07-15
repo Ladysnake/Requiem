@@ -54,6 +54,7 @@ import ladysnake.requiem.api.v1.event.requiem.ConsumableItemEvents;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
+import ladysnake.requiem.api.v1.event.requiem.SoulCaptureEvents;
 import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.possession.item.PossessionItemAction;
@@ -78,6 +79,7 @@ import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.ability.PlayerAbilityController;
+import ladysnake.requiem.core.entity.EntityAiToggle;
 import ladysnake.requiem.core.entity.ability.AutoAimAbility;
 import ladysnake.requiem.core.entity.ability.DelegatingDirectAbility;
 import ladysnake.requiem.core.entity.ability.RangedAttackAbility;
@@ -111,6 +113,7 @@ import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.ActionResult;
@@ -123,6 +126,7 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import static ladysnake.requiem.common.remnant.RemnantTypes.MORTAL;
 
@@ -160,6 +164,9 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         });
         HumanityCheckCallback.EVENT.register(possessedEntity -> EnchantmentHelper.getEquipmentLevel(RequiemEnchantments.HUMANITY, possessedEntity));
         ConsumableItemEvents.POST_CONSUMED.register(RequiemCriteria.USED_TOTEM::trigger);
+        SoulCaptureEvents.BEFORE_ATTEMPT.register((player, target) -> Optional.ofNullable(player.getStatusEffect(RequiemStatusEffects.ATTRITION)).map(StatusEffectInstance::getAmplifier).orElse(-1) < 3);
+        SoulCaptureEvents.BEFORE_ATTEMPT.register((player, target) -> !target.getType().isIn(RequiemEntityTypeTags.SOULLESS));
+        SoulCaptureEvents.BEFORE_ATTEMPT.register((player, target) -> !EntityAiToggle.isAiDisabled(target));
     }
 
     private void registerEtherealEventHandlers() {
@@ -184,9 +191,12 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             player.sendAbilitiesUpdate();
             ((MobResurrectable) player).spawnResurrectionEntity();
 
+            // effects do not normally get synced after respawn, so we do it ourselves
             for (StatusEffectInstance effect : player.getStatusEffects()) {
                 player.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), effect));
             }
+            // Fix for MC-108707: when you respawn while a player (or a shell) is watching you, you don't get data tracker updates
+            player.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker(), true));
         }));
         RemnantStateChangeCallback.EVENT.register((player, remnant) -> {
             if (!remnant.isVagrant()) {
@@ -320,7 +330,6 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     @Override
     public void registerRemnantStates(Registry<RemnantType> registry) {
         Registry.register(registry, Requiem.id("remnant"), RemnantTypes.REMNANT);
-        Registry.register(registry, Requiem.id("wandering_spirit"), RemnantTypes.WANDERING_SPIRIT);
     }
 
     @Override
@@ -347,11 +356,10 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     @Override
     public void registerDialogueActions(DialogueRegistry registry) {
         registry.registerAction(PlayerDialogueTracker.BECOME_REMNANT, p -> handleRemnantChoiceAction(p, RemnantTypes.REMNANT));
-        registry.registerAction(PlayerDialogueTracker.BECOME_WANDERING_SPIRIT, p -> handleRemnantChoiceAction(p, RemnantTypes.WANDERING_SPIRIT));
         registry.registerAction(PlayerDialogueTracker.STAY_MORTAL, p -> handleRemnantChoiceAction(p, MORTAL));
     }
 
-    private static void handleRemnantChoiceAction(ServerPlayerEntity player, RemnantType chosenType) {
+    public static void handleRemnantChoiceAction(ServerPlayerEntity player, RemnantType chosenType) {
         DeathSuspender deathSuspender = DeathSuspender.get(player);
         if (deathSuspender.isLifeTransient()) {
             makeRemnantChoice(player, chosenType);

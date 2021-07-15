@@ -160,7 +160,7 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
     private boolean requiem$wasSprinting;
     @Inject(method = "method_26317", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSprinting()Z"))
     private void preventWaterHovering(double d, boolean bl, Vec3d vec3d, CallbackInfoReturnable<Vec3d> cir) {
-        if (this.requiem$isSprinting() && MovementAlterer.KEY.get(this).disablesSwimming()) {
+        if (this.requiem$isSprinting() && MovementAlterer.KEY.maybeGet(this).map(MovementAlterer::disablesSwimming).orElse(false)) {
             requiem$wasSprinting = true;
             this.setSprinting(false);
         }

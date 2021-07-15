@@ -47,6 +47,7 @@ import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import ladysnake.requiem.core.entity.EntityAiToggle;
 import ladysnake.requiem.core.tag.RequiemCoreTags;
 import ladysnake.requiem.mixin.common.access.EndermanEntityAccessor;
 import net.fabricmc.fabric.api.util.TriState;
@@ -95,8 +96,8 @@ public class BasePossessionHandlers {
             return PossessionStartCallback.Result.PASS;
         });
         PossessionStartCallback.EVENT.register(Requiem.id("emancipation"), (target, possessor, simulate) -> {
-            if (possessor.hasStatusEffect(RequiemStatusEffects.EMANCIPATION)) {
-                // TODO check that the mob is soulless
+            if (possessor.hasStatusEffect(RequiemStatusEffects.EMANCIPATION)
+                && EntityAiToggle.isAiDisabled(target)) {
                 return PossessionStartCallback.Result.ALLOW;
             }
             return PossessionStartCallback.Result.PASS;

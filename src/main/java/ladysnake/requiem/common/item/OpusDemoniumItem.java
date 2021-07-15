@@ -68,7 +68,7 @@ public class OpusDemoniumItem extends WritableBookItem {
     @Environment(EnvType.CLIENT)
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> lines, TooltipContext ctx) {
-        addTooltipLine(lines, RequiemItems.OMINOUS_SOUL_VESSEL);
+        addTooltipLine(lines, RequiemItems.SEALED_REMNANT_VESSEL);
         addTooltipLine(lines, RequiemItems.SOUL_VESSEL);
     }
 

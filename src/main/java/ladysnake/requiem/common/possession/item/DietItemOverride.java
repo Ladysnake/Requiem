@@ -63,12 +63,10 @@ public class DietItemOverride implements PossessionItemOverride, InstancedItemOv
 
     private final LazyItemPredicate food;
     private final Filter filter;
-    private final OverrideFailure failure;
 
     public DietItemOverride(LazyItemPredicate food, Filter filter) {
         this.food = food;
         this.filter = filter;
-        failure = new OverrideFailure(true);
     }
 
     @Override
@@ -86,7 +84,7 @@ public class DietItemOverride implements PossessionItemOverride, InstancedItemOv
         if (this.food.get(possessed.world).test(stack)) {
             return Optional.of(this);
         } else if (stack.isFood()) {
-            return Optional.of(this.failure);
+            return Optional.of(OverrideFailure.get(true));
         }
         return Optional.empty();
     }

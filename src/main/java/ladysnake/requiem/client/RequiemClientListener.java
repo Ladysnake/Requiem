@@ -129,14 +129,21 @@ public final class RequiemClientListener implements
 
     @Override
     public void onEndTick(MinecraftClient client) {
-        if (client.player != null && client.currentScreen == null) {
-            if (DeathSuspender.get(client.player).isLifeTransient()) {
-                if (--timeBeforeDialogueGui == 0) {
-                    DialogueTracker dialogueTracker = DialogueTracker.get(client.player);
-                    dialogueTracker.startDialogue(Requiem.id("remnant_choice"));
-                    client.setScreen(new CutsceneDialogueScreen(new TranslatableText("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue(), this.rc.worldFreezeFxRenderer()));
-                } else if (timeBeforeDialogueGui < 0) {
-                    timeBeforeDialogueGui = 20;
+        if (client.player != null) {
+            MobEntity possessedEntity = PossessionComponent.get(client.player).getPossessedEntity();
+            if (possessedEntity != null && possessedEntity.getHealth() != client.player.getHealth()) {
+                client.player.updateHealth(possessedEntity.getHealth());
+                if (client.player.getHealth() <= 0) client.player.setHealth(1);
+            }
+            if (client.currentScreen == null) {
+                if (DeathSuspender.get(client.player).isLifeTransient()) {
+                    if (--timeBeforeDialogueGui == 0) {
+                        DialogueTracker dialogueTracker = DialogueTracker.get(client.player);
+                        dialogueTracker.startDialogue(Requiem.id("remnant_choice"));
+                        client.setScreen(new CutsceneDialogueScreen(new TranslatableText("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue(), this.rc.worldFreezeFxRenderer()));
+                    } else if (timeBeforeDialogueGui < 0) {
+                        timeBeforeDialogueGui = 20;
+                    }
                 }
             }
         }

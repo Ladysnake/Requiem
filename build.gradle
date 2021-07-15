@@ -5,7 +5,7 @@ import java.time.Year
 import com.modrinth.minotaur.TaskModrinthUpload
 
 plugins {
-    id 'fabric-loom' version '0.9-SNAPSHOT'
+    id 'fabric-loom' version '0.9.25'   // 0.9.26 breaks Quiltflower
     id 'io.github.juuxel.loom-quiltflower' version '1.1.1'
     id 'org.cadixdev.licenser' version '0.6.0'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
@@ -143,6 +143,12 @@ repositories {
         }
     }
     maven {
+        url = 'https://maven.cafeteria.dev'
+        content {
+            includeGroup 'net.adriantodt.fabricmc'
+        }
+    }
+    maven {
         name = 'CottonMC'
         url = 'https://server.bbkr.space/artifactory/libs-release'
         content {
@@ -252,14 +258,16 @@ dependencies {
 //    modRuntime("io.github.Lemonszz:Biome-Makeover:${biome_makeover_version}")
 
     modRuntime "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
-//    modRuntime "io.github.adriantodt:FallFlyingLib:${fallflyinglib_version}"
+    modRuntime "net.adriantodt.fabricmc:fallflyinglib:${fallflyinglib_version}"
     modCompileOnly "dev.emi:trinkets:${trinkets_version}"
     modCompileOnly("curse.maven:Pehkui-319596:${pehkui_version}") { transitive = false }
 //    modRuntime("curse.maven:Pehkui-319596:${pehkui_version}") { transitive = false }
     modCompileOnly("curse.maven:Snow-Mercy-429949:${snowmercy_version}") { transitive = false }
 //    modRuntime("curse.maven:Snow-Mercy-429949:${snowmercy_version}") { transitive = false }
     modCompileOnly("com.github.apace100:apoli:${apoli_version}") { transitive = false }
+    modRuntime("com.github.apace100:apoli:${apoli_version}") { transitive = false }
     modCompileOnly("com.github.apace100:calio:${calio_version}") { transitive = false }
+    modRuntime("com.github.apace100:calio:${calio_version}") { transitive = false }
     modCompileOnly("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
     modRuntime("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:${eldritch_mobs_version}") { transitive = false }

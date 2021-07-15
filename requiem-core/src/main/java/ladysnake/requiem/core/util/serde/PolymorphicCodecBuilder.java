@@ -34,29 +34,21 @@
  */
 package ladysnake.requiem.core.util.serde;
 
-import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.Decoder;
-import com.mojang.serialization.Dynamic;
-import com.mojang.serialization.Encoder;
-import com.mojang.serialization.JsonOps;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public class PolymorphicCodecBuilder<K, S> {
-    private final Decoder<K> keyDecoder;
-    private final Encoder<K> keyEncoder;
+public final class PolymorphicCodecBuilder<K, S> {
+    private final Codec<K> keyCodec;
     private final Function<S, K> keyExtractor;
     private final Map<K, Codec<? extends S>> codecs;
     private final String keyName;
 
     private PolymorphicCodecBuilder(String keyName, Codec<K> keyCodec, Function<S, K> keyExtractor) {
         this.keyName = keyName;
-        this.keyDecoder = keyCodec.fieldOf(keyName).decoder();
-        this.keyEncoder = keyCodec;
+        this.keyCodec = keyCodec;
         this.keyExtractor = keyExtractor;
         this.codecs = new HashMap<>();
     }
@@ -71,23 +63,6 @@ public class PolymorphicCodecBuilder<K, S> {
     }
 
     public Codec<S> build() {
-        return Codec.PASSTHROUGH.flatXmap(
-            d -> keyDecoder.parse(d).flatMap(key -> {
-                Codec<? extends S> c = this.codecs.get(key);
-                if (c == null) return DataResult.error(String.format("Invalid/Unsupported value '%s' was found for key '%s'", key, keyName));
-                return c.parse(d);
-            }),
-            d -> {
-                K key = keyExtractor.apply(d);
-                // This is the codec for this specific object type, it *should* be fine
-                @SuppressWarnings("unchecked") Codec<S> c = (Codec<S>) this.codecs.get(key);
-                if (c == null) return DataResult.error(String.format("Invalid/Unsupported value \"%s\" was found for key '%s'", key, keyName));
-                return c.encodeStart(JsonOps.INSTANCE, d).flatMap(j -> keyEncoder.encodeStart(JsonOps.INSTANCE, key).map(k -> {
-                    JsonObject json = j.getAsJsonObject();
-                    json.add(keyName, k);
-                    return new Dynamic<>(JsonOps.INSTANCE, j);
-                }));
-            }
-        );
+        return this.keyCodec.dispatch(this.keyName, this.keyExtractor, this.codecs::get);
     }
 }

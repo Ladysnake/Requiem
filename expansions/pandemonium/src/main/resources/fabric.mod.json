@@ -14,7 +14,7 @@
       "ladysnake.pandemonium.Pandemonium::INSTANCE",
       "ladysnake.pandemonium.compat.PandemoniumCompatibilityManager::registerEntityComponentFactories"
     ],
-    "cardinal-components-world": [
+    "cardinal-components-scoreboard": [
       "ladysnake.pandemonium.Pandemonium::INSTANCE"
     ],
     "modmenu": [
@@ -23,7 +23,6 @@
   },
   "custom": {
     "cardinal-components": [
-      "pandemonium:anchor_provider"
     ]
   },
   "mixins": [

@@ -164,7 +164,7 @@ public abstract class MutableRemnantState implements RemnantState {
             }
         }
         for (StatusEffectInstance effect : original.getStatusEffects()) {
-            if (StickyStatusEffect.shouldStick(effect.getEffectType(), this.player)) {
+            if (StickyStatusEffect.shouldStick(effect, this.player)) {
                 this.player.addStatusEffect(new StatusEffectInstance(effect));
             }
         }

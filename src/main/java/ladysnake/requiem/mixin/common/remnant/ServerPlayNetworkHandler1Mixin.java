@@ -49,20 +49,29 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(targets = "net/minecraft/server/network/ServerPlayNetworkHandler$1")
 public abstract class ServerPlayNetworkHandler1Mixin implements PlayerInteractEntityC2SPacket.Handler {
-    @SuppressWarnings("ShadowTarget")   // synthetic
-    @Shadow
-    public ServerPlayNetworkHandler field_28963;
+    @Shadow(aliases = "field_28963")
+    public ServerPlayNetworkHandler networkHandler;
 
-    @SuppressWarnings("ShadowTarget")   // synthetic
-    @Shadow
-    public Entity field_28962;
+    @Shadow(aliases = "field_28962")
+    public Entity entity;
 
     @SuppressWarnings("InvalidInjectorMethodSignature")
-    @Inject(method = "processInteract", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "processInteract", at = @At("HEAD"), cancellable = true, require = 0)
     private void onPlayerInteractEntity(Hand hand, @Coerce Object action, CallbackInfo ci) {
-        ServerWorld world = field_28963.getPlayer().getServerWorld();
+        ServerWorld world = this.networkHandler.getPlayer().getServerWorld();
 
-        if (!AllowUseEntityCallback.EVENT.invoker().allow(field_28963.getPlayer(), world, hand, field_28962)) {
+        if (!AllowUseEntityCallback.EVENT.invoker().allow(this.networkHandler.getPlayer(), world, hand, entity)) {
+            ci.cancel();
+        }
+    }
+
+    // Remapping is broken lol
+    @SuppressWarnings("UnresolvedMixinReference")
+    @Inject(method = "method_33897", at = @At("HEAD"), cancellable = true, require = 0)
+    private void onPlayerInteractEntityObf(Hand hand, @Coerce Object action, CallbackInfo ci) {
+        ServerWorld world = this.networkHandler.getPlayer().getServerWorld();
+
+        if (!AllowUseEntityCallback.EVENT.invoker().allow(this.networkHandler.getPlayer(), world, hand, entity)) {
             ci.cancel();
         }
     }

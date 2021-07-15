@@ -42,6 +42,7 @@ import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.RemnantTypes;
+import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
@@ -107,7 +108,7 @@ public class ClientMessageHandler {
         ClientPlayNetworking.registerGlobalReceiver(ETHEREAL_ANIMATION, (client, handler, buf, responseSender) -> client.execute(() -> {
             MinecraftClient mc = this.mc;
             assert mc.player != null;
-            mc.player.world.playSound(mc.player, mc.player.getX(), mc.player.getY(), mc.player.getZ(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2, 0.6f);
+            mc.player.world.playSound(mc.player, mc.player.getX(), mc.player.getY(), mc.player.getZ(), RequiemSoundEvents.EFFECT_DISSOCIATE, SoundCategory.PLAYERS, 2, 0.6f);
             this.rc.fxRenderer().beginEtherealAnimation();
         }));
         ClientPlayNetworking.registerGlobalReceiver(BODY_CURE, (client, handler, buf, responseSender) -> {
