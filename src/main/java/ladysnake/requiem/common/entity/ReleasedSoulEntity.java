@@ -66,8 +66,11 @@ public class ReleasedSoulEntity extends SoulEntity {
     private static final byte TELEPORT_AWAY_STATUS = 2;
     private static final byte MERGE_WITH_BODY_STATUS = 3;
 
+    /**The entity is not found anywhere, probably dead*/
     public static final byte BODY_MISSING = -1;
+    /**The entity is loaded and close enough to the soul to fly there*/
     public static final byte BODY_FOUND = 0;
+    /**The entity is in the wrong world, way too far, or unloaded with a player*/
     public static final byte BODY_ISEKAI = 1;
 
     public static final TrackedData<Byte> BODY_STATUS = DataTracker.registerData(ReleasedSoulEntity.class, TrackedDataHandlerRegistry.BYTE);

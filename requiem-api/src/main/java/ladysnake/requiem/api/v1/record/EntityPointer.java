@@ -29,8 +29,14 @@ import net.minecraft.world.World;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * A pointer containing all the necessary information to locate an entity.
+ *
+ * @param uuid  {@linkplain Entity#getUuid() the entity's unique serverside identifier}
+ * @param world the {@link RegistryKey} describing {@linkplain Entity#getEntityWorld() the entity's current dimension}
+ * @param pos   the {@link Vec3d} describing {@linkplain Entity#getPos() the entity's last known position}
+ */
 public record EntityPointer(UUID uuid, RegistryKey<World> world, Vec3d pos) {
-    public static final EntityPointer ORIGIN = new EntityPointer(new UUID(0, 0), World.OVERWORLD, Vec3d.ZERO);
     public static final Codec<EntityPointer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         DynamicSerializableUuid.CODEC.fieldOf("uuid").forGetter(EntityPointer::uuid),
         World.CODEC.fieldOf("world").forGetter(EntityPointer::world),
@@ -45,6 +51,14 @@ public record EntityPointer(UUID uuid, RegistryKey<World> world, Vec3d pos) {
         this(entity.getUuid(), entity.world.getRegistryKey(), entity.getPos());
     }
 
+    /**
+     * Attempts to find the entity this pointer is referencing using the given {@link MinecraftServer}.
+     *
+     * <p>The entity will only be found if it is already loaded into a world.
+     *
+     * @param server the server object to use to find the entity
+     * @return an {@code Optional} describing the referenced entity, or {@code Optional.empty()} if no corresponding loaded entity was found
+     */
     public Optional<Entity> resolve(MinecraftServer server) {
         return Optional.ofNullable(server.getWorld(this.world())).map(world -> world.getEntity(this.uuid()));
     }

@@ -25,6 +25,11 @@ import net.minecraft.util.registry.SimpleRegistry;
 
 import java.util.Objects;
 
+/**
+ * A data type that can be stored in a {@link GlobalRecord}.
+ *
+ * @param <T> type for which the {@code RecordType} is being registered.
+ */
 public final class RecordType<T> {
     @SuppressWarnings("unchecked")
     public static final SimpleRegistry<RecordType<?>> REGISTRY =
@@ -46,6 +51,14 @@ public final class RecordType<T> {
         this.codec = codec;
     }
 
+    /**
+     * Creates and registers a new {@link RecordType} with the given id.
+     *
+     * @param id    the unique identifier used to register the resulting record type
+     * @param codec the {@link Codec} to use to (de)serialize associated data
+     * @param <T>   type for which the {@code RecordType} is being registered
+     * @return a newly registered {@link RecordType} for encoding instances of {@code T}
+     */
     public static <T> RecordType<T> register(Identifier id, Codec<T> codec) {
         return Registry.register(REGISTRY, id, new RecordType<>(codec));
     }

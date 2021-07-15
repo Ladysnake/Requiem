@@ -73,6 +73,7 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
 
     @Override
     protected void requiem$mobTick() {
+        // for some reason minecraft uses "mob tick" instead of "mobTick", so we do the same
         this.world.getProfiler().push("mob tick");
         this.mobTick();
         this.world.getProfiler().pop();
