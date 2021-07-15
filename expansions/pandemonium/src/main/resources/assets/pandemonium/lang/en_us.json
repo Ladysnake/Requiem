@@ -8,5 +8,10 @@
   "entity.pandemonium.player_shell": "Player Shell",
   "config.pandemonium.possession": "Possession",
   "config.pandemonium.allow_possessing_all_mobs": "Allow possessing all mobs",
-  "requiem:merge_hint": "Press %s to return"
+  "requiem:merge_hint": "Press %s to return",
+  "requiem:remnant_type.pandemonium.wandering_spirit.name": "Wandering Spirit",
+  "origins:origin.pandemonium.wandering_spirit.name": "Wandering Spirit",
+  "origins:origin.pandemonium.wandering_spirit.description": "Those long lost demons have become unable to regenerate their human form.",
+  "origins:power.pandemonium.wandering_spirit.name": "Passerby",
+  "origins:power.pandemonium.wandering_spirit.description": "You can leave a possessed body anytime."
 }

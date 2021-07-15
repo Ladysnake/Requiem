@@ -22,7 +22,6 @@
 
   "requiem:remnant_type.requiem.mortal.name": "Mortal",
   "requiem:remnant_type.requiem.remnant.name": "Remnant",
-  "requiem:remnant_type.requiem.wandering_spirit.name": "Wandering Spirit",
 
   "requiem:commands.query.success.other": "%2$s is %1$s",
   "requiem:commands.query.success.self": "You are %s",
@@ -162,8 +161,6 @@
   "origins:origin.requiem.mortal.description": "A mere mortal. Your ordinary Minecraft experience awaits.",
   "origins:origin.requiem.remnant.name": "Demon",
   "origins:origin.requiem.remnant.description": "Tales have been told of mysterious demons taking over the bodies of the dead. No one really knows what they are, but few really want to find out.",
-  "origins:origin.requiem.wandering_spirit.name": "Wandering Spirit",
-  "origins:origin.requiem.wandering_spirit.description": "Those long lost demons have become unable to regenerate their human form.",
   "origins:origin.requiem.vagrant.name": "Vagrant",
   "origins:origin.requiem.vagrant.description": "A demon outside of a congruous body. Condemned to wander and take over weaker entities to act as proxies with the physical world.",
   "origins:power.requiem.remnant.name": "Dissociation",
@@ -176,8 +173,6 @@
   "origins:power.requiem.possession.description": "As a free soul, you may take over the empty bodies that roam this world.",
   "origins:power.requiem.resurrection.name": "Death Grip",
   "origins:power.requiem.resurrection.description": "Under some circumstances, your soul may hold on to your disfigured body after its death.",
-  "origins:power.requiem.wandering_spirit.name": "Passerby",
-  "origins:power.requiem.wandering_spirit.description": "You can leave a possessed body anytime.",
   "origins:power.requiem.soul_mending.name": "Soul Mending",
   "origins:power.requiem.soul_mending.description": "Your soul slowly mends itself during possession.",
   "origins:power.requiem.banished.name": "Banished",
