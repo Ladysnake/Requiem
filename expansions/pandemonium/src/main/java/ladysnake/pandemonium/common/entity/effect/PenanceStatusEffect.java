@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
 import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -50,7 +51,7 @@ import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class PenanceStatusEffect extends StatusEffect {
+public class PenanceStatusEffect extends StatusEffect implements StickyStatusEffect {
 
     public static final int PREVENT_CURE_THRESHOLD = 0;
     public static final int PLAYER_BAN_THRESHOLD = 1;
@@ -76,6 +77,16 @@ public class PenanceStatusEffect extends StatusEffect {
         if (PenanceComponent.KEY.maybeGet(entity).filter(PenanceComponent::shouldApplyPenance).isPresent()) {
             applyPenance(entity, amplifier);
         }
+    }
+
+    @Override
+    public boolean shouldStick(LivingEntity entity) {
+        return RemnantComponent.KEY.maybeGet(entity).map(rc -> rc.getRemnantType().isDemon()).orElse(false);
+    }
+
+    @Override
+    public boolean shouldFreezeDuration(LivingEntity entity) {
+        return false;
     }
 
     public static void applyPenance(LivingEntity entity, int amplifier) {

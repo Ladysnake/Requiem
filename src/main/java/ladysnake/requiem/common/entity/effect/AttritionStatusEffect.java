@@ -120,6 +120,6 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
         PlayerEntity possessor = ((Possessable)entity).getPossessor();
         if (possessor == null) return false;
         RemnantComponent remnantComponent = RemnantComponent.get(possessor);
-        return remnantComponent.isVagrant() || remnantComponent.getRemnantType() == RemnantTypes.WANDERING_SPIRIT;
+        return remnantComponent.getRemnantType() == RemnantTypes.WANDERING_SPIRIT;
     }
 }
