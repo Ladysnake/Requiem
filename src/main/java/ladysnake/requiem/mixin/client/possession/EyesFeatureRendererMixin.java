@@ -32,30 +32,32 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.client.render.entity;
+package ladysnake.requiem.mixin.client.possession;
 
-import ladysnake.pandemonium.Pandemonium;
-import ladysnake.pandemonium.common.entity.WololoComponent;
+import ladysnake.requiem.client.render.entity.ClientWololoComponent;
+import ladysnake.requiem.common.entity.WololoComponent;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.EndermanEntity;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.feature.EyesFeatureRenderer;
+import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-public class ClientWololoComponent extends WololoComponent {
-    private static final RenderLayer CLASSIC_ENDERMAN_EYES = RenderLayer.getEyes(Pandemonium.id("textures/entity/enderman/classic_enderman_eyes.png"));
-
-    private final @Nullable RenderLayer eyesLayer;
-
-    public ClientWololoComponent(LivingEntity entity) {
-        super(entity);
-        if (entity instanceof EndermanEntity) {
-            eyesLayer = CLASSIC_ENDERMAN_EYES;
-        } else {
-            eyesLayer = null;
+@Mixin(EyesFeatureRenderer.class)
+public abstract class EyesFeatureRendererMixin<T extends Entity, M extends EntityModel<T>> {
+    @ModifyVariable(method = "render", at = @At("STORE"))
+    private VertexConsumer changeLayer(VertexConsumer consumer, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+        WololoComponent wololo = WololoComponent.KEY.getNullable(entity);
+        if (wololo != null) {
+            RenderLayer eyesLayer = ((ClientWololoComponent) wololo).getEyesLayer();
+            if (eyesLayer != null) {
+                return vertexConsumers.getBuffer(eyesLayer);
+            }
         }
-    }
-
-    public @Nullable RenderLayer getEyesLayer() {
-        return this.isConverted() ? eyesLayer : null;
+        return consumer;
     }
 }

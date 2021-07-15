@@ -83,8 +83,8 @@ public class DemonRemnantState extends MutableRemnantState {
     }
 
     @Override
-    public boolean canSplit() {
-        return this.player.hasStatusEffect(RequiemStatusEffects.EMANCIPATION);
+    public boolean canSplit(boolean forced) {
+        return forced || this.player.hasStatusEffect(RequiemStatusEffects.EMANCIPATION);
     }
 
     @Override

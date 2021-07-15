@@ -64,12 +64,10 @@ public class CureItemOverride implements PossessionItemOverride, InstancedItemOv
 
     private final LazyEntityPredicate possessedState;
     private final LazyItemPredicate reagent;
-    private final InstancedItemOverride failure;
 
     public CureItemOverride(LazyEntityPredicate possessedState, LazyItemPredicate reagent) {
         this.possessedState = possessedState;
         this.reagent = reagent;
-        failure = new OverrideFailure(false);
     }
 
     @Override
@@ -106,7 +104,7 @@ public class CureItemOverride implements PossessionItemOverride, InstancedItemOv
             if (this.possessedState.test(possessed)) {
                 return Optional.of(this);
             } else {
-                return Optional.of(this.failure);
+                return Optional.of(OverrideFailure.get(false));
             }
         }
         return Optional.empty();

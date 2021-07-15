@@ -11,6 +11,12 @@
       "block/beacon/deactivate"
     ]
   },
+  "effect.dissociate": {
+    "subtitle": "requiem:subtitles.effect.dissociating",
+    "sounds": [
+      "block/beacon/activate"
+    ]
+  },
   "effect.possession.attempt": {
     "subtitle": "requiem:subtitles.effect.possession.attempt",
     "sounds": [

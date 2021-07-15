@@ -11,6 +11,12 @@
   "requiem:advancements.requiem.makeshift_makeover.description": "Replace every bone of a Wither Skeleton",
   "requiem:advancements.adventure.the_choice.title": "A devilish conundrum",
   "requiem:advancements.adventure.the_choice.description": "Choose between an ordinary life and a bizarre eternity",
+  "requiem:advancements.requiem.classic_look.title": "Classic Look",
+  "requiem:advancements.requiem.classic_look.description": "Possess a relooked enderman",
+  "requiem:advancements.requiem.piglin_seppukku.title": "What have I done?",
+  "requiem:advancements.requiem.piglin_seppukku.description": "Cause a zombified piglin to regret its actions",
+  "requiem:advancements.requiem.kung_fu_panda.title": "Kung Fu Panda",
+  "requiem:advancements.requiem.kung_fu_panda.description": "As a panda, hit something with a wooden sword",
 
   "requiem:argument.entity.options.possessor.description": "Entities possessed by",
 
@@ -61,6 +67,7 @@
 
   "requiem:subtitles.effect.become.mortal": "Becoming mortal",
   "requiem:subtitles.effect.become.remnant": "Acquiring a demon",
+  "requiem:subtitles.effect.dissociating": "Player dissociating",
   "requiem:subtitles.effect.phasing": "Player phasing",
   "requiem:subtitles.effect.possession.attempt": "Possession Attempt",
   "requiem:subtitles.effect.time.stop": "ZA WARUDO! TOKI WO TOMARE",
@@ -144,7 +151,6 @@
   "item.requiem.shattered_soul_vessel": "Shattered Soul Vessel",
   "item.requiem.soul_vessel": "Soul Vessel",
   "item.requiem.ominous_soul_vessel": "Ominous Soul Vessel",
-  "item.requiem.baleful_soul_vessel": "Baleful Soul Vessel",
   "requiem:opus_daemonium.curse": "Curse",
   "requiem:opus_daemonium.cure": "Cure",
   "requiem:opus_daemonium.banishment": "Banishment",

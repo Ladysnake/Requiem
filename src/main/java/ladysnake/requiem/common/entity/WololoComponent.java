@@ -32,12 +32,12 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity;
+package ladysnake.requiem.common.entity;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import ladysnake.pandemonium.client.render.entity.ClientWololoComponent;
+import ladysnake.requiem.client.render.entity.ClientWololoComponent;
 import ladysnake.requiem.core.RequiemCore;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;

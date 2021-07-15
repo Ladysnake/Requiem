@@ -32,14 +32,30 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.mixin.common.access;
+package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import net.minecraft.world.chunk.WorldChunk;
+import ladysnake.requiem.common.entity.WololoComponent;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.mob.EndermanEntity;
+import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-@Mixin(WorldChunk.class)
-public interface WorldChunkAccessor {
-    @Accessor("loadedToWorld")
-    boolean isLoadedToWorld();
+@Mixin(EndermanEntity.class)
+public abstract class EndermanEntityMixin extends HostileEntity {
+    protected EndermanEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {
+        super(entityType, world);
+    }
+
+    @ModifyArg(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)V"))
+    private ParticleEffect swapParticleEffect(ParticleEffect baseEffect) {
+        if (WololoComponent.isConverted(this)) {
+            return ParticleTypes.SMOKE;
+        }
+        return baseEffect;
+    }
 }

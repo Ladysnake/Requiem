@@ -161,8 +161,9 @@ public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComp
     /**
      *
      * @return {@code true} if this player can currently split into a player shell and a vagrant form
+     * @param forced
      */
-    boolean canPerformSplit();
+    boolean canPerformSplit(boolean forced);
 
     /**
      * Called when this remnant state's player is cloned

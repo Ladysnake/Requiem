@@ -50,9 +50,11 @@ import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.core.record.EntityPositionClerk;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -64,12 +66,17 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 public final class PlayerSplitter {
     public static boolean split(ServerPlayerEntity whole) {
-        if (isReadyForSplit(whole)) {
+        return split(whole, false);
+    }
+
+    public static boolean split(ServerPlayerEntity whole, boolean forced) {
+        if (isReadyForSplit(whole, forced)) {
             doSplit(whole);
             return true;
         }
@@ -77,8 +84,8 @@ public final class PlayerSplitter {
         return false;
     }
 
-    private static boolean isReadyForSplit(ServerPlayerEntity whole) {
-        return RemnantComponent.get(whole).canPerformSplit();
+    private static boolean isReadyForSplit(ServerPlayerEntity whole, boolean forced) {
+        return RemnantComponent.get(whole).canPerformSplit(forced);
     }
 
     private static void doSplit(ServerPlayerEntity whole) {
@@ -106,6 +113,11 @@ public final class PlayerSplitter {
         shell.changeGameMode(whole.interactionManager.isSurvivalLike() ? whole.interactionManager.getGameMode() : GameMode.SURVIVAL);
         RemnantComponent.get(shell).become(RemnantTypes.MORTAL, true);
         InventoryLimiter.instance().disable(shell);
+        for (StatusEffectInstance effect : List.copyOf(shell.getStatusEffects())) {
+            if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
+                shell.removeStatusEffect(effect.getEffectType());
+            }
+        }
         PlayerShellEvents.DATA_TRANSFER.invoker().transferData(whole, shell, false);
         return shell;
     }

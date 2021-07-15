@@ -117,7 +117,7 @@ public class WandererRemnantState extends MutableRemnantState {
     }
 
     @Override
-    public boolean canSplit() {
+    public boolean canSplit(boolean forced) {
         return true;
     }
 

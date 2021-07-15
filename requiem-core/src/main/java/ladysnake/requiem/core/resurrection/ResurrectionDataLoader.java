@@ -41,6 +41,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import ladysnake.requiem.core.RequiemCore;
 import ladysnake.requiem.core.util.serde.EntityTypeAdapter;
+import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -51,6 +52,7 @@ import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.profiler.Profiler;
 
 import javax.annotation.Nullable;
@@ -58,12 +60,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public final class ResurrectionDataLoader implements SimpleResourceReloadListener<List<ResurrectionData>> {
+public final class ResurrectionDataLoader implements SimpleResourceReloadListener<List<Pair<Identifier, JsonObject>>> {
     public static final ResurrectionDataLoader INSTANCE = new ResurrectionDataLoader();
 
     public static final Gson GSON = new GsonBuilder()
@@ -93,27 +96,38 @@ public final class ResurrectionDataLoader implements SimpleResourceReloadListene
     }
 
     @Override
-    public CompletableFuture<List<ResurrectionData>> load(ResourceManager manager, Profiler profiler, Executor executor) {
+    public CompletableFuture<List<Pair<Identifier, JsonObject>>> load(ResourceManager manager, Profiler profiler, Executor executor) {
         return CompletableFuture.supplyAsync(() -> {
-            List<ResurrectionData> resurrectionData = new ArrayList<>();
+            List<Pair<Identifier, JsonObject>> resurrectionData = new ArrayList<>();
             for (Identifier location : manager.findResources("requiem_resurrections", (res) -> res.endsWith(".json"))) {
                 try (Resource res = manager.getResource(location); Reader in = new InputStreamReader(res.getInputStream())) {
-                    resurrectionData.add(ResurrectionData.deserialize(GSON.fromJson(in, JsonObject.class)));
+                    resurrectionData.add(new Pair<>(location, GSON.fromJson(in, JsonObject.class)));
                 } catch (IOException | JsonParseException e) {
                     RequiemCore.LOGGER.error("[Requiem] Could not read resurrection data from {}", location, e);
                 }
             }
-            Collections.sort(resurrectionData);
             return resurrectionData;
         }, executor);
     }
 
     @Override
-    public CompletableFuture<Void> apply(List<ResurrectionData> resurrectionData, ResourceManager resourceManager, Profiler profiler, Executor executor) {
+    public CompletableFuture<Void> apply(List<Pair<Identifier, JsonObject>> resurrectionData, ResourceManager resourceManager, Profiler profiler, Executor executor) {
         return CompletableFuture.runAsync(() -> {
             this.resurrectionData.clear();
-            this.resurrectionData.addAll(resurrectionData);
+            for (Pair<Identifier, JsonObject> resurrectionDatum : resurrectionData) {
+                try {
+                    this.resurrectionData.add(ResurrectionData.deserialize(resurrectionDatum.getRight()));
+                } catch (JsonParseException e) {
+                    RequiemCore.LOGGER.error("[Requiem] Could not read resurrection data from {}", resurrectionDatum.getLeft(), e);
+                }
+            }
+            Collections.sort(this.resurrectionData);
         }, executor);
+    }
+
+    @Override
+    public Collection<Identifier> getFabricDependencies() {
+        return List.of(ResourceReloadListenerKeys.TAGS);
     }
 
     @Override

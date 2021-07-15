@@ -18,7 +18,7 @@
 package ladysnake.requiem.api.v1.remnant;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 
 public interface StickyStatusEffect {
     /**
@@ -27,7 +27,16 @@ public interface StickyStatusEffect {
      */
     boolean shouldStick(LivingEntity entity);
 
-    static boolean shouldStick(StatusEffect effect, LivingEntity affected) {
-        return effect instanceof StickyStatusEffect && ((StickyStatusEffect) effect).shouldStick(affected);
+    /**
+     * If this method returns {@code true}, this effect cannot be cleared by anything
+     * except the /clear command.
+     */
+    default boolean shouldFreezeDuration(LivingEntity entity) {
+        return this.shouldStick(entity);
+    }
+
+    static boolean shouldStick(StatusEffectInstance effect, LivingEntity affected) {
+        return effect.getEffectType() instanceof StickyStatusEffect sticky
+            && sticky.shouldStick(affected) && (effect.getDuration() > 0 || sticky.shouldFreezeDuration(affected));
     }
 }

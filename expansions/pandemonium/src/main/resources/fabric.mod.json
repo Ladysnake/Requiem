@@ -23,7 +23,6 @@
   },
   "custom": {
     "cardinal-components": [
-      "pandemonium:anchor_provider"
     ]
   },
   "mixins": [
