@@ -36,6 +36,8 @@ package ladysnake.requiem.common.entity.effect;
 
 import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.LivingEntity;
@@ -47,7 +49,7 @@ import net.minecraft.sound.SoundCategory;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public class ReclamationStatusEffect extends StatusEffect {
+public class ReclamationStatusEffect extends StatusEffect implements StickyStatusEffect {
     private static final Map<LivingEntity, Integer> playersToHeal = new WeakHashMap<>();
 
     public ReclamationStatusEffect(StatusEffectType type, int color) {
@@ -80,5 +82,15 @@ public class ReclamationStatusEffect extends StatusEffect {
         if (!entity.world.isClient()) {
             playersToHeal.put(entity, amplifier + 1);
         }
+    }
+
+    @Override
+    public boolean shouldStick(LivingEntity entity) {
+        return false;
+    }
+
+    @Override
+    public boolean shouldFreezeDuration(LivingEntity entity) {
+        return RemnantComponent.isIncorporeal(entity);
     }
 }
