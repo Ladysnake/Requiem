@@ -41,7 +41,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 
 import java.util.List;
 
-public class PandemoniumMemoryModules {
+public final class PandemoniumMemoryModules {
     public static final MemoryModuleType<Integer> GO_HOME_ATTEMPTS = register("pathfinding_failures");
     public static final MemoryModuleType<List<LivingEntity>> VISIBLE_HOSTILES = register("visible_hostiles");
 
