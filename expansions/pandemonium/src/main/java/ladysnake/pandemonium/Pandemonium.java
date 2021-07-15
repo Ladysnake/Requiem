@@ -37,18 +37,16 @@ package ladysnake.pandemonium;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
-import dev.onyxstudios.cca.api.v3.world.WorldComponentFactoryRegistry;
-import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer;
+import dev.onyxstudios.cca.api.v3.scoreboard.ScoreboardComponentFactoryRegistry;
+import dev.onyxstudios.cca.api.v3.scoreboard.ScoreboardComponentInitializer;
 import io.github.ladysnake.impersonate.Impersonate;
-import ladysnake.pandemonium.api.anchor.FractureAnchorManager;
-import ladysnake.pandemonium.client.ClientAnchorManager;
+import ladysnake.pandemonium.client.ClientRecordKeeper;
 import ladysnake.pandemonium.common.PandemoniumCommand;
 import ladysnake.pandemonium.common.PandemoniumConfig;
 import ladysnake.pandemonium.common.block.PandemoniumBlocks;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
 import ladysnake.pandemonium.common.entity.effect.PenanceComponent;
-import ladysnake.pandemonium.common.impl.anchor.CommonAnchorManager;
 import ladysnake.pandemonium.common.item.PandemoniumItems;
 import ladysnake.pandemonium.common.network.ServerMessageHandling;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
@@ -58,16 +56,17 @@ import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
+import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.core.RequiemCore;
+import ladysnake.requiem.core.record.EntityPositionClerk;
+import ladysnake.requiem.core.record.ServerRecordKeeper;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
-import net.minecraft.world.World;
 
 @CalledThroughReflection
-public final class Pandemonium implements ModInitializer, EntityComponentInitializer, WorldComponentInitializer {
+public final class Pandemonium implements ModInitializer, EntityComponentInitializer, ScoreboardComponentInitializer {
     public static final String MOD_ID = "pandemonium";
     public static final Identifier BODY_IMPERSONATION = RequiemCore.id("body_impersonation");
     @AccessedThroughReflection
@@ -75,13 +74,6 @@ public final class Pandemonium implements ModInitializer, EntityComponentInitial
 
     public static Identifier id(String path) {
         return new Identifier(MOD_ID, path);
-    }
-
-    public static void tickAnchors(World world) {
-        Profiler profiler = world.getProfiler();
-        profiler.push("requiem_ethereal_anchors");
-        FractureAnchorManager.get(world).updateAnchors(world.getLevelProperties().getTime());
-        profiler.pop();
     }
 
     @Override
@@ -93,7 +85,6 @@ public final class Pandemonium implements ModInitializer, EntityComponentInitial
         PandemoniumStatusEffects.init();
         ServerMessageHandling.init();
         RequiemApi.registerPlugin(new PandemoniumRequiemPlugin());
-        ServerTickEvents.END_WORLD_TICK.register(Pandemonium::tickAnchors);
         PlayerRespawnCallback.EVENT.register((player, returnFromEnd) -> {
             if (!returnFromEnd) Impersonate.IMPERSONATION.get(player).stopImpersonation(BODY_IMPERSONATION);
         });
@@ -108,13 +99,14 @@ public final class Pandemonium implements ModInitializer, EntityComponentInitial
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         registry.registerForPlayers(PlayerBodyTracker.KEY, PlayerBodyTracker::new, RespawnCopyStrategy.ALWAYS_COPY);
         registry.registerForPlayers(PenanceComponent.KEY, PenanceComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
+        registry.registerFor(LivingEntity.class, EntityPositionClerk.KEY, EntityPositionClerk::new);
     }
 
     @Override
-    public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {
-        registry.register(FractureAnchorManager.KEY, world -> world.isClient
-            ? new ClientAnchorManager(world)
-            : new CommonAnchorManager(world)
+    public void registerScoreboardComponentFactories(ScoreboardComponentFactoryRegistry registry) {
+        registry.registerScoreboardComponent(GlobalRecordKeeper.KEY, (scoreboard, server) -> server == null
+            ? new ClientRecordKeeper(scoreboard)
+            : new ServerRecordKeeper(scoreboard, server)
         );
     }
 

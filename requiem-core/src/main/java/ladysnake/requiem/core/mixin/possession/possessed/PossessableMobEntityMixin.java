@@ -71,6 +71,14 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
         super(type, world);
     }
 
+    @Override
+    protected void requiem$mobTick() {
+        // for some reason minecraft uses "mob tick" instead of "mobTick", so we do the same
+        this.world.getProfiler().push("mob tick");
+        this.mobTick();
+        this.world.getProfiler().pop();
+    }
+
     @Inject(method = "setAttacking", at = @At("RETURN"))
     private void resetAttackMode(boolean attacking, CallbackInfo ci) {
         if (attacking && this.isBeingPossessed()) {
@@ -124,12 +132,5 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
     private <T extends MobEntity> void possessConvertedZombie(EntityType<T> type, boolean bl, CallbackInfoReturnable<T> ci, T converted) {
         PossessionHooks.dropArmorIfBanned(converted);
         PossessedDataBase.onMobConverted((MobEntity) (Object) this, converted);
-    }
-
-    @Override
-    protected void requiem_mobTick() {
-        this.world.getProfiler().push("mob tick");
-        this.mobTick();
-        this.world.getProfiler().pop();
     }
 }

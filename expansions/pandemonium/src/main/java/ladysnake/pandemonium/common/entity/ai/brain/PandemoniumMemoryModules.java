@@ -34,8 +34,10 @@
  */
 package ladysnake.pandemonium.common.entity.ai.brain;
 
+import com.mojang.serialization.Codec;
 import ladysnake.pandemonium.Pandemonium;
 import ladysnake.pandemonium.mixin.common.entity.ai.MemoryModuleTypeAccessor;
+import ladysnake.pandemonium.mixin.common.entity.ai.SerializableMemoryModuleTypeAccessor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 
@@ -47,5 +49,9 @@ public final class PandemoniumMemoryModules {
 
     private static <U> MemoryModuleType<U> register(String id) {
         return MemoryModuleTypeAccessor.pandemonium$register(Pandemonium.MOD_ID + ":" + id);
+    }
+
+    private static <U> MemoryModuleType<U> register(String id, Codec<U> codec) {
+        return SerializableMemoryModuleTypeAccessor.pandemonium$register(Pandemonium.MOD_ID + ":" + id, codec);
     }
 }
