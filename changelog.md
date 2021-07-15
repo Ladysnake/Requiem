@@ -10,16 +10,28 @@ Version 2.0.0
 Updated to MC 1.17
 
 **Additions**
-- Added the Emancipation status effect, letting you freely leave your current body
-- Added the Reclamation status effect, letting you cure attrition over time
-- Added the Tachylite block family
-- Added Runic Tachylite for all soulbound status effects
+- Added more Soul Status Effects:
+    - Added the Emancipation status effect, letting you freely leave your current body
+    - Added the Reclamation status effect, letting you cure attrition over time
+- Added Tachylite blocks:
+    - Added Tachylite, Chiseled Tachylite (+slabs, stairs and pillars), Polished Tachylite (+slabs, stairs and pillars), and Scraped Tachylite
+    - Added Runic Tachylite for all soulbound status effects
 - Added Tachylite Obelisks, a new player-made structure
+- Added Soul Vessel items:
+    - Added the Empty Soul Vessel, a rare item that is used to obtain most of the new content
+    - Added Ichor Vessels, Soul Vessels filled with mysterious substances that act like potions
+    - Added the Sealed Remnant Vessel, an item that acts as a replacement for the Cursed Opus Daemonium
+- Added the Soul Capture mechanic, letting you store a mob's soul into a Vessel thereby making the mob fit for possession
+    - Filled Soul Vessels can be emptied to restore the mob's soul (provided the mob's shell is still alive)
+- Added Souls, small environmental entities that are spawned when you release one from a Vessel
+    - yep, they use the same models as Illuminations' Will o' Wisp. What did you expect, they're souls.
 
 **Changes**
 - Some datapack things have changed
     - Dialogues are now in the `requiem:requiem/dialogues` directory
 - Possessed pillagers can now ride ravagers
+- The backgrounds for soul status effects have changed to reflect that they are no longer attrition exclusives
+- The texture for Humanity enchantment books has been slightly tweaked, because why not
 
 **Mod Interaction**
 - Updated Origins compatibility
@@ -27,9 +39,17 @@ Updated to MC 1.17
 - Updated Mod Menu metadata
 - **Requiem's API got breaking changes, if you are a modder doing compatibility with Requiem make sure to check things work fine !**
 
+**Removals**
+- Removed the Opus Daemonium and its derivatives
+- Moved the Wandering Spirit alternative remnant type to Pandemonium
+
 #### Pandemonium
 **Additions**
 - Added the Penance status effect, preventing you from leaving your current body
+- Added the Wandering Spirit alternative remnant type previously available in Requiem
+
+**Changes**
+- Player Shells are now tracked across dimensions
 
 ------------------------------------------------------
 Version 1.7.13
