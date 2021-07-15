@@ -50,6 +50,7 @@ import ladysnake.pandemonium.common.entity.WololoComponent;
 import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
 import ladysnake.pandemonium.common.entity.effect.PenanceComponent;
 import ladysnake.pandemonium.common.impl.anchor.CommonAnchorManager;
+import ladysnake.pandemonium.common.item.PandemoniumItems;
 import ladysnake.pandemonium.common.network.ServerMessageHandling;
 import ladysnake.pandemonium.common.remnant.PlayerBodyTracker;
 import ladysnake.pandemonium.compat.PandemoniumCompatibilityManager;
@@ -88,6 +89,7 @@ public final class Pandemonium implements ModInitializer, EntityComponentInitial
         PandemoniumConfig.load();
         PandemoniumBlocks.init();
         PandemoniumEntities.init();
+        PandemoniumItems.init();
         PandemoniumStatusEffects.init();
         ServerMessageHandling.init();
         RequiemApi.registerPlugin(new PandemoniumRequiemPlugin());

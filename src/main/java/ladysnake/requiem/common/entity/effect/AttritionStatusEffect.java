@@ -116,10 +116,14 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
 
     @Override
     public boolean shouldStick(LivingEntity entity) {
-        if (RemnantComponent.isVagrant(entity)) return true;
-        PlayerEntity possessor = ((Possessable)entity).getPossessor();
-        if (possessor == null) return false;
-        RemnantComponent remnantComponent = RemnantComponent.get(possessor);
-        return remnantComponent.getRemnantType() == RemnantTypes.WANDERING_SPIRIT;
+        // If a remnant cannot regenerate a player body (like wandering spirits), it means they should always be considered as "outside a congruent body"
+        return RemnantComponent.KEY.maybeGet(entity).map(rc -> rc.isVagrant() || !rc.canRegenerateBody()).orElse(false);
+    }
+
+    @Override
+    public boolean shouldFreezeDuration(LivingEntity entity) {
+        if (this.shouldStick(entity)) return true;
+        // No ticking down for possessed entities either
+        return ((Possessable)entity).getPossessor() != null;
     }
 }

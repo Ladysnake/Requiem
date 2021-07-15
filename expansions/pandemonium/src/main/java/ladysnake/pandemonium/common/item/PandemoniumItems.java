@@ -32,30 +32,24 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.item;
+package ladysnake.pandemonium.common.item;
 
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.common.remnant.RemnantTypes;
+import ladysnake.pandemonium.Pandemonium;
+import ladysnake.pandemonium.common.remnant.PandemoniumRemnantTypes;
+import ladysnake.requiem.common.item.DemonSoulVesselItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
-public final class RequiemItems {
-    public static final DebugItem DEBUG_ITEM = new DebugItem(new Item.Settings());
-    public static final Item TOTEM_OF_SKELETONIZATION = new Item((new Item.Settings()).maxCount(1).group(ItemGroup.COMBAT).rarity(Rarity.UNCOMMON));
-    public static final DemonSoulVesselItem SOUL_VESSEL = new DemonSoulVesselItem(RemnantTypes.MORTAL, Formatting.AQUA, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.cure");
-    public static final DemonSoulVesselItem OMINOUS_SOUL_VESSEL = new DemonSoulVesselItem(RemnantTypes.REMNANT, Formatting.RED, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.curse");
+public final class PandemoniumItems {
+    public static final DemonSoulVesselItem BALEFUL_SOUL_VESSEL = new DemonSoulVesselItem(PandemoniumRemnantTypes.WANDERING_SPIRIT, Formatting.GRAY, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.banishment");
 
     public static void init() {
-        registerItem(DEBUG_ITEM, "debug_item");
-        registerItem(TOTEM_OF_SKELETONIZATION, "totem_of_skeletonization");
-        registerItem(SOUL_VESSEL, "soul_vessel");
-        registerItem(OMINOUS_SOUL_VESSEL, "ominous_soul_vessel");
+        registerItem(PandemoniumItems.BALEFUL_SOUL_VESSEL, "baleful_soul_vessel");
     }
 
     public static <T extends Item> void registerItem(T item, String name) {
-        Registry.register(Registry.ITEM, Requiem.id(name), item);
+        Registry.register(Registry.ITEM, Pandemonium.id(name), item);
     }
 }
