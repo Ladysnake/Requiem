@@ -87,7 +87,12 @@ public final class PenanceComponent implements ServerTickingComponent, ClientTic
             if (this.shouldApplyPenance()) {
                 PenanceStatusEffect.applyPenance(this.owner, penance.getAmplifier());
             }
-            KEY.sync(this.owner);
+            // if we sync here right after the player has respawned,
+            // we will sync the old value to the new player, causing a desync
+            // (connections are still functional after the player got removed)
+            if (!this.owner.isRemoved()) {
+                KEY.sync(this.owner);
+            }
         } else if (this.timeWithPenance >= 0) {
             this.timeWithPenance = -1;
             KEY.sync(this.owner);
