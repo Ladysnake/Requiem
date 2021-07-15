@@ -6,7 +6,7 @@
     "requiem:resurrection",
     "requiem:damned"
   ],
-  "icon": "requiem:ominous_soul_vessel",
+  "icon": "requiem:sealed_remnant_vessel",
   "name": "origins:origin.requiem.remnant.name",
   "description": "origins:origin.requiem.remnant.description",
   "order": 1,

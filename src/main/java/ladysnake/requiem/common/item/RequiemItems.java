@@ -49,7 +49,7 @@ public final class RequiemItems {
     public static final FilledSoulVesselItem FILLED_SOUL_VESSEL = new FilledSoulVesselItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1), EMPTY_SOUL_VESSEL);
     public static final Item SHATTERED_SOUL_VESSEL = new Item(new Item.Settings().group(ItemGroup.MISC).maxCount(1));
     public static final DemonSoulVesselItem SOUL_VESSEL = new DemonSoulVesselItem(RemnantTypes.MORTAL, Formatting.AQUA, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.cure");
-    public static final DemonSoulVesselItem OMINOUS_SOUL_VESSEL = new DemonSoulVesselItem(RemnantTypes.REMNANT, Formatting.RED, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.curse");
+    public static final DemonSoulVesselItem SEALED_REMNANT_VESSEL = new DemonSoulVesselItem(RemnantTypes.REMNANT, Formatting.RED, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.curse");
 
     public static void init() {
         registerItem(DEBUG_ITEM, "debug_item");
@@ -58,7 +58,7 @@ public final class RequiemItems {
         registerItem(EMPTY_SOUL_VESSEL, "empty_soul_vessel");
         registerItem(FILLED_SOUL_VESSEL, "filled_soul_vessel");
         registerItem(SHATTERED_SOUL_VESSEL, "shattered_soul_vessel");
-        registerItem(OMINOUS_SOUL_VESSEL, "ominous_soul_vessel");
+        registerItem(SEALED_REMNANT_VESSEL, "sealed_remnant_vessel");
 
         FILLED_SOUL_VESSEL.registerCallbacks();
     }
