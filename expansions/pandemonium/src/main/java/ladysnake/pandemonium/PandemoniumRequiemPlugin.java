@@ -88,8 +88,6 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
             PossessionStartCallback.EVENT.unregister(new Identifier(Requiem.MOD_ID, "enderman"));
             PossessionStartCallback.EVENT.register(Pandemonium.id("allow_everything"), (target, possessor, simulate) -> PossessionStartCallback.Result.ALLOW);
         }
-        PlayerShellEvents.PRE_MERGE.register((player, playerShell, shellProfile) ->
-            PenanceStatusEffect.getLevel(player) < 1);
         PossessionStartCallback.EVENT.register(Pandemonium.id("deny_penance_three"), ((target, possessor, simulate) ->
             PenanceStatusEffect.getLevel(possessor) >= 2 ? PossessionStartCallback.Result.DENY : PossessionStartCallback.Result.PASS));
         InitiateFractureCallback.EVENT.register(player -> {
@@ -150,7 +148,7 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
     @Override
     public void registerVagrantInteractions(VagrantInteractionRegistry registry) {
         registry.registerPossessionInteraction(PlayerEntity.class,
-            (target, possessor) -> target instanceof AutomatoneFakePlayer,
+            (target, possessor) -> target instanceof AutomatoneFakePlayer shell && PlayerShellEvents.PRE_MERGE.invoker().canMerge(possessor, target, shell.getDisplayProfile()),
             (target, possessor) -> {
                 if (target instanceof PlayerShellEntity && !PlayerSplitter.merge((PlayerShellEntity) target, (ServerPlayerEntity) possessor)) {
                     possessor.sendMessage(new TranslatableText("requiem:possess.incompatible_body"), true);
