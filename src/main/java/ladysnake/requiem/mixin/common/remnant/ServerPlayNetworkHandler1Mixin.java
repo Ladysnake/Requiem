@@ -55,20 +55,10 @@ public abstract class ServerPlayNetworkHandler1Mixin implements PlayerInteractEn
     @Shadow(aliases = "field_28962")
     public Entity entity;
 
-    @SuppressWarnings("InvalidInjectorMethodSignature")
-    @Inject(method = "processInteract", at = @At("HEAD"), cancellable = true, require = 0)
+    // The qualifier is 100% not unnecessary, refmaps get broken otherwise
+    @SuppressWarnings({"InvalidInjectorMethodSignature", "UnnecessaryQualifiedMemberReference"})
+    @Inject(method = "Lnet/minecraft/server/network/ServerPlayNetworkHandler$1;processInteract(Lnet/minecraft/util/Hand;Lnet/minecraft/server/network/ServerPlayNetworkHandler$Interaction;)V", at = @At("HEAD"), cancellable = true)
     private void onPlayerInteractEntity(Hand hand, @Coerce Object action, CallbackInfo ci) {
-        ServerWorld world = this.networkHandler.getPlayer().getServerWorld();
-
-        if (!AllowUseEntityCallback.EVENT.invoker().allow(this.networkHandler.getPlayer(), world, hand, entity)) {
-            ci.cancel();
-        }
-    }
-
-    // Remapping is broken lol
-    @SuppressWarnings("UnresolvedMixinReference")
-    @Inject(method = "method_33897", at = @At("HEAD"), cancellable = true, require = 0)
-    private void onPlayerInteractEntityObf(Hand hand, @Coerce Object action, CallbackInfo ci) {
         ServerWorld world = this.networkHandler.getPlayer().getServerWorld();
 
         if (!AllowUseEntityCallback.EVENT.invoker().allow(this.networkHandler.getPlayer(), world, hand, entity)) {

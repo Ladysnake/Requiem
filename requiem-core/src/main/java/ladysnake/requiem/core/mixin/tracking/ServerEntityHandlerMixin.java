@@ -32,7 +32,7 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.mixin.common.entity.tracking;
+package ladysnake.requiem.core.mixin.tracking;
 
 import ladysnake.requiem.core.record.EntityPositionClerk;
 import net.minecraft.entity.Entity;
@@ -42,19 +42,21 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+// Qualified methods are necessary for the refmap
+@SuppressWarnings("UnnecessaryQualifiedMemberReference")
 @Mixin(targets = "net/minecraft/server/world/ServerWorld$ServerEntityHandler")
 public abstract class ServerEntityHandlerMixin implements EntityHandler<Entity> {
-    @Inject(method = "destroy", at = @At("RETURN"))
+    @Inject(method = "Lnet/minecraft/server/world/ServerWorld$ServerEntityHandler;destroy(Lnet/minecraft/entity/Entity;)V", at = @At("RETURN"))
     private void onDestroyed(Entity entity, CallbackInfo ci) {
         EntityPositionClerk.KEY.maybeGet(entity).ifPresent(EntityPositionClerk::destroy);
     }
 
-    @Inject(method = "startTicking", at = @At("RETURN"))
+    @Inject(method = "Lnet/minecraft/server/world/ServerWorld$ServerEntityHandler;startTicking(Lnet/minecraft/entity/Entity;)V", at = @At("RETURN"))
     private void onStartTicking(Entity entity, CallbackInfo ci) {
         EntityPositionClerk.KEY.maybeGet(entity).ifPresent(EntityPositionClerk::startTicking);
     }
 
-    @Inject(method = "stopTicking", at = @At("RETURN"))
+    @Inject(method = "Lnet/minecraft/server/world/ServerWorld$ServerEntityHandler;stopTicking(Lnet/minecraft/entity/Entity;)V", at = @At("RETURN"))
     private void onStopTicking(Entity entity, CallbackInfo ci) {
         EntityPositionClerk.KEY.maybeGet(entity).ifPresent(EntityPositionClerk::stopTicking);
     }
