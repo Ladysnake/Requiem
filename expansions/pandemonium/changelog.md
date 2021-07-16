@@ -3,6 +3,10 @@ Version 2.0.0
 ------------------------------------------------------
 **Additions**
 - Added the Penance status effect, preventing you from leaving your current body
+- Added the Wandering Spirit alternative remnant type previously available in Requiem
+
+**Changes**
+- Player Shells are now tracked across dimensions
 
 ------------------------------------------------------
 Version 1.7.12
