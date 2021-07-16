@@ -36,14 +36,20 @@ package ladysnake.requiem.common.block;
 
 import ladysnake.requiem.api.v1.block.ObeliskEffectRune;
 import ladysnake.requiem.common.item.RequiemItems;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -52,9 +58,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Random;
 import java.util.function.Supplier;
 
 public class RunicObsidianBlock extends BlockWithEntity implements ObeliskEffectRune {
+    public static final BooleanProperty ACTIVATED = BooleanProperty.of("activated");
+
     private final Supplier<StatusEffect> effect;
     private final int maxLevel;
 
@@ -62,10 +71,14 @@ public class RunicObsidianBlock extends BlockWithEntity implements ObeliskEffect
         super(settings);
         this.effect = effect;
         this.maxLevel = maxLevel;
+        this.setDefaultState(this.stateManager.getDefaultState().with(ACTIVATED, false));
     }
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (world instanceof ServerWorld sw) {
+            tryActivateObelisk(sw, pos);
+        }
         if (player.getStackInHand(hand).getItem() == RequiemItems.DEBUG_ITEM) {
             if (!world.isClient && world.getBlockEntity(pos) instanceof RunicObsidianBlockEntity core) {
                 player.sendMessage(new LiteralText("Width: %d, Height: %d".formatted(core.getRangeLevel(), core.getPowerLevel())), true);
@@ -75,15 +88,51 @@ public class RunicObsidianBlock extends BlockWithEntity implements ObeliskEffect
         return ActionResult.PASS;
     }
 
-    @Nullable
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new RunicObsidianBlockEntity(pos, state);
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        world.getBlockTickScheduler().schedule(pos, this, 0);
     }
 
-    @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+        world.getBlockTickScheduler().schedule(pos, this, 0);
+    }
+
+    @Override
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        tryActivateObelisk(world, pos);
+    }
+
+    public static void tryActivateObelisk(ServerWorld world, BlockPos pos) {
+        RunicObsidianBlockEntity.findObeliskOrigin(world, pos).flatMap(origin -> RunicObsidianBlockEntity.matchObelisk(world, origin).result())
+            .ifPresentOrElse(
+                match -> match.runePositions().forEach(runePos -> toggleRune(world, runePos, true)),
+                () -> toggleRune(world, pos, false)
+            );
+    }
+
+    private static void toggleRune(ServerWorld world, BlockPos runePos, boolean activated) {
+        BlockState blockState = world.getBlockState(runePos);
+        if (blockState.get(ACTIVATED) != activated) {
+            int flags = Block.NOTIFY_LISTENERS;
+            // Propagate deactivation but not activation
+            if (!activated) flags |= Block.NOTIFY_NEIGHBORS;
+            world.setBlockState(runePos, blockState.cycle(ACTIVATED), flags);
+        }
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(ACTIVATED);
+    }
+
+    @Override
+    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return state.get(ACTIVATED) ? new RunicObsidianBlockEntity(pos, state) : null;
+    }
+
+    @Override
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         return checkType(type, RequiemBlockEntities.RUNIC_OBSIDIAN, RunicObsidianBlockEntity::tick);
     }
 

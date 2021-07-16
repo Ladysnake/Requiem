@@ -1,7 +1,10 @@
 {
   "variants": {
-    "": {
+    "activated=false": {
       "model": "requiem:block/tachylite/runic/reclamation"
+    },
+    "activated=true": {
+      "model": "requiem:block/tachylite/runic/reclamation_on"
     }
   }
 }

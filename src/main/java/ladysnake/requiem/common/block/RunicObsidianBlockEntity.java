@@ -35,6 +35,8 @@
 package ladysnake.requiem.common.block;
 
 import com.google.common.base.Preconditions;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import ladysnake.requiem.api.v1.block.ObeliskRune;
@@ -58,19 +60,25 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class RunicObsidianBlockEntity extends BlockEntity {
     public static final Direction[] OBELISK_SIDES = {Direction.SOUTH, Direction.EAST, Direction.NORTH, Direction.WEST};
     public static final int POWER_ATTEMPTS = 1;
     public static final int MAX_OBELISK_WIDTH = 5;
+    public static final DataResult<ObeliskMatch> INVALID_BASE = DataResult.error("Structure does not have a matching base");
+    public static final DataResult<ObeliskMatch> INVALID_CORE = DataResult.error("Structure does not have a matching runic core");
+    public static final DataResult<ObeliskMatch> INVALID_CAP = DataResult.error("Structure does not have a matching cap");
 
     private final Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
+    private boolean requiresInit = true;
     private @Nullable BlockPos delegate;
     private int obeliskWidth = 0;
     private int obeliskHeight = 0;
@@ -79,18 +87,22 @@ public class RunicObsidianBlockEntity extends BlockEntity {
         super(RequiemBlockEntities.RUNIC_OBSIDIAN, pos, state);
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, RunicObsidianBlockEntity blockEntity) {
+    public static void tick(World world, BlockPos pos, BlockState state, RunicObsidianBlockEntity be) {
         if (world.isClient) return;
 
         // Salt the time to avoid checking every potential obelisk on the same tick
         if ((world.getTime() + pos.hashCode()) % 80L == 0L) {
-            blockEntity.refresh();
+            RunicObsidianBlock.tryActivateObelisk((ServerWorld) world, pos);
 
-            int obeliskWidth = blockEntity.obeliskWidth;
+            if (be.requiresInit) {
+                be.init(state);
+            }
+
+            int obeliskWidth = be.obeliskWidth;
             Vec3d obeliskCenter = getObeliskCenter(pos, obeliskWidth);
 
-            if (!blockEntity.levels.isEmpty() && blockEntity.findPowerSource((ServerWorld) world, obeliskCenter, obeliskWidth * 5)) {
-                blockEntity.applyPlayerEffects(world, pos);
+            if (!be.levels.isEmpty() && be.findPowerSource((ServerWorld) world, obeliskCenter, obeliskWidth * 5)) {
+                be.applyPlayerEffects(world, pos);
             }
         }
     }
@@ -102,6 +114,15 @@ public class RunicObsidianBlockEntity extends BlockEntity {
             pos.getY() - 2,
             MathHelper.lerp(0.5, pos.getZ(), pos.getZ() + obeliskWidth - 1)
         );
+    }
+
+    public static Optional<BlockPos> findObeliskOrigin(World world, BlockPos pos) {
+        while (true) {
+            ObeliskOriginMatch match = tryMatchObeliskOrigin(world, pos);
+            if (match.origin != null) return Optional.of(match.origin);
+            else if (match.delegate == null) return Optional.empty();
+            else pos = match.delegate;
+        }
     }
 
     private void applyPlayerEffects(World world, BlockPos pos) {
@@ -168,15 +189,22 @@ public class RunicObsidianBlockEntity extends BlockEntity {
         return this.getDelegate().obeliskHeight;
     }
 
-    private void refresh() {
+    private void init(BlockState state) {
         assert this.world != null;
         this.delegate = null;
         this.levels.clear();
         this.obeliskWidth = 0;
         this.obeliskHeight = 0;
 
-        BlockPos obeliskOrigin = this.findObeliskOrigin();
-        if (obeliskOrigin != null) this.matchObelisk(this.world, obeliskOrigin);
+        tryMatchObeliskOrigin(this.world, this.pos).apply(
+            obeliskOrigin -> matchObelisk(world, obeliskOrigin).result().ifPresent(match -> {
+                this.obeliskWidth = match.coreWidth();
+                this.obeliskHeight = match.coreHeight();
+                this.levels.putAll(match.collectRunes());
+            }),
+            delegate -> this.delegate = delegate,
+            () -> this.world.getBlockTickScheduler().schedule(this.pos, state.getBlock(), 0)
+        );
     }
 
     /**
@@ -188,87 +216,82 @@ public class RunicObsidianBlockEntity extends BlockEntity {
      * {@code null} if the core below this block entity does not conform
      * to expectations.
      *
-     * @return a {@link BlockPos} describing a potential origin for an obelisk
+     * @param world the world in which to search for the origin of an obelisk
+     * @param pos   the position from which to initiate the search
+     * @return an {@link Either} describing either a potential origin for an obelisk, or the position of a better-suited delegate
      */
-    @Contract(mutates = "this")
-    private @Nullable BlockPos findObeliskOrigin() {
-        Preconditions.checkState(this.world != null);
-
+    public static ObeliskOriginMatch tryMatchObeliskOrigin(World world, BlockPos pos) {
         // getBlockEntity is faster than getBlockState, and we know that adjacent blocks must be of the same type for the structure to be valid
-        if (!(world.getBlockEntity(this.pos.west()) instanceof RunicObsidianBlockEntity)) {
-            if (!(world.getBlockEntity(this.pos.north()) instanceof RunicObsidianBlockEntity)) {
+        if (!(world.getBlockState(pos.west()).isIn(RequiemBlockTags.OBELISK_CORE))) {
+            if (!(world.getBlockState(pos.north()).isIn(RequiemBlockTags.OBELISK_CORE))) {
                 // we are at the northwest corner, now we go down until we find either the floor or a better candidate
                 // this should not go on for too many blocks, so mutable blockpos should not be necessary
-                BlockPos obeliskOrigin = this.pos;
+                BlockPos obeliskOrigin = pos;
                 BlockPos down = obeliskOrigin.down();
                 BlockState downState = world.getBlockState(down);
 
                 while (!downState.isIn(RequiemBlockTags.OBELISK_FRAME)) {
                     if (!downState.isIn(RequiemBlockTags.OBELISK_CORE)) {
-                        // This is not a valid obelisk
-                        return null;
+                        return ObeliskOriginMatch.failure();
                     }
                     obeliskOrigin = down;
                     down = obeliskOrigin.down();
 
                     if (world.getBlockEntity(down) instanceof RunicObsidianBlockEntity) {
                         // Found a better candidate in a lower core layer
-                        this.delegate = down;
-                        return null;
+                        return ObeliskOriginMatch.partial(down);
                     }
 
                     downState = world.getBlockState(down);
                 }
 
-                return obeliskOrigin;
+                return ObeliskOriginMatch.success(obeliskOrigin);
             } else {
-                // Found a better candidate
-                this.delegate = this.pos.north();
-                return null;
+                // Found a better candidate in the same layer
+                return ObeliskOriginMatch.partial(pos.north());
             }
         } else {
-            // Found a better candidate
-            this.delegate = this.pos.west();
-            return null;
+            // Found a better candidate in the same layer
+            return ObeliskOriginMatch.partial(pos.west());
         }
     }
 
-    @Contract(mutates = "this")
-    private void matchObelisk(World world, BlockPos origin) {
+    public static DataResult<ObeliskMatch> matchObelisk(World world, BlockPos origin) {
         int tentativeWidth = matchObeliskBase(world, origin);
         if (tentativeWidth > 0) {
-            Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
-            int tentativeHeight = matchObeliskCore(world, origin, tentativeWidth, levels);
-            if (tentativeHeight > 0 && matchObeliskCap(world, origin, tentativeWidth, tentativeHeight)) {
-                this.obeliskWidth = tentativeWidth;
-                this.obeliskHeight = tentativeHeight;
-                this.levels.putAll(levels);
+            ObeliskMatch attempt = matchObeliskCore(world, origin, tentativeWidth);
+            if (attempt.coreHeight() > 0) {
+                if (matchObeliskCap(world, origin, tentativeWidth, attempt.coreHeight())) {
+                    return DataResult.success(attempt);
+                }
+                return INVALID_CAP;
             }
+            return INVALID_CORE;
         }
+        return INVALID_BASE;
     }
 
-    private static int matchObeliskCore(World world, BlockPos origin, int width, Object2IntMap<ObeliskRune> levels) {
+    private static ObeliskMatch matchObeliskCore(World world, BlockPos origin, int width) {
         // start at north-west corner
         BlockPos start = origin.add(-1, 0, -1);
         BlockPos.Mutable pos = start.mutableCopy();
-        int height = 0;
+        List<RuneSearchResult> layers = new ArrayList<>();
+        int height;
 
-        while (true) {
-            if (!world.getBlockState(pos.set(start.getX(), start.getY() + height, start.getZ())).isIn(RequiemBlockTags.OBELISK_FRAME)
-                || !world.getBlockState(pos.set(start.getX() + width + 1, start.getY() + height, start.getZ())).isIn(RequiemBlockTags.OBELISK_FRAME)
-                || !world.getBlockState(pos.set(start.getX() + width + 1, start.getY() + height, start.getZ() + width + 1)).isIn(RequiemBlockTags.OBELISK_FRAME)
-                || !world.getBlockState(pos.set(start.getX(), start.getY() + height, start.getZ() + width + 1)).isIn(RequiemBlockTags.OBELISK_FRAME)
-            ) {
-                return height;
-            }
-
-            @Nullable RuneSearchResult result = findRune(world, origin, width, height);
-            if (!result.valid()) return height;
-            if (result.rune() != null && levels.getInt(result.rune()) <= result.rune().getMaxLevel()) {
-                levels.mergeInt(result.rune(), 1, Integer::sum);
-            }
-            height++;
+        for (height = 0; testCoreLayerFrame(world, start, pos, width, height); height++) {
+            RuneSearchResult result = findRune(world, origin, width, height);
+            if (!result.valid()) break;
+            layers.add(result);
         }
+
+        return new ObeliskMatch(origin, width, height, layers);
+    }
+
+    private static boolean testCoreLayerFrame(World world, BlockPos start, BlockPos.Mutable pos, int width, int height) {
+        return world.getBlockState(pos.set(start.getX(), start.getY() + height, start.getZ())).isIn(RequiemBlockTags.OBELISK_FRAME)
+            && world.getBlockState(pos.set(start.getX() + width + 1, start.getY() + height, start.getZ())).isIn(RequiemBlockTags.OBELISK_FRAME)
+            && world.getBlockState(pos.set(start.getX() + width + 1, start.getY() + height, start.getZ() + width + 1)).isIn(RequiemBlockTags.OBELISK_FRAME)
+            && world.getBlockState(pos.set(start.getX(), start.getY() + height, start.getZ() + width + 1)).isIn(RequiemBlockTags.OBELISK_FRAME);
     }
 
     private static RuneSearchResult findRune(World world, BlockPos origin, int width, int height) {
@@ -327,8 +350,7 @@ public class RunicObsidianBlockEntity extends BlockEntity {
         return true;
     }
 
-    @NotNull
-    private static Iterable<BlockPos> iterateCoreBlocks(BlockPos origin, int width, int height) {
+    static Iterable<BlockPos> iterateCoreBlocks(BlockPos origin, int width, int height) {
         return BlockPos.iterate(origin.up(height), origin.add(width - 1, height, width - 1));
     }
 
@@ -369,12 +391,41 @@ public class RunicObsidianBlockEntity extends BlockEntity {
         return lastSideLength;
     }
 
-    private record RuneSearchResult(boolean valid, @Nullable ObeliskRune rune) {
+    record RuneSearchResult(boolean valid, @Nullable ObeliskRune rune) {
         static final RuneSearchResult FAILED = new RuneSearchResult(false, null);
         static final RuneSearchResult INERT = new RuneSearchResult(true, null);
 
         static RuneSearchResult of(@Nullable ObeliskRune rune) {
             return rune == null ? INERT : new RuneSearchResult(true, rune);
+        }
+    }
+
+    private static final class ObeliskOriginMatch {
+        private static final ObeliskOriginMatch FAIL = new ObeliskOriginMatch(null, null);
+
+        private final @Nullable BlockPos origin;
+        private final @Nullable BlockPos delegate;
+
+        public static ObeliskOriginMatch success(BlockPos origin) {
+            return new ObeliskOriginMatch(origin, null);
+        }
+
+        public static ObeliskOriginMatch partial(BlockPos delegate) {
+            return new ObeliskOriginMatch(null, delegate);
+        }
+
+        public static ObeliskOriginMatch failure() {
+            return FAIL;
+        }
+
+        private ObeliskOriginMatch(@Nullable BlockPos origin, @Nullable BlockPos delegate) {
+            this.origin = origin;
+            this.delegate = delegate;
+        }
+
+        public void apply(Consumer<BlockPos> originConsumer, Consumer<BlockPos> delegateConsumer, Runnable failure) {
+            if (this.origin != null) originConsumer.accept(this.origin);
+            else if (this.delegate != null) delegateConsumer.accept(this.delegate);
         }
     }
 }
