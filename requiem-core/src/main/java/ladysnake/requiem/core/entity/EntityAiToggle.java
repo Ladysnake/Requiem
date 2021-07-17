@@ -34,9 +34,9 @@
  */
 package ladysnake.requiem.core.entity;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import ladysnake.requiem.core.RequiemCore;
@@ -47,13 +47,15 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class EntityAiToggle implements Component {
+public class EntityAiToggle implements AutoSyncedComponent {
     public static final ComponentKey<EntityAiToggle> KEY = ComponentRegistry.getOrCreate(RequiemCore.id("ai_toggle"), EntityAiToggle.class);
 
     public static boolean isAiDisabled(LivingEntity entity) {
@@ -62,6 +64,7 @@ public class EntityAiToggle implements Component {
 
     private final LivingEntity owner;
     private final Object2BooleanMap<Identifier> aiInhibitors = new Object2BooleanOpenHashMap<>();
+    private boolean disabled;
 
     public EntityAiToggle(LivingEntity owner) {
         this.owner = owner;
@@ -81,7 +84,7 @@ public class EntityAiToggle implements Component {
         } else {
             this.aiInhibitors.removeBoolean(inhibitorId);
         }
-        boolean nowDisabled = this.isAiDisabled();
+        boolean nowDisabled = !this.aiInhibitors.isEmpty();
 
         if (wasDisabled != nowDisabled) {
             this.refresh(nowDisabled);
@@ -89,16 +92,28 @@ public class EntityAiToggle implements Component {
     }
 
     private void refresh(boolean nowDisabled) {
+        this.disabled = nowDisabled;
         ((DisableableAiController) this.owner.getBrain()).requiem$setDisabled(nowDisabled);
         if (this.owner instanceof MobEntityAccessor mob) {
             ((DisableableAiController) mob.getGoalSelector()).requiem$setDisabled(nowDisabled);
             ((DisableableAiController) mob.getTargetSelector()).requiem$setDisabled(nowDisabled);
             ((DisableableAiController) mob.requiem$getNavigation()).requiem$setDisabled(nowDisabled);
         }
+        KEY.sync(this.owner);
+    }
+
+    @Override
+    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
+        buf.writeBoolean(this.disabled);
+    }
+
+    @Override
+    public void applySyncPacket(PacketByteBuf buf) {
+        this.disabled = buf.readBoolean();
     }
 
     public boolean isAiDisabled() {
-        return !this.aiInhibitors.isEmpty();
+        return this.disabled;
     }
 
     @Override
@@ -109,7 +124,7 @@ public class EntityAiToggle implements Component {
             .map(Identifier::tryParse)
             .filter(Objects::nonNull)
             .forEach(id -> this.aiInhibitors.put(id, true));
-        this.refresh(this.isAiDisabled());
+        this.refresh(!this.aiInhibitors.isEmpty());
     }
 
     @Override
