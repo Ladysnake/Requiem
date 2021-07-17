@@ -30,7 +30,8 @@
     "possession.possessor.PossessorPlayerEntityMixin",
     "possession.possessor.PossessorServerPlayerEntityMixin",
     "possession.possessor.PotionItemMixin",
-    "possession.possessor.StatusEffectInstanceMixin"
+    "possession.possessor.StatusEffectInstanceMixin",
+    "tracking.ServerEntityHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -17,8 +17,7 @@
     "entity.mob.LivingEntityAccessor",
     "entity.mob.PandaEntityMixin",
     "entity.mob.WololoGoalMixin",
-    "entity.player.TargetPredicateMixin",
-    "entity.tracking.ServerEntityHandlerMixin"
+    "entity.player.TargetPredicateMixin"
   ],
   "injectors": {
     "defaultRequire": 1

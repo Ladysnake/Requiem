@@ -47,9 +47,11 @@ import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
 import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.client.ClientRecordKeeper;
 import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.entity.CoolPlayerMovementAlterer;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
@@ -67,6 +69,8 @@ import ladysnake.requiem.core.ability.ImmutableMobAbilityController;
 import ladysnake.requiem.core.ability.PlayerAbilityController;
 import ladysnake.requiem.core.entity.EntityAiToggle;
 import ladysnake.requiem.core.possession.PossessionComponentImpl;
+import ladysnake.requiem.core.record.EntityPositionClerk;
+import ladysnake.requiem.core.record.ServerRecordKeeper;
 import ladysnake.requiem.core.remnant.RevivingDeathSuspender;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.EndermanEntity;
@@ -97,11 +101,16 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerFor(ZombieVillagerEntity.class, CurableEntityComponent.KEY, DelegatingCurableEntityComponent::new);
         registry.registerFor(ZombifiedPiglinEntity.class, CurableEntityComponent.KEY, CurableZombifiedPiglinComponent::new);
         registry.registerFor(LivingEntity.class, EntityAiToggle.KEY, EntityAiToggle::new);
+        registry.registerFor(LivingEntity.class, EntityPositionClerk.KEY, EntityPositionClerk::new);
     }
 
     @Override
     public void registerScoreboardComponentFactories(ScoreboardComponentFactoryRegistry registry) {
         registry.registerScoreboardComponent(AttritionFocus.KEY, GlobalAttritionFocus.class, (sc, server) -> new GlobalAttritionFocus(server));
         registry.registerScoreboardComponent(RequiemSyncedGamerules.KEY, (scoreboard, server) -> new RequiemSyncedGamerules(server));
+        registry.registerScoreboardComponent(GlobalRecordKeeper.KEY, (scoreboard, server) -> server == null
+            ? new ClientRecordKeeper(scoreboard)
+            : new ServerRecordKeeper(scoreboard, server)
+        );
     }
 }

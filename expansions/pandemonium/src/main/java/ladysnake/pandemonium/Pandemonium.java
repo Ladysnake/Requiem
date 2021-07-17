@@ -37,10 +37,7 @@ package ladysnake.pandemonium;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
-import dev.onyxstudios.cca.api.v3.scoreboard.ScoreboardComponentFactoryRegistry;
-import dev.onyxstudios.cca.api.v3.scoreboard.ScoreboardComponentInitializer;
 import io.github.ladysnake.impersonate.Impersonate;
-import ladysnake.pandemonium.client.ClientRecordKeeper;
 import ladysnake.pandemonium.common.PandemoniumCommand;
 import ladysnake.pandemonium.common.PandemoniumConfig;
 import ladysnake.pandemonium.common.block.PandemoniumBlocks;
@@ -56,17 +53,13 @@ import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
-import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.core.RequiemCore;
-import ladysnake.requiem.core.record.EntityPositionClerk;
-import ladysnake.requiem.core.record.ServerRecordKeeper;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 
 @CalledThroughReflection
-public final class Pandemonium implements ModInitializer, EntityComponentInitializer, ScoreboardComponentInitializer {
+public final class Pandemonium implements ModInitializer, EntityComponentInitializer {
     public static final String MOD_ID = "pandemonium";
     public static final Identifier BODY_IMPERSONATION = RequiemCore.id("body_impersonation");
     @AccessedThroughReflection
@@ -99,15 +92,6 @@ public final class Pandemonium implements ModInitializer, EntityComponentInitial
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         registry.registerForPlayers(PlayerBodyTracker.KEY, PlayerBodyTracker::new, RespawnCopyStrategy.ALWAYS_COPY);
         registry.registerForPlayers(PenanceComponent.KEY, PenanceComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
-        registry.registerFor(LivingEntity.class, EntityPositionClerk.KEY, EntityPositionClerk::new);
-    }
-
-    @Override
-    public void registerScoreboardComponentFactories(ScoreboardComponentFactoryRegistry registry) {
-        registry.registerScoreboardComponent(GlobalRecordKeeper.KEY, (scoreboard, server) -> server == null
-            ? new ClientRecordKeeper(scoreboard)
-            : new ServerRecordKeeper(scoreboard, server)
-        );
     }
 
     private Pandemonium() {
