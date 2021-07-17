@@ -37,7 +37,7 @@ package ladysnake.pandemonium.common.entity.ai.brain.tasks;
 import baritone.api.fakeplayer.FakeServerPlayerEntity;
 import com.google.common.collect.ImmutableMap;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
-import ladysnake.pandemonium.common.util.RayHelper;
+import ladysnake.requiem.core.util.RayHelper;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
