@@ -94,6 +94,12 @@ public class RunicObsidianBlockEntity extends BlockEntity {
         if ((world.getTime() + pos.hashCode()) % 80L == 0L) {
             RunicObsidianBlock.tryActivateObelisk((ServerWorld) world, pos);
 
+            if (!state.get(RunicObsidianBlock.ACTIVATED)) {
+                world.removeBlockEntity(pos);
+                be.markRemoved();
+                return;
+            }
+
             if (be.requiresInit) {
                 be.init(state);
             }

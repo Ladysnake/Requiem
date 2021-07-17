@@ -106,7 +106,7 @@ public class RunicObsidianBlock extends BlockWithEntity implements ObeliskEffect
     public static void tryActivateObelisk(ServerWorld world, BlockPos pos) {
         RunicObsidianBlockEntity.findObeliskOrigin(world, pos).flatMap(origin -> RunicObsidianBlockEntity.matchObelisk(world, origin).result())
             .ifPresentOrElse(
-                match -> match.runePositions().forEach(runePos -> toggleRune(world, runePos, true)),
+                match -> toggleRune(world, pos, true),
                 () -> toggleRune(world, pos, false)
             );
     }
@@ -114,10 +114,7 @@ public class RunicObsidianBlock extends BlockWithEntity implements ObeliskEffect
     private static void toggleRune(ServerWorld world, BlockPos runePos, boolean activated) {
         BlockState blockState = world.getBlockState(runePos);
         if (blockState.get(ACTIVATED) != activated) {
-            int flags = Block.NOTIFY_LISTENERS;
-            // Propagate deactivation but not activation
-            if (!activated) flags |= Block.NOTIFY_NEIGHBORS;
-            world.setBlockState(runePos, blockState.cycle(ACTIVATED), flags);
+            world.setBlockState(runePos, blockState.cycle(ACTIVATED), Block.NOTIFY_LISTENERS | Block.NOTIFY_NEIGHBORS);
         }
     }
 
