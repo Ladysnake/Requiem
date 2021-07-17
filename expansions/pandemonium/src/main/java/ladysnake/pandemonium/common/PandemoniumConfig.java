@@ -56,7 +56,7 @@ public final class PandemoniumConfig {
 
     public static class PossessConfig {
         @Comment("Toggles whether all mobs can be possessed by default. Individual mobs can still be configured through datapacks.")
-        public boolean allowPossessingAllMobs = true;
+        public boolean allowPossessingAllMobs = false;
     }
 
     private static final AnnotatedSettings settings = AnnotatedSettings.builder()
