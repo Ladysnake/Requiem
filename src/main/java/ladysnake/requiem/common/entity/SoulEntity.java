@@ -100,17 +100,7 @@ public class SoulEntity extends Entity {
                 this.updateTarget();
             }
 
-            if (!this.getBlockStateAtPos().isAir()) {
-                if (timeInSolid > -1) {
-                    timeInSolid += 1;
-                }
-            } else {
-                timeInSolid = 0;
-            }
-
-            if (timeInSolid > 25) {
-                this.kill();
-            }
+            this.tickTimeInSolid();
         }
 
         this.getTarget().ifPresent(target -> {
@@ -148,6 +138,20 @@ public class SoulEntity extends Entity {
             if (random.nextInt(20) == 0) {
                 this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.PARTICLE_SOUL_ESCAPE, SoundCategory.AMBIENT, 1.0f, 1.5f, true);
             }
+        }
+    }
+
+    protected void tickTimeInSolid() {
+        if (!this.getBlockStateAtPos().isAir()) {
+            if (timeInSolid > -1) {
+                timeInSolid += 1;
+            }
+        } else {
+            timeInSolid = 0;
+        }
+
+        if (timeInSolid > 25) {
+            this.kill();
         }
     }
 

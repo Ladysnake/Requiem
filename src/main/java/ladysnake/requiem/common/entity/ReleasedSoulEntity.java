@@ -122,6 +122,11 @@ public class ReleasedSoulEntity extends SoulEntity {
     }
 
     @Override
+    protected void tickTimeInSolid() {
+        // NO-OP
+    }
+
+    @Override
     protected void expire() {
         if (this.getBodyStatus() == BODY_ISEKAI) {
             // Will be retrieved later
