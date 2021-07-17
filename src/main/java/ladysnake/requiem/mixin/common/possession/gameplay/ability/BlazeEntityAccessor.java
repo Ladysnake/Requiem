@@ -32,34 +32,17 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.mixin.common.entity.mob;
+package ladysnake.requiem.mixin.common.possession.gameplay.ability;
 
-import ladysnake.pandemonium.common.entity.ability.ExtendedWololoGoal;
-import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.mob.EvokerEntity;
-import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.entity.mob.BlazeEntity;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(EvokerEntity.WololoGoal.class)
-public abstract class WololoGoalMixin implements ExtendedWololoGoal {
-    @Shadow
-    @Final
-    private TargetPredicate convertibleSheepPredicate;
+@Mixin(BlazeEntity.class)
+public interface BlazeEntityAccessor {
+    @Invoker("isFireActive")
+    boolean requiem$invokeIsFireActive();
 
-    @Override
-    public @NotNull TargetPredicate requiem_getConvertibleSheepPredicate() {
-        return this.convertibleSheepPredicate;
-    }
-
-    @Inject(method = "canStart", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/mob/EvokerEntity$WololoGoal;convertibleSheepPredicate:Lnet/minecraft/entity/ai/TargetPredicate;"), cancellable = true)
-    private void canStart(CallbackInfoReturnable<Boolean> cir) {
-        if (this.requiem_hasValidTarget()) {
-            cir.setReturnValue(true);
-        }
-    }
+    @Invoker("setFireActive")
+    void requiem$invokeSetFireActive(boolean active);
 }

@@ -32,54 +32,14 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity.ability;
+package ladysnake.requiem.mixin.common.possession.gameplay.ability;
 
-import ladysnake.requiem.core.entity.ability.IndirectAbilityBase;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.GhastEntity;
-import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.entity.mob.CreeperEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-public class GhastFireballAbility extends IndirectAbilityBase<LivingEntity> {
-    public GhastFireballAbility(LivingEntity owner) {
-        super(owner, 60);
-    }
-
-    @Override
-    public void update() {
-        super.update();
-        if (this.cooldown == 20) {
-            this.setShooting(false);
-        }
-    }
-
-    private void setShooting(boolean shooting) {
-        if (this.owner instanceof GhastEntity) {
-            ((GhastEntity) this.owner).setShooting(shooting);
-        }
-    }
-
-    @Override
-    public boolean run() {
-        if (!this.owner.world.isClient) {
-            this.owner.world.syncWorldEvent(null, 1016, this.owner.getBlockPos(), 0);
-            this.setShooting(true);
-            this.spawnFireball();
-            this.beginCooldown();
-        }
-        return true;
-    }
-
-    private void spawnFireball() {
-        Vec3d scaledRot = this.owner.getRotationVec(1.0F);
-        Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
-        int explosionPower = this.owner instanceof GhastEntity ? ((GhastEntity) this.owner).getFireballStrength() : 1;
-        FireballEntity fireball = new FireballEntity(this.owner.world, this.owner, rot.x, rot.y, rot.z, explosionPower);
-        fireball.setPosition(
-            this.owner.getX() + scaledRot.x * 4.0D,
-            this.owner.getY() + (double) (this.owner.getHeight() / 2.0F) + 0.5D,
-            this.owner.getZ() + scaledRot.z * 4.0D
-        );
-        this.owner.world.spawnEntity(fireball);
-    }
+@Mixin(CreeperEntity.class)
+public interface CreeperEntityAccessor {
+    @Accessor
+    int getCurrentFuseTime();
 }

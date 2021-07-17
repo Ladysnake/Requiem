@@ -10,13 +10,6 @@
     "entity.ai.SerializableMemoryModuleTypeAccessor",
     "entity.ai.TargetPredicateAccessor",
     "entity.ai.goal.FollowTargetGoalMixin",
-    "entity.mob.BlazeEntityAccessor",
-    "entity.mob.CreeperEntityAccessor",
-    "entity.mob.EvokerEntityAccessor",
-    "entity.mob.FoxEntityMixin",
-    "entity.mob.LivingEntityAccessor",
-    "entity.mob.PandaEntityMixin",
-    "entity.mob.WololoGoalMixin",
     "entity.player.TargetPredicateMixin"
   ],
   "injectors": {

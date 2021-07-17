@@ -17,6 +17,12 @@ repositories {
             includeGroup 'me.lucko'
         }
     }
+    maven {
+        url = 'https://maven.jamieswhiteshirt.com/libs-release/'
+        content {
+            includeGroup 'com.jamieswhiteshirt'
+        }
+    }
 }
 
 dependencies {
@@ -24,6 +30,7 @@ dependencies {
     modImplementation "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
     modImplementation "io.github.ladysnake:locki:${locki_version}"
     modImplementation "me.lucko:fabric-permissions-api:${fpa_version}"
+    modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${rootProject.reach_version}"
 }
 
 remapJar.dependsOn(project(":requiem-api").tasks.remapJar)

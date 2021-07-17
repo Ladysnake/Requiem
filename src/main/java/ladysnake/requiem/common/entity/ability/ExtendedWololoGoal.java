@@ -32,21 +32,16 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.mixin.common.entity.mob;
+package ladysnake.requiem.common.entity.ability;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.data.TrackedData;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import net.minecraft.entity.ai.TargetPredicate;
 
-@Mixin(LivingEntity.class)
-public interface LivingEntityAccessor {
-    @Accessor("STUCK_ARROW_COUNT")
-    static TrackedData<Integer> getStuckArrowCountTrackedData() {
-        throw new IllegalStateException();
+public interface ExtendedWololoGoal {
+    default TargetPredicate requiem_getConvertibleSheepPredicate() {
+        throw new AssertionError();
     }
-    @Accessor("STINGER_COUNT")
-    static TrackedData<Integer> getStuckStingerCountTrackedData() {
-        throw new IllegalStateException();
+
+    default boolean requiem_hasValidTarget() {
+        return false;
     }
 }

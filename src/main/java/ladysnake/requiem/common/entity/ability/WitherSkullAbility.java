@@ -32,7 +32,7 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity.ability;
+package ladysnake.requiem.common.entity.ability;
 
 import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
 import ladysnake.requiem.api.v1.entity.ability.IndirectAbility;

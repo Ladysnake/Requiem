@@ -32,7 +32,7 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.util;
+package ladysnake.requiem.core.util;
 
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import net.minecraft.entity.Entity;
@@ -56,7 +56,7 @@ import java.util.function.Predicate;
  *
  * @author UpcraftLP
  */
-public class RayHelper {
+public final class RayHelper {
 
     /**
      * Raytraces using an entity's position as source, and its look vector as direction
@@ -111,31 +111,19 @@ public class RayHelper {
         if (trace.getType() == HitResult.Type.BLOCK) {
             BlockHitResult result = (BlockHitResult) trace;
             switch (result.getSide()) {
-                case DOWN:
-                    pos = pos.subtract(0, entity.getHeight(), 0);
-                    break;
-                case UP:
-                    secondPass = false;
-                    break;
-                default:
+                case DOWN -> pos = pos.subtract(0, entity.getHeight(), 0);
+                case UP -> secondPass = false;
+                default -> {
                     Vec3d entityPos = entity.getCameraPosVec(deltaTime);
                     Vec3d toTarget = pos.subtract(entityPos);
                     if (pos.y - (int) pos.y >= 0.5D) {
-                        BlockPos testPos;
-                        switch (result.getSide()) {
-                            case EAST:
-                                testPos = new BlockPos(pos.x - 1, pos.y + 1, pos.z);
-                                break;
-                            case WEST:
-                            case NORTH:
-                                testPos = new BlockPos(pos.x, pos.y + 1, pos.z);
-                                break;
-                            case SOUTH:
-                                testPos = new BlockPos(pos.x, pos.y + 1, pos.z - 1);
-                                break;
-                            default: //should never happen, but better safe than sorry
+                        BlockPos testPos = switch (result.getSide()) {
+                            case EAST -> new BlockPos(pos.x - 1, pos.y + 1, pos.z);
+                            case WEST, NORTH -> new BlockPos(pos.x, pos.y + 1, pos.z);
+                            case SOUTH -> new BlockPos(pos.x, pos.y + 1, pos.z - 1);
+                            default -> //should never happen, but better safe than sorry
                                 throw new RaytraceException("hit result had wrong value: " + result.getSide());
-                        }
+                        };
                         if (!world.isSpaceEmpty(null, entity.getBoundingBox().offset(testPos.getX() - entity.getX(), testPos.getY() - entity.getY(), testPos.getZ() - entity.getZ()))) {
                             toTarget = toTarget.multiply(Math.max((toTarget.length() + 0.8D) / toTarget.length(), 1.0D));
                             pos = new Vec3d(entityPos.x + toTarget.x, testPos.getY() + 0.1D, entityPos.z + toTarget.z);
@@ -150,6 +138,7 @@ public class RayHelper {
                         HitResult result1 = raycast(world, entity, pos, pos.subtract(0.0D, 1.0D, 0.0D), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.SOURCE_ONLY);
                         pos = result1.getPos();
                     }
+                }
             }
         }
         if (secondPass) {

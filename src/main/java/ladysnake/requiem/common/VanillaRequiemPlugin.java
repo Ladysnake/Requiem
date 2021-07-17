@@ -68,9 +68,18 @@ import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
+import ladysnake.requiem.common.entity.ability.BlazeFireballAbility;
+import ladysnake.requiem.common.entity.ability.BlinkAbility;
+import ladysnake.requiem.common.entity.ability.CreeperPrimingAbility;
+import ladysnake.requiem.common.entity.ability.EvokerFangAbility;
+import ladysnake.requiem.common.entity.ability.EvokerVexAbility;
+import ladysnake.requiem.common.entity.ability.EvokerWololoAbility;
+import ladysnake.requiem.common.entity.ability.GhastFireballAbility;
+import ladysnake.requiem.common.entity.ability.GuardianBeamAbility;
 import ladysnake.requiem.common.entity.ability.ShulkerPeekAbility;
 import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
 import ladysnake.requiem.common.entity.ability.VagrantPossessAbility;
+import ladysnake.requiem.common.entity.ability.WitherSkullAbility;
 import ladysnake.requiem.common.entity.effect.ReclamationStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.network.RequiemNetworking;
@@ -97,16 +106,21 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.EndermanEntity;
+import net.minecraft.entity.mob.EvokerEntity;
+import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.mob.WitchEntity;
+import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
@@ -316,6 +330,18 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
     @Override
     public void registerMobAbilities(MobAbilityRegistry abilityRegistry) {
+        abilityRegistry.register(EntityType.BLAZE, MobAbilityConfig.builder().indirectAttack(BlazeFireballAbility::new).build());
+        abilityRegistry.register(EntityType.CREEPER, MobAbilityConfig.<CreeperEntity>builder().indirectAttack(CreeperPrimingAbility::new).build());
+        abilityRegistry.register(EntityType.ENDERMAN, MobAbilityConfig.builder().indirectInteract(BlinkAbility::new).build());
+        abilityRegistry.register(EntityType.EVOKER, MobAbilityConfig.<EvokerEntity>builder()
+            .directAttack(EvokerFangAbility::new)
+            .directInteract(EvokerWololoAbility::new)
+            .indirectInteract(EvokerVexAbility::new)
+            .build());
+        abilityRegistry.register(EntityType.GHAST, MobAbilityConfig.builder().indirectAttack(GhastFireballAbility::new).build());
+        abilityRegistry.register(EntityType.GUARDIAN, MobAbilityConfig.<GuardianEntity>builder().directAttack(GuardianBeamAbility::new).build());
+        abilityRegistry.register(EntityType.ELDER_GUARDIAN, MobAbilityConfig.<GuardianEntity>builder().directAttack(GuardianBeamAbility::new).build());
+        abilityRegistry.register(EntityType.LLAMA, MobAbilityConfig.<LlamaEntity>builder().directAttack(RangedAttackAbility::new).build());
         abilityRegistry.register(EntityType.SHULKER, MobAbilityConfig.<ShulkerEntity>builder()
             .directAttack(ShulkerShootAbility::new)
             .indirectAttack(shulker -> new AutoAimAbility<>(shulker, AbilityType.ATTACK, 16.0, 4.0))
@@ -323,8 +349,10 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         abilityRegistry.register(EntityType.SNOW_GOLEM, MobAbilityConfig.<SnowGolemEntity>builder()
             .directAttack(e -> new RangedAttackAbility<>(e, 20, 10))
             .indirectInteract(SnowmanSnowballAbility::new).build());
+        abilityRegistry.register(EntityType.TRADER_LLAMA, MobAbilityConfig.<LlamaEntity>builder().directAttack(RangedAttackAbility::new).build());
         abilityRegistry.register(EntityType.WITCH, MobAbilityConfig.<WitchEntity>builder()
             .directAttack(owner -> new RangedAttackAbility<>(owner, 50, 10.)).build());
+        abilityRegistry.register(EntityType.WITHER, MobAbilityConfig.<WitherEntity>builder().indirectAttack(WitherSkullAbility.BlueWitherSkullAbility::new).directAttack(WitherSkullAbility.BlackWitherSkullAbility::new).build());
     }
 
     @Override

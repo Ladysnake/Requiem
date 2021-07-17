@@ -32,10 +32,10 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity.ability;
+package ladysnake.requiem.common.entity.ability;
 
-import ladysnake.pandemonium.mixin.common.entity.mob.BlazeEntityAccessor;
 import ladysnake.requiem.core.entity.ability.IndirectAbilityBase;
+import ladysnake.requiem.mixin.common.possession.gameplay.ability.BlazeEntityAccessor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;

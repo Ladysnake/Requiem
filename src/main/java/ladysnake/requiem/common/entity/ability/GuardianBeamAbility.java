@@ -32,17 +32,42 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.mixin.common.entity.mob;
+package ladysnake.requiem.common.entity.ability;
 
-import net.minecraft.entity.mob.BlazeEntity;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Invoker;
+import ladysnake.requiem.core.entity.ability.TickingGoalAbility;
+import ladysnake.requiem.core.util.reflection.ReflectionHelper;
+import ladysnake.requiem.core.util.reflection.UncheckedReflectionException;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.mob.GuardianEntity;
 
-@Mixin(BlazeEntity.class)
-public interface BlazeEntityAccessor {
-    @Invoker("isFireActive")
-    boolean requiem$invokeIsFireActive();
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
-    @Invoker("setFireActive")
-    void requiem$invokeSetFireActive(boolean active);
+public class GuardianBeamAbility extends TickingGoalAbility<GuardianEntity, LivingEntity> {
+    public GuardianBeamAbility(GuardianEntity owner) {
+        super(owner, makeGoal(owner), 20*4, 15, LivingEntity.class);
+    }
+
+    private static final Constructor<? extends Goal> BEAM_GOAL_FACTORY;
+
+    private static Goal makeGoal(GuardianEntity owner) {
+        try {
+            return BEAM_GOAL_FACTORY.newInstance(owner);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new UncheckedReflectionException("Failed to instantiate FireBeamGoal", e);
+        }
+    }
+
+    static {
+        try {
+            Class<? extends Goal> clazz = ReflectionHelper.findClass("net.minecraft.class_1577$class_1578");
+            BEAM_GOAL_FACTORY = clazz.getDeclaredConstructor(GuardianEntity.class);
+            BEAM_GOAL_FACTORY.setAccessible(true);
+        } catch (ClassNotFoundException e) {
+            throw new UncheckedReflectionException("Could not find the FireBeamGoal class", e);
+        } catch (NoSuchMethodException e) {
+            throw new UncheckedReflectionException("Could not find the FireBeamGoal constructor", e);
+        }
+    }
 }

@@ -32,12 +32,12 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity.ability;
+package ladysnake.requiem.common.entity.ability;
 
-import ladysnake.pandemonium.common.entity.internal.SpellcastingIllagerAccess;
-import ladysnake.pandemonium.mixin.common.entity.mob.EvokerEntityAccessor;
 import ladysnake.requiem.common.entity.WololoComponent;
+import ladysnake.requiem.common.entity.internal.SpellcastingIllagerAccess;
 import ladysnake.requiem.core.entity.ability.DirectAbilityBase;
+import ladysnake.requiem.mixin.common.possession.gameplay.ability.EvokerEntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.passive.SheepEntity;

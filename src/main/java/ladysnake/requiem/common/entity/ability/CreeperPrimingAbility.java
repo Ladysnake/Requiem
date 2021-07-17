@@ -32,29 +32,20 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity.ability;
+package ladysnake.requiem.common.entity.ability;
 
-import ladysnake.pandemonium.common.util.RayHelper;
 import ladysnake.requiem.core.entity.ability.IndirectAbilityBase;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.entity.mob.CreeperEntity;
 
-public class BlinkAbility extends IndirectAbilityBase<LivingEntity> {
-    public static final int COOLDOWN = 400;
-
-    public BlinkAbility(LivingEntity owner) {
-        super(owner, COOLDOWN);
+public class CreeperPrimingAbility extends IndirectAbilityBase<CreeperEntity> {
+    public CreeperPrimingAbility(CreeperEntity owner) {
+        super(owner, 0);
     }
 
     @Override
     public boolean run() {
         if (!this.owner.world.isClient) {
-            Vec3d blinkPos = RayHelper.findBlinkPos(this.owner, 1F, 32D);
-            if (this.owner.teleport(blinkPos.x, blinkPos.y, blinkPos.z, true)) {
-                this.owner.world.playSound(null, this.owner.prevX, this.owner.prevY, this.owner.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.owner.getSoundCategory(), 1.0F, 1.0F);
-                this.owner.world.playSound(null, blinkPos.x, blinkPos.y, blinkPos.z, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.owner.getSoundCategory(), 1.0F, 1.0F);
-            }
+            this.owner.setFuseSpeed(this.owner.getFuseSpeed() > 0 ? -1 : 1);
         }
         return true;
     }

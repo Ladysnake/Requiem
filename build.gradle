@@ -230,6 +230,8 @@ dependencies {
     include "io.github.ladysnake:locki:${locki_version}"
     modImplementation "dev.emi.chime:chime:${chime_version}"
     include "dev.emi.chime:chime:${chime_version}"
+    modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
+    include "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
     // Fiber is technically not a mod and could use implementation, however that leaves it out of the generated pom.xml
     modImplementation "me.zeroeightsix:fiber:${fiber_version}"
     include "me.zeroeightsix:fiber:${fiber_version}"

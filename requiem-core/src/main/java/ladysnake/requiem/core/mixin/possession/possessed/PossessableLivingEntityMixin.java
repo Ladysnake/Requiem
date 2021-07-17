@@ -171,7 +171,9 @@ public abstract class PossessableLivingEntityMixin extends Entity implements Pos
 
         this.possessor = possessor;
 
-        EntityAiToggle.KEY.get(this).toggleAi(RequiemCore.POSSESSION_MECHANISM_ID, this.possessor != null, false);
+        if (!this.world.isClient) {
+            EntityAiToggle.KEY.get(this).toggleAi(RequiemCore.POSSESSION_MECHANISM_ID, this.possessor != null, false);
+        }
 
         EntityAttributeInstance speedAttribute = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
         speedAttribute.removeModifier(RequiemCore.INHERENT_MOB_SLOWNESS_UUID);

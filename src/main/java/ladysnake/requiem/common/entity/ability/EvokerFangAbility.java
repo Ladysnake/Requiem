@@ -32,10 +32,10 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity.ability;
+package ladysnake.requiem.common.entity.ability;
 
-import ladysnake.pandemonium.common.entity.internal.SpellcastingIllagerAccess;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.common.entity.internal.SpellcastingIllagerAccess;
 import ladysnake.requiem.core.entity.ability.DirectAbilityBase;
 import ladysnake.requiem.core.util.reflection.ReflectionHelper;
 import ladysnake.requiem.core.util.reflection.UncheckedReflectionException;

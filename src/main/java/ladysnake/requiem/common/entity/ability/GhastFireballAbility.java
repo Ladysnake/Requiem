@@ -32,31 +32,54 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity.internal;
+package ladysnake.requiem.common.entity.ability;
 
-import ladysnake.requiem.core.util.reflection.ReflectionHelper;
-import ladysnake.requiem.core.util.reflection.UnableToFindMethodException;
-import ladysnake.requiem.core.util.reflection.UncheckedReflectionException;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.mob.SpellcastingIllagerEntity;
-import net.minecraft.world.World;
+import ladysnake.requiem.core.entity.ability.IndirectAbilityBase;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.GhastEntity;
+import net.minecraft.entity.projectile.FireballEntity;
+import net.minecraft.util.math.Vec3d;
 
-import java.lang.reflect.Method;
+public class GhastFireballAbility extends IndirectAbilityBase<LivingEntity> {
+    public GhastFireballAbility(LivingEntity owner) {
+        super(owner, 60);
+    }
 
-public abstract class SpellcastingIllagerAccess extends SpellcastingIllagerEntity {
-    public static final SpellcastingIllagerEntity.Spell SPELL_NONE = Spell.NONE;
-    public static final Spell SPELL_FANGS = Spell.FANGS;
-    public static final Method CAST_SPELL_GOAL$CAST_SPELL;
-
-    static {
-        try {
-            CAST_SPELL_GOAL$CAST_SPELL = ReflectionHelper.findMethodFromIntermediary(CastSpellGoal.class, "method_7148", void.class);
-        } catch (UnableToFindMethodException e) {
-            throw new UncheckedReflectionException(e);
+    @Override
+    public void update() {
+        super.update();
+        if (this.cooldown == 20) {
+            this.setShooting(false);
         }
     }
 
-    private SpellcastingIllagerAccess(EntityType<? extends SpellcastingIllagerEntity> entityType, World world) {
-        super(entityType, world);
+    private void setShooting(boolean shooting) {
+        if (this.owner instanceof GhastEntity) {
+            ((GhastEntity) this.owner).setShooting(shooting);
+        }
+    }
+
+    @Override
+    public boolean run() {
+        if (!this.owner.world.isClient) {
+            this.owner.world.syncWorldEvent(null, 1016, this.owner.getBlockPos(), 0);
+            this.setShooting(true);
+            this.spawnFireball();
+            this.beginCooldown();
+        }
+        return true;
+    }
+
+    private void spawnFireball() {
+        Vec3d scaledRot = this.owner.getRotationVec(1.0F);
+        Vec3d rot = this.owner.getRotationVec(1.0f).multiply(10);
+        int explosionPower = this.owner instanceof GhastEntity ? ((GhastEntity) this.owner).getFireballStrength() : 1;
+        FireballEntity fireball = new FireballEntity(this.owner.world, this.owner, rot.x, rot.y, rot.z, explosionPower);
+        fireball.setPosition(
+            this.owner.getX() + scaledRot.x * 4.0D,
+            this.owner.getY() + (double) (this.owner.getHeight() / 2.0F) + 0.5D,
+            this.owner.getZ() + scaledRot.z * 4.0D
+        );
+        this.owner.world.spawnEntity(fireball);
     }
 }

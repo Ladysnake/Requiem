@@ -32,16 +32,37 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity.ability;
+package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import net.minecraft.entity.ai.TargetPredicate;
+import ladysnake.requiem.api.v1.possession.Possessable;
+import net.minecraft.entity.passive.FoxEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-public interface ExtendedWololoGoal {
-    default TargetPredicate requiem_getConvertibleSheepPredicate() {
-        throw new AssertionError();
+@Mixin(FoxEntity.class)
+public abstract class FoxEntityMixin implements Possessable {
+    @Shadow
+    abstract void stopActions();
+
+    @Shadow
+    public abstract void setCrouching(boolean crouching);
+
+    @Override
+    public void onPossessorSet(@Nullable PlayerEntity possessor) {
+        this.stopActions();
     }
 
-    default boolean requiem_hasValidTarget() {
-        return false;
+    // Sync crouching mode
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/FoxEntity;isInSneakingPose()Z"))
+    private void tick(CallbackInfo ci) {
+        PlayerEntity possessor = this.getPossessor();
+        if (possessor != null) {
+            this.setCrouching(possessor.isSneaking());
+        }
     }
 }

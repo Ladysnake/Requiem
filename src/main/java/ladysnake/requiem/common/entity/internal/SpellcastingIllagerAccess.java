@@ -32,21 +32,31 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity.ability;
+package ladysnake.requiem.common.entity.internal;
 
-import ladysnake.requiem.core.entity.ability.IndirectAbilityBase;
-import net.minecraft.entity.mob.CreeperEntity;
+import ladysnake.requiem.core.util.reflection.ReflectionHelper;
+import ladysnake.requiem.core.util.reflection.UnableToFindMethodException;
+import ladysnake.requiem.core.util.reflection.UncheckedReflectionException;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.mob.SpellcastingIllagerEntity;
+import net.minecraft.world.World;
 
-public class CreeperPrimingAbility extends IndirectAbilityBase<CreeperEntity> {
-    public CreeperPrimingAbility(CreeperEntity owner) {
-        super(owner, 0);
+import java.lang.reflect.Method;
+
+public abstract class SpellcastingIllagerAccess extends SpellcastingIllagerEntity {
+    public static final SpellcastingIllagerEntity.Spell SPELL_NONE = Spell.NONE;
+    public static final Spell SPELL_FANGS = Spell.FANGS;
+    public static final Method CAST_SPELL_GOAL$CAST_SPELL;
+
+    static {
+        try {
+            CAST_SPELL_GOAL$CAST_SPELL = ReflectionHelper.findMethodFromIntermediary(CastSpellGoal.class, "method_7148", void.class);
+        } catch (UnableToFindMethodException e) {
+            throw new UncheckedReflectionException(e);
+        }
     }
 
-    @Override
-    public boolean run() {
-        if (!this.owner.world.isClient) {
-            this.owner.setFuseSpeed(this.owner.getFuseSpeed() > 0 ? -1 : 1);
-        }
-        return true;
+    private SpellcastingIllagerAccess(EntityType<? extends SpellcastingIllagerEntity> entityType, World world) {
+        super(entityType, world);
     }
 }

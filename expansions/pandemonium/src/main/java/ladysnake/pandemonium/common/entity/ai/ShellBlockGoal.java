@@ -36,8 +36,8 @@ package ladysnake.pandemonium.common.entity.ai;
 
 import ladysnake.pandemonium.common.entity.PlayerShellEntity;
 import ladysnake.pandemonium.mixin.common.entity.PersistentProjectileEntityAccessor;
-import ladysnake.pandemonium.mixin.common.entity.mob.CreeperEntityAccessor;
 import ladysnake.requiem.common.tag.RequiemItemTags;
+import ladysnake.requiem.mixin.common.possession.gameplay.ability.CreeperEntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
