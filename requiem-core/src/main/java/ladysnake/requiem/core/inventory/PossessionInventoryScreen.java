@@ -92,7 +92,7 @@ public class PossessionInventoryScreen extends AbstractInventoryScreen<PlayerScr
 
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        MobEntity possessedEntity = PossessionComponent.getPossessedEntity(this.player);
+        MobEntity possessedEntity = PossessionComponent.getHost(this.player);
         Text title = possessedEntity != null ? possessedEntity.getName() : this.title;
         this.textRenderer.draw(matrices, title, this.titleX, this.titleY, 0x404040);
     }

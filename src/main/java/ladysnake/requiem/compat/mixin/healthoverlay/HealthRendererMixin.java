@@ -44,15 +44,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import terrails.healthoverlay.HealthRenderer;
 
+import java.util.Objects;
+
 @CheckEnv(Env.CLIENT)
 @Mixin(value = HealthRenderer.class)
 public abstract class HealthRendererMixin {
     @Redirect(method = {"render", "renderHearts"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getHealth()F"))
     private float substituteHealth(PlayerEntity player) {
-        LivingEntity possessed = PossessionComponent.get(player).getPossessedEntity();
-        if (possessed != null) {
-            return possessed.getHealth();
-        }
-        return player.getHealth();
+        LivingEntity host = PossessionComponent.get(player).getHost();
+        return Objects.requireNonNullElse(host, player).getHealth();
     }
 }

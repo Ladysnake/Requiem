@@ -110,7 +110,7 @@ public class DemonSoulVesselItem extends Item {
 
             if (currentState != this.remnantType) {
                 PossessionComponent possessionComponent = PossessionComponent.get(player);
-                MobEntity possessedEntity = possessionComponent.getPossessedEntity();
+                MobEntity possessedEntity = possessionComponent.getHost();
 
                 if (possessedEntity == null || possessionComponent.isCuring()) {
                     world.playSound(null,

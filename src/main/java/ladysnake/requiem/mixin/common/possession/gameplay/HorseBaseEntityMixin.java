@@ -66,7 +66,7 @@ public abstract class HorseBaseEntityMixin extends MobEntity {
     private void undeadHorsesAutoSaddled(CallbackInfoReturnable<Boolean> cir) {
         Entity passenger = this.getPrimaryPassenger();
         if (this.isUndead() && passenger != null) {
-            LivingEntity possessedEntity = PossessionComponent.getPossessedEntity(passenger);
+            LivingEntity possessedEntity = PossessionComponent.getHost(passenger);
             if (possessedEntity != null && possessedEntity.isUndead()) {
                 cir.setReturnValue(true);
             }

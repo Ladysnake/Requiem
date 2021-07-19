@@ -44,6 +44,8 @@
   "requiem:commands.possession.stop.success.other": "%s stopped possessing %s",
   "requiem:commands.possession.stop.success.self": "Stopped possessing %s",
 
+  "requiem:block.minecraft.bed.invalid_body": "This form does not sleep",
+
   "requiem:opus.mortal_sentence": "Ad Vitam Mortale",
   "requiem:opus.remnant_sentence": "Ad Vitam Aeternam",
   "requiem:opus.wanderer_sentence": "Ad Vitam Vagrate",

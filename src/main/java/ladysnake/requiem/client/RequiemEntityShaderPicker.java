@@ -69,7 +69,7 @@ public final class RequiemEntityShaderPicker implements PickEntityShaderCallback
     public void pickEntityShader(@Nullable Entity camera, Consumer<Identifier> loadShaderFunc, Supplier<ShaderEffect> appliedShaderGetter) {
         if (camera == null) return;
         // make players use their possessed entity's shader
-        Entity possessed = PossessionComponent.getPossessedEntity(camera);
+        Entity possessed = PossessionComponent.getHost(camera);
         if (possessed != null) {
             MinecraftClient.getInstance().gameRenderer.onCameraEntitySet(possessed);
         } else if (appliedShaderGetter.get() == null) {

@@ -69,7 +69,7 @@ public abstract class EntityRenderDispatcherMixin {
     private void updateCamerasPossessedEntity(World w, Camera c, Entity e, CallbackInfo ci) {
         MinecraftClient client = MinecraftClient.getInstance();
         Entity camera = client.getCameraEntity();
-        requiem_camerasPossessed = camera == null ? null : PossessionComponent.getPossessedEntity(camera);
+        requiem_camerasPossessed = camera == null ? null : PossessionComponent.getHost(camera);
     }
 
     /**

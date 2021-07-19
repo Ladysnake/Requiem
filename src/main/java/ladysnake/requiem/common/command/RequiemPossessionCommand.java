@@ -9,17 +9,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class RequiemPossessionCommand {
+public final class RequiemPossessionCommand {
     public static final String POSSESSION_SUBCOMMAND = "possession";
 
     static LiteralArgumentBuilder<ServerCommandSource> possessionSubcommand() {
@@ -50,44 +48,52 @@ public class RequiemPossessionCommand {
         if (!(possessed instanceof MobEntity)) {
             throw new CommandException(new TranslatableText("requiem:commands.possession.start.fail.not_mob", possessed.getDisplayName()));
         }
+
         if (!RemnantComponent.get(player).isIncorporeal()) {
             throw new CommandException(new TranslatableText("requiem:commands.possession.start.fail.not_incorporeal", player.getDisplayName()));
         }
+
         boolean success = PossessionComponent.get(player).startPossessing((MobEntity) possessed);
+
         if (!success) {
             throw new CommandException(new TranslatableText("requiem:commands.possession.start.fail", possessed.getDisplayName()));
         }
+
         TranslatableText message;
         String baseKey = "requiem:commands.possession.start.success";
+
         if (source.getEntity() == player) {
             message = new TranslatableText(baseKey + ".self", possessed.getDisplayName());
         } else {
             message = new TranslatableText(baseKey + ".other", player.getDisplayName(), possessed.getDisplayName());
         }
+
         source.sendFeedback(message, true);
         return 1;
     }
 
     private static int stopPossession(ServerCommandSource source, Collection<ServerPlayerEntity> players) {
         int count = 0;
+
         for (ServerPlayerEntity player : players) {
             PossessionComponent possessionComponent = PossessionComponent.get(player);
-            if (possessionComponent.isPossessing()) {
-                Entity possessed = Objects.requireNonNull(possessionComponent.getPossessedEntity());
+            Entity host = possessionComponent.getHost();
+
+            if (host != null) {
                 possessionComponent.stopPossessing();
-                sendStopPossessionFeedback(source, player, possessed);
+                sendStopPossessionFeedback(source, player, host);
                 ++count;
             }
         }
+
         return count;
     }
 
-    private static void sendStopPossessionFeedback(ServerCommandSource source, ServerPlayerEntity player, Entity possessed) {
-        Text name = possessed.getDisplayName();
+    private static void sendStopPossessionFeedback(ServerCommandSource source, ServerPlayerEntity player, Entity formerHost) {
         if (source.getEntity() == player) {
-            source.sendFeedback(new TranslatableText("requiem:commands.possession.stop.success.self", name), true);
+            source.sendFeedback(new TranslatableText("requiem:commands.possession.stop.success.self", formerHost.getDisplayName()), true);
         } else {
-            source.sendFeedback(new TranslatableText("requiem:commands.possession.stop.success.other", player.getDisplayName(), name), true);
+            source.sendFeedback(new TranslatableText("requiem:commands.possession.stop.success.other", player.getDisplayName(), formerHost.getDisplayName()), true);
         }
     }
 }

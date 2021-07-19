@@ -57,7 +57,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     @Inject(method = "getArrowType", at = @At("RETURN"), cancellable = true)
     private void generateArrow(ItemStack weapon, CallbackInfoReturnable<ItemStack> cir) {
         if (cir.getReturnValue().isEmpty()) {
-            MobEntity host = PossessionComponent.getPossessedEntity(this);
+            MobEntity host = PossessionComponent.getHost(this);
             if (host != null && RequiemEntityTypeTags.ARROW_GENERATORS.contains(host.getType())) {
                 weapon.getOrCreateNbt().putBoolean("requiem:infinity_shot", true);
                 cir.setReturnValue(new ItemStack(Items.ARROW));

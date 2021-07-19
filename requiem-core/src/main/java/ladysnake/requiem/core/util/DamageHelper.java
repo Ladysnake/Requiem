@@ -61,7 +61,7 @@ public final class DamageHelper {
     @Nullable
     private static LivingEntity getPossessionAttacker(DamageSource source) {
         // players do not care about humanity anyway, so we check for their possessed entity directly
-        Entity attacker = source.getAttacker() instanceof PlayerEntity ? PossessionComponent.getPossessedEntity(source.getAttacker()) : source.getAttacker();
+        Entity attacker = source.getAttacker() instanceof PlayerEntity ? PossessionComponent.getHost(source.getAttacker()) : source.getAttacker();
 
         // check that the attacker is being possessed, and that it can use its equipment
         if (attacker instanceof Possessable && ((Possessable) attacker).isBeingPossessed() && RequiemCoreTags.Entity.ITEM_USERS.contains(attacker.getType())) {
@@ -72,7 +72,7 @@ public final class DamageHelper {
     }
 
     public static DamageSource tryProxyDamage(DamageSource source, LivingEntity attacker) {
-        Entity delegate = PossessionComponent.getPossessedEntity(attacker);
+        Entity delegate = PossessionComponent.getHost(attacker);
         return delegate != null ? createProxiedDamage(source, delegate) : null;
     }
 

@@ -60,7 +60,7 @@ public abstract class BowItemMixin extends RangedWeaponItem {
 
     @ModifyVariable(method = "onStoppedUsing", ordinal = 0, at = @At("STORE"))
     private boolean giveSkeletonInfinity(boolean infinity, ItemStack item, World world, LivingEntity user, int charge) {
-        MobEntity possessed = PossessionComponent.getPossessedEntity(user);
+        MobEntity possessed = PossessionComponent.getHost(user);
         NbtCompound tag = item.getNbt();
         if (tag != null && tag.getBoolean(VanillaRequiemPlugin.INFINITY_SHOT_TAG)) {
             tag.remove(VanillaRequiemPlugin.INFINITY_SHOT_TAG);
@@ -73,7 +73,7 @@ public abstract class BowItemMixin extends RangedWeaponItem {
 
     @ModifyVariable(method = "onStoppedUsing", ordinal = 0, at = @At("STORE"))
     private PersistentProjectileEntity useSkeletonArrow(PersistentProjectileEntity firedArrow, ItemStack item, World world, LivingEntity user, int charge) {
-        LivingEntity possessed = PossessionComponent.getPossessedEntity(user);
+        LivingEntity possessed = PossessionComponent.getHost(user);
         if (possessed instanceof ArrowShooter) {
             return ((ArrowShooter)possessed).requiem$invokeCreateArrow(((ProjectileEntityAccessor)firedArrow).requiem$invokeAsItemStack(), 1f);
         }

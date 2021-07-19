@@ -58,7 +58,7 @@ public class PandemoniumClient implements ClientModInitializer {
         MutableBoolean wasLookingAtShell = new MutableBoolean();
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
             if (client.targetedEntity instanceof AutomatoneFakePlayer && client.player != null) {
-                if (PossessionComponent.getPossessedEntity(client.player) != null && client.player.getUuid().equals(((AutomatoneFakePlayer) client.targetedEntity).getOwnerUuid())) {
+                if (PossessionComponent.getHost(client.player) != null && client.player.getUuid().equals(((AutomatoneFakePlayer) client.targetedEntity).getOwnerUuid())) {
                     client.inGameHud.setOverlayMessage(new TranslatableText("requiem:merge_hint", FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
                     wasLookingAtShell.setTrue();
                 }

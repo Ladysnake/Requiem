@@ -63,7 +63,7 @@ public abstract class BowItemMixin extends RangedWeaponItem {
 
     @Inject(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;setCurrentHand(Lnet/minecraft/util/Hand;)V"))
     private void setAttackingMode(World world, PlayerEntity player, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        MobEntity possessed = PossessionComponent.get(player).getPossessedEntity();
+        MobEntity possessed = PossessionComponent.get(player).getHost();
         if (possessed != null) {
             possessed.setAttacking(true);
         }
@@ -79,7 +79,7 @@ public abstract class BowItemMixin extends RangedWeaponItem {
             )
     )
     private void setCurrentUser(ItemStack item, World world, LivingEntity user, int charge, CallbackInfo ci) {
-        MobEntity possessed = PossessionComponent.getPossessedEntity(user);
+        MobEntity possessed = PossessionComponent.getHost(user);
         REQUIEM__CURRENT_USER.set(possessed);
         if (possessed != null) {    // counterpart to setAttackingMode
             possessed.setAttacking(false);

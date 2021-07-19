@@ -80,7 +80,7 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Re
     @Inject(method = "wouldCollideAt", at = @At(value = "RETURN"), cancellable = true)
     private void stopPushingOutOfBlocks(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValue()) {
-            Entity possessed = PossessionComponent.get(this).getPossessedEntity();
+            Entity possessed = PossessionComponent.get(this).getHost();
             if (possessed != null && possessed.getHeight() < 1F) {
                 cir.setReturnValue(false);
             }

@@ -61,7 +61,7 @@ public abstract class HungerManagerMixin {
 
     @Inject(method = "update", at = @At(value = "INVOKE", ordinal = 0))
     private void updateSoulHunger(PlayerEntity player, CallbackInfo ci) {
-        Possessable possessed = (Possessable) PossessionComponent.get(player).getPossessedEntity();
+        Possessable possessed = (Possessable) PossessionComponent.get(player).getHost();
         if (possessed != null && !possessed.isRegularEater()) {
             this.exhaustion = 0;
             this.foodLevel = 20;
@@ -71,7 +71,7 @@ public abstract class HungerManagerMixin {
 
     @ModifyArg(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;heal(F)V"))
     private float healPossessedEntity(float amount) {
-        LivingEntity possessedEntity = PossessionComponent.get(PLAYER_ENTITY_THREAD_LOCAL.get()).getPossessedEntity();
+        LivingEntity possessedEntity = PossessionComponent.get(PLAYER_ENTITY_THREAD_LOCAL.get()).getHost();
         if (possessedEntity != null && ((Possessable) possessedEntity).isRegularEater()) {
             possessedEntity.heal(amount);
         }
@@ -80,7 +80,7 @@ public abstract class HungerManagerMixin {
 
     @ModifyArg(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
     private float damagePossessedEntity(float amount) {
-        LivingEntity possessedEntity = PossessionComponent.get(PLAYER_ENTITY_THREAD_LOCAL.get()).getPossessedEntity();
+        LivingEntity possessedEntity = PossessionComponent.get(PLAYER_ENTITY_THREAD_LOCAL.get()).getHost();
         if (possessedEntity != null && ((Possessable) possessedEntity).isRegularEater()) {
             possessedEntity.damage(DamageSource.STARVE, amount);
         }

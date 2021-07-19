@@ -57,7 +57,7 @@ public abstract class StatusEffectInstanceMixin {
     @Inject(method = "update", at = @At("RETURN"), cancellable = true)
     private void cancelRemoval(LivingEntity entity, Runnable overwriteCallback, CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValueZ()) {
-            MobEntity possessed = PossessionComponent.getPossessedEntity(entity);
+            MobEntity possessed = PossessionComponent.getHost(entity);
             if (possessed != null && possessed.hasStatusEffect(this.getEffectType())) {
                 cir.setReturnValue(true);
             }

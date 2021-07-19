@@ -49,7 +49,7 @@ public abstract class CraftingScreenHandlerMixin {
     @Inject(method = "canUse", at = @At("RETURN"), cancellable = true)
     private void allowSupercrafters(PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValueZ()) {
-            Entity possessedEntity = PossessionComponent.get(player).getPossessedEntity();
+            Entity possessedEntity = PossessionComponent.get(player).getHost();
             if (possessedEntity != null && RequiemEntityTypeTags.SUPERCRAFTERS.contains(possessedEntity.getType())) {
                 cir.setReturnValue(true);
             }

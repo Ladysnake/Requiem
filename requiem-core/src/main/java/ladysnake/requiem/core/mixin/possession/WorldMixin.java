@@ -38,6 +38,7 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -47,9 +48,9 @@ import java.util.function.Predicate;
 @Mixin(World.class)
 public abstract class WorldMixin {
     @ModifyVariable(method = "getOtherEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;", at = @At(value = "HEAD"), argsOnly = true)
-    private Predicate<Entity> ignorePossessed(Predicate<Entity> predicate, Entity ignored) {
+    private @Nullable Predicate<Entity> ignorePossessed(@Nullable Predicate<Entity> predicate, @Nullable Entity ignored) {
         if (ignored != null) {
-            LivingEntity possessed = PossessionComponent.getPossessedEntity(ignored);
+            LivingEntity possessed = PossessionComponent.getHost(ignored);
             if (possessed != null) {
                 Predicate<Entity> appendedPredicate = e -> e != possessed;
                 return predicate == null ? appendedPredicate : predicate.and(appendedPredicate);

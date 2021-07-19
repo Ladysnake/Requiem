@@ -344,7 +344,7 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
     }
 
     private static LivingEntity getCurrentBody(PlayerEntity player) {
-        LivingEntity possessed = PossessionComponent.get(player).getPossessedEntity();
+        LivingEntity possessed = PossessionComponent.get(player).getHost();
         return possessed == null ? player : possessed;
     }
 

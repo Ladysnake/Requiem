@@ -178,7 +178,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
      */
     @Override
     public void stopPossessing(boolean transfer) {
-        LivingEntity host = this.getPossessedEntity();
+        LivingEntity host = this.getHost();
         if (host != null) {
             this.resetState();
             ((Possessable) host).setPossessor(null);
@@ -258,10 +258,9 @@ public final class PossessionComponentImpl implements PossessionComponent {
     /**
      * {@inheritDoc}
      */
-    @CheckForNull
     @Override
-    public MobEntity getPossessedEntity() {
-        if (!isPossessing()) {
+    public @CheckForNull MobEntity getHost() {
+        if (!this.isPossessionOngoing()) {
             return null;
         }
 
@@ -295,13 +294,13 @@ public final class PossessionComponentImpl implements PossessionComponent {
      * {@inheritDoc}
      */
     @Override
-    public boolean isPossessing() {
+    public boolean isPossessionOngoing() {
         return this.possessed != null;
     }
 
     @Override
     public boolean canBeCured(ItemStack cure) {
-        MobEntity possessedEntity = this.getPossessedEntity();
+        MobEntity possessedEntity = this.getHost();
         return possessedEntity != null
             && RequiemCoreTags.Item.UNDEAD_CURES.contains(cure.getItem())
             && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)
@@ -327,7 +326,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
     @Override
     public void serverTick() {
         if (this.isCuring()) {
-            if (!this.isPossessing()) this.conversionTimer = 0;
+            if (!this.isPossessionOngoing()) this.conversionTimer = 0;
             else this.conversionTimer--;
 
             if (this.conversionTimer == 0) {
@@ -337,7 +336,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
     }
 
     private void finishCuring() {
-        MobEntity possessedEntity = this.getPossessedEntity();
+        MobEntity possessedEntity = this.getHost();
 
         if (possessedEntity != null) {
             RemnantComponent.get(this.player).curePossessed(possessedEntity);

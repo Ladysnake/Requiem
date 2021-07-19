@@ -133,14 +133,10 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
 
     @Unique
     private void prepareDimensionChange() {
-        PossessionComponent possessionComponent = PossessionComponent.get(this);
-
-        if (possessionComponent.isPossessing()) {
-            MobEntity current = possessionComponent.getPossessedEntity();
-            if (current != null && !current.isRemoved()) {
-                this.setResurrectionEntity(current);
-                current.remove(RemovalReason.UNLOADED_WITH_PLAYER);
-            }
+        MobEntity currentHost = PossessionComponent.getHost(this);
+        if (currentHost != null && !currentHost.isRemoved()) {
+            this.setResurrectionEntity(currentHost);
+            currentHost.remove(RemovalReason.UNLOADED_WITH_PLAYER);
         }
     }
 
@@ -167,7 +163,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
 
     @Inject(method = "swingHand", at = @At("HEAD"))
     private void swingHand(Hand hand, CallbackInfo ci) {
-        LivingEntity possessed = PossessionComponent.get(this).getPossessedEntity();
+        LivingEntity possessed = PossessionComponent.get(this).getHost();
 
         if (possessed != null) {
             possessed.swingHand(hand);
@@ -176,7 +172,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
 
     @Inject(method = "onStatusEffectApplied", at = @At("RETURN"))
     private void onStatusEffectAdded(StatusEffectInstance effect, Entity entity, CallbackInfo ci) {
-        MobEntity possessed = PossessionComponent.get(this).getPossessedEntity();
+        MobEntity possessed = PossessionComponent.get(this).getHost();
 
         if (possessed != null) {
             possessed.addStatusEffect(new StatusEffectInstance(effect));
@@ -186,7 +182,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
     @Inject(method = "onStatusEffectUpgraded", at = @At("RETURN"))
     private void onStatusEffectUpdated(StatusEffectInstance effect, boolean upgrade, @Nullable Entity entity, CallbackInfo ci) {
         if (upgrade) {
-            MobEntity possessed = PossessionComponent.get(this).getPossessedEntity();
+            MobEntity possessed = PossessionComponent.get(this).getHost();
 
             if (possessed != null) {
                 possessed.addStatusEffect(new StatusEffectInstance(effect));
@@ -196,7 +192,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
 
     @Inject(method = "onStatusEffectRemoved", at = @At("RETURN"))
     private void onStatusEffectRemoved(StatusEffectInstance effect, CallbackInfo ci) {
-        MobEntity possessed = PossessionComponent.get(this).getPossessedEntity();
+        MobEntity possessed = PossessionComponent.get(this).getHost();
 
         if (possessed != null) {
             possessed.removeStatusEffect(effect.getEffectType());
@@ -206,7 +202,7 @@ public abstract class PossessorServerPlayerEntityMixin extends PlayerEntity impl
 
     @Inject(method = "writeCustomDataToNbt", at = @At("RETURN"))
     private void writePossessedMobToTag(NbtCompound tag, CallbackInfo info) {
-        Entity possessedEntity = PossessionComponent.get(this).getPossessedEntity();
+        Entity possessedEntity = PossessionComponent.get(this).getHost();
 
         if (possessedEntity != null) {
             Entity possessedEntityVehicle = possessedEntity.getRootVehicle();

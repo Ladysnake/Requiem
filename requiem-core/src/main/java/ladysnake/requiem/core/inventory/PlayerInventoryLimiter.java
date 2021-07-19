@@ -106,7 +106,7 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
 
     @Override
     public InventoryShape getInventoryShape(PlayerEntity player) {
-        if (!player.isCreative() && PossessionComponent.get(player).isPossessing()) {
+        if (!player.isCreative() && PossessionComponent.get(player).isPossessionOngoing()) {
             InventoryKeeper keeper = InventoryKeeper.get(player);
             if (keeper.isEntirelyLocked(DefaultInventoryNodes.INVENTORY)) {
                 return InventoryShape.ALT_LARGE;

@@ -47,6 +47,7 @@ public final class RequiemCoreTags {
         public static final Tag<EntityType<?>> ITEM_USERS = register("inventory/item_users");
         public static final Tag<EntityType<?>> INVENTORY_CARRIERS = register("inventory/inventory_carriers");
         public static final Tag<EntityType<?>> EATERS = register("behavior/regular_eaters");
+        public static final Tag<EntityType<?>> SLEEPERS = register("behavior/regular_sleepers");
         public static final Tag<EntityType<?>> IMMOVABLE = register("behavior/immovable");
         public static final Tag<EntityType<?>> ARMOR_BANNED = register("inventory/armor_banned");
 

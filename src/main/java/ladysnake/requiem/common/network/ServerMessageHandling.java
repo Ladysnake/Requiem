@@ -79,7 +79,7 @@ public final class ServerMessageHandling {
 
             if (remnantState.getRemnantType().isDemon()) {
                 PossessionComponent possessionComponent = PossessionComponent.get(player);
-                MobEntity possessedEntity = possessionComponent.getPossessedEntity();
+                MobEntity possessedEntity = possessionComponent.getHost();
                 if (possessedEntity != null && RemnantComponent.get(player).canDissociateFrom(possessedEntity)) {
                     possessionComponent.stopPossessing();
                     RequiemNetworking.sendEtherealAnimationMessage(player);
@@ -99,7 +99,7 @@ public final class ServerMessageHandling {
             server.execute(() -> MovementAlterer.get(player).hugWall(yes));
         });
         ServerPlayNetworking.registerGlobalReceiver(OPEN_CRAFTING_MENU, (server, player, handler, buf, responseSender) -> server.execute(() -> {
-            MobEntity possessed = PossessionComponent.get(player).getPossessedEntity();
+            MobEntity possessed = PossessionComponent.get(player).getHost();
             if (possessed != null && RequiemEntityTypeTags.SUPERCRAFTERS.contains(possessed.getType())) {
                 player.openHandledScreen(Blocks.CRAFTING_TABLE.getDefaultState().createScreenHandlerFactory(player.world, player.getBlockPos()));
             }

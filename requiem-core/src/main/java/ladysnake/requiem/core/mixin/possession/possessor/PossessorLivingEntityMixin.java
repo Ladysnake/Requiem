@@ -128,7 +128,7 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
     private void onFall(double fallY, boolean onGround, BlockState floorBlock, BlockPos floorPos, CallbackInfo info) {
         if (this.requiem$getWorld().isClient) return;
 
-        Entity possessed = PossessionComponent.getPossessedEntity((Entity) (Object) this);
+        Entity possessed = PossessionComponent.getHost((Entity) (Object) this);
         if (possessed != null && this.requiem$getFallDistance() > 0) {
             possessed.fallDistance = this.requiem$getFallDistance();
             possessed.copyPositionAndRotation((Entity) (Object) this);

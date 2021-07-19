@@ -104,7 +104,7 @@ public abstract class PlayerManagerMixin {
             }
         }
 
-        if (!player.isPossessing()) {
+        if (!player.isPossessionOngoing()) {
             RequiemCore.LOGGER.warn("Couldn't reattach possessed entity to player");
             possessedEntityMount.streamPassengersAndSelf().forEach(e -> e.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER));
         }
@@ -120,7 +120,7 @@ public abstract class PlayerManagerMixin {
             )
     )
     private void logOutPossessedEntity(ServerPlayerEntity player, CallbackInfo info) {
-        Entity possessedEntity = PossessionComponent.get(player).getPossessedEntity();
+        Entity possessedEntity = PossessionComponent.get(player).getHost();
         if (possessedEntity != null) {
             ServerWorld world = player.getServerWorld();
             possessedEntity.streamPassengersAndSelf().forEach(e -> e.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER));

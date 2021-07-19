@@ -54,7 +54,7 @@ public class EmancipationStatusEffect extends StatusEffect {
         super.onRemoved(entity, attributes, amplifier);
         if (entity instanceof ServerPlayerEntity player) {
             PossessionComponent possessionComponent = PossessionComponent.get(player);
-            MobEntity host = possessionComponent.getPossessedEntity();
+            MobEntity host = possessionComponent.getHost();
             if (host != null && PossessionStartCallback.EVENT.invoker().onPossessionAttempted(host, player, true) != PossessionStartCallback.Result.ALLOW) {
                 possessionComponent.stopPossessing();
                 RequiemNetworking.sendEtherealAnimationMessage(player);

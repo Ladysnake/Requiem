@@ -86,7 +86,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
 
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
     private void travel(CallbackInfo info) {
-        @SuppressWarnings("ConstantConditions") Entity possessed = PossessionComponent.getPossessedEntity((Entity) (Object) this);
+        @SuppressWarnings("ConstantConditions") Entity possessed = PossessionComponent.getHost((Entity) (Object) this);
         if (possessed != null && ((VariableMobilityEntity) possessed).requiem_isImmovable()) {
             if (!this.requiem$getWorld().isClient && (this.requiem$getX() != possessed.getX() || this.requiem$getY() != possessed.getY() || this.requiem$getZ() != possessed.getZ())) {
                 ServerPlayNetworkHandler networkHandler = ((ServerPlayerEntity) (Object) this).networkHandler;
@@ -108,7 +108,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
      */
     @Inject(method = "getDimensions", at = @At("HEAD"), cancellable = true)
     private void adjustSize(EntityPose pose, CallbackInfoReturnable<EntityDimensions> cir) {
-        Entity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
+        Entity possessedEntity = PossessionComponent.KEY.get(this).getHost();
         if (possessedEntity != null) {
             cir.setReturnValue(possessedEntity.getDimensions(pose));
         }
@@ -116,7 +116,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
 
     @Inject(method = "canConsume", at = @At("RETURN"), cancellable = true)
     private void canSoulConsume(boolean ignoreHunger, CallbackInfoReturnable<Boolean> cir) {
-        Possessable possessed = (Possessable) PossessionComponent.KEY.get(this).getPossessedEntity();
+        Possessable possessed = (Possessable) PossessionComponent.KEY.get(this).getHost();
         if (possessed != null) {
             cir.setReturnValue(ignoreHunger || possessed.isRegularEater() && this.getHungerManager().isNotFull());
         }
@@ -124,7 +124,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
 
     @Inject(method = "canFoodHeal", at = @At("RETURN"), cancellable = true)
     private void canFoodHealPossessed(CallbackInfoReturnable<Boolean> cir) {
-        LivingEntity possessed = PossessionComponent.KEY.get(this).getPossessedEntity();
+        LivingEntity possessed = PossessionComponent.KEY.get(this).getHost();
         if (possessed != null) {
             cir.setReturnValue(((Possessable) possessed).isRegularEater() && possessed.getHealth() > 0 && possessed.getHealth() < possessed.getMaxHealth());
         }
@@ -132,7 +132,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
 
     @Inject(method = "addExhaustion", slice = @Slice(to = @At("INVOKE:FIRST")), at = @At(value = "RETURN"))
     private void addExhaustion(float exhaustion, CallbackInfo ci) {
-        Possessable possessed = (Possessable) PossessionComponent.KEY.get(this).getPossessedEntity();
+        Possessable possessed = (Possessable) PossessionComponent.KEY.get(this).getHost();
         if (possessed != null && possessed.isRegularEater()) {
             if (!this.requiem$getWorld().isClient) {
                 this.getHungerManager().addExhaustion(exhaustion);
@@ -145,7 +145,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
         @SuppressWarnings("ConstantConditions") Entity self = (Entity) (Object) this;
         // This method can be called in the constructor
         if (ComponentProvider.fromEntity(self).getComponentContainer() != null) {
-            Entity possessedEntity = PossessionComponent.getPossessedEntity(self);
+            Entity possessedEntity = PossessionComponent.getHost(self);
             if (possessedEntity != null) {
                 cir.setReturnValue(possessedEntity.getAir());
             }
@@ -156,7 +156,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
     protected void requiem$delegateMaxBreath(CallbackInfoReturnable<Integer> cir) {
         // This method can be called in the constructor, before CCA is initialized
         if (((ComponentProvider) this).getComponentContainer() != null) {
-            @SuppressWarnings("ConstantConditions") Entity possessedEntity = PossessionComponent.getPossessedEntity((Entity) (Object) this);
+            @SuppressWarnings("ConstantConditions") Entity possessedEntity = PossessionComponent.getHost((Entity) (Object) this);
             if (possessedEntity != null) {
                 cir.setReturnValue(possessedEntity.getMaxAir());
             }
@@ -165,7 +165,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
 
     @Override
     protected void requiem$canFly(CallbackInfoReturnable<Boolean> cir) {
-        MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
+        MobEntity possessedEntity = PossessionComponent.KEY.get(this).getHost();
         if (possessedEntity != null) {
             cir.setReturnValue(false);
         }
@@ -173,7 +173,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
 
     @Override
     protected void requiem$setSprinting(boolean sprinting, CallbackInfo ci) {
-        MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
+        MobEntity possessedEntity = PossessionComponent.KEY.get(this).getHost();
         if (possessedEntity != null) {
             possessedEntity.setSprinting(sprinting);
         }
@@ -192,7 +192,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
             if (RemnantComponent.KEY.get(this).isIncorporeal()) {
                 cir.setReturnValue(true);
             } else {
-                MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
+                MobEntity possessedEntity = PossessionComponent.KEY.get(this).getHost();
 
                 if (possessedEntity != null && possessedEntity.canAvoidTraps()) {
                     cir.setReturnValue(true);
@@ -203,7 +203,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
 
     @Override
     protected void requiem$isOnFire(CallbackInfoReturnable<Boolean> cir) {
-        MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
+        MobEntity possessedEntity = PossessionComponent.KEY.get(this).getHost();
         if (possessedEntity != null) {
             cir.setReturnValue(possessedEntity.isOnFire());
         } else if (RemnantComponent.KEY.get(this).isIncorporeal()) {
@@ -214,7 +214,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
 
     @Override
     protected void requiem$canWalkOnFluid(Fluid fluid, CallbackInfoReturnable<Boolean> cir) {
-        MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
+        MobEntity possessedEntity = PossessionComponent.KEY.get(this).getHost();
         if (possessedEntity != null) {
             cir.setReturnValue(possessedEntity.canWalkOnFluid(fluid));
         }
@@ -224,7 +224,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
     private void adjustEyeHeight(EntityPose pose, EntityDimensions size, CallbackInfoReturnable<Float> cir) {
         // This method can be called in the Entity constructor, before CCA is initialized
         if (((ComponentProvider)this).getComponentContainer() != null) {
-            @SuppressWarnings("ConstantConditions") LivingEntity possessed = PossessionComponent.getPossessedEntity((Entity) (Object) this);
+            @SuppressWarnings("ConstantConditions") LivingEntity possessed = PossessionComponent.getHost((Entity) (Object) this);
             if (possessed != null) {
                 cir.setReturnValue(((LivingEntityAccessor) possessed).requiem$invokeGetEyeHeight(pose, possessed.getDimensions(pose)));
             }
@@ -233,7 +233,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
 
     @Inject(method = "slowMovement", at = @At("HEAD"), cancellable = true)
     private void slowMovement(BlockState state, Vec3d multiplier, CallbackInfo ci) {
-        MobEntity possessedEntity = PossessionComponent.KEY.get(this).getPossessedEntity();
+        MobEntity possessedEntity = PossessionComponent.KEY.get(this).getHost();
         if (possessedEntity != null) {
             possessedEntity.fallDistance = this.requiem$getFallDistance();
             possessedEntity.slowMovement(state, multiplier);

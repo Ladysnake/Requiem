@@ -87,7 +87,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
 
     @Inject(method = "init", at = @At("RETURN"))
     private void addSupercrafterButton(CallbackInfo ci) {
-        MobEntity possessedEntity = PossessionComponent.getPossessedEntity(this.requiem$player);
+        MobEntity possessedEntity = PossessionComponent.getHost(this.requiem$player);
         if (possessedEntity != null && RequiemEntityTypeTags.SUPERCRAFTERS.contains(possessedEntity.getType())) {
             this.supercrafterButton = this.addDrawableChild(new TexturedButtonWidget(
                 this.x + 131,
@@ -118,7 +118,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
 
     @ModifyArg(method = "drawForeground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;draw(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/text/Text;FFI)I"))
     private Text swapScreenName(Text name) {
-        MobEntity possessedEntity = PossessionComponent.getPossessedEntity(this.requiem$player);
+        MobEntity possessedEntity = PossessionComponent.getHost(this.requiem$player);
         if (possessedEntity != null) {
             return possessedEntity.getName();
         }

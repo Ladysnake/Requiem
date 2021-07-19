@@ -51,9 +51,9 @@ public interface PossessionComponent extends AutoSyncedComponent, ServerTickingC
         return KEY.get(player);
     }
 
-    static @Nullable MobEntity getPossessedEntity(Entity possessor) {
+    static @Nullable MobEntity getHost(Entity possessor) {
         PossessionComponent p = KEY.getNullable(possessor);
-        return p == null ? null : p.getPossessedEntity();
+        return p == null ? null : p.getHost();
     }
 
     /**
@@ -68,7 +68,7 @@ public interface PossessionComponent extends AutoSyncedComponent, ServerTickingC
      * possessed.
      * <p>
      * After this method returns, and if the attempt is successful, further calls to
-     * {@link #getPossessedEntity()} will return <code>mob</code> until either {@link #stopPossessing()} is called,
+     * {@link #getHost()} will return <code>mob</code> until either {@link #stopPossessing()} is called,
      * or <code>mob</code> cannot be found, whichever happens first. Likewise, calling {@link Possessable#getPossessor()}
      * on <code>mob</code> will return the player represented by this component.
      * <p>
@@ -84,25 +84,24 @@ public interface PossessionComponent extends AutoSyncedComponent, ServerTickingC
 
     /**
      * Attempts to start possessing a mob.
-     * <p>
-     * Starting possession sets internal state for both the {@link Possessable mob} and the
+     *
+     * <p>Starting possession sets internal state for both the {@link Possessable mob} and the
      * {@link RequiemPlayer player} represented by this component.
      * It will also make any necessary change to the global game state (eg. teleporting the
      * player to the possessed mob, or transferring equipment).
-     * <p>
-     * This method returns <code>true</code> if the <code>mob</code> has been successfully
+     *
+     * <p>This method returns <code>true</code> if the <code>mob</code> has been successfully
      * possessed.
      *
-     * <p>
-     * If <code>simulate</code> is true, the attempt is simulated.
+     * <p>If <code>simulate</code> is true, the attempt is simulated.
      * When the attempt is simulated, the state of the game is not altered by this method's execution.
      * This means that this method is effectively pure during simulated possession attempts,
      * in the following sense:
      * <em>If its return value is not used, removing its invocation won't
      * affect program state and change the semantics. Exception throwing is not considered to be a side effect.</em>
-     * <p>
-     * After this method returns, and if the attempt is successful and not simulated, further calls to
-     * {@link #getPossessedEntity()} will return <code>mob</code> until either {@link #stopPossessing()} is called,
+     *
+     * <p>After this method returns, and if the attempt is successful and not simulated, further calls to
+     * {@link #getHost()} will return <code>mob</code> until either {@link #stopPossessing()} is called,
      * or <code>mob</code> cannot be found, whichever happens first. Likewise, calling {@link Possessable#getPossessor()}
      * on <code>mob</code> will return the player represented by this component.
      *
@@ -130,10 +129,13 @@ public interface PossessionComponent extends AutoSyncedComponent, ServerTickingC
      */
     void stopPossessing(boolean transfer);
 
-    @CheckForNull
-    MobEntity getPossessedEntity();
+    /**
+     * @return the entity that is currently being possessed, or {@code null} if no possession
+     * is currently taking place
+     */
+    @CheckForNull MobEntity getHost();
 
-    boolean isPossessing();
+    boolean isPossessionOngoing();
 
     boolean canBeCured(ItemStack cure);
 

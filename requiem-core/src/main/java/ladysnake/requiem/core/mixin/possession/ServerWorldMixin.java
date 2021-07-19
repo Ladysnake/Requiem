@@ -54,7 +54,7 @@ public abstract class ServerWorldMixin {
 
         if (possessor != null && entity instanceof MobEntity) {
             PossessionComponent possessionComponent = PossessionComponent.get(possessor);
-            if (possessionComponent.getPossessedEntity() != entity) {
+            if (possessionComponent.getHost() != entity) {
                 ((Possessable) entity).setPossessor(null);  // reset the possessor in case the possession actually fails
                 possessionComponent.startPossessing((MobEntity) entity);
             }

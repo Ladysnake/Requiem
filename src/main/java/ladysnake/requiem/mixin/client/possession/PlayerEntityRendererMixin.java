@@ -78,7 +78,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
      */
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void cancelRender(AbstractClientPlayerEntity renderedPlayer, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int lightmap, CallbackInfo ci) {
-        LivingEntity possessedEntity = PossessionComponent.get(renderedPlayer).getPossessedEntity();
+        LivingEntity possessedEntity = PossessionComponent.get(renderedPlayer).getHost();
         if (possessedEntity != null) {
             if (renderedPlayer == MinecraftClient.getInstance().player) {
                 if (((VariableMobilityEntity)possessedEntity).requiem_isImmovable()) {
@@ -119,7 +119,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     @Unique
     private boolean requiem_renderPossessedArm(MatrixStack matrices, VertexConsumerProvider vertices, AbstractClientPlayerEntity renderedPlayer, int lightmapCoordinates, boolean rightArm) {
         if (RemnantComponent.get(renderedPlayer).isVagrant()) {
-            LivingEntity possessed = PossessionComponent.get(renderedPlayer).getPossessedEntity();
+            LivingEntity possessed = PossessionComponent.get(renderedPlayer).getHost();
             if (possessed != null) {
                 EntityRenderer<? super LivingEntity> possessedRenderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(possessed);
                 // If the mob has an arm, render it instead of the player's

@@ -167,7 +167,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
         ClientPlayerEntity player = this.client.player;
 
         if (mountHeartCount == 0 && player != null && RemnantComponent.get(player).isVagrant()) {
-            Possessable possessed = (Possessable) PossessionComponent.get(player).getPossessedEntity();
+            Possessable possessed = (Possessable) PossessionComponent.get(player).getHost();
             if (possessed == null || !possessed.isRegularEater()) {
                 skippedFood = true;
                 return -1;
@@ -197,7 +197,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
         PlayerEntity playerEntity = this.getCameraPlayer();
 
         if (RemnantComponent.get(playerEntity).isVagrant()) {
-            LivingEntity possessed = PossessionComponent.get(playerEntity).getPossessedEntity();
+            LivingEntity possessed = PossessionComponent.get(playerEntity).getHost();
             if (possessed == null) {
                 return RequiemFluidTags.EMPTY;  // will cause isSubmergedIn to return false
             } else if (possessed.canBreatheInWater()) {
@@ -211,7 +211,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     @ModifyVariable(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J"), ordinal = 0)
     private int substituteHealth(int health) {
         assert client.player != null;
-        LivingEntity entity = PossessionComponent.get(client.player).getPossessedEntity();
+        LivingEntity entity = PossessionComponent.get(client.player).getHost();
         if (entity != null) {
             return MathHelper.ceil(entity.getHealth());
         }

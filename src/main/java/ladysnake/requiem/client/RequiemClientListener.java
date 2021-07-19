@@ -130,7 +130,7 @@ public final class RequiemClientListener implements
     @Override
     public void onEndTick(MinecraftClient client) {
         if (client.player != null) {
-            MobEntity possessedEntity = PossessionComponent.get(client.player).getPossessedEntity();
+            MobEntity possessedEntity = PossessionComponent.get(client.player).getHost();
             if (possessedEntity != null && possessedEntity.getHealth() != client.player.getHealth()) {
                 client.player.updateHealth(possessedEntity.getHealth());
                 if (client.player.getHealth() <= 0) client.player.setHealth(1);
@@ -161,7 +161,7 @@ public final class RequiemClientListener implements
     @Override
     public void onTooltipBuilt(ItemStack item, @Nullable PlayerEntity player, @SuppressWarnings("unused") TooltipContext context, List<Text> lines) {
         if (player != null) {
-            MobEntity possessed = PossessionComponent.get(player).getPossessedEntity();
+            MobEntity possessed = PossessionComponent.get(player).getHost();
             if (possessed == null) {
                 return;
             }

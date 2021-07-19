@@ -77,7 +77,7 @@ public abstract class MutableRemnantState implements RemnantState {
 
     @Override
     public boolean isIncorporeal() {
-        return this.isVagrant() && !PossessionComponent.get(this.player).isPossessing();
+        return this.isVagrant() && !PossessionComponent.get(this.player).isPossessionOngoing();
     }
 
     @Override

@@ -157,7 +157,7 @@ public abstract class PossessableLivingEntityMixin extends Entity implements Pos
         // we need a cast here to trick the compiler
         // clever Idea assumes possessedEntity cannot be this because of the wrong class, which is wrong because Mixin
         //noinspection ConstantConditions
-        if ((this.possessor != null && PossessionComponent.get(this.possessor).getPossessedEntity() == (Entity) this) && !this.world.isClient) {
+        if ((this.possessor != null && PossessionComponent.get(this.possessor).getHost() == (Entity) this) && !this.world.isClient) {
             throw new IllegalStateException("Players must stop possessing an entity before it can change possessor!");
         }
 

@@ -54,7 +54,7 @@ public class PossessionDelegatingModifier implements NonDeterministicModifier {
     }
 
     public static void replaceAttributes(PlayerEntity e) {
-        replaceAttributes(e, PossessionComponent.KEY.get(e)::getPossessedEntity);
+        replaceAttributes(e, PossessionComponent.get(e)::getHost);
     }
 
     public static void replaceAttributes(LivingEntity e, Supplier<LivingEntity> entitySupplier) {

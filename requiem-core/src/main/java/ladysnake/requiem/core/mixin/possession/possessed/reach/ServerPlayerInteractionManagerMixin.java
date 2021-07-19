@@ -54,7 +54,7 @@ public abstract class ServerPlayerInteractionManagerMixin {
 
     @ModifyVariable(method = "processBlockBreakingAction", at = @At(value = "STORE"), ordinal = 3)
     private double recalculateDistance(double distanceToBlock, BlockPos pos) {
-        MobEntity host = PossessionComponent.getPossessedEntity(this.player);
+        MobEntity host = PossessionComponent.getHost(this.player);
         if (host != null) {
             return PossessionComponentImpl.reachSq(pos, host);
         }

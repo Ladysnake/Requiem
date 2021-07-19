@@ -113,7 +113,7 @@ public record PossessionItemOverrideWrapper(
     public static Optional<TypedActionResult<ItemStack>> tryUseOverride(World world, PlayerEntity player, ItemStack heldStack, Hand hand) {
         OverridableItemStack.get(heldStack).requiem$clearOverriddenUseTime();
 
-        MobEntity possessedEntity = PossessionComponent.getPossessedEntity(player);
+        MobEntity possessedEntity = PossessionComponent.getHost(player);
         if (possessedEntity != null) {
             return PossessionItemOverrideWrapper.findOverride(world, player, possessedEntity, heldStack)
                 .map(override -> override.use(player, possessedEntity, heldStack, world, hand))
@@ -126,7 +126,7 @@ public record PossessionItemOverrideWrapper(
     public static Optional<TypedActionResult<ItemStack>> tryFinishUsingOverride(World world, PlayerEntity player, ItemStack heldStack, Hand hand) {
         OverridableItemStack.get(heldStack).requiem$clearOverriddenUseTime();
 
-        MobEntity possessedEntity = PossessionComponent.getPossessedEntity(player);
+        MobEntity possessedEntity = PossessionComponent.getHost(player);
         if (possessedEntity != null) {
             return PossessionItemOverrideWrapper.findOverride(world, player, possessedEntity, heldStack)
                 .map(override -> override.finishUsing(player, possessedEntity, heldStack, world, hand))

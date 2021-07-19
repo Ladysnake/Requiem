@@ -79,7 +79,7 @@ public final class BumblezoneCompat implements UseBlockCallback {
     @Override
     public ActionResult interact(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
         if (world.getRegistryKey() == BumblezoneCompat.BZ_WORLD_KEY) {
-            if (PossessionComponent.getPossessedEntity(player) instanceof BeeEntity) {
+            if (PossessionComponent.getHost(player) instanceof BeeEntity) {
                 if (world.getBlockState(hitResult.getBlockPos()).isOf(Blocks.HONEYCOMB_BLOCK)) {
                     if (!world.isClient) this.tpOutOfBz.accept(player);
                     return ActionResult.SUCCESS;

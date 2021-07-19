@@ -87,7 +87,7 @@ public class WandererRemnantState extends MutableRemnantState {
     @Override
     public void serverTick() {
         ServerPlayerEntity player = (ServerPlayerEntity) this.player;
-        LivingEntity body = this.isVagrant() ? PossessionComponent.get(player).getPossessedEntity() : player;
+        LivingEntity body = this.isVagrant() ? PossessionComponent.get(player).getHost() : player;
 
         if (body != null && !player.getServerWorld().getServer().isHardcore() && player.hasStatusEffect(RequiemStatusEffects.ATTRITION) && player.getRandom().nextInt(ATTRITION_MEND_PROBABILITY) == 0) {
             AttritionFocus.KEY.get(body).addAttrition(this.player.getUuid(), 1);

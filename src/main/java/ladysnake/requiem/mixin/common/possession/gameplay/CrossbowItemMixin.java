@@ -59,7 +59,7 @@ public abstract class CrossbowItemMixin extends RangedWeaponItem {
     @ModifyVariable(method = "loadProjectiles", at = @At(value = "STORE", ordinal = 0), ordinal = 0)
     private static boolean giveCrossbowInfinity(boolean creative, LivingEntity shooter, ItemStack crossbow) {
         if (!creative) {
-            MobEntity possessed = PossessionComponent.getPossessedEntity(shooter);
+            MobEntity possessed = PossessionComponent.getHost(shooter);
             // the arrow consumption code is run on both sides for whatever reason. That complicates the random behaviour:
             // - if we tell the client to eat an arrow but the server does not, the server will not update back => desync
             // - if we tell the client to *not* eat an arrow but the server does, the server will update back => everything's fine

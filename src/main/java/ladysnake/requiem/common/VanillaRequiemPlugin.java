@@ -219,7 +219,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             } else {
                 InventoryLimiter.instance().enable(player);
             }
-            MobEntity possessed = PossessionComponent.getPossessedEntity(player);
+            MobEntity possessed = PossessionComponent.getHost(player);
             if (possessed != null) {
                 PlayerAbilityController.get(player).usePossessedAbilities(possessed);
             } else {
@@ -246,7 +246,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         BasePossessionHandlers.register();
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (entity instanceof SpiderEntity) {
-                LivingEntity possessed = PossessionComponent.get(player).getPossessedEntity();
+                LivingEntity possessed = PossessionComponent.get(player).getHost();
                 if (possessed instanceof SkeletonEntity) {
                     if (!world.isClient) {
                         possessed.startRiding(entity);
@@ -254,7 +254,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                     return ActionResult.SUCCESS;
                 }
             } else if (entity instanceof RavagerEntity) {
-                LivingEntity possessed = PossessionComponent.get(player).getPossessedEntity();
+                LivingEntity possessed = PossessionComponent.get(player).getHost();
                 if (possessed != null && possessed.getType().isIn(EntityTypeTags.RAIDERS)) {
                     if (!world.isClient) {
                         possessed.startRiding(entity);
@@ -266,13 +266,13 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         });
         MobTravelRidingCallback.EVENT.register((mount, rider) -> {
             if (mount.getType() == EntityType.RAVAGER) {
-                MobEntity possessedEntity = PossessionComponent.getPossessedEntity(rider);
+                MobEntity possessedEntity = PossessionComponent.getHost(rider);
                 return possessedEntity != null && possessedEntity.getType().isIn(EntityTypeTags.RAIDERS);
             }
             return false;
         });
         UseItemCallback.EVENT.register((player, world, hand) -> {
-            LivingEntity possessed = PossessionComponent.getPossessedEntity(player);
+            LivingEntity possessed = PossessionComponent.getHost(player);
             if (possessed != null && !RequiemCoreTags.Entity.ITEM_USERS.contains(possessed.getType()) && !player.isCreative()) {
                 return new TypedActionResult<>(ActionResult.FAIL, player.getStackInHand(hand));
             }

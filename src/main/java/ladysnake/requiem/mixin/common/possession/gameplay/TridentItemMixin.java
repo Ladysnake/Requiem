@@ -60,7 +60,7 @@ public abstract class TridentItemMixin extends Item {
 
     @Inject(method = "onStoppedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/TridentEntity;setProperties(Lnet/minecraft/entity/Entity;FFFFF)V"))
     private void giveDrownedInfinity(ItemStack stack, World world, LivingEntity user, int ticks, CallbackInfo ci) {
-        if (PossessionComponent.getPossessedEntity(user) instanceof DrownedEntity && world.getRandom().nextFloat() < 0.8f) {
+        if (PossessionComponent.getHost(user) instanceof DrownedEntity && world.getRandom().nextFloat() < 0.8f) {
             PlayerAbilities abilities = ((PlayerEntity) user).getAbilities();
             if (!abilities.creativeMode) {
                 // Makes the trident not consume the item

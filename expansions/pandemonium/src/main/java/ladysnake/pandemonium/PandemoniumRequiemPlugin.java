@@ -85,7 +85,7 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
 
             if (PlayerSplitter.split(player)) {
                 success = true;
-            } else if (possessionComponent.isPossessing()) {
+            } else if (possessionComponent.isPossessionOngoing()) {
                 Entity targetedEntity = RayHelper.getTargetedEntity(player);
                 if (targetedEntity instanceof PlayerShellEntity && Objects.equals(player.getUuid(), ((PlayerShellEntity) targetedEntity).getOwnerUuid())) {
                     possessionComponent.stopPossessing();

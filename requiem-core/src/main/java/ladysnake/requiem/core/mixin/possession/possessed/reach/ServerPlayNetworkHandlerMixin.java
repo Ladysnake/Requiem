@@ -56,7 +56,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
     // TODO consider applying the fix to horizontal dimensions as well
     @ModifyArg(method = "onPlayerInteractBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;squaredDistanceTo(DDD)D"), index = 1)
     private double onPlayerInteractBlockModifyDistance(double posY) {
-        MobEntity host = PossessionComponent.getPossessedEntity(player);
+        MobEntity host = PossessionComponent.getHost(player);
         if (host != null) {
             return posY - host.getEyeHeight(host.getPose());
         }
@@ -65,7 +65,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
     @ModifyArg(method = "onPlayerInteractEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;squaredDistanceTo(Lnet/minecraft/entity/Entity;)D"))
     private Entity onPlayerInteractEntityModifyDistance(Entity target) {
-        MobEntity host = PossessionComponent.getPossessedEntity(player);
+        MobEntity host = PossessionComponent.getHost(player);
         // TODO consider compatibility with Reach attributes
         if (host != null && PossessionComponentImpl.reachSq(target.getBlockPos(), host) < 36.0D) {
             return host;
