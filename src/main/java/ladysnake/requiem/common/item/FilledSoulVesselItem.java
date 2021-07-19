@@ -71,7 +71,7 @@ public class FilledSoulVesselItem extends Item {
     public void registerCallbacks() {
         EntityRecordUpdateCallback.EVENT.register((entity, linkedRecord) ->
             linkedRecord.get(RequiemRecordTypes.RELEASED_SOUL).flatMap(u -> EntityAiToggle.KEY.maybeGet(entity)).ifPresent(aiSwitch -> {
-                aiSwitch.toggleAi(Registry.ITEM.getId(this.emptySoulVessel), false, false);
+                aiSwitch.toggleAi(Registry.ITEM.getId(RequiemItems.EMPTY_SOUL_VESSEL), false, false);
                 linkedRecord.invalidate();
             }));
     }

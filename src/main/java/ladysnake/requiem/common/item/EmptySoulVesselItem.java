@@ -121,7 +121,7 @@ public class EmptySoulVesselItem extends Item {
             NbtCompound data = result.getOrCreateSubNbt(FilledSoulVesselItem.SOUL_FRAGMENT_NBT);
             data.putString("type", EntityType.getId(entity.getType()).toString());
             this.setupRecord(entity, target, data);
-            EntityAiToggle.KEY.get(target).toggleAi(Registry.ITEM.getId(this), true, true);
+            EntityAiToggle.KEY.get(target).toggleAi(Registry.ITEM.getId(RequiemItems.EMPTY_SOUL_VESSEL), true, true);
         }
         return ItemUsage.exchangeStack(stack, remnant, result, false);
     }
@@ -159,7 +159,7 @@ public class EmptySoulVesselItem extends Item {
         }
     }
 
-    private boolean wins(PlayerEntity user, int playerSoulStrength, LivingEntity entity, int targetSoulStrength) {
+    protected boolean wins(PlayerEntity user, int playerSoulStrength, LivingEntity entity, int targetSoulStrength) {
         if (playerSoulStrength > targetSoulStrength) {
             return true;
         }
