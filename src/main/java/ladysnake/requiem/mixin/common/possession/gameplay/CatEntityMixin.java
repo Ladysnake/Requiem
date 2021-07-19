@@ -34,21 +34,33 @@
  */
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import ladysnake.requiem.api.v1.possession.Possessable;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CatEntity;
-import net.minecraft.entity.passive.OcelotEntity;
+import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin({CatEntity.class, OcelotEntity.class})
-public abstract class CatEntityMixin implements Possessable {
-    // Cats stop sprinting each tick, which is bad because remnants kinda want to sprint yknow
-    @Inject(method = "mobTick", at = @At("HEAD"), cancellable = true)
-    private void nukeSprintCancellation(CallbackInfo ci) {
-        if (this.isBeingPossessed()) {
-            ci.cancel();
-        }
+@Mixin(CatEntity.class)
+public abstract class CatEntityMixin extends LivingEntityMixin {
+    @Shadow
+    public abstract void setInSleepingPose(boolean sleeping);
+
+    protected CatEntityMixin(EntityType<? extends TameableEntity> entityType, World world) {
+        super(entityType, world);
+    }
+
+    @Override
+    protected void requiem$sleep(BlockPos pos, CallbackInfo ci) {
+        this.setPose(EntityPose.STANDING);
+        this.setInSleepingPose(true);
+    }
+
+    @Override
+    protected void requiem$wakeUp(CallbackInfo ci) {
+        this.setInSleepingPose(false);
     }
 }

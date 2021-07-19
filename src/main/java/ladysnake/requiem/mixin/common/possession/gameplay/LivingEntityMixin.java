@@ -44,6 +44,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -122,5 +123,15 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
                 RequiemCriteria.DEATH_AFTER_POSSESSION.handle((ServerPlayerEntity) previousPossessor, this, deathCause);
             }
         }
+    }
+
+    @Inject(method = "sleep", at = @At("RETURN"))
+    protected void requiem$sleep(BlockPos pos, CallbackInfo ci) {
+        // NO-OP
+    }
+
+    @Inject(method = "wakeUp", at = @At("RETURN"))
+    protected void requiem$wakeUp(CallbackInfo ci) {
+        // NO-OP
     }
 }

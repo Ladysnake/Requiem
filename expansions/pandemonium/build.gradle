@@ -37,6 +37,12 @@ repositories {
         }
     }
     maven {
+        url = "https://maven.theillusivec4.top"
+        content {
+            includeGroupByRegex 'top\\.theillusivec4\\..*'
+        }
+    }
+    maven {
         name = 'JitPack'
         url = 'https://jitpack.io'
     }
@@ -65,6 +71,7 @@ dependencies {
         exclude(group: "net.fabricmc.fabric-api")
     }
     modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${rootProject.reach_version}"
+    modImplementation("top.theillusivec4.somnus:somnus-fabric:${somnus_version}")
     modCompileOnly("com.github.apace100:origins-fabric:${rootProject.origins_version}") { transitive = false }
     modCompileOnly("curse.maven:haema-391257:${rootProject.haema_version}")
 }

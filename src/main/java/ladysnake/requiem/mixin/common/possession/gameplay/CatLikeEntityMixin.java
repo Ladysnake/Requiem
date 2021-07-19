@@ -35,56 +35,20 @@
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
 import ladysnake.requiem.api.v1.possession.Possessable;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.FoxEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.entity.passive.CatEntity;
+import net.minecraft.entity.passive.OcelotEntity;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(FoxEntity.class)
-public abstract class FoxEntityMixin extends LivingEntityMixin implements Possessable {
-    public FoxEntityMixin(EntityType<?> type, World world) {
-        super(type, world);
-    }
-
-    @Shadow
-    abstract void stopActions();
-
-    @Shadow
-    public abstract void setCrouching(boolean crouching);
-
-    @Shadow
-    abstract void setSleeping(boolean sleeping);
-
-    @Override
-    public void onPossessorSet(@Nullable PlayerEntity possessor) {
-        this.stopActions();
-    }
-
-    // Sync crouching mode
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/FoxEntity;isInSneakingPose()Z"))
-    private void tick(CallbackInfo ci) {
-        PlayerEntity possessor = this.getPossessor();
-        if (possessor != null) {
-            this.setCrouching(possessor.isSneaking());
+@Mixin({CatEntity.class, OcelotEntity.class})
+public abstract class CatLikeEntityMixin implements Possessable {
+    // Cats stop sprinting each tick, which is bad because remnants kinda want to sprint yknow
+    @Inject(method = "mobTick", at = @At("HEAD"), cancellable = true)
+    private void nukeSprintCancellation(CallbackInfo ci) {
+        if (this.isBeingPossessed()) {
+            ci.cancel();
         }
-    }
-
-    @Override
-    protected void requiem$sleep(BlockPos pos, CallbackInfo ci) {
-        this.setPose(EntityPose.STANDING);
-        this.setSleeping(true);
-    }
-
-    @Override
-    protected void requiem$wakeUp(CallbackInfo ci) {
-        this.setSleeping(false);
     }
 }

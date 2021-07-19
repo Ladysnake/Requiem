@@ -33,6 +33,7 @@
     "possession.gameplay.BlockItemMixin",
     "possession.gameplay.BowItemMixin",
     "possession.gameplay.CatEntityMixin",
+    "possession.gameplay.CatLikeEntityMixin",
     "possession.gameplay.CraftingScreenHandlerMixin",
     "possession.gameplay.CrossbowItemMixin",
     "possession.gameplay.EndermanEntityMixin",

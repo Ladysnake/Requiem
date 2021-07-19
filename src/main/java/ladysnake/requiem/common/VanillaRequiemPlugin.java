@@ -130,11 +130,13 @@ import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.EntityTypeTags;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import top.theillusivec4.somnus.api.PlayerSleepEvents;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -309,6 +311,14 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                 }
             }
         );
+        PlayerSleepEvents.TRY_SLEEP.register((player, pos) -> {
+            MobEntity host = PossessionComponent.getHost(player);
+            if (host != null && !RequiemCoreTags.Entity.SLEEPERS.contains(host.getType())) {
+                player.sendMessage(new TranslatableText("requiem:block.minecraft.bed.invalid_body"), true);
+                return PlayerEntity.SleepFailureReason.OTHER_PROBLEM;
+            }
+            return null;
+        });
     }
 
     private static boolean canUseItems(MobEntity possessed) {
