@@ -51,8 +51,11 @@ import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.particle.PortalParticle;
+import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
 
 public final class RequiemClient {
@@ -143,6 +146,9 @@ public final class RequiemClient {
         EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_VILLAGER, CuredVillagerEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_PIGLIN, (ctx) -> new CuredPiglinEntityRenderer(ctx, EntityModelLayers.PIGLIN, EntityModelLayers.PIGLIN_INNER_ARMOR, EntityModelLayers.PIGLIN_OUTER_ARMOR, false));
         EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_PIGLIN_BRUTE, (ctx) -> new CuredPiglinEntityRenderer(ctx, EntityModelLayers.PIGLIN_BRUTE, EntityModelLayers.PIGLIN_BRUTE_INNER_ARMOR, EntityModelLayers.PIGLIN_BRUTE_OUTER_ARMOR, false));
+        // shh, it's fine
+        @SuppressWarnings({"unchecked", "RedundantCast"}) EntityType<? extends AbstractClientPlayerEntity> playerShellType = (EntityType<? extends AbstractClientPlayerEntity>) (EntityType<?>) RequiemEntities.PLAYER_SHELL;
+        EntityRendererRegistry.INSTANCE.register(playerShellType, ctx -> new PlayerEntityRenderer(ctx, false));
     }
 
     private void initListeners() {

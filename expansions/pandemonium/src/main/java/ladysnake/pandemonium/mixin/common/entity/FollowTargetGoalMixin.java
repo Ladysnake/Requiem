@@ -34,9 +34,47 @@
  */
 package ladysnake.pandemonium.mixin.common.entity;
 
-import net.minecraft.entity.Entity;
+import ladysnake.pandemonium.common.entity.MorticianEntity;
+import ladysnake.requiem.mixin.common.shell.ai.TargetPredicateAccessor;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.TargetPredicate;
+import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.TrackTargetGoal;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.MerchantEntity;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Entity.class)
-public interface EntityAccessor {
+import java.util.function.Predicate;
+
+@Mixin(FollowTargetGoal.class)
+public abstract class FollowTargetGoalMixin extends TrackTargetGoal {
+    @Shadow protected TargetPredicate targetPredicate;
+
+    @Shadow
+    @Final
+    protected Class<? extends LivingEntity> targetClass;
+
+    public FollowTargetGoalMixin(MobEntity mobEntity_1, boolean boolean_1) {
+        super(mobEntity_1, boolean_1);
+    }
+
+    @Inject(
+        method = "<init>(Lnet/minecraft/entity/mob/MobEntity;Ljava/lang/Class;Z)V",
+        at = @At("TAIL")
+    )
+    private void removeMorticiansAsTargets(CallbackInfo ci) {
+        if (this.targetClass.equals(MerchantEntity.class)) {
+            Predicate<LivingEntity> predicate = ((TargetPredicateAccessor) this.targetPredicate).getPredicate();
+            if (predicate != null) {
+                this.targetPredicate.setPredicate(predicate.and((e) -> !(e instanceof MorticianEntity)));
+            } else {
+                this.targetPredicate.setPredicate((e) -> !(e instanceof MorticianEntity));
+            }
+        }
+    }
 }

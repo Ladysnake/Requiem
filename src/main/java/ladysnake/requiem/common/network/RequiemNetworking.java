@@ -40,7 +40,10 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.common.remnant.RemnantTypes;
+import ladysnake.requiem.core.RequiemCore;
 import ladysnake.requiem.core.RequiemCoreNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -70,6 +73,7 @@ public class RequiemNetworking {
     public static final Identifier OPUS_UPDATE = Requiem.id("opus_update");
     public static final Identifier DIALOGUE_ACTION = Requiem.id("dialogue_action");
     public static final Identifier OPEN_CRAFTING_MENU = Requiem.id("open_crafting");
+    public static final Identifier ANCHOR_DAMAGE = RequiemCore.id("anchor_damage");
 
     public static void sendToServer(Identifier identifier, PacketByteBuf data) {
         sendToServer(new CustomPayloadC2SPacket(identifier, data));
@@ -161,5 +165,11 @@ public class RequiemNetworking {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeVarInt(entity.getId());
         RequiemCoreNetworking.sendToAllTrackingIncluding(entity, new CustomPayloadS2CPacket(BODY_CURE, buf));
+    }
+
+    public static void sendAnchorDamageMessage(ServerPlayerEntity player, boolean dead) {
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeBoolean(dead);
+        ServerPlayNetworking.send(player, ANCHOR_DAMAGE, buf);
     }
 }

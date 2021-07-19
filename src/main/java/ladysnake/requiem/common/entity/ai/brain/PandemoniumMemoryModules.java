@@ -32,26 +32,26 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity;
+package ladysnake.requiem.common.entity.ai.brain;
 
+import com.mojang.serialization.Codec;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.common.entity.RequiemEntities;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.util.registry.Registry;
+import ladysnake.requiem.mixin.common.shell.ai.MemoryModuleTypeAccessor;
+import ladysnake.requiem.mixin.common.shell.ai.SerializableMemoryModuleTypeAccessor;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 
-public final class PandemoniumEntities {
-    public static final EntityType<MorticianEntity> MORTICIAN = FabricEntityTypeBuilder.createLiving()
-        .spawnGroup(SpawnGroup.CREATURE)
-        .entityFactory(MorticianEntity::new)
-        .defaultAttributes(MorticianEntity::createMobAttributes)
-        .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
-        .build();
+import java.util.List;
 
-    public static void init() {
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("player_shell"), RequiemEntities.PLAYER_SHELL);
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("mortician"), MORTICIAN);
+public final class PandemoniumMemoryModules {
+    public static final MemoryModuleType<Integer> GO_HOME_ATTEMPTS = register("pathfinding_failures");
+    public static final MemoryModuleType<List<LivingEntity>> VISIBLE_HOSTILES = register("visible_hostiles");
+
+    private static <U> MemoryModuleType<U> register(String id) {
+        return MemoryModuleTypeAccessor.pandemonium$register(Requiem.MOD_ID + ":" + id);
+    }
+
+    private static <U> MemoryModuleType<U> register(String id, Codec<U> codec) {
+        return SerializableMemoryModuleTypeAccessor.pandemonium$register(Requiem.MOD_ID + ":" + id, codec);
     }
 }

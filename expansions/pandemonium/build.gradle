@@ -57,9 +57,7 @@ dependencies {
     modImplementation ("io.github.ladysnake:PlayerAbilityLib:${pal_version}")
     modImplementation ("io.github.ladysnake:locki:${locki_version}")
     modImplementation ("io.github.ladysnake:impersonate:${impersonate_version}") { transitive = false }
-    include "io.github.ladysnake:impersonate:${impersonate_version}"
     modImplementation "io.github.ladysnake:automatone:${automatone_version}"
-    include "io.github.ladysnake:automatone:${automatone_version}:optimized"
     implementation "me.zeroeightsix:fiber:${rootProject.fiber_version}"
 //    modCompileOnly ("io.github.shedaniel:FiberToCloth:0907730") { transitive = false }
     modCompileOnly ("io.github.prospector:modmenu:${rootProject.modmenu_version}") { transitive = false }

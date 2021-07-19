@@ -32,26 +32,19 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity;
+package ladysnake.requiem.mixin.common.shell.ai;
 
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.common.entity.RequiemEntities;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.entity.ai.brain.sensor.Sensor;
+import net.minecraft.entity.ai.brain.sensor.SensorType;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-public final class PandemoniumEntities {
-    public static final EntityType<MorticianEntity> MORTICIAN = FabricEntityTypeBuilder.createLiving()
-        .spawnGroup(SpawnGroup.CREATURE)
-        .entityFactory(MorticianEntity::new)
-        .defaultAttributes(MorticianEntity::createMobAttributes)
-        .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
-        .build();
+import java.util.function.Supplier;
 
-    public static void init() {
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("player_shell"), RequiemEntities.PLAYER_SHELL);
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("mortician"), MORTICIAN);
+@Mixin(SensorType.class)
+public interface SensorTypeAccessor {
+    @Invoker("register")
+    static <U extends Sensor<?>> SensorType<U> pandemonium$register(String id, Supplier<U> supplier) {
+        throw new IllegalStateException("Untransformed mixin");
     }
 }

@@ -35,12 +35,12 @@
 package ladysnake.pandemonium.common.entity.effect;
 
 import com.mojang.authlib.GameProfile;
-import ladysnake.pandemonium.common.PlayerSplitter;
 import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
 import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
+import ladysnake.requiem.common.remnant.PlayerSplitter;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;

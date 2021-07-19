@@ -34,15 +34,18 @@
  */
 package ladysnake.requiem.common.entity;
 
+import baritone.api.fakeplayer.FakePlayers;
 import com.google.common.collect.ImmutableMap;
 import ladysnake.requiem.Requiem;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PiglinBruteEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.registry.Registry;
 
 public final class RequiemEntities {
@@ -84,6 +87,15 @@ public final class RequiemEntities {
         .build();
     public static final ImmutableMap<EntityType<? extends MobEntity>, EntityType<? extends MobEntity>> CURED_PIGLIN_VARIANTS =
         ImmutableMap.of(EntityType.PIGLIN, CURED_PIGLIN, EntityType.PIGLIN_BRUTE, CURED_PIGLIN_BRUTE);
+    public static final EntityType<PlayerEntity> PLAYER_SHELL = FabricEntityTypeBuilder.<PlayerEntity>createLiving()
+        .spawnGroup(SpawnGroup.MISC)
+        .entityFactory(FakePlayers.entityFactory(PlayerShellEntity::new))
+        .defaultAttributes(PlayerShellEntity::createPlayerShellAttributes)
+        .dimensions(EntityDimensions.changing(EntityType.PLAYER.getWidth(), EntityType.PLAYER.getHeight()))
+        .trackRangeBlocks(64)
+        .trackedUpdateRate(1)
+        .forceTrackedVelocityUpdates(true)
+        .build();
 
     public static void init() {
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("soul"), RELEASED_SOUL);

@@ -32,26 +32,37 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity;
+package ladysnake.requiem.common.entity.ai.brain.tasks;
 
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.common.entity.RequiemEntities;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.util.registry.Registry;
+import baritone.api.fakeplayer.FakeServerPlayerEntity;
+import baritone.api.utils.RotationUtils;
+import com.google.common.collect.ImmutableMap;
+import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.server.world.ServerWorld;
 
-public final class PandemoniumEntities {
-    public static final EntityType<MorticianEntity> MORTICIAN = FabricEntityTypeBuilder.createLiving()
-        .spawnGroup(SpawnGroup.CREATURE)
-        .entityFactory(MorticianEntity::new)
-        .defaultAttributes(MorticianEntity::createMobAttributes)
-        .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
-        .build();
+public class PlayerLookAroundTask extends Task<FakeServerPlayerEntity> {
+    public PlayerLookAroundTask(int minRunTime, int maxRunTime) {
+        super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_PRESENT), minRunTime, maxRunTime);
+    }
 
-    public static void init() {
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("player_shell"), RequiemEntities.PLAYER_SHELL);
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("mortician"), MORTICIAN);
+    @Override
+    protected boolean shouldKeepRunning(ServerWorld serverWorld, FakeServerPlayerEntity player, long l) {
+        return player.getBrain().getOptionalMemory(MemoryModuleType.LOOK_TARGET)
+            .filter(lookTarget -> lookTarget.isSeenBy(player))
+            .isPresent();
+    }
+
+    @Override
+    protected void finishRunning(ServerWorld serverWorld, FakeServerPlayerEntity player, long l) {
+        player.getBrain().forget(MemoryModuleType.LOOK_TARGET);
+    }
+
+    @Override
+    protected void keepRunning(ServerWorld serverWorld, FakeServerPlayerEntity player, long l) {
+        player.getBrain().getOptionalMemory(MemoryModuleType.LOOK_TARGET).ifPresent((lookTarget) ->
+            player.getBaritone().getLookBehavior().updateSecondaryTarget(
+                RotationUtils.calcRotationFromVec3d(player.getCameraPosVec(1), lookTarget.getPos())));
     }
 }

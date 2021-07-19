@@ -67,7 +67,11 @@
     "remnant.ServerPlayNetworkHandler1Mixin",
     "remnant.ServerPlayNetworkHandlerMixin",
     "remnant.ShapeContextMixin",
-    "remnant.TargetPredicateMixin"
+    "remnant.TargetPredicateMixin",
+    "shell.ai.MemoryModuleTypeAccessor",
+    "shell.ai.SensorTypeAccessor",
+    "shell.ai.SerializableMemoryModuleTypeAccessor",
+    "shell.ai.TargetPredicateAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

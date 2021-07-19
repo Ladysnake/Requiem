@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.RequiemClient;
+import ladysnake.requiem.client.RequiemFx;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
@@ -74,43 +75,12 @@ public class ClientMessageHandler {
     }
 
     public void init() {
-        ClientPlayNetworking.registerGlobalReceiver(OPUS_USE, ((client, handler, buf, responseSender) -> {
-            int remnantId = buf.readVarInt();
-            boolean showBook = buf.readBoolean();
-            RemnantType remnantType = RemnantTypes.get(remnantId);
-            boolean cure = !remnantType.isDemon();
-
-            client.execute(() -> {
-                PlayerEntity player = Objects.requireNonNull(client.player);
-                if (showBook) {
-                    mc.particleManager.addEmitter(player, ParticleTypes.PORTAL, 120);
-                    mc.gameRenderer.showFloatingItem(remnantType.getConversionBook(player));
-                }
-                if (cure) {
-                    this.rc.fxRenderer().playEtherealPulseAnimation(16, 0.0f, 0.8f, 0.6f);
-                } else {
-                    this.rc.fxRenderer().playEtherealPulseAnimation(16, 1.0f, 0.25f, 0.27f);
-                }
-            });
-        }));
-        ClientPlayNetworking.registerGlobalReceiver(DATA_SYNC, (client, handler, buf, responseSender) -> {
-            // We intentionally do not use the context's task queue directly
-            // First, we make each sub data manager process its data, then we apply it synchronously with the task queue
-            Map<Identifier, SubDataManager<?>> map = SubDataManagerHelper.getClientHelper().streamDataManagers().collect(Collectors.toMap(IdentifiableResourceReloadListener::getFabricId, Function.identity()));
-            int nbManagers = buf.readVarInt();
-            for (int i = 0; i < nbManagers; i++) {
-                Identifier id = buf.readIdentifier();
-                SubDataManager<?> manager = Objects.requireNonNull(map.get(id), "Unknown sub data manager " + id);
-                Requiem.LOGGER.info("[Requiem] Received data for {}", manager.getFabricId());
-                syncSubDataManager(buf, manager, client);
-            }
+        ClientPlayNetworking.registerGlobalReceiver(ANCHOR_DAMAGE, (client, handler, buf, responseSender) -> {
+            boolean dead = buf.readBoolean();
+            client.execute(() -> RequiemClient.instance().fxRenderer().playEtherealPulseAnimation(
+                dead ? 4 : 1, RequiemFx.ETHEREAL_DAMAGE_COLOR[0], RequiemFx.ETHEREAL_DAMAGE_COLOR[1], RequiemFx.ETHEREAL_DAMAGE_COLOR[2]
+            ));
         });
-        ClientPlayNetworking.registerGlobalReceiver(ETHEREAL_ANIMATION, (client, handler, buf, responseSender) -> client.execute(() -> {
-            MinecraftClient mc = this.mc;
-            assert mc.player != null;
-            mc.player.world.playSound(mc.player, mc.player.getX(), mc.player.getY(), mc.player.getZ(), RequiemSoundEvents.EFFECT_DISSOCIATE, SoundCategory.PLAYERS, 2, 0.6f);
-            this.rc.fxRenderer().beginEtherealAnimation();
-        }));
         ClientPlayNetworking.registerGlobalReceiver(BODY_CURE, (client, handler, buf, responseSender) -> {
             int entityId = buf.readVarInt();
             client.execute(() -> {
@@ -139,6 +109,43 @@ public class ClientMessageHandler {
                 }
             });
         });
+        ClientPlayNetworking.registerGlobalReceiver(DATA_SYNC, (client, handler, buf, responseSender) -> {
+            // We intentionally do not use the context's task queue directly
+            // First, we make each sub data manager process its data, then we apply it synchronously with the task queue
+            Map<Identifier, SubDataManager<?>> map = SubDataManagerHelper.getClientHelper().streamDataManagers().collect(Collectors.toMap(IdentifiableResourceReloadListener::getFabricId, Function.identity()));
+            int nbManagers = buf.readVarInt();
+            for (int i = 0; i < nbManagers; i++) {
+                Identifier id = buf.readIdentifier();
+                SubDataManager<?> manager = Objects.requireNonNull(map.get(id), "Unknown sub data manager " + id);
+                Requiem.LOGGER.info("[Requiem] Received data for {}", manager.getFabricId());
+                syncSubDataManager(buf, manager, client);
+            }
+        });
+        ClientPlayNetworking.registerGlobalReceiver(ETHEREAL_ANIMATION, (client, handler, buf, responseSender) -> client.execute(() -> {
+            MinecraftClient mc = this.mc;
+            assert mc.player != null;
+            mc.player.world.playSound(mc.player, mc.player.getX(), mc.player.getY(), mc.player.getZ(), RequiemSoundEvents.EFFECT_DISSOCIATE, SoundCategory.PLAYERS, 2, 0.6f);
+            this.rc.fxRenderer().beginEtherealAnimation();
+        }));
+        ClientPlayNetworking.registerGlobalReceiver(OPUS_USE, ((client, handler, buf, responseSender) -> {
+            int remnantId = buf.readVarInt();
+            boolean showBook = buf.readBoolean();
+            RemnantType remnantType = RemnantTypes.get(remnantId);
+            boolean cure = !remnantType.isDemon();
+
+            client.execute(() -> {
+                PlayerEntity player = Objects.requireNonNull(client.player);
+                if (showBook) {
+                    mc.particleManager.addEmitter(player, ParticleTypes.PORTAL, 120);
+                    mc.gameRenderer.showFloatingItem(remnantType.getConversionBook(player));
+                }
+                if (cure) {
+                    this.rc.fxRenderer().playEtherealPulseAnimation(16, 0.0f, 0.8f, 0.6f);
+                } else {
+                    this.rc.fxRenderer().playEtherealPulseAnimation(16, 1.0f, 0.25f, 0.27f);
+                }
+            });
+        }));
     }
 
     private static <T> void syncSubDataManager(PacketByteBuf buffer, SubDataManager<T> subManager, ThreadExecutor<?> taskQueue) {

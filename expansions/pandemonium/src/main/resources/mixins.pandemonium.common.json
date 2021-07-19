@@ -4,13 +4,8 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "entity.EntityAccessor",
-    "entity.PersistentProjectileEntityAccessor",
-    "entity.ai.MemoryModuleTypeAccessor",
-    "entity.ai.SensorTypeAccessor",
-    "entity.ai.SerializableMemoryModuleTypeAccessor",
-    "entity.ai.TargetPredicateAccessor",
-    "entity.ai.goal.FollowTargetGoalMixin",
-    "entity.player.TargetPredicateMixin"
+    "entity.FollowTargetGoalMixin",
+    "entity.PersistentProjectileEntityAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

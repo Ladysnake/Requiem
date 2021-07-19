@@ -70,6 +70,7 @@ public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEv
     private static final float[] ETHEREAL_COLOR = {0.0f, 0.7f, 1.0f};
 
     public static final int PULSE_ANIMATION_TIME = 20;
+    public static final float[] ETHEREAL_DAMAGE_COLOR = {0.5f, 0.0f, 0.0f};
 
     private final MinecraftClient mc = MinecraftClient.getInstance();
     private final ManagedShaderEffect spectreShader = ShaderEffectManager.getInstance().manage(SPECTRE_SHADER_ID);

@@ -63,6 +63,7 @@ import ladysnake.requiem.common.entity.effect.StatusEffectReapplicatorImpl;
 import ladysnake.requiem.common.gamerule.RequiemSyncedGamerules;
 import ladysnake.requiem.common.possession.LootingPossessedData;
 import ladysnake.requiem.common.remnant.GlobalAttritionFocus;
+import ladysnake.requiem.common.remnant.PlayerBodyTracker;
 import ladysnake.requiem.common.remnant.RemnantComponentImpl;
 import ladysnake.requiem.common.remnant.SimpleAttritionFocus;
 import ladysnake.requiem.core.ability.ImmutableMobAbilityController;
@@ -102,6 +103,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerFor(ZombifiedPiglinEntity.class, CurableEntityComponent.KEY, CurableZombifiedPiglinComponent::new);
         registry.registerFor(LivingEntity.class, EntityAiToggle.KEY, EntityAiToggle::new);
         registry.registerFor(LivingEntity.class, EntityPositionClerk.KEY, EntityPositionClerk::new);
+        registry.registerForPlayers(PlayerBodyTracker.KEY, PlayerBodyTracker::new, RespawnCopyStrategy.ALWAYS_COPY);
     }
 
     @Override
