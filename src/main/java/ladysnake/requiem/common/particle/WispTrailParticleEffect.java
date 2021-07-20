@@ -38,8 +38,6 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
@@ -97,41 +95,5 @@ public record WispTrailParticleEffect(float red, float green, float blue, float 
     @Override
     public ParticleType<WispTrailParticleEffect> getType() {
         return RequiemParticleTypes.SOUL_TRAIL;
-    }
-
-    @Override
-    @Environment(EnvType.CLIENT)
-    public float red() {
-        return this.red;
-    }
-
-    @Override
-    @Environment(EnvType.CLIENT)
-    public float green() {
-        return this.green;
-    }
-
-    @Override
-    @Environment(EnvType.CLIENT)
-    public float blue() {
-        return this.blue;
-    }
-
-    @Override
-    @Environment(EnvType.CLIENT)
-    public float redEvolution() {
-        return redEvolution;
-    }
-
-    @Override
-    @Environment(EnvType.CLIENT)
-    public float greenEvolution() {
-        return greenEvolution;
-    }
-
-    @Override
-    @Environment(EnvType.CLIENT)
-    public float blueEvolution() {
-        return blueEvolution;
     }
 }
