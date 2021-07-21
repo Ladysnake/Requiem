@@ -10,6 +10,7 @@
     "noai.BrainMixin",
     "noai.EntityNavigationMixin",
     "noai.GoalSelectorMixin",
+    "noai.WitchEntityMixin",
     "noai.WitherEntityMixin",
     "possession.EntityAttributeInstanceMixin",
     "possession.ServerWorldMixin",

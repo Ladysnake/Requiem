@@ -32,7 +32,7 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.util;
+package ladysnake.requiem.core.util;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
