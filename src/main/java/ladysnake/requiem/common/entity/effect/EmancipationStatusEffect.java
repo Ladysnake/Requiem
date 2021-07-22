@@ -36,6 +36,8 @@ package ladysnake.requiem.common.entity.effect;
 
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -44,7 +46,7 @@ import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class EmancipationStatusEffect extends StatusEffect {
+public class EmancipationStatusEffect extends StatusEffect implements StickyStatusEffect {
     public EmancipationStatusEffect(StatusEffectType type, int color) {
         super(type, color);
     }
@@ -60,5 +62,15 @@ public class EmancipationStatusEffect extends StatusEffect {
                 RequiemNetworking.sendEtherealAnimationMessage(player);
             }
         }
+    }
+
+    @Override
+    public boolean shouldStick(LivingEntity entity) {
+        return RemnantComponent.KEY.maybeGet(entity).map(r -> r.getRemnantType().isDemon()).orElse(false);
+    }
+
+    @Override
+    public boolean shouldFreezeDuration(LivingEntity entity) {
+        return false;
     }
 }
