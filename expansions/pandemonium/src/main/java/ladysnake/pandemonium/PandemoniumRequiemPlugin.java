@@ -34,7 +34,6 @@
  */
 package ladysnake.pandemonium;
 
-import baritone.api.fakeplayer.AutomatoneFakePlayer;
 import ladysnake.pandemonium.common.PandemoniumConfig;
 import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
 import ladysnake.pandemonium.common.entity.effect.PenanceStatusEffect;
@@ -42,28 +41,13 @@ import ladysnake.pandemonium.common.remnant.PandemoniumRemnantTypes;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
-import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
-import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
-import ladysnake.requiem.api.v1.remnant.VagrantInteractionRegistry;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
-import ladysnake.requiem.common.entity.PlayerShellEntity;
-import ladysnake.requiem.common.network.RequiemNetworking;
-import ladysnake.requiem.common.remnant.PlayerBodyTracker;
-import ladysnake.requiem.common.remnant.PlayerSplitter;
-import ladysnake.requiem.core.util.RayHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-
-import java.util.Objects;
 
 public class PandemoniumRequiemPlugin implements RequiemPlugin {
 
@@ -78,36 +62,6 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
         }
         PossessionStartCallback.EVENT.register(Pandemonium.id("deny_penance_three"), ((target, possessor, simulate) ->
             PenanceStatusEffect.getLevel(possessor) >= 2 ? PossessionStartCallback.Result.DENY : PossessionStartCallback.Result.PASS));
-        InitiateFractureCallback.EVENT.register(player -> {
-            PossessionComponent possessionComponent = PossessionComponent.get(player);
-
-            boolean success;
-
-            if (PlayerSplitter.split(player)) {
-                success = true;
-            } else if (possessionComponent.isPossessionOngoing()) {
-                Entity targetedEntity = RayHelper.getTargetedEntity(player);
-                if (targetedEntity instanceof PlayerShellEntity && Objects.equals(player.getUuid(), ((PlayerShellEntity) targetedEntity).getOwnerUuid())) {
-                    possessionComponent.stopPossessing();
-                    PlayerSplitter.merge((PlayerShellEntity) targetedEntity, player);
-                    RequiemNetworking.sendBodyCureMessage(player);
-                    success = true;
-                } else if (PlayerBodyTracker.get(player).getAnchor().isPresent()) {
-                    possessionComponent.stopPossessing();
-                    success = true;
-                } else {
-                    success = false;
-                }
-            } else {
-                success = false;
-            }
-
-            if (success) {
-                RequiemNetworking.sendEtherealAnimationMessage(player);
-            }
-
-            return success;
-        });
     }
 
     @Override
@@ -123,17 +77,5 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
     @Override
     public void registerRemnantStates(Registry<RemnantType> registry) {
         Registry.register(registry, Pandemonium.id("wandering_spirit"), PandemoniumRemnantTypes.WANDERING_SPIRIT);
-    }
-
-    @Override
-    public void registerVagrantInteractions(VagrantInteractionRegistry registry) {
-        registry.registerPossessionInteraction(PlayerEntity.class,
-            (target, possessor) -> target instanceof AutomatoneFakePlayer shell && PlayerShellEvents.PRE_MERGE.invoker().canMerge(possessor, target, shell.getDisplayProfile()),
-            (target, possessor) -> {
-                if (target instanceof PlayerShellEntity && !PlayerSplitter.merge((PlayerShellEntity) target, (ServerPlayerEntity) possessor)) {
-                    possessor.sendMessage(new TranslatableText("requiem:possess.incompatible_body"), true);
-                }
-            }
-        );
     }
 }

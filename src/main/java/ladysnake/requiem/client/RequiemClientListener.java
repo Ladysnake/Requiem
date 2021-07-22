@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.client;
 
+import baritone.api.fakeplayer.AutomatoneFakePlayer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
@@ -70,10 +71,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.MilkBucketItem;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.TridentItem;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -125,6 +128,18 @@ public final class RequiemClientListener implements
             return false;
         });
         ShaderEffectRenderCallback.EVENT.register(GhostParticle::draw);
+        MutableBoolean wasLookingAtShell = new MutableBoolean();
+        ClientTickEvents.START_CLIENT_TICK.register(client -> {
+            if (client.targetedEntity instanceof AutomatoneFakePlayer && client.player != null) {
+                if (PossessionComponent.getHost(client.player) != null && client.player.getUuid().equals(((AutomatoneFakePlayer) client.targetedEntity).getOwnerUuid())) {
+                    client.inGameHud.setOverlayMessage(new TranslatableText("requiem:merge_hint", FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
+                    wasLookingAtShell.setTrue();
+                }
+            } else if (wasLookingAtShell.booleanValue()) {
+                client.inGameHud.setOverlayMessage(LiteralText.EMPTY, false);
+                wasLookingAtShell.setFalse();
+            }
+        });
     }
 
     @Override

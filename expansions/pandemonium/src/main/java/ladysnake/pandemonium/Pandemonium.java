@@ -37,7 +37,6 @@ package ladysnake.pandemonium;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
-import io.github.ladysnake.impersonate.Impersonate;
 import ladysnake.pandemonium.common.PandemoniumConfig;
 import ladysnake.pandemonium.common.block.PandemoniumBlocks;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
@@ -48,9 +47,6 @@ import ladysnake.pandemonium.common.network.ServerMessageHandling;
 import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
-import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
-import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
-import ladysnake.requiem.common.remnant.PlayerSplitter;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 
@@ -73,12 +69,6 @@ public final class Pandemonium implements ModInitializer, EntityComponentInitial
         PandemoniumStatusEffects.init();
         ServerMessageHandling.init();
         RequiemApi.registerPlugin(new PandemoniumRequiemPlugin());
-        PlayerRespawnCallback.EVENT.register((player, returnFromEnd) -> {
-            if (!returnFromEnd) Impersonate.IMPERSONATION.get(player).stopImpersonation(PlayerSplitter.BODY_IMPERSONATION);
-        });
-        RemnantStateChangeCallback.EVENT.register((player, state) -> {
-            if (state.isVagrant()) Impersonate.IMPERSONATION.get(player).stopImpersonation(PlayerSplitter.BODY_IMPERSONATION);
-        });
     }
 
     @Override

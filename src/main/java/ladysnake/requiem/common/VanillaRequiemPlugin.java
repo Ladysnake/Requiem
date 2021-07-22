@@ -34,6 +34,8 @@
  */
 package ladysnake.requiem.common;
 
+import baritone.api.fakeplayer.AutomatoneFakePlayer;
+import io.github.ladysnake.impersonate.Impersonate;
 import io.github.ladysnake.locki.DefaultInventoryNodes;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
@@ -52,6 +54,8 @@ import ladysnake.requiem.api.v1.event.minecraft.PrepareRespawnCallback;
 import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
 import ladysnake.requiem.api.v1.event.requiem.ConsumableItemEvents;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
+import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
+import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.SoulCaptureEvents;
@@ -67,6 +71,7 @@ import ladysnake.requiem.api.v1.remnant.VagrantInteractionRegistry;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
+import ladysnake.requiem.common.entity.PlayerShellEntity;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
 import ladysnake.requiem.common.entity.ability.BlazeFireballAbility;
 import ladysnake.requiem.common.entity.ability.BlinkAbility;
@@ -84,6 +89,8 @@ import ladysnake.requiem.common.entity.effect.ReclamationStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
+import ladysnake.requiem.common.remnant.PlayerBodyTracker;
+import ladysnake.requiem.common.remnant.PlayerSplitter;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
@@ -95,6 +102,7 @@ import ladysnake.requiem.core.entity.ability.RangedAttackAbility;
 import ladysnake.requiem.core.entity.ability.SnowmanSnowballAbility;
 import ladysnake.requiem.core.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.core.tag.RequiemCoreTags;
+import ladysnake.requiem.core.util.RayHelper;
 import ladysnake.requiem.mixin.common.access.StatusEffectAccessor;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
@@ -103,6 +111,7 @@ import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -178,6 +187,36 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             PossessedData.KEY.maybeGet(dead).ifPresent(PossessedData::dropItems);
             return false;
         });
+        InitiateFractureCallback.EVENT.register(player -> {
+            PossessionComponent possessionComponent = PossessionComponent.get(player);
+
+            boolean success;
+
+            if (PlayerSplitter.split(player)) {
+                success = true;
+            } else if (possessionComponent.isPossessionOngoing()) {
+                Entity targetedEntity = RayHelper.getTargetedEntity(player);
+                if (targetedEntity instanceof PlayerShellEntity && Objects.equals(player.getUuid(), ((PlayerShellEntity) targetedEntity).getOwnerUuid())) {
+                    possessionComponent.stopPossessing();
+                    PlayerSplitter.merge((PlayerShellEntity) targetedEntity, player);
+                    RequiemNetworking.sendBodyCureMessage(player);
+                    success = true;
+                } else if (PlayerBodyTracker.get(player).getAnchor().isPresent()) {
+                    possessionComponent.stopPossessing();
+                    success = true;
+                } else {
+                    success = false;
+                }
+            } else {
+                success = false;
+            }
+
+            if (success) {
+                RequiemNetworking.sendEtherealAnimationMessage(player);
+            }
+
+            return success;
+        });
         HumanityCheckCallback.EVENT.register(possessedEntity -> EnchantmentHelper.getEquipmentLevel(RequiemEnchantments.HUMANITY, possessedEntity));
         ConsumableItemEvents.POST_CONSUMED.register(RequiemCriteria.USED_TOTEM::trigger);
         SoulCaptureEvents.BEFORE_ATTEMPT.register((player, target) -> Optional.ofNullable(player.getStatusEffect(RequiemStatusEffects.ATTRITION)).map(StatusEffectInstance::getAmplifier).orElse(-1) < 3);
@@ -227,6 +266,12 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             } else {
                 PlayerAbilityController.get(player).resetAbilities(remnant.isIncorporeal());
             }
+        });
+        PlayerRespawnCallback.EVENT.register((player, returnFromEnd) -> {
+            if (!returnFromEnd) Impersonate.IMPERSONATION.get(player).stopImpersonation(PlayerSplitter.BODY_IMPERSONATION);
+        });
+        RemnantStateChangeCallback.EVENT.register((player, state) -> {
+            if (state.isVagrant()) Impersonate.IMPERSONATION.get(player).stopImpersonation(PlayerSplitter.BODY_IMPERSONATION);
         });
     }
 
@@ -383,6 +428,14 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             EndermanEntity.class,
             (mob, player) -> !PossessionComponent.get(player).startPossessing(mob, true),
             BasePossessionHandlers::performEndermanSoulAction
+        );
+        registry.registerPossessionInteraction(PlayerEntity.class,
+            (target, possessor) -> target instanceof AutomatoneFakePlayer shell && PlayerShellEvents.PRE_MERGE.invoker().canMerge(possessor, target, shell.getDisplayProfile()),
+            (target, possessor) -> {
+                if (target instanceof PlayerShellEntity && !PlayerSplitter.merge((PlayerShellEntity) target, (ServerPlayerEntity) possessor)) {
+                    possessor.sendMessage(new TranslatableText("requiem:possess.incompatible_body"), true);
+                }
+            }
         );
         registry.registerPossessionInteraction(
             MobEntity.class,
