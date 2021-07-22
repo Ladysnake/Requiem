@@ -32,7 +32,7 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity.effect;
+package ladysnake.requiem.common.entity.effect;
 
 import com.demonwav.mcdev.annotations.CheckEnv;
 import com.demonwav.mcdev.annotations.Env;
@@ -83,7 +83,7 @@ public final class PenanceComponent implements ServerTickingComponent, ClientTic
     @Override
     public void clientTick() {
         this.lastPenanceStrength = this.nextPenanceStrength;
-        if (RemnantComponent.isIncorporeal(this.owner) && this.owner.hasStatusEffect(PandemoniumStatusEffects.PENANCE)) {
+        if (RemnantComponent.isIncorporeal(this.owner) && this.owner.hasStatusEffect(RequiemStatusEffects.PENANCE)) {
             this.nextPenanceStrength = 0.4f;
         } else {
             this.nextPenanceStrength = Math.min(1, (float) this.timeWithPenance / PENANCE_WARNING_TIME);
@@ -92,7 +92,7 @@ public final class PenanceComponent implements ServerTickingComponent, ClientTic
 
     @Override
     public void serverTick() {
-        StatusEffectInstance penance = this.owner.getStatusEffect(PandemoniumStatusEffects.PENANCE);
+        StatusEffectInstance penance = this.owner.getStatusEffect(RequiemStatusEffects.PENANCE);
         if (penance != null && this.shouldSplitFromCurrentBody(penance)) {
             this.timeWithPenance++;
             if (this.shouldApplyPenance()) {
@@ -149,7 +149,7 @@ public final class PenanceComponent implements ServerTickingComponent, ClientTic
         byte op = buf.readByte();
         switch (op) {
             case DATA_SYNC -> this.timeWithPenance = buf.readVarInt();
-            case FX_SYNC -> RequiemClient.instance().fxRenderer().playEtherealPulseAnimation(PENANCE_FLASH_INTENSITY, PandemoniumStatusEffects.PENANCE.getColor());
+            case FX_SYNC -> RequiemClient.instance().fxRenderer().playEtherealPulseAnimation(PENANCE_FLASH_INTENSITY, RequiemStatusEffects.PENANCE.getColor());
         }
     }
 

@@ -43,6 +43,7 @@ public final class RequiemBlockEntities {
     public static final BlockEntityType<RunicObsidianBlockEntity> RUNIC_OBSIDIAN = FabricBlockEntityTypeBuilder.create(RunicObsidianBlockEntity::new,
         RequiemBlocks.RUNIC_TACHYLITE_ATTRITION,
         RequiemBlocks.RUNIC_TACHYLITE_EMANCIPATION,
+        RequiemBlocks.RUNIC_OBSIDIAN_PENANCE,
         RequiemBlocks.RUNIC_TACHYLITE_RECLAMATION
     ).build(null);
 

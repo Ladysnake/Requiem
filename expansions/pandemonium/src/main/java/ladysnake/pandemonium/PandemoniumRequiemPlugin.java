@@ -35,17 +35,15 @@
 package ladysnake.pandemonium;
 
 import ladysnake.pandemonium.common.PandemoniumConfig;
-import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
-import ladysnake.pandemonium.common.entity.effect.PenanceStatusEffect;
 import ladysnake.pandemonium.common.remnant.PandemoniumRemnantTypes;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
+import ladysnake.requiem.common.entity.effect.PenanceStatusEffect;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -62,11 +60,6 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
         }
         PossessionStartCallback.EVENT.register(Pandemonium.id("deny_penance_three"), ((target, possessor, simulate) ->
             PenanceStatusEffect.getLevel(possessor) >= 2 ? PossessionStartCallback.Result.DENY : PossessionStartCallback.Result.PASS));
-    }
-
-    @Override
-    public void registerSoulBindings(SoulbindingRegistry registry) {
-        registry.registerSoulbound(PandemoniumStatusEffects.PENANCE);
     }
 
     @Override

@@ -34,16 +34,8 @@
  */
 package ladysnake.pandemonium.common.block;
 
-import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
-import ladysnake.requiem.common.block.RequiemBlocks;
-import ladysnake.requiem.common.block.RunicObsidianBlock;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Blocks;
-
 public final class PandemoniumBlocks {
-    public static final RunicObsidianBlock RUNIC_OBSIDIAN_PENANCE = new RunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), () -> PandemoniumStatusEffects.PENANCE, 1);
 
     public static void init() {
-        RequiemBlocks.registerRunic(RUNIC_OBSIDIAN_PENANCE, "tachylite/runic/penance");
     }
 }

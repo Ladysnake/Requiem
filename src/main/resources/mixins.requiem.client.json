@@ -14,6 +14,7 @@
     "opus.LecternScreenMixin",
     "opus.WrittenBookScreenContentsMixin",
     "particle.ParticleManagerMixin",
+    "penance.GameRendererMixin",
     "possession.ArmorFeatureRendererMixin",
     "possession.ClientEntityMixin",
     "possession.EntityRenderDispatcherMixin",

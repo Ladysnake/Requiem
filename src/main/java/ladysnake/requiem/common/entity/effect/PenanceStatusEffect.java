@@ -32,7 +32,7 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity.effect;
+package ladysnake.requiem.common.entity.effect;
 
 import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
@@ -57,13 +57,13 @@ public class PenanceStatusEffect extends StatusEffect implements StickyStatusEff
     public static final int PLAYER_BAN_THRESHOLD = 1;
     public static final int MOB_BAN_THRESHOLD = 2;
 
-    protected PenanceStatusEffect(StatusEffectType type, int color) {
+    public PenanceStatusEffect(StatusEffectType type, int color) {
         super(type, color);
     }
 
     public static void registerCallbacks() {
         CanCurePossessedCallback.EVENT.register((body) -> {
-            if (body.hasStatusEffect(PandemoniumStatusEffects.PENANCE)) {
+            if (body.hasStatusEffect(RequiemStatusEffects.PENANCE)) {
                 return TriState.FALSE;
             }
             return TriState.DEFAULT;
@@ -106,12 +106,12 @@ public class PenanceStatusEffect extends StatusEffect implements StickyStatusEff
     }
 
     public static int getLevel(PlayerEntity player) {
-        StatusEffectInstance penance = player.getStatusEffect(PandemoniumStatusEffects.PENANCE);
+        StatusEffectInstance penance = player.getStatusEffect(RequiemStatusEffects.PENANCE);
         return penance == null ? -1 : penance.getAmplifier();
     }
 
     public static boolean canMerge(PlayerEntity possessor, PlayerEntity target, GameProfile shellProfile) {
-        StatusEffectInstance penance = possessor.getStatusEffect(PandemoniumStatusEffects.PENANCE);
+        StatusEffectInstance penance = possessor.getStatusEffect(RequiemStatusEffects.PENANCE);
         return penance == null || penance.getAmplifier() < 1;
     }
 }

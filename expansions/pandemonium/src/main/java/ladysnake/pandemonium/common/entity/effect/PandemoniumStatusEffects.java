@@ -36,14 +36,12 @@ package ladysnake.pandemonium.common.entity.effect;
 
 import ladysnake.requiem.Requiem;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.util.registry.Registry;
 
 public final class PandemoniumStatusEffects {
-    public static final StatusEffect PENANCE = new PenanceStatusEffect(StatusEffectType.HARMFUL, 0xB6FF00);
 
     public static void init() {
-        registerEffect(PENANCE, "penance");
+
     }
 
     public static void registerEffect(StatusEffect effect, String name) {

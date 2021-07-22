@@ -46,10 +46,12 @@ public final class RequiemStatusEffects {
         .addAttributeModifier(EntityAttributes.GENERIC_MAX_HEALTH, "069ae0b1-4014-41dd-932f-a5da4417d711", -0.2, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
     public static final StatusEffect EMANCIPATION = new EmancipationStatusEffect(StatusEffectType.BENEFICIAL, 0x7799FF);
     public static final StatusEffect RECLAMATION = new ReclamationStatusEffect(StatusEffectType.BENEFICIAL, 0xFFDF00);
+    public static final StatusEffect PENANCE = new PenanceStatusEffect(StatusEffectType.HARMFUL, 0xB6FF00);
 
     public static void init() {
         registerEffect(ATTRITION, "attrition");
         registerEffect(EMANCIPATION, "emancipation");
+        registerEffect(PENANCE, "penance");
         registerEffect(RECLAMATION, "reclamation");
     }
 

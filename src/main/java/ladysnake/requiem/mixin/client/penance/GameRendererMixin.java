@@ -32,11 +32,34 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.mixin.common.entity;
+package ladysnake.requiem.mixin.client.penance;
 
-import net.minecraft.entity.Entity;
+import ladysnake.requiem.client.RequiemClient;
+import ladysnake.requiem.common.entity.effect.PenanceComponent;
+import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.GameRenderer;
+import org.objectweb.asm.Opcodes;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Entity.class)
-public interface EntityAccessor {
+@Mixin(GameRenderer.class)
+public abstract class GameRendererMixin {
+    @Shadow
+    @Final
+    private MinecraftClient client;
+
+    @Inject(method = "render", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/network/ClientPlayerEntity;lastNauseaStrength:F"))
+    private void renderPenanceOverlay(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
+        assert this.client.player != null;
+        float f = PenanceComponent.KEY.get(this.client.player).getOverlayStrength(tickDelta);
+        if (f > 0.0F) {
+            RequiemClient.instance().fxRenderer().renderPenanceOverlay(RequiemStatusEffects.PENANCE.getColor(), f);
+        }
+    }
+
 }

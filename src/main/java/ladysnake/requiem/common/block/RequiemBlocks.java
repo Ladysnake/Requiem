@@ -69,6 +69,7 @@ public class RequiemBlocks {
     public static final Block SCRAPED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/scraped");
     public static final RunicObsidianBlock RUNIC_TACHYLITE_ATTRITION = makeRunic("attrition", 3);
     public static final RunicObsidianBlock RUNIC_TACHYLITE_EMANCIPATION = makeRunic("emancipation", 1);
+    public static final RunicObsidianBlock RUNIC_OBSIDIAN_PENANCE = makeRunic("penance", 3);
     public static final ReclamationRunicObsidianBlock RUNIC_TACHYLITE_RECLAMATION = new ReclamationRunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), () -> RequiemStatusEffects.RECLAMATION, 1);
 
     private static Block makeVariant(Block base, String id) {
