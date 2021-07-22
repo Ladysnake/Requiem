@@ -36,6 +36,7 @@ package ladysnake.requiem.compat;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
@@ -56,6 +57,7 @@ import ladysnake.requiem.common.gamerule.RequiemSyncedGamerules;
 import ladysnake.requiem.common.gamerule.StartingRemnantType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -65,6 +67,7 @@ import java.util.List;
 
 public final class OriginsCompat {
     public static final ComponentKey<OriginComponent> ORIGIN_KEY = ModComponents.ORIGIN;
+    public static final ComponentKey<PowerHolderComponent> APOLI_POWER_KEY = PowerHolderComponent.KEY;
     public static final SerializableDataType<RemnantType> REMNANT_TYPE = SerializableDataType.registry(RemnantType.class, RequiemRegistries.REMNANT_STATES);
 
     // The factory for the origins power that lets player decide whether they want to be a remnant or not
@@ -88,9 +91,11 @@ public final class OriginsCompat {
             return ((List<?>) instance.get("value")).contains(startingRemnantType);
         }
     );
+    public static final ComponentKey<OriginDataHolder> ORIGIN_HOLDER_KEY =
+        ComponentRegistry.getOrCreate(Requiem.id("origin_holder"), OriginDataHolder.class);
     @SuppressWarnings("unchecked")
-    public static final ComponentKey<ComponentDataHolder<OriginComponent>> HOLDER_KEY =
-        ComponentRegistry.getOrCreate(Requiem.id("origin_holder"), ((Class<ComponentDataHolder<OriginComponent>>) (Class<?>) ComponentDataHolder.class));
+    public static final ComponentKey<ComponentDataHolder<PowerHolderComponent>> APOLI_HOLDER_KEY =
+        ComponentRegistry.getOrCreate(Requiem.id("apoli_power_holder"), ((Class<ComponentDataHolder<PowerHolderComponent>>) (Class<?>) ComponentDataHolder.class));
 
     private static final Identifier SOUL_TYPE_LAYER_ID = Requiem.id("soul_type");
     private static Origin vagrant;
@@ -113,10 +118,12 @@ public final class OriginsCompat {
         RemnantStateChangeCallback.EVENT.register((player, state) -> {
             if (!player.world.isClient) {
                 if (state.isVagrant()) {
-                    HOLDER_KEY.get(player).storeData(player);
+                    ORIGIN_HOLDER_KEY.get(player).storeData(player);
+                    APOLI_HOLDER_KEY.get(player).storeData(player);
                     applyVagrantOrigin(player);
                 } else {
-                    HOLDER_KEY.get(player).restoreData(player);
+                    ORIGIN_HOLDER_KEY.get(player).restoreData(player);
+                    APOLI_HOLDER_KEY.get(player).restoreData(player);
                 }
             }
         });
@@ -125,5 +132,18 @@ public final class OriginsCompat {
             if (vagrant == null) throw new IllegalStateException("Special vagrant origin not found");
             vagrant.setSpecial();
         });
+        RequiemCompatibilityManager.registerShellDataCallbacks(OriginsCompat.ORIGIN_HOLDER_KEY);
+    }
+
+    public static class OriginDataHolder extends ComponentDataHolder<OriginComponent> {
+        public OriginDataHolder(ComponentKey<OriginComponent> originKey, ComponentKey<OriginDataHolder> selfKey) {
+            super(originKey, selfKey);
+        }
+
+        @Override
+        protected void restoreData0(OriginComponent component, NbtCompound data) {
+            super.restoreData0(component, data);
+            component.onPowersRead();
+        }
     }
 }

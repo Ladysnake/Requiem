@@ -64,5 +64,6 @@ public final class HaemaCompat {
                 VAMPIRE_KEY.sync(player);
             }
         });
+        RequiemCompatibilityManager.registerShellDataCallbacks(HaemaCompat.HOLDER_KEY);
     }
 }

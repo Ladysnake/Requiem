@@ -11,8 +11,7 @@
       "ladysnake.pandemonium.Pandemonium::INSTANCE"
     ],
     "cardinal-components-entity": [
-      "ladysnake.pandemonium.Pandemonium::INSTANCE",
-      "ladysnake.pandemonium.compat.PandemoniumCompatibilityManager::registerEntityComponentFactories"
+      "ladysnake.pandemonium.Pandemonium::INSTANCE"
     ],
     "modmenu": [
       "ladysnake.pandemonium.compat.PandemoniumModMenuCompat"

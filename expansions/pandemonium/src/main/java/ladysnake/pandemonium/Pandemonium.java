@@ -45,7 +45,6 @@ import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
 import ladysnake.pandemonium.common.entity.effect.PenanceComponent;
 import ladysnake.pandemonium.common.item.PandemoniumItems;
 import ladysnake.pandemonium.common.network.ServerMessageHandling;
-import ladysnake.pandemonium.compat.PandemoniumCompatibilityManager;
 import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
@@ -80,7 +79,6 @@ public final class Pandemonium implements ModInitializer, EntityComponentInitial
         RemnantStateChangeCallback.EVENT.register((player, state) -> {
             if (state.isVagrant()) Impersonate.IMPERSONATION.get(player).stopImpersonation(PlayerSplitter.BODY_IMPERSONATION);
         });
-        PandemoniumCompatibilityManager.init();
     }
 
     @Override

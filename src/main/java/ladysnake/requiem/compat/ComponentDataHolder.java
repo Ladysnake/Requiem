@@ -70,14 +70,18 @@ public class ComponentDataHolder<C extends Component> implements Component {
             C component = this.dataKey.get(player);
             NbtCompound backup = Util.make(new NbtCompound(), component::writeToNbt);
             try {
-                component.readFromNbt(this.data);
+                restoreData0(component, this.data);
             } catch (RuntimeException e) {
                 Requiem.LOGGER.error("[Requiem] Failed to deserialize data from " + this.dataKey.getId(), e);
-                component.readFromNbt(backup);
+                restoreData0(component, backup);
             }
             this.data = null;
             this.dataKey.sync(player);
         }
+    }
+
+    protected void restoreData0(C component, NbtCompound data) {
+        component.readFromNbt(data);
     }
 
     @Override
