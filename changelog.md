@@ -12,6 +12,7 @@ Updated to MC 1.17
 **Additions**
 - Added more Soul Status Effects:
     - Added the Emancipation status effect, letting you freely leave your current body
+    - Added the Penance status effect, preventing you from leaving your current body
     - Added the Reclamation status effect, letting you cure attrition over time
 - Added Tachylite blocks:
     - Added Tachylite, Chiseled Tachylite (+slabs, stairs and pillars), Polished Tachylite (+slabs, stairs and pillars), and Scraped Tachylite
@@ -19,12 +20,15 @@ Updated to MC 1.17
 - Added Tachylite Obelisks, a new player-made structure
 - Added Soul Vessel items:
     - Added the Empty Soul Vessel, a rare item that is used to obtain most of the new content
+        - Added the Creative Soul Vessel, a creative-only soul vessel that succeeds every time
     - Added Ichor Vessels, Soul Vessels filled with mysterious substances that act like potions
     - Added the Sealed Remnant Vessel, an item that acts as a replacement for the Cursed Opus Daemonium
 - Added the Soul Capture mechanic, letting you store a mob's soul into a Vessel thereby making the mob fit for possession
     - Filled Soul Vessels can be emptied to restore the mob's soul (provided the mob's shell is still alive)
 - Added Souls, small environmental entities that are spawned when you release one from a Vessel
     - yep, they use the same models as Illuminations' Will o' Wisp. What did you expect, they're souls.
+- Added player shells, static bodies of soulless players (previously available in Pandemonium)
+    - Contrary to previous pandemonium versions, they are now tracked across dimensions
 
 **Changes**
 - Some datapack things have changed
@@ -32,6 +36,8 @@ Updated to MC 1.17
 - Possessed pillagers can now ride ravagers
 - The backgrounds for soul status effects have changed to reflect that they are no longer attrition exclusives
 - The texture for Humanity enchantment books has been slightly tweaked, because why not
+- Whether possessed entities can sleep is now controlled by the `requiem:regular_sleepers` tag
+    - This tag includes villagers, foxes and cats by default
 
 **Mod Interaction**
 - Updated Origins compatibility
@@ -43,13 +49,15 @@ Updated to MC 1.17
 - Removed the Opus Daemonium and its derivatives
 - Moved the Wandering Spirit alternative remnant type to Pandemonium
 
+**Fixes**
+- Fixed possessed mobs sleeping standing up
+
 #### Pandemonium
 **Additions**
-- Added the Penance status effect, preventing you from leaving your current body
 - Added the Wandering Spirit alternative remnant type previously available in Requiem
 
 **Changes**
-- Player Shells are now tracked across dimensions
+- The "possess all mobs" config option is now off by default
 
 ------------------------------------------------------
 Version 1.7.13
