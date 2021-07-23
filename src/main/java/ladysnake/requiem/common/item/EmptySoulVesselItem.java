@@ -37,6 +37,7 @@ package ladysnake.requiem.common.item;
 import ladysnake.requiem.api.v1.event.requiem.SoulCaptureEvents;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
+import ladysnake.requiem.common.block.InertRunestoneBlock;
 import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.block.RunestoneBlock;
 import ladysnake.requiem.common.entity.RequiemEntityAttributes;
@@ -106,12 +107,14 @@ public class EmptySoulVesselItem extends Item {
                 if (filledVessel == null) return TypedActionResult.fail(stack);
 
                 world.setBlockState(pos, RequiemBlocks.TACHYLITE_RUNESTONE.getDefaultState(), Block.NOTIFY_LISTENERS | Block.NOTIFY_NEIGHBORS);
+                InertRunestoneBlock.tryActivateObelisk((ServerWorld) world, pos, false);
 
                 world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
+                return TypedActionResult.success(new ItemStack(filledVessel), false);
             }
 
-            return TypedActionResult.success(stack, world.isClient);
+            return TypedActionResult.success(stack, true);
         }
 
         return TypedActionResult.pass(stack);

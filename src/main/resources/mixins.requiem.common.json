@@ -18,6 +18,7 @@
     "data.EntityPredicateMixin",
     "data.ItemPredicateMixin",
     "data.LocationPredicateMixin",
+    "event.BlockStateMixin",
     "event.ItemEntityMixin",
     "event.PlayerManagerMixin",
     "humanity.EnderDragonEntityMixin",

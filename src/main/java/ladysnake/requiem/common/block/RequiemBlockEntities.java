@@ -41,6 +41,7 @@ import net.minecraft.util.registry.Registry;
 
 public final class RequiemBlockEntities {
     public static final BlockEntityType<RunestoneBlockEntity> RUNIC_OBSIDIAN = FabricBlockEntityTypeBuilder.create(RunestoneBlockEntity::new,
+        RequiemBlocks.TACHYLITE_RUNESTONE,
         RequiemBlocks.RUNIC_TACHYLITE_ATTRITION,
         RequiemBlocks.RUNIC_TACHYLITE_EMANCIPATION,
         RequiemBlocks.RUNIC_TACHYLITE_PENANCE,

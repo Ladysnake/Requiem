@@ -67,7 +67,7 @@ public class RequiemBlocks {
     public static final SlabBlock POLISHED_TACHYLITE_SLAB = makeSlab(POLISHED_TACHYLITE);
     public static final StairsBlock POLISHED_TACHYLITE_STAIRS = makeStairs(POLISHED_TACHYLITE);
     public static final Block SCRAPED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/scraped");
-    public static final Block TACHYLITE_RUNESTONE = makeVariant(TACHYLITE, "tachylite/runestone");
+    public static final Block TACHYLITE_RUNESTONE = new InertRunestoneBlock(AbstractBlock.Settings.copy(TACHYLITE));
     public static final RunestoneBlock RUNIC_TACHYLITE_ATTRITION = makeRunic("attrition", 3);
     public static final RunestoneBlock RUNIC_TACHYLITE_EMANCIPATION = makeRunic("emancipation", 1);
     public static final RunestoneBlock RUNIC_TACHYLITE_PENANCE = makeRunic("penance", 3);
@@ -107,11 +107,9 @@ public class RequiemBlocks {
 
     public static void init() {
         allBlocks.forEach(RequiemBlocks::register);
-        registerRunic(RUNIC_TACHYLITE_RECLAMATION, "tachylite/runic/reclamation");
-    }
-
-    public static <T extends Block & ObeliskRune> void registerRunic(T block, String name) {
-        register(block, name);
+        register(RUNIC_TACHYLITE_RECLAMATION, "tachylite/runic/reclamation");
+        register(TACHYLITE_RUNESTONE, "tachylite/runestone");
+        InertRunestoneBlock.registerCallbacks();
     }
 
     public static void register(Block block, String name) {

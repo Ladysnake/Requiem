@@ -32,40 +32,26 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.block;
+package ladysnake.requiem.mixin.common.event;
 
-import ladysnake.requiem.api.v1.block.ObeliskEffectRune;
-import net.minecraft.block.Block;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import ladysnake.requiem.api.v1.event.minecraft.BlockReplacedCallback;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Optional;
-import java.util.function.Supplier;
+@Mixin(AbstractBlock.AbstractBlockState.class)
+public abstract class BlockStateMixin {
+    @Shadow
+    protected abstract BlockState asBlockState();
 
-public class RunestoneBlock extends InertRunestoneBlock implements ObeliskEffectRune {
-    public static Optional<Block> getByEffect(StatusEffect effect) {
-        Identifier id = Registry.STATUS_EFFECT.getId(effect);
-        return Optional.ofNullable(id).flatMap(i ->
-            Registry.BLOCK.getOrEmpty(new Identifier(i.getNamespace(), "tachylite/runic/" + i.getPath())));
-    }
-
-    private final Supplier<StatusEffect> effect;
-    private final int maxLevel;
-
-    public RunestoneBlock(Settings settings, Supplier<StatusEffect> effect, int maxLevel) {
-        super(settings);
-        this.effect = effect;
-        this.maxLevel = maxLevel;
-    }
-
-    @Override
-    public StatusEffect getEffect() {
-        return effect.get();
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return this.maxLevel;
+    @Inject(method = "onStateReplaced", at = @At("RETURN"))
+    private void emitBlockPlaceEvent(World world, BlockPos pos, BlockState newState, boolean moved, CallbackInfo ci) {
+        BlockReplacedCallback.EVENT.invoker().onBlockPlaced(this.asBlockState(), world, pos, newState, moved);
     }
 }

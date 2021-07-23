@@ -1,6 +1,9 @@
 {
   "variants": {
-    "": {
+    "activated=false": {
+      "model": "requiem:block/tachylite/runestone"
+    },
+    "activated=true": {
       "model": "requiem:block/tachylite/runestone"
     }
   }

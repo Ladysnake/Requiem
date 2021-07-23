@@ -60,7 +60,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -78,7 +77,6 @@ public class RunestoneBlockEntity extends BlockEntity {
 
     private final Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
     private boolean requiresInit = true;
-    @Nullable BlockPos delegate;
     private int obeliskCoreWidth = 0;
     private int obeliskCoreHeight = 0;
 
@@ -91,9 +89,9 @@ public class RunestoneBlockEntity extends BlockEntity {
 
         // Salt the time to avoid checking every potential obelisk on the same tick
         if ((world.getTime() + pos.hashCode()) % 80L == 0L) {
-            RunestoneBlock.tryActivateObelisk((ServerWorld) world, pos);
+            InertRunestoneBlock.tryActivateObelisk((ServerWorld) world, pos, false);
 
-            if (!state.get(RunestoneBlock.ACTIVATED)) {
+            if (!state.get(InertRunestoneBlock.ACTIVATED)) {
                 world.removeBlockEntity(pos);
                 be.markRemoved();
                 return;
@@ -114,7 +112,6 @@ public class RunestoneBlockEntity extends BlockEntity {
         }
     }
 
-    @NotNull
     private static Vec3d getObeliskCenter(BlockPos origin, int coreWidth) {
         return new Vec3d(
             MathHelper.lerp(0.5, origin.getX(), origin.getX() + coreWidth - 1),
@@ -178,38 +175,26 @@ public class RunestoneBlockEntity extends BlockEntity {
         return false;
     }
 
-    private RunestoneBlockEntity getDelegate() {
-        if (this.world != null && this.delegate != null) {
-            BlockEntity blockEntity = this.world.getBlockEntity(this.delegate);
-            if (blockEntity instanceof RunestoneBlockEntity) {
-                return ((RunestoneBlockEntity) blockEntity).getDelegate();
-            }
-        }
-        return this;
-    }
-
     public int getRangeLevel() {
-        return this.getDelegate().obeliskCoreWidth;
+        return this.obeliskCoreWidth;
     }
 
     public int getPowerLevel() {
-        return this.getDelegate().obeliskCoreHeight;
+        return this.obeliskCoreHeight;
     }
 
     private void init(BlockState state) {
         assert this.world != null;
-        this.delegate = null;
         this.levels.clear();
         this.obeliskCoreWidth = 0;
         this.obeliskCoreHeight = 0;
 
-        tryMatchObeliskOrigin(this.world, this.pos).apply(
+        Optional.ofNullable(tryMatchObeliskOrigin(this.world, this.pos).origin).ifPresentOrElse(
             obeliskOrigin -> matchObelisk(world, obeliskOrigin).result().ifPresent(match -> {
                 this.obeliskCoreWidth = match.coreWidth();
                 this.obeliskCoreHeight = match.coreHeight();
                 this.levels.putAll(match.collectRunes());
             }),
-            delegate -> this.delegate = delegate,
             () -> this.world.getBlockTickScheduler().schedule(this.pos, state.getBlock(), 0)
         );
     }
@@ -218,7 +203,7 @@ public class RunestoneBlockEntity extends BlockEntity {
      * Finds the bottommost northwest corner of an obelisk.
      *
      * <p>If a {@link RunestoneBlockEntity} is found along the way, the search will be aborted
-     * and {@link #delegate} will be set.
+     * and a potential delegate will be set.
      * This method does not check that there is a valid obelisk, however it will abort and return
      * {@code null} if the core below this block entity does not conform
      * to expectations.
@@ -236,10 +221,7 @@ public class RunestoneBlockEntity extends BlockEntity {
                 BlockPos down = obeliskOrigin.down();
                 BlockState downState = world.getBlockState(down);
 
-                while (!downState.isIn(RequiemBlockTags.OBELISK_FRAME)) {
-                    if (!downState.isIn(RequiemBlockTags.OBELISK_CORE)) {
-                        return ObeliskOriginMatch.failure();
-                    }
+                while (downState.isIn(RequiemBlockTags.OBELISK_CORE)) {
                     obeliskOrigin = down;
                     down = obeliskOrigin.down();
 

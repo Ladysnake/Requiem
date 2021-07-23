@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.common.item;
 
+import ladysnake.requiem.common.block.InertRunestoneBlock;
 import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.block.RunestoneBlock;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
@@ -47,6 +48,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -143,12 +145,14 @@ public class IchorVesselItem extends Item {
                 if (runestone.isEmpty()) return TypedActionResult.fail(stack);
 
                 world.setBlockState(pos, runestone.get().getDefaultState(), Block.NOTIFY_LISTENERS | Block.NOTIFY_NEIGHBORS);
+                InertRunestoneBlock.tryActivateObelisk((ServerWorld) world, pos, false);
 
                 world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
+                return TypedActionResult.success(new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL), false);
             }
 
-            return TypedActionResult.success(stack, world.isClient);
+            return TypedActionResult.success(stack, true);
         }
 
         return TypedActionResult.pass(stack);
