@@ -36,10 +36,12 @@ package ladysnake.requiem.common.block;
 
 import ladysnake.requiem.api.v1.block.ObeliskEffectRune;
 import ladysnake.requiem.common.item.RequiemItems;
+import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -48,6 +50,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.text.LiteralText;
@@ -106,16 +109,29 @@ public class RunicObsidianBlock extends BlockWithEntity implements ObeliskEffect
     public static void tryActivateObelisk(ServerWorld world, BlockPos pos) {
         RunicObsidianBlockEntity.findObeliskOrigin(world, pos).flatMap(origin -> RunicObsidianBlockEntity.matchObelisk(world, origin).result())
             .ifPresentOrElse(
-                match -> toggleRune(world, pos, true),
-                () -> toggleRune(world, pos, false)
+                match -> {
+                    if (toggleRune(world, pos, true) && match.origin().equals(pos)) {
+                        BeaconBlockEntity.playSound(world, pos, SoundEvents.BLOCK_BEACON_POWER_SELECT);
+                    }
+                },
+                () -> {
+                    if (toggleRune(world, pos, false)) {
+                        if (world.getBlockEntity(pos) instanceof RunicObsidianBlockEntity be && be.delegate == null) {
+                            BeaconBlockEntity.playSound(world, pos, SoundEvents.BLOCK_BEACON_DEACTIVATE);
+                        }
+                        BeaconBlockEntity.playSound(world, pos, RequiemSoundEvents.ITEM_FILLED_VESSEL_USE);
+                    }
+                }
             );
     }
 
-    private static void toggleRune(ServerWorld world, BlockPos runePos, boolean activated) {
+    private static boolean toggleRune(ServerWorld world, BlockPos runePos, boolean activated) {
         BlockState blockState = world.getBlockState(runePos);
         if (blockState.get(ACTIVATED) != activated) {
             world.setBlockState(runePos, blockState.cycle(ACTIVATED), Block.NOTIFY_LISTENERS | Block.NOTIFY_NEIGHBORS);
+            return true;
         }
+        return false;
     }
 
     @Override

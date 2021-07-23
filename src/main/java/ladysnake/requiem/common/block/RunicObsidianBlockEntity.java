@@ -79,7 +79,7 @@ public class RunicObsidianBlockEntity extends BlockEntity {
 
     private final Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
     private boolean requiresInit = true;
-    private @Nullable BlockPos delegate;
+    @Nullable BlockPos delegate;
     private int obeliskWidth = 0;
     private int obeliskHeight = 0;
 

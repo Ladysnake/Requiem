@@ -66,6 +66,10 @@ public final class ObeliskMatch {
             .flatMap(positions -> StreamSupport.stream(positions.spliterator(), false));
     }
 
+    public BlockPos origin() {
+        return this.origin;
+    }
+
     public int coreWidth() {
         return this.coreWidth;
     }
