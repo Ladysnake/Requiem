@@ -71,7 +71,7 @@ import java.util.function.Consumer;
 public class RunicObsidianBlockEntity extends BlockEntity {
     public static final Direction[] OBELISK_SIDES = {Direction.SOUTH, Direction.EAST, Direction.NORTH, Direction.WEST};
     public static final int POWER_ATTEMPTS = 1;
-    public static final int MAX_OBELISK_WIDTH = 5;
+    public static final int MAX_OBELISK_WIDTH = 7;
     public static final DataResult<ObeliskMatch> INVALID_BASE = DataResult.error("Structure does not have a matching base");
     public static final DataResult<ObeliskMatch> INVALID_CORE = DataResult.error("Structure does not have a matching runic core");
     public static final DataResult<ObeliskMatch> INVALID_CAP = DataResult.error("Structure does not have a matching cap");
@@ -79,8 +79,8 @@ public class RunicObsidianBlockEntity extends BlockEntity {
     private final Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
     private boolean requiresInit = true;
     @Nullable BlockPos delegate;
-    private int obeliskWidth = 0;
-    private int obeliskHeight = 0;
+    private int obeliskCoreWidth = 0;
+    private int obeliskCoreHeight = 0;
 
     public RunicObsidianBlockEntity(BlockPos pos, BlockState state) {
         super(RequiemBlockEntities.RUNIC_OBSIDIAN, pos, state);
@@ -104,7 +104,7 @@ public class RunicObsidianBlockEntity extends BlockEntity {
                 be.requiresInit = false;
             }
 
-            int obeliskWidth = be.obeliskWidth;
+            int obeliskWidth = be.obeliskCoreWidth;
             Vec3d obeliskCenter = getObeliskCenter(pos, obeliskWidth);
 
             if (!be.levels.isEmpty() && be.findPowerSource((ServerWorld) world, obeliskCenter, obeliskWidth * 5)) {
@@ -115,11 +115,11 @@ public class RunicObsidianBlockEntity extends BlockEntity {
     }
 
     @NotNull
-    private static Vec3d getObeliskCenter(BlockPos pos, int obeliskWidth) {
+    private static Vec3d getObeliskCenter(BlockPos origin, int coreWidth) {
         return new Vec3d(
-            MathHelper.lerp(0.5, pos.getX(), pos.getX() + obeliskWidth - 1),
-            pos.getY() - 2,
-            MathHelper.lerp(0.5, pos.getZ(), pos.getZ() + obeliskWidth - 1)
+            MathHelper.lerp(0.5, origin.getX(), origin.getX() + coreWidth - 1),
+            origin.getY() - 2,
+            MathHelper.lerp(0.5, origin.getZ(), origin.getZ() + coreWidth - 1)
         );
     }
 
@@ -133,18 +133,18 @@ public class RunicObsidianBlockEntity extends BlockEntity {
     }
 
     private void applyPlayerEffects(World world, BlockPos pos) {
-        Preconditions.checkState(this.obeliskWidth > 0);
-        Preconditions.checkState(this.obeliskHeight > 0);
+        Preconditions.checkState(this.obeliskCoreWidth > 0);
+        Preconditions.checkState(this.obeliskCoreHeight > 0);
 
-        double range = this.obeliskWidth * 10 + 10;
-        Box box = (new Box(pos, pos.add(this.obeliskWidth - 1, obeliskHeight - 1, this.obeliskWidth - 1))).expand(range);
+        double range = this.obeliskCoreWidth * 10 + 10;
+        Box box = (new Box(pos, pos.add(this.obeliskCoreWidth - 1, obeliskCoreHeight - 1, this.obeliskCoreWidth - 1))).expand(range);
 
         List<PlayerEntity> players = world.getNonSpectatingEntities(PlayerEntity.class, box);
 
         for (PlayerEntity player : players) {
             if (RemnantComponent.get(player).getRemnantType().isDemon()) {
                 for (Object2IntMap.Entry<ObeliskRune> effect : this.levels.object2IntEntrySet()) {
-                    effect.getKey().applyEffect((ServerPlayerEntity) player, effect.getIntValue(), this.obeliskWidth);
+                    effect.getKey().applyEffect((ServerPlayerEntity) player, effect.getIntValue(), this.obeliskCoreWidth);
                 }
             }
         }
@@ -189,24 +189,24 @@ public class RunicObsidianBlockEntity extends BlockEntity {
     }
 
     public int getRangeLevel() {
-        return this.getDelegate().obeliskWidth;
+        return this.getDelegate().obeliskCoreWidth;
     }
 
     public int getPowerLevel() {
-        return this.getDelegate().obeliskHeight;
+        return this.getDelegate().obeliskCoreHeight;
     }
 
     private void init(BlockState state) {
         assert this.world != null;
         this.delegate = null;
         this.levels.clear();
-        this.obeliskWidth = 0;
-        this.obeliskHeight = 0;
+        this.obeliskCoreWidth = 0;
+        this.obeliskCoreHeight = 0;
 
         tryMatchObeliskOrigin(this.world, this.pos).apply(
             obeliskOrigin -> matchObelisk(world, obeliskOrigin).result().ifPresent(match -> {
-                this.obeliskWidth = match.coreWidth();
-                this.obeliskHeight = match.coreHeight();
+                this.obeliskCoreWidth = match.coreWidth();
+                this.obeliskCoreHeight = match.coreHeight();
                 this.levels.putAll(match.collectRunes());
             }),
             delegate -> this.delegate = delegate,
