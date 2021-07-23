@@ -44,9 +44,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.tag.RequiemBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.StairsBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.enums.StairShape;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -67,7 +65,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public class RunicObsidianBlockEntity extends BlockEntity {
     public static final Direction[] OBELISK_SIDES = {Direction.SOUTH, Direction.EAST, Direction.NORTH, Direction.WEST};
@@ -102,6 +99,7 @@ public class RunicObsidianBlockEntity extends BlockEntity {
 
             if (be.requiresInit) {
                 be.init(state);
+                be.requiresInit = false;
             }
 
             int obeliskWidth = be.obeliskWidth;
@@ -227,7 +225,6 @@ public class RunicObsidianBlockEntity extends BlockEntity {
      * @return an {@link Either} describing either a potential origin for an obelisk, or the position of a better-suited delegate
      */
     public static ObeliskOriginMatch tryMatchObeliskOrigin(World world, BlockPos pos) {
-        // getBlockEntity is faster than getBlockState, and we know that adjacent blocks must be of the same type for the structure to be valid
         if (!(world.getBlockState(pos.west()).isIn(RequiemBlockTags.OBELISK_CORE))) {
             if (!(world.getBlockState(pos.north()).isIn(RequiemBlockTags.OBELISK_CORE))) {
                 // we are at the northwest corner, now we go down until we find either the floor or a better candidate
@@ -277,33 +274,33 @@ public class RunicObsidianBlockEntity extends BlockEntity {
         return INVALID_BASE;
     }
 
-    private static ObeliskMatch matchObeliskCore(World world, BlockPos origin, int width) {
+    private static ObeliskMatch matchObeliskCore(World world, BlockPos origin, int sideLength) {
         // start at north-west corner
         BlockPos start = origin.add(-1, 0, -1);
         BlockPos.Mutable pos = start.mutableCopy();
         List<RuneSearchResult> layers = new ArrayList<>();
         int height;
 
-        for (height = 0; testCoreLayerFrame(world, start, pos, width, height); height++) {
-            RuneSearchResult result = findRune(world, origin, width, height);
+        for (height = 0; testCoreLayerFrame(world, start, pos, sideLength, height); height++) {
+            RuneSearchResult result = findRune(world, origin, sideLength, height);
             if (!result.valid()) break;
             layers.add(result);
         }
 
-        return new ObeliskMatch(origin, width, height, layers);
+        return new ObeliskMatch(origin, sideLength - 2, height, layers);
     }
 
-    private static boolean testCoreLayerFrame(World world, BlockPos start, BlockPos.Mutable pos, int width, int height) {
+    private static boolean testCoreLayerFrame(World world, BlockPos start, BlockPos.Mutable pos, int sideLength, int height) {
         return world.getBlockState(pos.set(start.getX(), start.getY() + height, start.getZ())).isIn(RequiemBlockTags.OBELISK_FRAME)
-            && world.getBlockState(pos.set(start.getX() + width + 1, start.getY() + height, start.getZ())).isIn(RequiemBlockTags.OBELISK_FRAME)
-            && world.getBlockState(pos.set(start.getX() + width + 1, start.getY() + height, start.getZ() + width + 1)).isIn(RequiemBlockTags.OBELISK_FRAME)
-            && world.getBlockState(pos.set(start.getX(), start.getY() + height, start.getZ() + width + 1)).isIn(RequiemBlockTags.OBELISK_FRAME);
+            && world.getBlockState(pos.set(start.getX() + sideLength - 1, start.getY() + height, start.getZ())).isIn(RequiemBlockTags.OBELISK_FRAME)
+            && world.getBlockState(pos.set(start.getX() + sideLength - 1, start.getY() + height, start.getZ() + sideLength - 1)).isIn(RequiemBlockTags.OBELISK_FRAME)
+            && world.getBlockState(pos.set(start.getX(), start.getY() + height, start.getZ() + sideLength - 1)).isIn(RequiemBlockTags.OBELISK_FRAME);
     }
 
     private static RuneSearchResult findRune(World world, BlockPos origin, int width, int height) {
         ObeliskRune rune = null;
         boolean first = true;
-        for (BlockPos corePos : iterateCoreBlocks(origin, width, height)) {
+        for (BlockPos corePos : iterateCoreBlocks(origin, width - 2, height)) {
             BlockState state = world.getBlockState(corePos);
             if (state.isIn(RequiemBlockTags.OBELISK_CORE)) {
                 @Nullable ObeliskRune foundRune = ObeliskRune.LOOKUP.find(world, corePos, state, null, null);
@@ -321,71 +318,37 @@ public class RunicObsidianBlockEntity extends BlockEntity {
     }
 
     private static int matchObeliskBase(BlockView world, BlockPos origin) {
-        int width = checkObeliskExtremity(world, origin.add(-1, -1, -1), RequiemBlockTags.OBELISK_BASE_EDGES, state -> state.isIn(RequiemBlockTags.OBELISK_BASE_CORNERS));
-
-        if (width > 0) {
-            for (BlockPos corePos : iterateCoreBlocks(origin, width, -1)) {
-                if (!world.getBlockState(corePos).isIn(RequiemBlockTags.OBELISK_BASE)) {
-                    // Not a valid base
-                    return 0;
-                }
-            }
-        }
-
-        return width;
+        return checkObeliskExtremity(world, origin.add(-1, -1, -1), RequiemBlockTags.OBELISK_BASE_EDGES);
     }
 
     private static boolean matchObeliskCap(BlockView world, BlockPos origin, int width, int height) {
-        if (checkObeliskExtremity(world, origin.add(-1, height, -1), RequiemBlockTags.OBELISK_CAP_EDGES, state -> {
-            if (state.isIn(RequiemBlockTags.OBELISK_CAP_CORNERS)) {
-                // Someone added full blocks to this list
-                if (!(state.getBlock() instanceof StairsBlock)) return true;
-
-                StairShape stairShape = state.get(StairsBlock.SHAPE);
-                return stairShape == StairShape.OUTER_LEFT || stairShape == StairShape.OUTER_RIGHT;
-            }
-            return false;
-        }) != width) {
-            return false;
-        }
-        for (BlockPos blockPos : iterateCoreBlocks(origin, width, height + 1)) {
-            if (!world.getBlockState(blockPos).isIn(RequiemBlockTags.OBELISK_CAP_TOP)) {
-                return false;
-            }
-        }
-        return true;
+        return checkObeliskExtremity(world, origin.add(-1, height, -1), RequiemBlockTags.OBELISK_CAP_EDGES) == width;
     }
 
-    static Iterable<BlockPos> iterateCoreBlocks(BlockPos origin, int width, int height) {
-        return BlockPos.iterate(origin.up(height), origin.add(width - 1, height, width - 1));
+    static Iterable<BlockPos> iterateCoreBlocks(BlockPos origin, int coreWidth, int height) {
+        return BlockPos.iterate(origin.up(height), origin.add(coreWidth - 1, height, coreWidth - 1));
     }
 
-    private static int checkObeliskExtremity(BlockView world, BlockPos origin, Tag<Block> edgeTag, Predicate<BlockState> corner) {
+    private static int checkObeliskExtremity(BlockView world, BlockPos origin, Tag<Block> edgeTag) {
         // start at bottom north-west corner
         BlockPos.Mutable pos = origin.mutableCopy();
         int lastSideLength = -1;
 
         for (Direction direction : OBELISK_SIDES) {
             int sideLength = 0;
-            while (true) {
-                BlockState state = world.getBlockState(pos);
-                if (corner.test(state)) {
-                    // Corner block can be start or end of side
-                    if (sideLength > 0) {
-                        break;
-                    }
-                } else if (state.isIn(edgeTag)) {
-                    sideLength++;
-                    if (sideLength > MAX_OBELISK_WIDTH) {
-                        // Too large: not a valid base
-                        return 0;
-                    }
-                } else {
-                    // Unexpected block: not a valid base
+
+            while (world.getBlockState(pos).isIn(edgeTag)) {
+                sideLength++;
+                if (sideLength > MAX_OBELISK_WIDTH) {
+                    // Too large: not a valid base
                     return 0;
                 }
                 pos.move(direction);
             }
+
+            // If we got here, we went one block too far: backtrack before turning
+            pos.move(direction.getOpposite());
+
             if (lastSideLength < 0) {
                 lastSideLength = sideLength;
             } else if (lastSideLength != sideLength) {

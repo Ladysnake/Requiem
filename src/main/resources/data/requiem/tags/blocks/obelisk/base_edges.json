@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "#requiem:obelisk/base",
     "requiem:tachylite/chiseled_stairs",
     "requiem:tachylite/polished_stairs"
   ]
