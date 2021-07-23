@@ -89,7 +89,6 @@ import ladysnake.requiem.common.entity.effect.ReclamationStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
-import ladysnake.requiem.common.remnant.PlayerBodyTracker;
 import ladysnake.requiem.common.remnant.PlayerSplitter;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
@@ -189,19 +188,20 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         });
         InitiateFractureCallback.EVENT.register(player -> {
             PossessionComponent possessionComponent = PossessionComponent.get(player);
+            MobEntity host = possessionComponent.getHost();
 
             boolean success;
 
             if (PlayerSplitter.split(player)) {
                 success = true;
-            } else if (possessionComponent.isPossessionOngoing()) {
+            } else if (host != null) {
                 Entity targetedEntity = RayHelper.getTargetedEntity(player);
                 if (targetedEntity instanceof PlayerShellEntity && Objects.equals(player.getUuid(), ((PlayerShellEntity) targetedEntity).getOwnerUuid())) {
                     possessionComponent.stopPossessing();
                     PlayerSplitter.merge((PlayerShellEntity) targetedEntity, player);
                     RequiemNetworking.sendBodyCureMessage(player);
                     success = true;
-                } else if (PlayerBodyTracker.get(player).getAnchor().isPresent()) {
+                } else if (RemnantComponent.get(player).canDissociateFrom(host)) {
                     possessionComponent.stopPossessing();
                     success = true;
                 } else {

@@ -40,7 +40,6 @@ import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -74,20 +73,8 @@ public final class ServerMessageHandling {
             AbilityType type = buf.readEnumConstant(AbilityType.class);
             server.execute(() -> MobAbilityController.get(player).useIndirect(type));
         });
-        ServerPlayNetworking.registerGlobalReceiver(ETHEREAL_FRACTURE, (server, player, handler, buf, responseSender) -> server.execute(() -> {
-            RemnantComponent remnantState = RemnantComponent.get(player);
-
-            if (remnantState.getRemnantType().isDemon()) {
-                PossessionComponent possessionComponent = PossessionComponent.get(player);
-                MobEntity possessedEntity = possessionComponent.getHost();
-                if (possessedEntity != null && RemnantComponent.get(player).canDissociateFrom(possessedEntity)) {
-                    possessionComponent.stopPossessing();
-                    RequiemNetworking.sendEtherealAnimationMessage(player);
-                } else {
-                    InitiateFractureCallback.EVENT.invoker().performFracture(player);
-                }
-            }
-        }));
+        ServerPlayNetworking.registerGlobalReceiver(ETHEREAL_FRACTURE, (server, player, handler, buf, responseSender) -> server.execute(() ->
+            InitiateFractureCallback.EVENT.invoker().performFracture(player)));
         ServerPlayNetworking.registerGlobalReceiver(DIALOGUE_ACTION, (server, player, handler, buf, responseSender) -> {
             Identifier action = buf.readIdentifier();
             server.execute(() -> DialogueTracker.get(player).handleAction(action));
