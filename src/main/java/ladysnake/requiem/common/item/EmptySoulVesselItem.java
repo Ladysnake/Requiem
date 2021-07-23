@@ -42,6 +42,7 @@ import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.particle.RequiemEntityParticleEffect;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.WandererRemnantState;
+import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.entity.EntityAiToggle;
 import ladysnake.requiem.core.record.EntityPositionClerk;
 import net.minecraft.entity.Entity;
@@ -144,16 +145,19 @@ public class EmptySoulVesselItem extends Item {
             NbtCompound useData = stack.getSubNbt(ACTIVE_DATA_TAG);
             if (useData != null) {
                 Entity target = serverWorld.getEntity(useData.getUuid("target"));
-                if (target instanceof LivingEntity && world.getRandom().nextFloat() < 0.75f) {
-                    serverWorld.spawnParticles(
-                        new RequiemEntityParticleEffect(RequiemParticleTypes.ENTITY_DUST, target.getId(), user.getId()),
-                        target.getX(), target.getBodyY(0.5), target.getZ(),
-                        world.random.nextInt(3) + 2,
-                        target.getWidth() * 0.2,
-                        target.getHeight() * 0.2,
-                        target.getWidth() * 0.2,
-                        1.0
-                    );
+                if (target instanceof LivingEntity) {
+                    if (world.getRandom().nextFloat() < 0.75f) {
+                        serverWorld.spawnParticles(
+                            new RequiemEntityParticleEffect(RequiemParticleTypes.ENTITY_DUST, target.getId(), user.getId()),
+                            target.getX(), target.getBodyY(0.5), target.getZ(),
+                            world.random.nextInt(3) + 2,
+                            target.getWidth() * 0.2,
+                            target.getHeight() * 0.2,
+                            target.getWidth() * 0.2,
+                            1.0
+                        );
+                    }
+                    target.playSound(RequiemSoundEvents.ITEM_EMPTY_VESSEL_USE, 1, 1);
                 }
             }
         }

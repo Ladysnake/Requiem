@@ -35,6 +35,7 @@
 package ladysnake.requiem.common.entity;
 
 import ladysnake.requiem.common.particle.WispTrailParticleEffect;
+import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -193,7 +194,7 @@ public class SoulEntity extends Entity {
                     this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.SOUL_SAND.getDefaultState()), this.getX() + random.nextGaussian() / 10, this.getY() + random.nextGaussian() / 10, this.getZ() + random.nextGaussian() / 10, random.nextGaussian() / 20, random.nextGaussian() / 20, random.nextGaussian() / 20);
                 }
                 this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.PARTICLE_SOUL_ESCAPE, SoundCategory.AMBIENT, 1.0f, 1.5f, true);
-                this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.BLOCK_SOUL_SAND_BREAK, SoundCategory.AMBIENT, 1.0f, 1.0f, true);
+                this.world.playSound(this.getX(), this.getY(), this.getZ(), RequiemSoundEvents.ENTITY_SOUL_DISINTEGRATES, SoundCategory.AMBIENT, 1.0f, 1.0f, true);
             }
             default -> super.handleStatus(status);
         }

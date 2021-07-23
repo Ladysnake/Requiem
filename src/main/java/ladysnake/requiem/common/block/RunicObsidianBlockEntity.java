@@ -41,6 +41,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import ladysnake.requiem.api.v1.block.ObeliskRune;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -49,6 +50,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.math.BlockPos;
@@ -107,6 +109,7 @@ public class RunicObsidianBlockEntity extends BlockEntity {
 
             if (!be.levels.isEmpty() && be.findPowerSource((ServerWorld) world, obeliskCenter, obeliskWidth * 5)) {
                 be.applyPlayerEffects(world, pos);
+                world.playSound(null, pos, RequiemSoundEvents.BLOCK_OBELISK_AMBIENT, SoundCategory.BLOCKS, 1.0F, 1.4F);
             }
         }
     }

@@ -41,7 +41,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -50,7 +49,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.text.LiteralText;
@@ -110,16 +109,18 @@ public class RunicObsidianBlock extends BlockWithEntity implements ObeliskEffect
         RunicObsidianBlockEntity.findObeliskOrigin(world, pos).flatMap(origin -> RunicObsidianBlockEntity.matchObelisk(world, origin).result())
             .ifPresentOrElse(
                 match -> {
-                    if (toggleRune(world, pos, true) && match.origin().equals(pos)) {
-                        BeaconBlockEntity.playSound(world, pos, SoundEvents.BLOCK_BEACON_POWER_SELECT);
+                    if (toggleRune(world, pos, true)) {
+                        if (match.origin().equals(pos)) {
+                            world.playSound(null, pos, RequiemSoundEvents.BLOCK_OBELISK_ACTIVATE, SoundCategory.BLOCKS, 1, 0.7F);
+                        }
+                        world.playSound(null, pos, RequiemSoundEvents.BLOCK_OBELISK_CHARGE, SoundCategory.BLOCKS, 1, 0.6f);
                     }
                 },
                 () -> {
                     if (toggleRune(world, pos, false)) {
                         if (world.getBlockEntity(pos) instanceof RunicObsidianBlockEntity be && be.delegate == null) {
-                            BeaconBlockEntity.playSound(world, pos, SoundEvents.BLOCK_BEACON_DEACTIVATE);
+                            world.playSound(null, pos, RequiemSoundEvents.BLOCK_OBELISK_DEACTIVATE, SoundCategory.BLOCKS, 1, 0.3f);
                         }
-                        BeaconBlockEntity.playSound(world, pos, RequiemSoundEvents.ITEM_FILLED_VESSEL_USE);
                     }
                 }
             );

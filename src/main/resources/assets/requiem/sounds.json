@@ -1,4 +1,34 @@
 {
+  "block.obelisk.activate": {
+    "subtitle": "requiem:subtitles.block.obelisk.activate",
+    "sounds": [
+      "block/end_portal/endportal"
+    ]
+  },
+  "block.obelisk.ambient": {
+    "subtitle": "requiem:subtitles.block.obelisk.ambient",
+    "sounds": [
+      {
+        "name": "ambient/nether/basalt_deltas/ambience",
+        "stream": true,
+        "volume": 0.3
+      }
+    ]
+  },
+  "block.obelisk.charge": {
+    "sounds": [
+      "block/respawn_anchor/charge1",
+      "block/respawn_anchor/charge2",
+      "block/respawn_anchor/charge3"
+    ]
+  },
+  "block.obelisk.deactivate": {
+    "subtitle": "requiem:subtitles.block.obelisk.deactivate",
+    "sounds": [
+      "block/respawn_anchor/deplete1",
+      "block/respawn_anchor/deplete2"
+    ]
+  },
   "effect.become.remnant": {
     "subtitle": "requiem:subtitles.effect.become.remnant",
     "sounds": [
@@ -44,6 +74,20 @@
         "volume": 1,
         "pitch": 0.85
       }
+    ]
+  },
+  "entity.soul.disintegrate": {
+    "subtitle": "requiem:subtitles.entity.soul.disintegrate",
+    "sounds": [
+      "block/soul_sand/break1",
+      "block/soul_sand/break2",
+      "block/soul_sand/break3",
+      "block/soul_sand/break4",
+      "block/soul_sand/break5",
+      "block/soul_sand/break6",
+      "block/soul_sand/break7",
+      "block/soul_sand/break8",
+      "block/soul_sand/break9"
     ]
   },
   "entity.soul.teleport": {
@@ -132,6 +176,52 @@
         "attenuation_distance": 12,
         "name": "enchant/soulspeed/soulspeed13",
         "volume": 0.25
+      }
+    ]
+  },
+  "item.empty_vessel.use": {
+    "subtitle": "requiem:subtitles.item.empty_vessel.use",
+    "sounds": [
+      {
+        "name": "block/soul_sand/step2",
+        "volume": 0.45
+      },
+      {
+        "name": "block/soul_sand/step3",
+        "volume": 0.45
+      },
+      {
+        "name": "block/soul_sand/step4",
+        "volume": 0.45
+      },
+      {
+        "name": "block/soul_sand/step5",
+        "volume": 0.45
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed1",
+        "volume": 0.55
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed2",
+        "volume": 0.55
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed3",
+        "volume": 0.55
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed4",
+        "volume": 0.55
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed5",
+        "volume": 0.55
       }
     ]
   },
