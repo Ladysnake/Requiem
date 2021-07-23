@@ -31,8 +31,6 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.CheckForNull;
-
 /**
  * A {@link PossessionComponent} handles a player's possession status.
  */
@@ -129,11 +127,16 @@ public interface PossessionComponent extends AutoSyncedComponent, ServerTickingC
      */
     void stopPossessing(boolean transfer);
 
+    @Deprecated
+    default @Nullable MobEntity getPossessedEntity() {
+        return getHost();
+    }
+
     /**
      * @return the entity that is currently being possessed, or {@code null} if no possession
      * is currently taking place
      */
-    @CheckForNull MobEntity getHost();
+    @Nullable MobEntity getHost();
 
     boolean isPossessionOngoing();
 
