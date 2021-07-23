@@ -54,6 +54,7 @@ import ladysnake.requiem.core.record.EntityPositionClerk;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -140,6 +141,8 @@ public final class PlayerSplitter {
         // override common data that may have been altered during this shell's existence
         performNbtCopy(computeCopyNbt(shell), soul);
         PlayerShellEvents.DATA_TRANSFER.invoker().transferData(shell, soul, true);
+
+        soul.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(soul.getId(), soul.getDataTracker(), true));
 
         shell.remove(Entity.RemovalReason.DISCARDED);
         if (mount != null) soul.startRiding(mount);
