@@ -68,7 +68,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class RunicObsidianBlockEntity extends BlockEntity {
+public class RunestoneBlockEntity extends BlockEntity {
     public static final Direction[] OBELISK_SIDES = {Direction.SOUTH, Direction.EAST, Direction.NORTH, Direction.WEST};
     public static final int POWER_ATTEMPTS = 1;
     public static final int MAX_OBELISK_WIDTH = 7;
@@ -82,18 +82,18 @@ public class RunicObsidianBlockEntity extends BlockEntity {
     private int obeliskCoreWidth = 0;
     private int obeliskCoreHeight = 0;
 
-    public RunicObsidianBlockEntity(BlockPos pos, BlockState state) {
+    public RunestoneBlockEntity(BlockPos pos, BlockState state) {
         super(RequiemBlockEntities.RUNIC_OBSIDIAN, pos, state);
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, RunicObsidianBlockEntity be) {
+    public static void tick(World world, BlockPos pos, BlockState state, RunestoneBlockEntity be) {
         if (world.isClient) return;
 
         // Salt the time to avoid checking every potential obelisk on the same tick
         if ((world.getTime() + pos.hashCode()) % 80L == 0L) {
-            RunicObsidianBlock.tryActivateObelisk((ServerWorld) world, pos);
+            RunestoneBlock.tryActivateObelisk((ServerWorld) world, pos);
 
-            if (!state.get(RunicObsidianBlock.ACTIVATED)) {
+            if (!state.get(RunestoneBlock.ACTIVATED)) {
                 world.removeBlockEntity(pos);
                 be.markRemoved();
                 return;
@@ -153,7 +153,7 @@ public class RunicObsidianBlockEntity extends BlockEntity {
     private boolean findPowerSource(ServerWorld world, Vec3d center, double range) {
         BlockPos.Mutable checked = new BlockPos.Mutable();
 
-        for (int attempt = 0; attempt < RunicObsidianBlockEntity.POWER_ATTEMPTS; attempt++) {
+        for (int attempt = 0; attempt < RunestoneBlockEntity.POWER_ATTEMPTS; attempt++) {
             // https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly/50746409#50746409
             double r = range * Math.sqrt(world.random.nextDouble());
             double theta = world.random.nextDouble() * 2 * Math.PI;
@@ -178,11 +178,11 @@ public class RunicObsidianBlockEntity extends BlockEntity {
         return false;
     }
 
-    private RunicObsidianBlockEntity getDelegate() {
+    private RunestoneBlockEntity getDelegate() {
         if (this.world != null && this.delegate != null) {
             BlockEntity blockEntity = this.world.getBlockEntity(this.delegate);
-            if (blockEntity instanceof RunicObsidianBlockEntity) {
-                return ((RunicObsidianBlockEntity) blockEntity).getDelegate();
+            if (blockEntity instanceof RunestoneBlockEntity) {
+                return ((RunestoneBlockEntity) blockEntity).getDelegate();
             }
         }
         return this;
@@ -217,7 +217,7 @@ public class RunicObsidianBlockEntity extends BlockEntity {
     /**
      * Finds the bottommost northwest corner of an obelisk.
      *
-     * <p>If a {@link RunicObsidianBlockEntity} is found along the way, the search will be aborted
+     * <p>If a {@link RunestoneBlockEntity} is found along the way, the search will be aborted
      * and {@link #delegate} will be set.
      * This method does not check that there is a valid obelisk, however it will abort and return
      * {@code null} if the core below this block entity does not conform
@@ -243,7 +243,7 @@ public class RunicObsidianBlockEntity extends BlockEntity {
                     obeliskOrigin = down;
                     down = obeliskOrigin.down();
 
-                    if (world.getBlockEntity(down) instanceof RunicObsidianBlockEntity) {
+                    if (world.getBlockEntity(down) instanceof RunestoneBlockEntity) {
                         // Found a better candidate in a lower core layer
                         return ObeliskOriginMatch.partial(down);
                     }

@@ -63,13 +63,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class RunicObsidianBlock extends BlockWithEntity implements ObeliskEffectRune {
+public class RunestoneBlock extends BlockWithEntity implements ObeliskEffectRune {
     public static final BooleanProperty ACTIVATED = BooleanProperty.of("activated");
 
     private final Supplier<StatusEffect> effect;
     private final int maxLevel;
 
-    public RunicObsidianBlock(Settings settings, Supplier<StatusEffect> effect, int maxLevel) {
+    public RunestoneBlock(Settings settings, Supplier<StatusEffect> effect, int maxLevel) {
         super(settings);
         this.effect = effect;
         this.maxLevel = maxLevel;
@@ -82,7 +82,7 @@ public class RunicObsidianBlock extends BlockWithEntity implements ObeliskEffect
             tryActivateObelisk(sw, pos);
         }
         if (player.getStackInHand(hand).getItem() == RequiemItems.DEBUG_ITEM) {
-            if (!world.isClient && world.getBlockEntity(pos) instanceof RunicObsidianBlockEntity core) {
+            if (!world.isClient && world.getBlockEntity(pos) instanceof RunestoneBlockEntity core) {
                 player.sendMessage(new LiteralText("Width: %d, Height: %d".formatted(core.getRangeLevel(), core.getPowerLevel())), true);
             }
             return ActionResult.SUCCESS;
@@ -106,7 +106,7 @@ public class RunicObsidianBlock extends BlockWithEntity implements ObeliskEffect
     }
 
     public static void tryActivateObelisk(ServerWorld world, BlockPos pos) {
-        RunicObsidianBlockEntity.findObeliskOrigin(world, pos).flatMap(origin -> RunicObsidianBlockEntity.matchObelisk(world, origin).result())
+        RunestoneBlockEntity.findObeliskOrigin(world, pos).flatMap(origin -> RunestoneBlockEntity.matchObelisk(world, origin).result())
             .ifPresentOrElse(
                 match -> {
                     if (toggleRune(world, pos, true)) {
@@ -118,7 +118,7 @@ public class RunicObsidianBlock extends BlockWithEntity implements ObeliskEffect
                 },
                 () -> {
                     if (toggleRune(world, pos, false)) {
-                        if (world.getBlockEntity(pos) instanceof RunicObsidianBlockEntity be && be.delegate == null) {
+                        if (world.getBlockEntity(pos) instanceof RunestoneBlockEntity be && be.delegate == null) {
                             world.playSound(null, pos, RequiemSoundEvents.BLOCK_OBELISK_DEACTIVATE, SoundCategory.BLOCKS, 1, 0.3f);
                         }
                     }
@@ -142,12 +142,12 @@ public class RunicObsidianBlock extends BlockWithEntity implements ObeliskEffect
 
     @Override
     public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return state.get(ACTIVATED) ? new RunicObsidianBlockEntity(pos, state) : null;
+        return state.get(ACTIVATED) ? new RunestoneBlockEntity(pos, state) : null;
     }
 
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, RequiemBlockEntities.RUNIC_OBSIDIAN, RunicObsidianBlockEntity::tick);
+        return checkType(type, RequiemBlockEntities.RUNIC_OBSIDIAN, RunestoneBlockEntity::tick);
     }
 
     @Override

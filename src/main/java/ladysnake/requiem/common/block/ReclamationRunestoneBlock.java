@@ -40,8 +40,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.function.Supplier;
 
-public class ReclamationRunicObsidianBlock extends RunicObsidianBlock {
-    public ReclamationRunicObsidianBlock(Settings settings, Supplier<StatusEffect> effect, int maxLevel) {
+public class ReclamationRunestoneBlock extends RunestoneBlock {
+    public ReclamationRunestoneBlock(Settings settings, Supplier<StatusEffect> effect, int maxLevel) {
         super(settings, effect, maxLevel);
     }
 

@@ -48,10 +48,10 @@ import java.util.stream.StreamSupport;
 public final class ObeliskMatch {
     private final int coreWidth;
     private final int coreHeight;
-    private final List<RunicObsidianBlockEntity.RuneSearchResult> layers;
+    private final List<RunestoneBlockEntity.RuneSearchResult> layers;
     private final BlockPos origin;
 
-    ObeliskMatch(BlockPos origin, int coreWidth, int coreHeight, List<RunicObsidianBlockEntity.RuneSearchResult> coreLayers) {
+    ObeliskMatch(BlockPos origin, int coreWidth, int coreHeight, List<RunestoneBlockEntity.RuneSearchResult> coreLayers) {
         this.origin = origin;
         Preconditions.checkArgument(coreHeight == coreLayers.size());
         this.coreWidth = coreWidth;
@@ -62,7 +62,7 @@ public final class ObeliskMatch {
     public Stream<BlockPos> runePositions() {
         return IntStream.range(0, this.coreHeight)
             .filter(height -> layers.get(height).rune() != null)
-            .mapToObj(height -> RunicObsidianBlockEntity.iterateCoreBlocks(this.origin, this.coreWidth, height))
+            .mapToObj(height -> RunestoneBlockEntity.iterateCoreBlocks(this.origin, this.coreWidth, height))
             .flatMap(positions -> StreamSupport.stream(positions.spliterator(), false));
     }
 
@@ -80,7 +80,7 @@ public final class ObeliskMatch {
 
     public Object2IntMap<ObeliskRune> collectRunes() {
         Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
-        for (RunicObsidianBlockEntity.RuneSearchResult result : this.layers) {
+        for (RunestoneBlockEntity.RuneSearchResult result : this.layers) {
             if (result.rune() != null && levels.getInt(result.rune()) <= result.rune().getMaxLevel()) {
                 levels.mergeInt(result.rune(), 1, Integer::sum);
             }

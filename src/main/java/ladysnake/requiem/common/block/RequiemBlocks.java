@@ -67,10 +67,11 @@ public class RequiemBlocks {
     public static final SlabBlock POLISHED_TACHYLITE_SLAB = makeSlab(POLISHED_TACHYLITE);
     public static final StairsBlock POLISHED_TACHYLITE_STAIRS = makeStairs(POLISHED_TACHYLITE);
     public static final Block SCRAPED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/scraped");
-    public static final RunicObsidianBlock RUNIC_TACHYLITE_ATTRITION = makeRunic("attrition", 3);
-    public static final RunicObsidianBlock RUNIC_TACHYLITE_EMANCIPATION = makeRunic("emancipation", 1);
-    public static final RunicObsidianBlock RUNIC_OBSIDIAN_PENANCE = makeRunic("penance", 3);
-    public static final ReclamationRunicObsidianBlock RUNIC_TACHYLITE_RECLAMATION = new ReclamationRunicObsidianBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), () -> RequiemStatusEffects.RECLAMATION, 1);
+    public static final Block TACHYLITE_RUNESTONE = makeVariant(TACHYLITE, "tachylite/runestone");
+    public static final RunestoneBlock RUNIC_TACHYLITE_ATTRITION = makeRunic("attrition", 3);
+    public static final RunestoneBlock RUNIC_TACHYLITE_EMANCIPATION = makeRunic("emancipation", 1);
+    public static final RunestoneBlock RUNIC_TACHYLITE_PENANCE = makeRunic("penance", 3);
+    public static final ReclamationRunestoneBlock RUNIC_TACHYLITE_RECLAMATION = new ReclamationRunestoneBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), () -> RequiemStatusEffects.RECLAMATION, 1);
 
     private static Block makeVariant(Block base, String id) {
         Block ret = new Block(AbstractBlock.Settings.copy(base));
@@ -90,8 +91,8 @@ public class RequiemBlocks {
         return make(() -> new SlabBlock(AbstractBlock.Settings.copy(base)), allBlocks.get(base) + "_slab");
     }
 
-    private static RunicObsidianBlock makeRunic(String effectName, int maxLevel) {
-        return make(() -> new RunicObsidianBlock(
+    private static RunestoneBlock makeRunic(String effectName, int maxLevel) {
+        return make(() -> new RunestoneBlock(
             AbstractBlock.Settings.copy(TACHYLITE),
             Suppliers.memoize(() -> Registry.STATUS_EFFECT.getOrEmpty(Requiem.id(effectName)).orElseThrow()),
             maxLevel
