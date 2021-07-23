@@ -44,7 +44,9 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
-import org.jetbrains.annotations.NotNull;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public final class RequiemItems {
     public static final DebugItem DEBUG_ITEM = new DebugItem(new Item.Settings());
@@ -56,13 +58,16 @@ public final class RequiemItems {
     public static final DemonSoulVesselItem SOUL_VESSEL = new DemonSoulVesselItem(RemnantTypes.MORTAL, Formatting.AQUA, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.cure");
     public static final DemonSoulVesselItem SEALED_REMNANT_VESSEL = new DemonSoulVesselItem(RemnantTypes.REMNANT, Formatting.RED, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.curse");
 
+    public static final Map<StatusEffect, IchorVesselItem> vesselsByEffect = new LinkedHashMap<>();
     public static final IchorVesselItem ICHOR_VESSEL_ATTRITION = makeIchorVessel(RequiemStatusEffects.ATTRITION);
     public static final IchorVesselItem ICHOR_VESSEL_EMANCIPATION = makeIchorVessel(RequiemStatusEffects.EMANCIPATION);
+    public static final IchorVesselItem ICHOR_VESSEL_PENANCE = makeIchorVessel(RequiemStatusEffects.PENANCE);
     public static final IchorVesselItem ICHOR_VESSEL_RECLAMATION = makeIchorVessel(RequiemStatusEffects.RECLAMATION);
 
-    @NotNull
-    private static IchorVesselItem makeIchorVessel(StatusEffect emancipation) {
-        return new IchorVesselItem(new Item.Settings().group(ItemGroup.BREWING).maxCount(1), new StatusEffectInstance(emancipation, 20*30));
+    private static IchorVesselItem makeIchorVessel(StatusEffect statusEffect) {
+        IchorVesselItem item = new IchorVesselItem(new Item.Settings().group(ItemGroup.BREWING).maxCount(1), new StatusEffectInstance(statusEffect, 20 * 30));
+        vesselsByEffect.put(statusEffect, item);
+        return item;
     }
 
     public static void init() {
@@ -76,7 +81,10 @@ public final class RequiemItems {
         registerItem(SEALED_REMNANT_VESSEL, "sealed_remnant_vessel");
         registerItem(ICHOR_VESSEL_ATTRITION, "ichor_vessel_attrition");
         registerItem(ICHOR_VESSEL_EMANCIPATION, "ichor_vessel_emancipation");
+        registerItem(ICHOR_VESSEL_PENANCE, "ichor_vessel_penance");
         registerItem(ICHOR_VESSEL_RECLAMATION, "ichor_vessel_reclamation");
+
+        RequiemDispenserBehaviors.registerDispenserBehaviors();
 
         FILLED_SOUL_VESSEL.registerCallbacks();
     }

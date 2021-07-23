@@ -34,22 +34,32 @@
  */
 package ladysnake.requiem.common.item;
 
+import ladysnake.requiem.common.block.RequiemBlocks;
+import ladysnake.requiem.common.block.RunestoneBlock;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.Block;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+
+import java.util.Optional;
 
 public class IchorVesselItem extends Item {
     private static final int MAX_USE_TIME = 32;
@@ -106,6 +116,42 @@ public class IchorVesselItem extends Item {
     @Override
     public SoundEvent getDrinkSound() {
         return RequiemSoundEvents.ITEM_EMPTY_VESSEL_USE;
+    }
+
+    @Override
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        World world = context.getWorld();
+        BlockPos pos = context.getBlockPos();
+        ItemStack stack = context.getStack();
+        PlayerEntity player = context.getPlayer();
+
+        TypedActionResult<ItemStack> result = useOnBlock(world, pos, stack);
+        if (result.getResult().isAccepted()) {
+            if (player != null) {
+                Item item = stack.getItem();
+                player.setStackInHand(context.getHand(), ItemUsage.exchangeStack(stack, player, result.getValue()));
+                player.incrementStat(Stats.USED.getOrCreateStat(item));
+            }
+        }
+        return result.getResult();
+    }
+
+    public TypedActionResult<ItemStack> useOnBlock(World world, BlockPos pos, ItemStack stack) {
+        if (world.getBlockState(pos).isOf(RequiemBlocks.TACHYLITE_RUNESTONE)) {
+            if (!world.isClient) {
+                Optional<Block> runestone = RunestoneBlock.getByEffect(this.effect.getEffectType());
+                if (runestone.isEmpty()) return TypedActionResult.fail(stack);
+
+                world.setBlockState(pos, runestone.get().getDefaultState(), Block.NOTIFY_LISTENERS | Block.NOTIFY_NEIGHBORS);
+
+                world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
+            }
+
+            return TypedActionResult.success(stack, world.isClient);
+        }
+
+        return TypedActionResult.pass(stack);
     }
 
     @Override

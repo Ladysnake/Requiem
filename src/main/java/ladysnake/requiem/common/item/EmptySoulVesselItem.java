@@ -37,6 +37,8 @@ package ladysnake.requiem.common.item;
 import ladysnake.requiem.api.v1.event.requiem.SoulCaptureEvents;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
+import ladysnake.requiem.common.block.RequiemBlocks;
+import ladysnake.requiem.common.block.RunestoneBlock;
 import ladysnake.requiem.common.entity.RequiemEntityAttributes;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.particle.RequiemEntityParticleEffect;
@@ -45,6 +47,7 @@ import ladysnake.requiem.common.remnant.WandererRemnantState;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.entity.EntityAiToggle;
 import ladysnake.requiem.core.record.EntityPositionClerk;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -54,15 +57,21 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class EmptySoulVesselItem extends Item {
 
@@ -70,6 +79,42 @@ public class EmptySoulVesselItem extends Item {
 
     public EmptySoulVesselItem(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        World world = context.getWorld();
+        BlockPos pos = context.getBlockPos();
+        ItemStack stack = context.getStack();
+        PlayerEntity player = context.getPlayer();
+
+        TypedActionResult<ItemStack> result = useOnBlock(world, pos, stack);
+        if (result.getResult().isAccepted()) {
+            if (player != null) {
+                Item item = stack.getItem();
+                player.setStackInHand(context.getHand(), ItemUsage.exchangeStack(stack, player, result.getValue()));
+                player.incrementStat(Stats.USED.getOrCreateStat(item));
+            }
+        }
+        return result.getResult();
+    }
+
+    public static TypedActionResult<ItemStack> useOnBlock(World world, BlockPos pos, ItemStack stack) {
+        if (world.getBlockState(pos).getBlock() instanceof RunestoneBlock runestone) {
+            if (!world.isClient) {
+                IchorVesselItem filledVessel = RequiemItems.vesselsByEffect.get(runestone.getEffect());
+                if (filledVessel == null) return TypedActionResult.fail(stack);
+
+                world.setBlockState(pos, RequiemBlocks.TACHYLITE_RUNESTONE.getDefaultState(), Block.NOTIFY_LISTENERS | Block.NOTIFY_NEIGHBORS);
+
+                world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
+            }
+
+            return TypedActionResult.success(stack, world.isClient);
+        }
+
+        return TypedActionResult.pass(stack);
     }
 
     @Override

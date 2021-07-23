@@ -55,16 +55,25 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Supplier;
 
 public class RunestoneBlock extends BlockWithEntity implements ObeliskEffectRune {
     public static final BooleanProperty ACTIVATED = BooleanProperty.of("activated");
+
+    public static Optional<Block> getByEffect(StatusEffect effect) {
+        Identifier id = Registry.STATUS_EFFECT.getId(effect);
+        return Optional.ofNullable(id).flatMap(i ->
+            Registry.BLOCK.getOrEmpty(new Identifier(i.getNamespace(), "tachylite/runic/" + i.getPath())));
+    }
 
     private final Supplier<StatusEffect> effect;
     private final int maxLevel;
