@@ -65,8 +65,8 @@ public class WillOWispModel extends Model {
 
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
-        ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild("skull", ModelPartBuilder.create()
+        ModelPartData root = modelData.getRoot();
+        root.addChild("skull", ModelPartBuilder.create()
                         .uv(0, 0)
                         .cuboid(-3.0F, -3.0F, -3.0F, 6.0F, 6.0F, 6.0F)
                         .uv(0, 16)

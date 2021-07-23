@@ -35,23 +35,22 @@
 package ladysnake.pandemonium.client.render.entity;
 
 import ladysnake.pandemonium.common.entity.MorticianEntity;
+import ladysnake.requiem.client.render.entity.model.MorticianEntityModel;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerHeldItemFeatureRenderer;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.render.entity.model.VillagerResemblingModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class MorticianEntityRenderer extends MobEntityRenderer<MorticianEntity, VillagerResemblingModel<MorticianEntity>> {
+public class MorticianEntityRenderer extends MobEntityRenderer<MorticianEntity, MorticianEntityModel<MorticianEntity>> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/wandering_trader.png");
 
     public MorticianEntityRenderer(EntityRendererFactory.Context ctx) {
-        super(ctx, new VillagerResemblingModel<>(ctx.getModelLoader().getModelPart(EntityModelLayers.VILLAGER)), 0.5F);
+        super(ctx, new MorticianEntityModel<>(ctx.getModelLoader().getModelPart(MorticianEntityModel.MODEL_LAYER)), 0.5F);
         this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader()));
         this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
     }

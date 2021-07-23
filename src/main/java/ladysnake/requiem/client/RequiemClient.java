@@ -46,6 +46,7 @@ import ladysnake.requiem.client.particle.wisp.WispTrailParticle;
 import ladysnake.requiem.client.render.entity.CuredPiglinEntityRenderer;
 import ladysnake.requiem.client.render.entity.CuredVillagerEntityRenderer;
 import ladysnake.requiem.client.render.entity.WillOWispEntityRenderer;
+import ladysnake.requiem.client.render.entity.model.MorticianEntityModel;
 import ladysnake.requiem.client.render.entity.model.WillOWispModel;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
@@ -173,6 +174,7 @@ public final class RequiemClient {
     }
 
     private void registerEntityModels() {
+        EntityModelLayerRegistry.registerModelLayer(MorticianEntityModel.MODEL_LAYER, MorticianEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(WillOWispModel.MODEL_LAYER, WillOWispModel::getTexturedModelData);
     }
 
