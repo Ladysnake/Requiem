@@ -43,6 +43,9 @@
   "requiem:commands.possession.start.success.self": "Started possessing %s",
   "requiem:commands.possession.stop.success.other": "%s stopped possessing %s",
   "requiem:commands.possession.stop.success.self": "Stopped possessing %s",
+  "requiem:commands.shell.split.fail.mortal": "Failed to split %s as they are Mortal",
+  "requiem:commands.shell.split.fail.vagrant": "Failed to split %s as they are already Vagrant",
+  "requiem:commands.shell.fail.not_shell": "%s is not a player shell",
 
   "requiem:block.minecraft.bed.invalid_body": "This form does not sleep",
 
@@ -93,6 +96,7 @@
   "requiem:tooltip.skeletal_efficiency": "Skeletal Efficiency",
   "requiem:tooltip.villager_base_food": "Village Food",
   "requiem:tooltip.villager_food": "Vegetarian",
+  "requiem:tooltip.witch_brew_base": "Witch's Brew Base",
   "requiem:tooltip.witch_food": "Witch Diet",
   "requiem:tooltip.zombie_food": "Zombie Snack",
 
@@ -133,6 +137,7 @@
 
   "effect.requiem.attrition": "Attrition",
   "effect.requiem.emancipation": "Emancipation",
+  "effect.requiem.penance": "Penance",
   "effect.requiem.reclamation": "Reclamation",
 
   "enchantment.requiem.humanity": "Humanity",
@@ -141,9 +146,11 @@
   "requiem:shulker.onboard": "Press %s or %s to dissociate",
   "requiem:dissociate_hint": "Press %s to dissociate",
   "requiem:possess.incompatible_body": "This body is incompatible with your soul",
+  "requiem:merge_hint": "Press %s to return",
 
   "entity.requiem.cured_piglin": "Pigman",
   "entity.requiem.cured_piglin_brute": "Pigman Brute",
+  "entity.requiem.player_shell": "Player Shell",
 
   "item.requiem.totem_of_skeletonization": "Totem of Skeletonization",
   "item.requiem.opus_daemonium": "Opus Daemonium",
