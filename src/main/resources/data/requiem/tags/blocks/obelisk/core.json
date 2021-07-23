@@ -1,10 +1,7 @@
 {
   "replace": false,
   "values": [
-    "minecraft:crying_obsidian",
-    "requiem:tachylite/runic/attrition",
-    "requiem:tachylite/runic/emancipation",
-    "requiem:tachylite/runic/penance",
-    "requiem:tachylite/runic/reclamation"
+    "#requiem:tachylite_runestones",
+    "minecraft:crying_obsidian"
   ]
 }

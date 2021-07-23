@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "requiem:tachylite/runic/attrition",
+    "requiem:tachylite/runic/emancipation",
+    "requiem:tachylite/runic/penance",
+    "requiem:tachylite/runic/reclamation"
+  ]
+}

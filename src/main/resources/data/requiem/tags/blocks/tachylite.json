@@ -1,10 +1,14 @@
 {
   "replace": false,
   "values": [
+    "#requiem:tachylite_runestones",
     "requiem:tachylite/chiseled",
     "requiem:tachylite/chiseled_pillar",
+    "requiem:tachylite/chiseled_slab",
+    "requiem:tachylite/chiseled_stairs",
     "requiem:tachylite/polished",
     "requiem:tachylite/polished_pillar",
+    "requiem:tachylite/polished_stairs",
     "requiem:tachylite/scraped",
     "requiem:tachylite/tachylite"
   ]
