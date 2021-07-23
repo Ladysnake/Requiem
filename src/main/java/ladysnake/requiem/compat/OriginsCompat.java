@@ -108,6 +108,7 @@ public final class OriginsCompat {
                     originComponent.setOrigin(originLayer, vagrant);
                 }
             }
+            OriginComponent.sync(player);
         }
     }
 
@@ -122,8 +123,8 @@ public final class OriginsCompat {
                     APOLI_HOLDER_KEY.get(player).storeData(player);
                     applyVagrantOrigin(player);
                 } else {
-                    ORIGIN_HOLDER_KEY.get(player).restoreData(player);
                     APOLI_HOLDER_KEY.get(player).restoreData(player);
+                    ORIGIN_HOLDER_KEY.get(player).restoreData(player);
                 }
             }
         });
