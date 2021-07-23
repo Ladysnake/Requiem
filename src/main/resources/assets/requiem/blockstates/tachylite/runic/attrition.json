@@ -4,7 +4,7 @@
       "model": "requiem:block/tachylite/runic/attrition"
     },
     "activated=true": {
-      "model": "requiem:block/tachylite/runic/attrition_on"
+      "model": "requiem:block/tachylite/runic/activated/attrition"
     }
   }
 }

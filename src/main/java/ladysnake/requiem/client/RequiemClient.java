@@ -36,6 +36,8 @@ package ladysnake.requiem.client;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
+import ladysnake.requiem.client.model.lib.SimpleBakedModel;
+import ladysnake.requiem.client.model.lib.SimpleUnbakedModel;
 import ladysnake.requiem.client.network.ClientMessageHandler;
 import ladysnake.requiem.client.particle.CureParticle;
 import ladysnake.requiem.client.particle.EntityDustParticle;
@@ -48,15 +50,23 @@ import ladysnake.requiem.client.render.entity.model.WillOWispModel;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
+import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
+import net.fabricmc.fabric.api.renderer.v1.model.ModelHelper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.particle.PortalParticle;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
+
+import java.util.List;
 
 public final class RequiemClient {
 
@@ -112,6 +122,7 @@ public final class RequiemClient {
     }
 
     private void init() {
+        this.registerBlockModels();
         this.registerEntityModels();
         this.registerEntityRenderers();
         this.registerModelPredicates();
@@ -119,6 +130,30 @@ public final class RequiemClient {
         this.registerSprites();
         this.initListeners();
         FractureKeyBinding.init();
+    }
+
+    private void registerBlockModels() {
+        ModelLoadingRegistry.INSTANCE.registerResourceProvider(resourceManager -> (modelId, context) -> {
+            if (modelId.getNamespace().equals(Requiem.MOD_ID)) {
+                if (modelId.getPath().startsWith("block/tachylite/runic/activated/")) {
+                    String effect = modelId.getPath().substring(modelId.getPath().lastIndexOf('/') + 1);
+                    String runestoneSpriteId = "requiem:block/%s_runestone".formatted(effect);
+                    String runeSpriteId = "requiem:block/%s_rune".formatted(effect);
+                    return new SimpleUnbakedModel(mb -> {
+                        Sprite runestoneSprite = mb.getSprite(runestoneSpriteId);
+                        Sprite runeSprite = mb.getSprite(runeSpriteId);
+                        mb.box(mb.finder().find(),
+                            -1, runestoneSprite,
+                            0, 0, 0, 1, 1, 1);
+                        mb.box(mb.finder().emissive(0, true).disableAo(0, true).disableDiffuse(0, true).blendMode(0, BlendMode.CUTOUT).find(),
+                            -1, runeSprite,
+                            0, 0, 0, 1, 1, 1);
+                        return new SimpleBakedModel(mb.builder.build(), ModelHelper.MODEL_TRANSFORM_BLOCK, runestoneSprite, null);
+                    }, List.of(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(runestoneSpriteId)), new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(runeSpriteId))));
+                }
+            }
+            return null;
+        });
     }
 
     private void registerParticleFactories() {

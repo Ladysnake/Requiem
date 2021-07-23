@@ -104,6 +104,7 @@ allprojects {
 
         include '**/*.java'
         exclude '**/package-info.java'
+        exclude '**/model/lib/**.java'
 
         //export variables
         ext {

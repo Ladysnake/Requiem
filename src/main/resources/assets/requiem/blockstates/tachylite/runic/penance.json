@@ -4,7 +4,7 @@
       "model": "requiem:block/tachylite/runic/penance"
     },
     "activated=true": {
-      "model": "requiem:block/tachylite/runic/penance_on"
+      "model": "requiem:block/tachylite/runic/activated/penance"
     }
   }
 }

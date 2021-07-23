@@ -4,7 +4,7 @@
       "model": "requiem:block/tachylite/runic/reclamation"
     },
     "activated=true": {
-      "model": "requiem:block/tachylite/runic/reclamation_on"
+      "model": "requiem:block/tachylite/runic/activated/reclamation"
     }
   }
 }

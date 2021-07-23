@@ -4,7 +4,7 @@
       "model": "requiem:block/tachylite/runic/emancipation"
     },
     "activated=true": {
-      "model": "requiem:block/tachylite/runic/emancipation_on"
+      "model": "requiem:block/tachylite/runic/activated/emancipation"
     }
   }
 }
