@@ -59,6 +59,7 @@ import ladysnake.requiem.common.entity.WololoComponent;
 import ladysnake.requiem.common.entity.cure.CurableZombifiedPiglinComponent;
 import ladysnake.requiem.common.entity.cure.DelegatingCurableEntityComponent;
 import ladysnake.requiem.common.entity.cure.SimpleCurableEntityComponent;
+import ladysnake.requiem.common.entity.effect.PenanceComponent;
 import ladysnake.requiem.common.entity.effect.StatusEffectReapplicatorImpl;
 import ladysnake.requiem.common.gamerule.RequiemSyncedGamerules;
 import ladysnake.requiem.common.possession.LootingPossessedData;
@@ -104,6 +105,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerFor(LivingEntity.class, EntityAiToggle.KEY, EntityAiToggle::new);
         registry.registerFor(LivingEntity.class, EntityPositionClerk.KEY, EntityPositionClerk::new);
         registry.registerForPlayers(PlayerBodyTracker.KEY, PlayerBodyTracker::new, RespawnCopyStrategy.ALWAYS_COPY);
+        registry.registerForPlayers(PenanceComponent.KEY, PenanceComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
     }
 
     @Override

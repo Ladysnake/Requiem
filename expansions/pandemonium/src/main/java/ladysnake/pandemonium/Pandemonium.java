@@ -34,9 +34,6 @@
  */
 package ladysnake.pandemonium;
 
-import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
-import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
-import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import ladysnake.pandemonium.common.PandemoniumConfig;
 import ladysnake.pandemonium.common.block.PandemoniumBlocks;
 import ladysnake.pandemonium.common.entity.PandemoniumEntities;
@@ -44,17 +41,13 @@ import ladysnake.pandemonium.common.entity.effect.PandemoniumStatusEffects;
 import ladysnake.pandemonium.common.item.PandemoniumItems;
 import ladysnake.pandemonium.common.network.ServerMessageHandling;
 import ladysnake.requiem.api.v1.RequiemApi;
-import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
-import ladysnake.requiem.common.entity.effect.PenanceComponent;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 
 @CalledThroughReflection
-public final class Pandemonium implements ModInitializer, EntityComponentInitializer {
+public final class Pandemonium implements ModInitializer {
     public static final String MOD_ID = "pandemonium";
-    @AccessedThroughReflection
-    public static final Pandemonium INSTANCE = new Pandemonium();
 
     public static Identifier id(String path) {
         return new Identifier(MOD_ID, path);
@@ -69,14 +62,5 @@ public final class Pandemonium implements ModInitializer, EntityComponentInitial
         PandemoniumStatusEffects.init();
         ServerMessageHandling.init();
         RequiemApi.registerPlugin(new PandemoniumRequiemPlugin());
-    }
-
-    @Override
-    public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-        registry.registerForPlayers(PenanceComponent.KEY, PenanceComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
-    }
-
-    private Pandemonium() {
-        super();
     }
 }

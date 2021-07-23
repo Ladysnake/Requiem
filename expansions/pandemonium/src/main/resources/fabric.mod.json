@@ -8,10 +8,7 @@
       "ladysnake.pandemonium.client.PandemoniumClient"
     ],
     "main": [
-      "ladysnake.pandemonium.Pandemonium::INSTANCE"
-    ],
-    "cardinal-components-entity": [
-      "ladysnake.pandemonium.Pandemonium::INSTANCE"
+      "ladysnake.pandemonium.Pandemonium"
     ],
     "modmenu": [
       "ladysnake.pandemonium.compat.PandemoniumModMenuCompat"
