@@ -1,14 +1,16 @@
 /*
 Source: https://www.shadertoy.com/view/4s2GRR
 */
-#version 120
+#version 130
 uniform sampler2D DiffuseSampler;
 uniform vec2 OutSize;
 uniform float Slider;
 
 #define EPSILON 0.000011
 
-varying vec2 texCoord;
+in vec2 texCoord;
+
+out vec4 fragColor;
 
 void main(void)
 {
@@ -42,7 +44,7 @@ void main(void)
 
   //Second part of cheat
   //for round effect, not elliptical
-  vec3 col = texture2D(DiffuseSampler, vec2(uv.x, uv.y * prop)).rgb;
+  vec3 col = texture(DiffuseSampler, vec2(uv.x, uv.y * prop)).rgb;
 
-  gl_FragColor = vec4(col, 1.0);
+  fragColor = vec4(col, 1.0);
 }

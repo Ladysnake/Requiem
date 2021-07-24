@@ -1,7 +1,7 @@
 // Adapted from a shader by @patriciogv
 // https://thebookofshaders.com/edit.php#11/circleWave-noise.frag
 
-#version 120
+#version 130
 
 uniform sampler2D DiffuseSampler;
 
@@ -15,7 +15,9 @@ uniform float RaysIntensity;
 uniform float Zoom;
 uniform vec3 OverlayColor;
 
-varying vec2 texCoord;
+in vec2 texCoord;
+
+out vec4 fragColor;
 
 vec2 random2(vec2 st){
   st = vec2( dot(st,vec2(127.1,311.7)),
@@ -57,12 +59,12 @@ float streaks(vec2 st, float a, float radius) {
 
 void main() {
   vec2 st = gl_FragCoord.xy / OutSize.xy;
-  vec3 tex = texture2D(DiffuseSampler, st).rgb;
+  vec3 tex = texture(DiffuseSampler, st).rgb;
   st = (vec2(0.5)-st) * Zoom;
   float a = atan(st.y, st.x);
   float value = shape(st, a, 0.8);
   vec3 color = mix(tex, OverlayColor, value * SolidIntensity);
   color += streaks(st, a, 0.8) * value * RaysIntensity;
 
-  gl_FragColor = vec4(color, 1.0 );
+  fragColor = vec4(color, 1.0);
 }
