@@ -40,6 +40,9 @@ import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.movement.PlayerMovementAlterer;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
@@ -50,6 +53,8 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class ObeliskSoulEntity extends SoulEntity {
+    public static final TrackedData<Boolean> PHASING = DataTracker.registerData(ObeliskSoulEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
     private @Nullable BlockPos targetPos;
     private int ticksAgainstWall = 0;
 
@@ -64,7 +69,23 @@ public class ObeliskSoulEntity extends SoulEntity {
     }
 
     @Override
+    protected void initDataTracker() {
+        super.initDataTracker();
+        this.getDataTracker().startTracking(PHASING, false);
+    }
+
+    public boolean isPhasing() {
+        return this.getDataTracker().get(PHASING);
+    }
+
+    public void setPhasing(boolean phasing) {
+        this.getDataTracker().set(PHASING, phasing);
+    }
+
+    @Override
     public void tick() {
+        this.noClip = this.isPhasing();
+
         if (!world.isClient) {
             if (this.targetPos != null && this.isTargetStale(targetPos)) {
                 this.setMaxAge(60);
@@ -74,15 +95,15 @@ public class ObeliskSoulEntity extends SoulEntity {
                 this.world.sendEntityStatus(this, SOUL_EXPIRED_STATUS);
                 this.discard();
             }
-        }
-        if (this.prevX == this.getX() && this.prevY == this.getY() && this.prevZ == this.getZ()) {
-            this.ticksAgainstWall++;
-            if (this.ticksAgainstWall > PlayerMovementAlterer.TICKS_BEFORE_PHASING) {
-                this.noClip = true;
+            if (this.prevX == this.getX() && this.prevY == this.getY() && this.prevZ == this.getZ()) {
+                this.ticksAgainstWall++;
+                if (this.ticksAgainstWall > PlayerMovementAlterer.TICKS_BEFORE_PHASING) {
+                    this.setPhasing(true);
+                }
+            } else if (this.world.isSpaceEmpty(this)) {
+                this.setPhasing(false);
+                this.ticksAgainstWall = 0;
             }
-        } else if (this.world.isSpaceEmpty(this)) {
-            this.noClip = false;
-            this.ticksAgainstWall = 0;
         }
         super.tick();
     }
@@ -114,7 +135,7 @@ public class ObeliskSoulEntity extends SoulEntity {
 
     @Override
     protected float getSpeedModifier() {
-        return (this.noClip ? 0.4f : 1) * super.getSpeedModifier();
+        return (this.isPhasing() ? 0.4f : 1) * super.getSpeedModifier();
     }
 
     @Override
