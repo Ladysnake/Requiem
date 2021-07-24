@@ -1,4 +1,5 @@
 {
   "transform": true,
-  "fragmentSource": "requiem:shaders/material/soul.frag"
+  "fragmentSource": "requiem:shaders/material/soul.frag",
+  "vertexSource": "canvas:shaders/material/default.vert"
 }
