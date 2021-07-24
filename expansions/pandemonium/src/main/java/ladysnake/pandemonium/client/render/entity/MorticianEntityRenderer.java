@@ -35,6 +35,7 @@
 package ladysnake.pandemonium.client.render.entity;
 
 import ladysnake.pandemonium.common.entity.MorticianEntity;
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.client.render.entity.model.MorticianEntityModel;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -47,7 +48,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class MorticianEntityRenderer extends MobEntityRenderer<MorticianEntity, MorticianEntityModel<MorticianEntity>> {
-    private static final Identifier TEXTURE = new Identifier("textures/entity/wandering_trader.png");
+    private static final Identifier TEXTURE = Requiem.id("textures/entity/mortician.png");
 
     public MorticianEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx, new MorticianEntityModel<>(ctx.getModelLoader().getModelPart(MorticianEntityModel.MODEL_LAYER)), 0.5F);
