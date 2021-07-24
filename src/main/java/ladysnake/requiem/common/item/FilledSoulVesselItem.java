@@ -93,6 +93,8 @@ public class FilledSoulVesselItem extends Item {
                 .orElse(null));
             releasedSoul.setPosition(user.getX(), user.getBodyY(0.8D), user.getZ());
             releasedSoul.setVelocity(user.getRotationVector().normalize().multiply(0.15));
+            releasedSoul.setYaw(user.getYaw());
+            releasedSoul.setPitch(user.getPitch());
             world.spawnEntity(releasedSoul);
             ItemStack result = new ItemStack(this.emptySoulVessel);
             return TypedActionResult.success(ItemUsage.exchangeStack(stack, user, result));
