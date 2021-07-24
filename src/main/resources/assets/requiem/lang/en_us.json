@@ -72,6 +72,8 @@
   "requiem:subtitles.block.obelisk.activate": "Obelisk forms",
   "requiem:subtitles.block.obelisk.ambient": "Obelisk whispers",
   "requiem:subtitles.block.obelisk.deactivate": "Obelisk collapses",
+  "requiem:subtitles.block.runestone.carve": "Runestone carved",
+  "requiem:subtitles.block.runestone.clear": "Runestone cleared",
   "requiem:subtitles.effect.become.mortal": "Becoming mortal",
   "requiem:subtitles.effect.become.remnant": "Acquiring a demon",
   "requiem:subtitles.effect.dissociating": "Player dissociating",

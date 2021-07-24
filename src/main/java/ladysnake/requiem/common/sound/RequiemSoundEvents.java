@@ -44,6 +44,8 @@ public final class RequiemSoundEvents {
     public static final SoundEvent BLOCK_OBELISK_AMBIENT = register("block.obelisk.ambient");
     public static final SoundEvent BLOCK_OBELISK_CHARGE = register("block.obelisk.charge");
     public static final SoundEvent BLOCK_OBELISK_DEACTIVATE = register("block.obelisk.deactivate");
+    public static final SoundEvent BLOCK_RUNESTONE_CARVE = register("block.runestone.carve");
+    public static final SoundEvent BLOCK_RUNESTONE_CLEAR = register("block.runestone.clear");
     public static final SoundEvent EFFECT_BECOME_MORTAL = register("effect.become.mortal");
     public static final SoundEvent EFFECT_BECOME_REMNANT = register("effect.become.remnant");
     public static final SoundEvent EFFECT_DISSOCIATE = register("effect.dissociate");

@@ -51,7 +51,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -147,7 +146,7 @@ public class IchorVesselItem extends Item {
                 world.setBlockState(pos, runestone.get().getDefaultState(), Block.NOTIFY_LISTENERS | Block.NOTIFY_NEIGHBORS);
                 InertRunestoneBlock.tryActivateObelisk((ServerWorld) world, pos, false);
 
-                world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                world.playSound(null, pos, RequiemSoundEvents.BLOCK_RUNESTONE_CARVE, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
                 return TypedActionResult.success(new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL), false);
             }

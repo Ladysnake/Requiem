@@ -29,6 +29,56 @@
       "block/respawn_anchor/deplete2"
     ]
   },
+  "block.runestone.carve": {
+    "subtitle": "requiem:subtitles.block.runestone.carve",
+    "sounds": [
+      {
+        "name": "ui/stonecutter/cut1",
+        "volume": 1,
+        "pitch": 0.8
+      },
+      {
+        "name": "ui/stonecutter/cut1",
+        "volume": 1,
+        "pitch": 0.72
+      },
+      {
+        "name": "ui/stonecutter/cut2",
+        "volume": 1,
+        "pitch": 0.8
+      },
+      {
+        "name": "ui/stonecutter/cut2",
+        "volume": 1,
+        "pitch": 0.72
+      }
+    ]
+  },
+  "block.runestone.clear": {
+    "subtitle": "requiem:subtitles.block.runestone.clear",
+    "sounds": [
+      {
+        "name": "ui/stonecutter/cut1",
+        "volume": 1,
+        "pitch": 1.42
+      },
+      {
+        "name": "ui/stonecutter/cut1",
+        "volume": 1,
+        "pitch": 1.3
+      },
+      {
+        "name": "ui/stonecutter/cut2",
+        "volume": 1,
+        "pitch": 1.42
+      },
+      {
+        "name": "ui/stonecutter/cut2",
+        "volume": 1,
+        "pitch": 1.3
+      }
+    ]
+  },
   "effect.become.remnant": {
     "subtitle": "requiem:subtitles.effect.become.remnant",
     "sounds": [

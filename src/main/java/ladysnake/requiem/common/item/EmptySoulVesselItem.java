@@ -63,7 +63,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -109,7 +108,7 @@ public class EmptySoulVesselItem extends Item {
                 world.setBlockState(pos, RequiemBlocks.TACHYLITE_RUNESTONE.getDefaultState(), Block.NOTIFY_LISTENERS | Block.NOTIFY_NEIGHBORS);
                 InertRunestoneBlock.tryActivateObelisk((ServerWorld) world, pos, false);
 
-                world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                world.playSound(null, pos, RequiemSoundEvents.BLOCK_RUNESTONE_CLEAR, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
                 return TypedActionResult.success(new ItemStack(filledVessel), false);
             }
