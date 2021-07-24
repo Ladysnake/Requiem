@@ -50,6 +50,7 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -70,6 +71,7 @@ public class SoulEntity extends Entity {
     protected int maxAge;
     protected int targetChangeCooldown = 0;
     protected int timeInSolid = -1;
+    private int targetChanges = 0;
 
     public SoulEntity(EntityType<? extends SoulEntity> type, World world) {
         super(type, world);
@@ -194,13 +196,19 @@ public class SoulEntity extends Entity {
                     this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.SOUL_SAND.getDefaultState()), this.getX() + random.nextGaussian() / 10, this.getY() + random.nextGaussian() / 10, this.getZ() + random.nextGaussian() / 10, random.nextGaussian() / 20, random.nextGaussian() / 20, random.nextGaussian() / 20);
                 }
                 this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.PARTICLE_SOUL_ESCAPE, SoundCategory.AMBIENT, 1.0f, 1.5f, true);
-                this.world.playSound(this.getX(), this.getY(), this.getZ(), RequiemSoundEvents.ENTITY_SOUL_DISINTEGRATES, SoundCategory.AMBIENT, 1.0f, 1.0f, true);
+                this.world.playSound(this.getX(), this.getY(), this.getZ(), this.getDisintegrationSound(), SoundCategory.AMBIENT, 1.0f, 1.0f, true);
             }
             default -> super.handleStatus(status);
         }
     }
 
+    protected SoundEvent getDisintegrationSound() {
+        return RequiemSoundEvents.ENTITY_SOUL_DISINTEGRATES;
+    }
+
     protected void updateTarget() {
+        this.targetChanges++;
+
         Vec3d newTarget = this.selectNextTarget();
         this.setTarget(newTarget);
 
@@ -241,5 +249,20 @@ public class SoulEntity extends Entity {
     @Override
     public Packet<?> createSpawnPacket() {
         return new EntitySpawnS2CPacket(this);
+    }
+
+    protected Vec3d selectPosTowards(Vec3d targetPos) {
+        double distanceToTarget = this.getPos().distanceTo(targetPos);
+        final double maxStepDistance = 15.0;
+        double scuffedDistanceToTarget = Math.min(maxStepDistance, distanceToTarget);
+        Vec3d towardsTarget = targetPos.subtract(this.getPos()).normalize().multiply(scuffedDistanceToTarget);
+        assert targetChanges > 0;
+        double fuzzyFactor = (scuffedDistanceToTarget * 1.5) / this.targetChanges;
+        Vec3d fuzzyTarget = towardsTarget.multiply(
+            Math.abs(1 + random.nextGaussian() * fuzzyFactor),
+            Math.abs(1 + random.nextGaussian() * fuzzyFactor),
+            Math.abs(1 + random.nextGaussian() * fuzzyFactor)
+        );
+        return this.getPos().add(fuzzyTarget);
     }
 }

@@ -50,6 +50,12 @@ import net.minecraft.util.registry.Registry;
 
 public final class RequiemEntities {
 
+    public static final EntityType<ObeliskSoulEntity> OBELISK_SOUL = FabricEntityTypeBuilder.<ObeliskSoulEntity>create()
+        .entityFactory(ObeliskSoulEntity::new)
+        .dimensions(EntityDimensions.changing(0.25f, 0.25f))
+        .trackRangeChunks(4)
+        .trackedUpdateRate(10)
+        .build();
     public static final EntityType<ReleasedSoulEntity> RELEASED_SOUL = FabricEntityTypeBuilder.<ReleasedSoulEntity>create()
         .entityFactory(ReleasedSoulEntity::new)
         .dimensions(EntityDimensions.changing(0.25f, 0.25f))
@@ -98,7 +104,8 @@ public final class RequiemEntities {
         .build();
 
     public static void init() {
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("soul"), RELEASED_SOUL);
+        Registry.register(Registry.ENTITY_TYPE, Requiem.id("obelisk_soul"), OBELISK_SOUL);
+        Registry.register(Registry.ENTITY_TYPE, Requiem.id("released_soul"), RELEASED_SOUL);
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_villager"), CURED_VILLAGER);
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_piglin"), CURED_PIGLIN);
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_piglin_brute"), CURED_PIGLIN_BRUTE);

@@ -83,6 +83,7 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
     public static final byte SYNC_NO_CLIP = 1;
     public static final byte SYNC_PHASING_PARTICLES = 2;
     public static final UUID SPEED_MODIFIER_UUID = UUID.fromString("3708adba-b37f-413f-8b66-62e05330c7da");
+    public static final int TICKS_BEFORE_PHASING = 60;
 
     @Nullable
     private MovementConfig config;
@@ -272,7 +273,7 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
         if (this.config != null && this.config.canPhaseThroughWalls() && hugging) {
             this.ticksAgainstWall++;
 
-            if (this.ticksAgainstWall > 60 && !this.noClipping) {
+            if (this.ticksAgainstWall > TICKS_BEFORE_PHASING && !this.noClipping) {
                 this.noClipping = true;
                 this.ticksAgainstWall = 0;
                 KEY.sync(this.player, (buf, player) -> writeToPacket(buf, SYNC_NO_CLIP), player -> shouldSyncWith(player, SYNC_NO_CLIP));

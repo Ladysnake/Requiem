@@ -40,10 +40,8 @@ import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.api.v1.record.RecordType;
 import ladysnake.requiem.common.RequiemRecordTypes;
-import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.particle.WispTrailParticleEffect;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
-import ladysnake.requiem.core.entity.EntityAiToggle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
@@ -54,9 +52,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -74,14 +70,13 @@ public class ReleasedSoulEntity extends SoulEntity {
     public static final byte BODY_ISEKAI = 1;
 
     public static final TrackedData<Byte> BODY_STATUS = DataTracker.registerData(ReleasedSoulEntity.class, TrackedDataHandlerRegistry.BYTE);
-    private int targetChanges = 0;
     private @Nullable UUID ownerRecord;
 
     public ReleasedSoulEntity(EntityType<? extends ReleasedSoulEntity> type, World world) {
         this(type, world, null);
     }
 
-    public ReleasedSoulEntity(EntityType<? extends SoulEntity> type, World world, @Nullable UUID ownerRecord) {
+    public ReleasedSoulEntity(EntityType<? extends ReleasedSoulEntity> type, World world, @Nullable UUID ownerRecord) {
         super(type, world);
         this.ownerRecord = ownerRecord;
         this.noClip = true;
@@ -112,8 +107,7 @@ public class ReleasedSoulEntity extends SoulEntity {
                 this.setMaxAge(-1);
                 this.getCollidingBody().ifPresent(body -> {
                     this.world.sendEntityStatus(this, SOUL_EXPIRED_STATUS);
-                    EntityAiToggle.KEY.maybeGet(body).ifPresent(t -> t.toggleAi(Registry.ITEM.getId(RequiemItems.EMPTY_SOUL_VESSEL), false, false));
-                    this.getRecord().ifPresent(data -> data.put(RequiemRecordTypes.RELEASED_SOUL, Unit.INSTANCE));
+                    this.getRecord().orElseThrow().put(RequiemRecordTypes.RELEASED_SOUL, Unit.INSTANCE);
                     this.discard();
                 });
             }
@@ -159,7 +153,6 @@ public class ReleasedSoulEntity extends SoulEntity {
             .flatMap(record -> record.get(RecordType.ENTITY_POINTER));
     }
 
-    @NotNull
     private Optional<GlobalRecord> getRecord() {
         return Optional.ofNullable(ownerRecord)
             .flatMap(GlobalRecordKeeper.get(this.world)::getRecord);
@@ -183,23 +176,8 @@ public class ReleasedSoulEntity extends SoulEntity {
 
     @Override
     protected Vec3d selectNextTarget() {
-        this.targetChanges++;
-
         return switch (this.getBodyStatus()) {
-            case BODY_FOUND -> this.getTarget().map(target -> {
-                double distanceToTarget = this.getPos().distanceTo(target.pos());
-                final double maxStepDistance = 15.0;
-                double scuffedDistanceToTarget = Math.min(maxStepDistance, distanceToTarget);
-                Vec3d towardsTarget = target.pos().subtract(this.getPos()).normalize().multiply(scuffedDistanceToTarget);
-                assert targetChanges > 0;
-                double fuzzyFactor = (scuffedDistanceToTarget * 1.5) / this.targetChanges;
-                Vec3d fuzzyTarget = towardsTarget.multiply(
-                    Math.abs(1 + random.nextGaussian() * fuzzyFactor),
-                    Math.abs(1 + random.nextGaussian() * fuzzyFactor),
-                    Math.abs(1 + random.nextGaussian() * fuzzyFactor)
-                );
-                return this.getPos().add(fuzzyTarget);
-            }).orElseThrow();
+            case BODY_FOUND -> this.getTarget().map(EntityPointer::pos).map(this::selectPosTowards).orElseThrow();
             case BODY_ISEKAI -> this.getPos().add(0, this.random.nextGaussian() * 0.1, 0);
             default -> this.getPos().add(
                 random.nextGaussian(),

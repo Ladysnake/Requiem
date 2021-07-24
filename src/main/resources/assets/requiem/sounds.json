@@ -90,6 +90,27 @@
       "block/soul_sand/break9"
     ]
   },
+  "entity.obelisk_soul.disintegrate": {
+    "subtitle": "requiem:subtitles.entity.soul.disintegrate",
+    "sounds": [
+      {
+        "name": "block/amethyst/break1",
+        "volume": 1
+      },
+      {
+        "name": "block/amethyst/break2",
+        "volume": 1
+      },
+      {
+        "name": "block/amethyst/break3",
+        "volume": 1
+      },
+      {
+        "name": "block/amethyst/break4",
+        "volume": 1
+      }
+    ]
+  },
   "entity.soul.teleport": {
     "subtitle": "requiem:subtitles.entity.soul.teleport",
     "sounds": [
